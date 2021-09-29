@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -40,6 +40,8 @@ import styles from "./ExtensionGroup.module.scss";
 import ExtensionRows from "./ExtensionRows";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
+import AuthContext from "@/auth/AuthContext";
+import { compact } from "lodash";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
@@ -69,6 +71,7 @@ const ExtensionGroup: React.FunctionComponent<{
   onRemove,
   onExportBlueprint,
 }) => {
+  const { flags } = useContext(AuthContext);
   const notify = useNotifications();
   const dispatch = useDispatch();
 
@@ -162,7 +165,7 @@ const ExtensionGroup: React.FunctionComponent<{
         <td>{status}</td>
         <td>
           <EllipsisMenu
-            items={[
+            items={compact([
               {
                 title: (
                   <>
@@ -171,18 +174,22 @@ const ExtensionGroup: React.FunctionComponent<{
                 ),
                 action: onViewLogs,
               },
-              {
-                title: (
-                  <>
-                    <FontAwesomeIcon icon={faTimes} /> Uninstall
-                  </>
-                ),
-                action: async () => {
-                  await removeMany(extensions);
-                },
-                className: "text-danger",
-              },
-            ]}
+              // #1532: temporary approach to controlling whether or not deployments can be uninstalled. In the future
+              // we'll want this to depend on the member's role within the deployment's organization
+              flags.includes("deployments-uninstall")
+                ? {
+                    title: (
+                      <>
+                        <FontAwesomeIcon icon={faTimes} /> Uninstall
+                      </>
+                    ),
+                    action: async () => {
+                      await removeMany(extensions);
+                    },
+                    className: "text-danger",
+                  }
+                : null,
+            ])}
           />
         </td>
       </tr>
