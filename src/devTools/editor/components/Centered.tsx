@@ -25,7 +25,7 @@ const Centered: React.FunctionComponent<{ isScrollable?: boolean }> = ({
 }) => (
   <Container fluid className={cx({ "h-100 pb-2 overflow-auto": isScrollable })}>
     <Row>
-      <Col className="mx-auto mt-4 text-center" md={8} lg={5} sm={11}>
+      <Col className="mx-auto mt-4 text-center" sm={11} md={9} lg={6} xl={5}>
         {children}
       </Col>
     </Row>
