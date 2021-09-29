@@ -41,7 +41,6 @@ import ExtensionRows from "./ExtensionRows";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
 import AuthContext from "@/auth/AuthContext";
-import { compact } from "lodash";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
@@ -165,7 +164,7 @@ const ExtensionGroup: React.FunctionComponent<{
         <td>{status}</td>
         <td>
           <EllipsisMenu
-            items={compact([
+            items={[
               {
                 title: (
                   <>
@@ -188,7 +187,7 @@ const ExtensionGroup: React.FunctionComponent<{
                 },
                 className: "text-danger",
               },
-            ])}
+            ]}
           />
         </td>
       </tr>
