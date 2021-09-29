@@ -28,8 +28,10 @@ import { Alert, Button } from "react-bootstrap";
 import config from "@/devTools/editor/extensionPoints/panel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCube,
   faExclamationTriangle,
+  faMousePointer,
+  faSearch,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import useAddExisting from "@/devTools/editor/panes/insert/useAddExisting";
 
@@ -49,9 +51,10 @@ const InsertPanelPane: React.FunctionComponent<{
 
       <div className="text-left">
         <p>
-          Click on a container to insert a panel in that container. Or, click{" "}
-          <span className="text-info">Use Existing Panel</span> to use a panel
-          foundation that already exists for the page
+          <FontAwesomeIcon icon={faMousePointer} size="lg" /> Click on an
+          existing <code>div</code> or container-like element to insert a panel
+          in that container. You may also search the{" "}
+          <span className="text-info">Marketplace</span> for existing panels.
         </p>
 
         <div>
@@ -72,14 +75,14 @@ const InsertPanelPane: React.FunctionComponent<{
               onClick={show}
               disabled={!panelExtensionPoints?.length}
             >
-              <FontAwesomeIcon icon={faCube} /> Use Existing Panel
+              <FontAwesomeIcon icon={faSearch} /> Search Marketplace
             </Button>
           )}
           onSelect={async (block) => addExistingPanel(block as PanelWithConfig)}
         />
 
         <Button className="ml-2" variant="danger" onClick={cancel}>
-          Cancel Insert
+          <FontAwesomeIcon icon={faTimes} /> Cancel
         </Button>
       </div>
     </Centered>

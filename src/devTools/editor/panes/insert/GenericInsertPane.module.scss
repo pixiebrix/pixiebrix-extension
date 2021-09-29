@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,21 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Col, Container, Row } from "react-bootstrap";
-import cx from "classnames";
+.buttonRow {
+  padding-left: 6rem;
+  padding-right: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
 
-const Centered: React.FunctionComponent<{ isScrollable?: boolean }> = ({
-  isScrollable = false,
-  children,
-}) => (
-  <Container fluid className={cx({ "h-100 pb-2 overflow-auto": isScrollable })}>
-    <Row>
-      <Col className="mx-auto mt-4 text-center" sm={11} md={9} lg={6} xl={5}>
-        {children}
-      </Col>
-    </Row>
-  </Container>
-);
+.searchButton {
+  margin-top: 0.5rem;
+}
 
-export default Centered;
+.cancelRow {
+  justify-content: center;
+}

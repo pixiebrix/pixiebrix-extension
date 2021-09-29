@@ -278,12 +278,12 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
     <div>
       <p>
         A context menu (also called a right-click menu) can be configured to
-        appear when you right click on a page, text selection, or other content
+        appear when you right click on a page, text selection, or other content.
       </p>
 
       <p>
-        Use an existing foundation, or start from scratch to have full control
-        over where the the menu item appears
+        Search for an existing context menu in the marketplace, or start from
+        scratch to have full control over how your context menu appears.
       </p>
     </div>
   ),

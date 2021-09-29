@@ -211,11 +211,11 @@ function ActualModal<T extends IBrick>({
     );
   }, [recommendations, bricks]);
 
-  // If there's no recommendations, default to the first brick so the right side isn't blank
   useEffect(
     () => {
-      if (recommendations.length === 0) {
-        setDetailBrick(bricks[0]);
+      // If there's no recommendations, default to the first brick so the right side isn't blank
+      if (recommendations.length === 0 && searchResults.length > 0) {
+        setDetailBrick(searchResults[0].data);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run on initial mount
