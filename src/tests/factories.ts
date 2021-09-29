@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, RegistryId, UUID } from "@/core";
-import { v4 } from "uuid";
+import { IExtension } from "@/core";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 
 const config = {
   apiVersion: "v1",
   kind: "component",
   metadata: {
-    id: "test/1",
+    id: "test/component-1",
     version: "1.0.0",
     name: "Text config",
     description: "Component's config made for testing",
@@ -50,9 +50,9 @@ const config = {
 export const extensionFactory: (
   extensionProps?: Partial<IExtension>
 ) => IExtension = (extensionProps) => ({
-  id: v4() as UUID,
+  id: uuidv4(),
   apiVersion: "v1",
-  extensionPointId: v4() as RegistryId,
+  extensionPointId: validateRegistryId("test/extension-point"),
   _deployment: null,
   _recipe: null,
   label: "Test label",
