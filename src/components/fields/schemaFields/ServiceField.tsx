@@ -17,14 +17,14 @@
 
 import React, { useCallback, useEffect, useMemo } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { useField, useFormikContext } from "formik";
+import { setIn, useField, useFormikContext } from "formik";
 import {
   OutputKey,
   RegistryId,
   SafeString,
-  Schema,
   ServiceDependency,
   ServiceKeyVar,
+  UUID,
 } from "@/core";
 import {
   createTypePredicate,
@@ -41,20 +41,23 @@ import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import SelectWidget, {
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import { isEmpty } from "lodash";
+import { castArray, isEmpty } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
+import {
+  extractServiceIds,
+  SERVICE_BASE_SCHEMA,
+  SERVICE_FIELD_REFS,
+} from "@/services/serviceUtils";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { UnknownObject } from "@/types";
+import { BlockPipeline } from "@/blocks/types";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
-export const SERVICE_FIELD_REFS = [
-  "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",
-  "https://app.pixiebrix.com/schemas/service#/definitions/configuredService",
-];
-
-export const SERVICE_BASE_SCHEMA =
-  "https://app.pixiebrix.com/schemas/services/";
-
-const SERVICE_ID_REGEX = /^https:\/\/app\.pixiebrix\.com\/schemas\/services\/(?<id>\S+)$/;
+/**
+ * Regex matching identifiers generated via defaultOutputKey
+ */
+const SERVICE_VAR_REGEX = /^@\w+$/;
 
 export const isServiceField = createTypePredicate(
   (x) =>
@@ -81,23 +84,123 @@ function defaultOutputKey(
   ) as OutputKey;
 }
 
-export function extractServiceIds(schema: Schema): RegistryId[] {
-  if ("$ref" in schema) {
-    const match = SERVICE_ID_REGEX.exec(schema.$ref ?? "");
-    return match ? [match.groups.id as RegistryId] : [];
-  }
-
-  if ("anyOf" in schema) {
-    return schema.anyOf
-      .filter((x) => x !== false)
-      .flatMap((x) => extractServiceIds(x as Schema));
-  }
-
-  throw new Error("Expected $ref or anyOf in schema for service");
-}
-
 function keyToFieldValue(key: OutputKey): ServiceKeyVar {
   return key == null ? null : (`@${key}` as ServiceKeyVar);
+}
+
+type ServiceSlice = Pick<FormState, "services" | "extension">;
+
+/**
+ * Return the auth id corresponding to a service variable usage
+ * @see AuthOption.value
+ * @see ServiceDependency.config
+ */
+function lookupAuthId(
+  dependencies: ServiceDependency[],
+  authOptions: AuthOption[],
+  value: ServiceKeyVar
+): UUID {
+  const dependency =
+    value == null
+      ? null
+      : dependencies.find((x) => keyToFieldValue(x.outputKey) === value);
+
+  return dependency == null
+    ? null
+    : authOptions.find((x) => x.value === dependency.config)?.value;
+}
+
+const PIPELINE_PROPERTIES = ["action", "body"];
+
+function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
+  const extensionConfig = state.extension as UnknownObject;
+
+  const identifiers = PIPELINE_PROPERTIES.flatMap((prop) => {
+    // eslint-disable-next-line security/detect-object-injection -- prop is constant
+    const pipeline = castArray(extensionConfig[prop] ?? []) as BlockPipeline;
+    return pipeline.flatMap((blockConfig) => {
+      const values = Object.values(blockConfig.config).filter(
+        (x) => typeof x === "string"
+      ) as string[];
+      return values.filter((value) => SERVICE_VAR_REGEX.test(value));
+    });
+  });
+
+  return new Set(identifiers);
+}
+
+/**
+ * Return a new copy of state with unused dependencies excluded
+ * @param state the form state
+ */
+export function produceExcludeUnusedDependencies<
+  T extends ServiceSlice = ServiceSlice
+>(state: T): T {
+  const used = selectTopLevelVars(state);
+  return produce(state, (draft) => {
+    draft.services = draft.services.filter((x) =>
+      used.has(keyToFieldValue(x.outputKey))
+    );
+  });
+}
+
+/**
+ * Key assumptions/limitations:
+ * - We're only supporting one service of each type at this time. If you change one of the auths for a service, it will
+ * change the other auths for that service too
+ */
+// eslint-disable-next-line max-params -- internal method where all the arguments have different types
+function produceServiceAuths(
+  state: ServiceSlice,
+  fieldName: string,
+  serviceId: UUID,
+  serviceIds: RegistryId[],
+  options: AuthOption[]
+) {
+  const option = options.find((x) => x.value === serviceId);
+
+  let outputKey: OutputKey;
+
+  let nextState = produce(state, (draft) => {
+    // Some bricks support alternative service ids, so need to check all of them
+    const match = draft.services.find((dependency) =>
+      serviceIds.includes(dependency.id)
+    );
+
+    if (match) {
+      console.debug(
+        "Dependency already exists for %s, switching service auth",
+        option.serviceId,
+        { state }
+      );
+      match.id = option.serviceId;
+      match.config = option.value;
+      outputKey = match.outputKey;
+    } else {
+      console.debug(
+        "Dependency does not exist for %s, creating dependency",
+        option.serviceId,
+        { state }
+      );
+      outputKey = defaultOutputKey(
+        option.serviceId,
+        draft.services.map((x) => x.outputKey)
+      );
+      draft.services.push({
+        id: option.serviceId,
+        outputKey,
+        config: option.value,
+      });
+    }
+  });
+
+  // Update field value before calling produceExcludeUnusedDependencies, otherwise it will see the stale service var
+  nextState = setIn(nextState, fieldName, keyToFieldValue(outputKey));
+
+  // Perform cleanup of the service dependencies
+  nextState = produceExcludeUnusedDependencies(nextState);
+
+  return nextState;
 }
 
 /**
@@ -111,12 +214,11 @@ const ServiceField: React.FunctionComponent<
   }
 > = ({ label, detectDefault = true, schema, ...props }) => {
   const [authOptions] = useAuthOptions();
-
+  const {
+    values: root,
+    setValues: setRootValues,
+  } = useFormikContext<ServiceSlice>();
   const [{ value, ...field }, meta, helpers] = useField<ServiceKeyVar>(props);
-
-  const { values: root, setValues } = useFormikContext<{
-    services: ServiceDependency[];
-  }>();
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);
@@ -128,64 +230,13 @@ const ServiceField: React.FunctionComponent<
     };
   }, [authOptions, schema]);
 
-  const selectedOption = useMemo(() => {
-    const dependency =
-      value == null
-        ? null
-        : root.services.find((x) => keyToFieldValue(x.outputKey) === value);
-
-    return dependency == null
-      ? null
-      : authOptions.find((x) => x.value === dependency.config);
-  }, [root.services, authOptions, value]);
-
   const onChange: SelectWidgetOnChange<AuthOption> = useCallback(
     ({ target: { value, options } }) => {
-      // Key Assumption: only one service of each type is configured. If a user changes the auth for one brick,
-      // it changes the auth for all the bricks.
-
-      const option = options.find((x) => x.value === value);
-
-      let outputKey: OutputKey;
-
-      setValues(
-        produce(root, (draft) => {
-          // Some bricks support alternative service ids, so need to check all of them
-          const match = draft.services.find((dependency) =>
-            serviceIds.includes(dependency.id)
-          );
-          if (match) {
-            console.debug(
-              "Dependency already exists for %s, switching service auth",
-              option.serviceId,
-              { root }
-            );
-            match.id = option.serviceId;
-            match.config = option.value;
-            outputKey = match.outputKey;
-          } else {
-            console.debug(
-              "Dependency does not exist for %s, creating dependency",
-              option.serviceId,
-              { root }
-            );
-            outputKey = defaultOutputKey(
-              option.serviceId,
-              draft.services.map((x) => x.outputKey)
-            );
-            draft.services.push({
-              id: option.serviceId,
-              outputKey,
-              config: option.value,
-            });
-          }
-        })
+      setRootValues(
+        produceServiceAuths(root, field.name, value, serviceIds, options)
       );
-
-      console.debug("Setting value to %s", outputKey);
-      helpers.setValue(keyToFieldValue(outputKey));
     },
-    [root, helpers, setValues, serviceIds]
+    [root, setRootValues, serviceIds, field.name]
   );
 
   useEffect(
@@ -243,7 +294,7 @@ const ServiceField: React.FunctionComponent<
       blankValue={null}
       options={options}
       // The SelectWidget re-looks up the option based on the value
-      value={selectedOption?.value}
+      value={lookupAuthId(root.services, authOptions, value)}
       onChange={onChange}
       error={meta.error}
       touched={meta.touched}

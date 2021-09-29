@@ -18,7 +18,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
-import { useField, useFormikContext } from "formik";
+import { getIn, useField, useFormikContext } from "formik";
 import { BlockPipeline } from "@/blocks/types";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
@@ -45,6 +45,7 @@ import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlo
 import useRuntimeErrors from "@/devTools/editor/hooks/useRuntimeErrors";
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -69,10 +70,8 @@ const EditTab: React.FC<{
   useExtensionTrace();
   useRuntimeErrors(pipelineFieldName);
 
-  const {
-    extensionPoint,
-    type: elementType,
-  } = useFormikContext<FormState>().values;
+  const { values, setValues: setFormValues } = useFormikContext<FormState>();
+  const { extensionPoint, type: elementType } = values;
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
@@ -121,14 +120,20 @@ const EditTab: React.FC<{
     }, []);
 
   const removeBlock = (pipelineIndex: number) => {
-    const newPipeline = produce(blockPipeline, (draft) => {
-      if (activeNodeIndex > pipelineIndex) {
-        setActiveNodeIndex(activeNodeIndex - 1);
-      }
-
-      draft.splice(pipelineIndex, 1);
+    let nextState = produce(values, (draft) => {
+      const pipeline = getIn(draft, pipelineFieldName) as BlockPipeline;
+      pipeline.splice(pipelineIndex, 1);
     });
-    pipelineFieldHelpers.setValue(newPipeline);
+
+    nextState = produceExcludeUnusedDependencies(nextState);
+
+    // Set the active node before setting the form values, otherwise there's a race condition based on the React state
+    // causing a re-render vs. the Formik state causing a re-render
+    if (activeNodeIndex > pipelineIndex) {
+      setActiveNodeIndex(activeNodeIndex - 1);
+    }
+
+    setFormValues(nextState);
   };
 
   const blockNodes: EditorNodeProps[] = zip(blockPipeline, resolvedBlocks).map(
