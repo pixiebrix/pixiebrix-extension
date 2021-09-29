@@ -25,7 +25,7 @@ import { Button, Col, Row } from "react-bootstrap";
 import BlockModal from "@/components/brickModal/BrickModal";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube, faExpand, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faExpand, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { reportEvent } from "@/telemetry/events";
@@ -122,12 +122,16 @@ const GenericInsertPane: React.FunctionComponent<{
       <div className="text-left">{config.insertModeHelp}</div>
       <Row>
         <Col sm={3}>
-          <h6>Start with:</h6>
+          <h5>Start with:</h5>
         </Col>
         <Col
           sm={9}
           className="text-left d-flex flex-column align-items-stretch px-5"
         >
+          <Button variant="primary" onClick={addNew}>
+            <FontAwesomeIcon icon={faExpand} /> Empty {config.label}
+          </Button>
+
           <BlockModal
             bricks={extensionPoints ?? []}
             renderButton={({ show }) => (
@@ -135,16 +139,13 @@ const GenericInsertPane: React.FunctionComponent<{
                 variant="info"
                 onClick={show}
                 disabled={!extensionPoints?.length}
+                className="mt-2"
               >
-                <FontAwesomeIcon icon={faCube} /> Existing Foundation
+                <FontAwesomeIcon icon={faSearch} /> Search Marketplace
               </Button>
             )}
             onSelect={async (block) => addExisting(block)}
           />
-
-          <Button variant="info" className="mt-2" onClick={addNew}>
-            <FontAwesomeIcon icon={faExpand} /> Empty {config.label}
-          </Button>
         </Col>
       </Row>
       <Row>
