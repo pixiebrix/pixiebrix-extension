@@ -84,7 +84,7 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
           onSelect={async (block) => addExisting(block as MenuItemWithConfig)}
         />
 
-        <Button variant="outline-danger" className="ml-2" onClick={cancel}>
+        <Button variant="danger" className="ml-2" onClick={cancel}>
           <FontAwesomeIcon icon={faTimes} /> Cancel
         </Button>
       </div>

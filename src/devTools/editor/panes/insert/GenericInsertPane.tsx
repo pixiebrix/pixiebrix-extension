@@ -25,7 +25,7 @@ import { Button, Row } from "react-bootstrap";
 import BlockModal from "@/components/brickModal/BrickModal";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExpand, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { reportEvent } from "@/telemetry/events";
@@ -123,7 +123,7 @@ const GenericInsertPane: React.FunctionComponent<{
       <div className="text-left">{config.insertModeHelp}</div>
       <Row className={styles.buttonRow}>
         <Button variant="primary" onClick={addNew}>
-          <FontAwesomeIcon icon={faExpand} /> Create new {config.label}
+          <FontAwesomeIcon icon={faPlus} /> Create new {config.label}
         </Button>
 
         <BlockModal
@@ -141,7 +141,7 @@ const GenericInsertPane: React.FunctionComponent<{
         />
       </Row>
       <Row className={styles.cancelRow}>
-        <Button variant="outline-danger" className="m-3" onClick={cancel}>
+        <Button variant="danger" className="m-3" onClick={cancel}>
           <FontAwesomeIcon icon={faTimes} /> Cancel
         </Button>
       </Row>

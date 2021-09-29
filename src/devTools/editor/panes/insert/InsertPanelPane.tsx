@@ -81,7 +81,7 @@ const InsertPanelPane: React.FunctionComponent<{
           onSelect={async (block) => addExistingPanel(block as PanelWithConfig)}
         />
 
-        <Button className="ml-2" variant="outline-danger" onClick={cancel}>
+        <Button className="ml-2" variant="danger" onClick={cancel}>
           <FontAwesomeIcon icon={faTimes} /> Cancel
         </Button>
       </div>
