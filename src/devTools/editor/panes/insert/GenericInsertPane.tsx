@@ -33,6 +33,7 @@ import * as nativeOperations from "@/background/devtools";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import { getCurrentURL } from "@/devTools/utils";
+import styles from "./GenericInsertPane.module.scss";
 
 const { addElement } = editorSlice.actions;
 
@@ -120,35 +121,26 @@ const GenericInsertPane: React.FunctionComponent<{
     <Centered isScrollable>
       <div className="PaneTitle">Build new {config.label} extension</div>
       <div className="text-left">{config.insertModeHelp}</div>
-      <Row>
-        <Col sm={3}>
-          <h5>Start with:</h5>
-        </Col>
-        <Col
-          sm={9}
-          className="text-left d-flex flex-column align-items-stretch px-5"
-        >
-          <Button variant="primary" onClick={addNew}>
-            <FontAwesomeIcon icon={faExpand} /> Empty {config.label}
-          </Button>
+      <Row className={styles.buttonRow}>
+        <Button variant="primary" onClick={addNew}>
+          <FontAwesomeIcon icon={faExpand} /> Create new {config.label}
+        </Button>
 
-          <BlockModal
-            bricks={extensionPoints ?? []}
-            renderButton={({ show }) => (
-              <Button
-                variant="info"
-                onClick={show}
-                disabled={!extensionPoints?.length}
-                className="mt-2"
-              >
-                <FontAwesomeIcon icon={faSearch} /> Search Marketplace
-              </Button>
-            )}
-            onSelect={async (block) => addExisting(block)}
-          />
-        </Col>
+        <BlockModal
+          bricks={extensionPoints ?? []}
+          renderButton={({ show }) => (
+            <Button
+              variant="info"
+              onClick={show}
+              disabled={!extensionPoints?.length}
+            >
+              <FontAwesomeIcon icon={faSearch} /> Search Marketplace
+            </Button>
+          )}
+          onSelect={async (block) => addExisting(block)}
+        />
       </Row>
-      <Row>
+      <Row className={styles.cancelRow}>
         <Button variant="outline-danger" className="m-3" onClick={cancel}>
           <FontAwesomeIcon icon={faTimes} /> Cancel
         </Button>
