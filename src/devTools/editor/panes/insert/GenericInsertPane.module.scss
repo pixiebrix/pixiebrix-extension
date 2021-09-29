@@ -21,10 +21,10 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
+}
 
-  :last-child {
-    margin-top: 0.5rem;
-  }
+.searchButton {
+  margin-top: 0.5rem;
 }
 
 .cancelRow {

@@ -133,6 +133,7 @@ const GenericInsertPane: React.FunctionComponent<{
               variant="info"
               onClick={show}
               disabled={!extensionPoints?.length}
+              className={styles.searchButton}
             >
               <FontAwesomeIcon icon={faSearch} /> Search Marketplace
             </Button>
