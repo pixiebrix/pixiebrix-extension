@@ -57,8 +57,6 @@ const EditorNode: React.FC<EditorNodeProps> = ({
     iconProp
   );
 
-  const hasError = true;
-
   return (
     // Use our own custom style here, not bootstrap
     <div className={styles.root}>

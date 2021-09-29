@@ -109,7 +109,6 @@ const DataPanel: React.FC<{
 
   const { values: formState } = useFormikContext<FormState>();
 
-  console.log("DataPanel", instanceId);
   const { record } = useSelector(makeSelectBlockTrace(instanceId));
 
   const relevantContext = useMemo(

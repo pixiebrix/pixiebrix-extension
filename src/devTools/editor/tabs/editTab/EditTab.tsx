@@ -89,7 +89,7 @@ const EditTab: React.FC<{
 
   const [
     { value: blockPipeline = [] },
-    ,
+    { error: blockPipelineError },
     pipelineFieldHelpers,
   ] = useField<BlockPipeline>(pipelineFieldName);
 
@@ -140,9 +140,7 @@ const EditTab: React.FC<{
     setFormValues(nextState);
   };
 
-  const traceError = useSelector(selectTraceError);
-  console.log("traceError", traceError);
-
+  console.log("EditTab. PipelineError", blockPipelineError);
   const blockNodes: EditorNodeProps[] = zip(blockPipeline, resolvedBlocks).map(
     ([action, block], index) =>
       block
@@ -160,7 +158,8 @@ const EditTab: React.FC<{
                 faIconClass={styles.brickFaIcon}
               />
             ),
-            hasError: traceError?.blockInstanceId === action.instanceId,
+            // eslint-disable-next-line security/detect-object-injection
+            hasError: Boolean(blockPipelineError?.[index]),
             onClick: () => {
               onSelectNode(index + 1);
             },
