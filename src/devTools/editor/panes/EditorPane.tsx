@@ -58,12 +58,7 @@ const EditorPane: React.FunctionComponent<{
 
   return (
     <ErrorBoundary key={key}>
-      <Formik
-        key={key}
-        initialValues={selectedElement}
-        onSubmit={create}
-        validateOnBlur={false}
-      >
+      <Formik key={key} initialValues={selectedElement} onSubmit={create}>
         {({ values }) => (
           <>
             <Effect
