@@ -73,10 +73,7 @@ function useRuntimeErrors(pipelineFieldName: string): RuntimeErrors {
         );
         if (blockIndex >= 0) {
           for (const unit of error.errors) {
-            const formikError = toFormikError(
-              joinName(pipelineFieldName, String(blockIndex)),
-              unit
-            );
+            const formikError = toFormikError(String(blockIndex), unit);
             if (formikError) {
               // Set to touched so it shows the error message
               setFieldTouched(formikError.fieldName);
@@ -92,6 +89,35 @@ function useRuntimeErrors(pipelineFieldName: string): RuntimeErrors {
 
   return {
     traceError,
+  };
+}
+
+export function usePipelineTraceValidation(
+  pipelineFieldName: string,
+  traceError: TraceError
+) {
+  return (blockPipeline: BlockPipeline) => {
+    if (traceError && isInputValidationError(traceError.error)) {
+      const { error, blockInstanceId } = traceError;
+      const blockIndex = blockPipeline.findIndex(
+        (block) => block.instanceId === blockInstanceId
+      );
+
+      if (blockIndex >= 0) {
+        for (const unit of error.errors) {
+          const formikError = toFormikError(
+            joinName(pipelineFieldName, String(blockIndex)),
+            unit
+          );
+
+          if (formikError) {
+            return {
+              [formikError.fieldName]: formikError.message,
+            };
+          }
+        }
+      }
+    }
   };
 }
 

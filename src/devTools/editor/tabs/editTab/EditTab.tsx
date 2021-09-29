@@ -47,6 +47,7 @@ import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/Founda
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
 import { useSelector } from "react-redux";
 import { selectTraceError } from "@/devTools/editor/slices/runtimeSelectors";
+import { usePipelineTraceValidation } from "../../hooks/useRuntimeErrors";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -84,11 +85,20 @@ const EditTab: React.FC<{
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
 
+  const traceError = useSelector(selectTraceError);
+  const validatePipeline = usePipelineTraceValidation(
+    pipelineFieldName,
+    traceError
+  );
+
   const [
     { value: blockPipeline = [] },
     { error: blockPipelineError },
     pipelineFieldHelpers,
-  ] = useField<BlockPipeline>(pipelineFieldName);
+  ] = useField<BlockPipeline>({
+    name: pipelineFieldName,
+    validate: validatePipeline,
+  });
 
   const blockFieldName = useMemo(
     () => `${pipelineFieldName}[${activeNodeIndex - 1}]`,
@@ -137,7 +147,6 @@ const EditTab: React.FC<{
     setFormValues(nextState);
   };
 
-  const traceError = useSelector(selectTraceError);
   const blockNodes: EditorNodeProps[] = zip(blockPipeline, resolvedBlocks).map(
     ([action, block], index) =>
       block
