@@ -107,7 +107,8 @@ const BlockPreview: React.FunctionComponent<{
           blockConfig: removeEmptyValues(blockConfig),
           args,
         });
-        setOutput(result);
+        const { outputKey } = blockConfig;
+        setOutput(outputKey ? { [`@${outputKey}`]: result } : result);
       } catch (error: unknown) {
         setOutput(error);
       } finally {
@@ -184,7 +185,7 @@ const BlockPreview: React.FunctionComponent<{
       )}
 
       {output && !isError && !isEmpty(output) && (
-        <JsonTree data={output} searchable />
+        <JsonTree data={output} searchable copyable />
       )}
 
       {output && !isError && isEmpty(output) && (
