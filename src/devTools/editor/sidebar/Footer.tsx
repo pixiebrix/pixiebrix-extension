@@ -19,19 +19,18 @@ import React, { useContext } from "react";
 import AuthContext from "@/auth/AuthContext";
 import { DevToolsContext } from "@/devTools/context";
 import BeatLoader from "react-spinners/BeatLoader";
+import styles from "./Footer.module.scss";
 
 const Footer: React.FunctionComponent = () => {
   const { scope } = useContext(AuthContext);
   const { connecting } = useContext(DevToolsContext);
 
   return (
-    <div className="Sidebar__footer flex-grow-0">
-      <div className="d-flex">
-        <div className="flex-grow-1">
-          Scope: <code>{scope}</code>
-        </div>
-        <div>{connecting && <BeatLoader size={7} />}</div>
+    <div className={styles.root}>
+      <div className={styles.scope}>
+        Scope: <code>{scope}</code>
       </div>
+      {connecting && <BeatLoader size={7} />}
     </div>
   );
 };

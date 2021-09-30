@@ -1,0 +1,63 @@
+.root {
+  flex-direction: column;
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  border-right: 2px solid #c6bfdb;
+
+  &.collapsed {
+    $burgerButtonWidth: 43px;
+    flex: 0 0 $burgerButtonWidth;
+    align-items: center;
+  }
+  &.expanded {
+    flex: 0 0 260px;
+  }
+
+  label {
+    font-size: 0.875rem;
+  }
+
+  :global {
+    .list-group {
+      border-radius: 0;
+
+      .list-group-item {
+        padding-left: 12px;
+        padding-right: 12px;
+        border-right: none;
+        font-size: 0.875rem;
+      }
+    }
+  }
+}
+
+.logo {
+  $logoSize: 31px;
+
+  background-color: #6462aa; // Make logo icon look square
+  width: $logoSize;
+  height: $logoSize;
+
+  &:hover {
+    filter: brightness(0.75);
+  }
+}
+
+.actions {
+  flex-grow: 0;
+
+  button {
+    border-radius: 0;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  :global(.badge) {
+    margin-top: -5px;
+  }
+}
+
+.extensions {
+  overflow-y: scroll;
+}

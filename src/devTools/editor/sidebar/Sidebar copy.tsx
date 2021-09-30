@@ -39,9 +39,6 @@ import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
 import { Except } from "type-fest";
-import styles from "./Sidebar.module.scss";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-import cx from "classnames";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -63,22 +60,14 @@ const DropdownEntry: React.FunctionComponent<{
   </Dropdown.Item>
 );
 
-const Logo: React.FunctionComponent = () => (
-  <img src={logoUrl} alt="PixiBrix logo" className={styles.logo} />
-);
-
-type SidebarProps = Except<
-  EditorState,
-  "error" | "dirty" | "knownEditable" | "selectionSeq" | "isBetaUI"
-> & {
-  installed: IExtension[];
-};
-
-const SidebarExpanded: React.FunctionComponent<
-  SidebarProps & {
-    collapseSidebar: () => void;
+const Sidebar: React.FunctionComponent<
+  Except<
+    EditorState,
+    "error" | "dirty" | "knownEditable" | "selectionSeq" | "isBetaUI"
+  > & {
+    installed: IExtension[];
   }
-> = ({ inserting, activeElement, installed, elements, collapseSidebar }) => {
+> = ({ inserting, activeElement, installed, elements }) => {
   const context = useContext(DevToolsContext);
   const {
     port,
@@ -128,30 +117,29 @@ const SidebarExpanded: React.FunctionComponent<
   const addElement = useAddElement();
 
   return (
-    <div className={cx(styles.root, styles.expanded)}>
-      <div className={styles.actions}>
+    <div className="Sidebar d-flex flex-column vh-100">
+      <div className="Sidebar__actions flex-grow-0">
         <div className="d-inline-flex flex-wrap">
           <a
             href="/options.html"
             target="_blank"
             title="Open PixieBrix Options"
           >
-            <Logo />
+            <img
+              src={logoUrl}
+              alt=""
+              width={31}
+              height={31}
+              className="Sidebar__logo"
+            />
           </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            onClick={collapseSidebar}
-          >
-            <FontAwesomeIcon icon={faBars} />
-          </button>
           <DropdownButton
             disabled={Boolean(inserting) || !hasPermissions}
             variant="info"
             size="sm"
             title="Add"
             id="add-extension-point"
-            className="mr-2"
+            className="mr-2 Sidebar__actions__dropdown"
           >
             {sortBy([...ADAPTERS.values()], (x) => x.displayOrder).map(
               (element) => (
@@ -181,7 +169,7 @@ const SidebarExpanded: React.FunctionComponent<
           ) : null}
         </div>
       </div>
-      <div className={styles.extensions}>
+      <div className="Sidebar__extensions flex-grow-1">
         <ListGroup>
           {entries.map((entry) =>
             isExtension(entry) ? (
@@ -209,36 +197,6 @@ const SidebarExpanded: React.FunctionComponent<
       </div>
       <Footer />
     </div>
-  );
-};
-
-const SidebarCollapsed: React.FunctionComponent<{
-  expandSidebar: () => void;
-}> = ({ expandSidebar }) => (
-  <div className={cx(styles.root, styles.collapsed)}>
-    <Logo />
-    <button className="navbar-toggler" type="button" onClick={expandSidebar}>
-      <FontAwesomeIcon icon={faBars} />
-    </button>
-  </div>
-);
-
-const Sidebar: React.FunctionComponent<SidebarProps> = (props) => {
-  const [collapsed, setCollapsed] = useState<boolean>(true);
-
-  return collapsed ? (
-    <SidebarCollapsed
-      expandSidebar={() => {
-        setCollapsed(false);
-      }}
-    />
-  ) : (
-    <SidebarExpanded
-      collapseSidebar={() => {
-        setCollapsed(true);
-      }}
-      {...props}
-    />
   );
 };
 

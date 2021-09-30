@@ -19,7 +19,6 @@ import { Container } from "react-bootstrap";
 import Sidebar from "@/devTools/editor/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
-import SplitPane from "react-split-pane";
 import { cancelSelectElement } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
 import { selectExtensions } from "@/options/selectors";
@@ -37,10 +36,9 @@ import GenericInsertPane from "@/devTools/editor/panes/insert/GenericInsertPane"
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/slices/editorSlice";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
+import styles from "./Editor.module.scss";
 
 const selectEditor = ({ editor }: RootState) => editor;
-
-const DEFAULT_SIDEBAR_WIDTH_PX = 260;
 
 const Editor: React.FunctionComponent = () => {
   const { tabState, port, connecting } = useContext(DevToolsContext);
@@ -141,22 +139,15 @@ const Editor: React.FunctionComponent = () => {
   ]);
 
   return (
-    <Container fluid className="h-100">
-      <SplitPane
-        split="vertical"
-        allowResize
-        minSize={DEFAULT_SIDEBAR_WIDTH_PX}
-        defaultSize={DEFAULT_SIDEBAR_WIDTH_PX}
-      >
-        <Sidebar
-          installed={installed}
-          elements={elements}
-          activeElement={activeElement}
-          inserting={inserting}
-        />
-        {body}
-      </SplitPane>
-    </Container>
+    <div className={styles.root}>
+      <Sidebar
+        installed={installed}
+        elements={elements}
+        activeElement={activeElement}
+        inserting={inserting}
+      />
+      {body}
+    </div>
   );
 };
 
