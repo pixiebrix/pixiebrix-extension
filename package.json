@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.4.0-beta.3",
+  "version": "1.4.0",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "preinstall": "npx npm-force-resolutions",
