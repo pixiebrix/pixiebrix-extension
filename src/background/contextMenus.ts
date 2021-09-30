@@ -28,6 +28,7 @@ import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage, hasCancelRootCause } from "@/errors";
 import { UUID } from "@/core";
+import { expectContext } from "@/utils/expectContext";
 
 type ExtensionId = UUID;
 // This is the type the browser API has for menu ids. In practice they should be strings because that's what we're
@@ -38,8 +39,10 @@ const extensionMenuItems = new Map<ExtensionId, MenuItemId>();
 const pendingRegistration = new Set<ExtensionId>();
 
 const MENU_PREFIX = "pixiebrix-";
-const CONTEXT_SCRIPT_INSTALL_MS = 1000;
-const CONTEXT_MENU_INSTALL_MS = 1000;
+
+// This constant must be high enough to give Chrome time to inject the content script. ensureContentScript can take
+// >= 1 seconds because it also waits for the content script to be ready
+const CONTEXT_SCRIPT_INSTALL_MS = 5000;
 
 export type SelectionMenuOptions = {
   extensionId: UUID;
@@ -52,11 +55,14 @@ function makeMenuId(extensionId: UUID): string {
   return `${MENU_PREFIX}${extensionId}`;
 }
 
+/**
+ * FIXME: this method doesn't handle frames
+ */
 async function dispatchMenu(
   info: Menus.OnClickData,
   tab: Tabs.Tab
 ): Promise<void> {
-  // FIXME: this method doesn't handle frames properly
+  expectContext("background");
 
   const target = { frameId: info.frameId, tabId: tab.id };
 
@@ -64,18 +70,27 @@ async function dispatchMenu(
     throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);
   }
 
+  try {
+    reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
+  } catch (error: unknown) {
+    console.warn("Error reporting ContextMenuClick event", { error });
+  }
+
+  console.time("ensureContentScript");
+
   // Using the context menu gives temporary access to the page
   await pTimeout(
     ensureContentScript(target),
     CONTEXT_SCRIPT_INSTALL_MS,
-    `contentScript not ready in ${CONTEXT_SCRIPT_INSTALL_MS}s`
+    `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}s`
   );
+
+  console.timeEnd("ensureContentScript");
 
   try {
     await handleMenuAction(target, {
-      extensionId: info.menuItemId.slice(MENU_PREFIX.length),
+      extensionId: info.menuItemId.slice(MENU_PREFIX.length) as UUID,
       args: info,
-      maxWaitMillis: CONTEXT_MENU_INSTALL_MS,
     });
     void showNotification(target, {
       message: "Ran content menu item action",
@@ -88,18 +103,12 @@ async function dispatchMenu(
         className: "info",
       });
     } else {
-      const message = `Error processing context menu action: ${getErrorMessage(
+      const message = `Error handling context menu action: ${getErrorMessage(
         error
       )}`;
       reportError(new Error(message));
       void showNotification(target, { message, className: "error" });
     }
-  }
-
-  try {
-    reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
-  } catch (error: unknown) {
-    console.warn("Error reporting ContextMenuClick event", { error });
   }
 }
 
@@ -152,6 +161,8 @@ export async function ensureContextMenu({
   title,
   documentUrlPatterns,
 }: SelectionMenuOptions) {
+  expectContext("background");
+
   if (!extensionId) {
     throw new Error("extensionId is required");
   }
