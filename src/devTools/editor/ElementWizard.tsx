@@ -151,15 +151,12 @@ const ElementWizard: React.FunctionComponent<{
             disabled={isSubmitting || !isValid}
           />
 
-          <ReloadToolbar
-            element={element}
-            disabled={isSubmitting || !isValid}
-          />
+          <ReloadToolbar element={element} disabled={isSubmitting} />
 
           <ActionToolbar
             installed={installed}
             element={element}
-            disabled={isSubmitting || !isValid}
+            disabled={isSubmitting}
           />
         </Nav>
 
