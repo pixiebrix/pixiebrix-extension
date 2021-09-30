@@ -16,7 +16,6 @@
  */
 import React from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { Runtime } from "webextension-polyfill-ts";
 import {
   ApiVersion,
   IExtension,
@@ -30,6 +29,7 @@ import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { NormalizedAvailability } from "@/blocks/types";
+import { Target } from "@/types";
 
 export type ElementType =
   | "menuItem"
@@ -147,9 +147,9 @@ export interface ElementConfig<
   /**
    * Method for the user to select an element from the host page (e.g., placing a menu button).
    * `undefined` for elements that aren't placed natively in the host page (e.g., context menus)
-   * @param port the devtools port with the backend page
+   * @param target the tab on which to run the function
    */
-  readonly selectNativeElement?: (port: Runtime.Port) => Promise<TResult>;
+  readonly selectNativeElement?: (target: Target) => Promise<TResult>;
 
   /**
    * Returns the initial page editor form state for a new element (including new foundation)

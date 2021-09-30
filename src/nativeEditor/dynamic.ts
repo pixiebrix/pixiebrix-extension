@@ -69,15 +69,14 @@ export async function updateDynamicElement({
 }
 
 export async function enableOverlay(selector: string): Promise<void> {
-  if (!selector) {
-    throw new Error(`Selector not found: ${selector}`);
+  if (!selector.trim()) {
+    return;
   }
 
   if (_overlay == null) {
     _overlay = new Overlay();
   }
 
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive on JQuery method
   const $elt = $(document).find(selector);
   _overlay.inspect($elt.toArray(), null);
 }

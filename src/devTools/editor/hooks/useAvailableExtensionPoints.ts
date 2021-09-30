@@ -21,8 +21,9 @@ import { useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useAsyncState } from "@/hooks/common";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { checkAvailable } from "@/background/devtools";
 import { zip } from "lodash";
+import { checkAvailable } from "@/contentScript/messenger/api";
+import { thisTab } from "@/devTools/utils";
 
 function useAvailableExtensionPoints<
   TConfig extends IExtensionPoint & { rawConfig: ExtensionPointConfig }
@@ -42,7 +43,7 @@ function useAvailableExtensionPoints<
 
     const availability = await Promise.allSettled(
       withConfig.map(async (x) =>
-        checkAvailable(port, x.rawConfig.definition.isAvailable ?? {})
+        checkAvailable(thisTab, x.rawConfig.definition.isAvailable ?? {})
       )
     );
 

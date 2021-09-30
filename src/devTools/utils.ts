@@ -18,6 +18,7 @@
 import { browser } from "webextension-polyfill-ts";
 import { Primitive } from "type-fest";
 import { compact, includes, isEmpty, mapValues, pickBy } from "lodash";
+import { Target } from "@/types";
 
 function printf(string: string, arguments_: string[]): string {
   // eslint-disable-next-line unicorn/no-array-reduce -- Short and already described by "printf"
@@ -84,3 +85,8 @@ export function searchData(query: string, data: unknown): unknown {
     ? data
     : undefined;
 }
+
+export const thisTab: Target = {
+  tabId: browser.devtools.inspectedWindow.tabId,
+  frameId: 0,
+};
