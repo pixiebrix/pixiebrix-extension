@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useContext } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,74 +31,92 @@ import {
 import cx from "classnames";
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
+import AuthContext from "@/auth/AuthContext";
 
-const Sidebar: React.FunctionComponent = () => (
-  <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
-    <nav className="sidebar sidebar-offcanvas" id={SIDEBAR_ID}>
-      <ul className="nav">
-        <SidebarLink
-          route="/installed"
-          title="Active Bricks"
-          icon={faCubes}
-          isActive={(match, location) =>
-            match ||
-            location.pathname === "/" ||
-            location.pathname.startsWith("/extensions/")
-          }
-        />
-        <SidebarLink
-          route="/blueprints"
-          title="My Blueprints"
-          icon={faScroll}
-        />
+const Sidebar: React.FunctionComponent = () => {
+  const { flags } = useContext(AuthContext);
 
-        <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
-        <SidebarLink route="/services" title="Integrations" icon={faCloud} />
-        <SidebarLink route="/settings" title="Settings" icon={faCogs} />
+  return (
+    <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
+      <nav className="sidebar sidebar-offcanvas" id={SIDEBAR_ID}>
+        <ul className="nav">
+          <SidebarLink
+            route="/installed"
+            title="Active Bricks"
+            icon={faCubes}
+            isActive={(match, location) =>
+              match ||
+              location.pathname === "/" ||
+              location.pathname.startsWith("/extensions/")
+            }
+          />
 
-        <hr />
-        <li className="nav-text-item">
-          <span className="nav-text">Quick Links</span>
-        </li>
+          <SidebarLink
+            route="/blueprints"
+            title="My Blueprints"
+            icon={faScroll}
+          />
 
-        <li className={cx("nav-item")}>
-          <a
-            href="https://www.pixiebrix.com/marketplace"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-link"
-          >
-            <span className="menu-title">Marketplace</span>
-            <FontAwesomeIcon icon={faStoreAlt} className="menu-icon" />
-          </a>
-        </li>
+          {!flags.includes("restricted-workshop") && (
+            <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
+          )}
 
-        <li className={cx("nav-item")}>
-          <a
-            href="https://community.pixiebrix.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-link"
-          >
-            <span className="menu-title">Community</span>
-            <FontAwesomeIcon icon={faSeedling} className="menu-icon" />
-          </a>
-        </li>
+          {!flags.includes("restricted-services") && (
+            <SidebarLink
+              route="/services"
+              title="Integrations"
+              icon={faCloud}
+            />
+          )}
 
-        <li className={cx("nav-item")}>
-          <a
-            href="https://docs.pixiebrix.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-link"
-          >
-            <span className="menu-title">Documentation</span>
-            <FontAwesomeIcon icon={faInfoCircle} className="menu-icon" />
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </OutsideClickHandler>
-);
+          <SidebarLink route="/settings" title="Settings" icon={faCogs} />
+
+          <hr />
+          <li className="nav-text-item">
+            <span className="nav-text">Quick Links</span>
+          </li>
+
+          {!flags.includes("restricted-marketplace") && (
+            <li className={cx("nav-item")}>
+              <a
+                href="https://www.pixiebrix.com/marketplace"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-link"
+              >
+                <span className="menu-title">Marketplace</span>
+                <FontAwesomeIcon icon={faStoreAlt} className="menu-icon" />
+              </a>
+            </li>
+          )}
+
+          <li className={cx("nav-item")}>
+            <a
+              href="https://community.pixiebrix.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-link"
+            >
+              <span className="menu-title">Community</span>
+              <FontAwesomeIcon icon={faSeedling} className="menu-icon" />
+            </a>
+          </li>
+
+          <li className={cx("nav-item")}>
+            <a
+              href="https://docs.pixiebrix.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-link"
+            >
+              <span className="menu-title">Documentation</span>
+              <FontAwesomeIcon icon={faInfoCircle} className="menu-icon" />
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </OutsideClickHandler>
+  );
+};
 
 export default Sidebar;
