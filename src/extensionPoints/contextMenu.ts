@@ -260,7 +260,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
     await ensureContextMenu({
       extensionId: extension.id,
-      contexts: this.contexts,
+      contexts: this.contexts ?? ["all"],
       title,
       documentUrlPatterns: patterns,
     });
@@ -297,6 +297,15 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
     const extensionLogger = this.logger.childLogger(
       selectExtensionContext(extension)
+    );
+
+    console.debug(
+      "Register context menu handler for: %s (%s)",
+      extension.id,
+      extension.label ?? "No Label",
+      {
+        extension,
+      }
     );
 
     registerHandler(extension.id, async (clickData) => {
@@ -341,7 +350,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   async run(): Promise<void> {
     if (this.extensions.length === 0) {
       console.debug(
-        `contextMenu extension point ${this.id} has no installed extension`
+        `contextMenu extension point ${this.id} has no installed extensions`
       );
       return;
     }

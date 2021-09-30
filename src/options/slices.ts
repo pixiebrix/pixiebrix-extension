@@ -29,7 +29,7 @@ import {
 } from "@/core";
 import { orderBy } from "lodash";
 import { reportEvent } from "@/telemetry/events";
-import { preloadMenus } from "@/background/preload";
+import { preloadContextMenus } from "@/background/initContextMenus";
 import { selectEventData } from "@/telemetry/deployments";
 import { uuidv4 } from "@/types/helpers";
 import { Except } from "type-fest";
@@ -206,7 +206,7 @@ export const optionsSlice = createSlice({
 
       state.extensions.push({ ...extension, active: true });
 
-      void preloadMenus({ extensions: [extension] });
+      void preloadContextMenus({ extensions: [extension] });
     },
 
     attachExtension(
@@ -288,7 +288,7 @@ export const optionsSlice = createSlice({
 
         state.extensions.push(extension);
 
-        void preloadMenus({ extensions: [extension] });
+        void preloadContextMenus({ extensions: [extension] });
       }
     },
     // XXX: why do we expose a `extensionId` in addition IExtension's `id` prop here?
