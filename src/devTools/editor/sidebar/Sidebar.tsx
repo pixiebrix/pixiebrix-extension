@@ -40,7 +40,10 @@ import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
 import { Except } from "type-fest";
 import styles from "./Sidebar.module.scss";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
+} from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 
 const DropdownEntry: React.FunctionComponent<{
@@ -129,57 +132,60 @@ const SidebarExpanded: React.FunctionComponent<
 
   return (
     <div className={cx(styles.root, styles.expanded)}>
-      <div className={styles.actions}>
-        <div className="d-inline-flex flex-wrap">
-          <a
-            href="/options.html"
-            target="_blank"
-            title="Open PixieBrix Options"
-          >
-            <Logo />
-          </a>
+      <div>
+        <div className={styles.actions}>
+          <div className={styles.actionsLeft}>
+            <a
+              href="/options.html"
+              target="_blank"
+              title="Open PixieBrix Options"
+            >
+              <Logo />
+            </a>
+            <DropdownButton
+              disabled={Boolean(inserting) || !hasPermissions}
+              variant="info"
+              size="sm"
+              title="Add"
+              id="add-extension-point"
+              className="mr-2"
+            >
+              {sortBy([...ADAPTERS.values()], (x) => x.displayOrder).map(
+                (element) => (
+                  <DropdownEntry
+                    key={element.elementType}
+                    caption={element.label}
+                    icon={element.icon}
+                    beta={element.beta}
+                    onClick={() => {
+                      addElement(element);
+                    }}
+                  />
+                )
+              )}
+            </DropdownButton>
+          </div>
           <button
-            className="navbar-toggler"
+            className={cx("navbar-toggler", styles.toggle)}
             type="button"
             onClick={collapseSidebar}
           >
-            <FontAwesomeIcon icon={faBars} />
+            <FontAwesomeIcon icon={faAngleDoubleLeft} />
           </button>
-          <DropdownButton
-            disabled={Boolean(inserting) || !hasPermissions}
-            variant="info"
-            size="sm"
-            title="Add"
-            id="add-extension-point"
-            className="mr-2"
-          >
-            {sortBy([...ADAPTERS.values()], (x) => x.displayOrder).map(
-              (element) => (
-                <DropdownEntry
-                  key={element.elementType}
-                  caption={element.label}
-                  icon={element.icon}
-                  beta={element.beta}
-                  onClick={() => {
-                    addElement(element);
-                  }}
-                />
-              )
-            )}
-          </DropdownButton>
-          {unavailableCount ? (
-            <div className="my-auto">
-              <Form.Check
-                type="checkbox"
-                label={`Show ${unavailableCount} unavailable`}
-                defaultChecked={showAll}
-                onChange={(event: FormEvent<HTMLInputElement>) => {
-                  setShowAll(event.currentTarget.checked);
-                }}
-              />
-            </div>
-          ) : null}
         </div>
+
+        {unavailableCount ? (
+          <div className={styles.unavailable}>
+            <Form.Check
+              type="checkbox"
+              label={`Show ${unavailableCount} unavailable`}
+              defaultChecked={showAll}
+              onChange={(event: FormEvent<HTMLInputElement>) => {
+                setShowAll(event.currentTarget.checked);
+              }}
+            />
+          </div>
+        ) : null}
       </div>
       <div className={styles.extensions}>
         <ListGroup>
@@ -217,14 +223,18 @@ const SidebarCollapsed: React.FunctionComponent<{
 }> = ({ expandSidebar }) => (
   <div className={cx(styles.root, styles.collapsed)}>
     <Logo />
-    <button className="navbar-toggler" type="button" onClick={expandSidebar}>
-      <FontAwesomeIcon icon={faBars} />
+    <button
+      className={cx("navbar-toggler", styles.toggle)}
+      type="button"
+      onClick={expandSidebar}
+    >
+      <FontAwesomeIcon icon={faAngleDoubleRight} />
     </button>
   </div>
 );
 
 const Sidebar: React.FunctionComponent<SidebarProps> = (props) => {
-  const [collapsed, setCollapsed] = useState<boolean>(true);
+  const [collapsed, setCollapsed] = useState<boolean>(false);
 
   return collapsed ? (
     <SidebarCollapsed

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React, { useCallback, useContext, useMemo } from "react";
-import { Container } from "react-bootstrap";
 import Sidebar from "@/devTools/editor/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
