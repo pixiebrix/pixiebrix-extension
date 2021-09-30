@@ -64,6 +64,11 @@ $logoSize: 31px;
 
 .toggle {
   padding: 5px !important;
+  border-radius: 0 !important;
+  background-color: white !important;
+  &:hover {
+    background-color: #e9ecef !important;
+  }
 }
 
 .unavailable {
