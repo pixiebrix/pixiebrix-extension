@@ -51,6 +51,15 @@ class CompositeReader extends Reader {
     return purity.every((x) => x);
   }
 
+  async isRootAware(): Promise<boolean> {
+    const readerArray = Object.values(this._readers);
+    // PERFORMANCE: could return quicker if any came back true using Promise.any
+    const awareness = await Promise.all(
+      readerArray.map(async (x) => x.isRootAware())
+    );
+    return awareness.some((x) => x);
+  }
+
   async read(root: HTMLElement | Document): Promise<ReaderOutput> {
     const readOne = async (key: string, reader: IReader) => [
       key,

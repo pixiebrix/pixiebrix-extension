@@ -17,6 +17,7 @@
 
 import { ExtensionPoint } from "@/types";
 import {
+  apiVersionOptions,
   blockList,
   makeServiceContext,
   mergeReaders,
@@ -49,6 +50,7 @@ import { notifyError } from "@/contentScript/notify";
 // @ts-expect-error using for the EventHandler type below
 import JQuery from "jquery";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { selectEventData } from "@/telemetry/deployments";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -140,6 +142,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         validate: true,
         serviceArgs: serviceContext,
         optionsArgs: extension.optionsArgs,
+        ...apiVersionOptions(extension.apiVersion),
       });
       extensionLogger.info("Successfully ran trigger");
       // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
@@ -163,9 +166,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           return error;
         }
 
-        reportEvent("TriggerRun", {
-          extensionId: extension.id,
-        });
+        reportEvent("TriggerRun", selectEventData(extension));
       })
     );
     return compact(errors);

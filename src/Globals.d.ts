@@ -23,3 +23,9 @@ declare module "*.module.scss" {
   const classes: Record<string, string>;
   export default classes;
 }
+
+declare module "react-select-virtualized" {
+  // eslint-disable-next-line import/no-unresolved -- Type-only import
+  import VirtualizedSelect from "react-virtualized-select";
+  export default VirtualizedSelect;
+}

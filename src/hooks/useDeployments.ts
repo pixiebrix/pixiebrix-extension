@@ -26,13 +26,16 @@ import { selectExtensions } from "@/options/selectors";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
-import { activeDeployments } from "@/background/deployment";
+import { selectInstalledDeployments } from "@/background/deployment";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
-import { Permissions } from "webextension-polyfill-ts";
+import { browser, Permissions } from "webextension-polyfill-ts";
 import { IExtension, UUID, RegistryId } from "@/core";
 import { getLinkedApiClient } from "@/services/apiClient";
+import { satisfies } from "semver";
+import { compact } from "lodash";
+import chromeP from "webext-polyfill-kinda";
 
 const { actions } = optionsSlice;
 
@@ -56,7 +59,7 @@ async function fetchDeployments(
   >("/api/deployments/", {
     uid: await getUID(),
     version: await getExtensionVersion(),
-    active: activeDeployments(installedExtensions),
+    active: selectInstalledDeployments(installedExtensions),
   });
   return deployments;
 }
@@ -112,9 +115,45 @@ function activateDeployments(
 }
 
 type DeploymentState = {
+  /**
+   * `true` iff one or more new deployments/deployment updates are available
+   */
   hasUpdate: boolean;
+
+  /**
+   * Callback to update the deployments (will prompt the user for permissions if required)
+   */
   update: () => Promise<void>;
+
+  /**
+   * `true` iff the user needs to update their PixieBrix browser extension version to use the deployment
+   */
+  extensionUpdateRequired: boolean;
 };
+
+/**
+ * Returns `true` if the user needs to update their browser extension to install the deployments.
+ *
+ * For now assumes only minimum version requirements. (I.e., this method also returns true if there's a maximum version
+ * violation).
+ */
+function checkExtensionUpdateRequired(deployments: Deployment[]): boolean {
+  // Check that the user's extension van run the deployment
+  const { version: extensionVersion } = browser.runtime.getManifest();
+  const versionRanges = compact(
+    deployments.map((x) => x.package.config.metadata.extensionVersion)
+  );
+
+  console.debug("Checking deployment version requirements", {
+    versionRanges,
+    extensionVersion,
+  });
+
+  // For now assume the only version restrictions will be that the version must be greater than a certain number
+  return versionRanges.some(
+    (versionRange) => !satisfies(extensionVersion, versionRange)
+  );
+}
 
 function useDeployments(): DeploymentState {
   const notify = useNotifications();
@@ -125,9 +164,13 @@ function useDeployments(): DeploymentState {
     installed,
   ]);
 
-  const updatedDeployments = useMemo(() => {
+  const [updatedDeployments, extensionUpdateRequired] = useMemo(() => {
     const isUpdated = makeUpdatedFilter(installed);
-    return (deployments ?? []).filter((x) => isUpdated(x));
+    const updatedDeployments = (deployments ?? []).filter((x) => isUpdated(x));
+    return [
+      updatedDeployments,
+      checkExtensionUpdateRequired(updatedDeployments),
+    ];
   }, [installed, deployments]);
 
   const handleUpdate = useCallback(async () => {
@@ -138,7 +181,7 @@ function useDeployments(): DeploymentState {
 
     try {
       notify.info("Fetching latest brick definitions");
-      // Get the latest brick definitions so we have the latest permission requirements
+      // Get the latest brick definitions so we have the latest permission and version requirements
       // XXX: is this being broadcast to the content scripts so they get the updated brick definition content?
       await refreshRegistries();
     } catch (error: unknown) {
@@ -147,6 +190,17 @@ function useDeployments(): DeploymentState {
         `Error fetching latest bricks from server: ${getErrorMessage(error)}`,
         { error, report: true }
       );
+    }
+
+    if (checkExtensionUpdateRequired(deployments)) {
+      await chromeP.runtime.requestUpdateCheck();
+      notify.warning(
+        "You must update the PixieBrix browser extension to activate the deployment",
+        {
+          event: "DeploymentRejectVersion",
+        }
+      );
+      return;
     }
 
     const permissions = await selectDeploymentPermissions(deployments);
@@ -173,7 +227,11 @@ function useDeployments(): DeploymentState {
     notify.success("Activated team bricks");
   }, [deployments, dispatch, notify, installed]);
 
-  return { hasUpdate: updatedDeployments?.length > 0, update: handleUpdate };
+  return {
+    hasUpdate: updatedDeployments?.length > 0,
+    update: handleUpdate,
+    extensionUpdateRequired,
+  };
 }
 
 export default useDeployments;

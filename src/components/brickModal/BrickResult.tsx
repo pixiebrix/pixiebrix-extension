@@ -17,18 +17,23 @@
 
 import React from "react";
 import { IBrick } from "@/core";
-import { ListGroup } from "react-bootstrap";
+import { Button, ListGroup } from "react-bootstrap";
 import cx from "classnames";
 import styles from "@/options/pages/brickEditor/referenceTab/BlockResult.module.scss";
 import BrickIcon from "@/components/BrickIcon";
-import { truncate } from "lodash";
 import { OfficialBadge } from "@/components/OfficialBadge";
 
 const BrickResult: React.FunctionComponent<{
   brick: IBrick;
   onSelect: () => void;
-}> = ({ brick, onSelect }) => (
-  <ListGroup.Item onClick={onSelect} className={cx(styles.root)}>
+  onShowDetail: () => void;
+  active?: boolean;
+  selectCaption: React.ReactNode;
+}> = ({ brick, onSelect, onShowDetail, selectCaption, active }) => (
+  <ListGroup.Item
+    onClick={onShowDetail}
+    className={cx(styles.root, { [styles.active]: active, active })}
+  >
     <div className="d-flex">
       <div className="mr-2 text-muted">
         <BrickIcon brick={brick} />
@@ -37,17 +42,26 @@ const BrickResult: React.FunctionComponent<{
         <div className={styles.ellipsis}>{brick.name}</div>
         <code className={cx("small", styles.id)}>{brick.id}</code>
         <p className={cx("small mb-0", styles.ellipsis)}>
-          {/* FIXME: applying both truncate and the CSS ellipses style is redundant */}
           {/* Use a span if no description to ensure a consistent height for react-window */}
-          {brick.description ? (
-            truncate(brick.description, { length: 256 })
-          ) : (
-            <span>&nbsp;</span>
-          )}
+          {brick.description ? `${brick.description}` : <span>&nbsp;</span>}
         </p>
       </div>
-      <div className="flex-grow-0">
+      <div className={cx("flex-grow-0", styles.officialBadge)}>
         <OfficialBadge id={brick.id} />
+      </div>
+      <div
+        className={cx(
+          "align-items-center justify-content-end",
+          styles.actionButtons
+        )}
+      >
+        <Button
+          variant="primary"
+          className="mb-1 text-nowrap"
+          onClick={onSelect}
+        >
+          {selectCaption}
+        </Button>
       </div>
     </div>
   </ListGroup.Item>

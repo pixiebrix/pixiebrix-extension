@@ -16,7 +16,8 @@
  */
 
 import { Reader } from "@/types";
-import { Schema } from "@/core";
+import { ReaderRoot, Schema } from "@/core";
+import { isHTMLElement } from "@/blocks/readers/frameworkReader";
 
 export class ElementReader extends Reader {
   defaultOutputKey = "element";
@@ -25,17 +26,14 @@ export class ElementReader extends Reader {
     super(
       "@pixiebrix/html/element",
       "HTML element reader",
-      "Read all attributes and JQuery data from an HTML element."
+      "Read all attributes and JQuery data from an HTML element"
     );
   }
 
-  async read(elementOrDocument: HTMLElement | Document) {
-    const element = elementOrDocument as HTMLElement;
-
-    if (!element?.tagName) {
-      throw new Error("Expected an HTML Element");
-    }
-
+  async read(elementOrDocument: ReaderRoot) {
+    const element = isHTMLElement(elementOrDocument)
+      ? elementOrDocument
+      : document.body;
     const $element = $(element);
 
     return {

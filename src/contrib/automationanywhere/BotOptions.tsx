@@ -39,6 +39,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
+import { cachePromiseMethod } from "@/utils/cachePromise";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
   "automation-anywhere/control-room"
@@ -59,6 +60,8 @@ async function fetchBots(
   }));
 }
 
+const cachedFetchBots = cachePromiseMethod(["aa:fetchBots"], fetchBots);
+
 async function fetchDevices(
   config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
@@ -74,6 +77,11 @@ async function fetchDevices(
   }));
 }
 
+const cachedFetchDevices = cachePromiseMethod(
+  ["aa:fetchDevices"],
+  fetchDevices
+);
+
 async function fetchSchema(
   config: SanitizedServiceConfiguration,
   fileId: string
@@ -86,6 +94,8 @@ async function fetchSchema(
     return interfaceToInputSchema(response.data);
   }
 }
+
+const cachedFetchSchema = cachePromiseMethod(["aa:fetchSchema"], fetchSchema);
 
 const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
@@ -104,7 +114,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
     remoteSchemaPending,
     remoteSchemaError,
   ] = useAsyncState(
-    async () => fetchSchema(hasPermissions ? config : null, fileId),
+    async () => cachedFetchSchema(hasPermissions ? config : null, fileId),
     [config, fileId, hasPermissions]
   );
 
@@ -120,7 +130,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             name={configName("fileId")}
             description="The Automation Anywhere bot"
             as={RemoteSelectWidget}
-            optionsFactory={fetchBots}
+            optionsFactory={cachedFetchBots}
             config={config}
           />
 
@@ -129,7 +139,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             name={configName("deviceId")}
             description="The device to run the bot on"
             as={RemoteSelectWidget}
-            optionsFactory={fetchDevices}
+            optionsFactory={cachedFetchDevices}
             config={config}
           />
 

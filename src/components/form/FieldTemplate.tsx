@@ -23,7 +23,7 @@ import {
   Row,
 } from "react-bootstrap";
 import { Except } from "type-fest";
-import SwitchButton from "@/components/form/switchButton/SwitchButton";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import styles from "./FieldTemplate.module.scss";
 import FormTheme from "@/components/form/FormTheme";
 import { getErrorMessage } from "@/errors";
@@ -33,16 +33,16 @@ export type FieldProps<
 > = FormControlProps &
   React.ComponentProps<As> & {
     name: string;
-    layout?: "horizontal" | "vertical" | "switch" | undefined;
-    label?: ReactNode | undefined;
-    description?: ReactNode | undefined;
-    error?: string | undefined;
-    touched?: boolean | undefined;
+    layout?: "horizontal" | "vertical" | "switch";
+    label?: ReactNode;
+    description?: ReactNode;
+    error?: string;
+    touched?: boolean;
     blankValue?: unknown;
   };
 
 export type CustomFieldWidget<TExtra = never> = React.ComponentType<
-  FieldProps & TExtra
+  FieldProps & { controlId?: string } & TExtra
 >;
 
 type FieldRenderProps = Except<FieldProps, "layout">;
@@ -57,6 +57,7 @@ const RenderedField: React.FC<FieldProps> = ({
   value,
   children,
   blankValue = "",
+  as: AsControl,
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
@@ -64,21 +65,48 @@ const RenderedField: React.FC<FieldProps> = ({
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
   const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
 
-  return layout === "vertical" ? (
-    <BootstrapForm.Group controlId={name} className={styles.verticalFormGroup}>
-      {label && (
-        <BootstrapForm.Label className={styles.verticalFormLabel}>
-          {label}
-        </BootstrapForm.Label>
-      )}
+  // Note on `controlId` and Bootstrap FormGroup.
+  // If we set `controlId` on the Bootstrap FormGroup, we must not set `id` on `FormLabel` and `FormControl`.
+  // This makes it impossible to use a FormControl as a CustomWidget,
+  // because it gets both `controlId` from Group and `id` from props of `AsControl`.
+  // See their logic at https://github.com/react-bootstrap/react-bootstrap/blob/v1.6.4/src/FormControl.tsx#L179:L182
+  // The most simple solution is to manually set `htmlFor` on the Label and `id` on the Control.
+  const controlId = name;
+
+  const formControl =
+    typeof AsControl === "undefined" || typeof AsControl === "string" ? (
       <BootstrapForm.Control
+        id={controlId}
+        name={name}
+        isInvalid={isInvalid}
+        value={nonUndefinedValue}
+        as={AsControl}
+        {...restFieldProps}
+      >
+        {children}
+      </BootstrapForm.Control>
+    ) : (
+      <AsControl
+        id={controlId}
         name={name}
         isInvalid={isInvalid}
         value={nonUndefinedValue}
         {...restFieldProps}
       >
         {children}
-      </BootstrapForm.Control>
+      </AsControl>
+    );
+  return layout === "vertical" ? (
+    <BootstrapForm.Group className={styles.verticalFormGroup}>
+      {label && (
+        <BootstrapForm.Label
+          className={styles.verticalFormLabel}
+          htmlFor={controlId}
+        >
+          {label}
+        </BootstrapForm.Label>
+      )}
+      {formControl}
       {description && (
         <BootstrapForm.Text className="text-muted">
           {description}
@@ -89,25 +117,19 @@ const RenderedField: React.FC<FieldProps> = ({
       )}
     </BootstrapForm.Group>
   ) : (
-    <BootstrapForm.Group
-      as={Row}
-      controlId={name}
-      className={styles.horizontalFormGroup}
-    >
+    <BootstrapForm.Group as={Row} className={styles.horizontalFormGroup}>
       {label && (
-        <BootstrapForm.Label column lg="3" className={styles.horizontalLabel}>
+        <BootstrapForm.Label
+          column
+          lg="3"
+          className={styles.horizontalLabel}
+          htmlFor={controlId}
+        >
           {label}
         </BootstrapForm.Label>
       )}
       <Col lg={label ? "9" : "12"}>
-        <BootstrapForm.Control
-          name={name}
-          isInvalid={isInvalid}
-          value={nonUndefinedValue}
-          {...restFieldProps}
-        >
-          {children}
-        </BootstrapForm.Control>
+        {formControl}
         {description && (
           <BootstrapForm.Text className="text-muted">
             {description}
@@ -124,10 +146,16 @@ const RenderedField: React.FC<FieldProps> = ({
 const RenderedSwitch: React.FC<FieldRenderProps> = ({
   name,
   label,
-  value,
-  onChange,
+  ...restFieldProps
 }) => (
-  <SwitchButton name={name} label={label} value={value} onChange={onChange} />
+  <BootstrapForm.Group as={Row} controlId={name}>
+    <Col sm="3">
+      <SwitchButtonWidget name={name} {...restFieldProps} />
+    </Col>
+    <Col sm="9" as="label" htmlFor={name}>
+      {label}
+    </Col>
+  </BootstrapForm.Group>
 );
 
 const FieldTemplate: React.FC<FieldProps> = ({ layout, ...restProps }) => {

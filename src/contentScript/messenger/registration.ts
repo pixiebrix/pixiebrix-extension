@@ -55,6 +55,11 @@ import {
 } from "@/contentScript/devTools";
 import { checkAvailable } from "@/blocks/available";
 import { showNotification } from "@/contentScript/notify";
+import {
+  linkChildTab,
+  runBlockInContentScript,
+} from "@/contentScript/executor";
+import { cancelSelect, selectElement } from "@/nativeEditor/selector";
 
 expectContext("contentScript");
 
@@ -96,6 +101,10 @@ declare global {
     CHECK_AVAILABLE: typeof checkAvailable;
     HANDLE_NAVIGATE: typeof handleNavigate;
     SHOW_NOTIFICATION: typeof showNotification;
+    LINK_CHILD_TAB: typeof linkChildTab;
+    CONTENT_MESSAGE_RUN_BLOCK: typeof runBlockInContentScript;
+    CANCEL_SELECT_ELEMENT: typeof cancelSelect;
+    SELECT_ELEMENT: typeof selectElement;
   }
 }
 
@@ -133,4 +142,9 @@ registerMethods({
   CHECK_AVAILABLE: checkAvailable,
   HANDLE_NAVIGATE: handleNavigate,
   SHOW_NOTIFICATION: showNotification,
+
+  LINK_CHILD_TAB: linkChildTab,
+  CONTENT_MESSAGE_RUN_BLOCK: runBlockInContentScript,
+  CANCEL_SELECT_ELEMENT: cancelSelect,
+  SELECT_ELEMENT: selectElement,
 });

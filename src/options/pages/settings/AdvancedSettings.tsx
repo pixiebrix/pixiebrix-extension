@@ -17,15 +17,17 @@
 
 import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { clearExtensionAuth } from "@/auth/token";
 import { browser } from "webextension-polyfill-ts";
 import chromeP from "webext-polyfill-kinda";
 import { isEmpty } from "lodash";
 import { useToasts } from "react-toast-notifications";
+import AuthContext from "@/auth/AuthContext";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const { addToast } = useToasts();
+  const { flags } = useContext(AuthContext);
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
   const clear = useCallback(async () => {
@@ -91,6 +93,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
               placeholder={DEFAULT_SERVICE_URL}
               defaultValue={serviceURL}
               onBlur={handleUpdate}
+              disabled={flags.includes("restricted-service-url")}
             />
             <Form.Text className="text-muted">
               The PixieBrix service URL

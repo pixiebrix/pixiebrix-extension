@@ -16,6 +16,7 @@
  */
 
 import {
+  ApiVersion,
   Config,
   EmptyConfig,
   IExtension,
@@ -36,6 +37,7 @@ import React from "react";
 import { createSitePattern } from "@/permissions/patterns";
 import {
   BaseFormState,
+  ElementType,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
@@ -57,6 +59,15 @@ export interface WizardStep {
   extraProps?: Record<string, unknown>;
 }
 
+/**
+ * Brick definition API controlling how the PixieBrix runtime interprets brick configurations
+ * @see ApiVersion
+ */
+export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v2";
+
+/**
+ * Default definition entry for the inner definition of the extensionPoint for the extension
+ */
 const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
 
 const INNER_SCOPE = "@internal";
@@ -105,6 +116,7 @@ export function makeInitialBaseState(
 ): Except<BaseFormState, "type" | "label" | "extensionPoint"> {
   return {
     uuid,
+    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     services: [],
     extension: {},
   };
@@ -174,7 +186,7 @@ export async function lookupExtensionPoint<
       definition
     );
     const innerExtensionPoint = ({
-      apiVersion: "v1",
+      apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       kind: "extensionPoint",
       metadata: internalExtensionPointMetaFactory(),
       ...definition,
@@ -209,7 +221,7 @@ export function baseSelectExtensionPoint(
   const { metadata } = formState.extensionPoint;
 
   return {
-    apiVersion: "v1",
+    apiVersion: formState.apiVersion,
     kind: "extensionPoint",
     metadata: {
       id: metadata.id,
@@ -272,13 +284,22 @@ export function removeEmptyValues<T extends object>(obj: T): T {
 /**
  * Return a composite reader to automatically include in new extensions created with the Page Editor.
  */
-export function getImplicitReader(): SingleLayerReaderConfig {
+export function getImplicitReader(type: ElementType): SingleLayerReaderConfig {
+  if (type === "trigger") {
+    return readerTypeHack([
+      validateRegistryId("@pixiebrix/document-metadata"),
+      { element: validateRegistryId("@pixiebrix/html/element") },
+    ]);
+  }
+
+  // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by the
+  // the contextMenu extension point.
   return [validateRegistryId("@pixiebrix/document-metadata")];
 }
 
 /**
  * Hack to use SingleLayerReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
  */
-export function readerHack(reader: ReaderConfig): SingleLayerReaderConfig {
+export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
   return reader as SingleLayerReaderConfig;
 }

@@ -15,17 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable security/detect-object-injection */
 import { useField } from "formik";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import styles from "./FieldEditor.module.scss";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
-import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
+import { UI_WIDGET } from "./schemaFieldNames";
 import {
+  FIELD_TYPES_WITHOUT_DEFAULT,
   FIELD_TYPE_OPTIONS,
   parseUiType,
+  produceSchemaOnPropertyNameChange,
+  produceSchemaOnUiTypeChange,
   replaceStringInArray,
   stringifyUiType,
+  validateNextPropertyName,
 } from "./formBuilderHelpers";
 import { Schema, SchemaPropertyType } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -33,7 +36,9 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import OptionsWidget from "@/components/form/widgets/OptionsWidget";
-import { CheckBoxLike } from "@/components/form/switchButton/SwitchButton";
+import SwitchButtonWidget, {
+  CheckBoxLike,
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { uniq } from "lodash";
 
 const FieldEditor: React.FC<{
@@ -46,12 +51,9 @@ const FieldEditor: React.FC<{
     ,
     { setValue: setRjsfSchema },
   ] = useField<RJSFSchema>(name);
-  const { schema } = rjsfSchema;
+  const { schema, uiSchema } = rjsfSchema;
   const [{ value: propertySchema }] = useField<Schema>(
     `${name}.schema.properties.${propertyName}`
-  );
-  const [{ value: propertyUiSchema }] = useField(
-    `${name}.uiSchema.${propertyName}`
   );
 
   const getFullFieldName = (fieldName: string) =>
@@ -67,24 +69,7 @@ const FieldEditor: React.FC<{
   }, [propertyName, schema]);
 
   const validatePropertyName = (nextName: string) => {
-    let error: string = null;
-
-    if (nextName !== propertyName) {
-      if (nextName === "") {
-        error = "Name cannot be empty.";
-      }
-
-      if (nextName.includes(".")) {
-        error = "Name must not contain periods.";
-      }
-
-      const existingProperties = Object.keys(schema.properties);
-      if (existingProperties.includes(nextName)) {
-        error = `Name must be unique. Another property "${
-          (schema.properties[nextName] as Schema).title
-        }" already has the name "${nextName}".`;
-      }
-    }
+    const error = validateNextPropertyName(schema, propertyName, nextName);
 
     setPropertyNameError(error);
 
@@ -108,26 +93,11 @@ const FieldEditor: React.FC<{
       return;
     }
 
-    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-      draft.schema.properties[nextName] = draft.schema.properties[propertyName];
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete draft.schema.properties[propertyName];
-
-      if (draft.schema.required?.includes(propertyName)) {
-        draft.schema.required = replaceStringInArray(
-          draft.schema.required,
-          propertyName,
-          nextName
-        );
-      }
-
-      const nextUiOrder = replaceStringInArray(
-        draft.uiSchema[UI_ORDER],
-        propertyName,
-        nextName
-      );
-      draft.uiSchema[UI_ORDER] = nextUiOrder;
-    });
+    const nextRjsfSchema = produceSchemaOnPropertyNameChange(
+      rjsfSchema,
+      propertyName,
+      nextName
+    );
     setRjsfSchema(nextRjsfSchema);
     setActiveField(nextName);
   };
@@ -138,42 +108,19 @@ const FieldEditor: React.FC<{
       return;
     }
 
-    const { propertyType, uiWidget, propertyFormat } = parseUiType(value);
-    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-      const draftPropertySchema = draft.schema.properties[
-        propertyName
-      ] as Schema;
-      if (propertySchema.type !== propertyType) {
-        draftPropertySchema.default = undefined;
-        draftPropertySchema.type = propertyType;
-      }
-
-      if (propertyFormat) {
-        draftPropertySchema.format = propertyFormat;
-      } else {
-        delete draftPropertySchema.format;
-      }
-
-      if (uiWidget) {
-        if (!draft.uiSchema[propertyName]) {
-          draft.uiSchema[propertyName] = {};
-        }
-
-        draft.uiSchema[propertyName][UI_WIDGET] = uiWidget;
-      } else if (draft.uiSchema[propertyName]) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete draft.uiSchema[propertyName][UI_WIDGET];
-      }
-
-      draftPropertySchema.enum = uiWidget === "select" ? [] : undefined;
-    });
+    const nextRjsfSchema = produceSchemaOnUiTypeChange(
+      rjsfSchema,
+      propertyName,
+      value
+    );
 
     setRjsfSchema(nextRjsfSchema);
   };
 
   const getSelectedUiTypeOption = () => {
     const propertyType = propertySchema.type as SchemaPropertyType;
-    const uiWidget = propertyUiSchema ? propertyUiSchema[UI_WIDGET] : undefined;
+    // eslint-disable-next-line security/detect-object-injection
+    const uiWidget = uiSchema?.[propertyName]?.[UI_WIDGET];
     const propertyFormat = propertySchema.format;
 
     const uiType = stringifyUiType({
@@ -218,6 +165,8 @@ const FieldEditor: React.FC<{
 
   const isRequired = (schema.required ?? []).includes(propertyName);
 
+  const selectedUiTypeOption = getSelectedUiTypeOption();
+
   return (
     <div className={styles.root}>
       <FieldTemplate
@@ -247,14 +196,17 @@ const FieldEditor: React.FC<{
         as={SelectWidget}
         blankValue={null}
         options={FIELD_TYPE_OPTIONS}
-        value={getSelectedUiTypeOption().value}
+        value={selectedUiTypeOption.value}
         onChange={onUiTypeChange}
       />
-      <ConnectedFieldTemplate
-        name={getFullFieldName("default")}
-        label="Default value"
-        type={parseUiType(getSelectedUiTypeOption().value).propertyType}
-      />
+
+      {!FIELD_TYPES_WITHOUT_DEFAULT.includes(selectedUiTypeOption.value) && (
+        <ConnectedFieldTemplate
+          name={getFullFieldName("default")}
+          label="Default value"
+          type={parseUiType(selectedUiTypeOption.value).propertyType}
+        />
+      )}
 
       {propertySchema.enum && (
         <ConnectedFieldTemplate
@@ -267,7 +219,7 @@ const FieldEditor: React.FC<{
       <FieldTemplate
         name={`${name}.schema.required`}
         label="Required Field?"
-        layout="switch"
+        as={SwitchButtonWidget}
         value={isRequired}
         onChange={onRequiredChange}
       />

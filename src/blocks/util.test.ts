@@ -17,13 +17,12 @@
 
 import { isOfficial } from "./util";
 import { RegistryId } from "@/core";
-import { randomWords } from "@/tests/testHelpers";
 
 describe("isOfficial", () => {
   test("returns true for an official block", () => {
     expect(isOfficial("@pixiebrix/api" as RegistryId)).toBeTruthy();
   });
   test("returns false for a 3d-party block", () => {
-    expect(isOfficial(randomWords() as RegistryId)).toBeFalsy();
+    expect(isOfficial("@non/pixiebrix" as RegistryId)).toBeFalsy();
   });
 });

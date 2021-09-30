@@ -29,9 +29,9 @@ import {
   faStoreAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import AuthContext from "@/auth/AuthContext";
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
+import AuthContext from "@/auth/AuthContext";
 
 const Sidebar: React.FunctionComponent = () => {
   const { flags } = useContext(AuthContext);
@@ -50,16 +50,25 @@ const Sidebar: React.FunctionComponent = () => {
               location.pathname.startsWith("/extensions/")
             }
           />
+
           <SidebarLink
             route="/blueprints"
             title="My Blueprints"
             icon={faScroll}
           />
-          {flags.includes("workshop") && (
+
+          {!flags.includes("restricted-workshop") && (
             <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
           )}
-          {/* <ConnectedNavLink route="build" title="Build Brick" icon={faTools} /> */}
-          <SidebarLink route="/services" title="Integrations" icon={faCloud} />
+
+          {!flags.includes("restricted-services") && (
+            <SidebarLink
+              route="/services"
+              title="Integrations"
+              icon={faCloud}
+            />
+          )}
+
           <SidebarLink route="/settings" title="Settings" icon={faCogs} />
 
           <hr />
@@ -67,17 +76,19 @@ const Sidebar: React.FunctionComponent = () => {
             <span className="nav-text">Quick Links</span>
           </li>
 
-          <li className={cx("nav-item")}>
-            <a
-              href="https://www.pixiebrix.com/marketplace"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nav-link"
-            >
-              <span className="menu-title">Marketplace</span>
-              <FontAwesomeIcon icon={faStoreAlt} className="menu-icon" />
-            </a>
-          </li>
+          {!flags.includes("restricted-marketplace") && (
+            <li className={cx("nav-item")}>
+              <a
+                href="https://www.pixiebrix.com/marketplace"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-link"
+              >
+                <span className="menu-title">Marketplace</span>
+                <FontAwesomeIcon icon={faStoreAlt} className="menu-icon" />
+              </a>
+            </li>
+          )}
 
           <li className={cx("nav-item")}>
             <a

@@ -17,7 +17,7 @@
 
 import React, { useMemo } from "react";
 import { Schema } from "@/core";
-import { ListGroup, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
 import { useTable, useExpanded, Row, Cell } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,6 +28,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { isServiceField } from "@/components/fields/schemaFields/ServiceField";
 import styles from "./SchemaTree.module.scss";
+import cx from "classnames";
 
 type SchemaTreeRow = {
   name: string;
@@ -42,6 +43,7 @@ const ExpandableCell: React.FunctionComponent<{
   cell: Cell;
 }> = ({ row, cell }) => (
   <span
+    className={cx(styles.codeCell)}
     {...row.getToggleRowExpandedProps({
       style: {
         // Indent the row according to depth level
@@ -58,13 +60,15 @@ const ExpandableCell: React.FunctionComponent<{
         )}
       </>
     )}
-    <code>{cell.value}</code>
+    {cell.value}
   </span>
 );
 
-const CodeCell: React.FunctionComponent<{
-  cell: Cell;
-}> = ({ cell }) => <code>{cell.value}</code>;
+const TypeCell: React.FunctionComponent<{
+  row: Row & { values: SchemaTreeRow };
+}> = ({ row }) => (
+  <span className={cx(styles.codeCell)}>{row.values.type}</span>
+);
 
 const RequiredCell: React.FunctionComponent<{
   row: Row & { values: SchemaTreeRow };
@@ -80,7 +84,7 @@ const getFormattedType = (definition: Schema) => {
   const { type, format, oneOf, anyOf } = definition;
 
   if (oneOf) {
-    return "one of many objects";
+    return "various types";
   }
 
   if (anyOf) {
@@ -90,7 +94,7 @@ const getFormattedType = (definition: Schema) => {
       }
     }
 
-    return "one or more of many objects";
+    return "various types";
   }
 
   if (type === "array") {
@@ -119,7 +123,7 @@ const getFormattedType = (definition: Schema) => {
   }
 
   if (format) {
-    return `${format} ${type as string}`;
+    return `${format}`;
   }
 
   return type ? type : "unknown";
@@ -146,10 +150,6 @@ const getFormattedData = (schema: Schema): SchemaTreeRow[] => {
       };
     }) as SchemaTreeRow[];
 };
-
-const DescriptionCell: React.FunctionComponent<{
-  cell: Cell;
-}> = ({ cell }) => <p className="m-0">{cell.value}</p>;
 
 const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   schema,
@@ -178,12 +178,11 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
       {
         Header: "Type",
         accessor: "type",
-        Cell: CodeCell,
+        Cell: TypeCell,
       },
       {
         Header: "Description",
         accessor: "description",
-        Cell: DescriptionCell,
       },
     ],
     []
@@ -198,23 +197,15 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   } = useTable({ columns, data }, useExpanded);
 
   if (!schema) {
-    return (
-      <ListGroup variant="flush" className="SchemaTree">
-        <ListGroup.Item>No schema</ListGroup.Item>
-      </ListGroup>
-    );
+    return <div className="text-muted">No schema</div>;
   }
 
   if (isEmpty(schema.properties)) {
-    return (
-      <ListGroup variant="flush" className="SchemaTree">
-        <ListGroup.Item>No properties defined</ListGroup.Item>
-      </ListGroup>
-    );
+    return <div className="text-muted">No properties defined</div>;
   }
 
   return (
-    <Table {...getTableProps()}>
+    <Table {...getTableProps()} size="sm">
       <thead>
         {headerGroups.map((headerGroup) => {
           const {

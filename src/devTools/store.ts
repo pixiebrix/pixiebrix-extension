@@ -35,6 +35,9 @@ import {
   formBuilderSlice,
   FormBuilderState,
 } from "@/devTools/editor/slices/formBuilderSlice";
+import runtimeSlice, {
+  RuntimeState,
+} from "@/devTools/editor/slices/runtimeSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -43,12 +46,13 @@ const persistSettingsConfig = {
   storage: localStorage,
 };
 
-export interface RootState {
+export type RootState = {
   options: OptionsState;
   editor: EditorState;
   formBuilder: FormBuilderState;
   settings: SettingsState;
-}
+  runtime: RuntimeState;
+};
 
 const conditionalMiddleware: Middleware[] = [];
 if (process.env.NODE_ENV === "development") {
@@ -63,11 +67,17 @@ const store = configureStore({
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     editor: editorSlice.reducer,
+    runtime: runtimeSlice.reducer,
     formBuilder: formBuilderSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware: (getDefaultMiddleware) => [
-    ...getDefaultMiddleware(),
+    ...getDefaultMiddleware({
+      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
+      serializableCheck: {
+        ignoredActions: ["persist/PERSIST"],
+      },
+    }),
     appApi.middleware,
     ...conditionalMiddleware,
   ],

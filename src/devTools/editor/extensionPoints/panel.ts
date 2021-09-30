@@ -24,7 +24,8 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  readerHack,
+  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+  readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
@@ -116,7 +117,7 @@ function fromNativeElement(
       metadata,
       definition: {
         ...panel.foundation,
-        reader: getImplicitReader(),
+        reader: getImplicitReader("panel"),
         isAvailable: makeIsAvailable(url),
       },
       traits: DEFAULT_TRAITS,
@@ -152,11 +153,19 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { uuid, label, extensionPoint, extension, services }: PanelFormState,
+  {
+    uuid,
+    apiVersion,
+    label,
+    extensionPoint,
+    extension,
+    services,
+  }: PanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<PanelConfig> {
   return removeEmptyValues({
     id: uuid,
+    apiVersion,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
     label,
@@ -188,6 +197,7 @@ async function fromExtensionPoint(
 
   return {
     uuid: uuidv4(),
+    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     installed: true,
     type: "panel",
     label: `My ${getDomain(url)} panel`,
@@ -211,7 +221,7 @@ async function fromExtensionPoint(
       },
       definition: {
         ...extensionPoint.definition,
-        reader: readerHack(extensionPoint.definition.reader),
+        reader: readerTypeHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -229,6 +239,7 @@ async function fromExtension(
 
   return {
     uuid: config.id,
+    apiVersion: config.apiVersion,
     installed: true,
     type: extensionPoint.definition.type,
     label: config.label,
@@ -251,7 +262,7 @@ async function fromExtension(
       },
       definition: {
         ...extensionPoint.definition,
-        reader: readerHack(extensionPoint.definition.reader),
+        reader: readerTypeHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },

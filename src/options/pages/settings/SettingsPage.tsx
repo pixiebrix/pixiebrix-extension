@@ -35,7 +35,7 @@ const Section: React.FunctionComponent = ({ children }) => (
 );
 
 const SettingsPage: React.FunctionComponent = () => {
-  const { organization } = useContext(AuthContext);
+  const { organization, flags } = useContext(AuthContext);
 
   return (
     <Page
@@ -61,13 +61,17 @@ const SettingsPage: React.FunctionComponent = () => {
         <LoggingSettings />
       </Section>
 
-      <Section>
-        <PermissionsSettings />
-      </Section>
+      {!flags.includes("restricted-permissions") && (
+        <Section>
+          <PermissionsSettings />
+        </Section>
+      )}
 
-      <Section>
-        <FactoryResetSettings />
-      </Section>
+      {!flags.includes("restricted-reset") && (
+        <Section>
+          <FactoryResetSettings />
+        </Section>
+      )}
 
       <Section>
         <AdvancedSettings />

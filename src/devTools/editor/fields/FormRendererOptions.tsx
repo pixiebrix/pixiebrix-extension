@@ -50,7 +50,11 @@ const FormRendererOptions: React.FC<{
         setActiveField={setActiveField}
       />
 
-      <SchemaField name={`${configName}.recordId`} schema={recordIdSchema} />
+      <SchemaField
+        name={`${configName}.recordId`}
+        label="Record ID"
+        schema={recordIdSchema}
+      />
     </div>
   );
 };

@@ -21,6 +21,7 @@ import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import CompositeReader from "@/blocks/readers/CompositeReader";
 import { locate } from "@/background/locator";
 import {
+  ApiVersion,
   BlockArg,
   IBlock,
   IReader,
@@ -84,14 +85,47 @@ export async function blockList(
   );
 }
 
-interface ReduceOptions {
+/**
+ * Options controlled by the apiVersion directive in brick definitions.
+ * @see ApiVersion
+ */
+type ApiVersionOptions = {
+  /**
+   * If set to `true`, data only flows via output keys. The last output of the last stage is returned.
+   * @since apiVersion 2
+   * @since 1.4.0
+   */
+  explicitDataFlow?: boolean;
+};
+
+type ReduceOptions = ApiVersionOptions & {
+  /**
+   * `true` to throw an error if JSON Schema validation fails against the inputSchema for a brick. Logs a warning
+   * if the errors don't match the outputSchema (if an outputSchema is provided)
+   */
   validate?: boolean;
+  /**
+   * `true` to log all inputs to the extension logger. The user toggles this setting on the Settings page
+   */
   logValues?: boolean;
+  /**
+   * `true` to throw an error if a renderer is encountered. Used to abort execution in the contentScript to pass
+   * data over to be rendered in a PixieBrix sidebar actionPanel.
+   */
   headless?: boolean;
+  /**
+   * Option values provided by the user during activation of an extension
+   */
   optionsArgs?: UserOptions;
+  /**
+   * Service credentials provided by the user during activation of an extension
+   */
   serviceArgs?: RenderedArgs;
+  /**
+   * A UUID to correlate trace records for a brick
+   */
   runId?: UUID;
-}
+};
 
 type SchemaProperties = Record<string, Schema>;
 
@@ -157,14 +191,14 @@ export async function runStage(
   };
 
   if (isReader(block)) {
+    // `reducePipeline` is responsible for passing the correct root into runStage based based on the BlockConfig
     if ((stage.window ?? "self") === "self") {
-      // TODO: allow the stage to define a different root within the extension root
       blockArgs = { root };
       logger.debug(
         `Passed root to reader ${stage.id} (window=${stage.window ?? "self"})`
       );
     } else {
-      // TODO: allow other roots in other tabs
+      // TODO: allow non-document roots in other tabs
       blockArgs = {};
       // By not setting the root, the other tab's document is user
       logger.debug(
@@ -301,12 +335,61 @@ function arraySchema(itemSchema: Schema): Schema {
   };
 }
 
+/**
+ * Return reducePipeline option settings based on the PixieBrix brick definition API version
+ * @see ReduceOptions
+ * @see ApiVersionOptions
+ */
+export function apiVersionOptions(
+  version: ApiVersion = "v1"
+): ApiVersionOptions {
+  switch (version) {
+    case "v2": {
+      return { explicitDataFlow: true };
+    }
+
+    case "v1":
+    default: {
+      return { explicitDataFlow: false };
+    }
+  }
+}
+
+/**
+ * Select the root element for a stage based on the rootMode and root
+ * @see BlockConfig.rootMode
+ * @see BlockConfig.root
+ */
+function selectStageRoot(
+  stage: BlockConfig,
+  defaultRoot: ReaderRoot
+): ReaderRoot {
+  const rootMode = stage.rootMode ?? "inherit";
+
+  const root = rootMode === "inherit" ? defaultRoot : document;
+  const $root = $(root ?? document);
+
+  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
+  const $stageRoot = stage.root ? $root.find(stage.root) : $root;
+
+  if ($stageRoot.length > 1) {
+    throw new BusinessError(`Multiple roots found for ${stage.root}`);
+  } else if ($stageRoot.length === 0) {
+    const rootDescriptor = (defaultRoot as HTMLElement).tagName ?? "document";
+    throw new BusinessError(
+      `No roots found for ${stage.root} (root=${rootDescriptor})`
+    );
+  }
+
+  return $stageRoot.get(0);
+}
+
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
   pipeline: BlockConfig | BlockPipeline,
   renderedArgs: RenderedArgs,
   logger: Logger,
-  root: HTMLElement | Document = null,
+  root: ReaderRoot = null,
   {
     validate = true,
     // Don't default `logValues`, will set async below using `getLoggingConfig` if not provided
@@ -314,6 +397,8 @@ export async function reducePipeline(
     headless = false,
     optionsArgs = {},
     serviceArgs = {},
+    // Default to the `apiVersion: v1` data flow behavior
+    explicitDataFlow = false,
     runId = uuidv4(),
   }: ReduceOptions = {}
 ): Promise<unknown> {
@@ -328,9 +413,13 @@ export async function reducePipeline(
     logValues = (await getLoggingConfig()).logValues ?? false;
   }
 
-  let currentArgs: RenderedArgs = renderedArgs;
+  // When using explicit data flow, the arguments come from `@input`
+  let currentArgs: RenderedArgs = explicitDataFlow ? {} : renderedArgs;
 
-  for (const [index, stage] of castArray(pipeline).entries()) {
+  const pipelineArray = castArray(pipeline);
+
+  for (const [index, stage] of pipelineArray.entries()) {
+    const isFinalStage = index === pipelineArray.length - 1;
     const stageContext: MessageContext = {
       blockId: stage.id,
       label: stage.label,
@@ -338,22 +427,7 @@ export async function reducePipeline(
     const stageLogger = logger.childLogger(stageContext);
 
     try {
-      const $stageRoot = stage.root
-        ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
-          $(root ?? document).find(stage.root)
-        : $(root ?? document);
-
-      if ($stageRoot.length > 1) {
-        throw new BusinessError(`Multiple roots found for ${stage.root}`);
-      } else if ($stageRoot.length === 0) {
-        throw new BusinessError(
-          `No roots found for ${stage.root} (root=${
-            (root as HTMLElement).tagName ?? "document"
-          })`
-        );
-      }
-
-      const stageRoot = $stageRoot.get(0);
+      const stageRoot = selectStageRoot(stage, root);
 
       if ("if" in stage) {
         const renderer = await engineRenderer(stage.templateEngine);
@@ -438,8 +512,13 @@ export async function reducePipeline(
         }
       } else if (stage.outputKey) {
         extraContext[`@${stage.outputKey}`] = output;
-      } else {
+      } else if (isFinalStage || !explicitDataFlow) {
         currentArgs = output as any;
+      } else if (explicitDataFlow) {
+        // Force correct use of outputKey in `apiVersion: v2` usage
+        throw new BusinessError(
+          "outputKey is required for blocks that return data"
+        );
       }
       // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {

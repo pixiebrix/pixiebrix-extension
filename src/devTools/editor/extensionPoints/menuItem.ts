@@ -28,7 +28,8 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  readerHack,
+  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+  readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
@@ -109,7 +110,7 @@ function fromNativeElement(
       metadata,
       definition: {
         ...button.menu,
-        reader: getImplicitReader(),
+        reader: getImplicitReader("menuItem"),
         isAvailable: makeIsAvailable(url),
       },
       traits: {
@@ -147,11 +148,19 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { uuid, label, extensionPoint, extension, services }: ActionFormState,
+  {
+    uuid,
+    apiVersion,
+    label,
+    extensionPoint,
+    extension,
+    services,
+  }: ActionFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<MenuItemExtensionConfig> {
   return removeEmptyValues({
     id: uuid,
+    apiVersion,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
     label,
@@ -172,6 +181,7 @@ async function fromExtensionPoint(
 
   return {
     uuid: uuidv4(),
+    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     installed: true,
     type: extensionPoint.definition.type,
     label: `My ${getDomain(url)} button`,
@@ -195,7 +205,7 @@ async function fromExtensionPoint(
       },
       definition: {
         ...extensionPoint.definition,
-        reader: readerHack(extensionPoint.definition.reader),
+        reader: readerTypeHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -213,6 +223,7 @@ export async function fromExtension(
 
   return {
     uuid: config.id,
+    apiVersion: config.apiVersion,
     installed: true,
     type: extensionPoint.definition.type,
     label: config.label,
@@ -230,7 +241,7 @@ export async function fromExtension(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
-        reader: readerHack(extensionPoint.definition.reader),
+        reader: readerTypeHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },

@@ -20,8 +20,9 @@ import { readerFactory } from "@/blocks/readers/factory";
 import { Validator, Schema as ValidatorSchema } from "@cfworker/json-schema";
 import { ValidationError } from "@/errors";
 import { castArray } from "lodash";
-import { reducePipeline } from "@/blocks/combinators";
+import { apiVersionOptions, reducePipeline } from "@/blocks/combinators";
 import {
+  ApiVersion,
   BlockArg,
   BlockOptions,
   Config,
@@ -49,6 +50,7 @@ const METHOD_MAP: Map<ComponentKind, string> = new Map([
 ]);
 
 interface ComponentConfig {
+  apiVersion?: ApiVersion;
   kind: ComponentKind;
   metadata: Metadata;
   defaultOptions: Record<string, string>;
@@ -78,6 +80,8 @@ function validateBlockDefinition(
 class ExternalBlock extends Block {
   public readonly component: ComponentConfig;
 
+  readonly apiVersion: ApiVersion;
+
   readonly inputSchema: Schema;
 
   readonly outputSchema: Schema;
@@ -87,6 +91,7 @@ class ExternalBlock extends Block {
   constructor(component: ComponentConfig) {
     const { id, name, description, icon } = component.metadata;
     super(id, name, description, icon);
+    this.apiVersion = component.apiVersion ?? "v1";
     this.component = component;
     this.inputSchema = this.component.inputSchema;
     this.outputSchema = this.component.outputSchema;
@@ -118,6 +123,19 @@ class ExternalBlock extends Block {
     return purity.every((x) => x);
   }
 
+  async isRootAware(): Promise<boolean> {
+    const pipeline = castArray(this.component.pipeline);
+
+    const awareness = await Promise.all(
+      pipeline.map(async (blockConfig) => {
+        const resolvedBlock = await blockRegistry.lookup(blockConfig.id);
+        return resolvedBlock.isRootAware();
+      })
+    );
+
+    return awareness.some((x) => x);
+  }
+
   async inferType(): Promise<ComponentKind | null> {
     const pipeline = castArray(this.component.pipeline);
     const last = pipeline[pipeline.length - 1];
@@ -145,6 +163,7 @@ class ExternalBlock extends Block {
         // OptionsArgs are set at the blueprint level. For composite bricks, they options should be passed in
         // at part of the brick inputs
         optionsArgs: undefined,
+        ...apiVersionOptions(this.component.apiVersion),
       }
     );
   }

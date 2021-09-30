@@ -20,14 +20,17 @@ import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import cx from "classnames";
+import { Badge } from "react-bootstrap";
 
 export type EditorNodeProps = {
   title: string;
   outputKey?: string;
-  icon: IconProp | React.ReactNode;
-  onClick: () => void;
-  muted?: boolean | undefined;
-  active?: boolean | undefined;
+  icon?: IconProp | React.ReactNode;
+  onClick?: () => void;
+  muted?: boolean;
+  active?: boolean;
+  hasError?: boolean;
+  hasWarning?: boolean;
 };
 
 function isFontAwesomeIcon(
@@ -46,6 +49,8 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   outputKey,
   muted,
   active,
+  hasError,
+  hasWarning,
 }) => {
   const outputName = outputKey ? `@${outputKey}` : "";
 
@@ -62,11 +67,20 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       <button
         type="button"
         onClick={onClick}
-        className={cx(styles.box, {
+        className={cx(styles.button, {
           [styles.mutedNode]: muted,
           [styles.activeNode]: active,
         })}
       >
+        {(hasError || hasWarning) && (
+          <Badge
+            pill
+            variant={hasError ? "danger" : "warning"}
+            className={styles.errorBadge}
+          >
+            !
+          </Badge>
+        )}
         {icon}
       </button>
       <div className={styles.outputKey}>{outputName}</div>

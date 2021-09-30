@@ -58,7 +58,7 @@ exports[`FormPreview it renders simple schema 1`] = `
                 class="form-group"
               >
                 <div
-                  class="undefined"
+                  class="root root isActive"
                   role="group"
                 >
                   <div
@@ -93,7 +93,7 @@ exports[`FormPreview it renders simple schema 1`] = `
                 class="form-group"
               >
                 <div
-                  class=""
+                  class="root root"
                   role="group"
                 >
                   <div
@@ -128,7 +128,7 @@ exports[`FormPreview it renders simple schema 1`] = `
                 class="form-group"
               >
                 <div
-                  class=""
+                  class="root root"
                   role="group"
                 >
                   <div

@@ -15,29 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, ReactNode } from "react";
-import { Col, Form as BootstrapForm, Row } from "react-bootstrap";
+import React, { ChangeEvent } from "react";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import styles from "./SwitchButton.module.scss";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 
 export type CheckBoxLike = {
   name: string;
   value: boolean;
 };
 
-export type SwitchButtonProps = {
-  name: string;
-  label: ReactNode;
-  onChange: React.ChangeEventHandler<CheckBoxLike>;
-  value?: boolean;
-};
-
-const SwitchButton: React.FC<SwitchButtonProps> = ({
-  name,
-  label,
-  onChange,
-  value,
-}) => {
+const SwitchButtonWidget: CustomFieldWidget = ({ name, onChange, value }) => {
   const patchedOnChange = (checked: boolean) => {
     onChange({
       target: { value: checked, name },
@@ -45,20 +32,13 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
   };
 
   return (
-    <BootstrapForm.Group as={Row} controlId={name}>
-      <Col sm="3">
-        <BootstrapSwitchButton
-          onlabel=" "
-          offlabel=" "
-          checked={value}
-          onChange={patchedOnChange}
-        />
-      </Col>
-      <Col sm="9" className={styles.label}>
-        {label}
-      </Col>
-    </BootstrapForm.Group>
+    <BootstrapSwitchButton
+      onlabel=" "
+      offlabel=" "
+      checked={value}
+      onChange={patchedOnChange}
+    />
   );
 };
 
-export default SwitchButton;
+export default SwitchButtonWidget;

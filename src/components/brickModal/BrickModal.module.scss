@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,14 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.checkbox {
-  position: absolute;
-  top: 0;
-  pointer-events: none;
-  display: none;
-}
+.root {
+  .results {
+    // use capital M to get the CSS method instead of SASS method
+    // https://css-tricks.com/when-sass-and-new-css-features-collide/#the-solution
+    max-height: Min(calc(100vh - 100px), 600px);
+    height: calc(100vh - 100px);
+  }
 
-.label {
-  display: flex;
-  align-items: center;
+  .brickDetail {
+    // 54px to match height of BlockModal results above
+    max-height: Min(calc(100vh - 54px), 600px);
+    overflow-y: scroll;
+  }
 }

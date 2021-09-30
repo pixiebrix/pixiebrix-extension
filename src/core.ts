@@ -35,9 +35,26 @@ export type SchemaDefinition = JSONSchema7Definition;
 export type SchemaProperties = Record<string, SchemaDefinition>;
 export type SchemaPropertyType = JSONSchema7TypeName;
 
+/**
+ * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
+ *
+ * Incremented whenever backward-incompatible changes are made.
+ *
+ * - v1: original, implicit templating and dataflow
+ * - v2: introduces explicitDataFlow
+ */
+export type ApiVersion = "v1" | "v2";
+
 export type RenderedHTML = string;
 
 export type ActionType = string;
+
+/**
+ * Simple semantic version number, major.minor.patch
+ */
+export type SemVerString = string & {
+  _semVerBrand: never;
+};
 
 /**
  * A valid identifier for a brick output key or a service key. (Does not include the preceding "@".)
@@ -172,6 +189,12 @@ export interface Metadata {
    * @deprecated experimental prop that will likely be removed in the future
    */
   readonly author?: string;
+
+  /**
+   * PixieBrix extension version required to install the brick/run the extension
+   * @since 1.4.0
+   */
+  readonly extensionVersion?: SemVerString;
 }
 
 export interface Sharing {
@@ -223,10 +246,30 @@ export type ServiceAuthPair = {
   config: UUID;
 };
 
-export interface DeploymentContext {
+/**
+ * Context about an automatically activated organization Deployment.
+ */
+export type DeploymentContext = {
+  /**
+   * Unique id of the deployment
+   */
   id: UUID;
+
+  /**
+   * `updated_at` timestamp of the deployment object from the server (in ISO format). Used to determine whether the
+   * client has latest deployment settings installed.
+   */
   timestamp: string;
-}
+
+  /**
+   * Whether or not the deployment is temporarily disabled.
+   *
+   * If undefined, is considered active for backward compatability
+   *
+   * @since 1.4.0
+   */
+  active?: boolean;
+};
 
 export type ExtensionRef = {
   /**
@@ -245,6 +288,12 @@ export type IExtension<T extends Config = EmptyConfig> = {
    * UUID of the extension.
    */
   id: UUID;
+
+  /**
+   * The PixieBrix brick definition API version, controlling how the runtime interprets configuration values.
+   * @see ApiVersion
+   */
+  apiVersion: ApiVersion;
 
   /**
    * Registry id of the extension point, or a reference to the definitions section.
@@ -436,11 +485,24 @@ export interface IBlock extends Metadata {
   isPure?: () => Promise<boolean>;
 
   /**
+   * Returns `true` if the block can use the reader root from the block options
+   *
+   * Defined as a promise to support blocks that refer to other blocks (and therefore need to look up the status of
+   * the other blocks to resolve their isRootAware status).
+   *
+   * @see BlockOptions.root
+   * @since 1.4.0
+   */
+  isRootAware?: () => Promise<boolean>;
+
+  /**
    * (Optional) default root output key to use when this block is added in the page editor.
    *
    * If not provided, the Page Editor will use a generic name, potentially based on the inferred type of the brick.
    *
    * For example, "foo" will produce: foo, foo2, foo3, foo4, etc.
+   *
+   * @since 1.3.2
    */
   defaultOutputKey?: string;
 

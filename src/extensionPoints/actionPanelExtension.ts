@@ -16,6 +16,7 @@
  */
 
 import {
+  apiVersionOptions,
   blockList,
   makeServiceContext,
   mergeReaders,
@@ -135,6 +136,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
         serviceArgs: serviceContext,
         optionsArgs: extension.optionsArgs,
         headless: true,
+        ...apiVersionOptions(extension.apiVersion),
       });
       // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
       // noinspection ExceptionCaughtLocallyJS
