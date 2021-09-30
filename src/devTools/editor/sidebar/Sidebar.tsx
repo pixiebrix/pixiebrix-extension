@@ -44,7 +44,9 @@ import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
+import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -233,22 +235,39 @@ const SidebarCollapsed: React.FunctionComponent<{
   </div>
 );
 
+const transitionProps = {
+  classNames: {
+    enter: styles.hidden,
+    enterActive: styles.showing,
+  },
+  timeout: {
+    enter: 100,
+    exit: 0,
+  },
+  unmountOnExit: true,
+  mountOnEnter: true,
+};
+
 const Sidebar: React.FunctionComponent<SidebarProps> = (props) => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
-
-  return collapsed ? (
-    <SidebarCollapsed
-      expandSidebar={() => {
-        setCollapsed(false);
-      }}
-    />
-  ) : (
-    <SidebarExpanded
-      collapseSidebar={() => {
-        setCollapsed(true);
-      }}
-      {...props}
-    />
+  return (
+    <>
+      <CSSTransition {...transitionProps} in={collapsed}>
+        <SidebarCollapsed
+          expandSidebar={() => {
+            setCollapsed(false);
+          }}
+        />
+      </CSSTransition>
+      <CSSTransition {...transitionProps} in={!collapsed}>
+        <SidebarExpanded
+          collapseSidebar={() => {
+            setCollapsed(true);
+          }}
+          {...props}
+        />
+      </CSSTransition>
+    </>
   );
 };
 

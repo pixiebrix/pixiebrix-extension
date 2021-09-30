@@ -111,6 +111,7 @@
     "react-split-pane": "^0.1.92",
     "react-table": "^7.7.0",
     "react-toast-notifications": "^2.4.4",
+    "react-transition-group": "^4.4.2",
     "react-virtualized": "^9.22.3",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
