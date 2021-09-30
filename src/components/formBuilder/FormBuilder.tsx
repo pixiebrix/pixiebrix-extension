@@ -19,11 +19,14 @@ import React, { useState } from "react";
 import FormEditor from "./FormEditor";
 import FormPreview from "./FormPreview";
 import styles from "./FormBuilder.module.scss";
+import { useField } from "formik";
+import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 
 const FormBuilder: React.FC<{
   name: string;
 }> = ({ name }) => {
   const [activeField, setActiveField] = useState<string>();
+  const [{ value: rjsfSchema }] = useField<RJSFSchema>(name);
 
   return (
     <div className={styles.root}>
@@ -36,7 +39,7 @@ const FormBuilder: React.FC<{
       </div>
       <div className={styles.column}>
         <FormPreview
-          name={name}
+          rjsfSchema={rjsfSchema}
           activeField={activeField}
           setActiveField={setActiveField}
         />
