@@ -18,10 +18,9 @@
 import React from "react";
 import { SanitizedServiceConfiguration, Schema } from "@/core";
 import useDependency from "@/services/useDependency";
-import ServiceField, {
-  extractServiceIds,
-} from "@/components/fields/schemaFields/ServiceField";
+import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import { Button } from "react-bootstrap";
+import { extractServiceIds } from "@/services/serviceUtils";
 
 type ConfigProps = {
   serviceSchema: Schema;

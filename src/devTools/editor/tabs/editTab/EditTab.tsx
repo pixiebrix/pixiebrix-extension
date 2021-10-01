@@ -18,17 +18,16 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
-import { useField, useFormikContext } from "formik";
+import { getIn, useField, useFormikContext } from "formik";
 import { BlockPipeline } from "@/blocks/types";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { compact, noop, zip } from "lodash";
+import { compact, zip } from "lodash";
 import { IBlock, OutputKey } from "@/core";
 import hash from "object-hash";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
@@ -43,6 +42,11 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
 import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlockConfigs";
+import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
+import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
+import { useSelector } from "react-redux";
+import { selectTraceError } from "@/devTools/editor/slices/runtimeSelectors";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -64,10 +68,11 @@ const EditTab: React.FC<{
   editable?: Set<string>;
   pipelineFieldName?: string;
 }> = ({ eventKey, pipelineFieldName = "extension.body" }) => {
-  const {
-    extensionPoint,
-    type: elementType,
-  } = useFormikContext<FormState>().values;
+  useExtensionTrace();
+  // ToDo Figure out how to properly bind field validation errors to Formik state // useRuntimeErrors(pipelineFieldName);
+
+  const { values, setValues: setFormValues } = useFormikContext<FormState>();
+  const { extensionPoint, type: elementType } = values;
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
@@ -81,7 +86,7 @@ const EditTab: React.FC<{
 
   const [
     { value: blockPipeline = [] },
-    ,
+    { error: blockPipelineError },
     pipelineFieldHelpers,
   ] = useField<BlockPipeline>(pipelineFieldName);
 
@@ -116,16 +121,23 @@ const EditTab: React.FC<{
     }, []);
 
   const removeBlock = (pipelineIndex: number) => {
-    const newPipeline = produce(blockPipeline, (draft) => {
-      if (activeNodeIndex > pipelineIndex) {
-        setActiveNodeIndex(activeNodeIndex - 1);
-      }
-
-      draft.splice(pipelineIndex, 1);
+    let nextState = produce(values, (draft) => {
+      const pipeline = getIn(draft, pipelineFieldName) as BlockPipeline;
+      pipeline.splice(pipelineIndex, 1);
     });
-    pipelineFieldHelpers.setValue(newPipeline);
+
+    nextState = produceExcludeUnusedDependencies(nextState);
+
+    // Set the active node before setting the form values, otherwise there's a race condition based on the React state
+    // causing a re-render vs. the Formik state causing a re-render
+    if (activeNodeIndex > pipelineIndex) {
+      setActiveNodeIndex(activeNodeIndex - 1);
+    }
+
+    setFormValues(nextState);
   };
 
+  const traceError = useSelector(selectTraceError);
   const blockNodes: EditorNodeProps[] = zip(blockPipeline, resolvedBlocks).map(
     ([action, block], index) =>
       block
@@ -143,14 +155,15 @@ const EditTab: React.FC<{
                 faIconClass={styles.brickFaIcon}
               />
             ),
+            // eslint-disable-next-line security/detect-object-injection
+            hasError: Boolean(blockPipelineError?.[index]),
+            hasWarning: traceError?.blockInstanceId === action.instanceId,
             onClick: () => {
               onSelectNode(index + 1);
             },
           }
         : {
             title: "Loading...",
-            icon: faSpinner,
-            onClick: noop,
           }
   );
 
@@ -248,11 +261,18 @@ const EditTab: React.FC<{
           </ErrorBoundary>
         </div>
         <div className={styles.dataPanel}>
-          <DataPanel
-            key={blockInstanceId}
-            blockFieldName={blockFieldName}
-            instanceId={blockInstanceId}
-          />
+          {activeNodeIndex === 0 ? (
+            <FoundationDataPanel
+              firstBlockInstanceId={blockPipeline[0]?.instanceId}
+            />
+          ) : (
+            <DataPanel
+              key={blockInstanceId}
+              blockPipelineFieldName={pipelineFieldName}
+              blockPipelineIndex={activeNodeIndex - 1}
+              instanceId={blockInstanceId}
+            />
+          )}
         </div>
       </div>
     </Tab.Pane>

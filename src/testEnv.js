@@ -15,9 +15,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import $ from "jquery";
-
-global.$ = $;
-global.jQuery = $;
-
 process.env.SERVICE_URL = "https://app.pixiebrix.com";

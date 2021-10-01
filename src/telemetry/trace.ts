@@ -19,6 +19,7 @@ import { RegistryId, RenderedArgs, UUID } from "@/core";
 import { JsonObject } from "type-fest";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy } from "lodash";
+import { BlockConfig } from "@/blocks/types";
 
 const STORAGE_KEY = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";
@@ -76,11 +77,16 @@ export type TraceEntryData = TraceRecordMeta & {
   templateContext: JsonObject;
 
   renderedArgs: RenderedArgs;
+
+  blockConfig: BlockConfig;
 };
 
 export type TraceExitData = TraceRecordMeta & (Output | ErrorOutput);
 
 export type TraceRecord = TraceEntryData & Partial<TraceExitData>;
+
+export type TraceSuccess = TraceEntryData & Output;
+export type TraceError = TraceEntryData & ErrorOutput;
 
 const indexKeys: Array<
   keyof Pick<TraceRecordMeta, "runId" | "blockInstanceId" | "extensionId">
@@ -193,6 +199,33 @@ export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
   }
 
   console.debug("Cleared %d trace entries for extension %s", cnt, extensionId);
+}
+
+export async function getLatestRunByExtensionId(
+  extensionId: UUID
+): Promise<TraceRecord[]> {
+  const db = await getDB();
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
+
+  const matches = [];
+  for await (const cursor of tx.store) {
+    if (cursor.value.extensionId === extensionId) {
+      matches.push(cursor.value);
+    }
+  }
+
+  // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
+  const sorted = sortBy(
+    matches.reverse(),
+    (x) => -new Date(x.timestamp).getTime()
+  );
+
+  if (sorted.length > 0) {
+    const { runId } = sorted[0];
+    return sorted.filter((x) => x.runId === runId);
+  }
+
+  return [];
 }
 
 export async function getByInstanceId(

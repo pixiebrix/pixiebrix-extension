@@ -17,14 +17,11 @@
 
 import React, { useContext, useMemo } from "react";
 import { UUID } from "@/core";
-import useInterval from "@/hooks/useInterval";
-import { isEmpty, pickBy, sortBy } from "lodash";
-import { useAsyncState } from "@/hooks/common";
-import { getByInstanceId } from "@/telemetry/trace";
-import { useField, useFormikContext } from "formik";
+import { get, isEmpty, isEqual, pickBy, startsWith } from "lodash";
+import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
-import { Nav, Tab, TabPaneProps } from "react-bootstrap";
+import { Alert, Nav, Tab, TabPaneProps } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./DataPanel.module.scss";
 import FormPreview from "@/components/formBuilder/FormPreview";
@@ -32,33 +29,24 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockPreview, {
   usePreviewInfo,
 } from "@/devTools/editor/tabs/effect/BlockPreview";
-import GridLoader from "react-spinners/GridLoader";
-import { getErrorMessage } from "@/errors";
 import { BlockConfig } from "@/blocks/types";
 import useReduxState from "@/hooks/useReduxState";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import AuthContext from "@/auth/AuthContext";
+import { useSelector } from "react-redux";
+import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
+import { JsonObject } from "type-fest";
+import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 
-const TRACE_RELOAD_MILLIS = 250;
-
-function useLatestTraceRecord(instanceId: UUID) {
-  return useAsyncState(async () => {
-    if (instanceId == null) {
-      throw new Error("No instance id found");
-    }
-
-    const records = await getByInstanceId(instanceId);
-    return sortBy(records, (x) => new Date(x.timestamp)).reverse()[0];
-  }, [instanceId]);
-}
-
+/**
+ * Exclude irrelevant top-level keys.
+ */
 const contextFilter = (value: unknown, key: string) => {
-  if (!key.startsWith("@")) {
-    return false;
-  }
-
   // `@options` comes from marketplace-installed extensions. There's a chance the user might add a brick that has
   // @options as an output key. In that case, we'd expect values to flow into it. So just checking to see if there's
   // any data is a good compromise even though we miss the corner-case where @options is user-defined but empty
@@ -66,6 +54,8 @@ const contextFilter = (value: unknown, key: string) => {
     return false;
   }
 
+  // At one point, we also excluded keys that weren't prefixed with "@" as a stop-gap for encouraging the use of output
+  // keys. With the introduction of ApiVersion v2, we removed that filter
   return true;
 };
 
@@ -73,25 +63,16 @@ type TabStateProps = {
   isLoading?: boolean;
   isTraceEmpty?: boolean;
   isTraceOptional?: boolean;
-  error?: unknown;
 };
 
 const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
-  isLoading = false,
   isTraceEmpty = false,
   isTraceOptional = false,
-  error,
   children,
   ...tabProps
 }) => {
   let contents;
-  if (isLoading) {
-    contents = (
-      <div className={styles.loading}>
-        <GridLoader />
-      </div>
-    );
-  } else if (isTraceEmpty && isTraceOptional) {
+  if (isTraceEmpty && isTraceOptional) {
     contents = (
       <>
         <div className="text-muted">
@@ -111,57 +92,86 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
         No trace available, run the extension to generate data
       </div>
     );
-  } else if (error) {
-    contents = (
-      <div className="text-danger">
-        Error loading trace: {getErrorMessage(error)}
-      </div>
-    );
   } else {
     contents = children;
   }
 
   return (
-    <Tab.Pane {...tabProps} className="pt-3">
+    <Tab.Pane {...tabProps} className={styles.tabPane}>
       {contents}
     </Tab.Pane>
   );
 };
 
 const DataPanel: React.FC<{
-  blockFieldName: string;
+  blockPipelineFieldName: string;
+  blockPipelineIndex: number;
   instanceId: UUID;
-}> = ({ blockFieldName, instanceId }) => {
+}> = ({ blockPipelineFieldName, blockPipelineIndex, instanceId }) => {
   const { flags } = useContext(AuthContext);
 
   const showDeveloperTabs = flags.includes("page-editor-developer");
 
   const { values: formState } = useFormikContext<FormState>();
 
-  const [record, isLoading, error, recalculate] = useLatestTraceRecord(
-    instanceId
-  );
+  const blockPipeline: BlockConfig[] = get(formState, blockPipelineFieldName);
+  // eslint-disable-next-line security/detect-object-injection
+  const block = blockPipeline[blockPipelineIndex];
 
-  useInterval(recalculate, TRACE_RELOAD_MILLIS);
+  const traces = useSelector(selectExtensionTrace);
+  const record = traces.find((t) => t.blockInstanceId === instanceId);
+
+  const isInputStale = useMemo(() => {
+    if (record === undefined) {
+      return false;
+    }
+
+    if (traces.length !== blockPipeline.length) {
+      return true;
+    }
+
+    const currentInput = blockPipeline.slice(0, blockPipelineIndex);
+    const tracedInput = currentInput.map(
+      (block) =>
+        traces.find((t) => t.blockInstanceId === block.instanceId).blockConfig
+    );
+
+    return !isEqual(currentInput, tracedInput);
+  }, [blockPipeline, blockPipelineIndex, record, traces]);
+
+  const isCurrentStale = useMemo(() => {
+    if (isInputStale) {
+      return true;
+    }
+
+    if (record === undefined) {
+      return false;
+    }
+
+    return !isEqual(record.blockConfig, block);
+  }, [isInputStale, record, block]);
 
   const relevantContext = useMemo(
     () => pickBy(record?.templateContext ?? {}, contextFilter),
     [record?.templateContext]
   );
-  const blockFieldConfigName = `${blockFieldName}.config`;
-  const [{ value: configValue }] = useField(blockFieldConfigName);
+
   const [formBuilderActiveField, setFormBuilderActiveField] = useReduxState(
     formBuilderSelectors.activeField,
     actions.setActiveField
   );
 
-  const [{ value: blockConfig }] = useField<BlockConfig>(blockFieldName);
+  const outputObj: JsonObject =
+    record !== undefined && "output" in record
+      ? "outputKey" in record
+        ? { [`@${record.outputKey}`]: record.output }
+        : record.output
+      : null;
 
-  const [previewInfo] = usePreviewInfo(blockConfig?.id);
+  const [previewInfo] = usePreviewInfo(block?.id);
 
-  const showFormPreview = configValue?.schema && configValue?.uiSchema;
-  const showBlockPreview =
-    (record && blockConfig) || previewInfo?.traceOptional;
+  const showFormPreview = block.config?.schema && block.config?.uiSchema;
+  const showBlockPreview = record || previewInfo?.traceOptional;
 
   const defaultKey = showFormPreview ? "preview" : "output";
 
@@ -192,13 +202,21 @@ const DataPanel: React.FC<{
         </Nav.Item>
       </Nav>
       <Tab.Content>
-        <DataTab
-          eventKey="context"
-          isLoading={isLoading}
-          isTraceEmpty={!record}
-          error={error}
-        >
-          <JsonTree data={relevantContext} copyable searchable />
+        <DataTab eventKey="context" isTraceEmpty={!record}>
+          {isInputStale && (
+            <Alert variant="warning">
+              <FontAwesomeIcon icon={faExclamationTriangle} /> A previous block
+              has changed, input context may be out of date
+            </Alert>
+          )}
+          <JsonTree
+            data={relevantContext}
+            copyable
+            searchable
+            shouldExpandNode={(keyPath) =>
+              keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
+            }
+          />
         </DataTab>
         {showDeveloperTabs && (
           <>
@@ -214,29 +232,53 @@ const DataPanel: React.FC<{
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
               </div>
-              <JsonTree data={blockConfig ?? {}} />
+              <JsonTree data={block ?? {}} />
             </DataTab>
           </>
         )}
-        <DataTab
-          eventKey="rendered"
-          isLoading={isLoading}
-          isTraceEmpty={!record}
-          error={error}
-        >
+        <DataTab eventKey="rendered" isTraceEmpty={!record}>
           {record && (
-            <JsonTree data={record.renderedArgs} copyable searchable />
+            <>
+              {isInputStale && (
+                <Alert variant="warning">
+                  <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
+                  block has changed, input context may be out of date
+                </Alert>
+              )}
+              <JsonTree
+                data={record.renderedArgs}
+                copyable
+                searchable
+                label="Rendered Inputs"
+              />
+            </>
           )}
         </DataTab>
         <DataTab
           eventKey="output"
-          isLoading={isLoading}
           isTraceEmpty={!record}
           isTraceOptional={previewInfo?.traceOptional}
-          error={error}
         >
-          {record && "output" in record && (
-            <JsonTree data={record.output} copyable searchable label="Data" />
+          {outputObj && (
+            <>
+              {isCurrentStale && (
+                <Alert variant="warning">
+                  <FontAwesomeIcon icon={faExclamationTriangle} /> This or a
+                  previous block has changed, output may be out of date
+                </Alert>
+              )}
+              <JsonTree
+                data={outputObj}
+                copyable
+                searchable
+                label="Data"
+                shouldExpandNode={(keyPath) =>
+                  keyPath.length === 1 &&
+                  "outputKey" in record &&
+                  keyPath[0] === `@${record.outputKey}`
+                }
+              />
+            </>
           )}
           {record && "error" in record && (
             <JsonTree data={record.error} label="Error" />
@@ -244,9 +286,7 @@ const DataPanel: React.FC<{
         </DataTab>
         <DataTab
           eventKey="preview"
-          isLoading={isLoading}
           isTraceEmpty={false}
-          error={null}
           // Only mount if the user is viewing it, because output previews take up resources to run
           mountOnEnter
           unmountOnExit
@@ -254,7 +294,7 @@ const DataPanel: React.FC<{
           {showFormPreview ? (
             <ErrorBoundary>
               <FormPreview
-                name={blockFieldConfigName}
+                rjsfSchema={block.config as RJSFSchema}
                 activeField={formBuilderActiveField}
                 setActiveField={setFormBuilderActiveField}
               />
@@ -262,7 +302,7 @@ const DataPanel: React.FC<{
           ) : // eslint-disable-next-line unicorn/no-nested-ternary -- pre-commit removes the parens
           showBlockPreview ? (
             <ErrorBoundary>
-              <BlockPreview traceRecord={record} blockConfig={blockConfig} />
+              <BlockPreview traceRecord={record} blockConfig={block} />
             </ErrorBoundary>
           ) : (
             <div className="text-muted">

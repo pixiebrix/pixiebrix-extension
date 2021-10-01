@@ -24,9 +24,7 @@ import "@/contentScript/messenger/registration";
 import addErrorListeners from "@/contentScript/errors";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
-import addContentScriptListener from "@/contentScript/backgroundProtocol";
 import { handleNavigate } from "@/contentScript/lifecycle";
-import addExecutorListener from "@/contentScript/executor";
 import "@/messaging/external";
 import "@/vendors/notify";
 import { markReady, updateTabInfo } from "@/contentScript/context";
@@ -51,8 +49,6 @@ async function init(): Promise<void> {
   // Add error listeners first so they can catch any initialization errors
   addErrorListeners();
 
-  addContentScriptListener();
-  addExecutorListener();
   addListenerForUpdateSelectedElement();
   initTelemetry();
 

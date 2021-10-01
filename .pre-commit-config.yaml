@@ -1,27 +1,13 @@
 # https://pre-commit.com/hooks.html
+exclude: __snapshots__/|package-lock.json
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
       - id: end-of-file-fixer
-        exclude: __snapshots__/
       - id: trailing-whitespace
-        exclude: __snapshots__/
       - id: detect-private-key
-        exclude: __snapshots__/
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.2.1
     hooks:
       - id: prettier
-        exclude: ^__snapshots__/
-#  - repo: https://github.com/pre-commit/mirrors-eslint
-#    rev: v7.10.0
-#    hooks:
-#      - id: eslint
-#        additional_dependencies:
-#          - "eslint@7.10.0"
-#          - "@typescript-eslint/eslint-plugin@4.4.0"
-#          - "@typescript-eslint/parser@4.4.0"
-#          - "eslint-plugin-react@7.21.3"
-#        files: \.[jt]sx?$
-#        types: [file]

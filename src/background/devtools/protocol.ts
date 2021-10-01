@@ -18,7 +18,7 @@
 import { browser, Runtime } from "webextension-polyfill-ts";
 import * as contentScriptProtocol from "@/contentScript/devTools";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
-import * as nativeSelectionProtocol from "@/nativeEditor/selector";
+import type { SelectMode } from "@/nativeEditor/selector";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import { Availability } from "@/blocks/types";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
@@ -78,7 +78,7 @@ export const detectFrameworks: (
 
 export const cancelSelectElement = liftBackground(
   "CANCEL_SELECT_ELEMENT",
-  (target: Target) => async () => nativeSelectionProtocol.cancelSelect(target)
+  (target: Target) => async () => contentScript.cancelSelect(target)
 );
 
 export const selectElement = liftBackground(
@@ -90,11 +90,11 @@ export const selectElement = liftBackground(
     root,
   }: {
     framework?: Framework;
-    mode: nativeSelectionProtocol.SelectMode;
+    mode: SelectMode;
     traverseUp?: number;
     root?: string;
   }) => {
-    const element = await nativeSelectionProtocol.selectElement(target, {
+    const element = await contentScript.selectElement(target, {
       framework,
       mode,
       traverseUp,

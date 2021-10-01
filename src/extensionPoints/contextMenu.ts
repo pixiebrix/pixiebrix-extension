@@ -16,6 +16,7 @@
  */
 
 import {
+  apiVersionOptions,
   blockList,
   makeServiceContext,
   mergeReaders,
@@ -53,6 +54,7 @@ import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { getErrorMessage, isErrorObject } from "@/errors";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { isDeploymentActive } from "@/options/deploymentUtils";
 
 export type ContextMenuConfig = {
   title: string;
@@ -208,7 +210,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   uninstall({ global = false }: { global?: boolean }): void {
-    // Don't uninstall the mouse handler because other context menus need it
+    // NOTE: don't uninstall the mouse/click handler because other context menus need it
     const extensions = this.extensions.splice(0, this.extensions.length);
     if (global) {
       for (const extension of extensions) {
@@ -239,9 +241,18 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   async ensureMenu(
-    extension: Pick<ResolvedExtension<ContextMenuConfig>, "id" | "config">
+    extension: Pick<
+      ResolvedExtension<ContextMenuConfig>,
+      "id" | "config" | "_deployment"
+    >
   ): Promise<void> {
     const { title } = extension.config;
+
+    // Check for null/undefined to preserve backward compatability
+    if (!isDeploymentActive(extension)) {
+      console.debug("Skipping ensureMenu for extension from paused deployment");
+      return;
+    }
 
     const patterns = compact(
       uniq([...this.documentUrlPatterns, ...(this.permissions?.origins ?? [])])
@@ -249,7 +260,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
     await ensureContextMenu({
       extensionId: extension.id,
-      contexts: this.contexts,
+      contexts: this.contexts ?? ["all"],
       title,
       documentUrlPatterns: patterns,
     });
@@ -288,6 +299,15 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       selectExtensionContext(extension)
     );
 
+    console.debug(
+      "Register context menu handler for: %s (%s)",
+      extension.id,
+      extension.label ?? "No Label",
+      {
+        extension,
+      }
+    );
+
     registerHandler(extension.id, async (clickData) => {
       reportEvent("HandleContextMenu", selectEventData(extension));
 
@@ -310,6 +330,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           validate: true,
           serviceArgs: serviceContext,
           optionsArgs: extension.optionsArgs,
+          ...apiVersionOptions(extension.apiVersion),
         });
       } catch (error: unknown) {
         if (isErrorObject(error)) {
@@ -329,7 +350,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   async run(): Promise<void> {
     if (this.extensions.length === 0) {
       console.debug(
-        `contextMenu extension point ${this.id} has no installed extension`
+        `contextMenu extension point ${this.id} has no installed extensions`
       );
       return;
     }

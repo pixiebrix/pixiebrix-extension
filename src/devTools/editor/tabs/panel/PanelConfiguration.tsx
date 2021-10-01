@@ -25,6 +25,7 @@ import TemplateWidget, {
 } from "@/devTools/editor/fields/TemplateWidget";
 import LocationWidget from "@/devTools/editor/fields/LocationWidget";
 import { makeLockableFieldProps } from "@/devTools/editor/fields/makeLockableFieldProps";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
 const panelSnippets: Snippet[] = [
   { label: "heading", value: "{{{heading}}}" },
@@ -55,17 +56,17 @@ const PanelConfiguration: React.FC<{
       />
     </FieldSection>
 
-    <FieldSection title="Configuration">
+    <FieldSection title="Advanced">
       <ConnectedFieldTemplate
         name="extension.collapsible"
-        layout="switch"
+        as={SwitchButtonWidget}
         label="Collapsible"
-        description="Panel heading to show in the sidebar"
+        description="Render the panel as a collapsible drawer"
       />
 
       <ConnectedFieldTemplate
         name="extension.shadowDOM"
-        layout="switch"
+        as={SwitchButtonWidget}
         label="Shadow DOM"
         description="Isolate the panel style with a Shadow DOM"
       />

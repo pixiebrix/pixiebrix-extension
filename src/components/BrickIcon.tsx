@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import { IBrick } from "@/core";
+import { Split } from "type-fest";
 import { BlockType, getType } from "@/blocks/util";
-import { IconProp, library } from "@fortawesome/fontawesome-svg-core";
-import { fab } from "@fortawesome/free-brands-svg-icons";
-import { far } from "@fortawesome/free-regular-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
@@ -32,7 +31,6 @@ import {
   faMagic,
   faMousePointer,
   faRandom,
-  fas,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
@@ -41,12 +39,15 @@ import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
 import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtension";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
-import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";
+import { useAsyncEffect } from "use-async-effect";
+import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
+import { MarketplaceListing } from "@/types/contract";
 
-library.add(fas, fab, far);
-
-export function getIcon(brick: IBrick, blockType: BlockType): IconProp {
+export function getDefaultBrickIcon(
+  brick: IBrick,
+  blockType: BlockType
+): IconProp {
   if ("schema" in brick) {
     return faCloud;
   }
@@ -96,49 +97,67 @@ const SIZE_REGEX = /^(?<size>\d)x$/i;
 const BrickIcon: React.FunctionComponent<{
   brick: IBrick;
   size?: "1x" | "2x";
-  // This prop sets a className only in cases where a <FontAwesomeIcon/> is used
+  /**
+   * Sets a className only in cases where a <FontAwesomeIcon/> is used
+   */
   faIconClass?: string;
 }> = ({ brick, size = "1x", faIconClass = "" }) => {
-  const [type] = useAsyncState(async () => getType(brick), [brick]);
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
+  const listing: MarketplaceListing | null = listings[brick.id];
 
-  const listing = listings[brick.id];
+  const [type] = useAsyncState(async () => getType(brick), [brick]);
+  const [listingFaIcon, setFaListingIcon] = useState<IconProp | undefined>();
+
+  useAsyncEffect(
+    async (isMounted) => {
+      if (!listing?.fa_icon) {
+        return;
+      }
+
+      // The fa_icon database value is a string e.g. "fas fa-coffee"
+      const [library, icon] = listing.fa_icon.split(" ") as Split<
+        typeof listing.fa_icon,
+        " "
+      >;
+
+      let svg: IconProp;
+
+      try {
+        svg = await fetchFortAwesomeIcon(library, icon);
+      } catch {
+        console.warn("Error dynamically loading FontAwesome icon", {
+          library,
+          icon,
+        });
+        // Don't do anything, because we're already using the default brick icon
+        return;
+      }
+
+      if (!isMounted()) {
+        return;
+      }
+
+      setFaListingIcon(svg);
+    },
+    [listing, setFaListingIcon]
+  );
 
   const sizeMultiplier = SIZE_REGEX.exec(size).groups?.size;
   // Setting height and width via em allows for scaling with font size
   const cssSize = `${sizeMultiplier}em`;
 
-  const fa_icon = useMemo(() => {
-    if (listing?.fa_icon) {
-      // The fa_icon database value is a string e.g. "fas fa-coffee"
-      const icon = listing.fa_icon.split(" ");
-      icon[1] = icon[1].replace("fa-", "");
-      return icon as IconProp;
-    }
-
-    return getIcon(brick, type);
-  }, [brick, type, listing]);
-
-  return (
-    <>
-      {listing?.image == null ? (
-        <FontAwesomeIcon
-          icon={fa_icon}
-          color={listing?.icon_color}
-          className={cx(faIconClass, { "text-muted": !listing?.icon_color })}
-          size={size}
-          fixedWidth
-        />
-      ) : (
-        <svg width={cssSize} height={cssSize}>
-          <image
-            xlinkHref={listing?.image.url}
-            width={cssSize}
-            height={cssSize}
-          />
-        </svg>
-      )}
-    </>
+  return listing?.image ? (
+    <svg width={cssSize} height={cssSize}>
+      <image xlinkHref={listing.image.url} width={cssSize} height={cssSize} />
+    </svg>
+  ) : (
+    <FontAwesomeIcon
+      icon={listingFaIcon ?? getDefaultBrickIcon(brick, type)}
+      color={listing?.icon_color}
+      className={faIconClass}
+      size={size}
+      fixedWidth
+    />
   );
 };
 

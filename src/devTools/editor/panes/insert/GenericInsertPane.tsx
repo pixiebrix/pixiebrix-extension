@@ -21,11 +21,11 @@ import { DevToolsContext } from "@/devTools/context";
 import { showBrowserActionPanel } from "@/background/devtools";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import Centered from "@/devTools/editor/components/Centered";
-import { Button } from "react-bootstrap";
+import { Button, Row } from "react-bootstrap";
 import BlockModal from "@/components/brickModal/BrickModal";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { reportEvent } from "@/telemetry/events";
@@ -33,6 +33,7 @@ import * as nativeOperations from "@/background/devtools";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import { getCurrentURL } from "@/devTools/utils";
+import styles from "./GenericInsertPane.module.scss";
 
 const { addElement } = editorSlice.actions;
 
@@ -118,32 +119,33 @@ const GenericInsertPane: React.FunctionComponent<{
 
   return (
     <Centered isScrollable>
-      <div className="PaneTitle">Add {config.label}</div>
+      <div className="PaneTitle">Build new {config.label} extension</div>
       <div className="text-left">{config.insertModeHelp}</div>
-      <div>
+      <Row className={styles.buttonRow}>
+        <Button variant="primary" onClick={addNew}>
+          <FontAwesomeIcon icon={faPlus} /> Create new {config.label}
+        </Button>
+
         <BlockModal
           bricks={extensionPoints ?? []}
-          caption={`Select ${config.label} Foundation`}
           renderButton={({ show }) => (
             <Button
               variant="info"
               onClick={show}
               disabled={!extensionPoints?.length}
+              className={styles.searchButton}
             >
-              <FontAwesomeIcon icon={faCube} /> Use Existing {config.label}
+              <FontAwesomeIcon icon={faSearch} /> Search Marketplace
             </Button>
           )}
           onSelect={async (block) => addExisting(block)}
         />
-
-        <Button variant="info" className="ml-2" onClick={addNew}>
-          <FontAwesomeIcon icon={faPlus} /> Create New
+      </Row>
+      <Row className={styles.cancelRow}>
+        <Button variant="danger" className="m-3" onClick={cancel}>
+          <FontAwesomeIcon icon={faTimes} /> Cancel
         </Button>
-
-        <Button variant="danger" className="ml-2" onClick={cancel}>
-          Cancel Insert
-        </Button>
-      </div>
+      </Row>
     </Centered>
   );
 };

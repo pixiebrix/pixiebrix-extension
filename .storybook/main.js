@@ -30,6 +30,9 @@ module.exports = {
   webpackFinal: async (config, { configType }) => {
     // https://storybook.js.org/docs/riot/configure/webpack#extending-storybooks-webpack-config
 
+    config.resolve.fallback = {
+      fs: false,
+    };
     config.resolve.alias = {
       "@": path.resolve(rootDir, "src"),
       "@img": path.resolve(rootDir, "img"),

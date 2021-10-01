@@ -24,7 +24,8 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  readerHack,
+  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+  readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
@@ -94,7 +95,7 @@ function fromNativeElement(
       metadata,
       definition: {
         isAvailable: makeIsAvailable(url),
-        reader: getImplicitReader(),
+        reader: getImplicitReader("actionPanel"),
       },
     },
     extension: {
@@ -122,11 +123,19 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { uuid, label, extensionPoint, extension, services }: ActionPanelFormState,
+  {
+    uuid,
+    label,
+    extensionPoint,
+    extension,
+    services,
+    apiVersion,
+  }: ActionPanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ActionPanelConfig> {
   return removeEmptyValues({
     id: uuid,
+    apiVersion,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
     label,
@@ -157,6 +166,7 @@ export async function fromExtensionPoint(
 
   return {
     uuid: uuidv4(),
+    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     installed: true,
     type: extensionPoint.definition.type,
     label: heading,
@@ -172,7 +182,7 @@ export async function fromExtensionPoint(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
-        reader: readerHack(extensionPoint.definition.reader),
+        reader: readerTypeHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -190,6 +200,7 @@ async function fromExtension(
 
   return {
     uuid: config.id,
+    apiVersion: config.apiVersion,
     installed: true,
     type: extensionPoint.definition.type,
     label: config.label,
@@ -206,7 +217,7 @@ async function fromExtension(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
-        reader: readerHack(extensionPoint.definition.reader),
+        reader: readerTypeHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -232,12 +243,12 @@ const config: ElementConfig<never, ActionPanelFormState> = {
     <div>
       <p>
         A sidebar panel can be configured to appear in the PixieBrix sidebar on
-        pages you choose
+        pages you choose.
       </p>
 
       <p>
-        Use an existing foundation, or start from scratch to have full control
-        over when the panel appears
+        Search for an existing sidebar panel in the marketplace, or start from
+        scratch to have full control over when the panel appears.
       </p>
     </div>
   ),

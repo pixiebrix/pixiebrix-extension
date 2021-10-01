@@ -30,6 +30,7 @@ import { useAsyncState } from "@/hooks/common";
 import { devtoolsProtocol } from "@/contrib/google/sheets/handlers";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getErrorMessage } from "@/errors";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
 const DEFAULT_HEADER_SCHEMA = {
   type: "string",
@@ -111,7 +112,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
       <ConnectedFieldTemplate
         name={joinName(basePath, "multi")}
         label="All Matches"
-        layout="switch"
+        as={SwitchButtonWidget}
         description="Toggle on to return an array of matches"
       />
     </div>

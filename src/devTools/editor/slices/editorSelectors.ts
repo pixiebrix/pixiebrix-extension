@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,14 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.checkbox {
-  position: absolute;
-  top: 0;
-  pointer-events: none;
-  display: none;
-}
+import { EditorState } from "@/devTools/editor/slices/editorSlice";
 
-.label {
-  display: flex;
-  align-items: center;
-}
+type RootState = { editor: EditorState };
+
+export const selectActiveExtension = ({ editor }: RootState) =>
+  editor.activeElement;

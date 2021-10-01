@@ -15,39 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pTimeout from "p-timeout";
 import { Menus } from "webextension-polyfill-ts";
+import { UUID } from "@/core";
 
-type Handler = (args: Menus.OnClickData) => Promise<void>;
+type MenuHandler = (args: Menus.OnClickData) => Promise<void>;
 
-const handlers = new Map<string, Handler>();
+const handlers = new Map<UUID, MenuHandler>();
 
-export function registerHandler(extensionId: string, handler: Handler): void {
-  console.debug(`Registered handler for extension: ${extensionId}`);
+export function registerHandler(extensionId: UUID, handler: MenuHandler): void {
   handlers.set(extensionId, handler);
 }
 
 export async function handleMenuAction({
   extensionId,
   args,
-  maxWaitMillis = Number.POSITIVE_INFINITY,
 }: {
-  extensionId: string;
+  extensionId: UUID;
   args: Menus.OnClickData;
-  maxWaitMillis: number;
 }): Promise<void> {
   const handler = handlers.get(extensionId);
   if (handler) {
-    await pTimeout(handler(args), maxWaitMillis);
+    await handler(args);
     return;
   }
 
-  console.error(`No context menu found for extension: ${extensionId}`, {
+  console.error("No context menu found for extension: %s", extensionId, {
     extensionId,
     handlers: [...handlers.keys()],
   });
 
-  throw new Error(
-    `No context menu handler found for extension in ${maxWaitMillis}ms`
-  );
+  throw new Error("No context menu handler found for extension");
 }

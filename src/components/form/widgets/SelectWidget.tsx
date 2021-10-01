@@ -41,6 +41,7 @@ type OwnProps<TOption extends Option = Option> = {
 };
 
 const SelectWidget: CustomFieldWidget<OwnProps> = ({
+  id,
   options,
   isClearable = false,
   isLoading,
@@ -64,6 +65,8 @@ const SelectWidget: CustomFieldWidget<OwnProps> = ({
 
   return (
     <Select
+      inputId={id}
+      name={name}
       isDisabled={disabled}
       isLoading={isLoading}
       isClearable={isClearable}

@@ -16,7 +16,8 @@
  */
 
 import { validate, v4 as uuidFactory } from "uuid";
-import { RegistryId, UUID } from "@/core";
+import { RegistryId, SemVerString, UUID } from "@/core";
+import { valid as semVerValid } from "semver";
 
 export const PACKAGE_REGEX = /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
 
@@ -31,7 +32,7 @@ export function isUUID(uuid: string): uuid is UUID {
 export function validateUUID(uuid: string): UUID {
   if (uuid == null) {
     // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
-    // we can remove this check as strictNullChecks will check the callsite
+    // we can remove this check as strictNullChecks will check the call site
     return uuid as UUID;
   }
 
@@ -51,7 +52,7 @@ export function isRegistryId(id: string): id is RegistryId {
 export function validateRegistryId(id: string): RegistryId {
   if (id == null) {
     // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
-    // we can remove this check as strictNullChecks will check the callsite
+    // we can remove this check as strictNullChecks will check the call site
     return id as RegistryId;
   }
 
@@ -62,4 +63,8 @@ export function validateRegistryId(id: string): RegistryId {
   console.debug("Invalid registry id: %s", id);
 
   throw new Error("Invalid registry id");
+}
+
+export function validateSemVerString(value: string): value is SemVerString {
+  return semVerValid(value) != null;
 }

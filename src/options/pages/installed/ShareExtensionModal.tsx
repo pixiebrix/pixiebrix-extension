@@ -46,9 +46,9 @@ import Form, {
   RenderBody,
   RenderSubmit,
 } from "@/components/form/Form";
-import { useOrganization } from "@/hooks/organization";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { useGetOrganizationsQuery } from "@/services/api";
 
 const { attachExtension } = optionsSlice.actions;
 
@@ -104,7 +104,7 @@ const ShareExtensionModal: React.FC<{
   // If loading the URL directly, there's a race condition if scope will be populated when the modal is mounted.
   // Not a priority to fix because user will general come to the modal via the "Share" button on the main page
   const { scope } = useContext(AuthContext);
-  const { organizations } = useOrganization();
+  const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const initialValues: FormState = {
     blueprintId: compact([scope, slugify(extension.label).toLowerCase()]).join(

@@ -24,6 +24,7 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
+  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
@@ -100,7 +101,7 @@ function fromNativeElement(
     extensionPoint: {
       metadata,
       definition: {
-        reader: getImplicitReader(),
+        reader: getImplicitReader("contextMenu"),
         documentUrlPatterns: isAvailable.matchPatterns,
         contexts: ["all"],
         defaultOptions: {},
@@ -139,11 +140,19 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { uuid, label, extensionPoint, extension, services }: ContextMenuFormState,
+  {
+    uuid,
+    apiVersion,
+    label,
+    extensionPoint,
+    extension,
+    services,
+  }: ContextMenuFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ContextMenuConfig> {
   return removeEmptyValues({
     id: uuid,
+    apiVersion,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
     label,
@@ -173,6 +182,7 @@ async function fromExtension(
 
   return {
     uuid: config.id,
+    apiVersion: config.apiVersion,
     installed: true,
     type: "contextMenu",
     label: config.label,
@@ -215,6 +225,7 @@ async function fromExtensionPoint(
 
   return {
     uuid: uuidv4(),
+    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     installed: true,
     type,
     label: `My ${getDomain(url)} context menu`,
@@ -267,12 +278,12 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
     <div>
       <p>
         A context menu (also called a right-click menu) can be configured to
-        appear when you right click on a page, text selection, or other content
+        appear when you right click on a page, text selection, or other content.
       </p>
 
       <p>
-        Use an existing foundation, or start from scratch to have full control
-        over where the the menu item appears
+        Search for an existing context menu in the marketplace, or start from
+        scratch to have full control over how your context menu appears.
       </p>
     </div>
   ),

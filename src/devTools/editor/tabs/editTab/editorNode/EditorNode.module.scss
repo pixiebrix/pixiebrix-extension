@@ -23,7 +23,7 @@
   align-items: center;
 }
 
-.box {
+.button {
   display: flex;
   flex-direction: column;
   border: none;
@@ -33,6 +33,7 @@
   align-items: center;
   justify-content: center;
   background-color: #dedede;
+  position: relative;
 
   &:hover {
     color: #fff;
@@ -70,24 +71,9 @@
   max-width: 120px;
 }
 
-.remove {
-  border: none;
-  border-radius: 50%;
-  position: relative;
-  color: red;
-  background-color: white;
-  left: 28px;
-  top: 10px;
-  margin-top: -10px;
-
-  &:hover {
-    cursor: pointer;
-    color: hotpink;
-    box-shadow: 1px 1px 1px gray;
-
-    &:active {
-      box-shadow: none;
-      color: red;
-    }
-  }
+.errorBadge {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translate3d(40%, -40%, 0);
 }

@@ -24,7 +24,8 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  readerHack,
+  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+  readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
@@ -94,7 +95,7 @@ function fromNativeElement(
       definition: {
         rootSelector: null,
         trigger: "load",
-        reader: getImplicitReader(),
+        reader: getImplicitReader("trigger"),
         isAvailable: makeIsAvailable(url),
       },
     },
@@ -124,11 +125,19 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { uuid, label, extensionPoint, extension, services }: TriggerFormState,
+  {
+    uuid,
+    apiVersion,
+    label,
+    extensionPoint,
+    extension,
+    services,
+  }: TriggerFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<TriggerConfig> {
   return removeEmptyValues({
     id: uuid,
+    apiVersion,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
     label,
@@ -164,6 +173,7 @@ async function fromExtensionPoint(
 
   return {
     uuid: uuidv4(),
+    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     installed: true,
     type,
     label: `My ${getDomain(url)} ${trigger} trigger`,
@@ -180,7 +190,7 @@ async function fromExtensionPoint(
         ...extensionPoint.definition,
         rootSelector,
         trigger,
-        reader: readerHack(reader),
+        reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -200,6 +210,7 @@ async function fromExtension(
 
   return {
     uuid: config.id,
+    apiVersion: config.apiVersion,
     installed: true,
     type: extensionPoint.definition.type,
     label: config.label,
@@ -216,7 +227,7 @@ async function fromExtension(
       definition: {
         rootSelector,
         trigger,
-        reader: readerHack(reader),
+        reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -246,8 +257,8 @@ const config: ElementConfig<undefined, TriggerFormState> = {
         etc.)
       </p>
       <p>
-        Use an existing foundation, or start from scratch to have full control
-        over when the trigger runs
+        Search for an existing trigger in the marketplace, or start from scratch
+        to have full control over when the trigger runs.
       </p>
     </div>
   ),

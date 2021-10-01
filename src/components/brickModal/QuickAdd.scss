@@ -26,6 +26,8 @@
     &:hover {
       cursor: pointer;
       background-color: #ececff;
+      border-color: #c7c7ff;
+      transition: background-color 0.15s ease-in-out;
     }
 
     &__image {
