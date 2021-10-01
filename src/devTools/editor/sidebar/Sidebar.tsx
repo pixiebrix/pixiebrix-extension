@@ -46,7 +46,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
-import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
