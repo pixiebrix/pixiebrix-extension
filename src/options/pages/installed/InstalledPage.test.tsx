@@ -1,6 +1,3 @@
-/* eslint-disable unicorn/filename-case */
-/* eslint-disable filenames/match-exported */
-
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -16,13 +13,29 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-const reactRedux = jest.createMockFromModule("react-redux");
+import React from "react";
 
-export const useDispatch = jest.fn(() => jest.fn());
-export const connect = jest.fn(() => jest.fn());
-export const useSelector = jest.fn();
+import { render } from "@testing-library/react";
+import { InstalledPage } from "./InstalledPage";
+import { StaticRouter } from "react-router-dom";
 
-export default reactRedux;
+describe("InstalledPage", () => {
+  afterAll(() => {
+    jest.resetAllMocks();
+  });
+
+  jest.mock("@/hooks/common", () => ({
+    useAsyncState: jest.fn().mockReturnValue([[], false, null, jest.fn()]),
+  }));
+
+  test("doesn't show ActiveBrick card when no extensions installed", () => {
+    const { container } = render(
+      <StaticRouter>
+        <InstalledPage extensions={[]} push={jest.fn()} onRemove={jest.fn()} />
+      </StaticRouter>
+    );
+    expect(container.querySelector(".ActiveBricksCard")).toBeNull();
+  });
+});
