@@ -87,6 +87,7 @@ export function searchData(query: string, data: unknown): unknown {
 }
 
 export const thisTab: Target = {
-  tabId: browser.devtools.inspectedWindow.tabId,
+  // This code might end up (unused) in non-dev bundles, so use `?.` to avoid errors
+  tabId: globalThis.browser?.devtools?.inspectedWindow?.tabId ?? 0,
   frameId: 0,
 };
