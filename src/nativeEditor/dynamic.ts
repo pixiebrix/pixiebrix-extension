@@ -69,10 +69,6 @@ export async function updateDynamicElement({
 }
 
 export async function enableOverlay(selector: string): Promise<void> {
-  if (!selector.trim()) {
-    return;
-  }
-
   if (_overlay == null) {
     _overlay = new Overlay();
   }

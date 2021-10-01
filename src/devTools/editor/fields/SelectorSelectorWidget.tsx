@@ -112,7 +112,9 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
   }, [element, sort]);
 
   const enableSelector = useCallback((selector: string) => {
-    void enableOverlay(thisTab, selector);
+    if (selector.trim()) {
+      void enableOverlay(thisTab, selector);
+    }
   }, []);
 
   const disableSelector = useCallback(() => {
