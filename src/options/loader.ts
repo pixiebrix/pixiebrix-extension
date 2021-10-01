@@ -42,7 +42,9 @@ export async function loadOptions(): Promise<ExtensionOptionsState> {
   // The redux persist layer persists the extensions value as as JSON-string.
   // Also apply the upgradeExtensionsState migration here because the migration in store might not have run yet.
   return migrateActiveExtensions(
-    migrateExtensionsShape({ extensions: JSON.parse(base.extensions) })
+    migrateExtensionsShape({
+      extensions: JSON.parse(base.extensions ?? "[]"),
+    })
   );
 }
 
