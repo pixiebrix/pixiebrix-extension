@@ -20,7 +20,8 @@ import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { PropError } from "@/errors";
 import { truncate } from "lodash";
-import parseDataUrl from "parse-data-url";
+import { getEncodingName } from "@/vendors/encodings";
+import parseDataUrl from "@/utils/parseDataUrl";
 
 export class ParseDataUrl extends Transformer {
   constructor() {
@@ -70,7 +71,7 @@ export class ParseDataUrl extends Transformer {
       throw new PropError(
         "Invalid data URL",
         this.id,
-        url,
+        "url",
         truncate(url, {
           length: maxLength,
           omission: `[${url.length - maxLength} characters clipped]`,
@@ -78,15 +79,19 @@ export class ParseDataUrl extends Transformer {
       );
     }
 
-    const decoder = new TextDecoder(dataURL.charset);
+    const { charset, mimeTypeEssence, body } = dataURL;
+
+    const decoder = new TextDecoder(charset);
 
     // https://github.com/ashtuchkin/iconv-lite/blob/4a7086f81a3793d8184ce0835008e4f8c7b3ef41/lib/index.js#L35
-    const body = decoder.decode(Buffer.from(dataURL.data, "binary"));
+    const decodedBody = decoder.decode(
+      Buffer.from(decodeURIComponent(body), "binary")
+    );
 
     return {
-      body,
-      mimeType: dataURL.mediaType,
-      encoding: decoder.encoding,
+      body: decodedBody,
+      mimeType: mimeTypeEssence,
+      encoding: getEncodingName(decoder.encoding),
     };
   }
 }
