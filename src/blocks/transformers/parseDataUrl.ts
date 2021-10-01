@@ -91,7 +91,7 @@ export class ParseDataUrl extends Transformer {
     return {
       body: decodedBody,
       mimeType: mimeTypeEssence,
-      encoding: getEncodingName(decoder.encoding),
+      encoding: getEncodingName(charset),
     };
   }
 }

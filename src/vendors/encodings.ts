@@ -1,7 +1,7 @@
 export function getEncodingName(rawEncoding: string): string {
   for (const { encodings } of definitions) {
     for (const { labels, name } of encodings) {
-      if (labels.includes(rawEncoding)) {
+      if (labels.includes(rawEncoding.toLowerCase())) {
         return name;
       }
     }

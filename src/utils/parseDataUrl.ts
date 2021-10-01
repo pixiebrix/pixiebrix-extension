@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import MIMEType from "whatwg-mimetype";
 import { safeParseUrl } from "@/utils";
-const MIMEType = require("whatwg-mimetype");
 
 const base64Ending = /; *base64$/; // Step 11, 11.4, 11.5
 
@@ -36,12 +36,12 @@ export default function parseDataUrl(url: string): ParsedDataURL | void {
     return;
   }
 
-  const commaPosition = pathname.indexOf(","); // Step 5, 8
+  const commaPosition = pathname.indexOf(","); // Step 5
   if (commaPosition < 0) {
     return; // Step 7
   }
 
-  let [mimeType] = pathname.slice(0, commaPosition).trim(); // Step 6
+  let mimeType = pathname.slice(0, commaPosition).trim(); // Step 6
   const isBase64 = base64Ending.test(mimeType); // Step 11
   if (isBase64) {
     // Must double-trim to follow the steps exactly, without changing the regex
@@ -50,7 +50,7 @@ export default function parseDataUrl(url: string): ParsedDataURL | void {
     mimeType = "text/plain"; // Step 12
   }
 
-  const encodedBody = pathname.slice(commaPosition); // Step 9
+  const encodedBody = pathname.slice(commaPosition + 1); // Step 8, 9
   let body = decodeURIComponent(encodedBody); // Step 10
   if (isBase64) {
     try {
@@ -61,10 +61,11 @@ export default function parseDataUrl(url: string): ParsedDataURL | void {
   }
 
   const parsedMimeType = new MIMEType(mimeType);
+
   return {
     body,
     mimeType: String(parsedMimeType),
     mimeTypeEssence: parsedMimeType.essence,
-    charset: parsedMimeType.parameters.get("charset"),
+    charset: parsedMimeType.parameters.get("charset") ?? "US-ASCII", // Step 14
   };
 }
