@@ -19,6 +19,7 @@ import { RegistryId, RenderedArgs, UUID } from "@/core";
 import { JsonObject } from "type-fest";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy } from "lodash";
+import { BlockConfig } from "@/blocks/types";
 
 const STORAGE_KEY = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";
@@ -76,6 +77,8 @@ export type TraceEntryData = TraceRecordMeta & {
   templateContext: JsonObject;
 
   renderedArgs: RenderedArgs;
+
+  blockConfig: BlockConfig;
 };
 
 export type TraceExitData = TraceRecordMeta & (Output | ErrorOutput);
