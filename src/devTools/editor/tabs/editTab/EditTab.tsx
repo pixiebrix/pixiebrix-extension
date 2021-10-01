@@ -268,7 +268,8 @@ const EditTab: React.FC<{
           ) : (
             <DataPanel
               key={blockInstanceId}
-              blockFieldName={blockFieldName}
+              blockPipelineFieldName={pipelineFieldName}
+              blockPipelineIndex={activeNodeIndex - 1}
               instanceId={blockInstanceId}
             />
           )}
