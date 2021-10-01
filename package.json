@@ -3,7 +3,6 @@
   "version": "1.4.1-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
-    "preinstall": "npx npm-force-resolutions",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "test:selenium": "jest --config selenium/jest.config.js",
@@ -40,7 +39,7 @@
     "@reduxjs/toolkit": "^1.6.0",
     "@rjsf/bootstrap-4": "^3.1.0",
     "@rjsf/core": "^3.0.0",
-    "@uipath/robot": "^1.2.5",
+    "@uipath/robot": "1.2.5",
     "ace-builds": "^1.4.12",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
@@ -51,7 +50,6 @@
     "copy-to-clipboard": "^3.3.1",
     "csharp-helpers": "^0.9.3",
     "css-selector-generator": "^3.4.4",
-    "data-urls": "^3.0.0",
     "dompurify": "^2.3.0",
     "exifreader": "^3.16.0",
     "export-to-csv": "^0.2.1",
@@ -139,8 +137,7 @@
     "webext-patterns": "^1.1.1",
     "webext-polyfill-kinda": "^0.1.0",
     "webextension-polyfill-ts": "^0.26.0",
-    "webidl-conversions": "^7.0.0",
-    "whatwg-encoding": "^2.0.0"
+    "whatwg-mimetype": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
@@ -202,7 +199,6 @@
     "@types/uuid": "^8.3.1",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.16.2",
-    "@types/whatwg-encoding": "^1.0.0",
     "@types/yup": "^0.29.13",
     "axios-mock-adapter": "^1.19.0",
     "babel-jest": "^27.0.6",
@@ -214,6 +210,7 @@
     "csp-parse": "0.0.2",
     "css-loader": "^6.2.0",
     "css-minimizer-webpack-plugin": "^3.0.2",
+    "data-urls": "^3.0.0",
     "dotenv": "^10.0.0",
     "eslint": "^7.30.0",
     "eslint-config-pixiebrix": "^0.9.0",
@@ -229,7 +226,6 @@
     "mini-css-extract-plugin": "~2.0.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "node-sass": "^6.0.1",
-    "npm-force-resolutions": "^0.0.10",
     "raw-loader": "^4.0.1",
     "react-select-event": "^5.3.0",
     "rollbar-sourcemap-webpack-plugin": "^3.3.0",
@@ -251,9 +247,6 @@
     "yaml-jest-transform": "^1.0.0",
     "yaml-loader": "^0.6.0",
     "zip-dir": "^2.0.0"
-  },
-  "resolutions": {
-    "webidl-conversions": "7.0.0"
   },
   "jest": {
     "silent": true,
