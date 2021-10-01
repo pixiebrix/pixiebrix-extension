@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
-import { getIn, useField, useFormikContext } from "formik";
+import { getIn, useFormikContext } from "formik";
 import { BlockPipeline } from "@/blocks/types";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
@@ -37,7 +37,7 @@ import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpe
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BrickIcon from "@/components/BrickIcon";
-import { isNullOrBlank, joinName } from "@/utils";
+import { isNullOrBlank } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
 import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
@@ -45,11 +45,7 @@ import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlo
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
-import { useSelector } from "react-redux";
-import { selectTraceError } from "@/devTools/editor/slices/runtimeSelectors";
-import { usePipelineTraceValidation } from "../../hooks/useRuntimeErrors";
-import { OutputUnit } from "@cfworker/json-schema";
-import { isInputValidationError } from "@/blocks/errors";
+import usePipelineField from "../../hooks/usePipelineField";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -87,58 +83,12 @@ const EditTab: React.FC<{
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
 
-  const traceError = useSelector(selectTraceError);
-
   const [
     { value: blockPipeline = [] },
     { error: blockPipelineError },
     pipelineFieldHelpers,
-  ] = useField<BlockPipeline>({
-    name: pipelineFieldName,
-    validate: (blockPipeline: BlockPipeline) => {
-      // ToDo
-      // 1. Move to a hook `useFieldWithErrorTrace
-      // 2. build the error from period-separated field name
-      // 3. make Formik to validate the fields when Trace changes
-      // 4. Q: how to warn about prev unsuccessful run?
-      console.log("blockPipeline.Validate. Trace Error", traceError);
-      if (!traceError) {
-        return;
-      }
-
-      const { error, blockInstanceId } = traceError;
-      const blockIndex = blockPipeline.findIndex(
-        (pipelineBlock) => pipelineBlock.instanceId === blockInstanceId
-      );
-      if (blockIndex === -1) {
-        return;
-      }
-
-      const errors: Record<string, unknown> = {};
-      if (isInputValidationError(traceError.error)) {
-        const REQUIRED_FIELD_REGEX = /^Instance does not have required property "(?<property>.+)"\.$/;
-        for (const unit of (error.errors as unknown) as OutputUnit[]) {
-          const property = REQUIRED_FIELD_REGEX.exec(unit.error)?.groups
-            .property;
-          const message = "This field is required";
-          errors[blockIndex] = {
-            config: {
-              [property]: message,
-            },
-          };
-        }
-      } else {
-        errors[blockIndex] = error.message;
-      }
-
-      console.log("blockPipeline.Validate. Errors", errors);
-      return errors;
-    },
-  });
-
-  useEffect(() => {
-    pipelineFieldHelpers.setTouched(true, true);
-  }, [traceError]);
+    traceError,
+  ] = usePipelineField(pipelineFieldName);
 
   const blockFieldName = useMemo(
     () => `${pipelineFieldName}[${activeNodeIndex - 1}]`,
