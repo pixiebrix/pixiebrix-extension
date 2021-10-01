@@ -19,6 +19,8 @@ import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { PropError } from "@/errors";
+import { truncate } from "lodash";
+import parseDataUrl from "parse-data-url";
 
 export class ParseDataUrl extends Transformer {
   constructor() {
@@ -62,31 +64,29 @@ export class ParseDataUrl extends Transformer {
   });
 
   async transform({ url }: BlockArg): Promise<unknown> {
-    const { default: parseDataURL } = await import("data-urls");
-    const { labelToName, decode } = await import("whatwg-encoding");
-
-    const dataURL = parseDataURL(url);
-
-    if (dataURL == null) {
+    const dataURL = parseDataUrl(url);
+    if (!dataURL) {
+      const maxLength = 50;
       throw new PropError(
         "Invalid data URL",
         this.id,
         url,
-        // Don't pass value because it will be very long
-        null
+        truncate(url, {
+          length: maxLength,
+          omission: `[${url.length - maxLength} characters clipped]`,
+        })
       );
     }
 
-    // If there's no charset parameter, let's just hope it's UTF-8; that seems like a good guess.
-    const encodingName = labelToName(
-      dataURL.mimeType.parameters.get("charset") || "utf-8"
-    );
+    const decoder = new TextDecoder(dataURL.charset);
+
+    // https://github.com/ashtuchkin/iconv-lite/blob/4a7086f81a3793d8184ce0835008e4f8c7b3ef41/lib/index.js#L35
+    const body = decoder.decode(Buffer.from(dataURL.data, "binary"));
 
     return {
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string -- see documentation for data-urls
-      mimeType: dataURL.mimeType.toString(),
-      encoding: encodingName,
-      body: decode(dataURL.body, encodingName),
+      body,
+      mimeType: dataURL.mediaType,
+      encoding: decoder.encoding,
     };
   }
 }
