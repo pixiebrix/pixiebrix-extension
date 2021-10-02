@@ -37,7 +37,7 @@ import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/slices/editorSlice";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
-import { thisTab } from "./utils";
+import { thisTab } from "@/devTools/utils";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
