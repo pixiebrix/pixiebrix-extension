@@ -60,16 +60,18 @@ async function _reportError(
 type LoggingException = (
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ) => boolean;
-const exceptionsList = new Set<LoggingException>();
-const seen = new WeakSet<ErrorEvent | PromiseRejectionEvent>();
-exceptionsList.add((errorEvent) => {
+
+function avoidLoops(errorEvent: ErrorEvent | PromiseRejectionEvent) {
   if (seen.has(errorEvent)) {
     // Avoid loops, let it through
     return true;
   }
 
   seen.add(errorEvent);
-});
+}
+
+const exceptionsList = new Set([avoidLoops]);
+const seen = new WeakSet<ErrorEvent | PromiseRejectionEvent>();
 
 function errorHandler(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
   if ([...exceptionsList].some((shouldIgnore) => shouldIgnore(errorEvent))) {
