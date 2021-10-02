@@ -20,6 +20,7 @@ import { uuidv4 } from "@/types/helpers";
 const start = Date.now();
 
 import "@/extensionContext";
+import { uncaughtErrorLoggingExceptions } from "@/telemetry/automaticallyLogErrors";
 import "@/contentScript/messenger/registration";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
@@ -31,7 +32,6 @@ import { initTelemetry } from "@/telemetry/events";
 import { markTabAsReady, whoAmI } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "./messaging/constants";
 import { addListenerForUpdateSelectedElement } from "./devTools/getSelectedElement";
-import { logUncaughtErrors } from "./telemetry/logging";
 import { showConnectionLost } from "./contentScript/connection";
 import { isConnectionError } from "./errors";
 
@@ -49,7 +49,7 @@ function ignoreConnectionErrors(
 }
 
 // Must be run as early as possible
-logUncaughtErrors(ignoreConnectionErrors);
+uncaughtErrorLoggingExceptions.add(ignoreConnectionErrors);
 
 registerBuiltinBlocks();
 registerContribBlocks();

@@ -17,15 +17,13 @@
 
 // https://developer.chrome.com/extensions/devtools
 
+import "@/telemetry/automaticallyLogErrors";
 import { browser } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 import { readSelectedElement } from "@/background/devtools";
-import { logUncaughtErrors } from "@/telemetry/logging";
 import { updateSelectedElement } from "./devTools/getSelectedElement";
 import { once } from "lodash";
 import { serializeError } from "serialize-error";
-
-logUncaughtErrors();
 
 const { onSelectionChanged } = browser.devtools.panels.elements;
 

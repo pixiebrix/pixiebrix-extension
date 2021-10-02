@@ -20,14 +20,13 @@ import React from "react";
 
 import Panel from "@/devTools/Panel";
 
+import "@/telemetry/automaticallyLogErrors";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@/vendors/overrides.scss";
 import "@/devTools/Panel.scss";
-import { logUncaughtErrors } from "@/telemetry/logging";
 
 import initGoogle from "@/contrib/google/initGoogle";
 
-logUncaughtErrors();
 initGoogle();
 
 ReactDOM.render(<Panel />, document.querySelector("#container"));
