@@ -20,9 +20,8 @@ import type { LogEntry } from "@/background/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { ErrorObject } from "serialize-error";
-import { ContextError, isErrorObject } from "@/errors";
+import { ContextError, isAxiosError, isErrorObject } from "@/errors";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import { AxiosError } from "axios";
 import InputDetail from "@/components/logViewer/details/InputDetail";
 import InputValidationErrorDetail from "@/components/logViewer/details/InputValidationErrorDetail";
 import NetworkErrorDetail from "@/components/logViewer/details/NetworkErrorDetail";
@@ -64,10 +63,8 @@ const ErrorDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
         );
       }
 
-      if (rootCause.isAxiosError) {
-        return (
-          <NetworkErrorDetail error={(rootCause as unknown) as AxiosError} />
-        );
+      if (isAxiosError(rootCause)) {
+        return <NetworkErrorDetail error={rootCause} />;
       }
 
       return entry.error.stack;

@@ -242,55 +242,16 @@ const CONNECTION_ERROR_PATTERNS = [
   "Extension context invalidated",
 ];
 
-function testConnectionErrorPatterns(message: string): boolean {
-  if (typeof message !== "string") {
-    return;
-  }
-
-  for (const pattern of CONNECTION_ERROR_PATTERNS) {
-    if ((message ?? "").includes(pattern)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 export function isPromiseRejectionEvent(
   event: unknown
 ): event is PromiseRejectionEvent {
-  return typeof event === "object" && "reason" in event;
+  return event && typeof event === "object" && "reason" in event;
 }
 
-export function selectPromiseRejectionError(
-  event: PromiseRejectionEvent
-): Error {
-  // Convert the project rejection to an error instance
-  if (event.reason instanceof Error) {
-    return event.reason;
-  }
-
-  if (typeof event.reason === "string") {
-    return new Error(event.reason);
-  }
-
-  return new Error(event.reason?.message ?? "Uncaught error in promise");
-}
-
-/**
- * See https://developer.mozilla.org/en-US/docs/Web/API/ErrorEvent
- */
-export function isErrorEvent(event: unknown): event is ErrorEvent {
-  // Need to check enough of the structure to make sure it's not mistaken for an error
-  return typeof event === "object" && "error" in event && "message" in event;
-}
-
-/**
- * Return true iff the value is an AxiosError.
- */
+// Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
 export function isAxiosError(error: unknown): error is AxiosError {
-  return (
-    typeof error === "object" && Boolean((error as AxiosError).isAxiosError)
+  return Boolean(
+    typeof error === "object" && (error as AxiosError).isAxiosError
   );
 }
 
@@ -299,31 +260,9 @@ export function isAxiosError(error: unknown): error is AxiosError {
  *
  * NOTE: does not recursively identify the root cause of the error.
  */
-export function isConnectionError(
-  event: ErrorEvent | PromiseRejectionEvent | unknown
-): boolean {
-  if (typeof event === "string") {
-    return testConnectionErrorPatterns(event);
-  }
-
-  if (event instanceof ConnectionError) {
-    return true;
-  }
-
-  if (event != null && typeof event === "object") {
-    if (isPromiseRejectionEvent(event)) {
-      return (
-        event.reason instanceof ConnectionError ||
-        testConnectionErrorPatterns(event.reason)
-      );
-    }
-
-    if (isErrorEvent(event)) {
-      return testConnectionErrorPatterns(event.message);
-    }
-  }
-
-  return false;
+export function isConnectionError(possibleError: unknown): boolean {
+  const message = getErrorMessage(possibleError);
+  return CONNECTION_ERROR_PATTERNS.some((pattern) => message.includes(pattern));
 }
 
 /**
@@ -345,34 +284,35 @@ export function isPrivatePageError(error: unknown): boolean {
  * Return an error message corresponding to an error.
  */
 export function getErrorMessage(error: unknown): string {
-  if (isErrorObject(error)) {
-    // `error.message` known to be of type string, so don't need to default it
-    return error.message;
+  // Two shortcuts first
+  if (!error) {
+    return DEFAULT_ERROR_MESSAGE;
   }
 
-  return String(error ?? DEFAULT_ERROR_MESSAGE);
-}
-
-/**
- * Returns the error corresponding to error-like objects
- *
- * Current handled:
- * - unhandled promise rejections
- * - error events
- */
-export function selectError(error: unknown): unknown {
-  if (error instanceof Error) {
-    // Check first to return directly if possible (in case our other type guards match too much)
+  if (typeof error === "string") {
     return error;
   }
 
-  if (isPromiseRejectionEvent(error)) {
-    return selectPromiseRejectionError(error);
+  const { message = DEFAULT_ERROR_MESSAGE } = selectError(error);
+  return String(message);
+}
+
+/**
+ * Finds or creates an Error object starting from strings, error event, or real Errors
+ */
+export function selectError(error: unknown): ErrorObject | Error {
+  // Extract error from event
+  if (error instanceof ErrorEvent) {
+    error = error.error;
+  } else if (isPromiseRejectionEvent(error)) {
+    error = error.reason;
   }
 
-  if (isErrorEvent(error)) {
-    return error.error;
+  if (isErrorObject(error)) {
+    return error;
   }
 
-  return error;
+  // Wrap error if an unknown primitive or object
+  // e.g. `throw 'Error message'`, which should never be written
+  return new Error(String(error));
 }

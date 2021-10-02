@@ -21,7 +21,6 @@ const start = Date.now();
 
 import "@/extensionContext";
 import "@/contentScript/messenger/registration";
-import addErrorListeners from "@/contentScript/errors";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
@@ -32,9 +31,25 @@ import { initTelemetry } from "@/telemetry/events";
 import { markTabAsReady, whoAmI } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "./messaging/constants";
 import { addListenerForUpdateSelectedElement } from "./devTools/getSelectedElement";
+import { logUncaughtErrors } from "./telemetry/logging";
+import { showConnectionLost } from "./contentScript/connection";
+import { isConnectionError } from "./errors";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();
+
+function ignoreConnectionErrors(
+  errorEvent: ErrorEvent | PromiseRejectionEvent
+) {
+  if (isConnectionError(errorEvent)) {
+    showConnectionLost();
+    errorEvent.preventDefault();
+    return true; // Ignore event
+  }
+}
+
+// Must be run as early as possible
+logUncaughtErrors(ignoreConnectionErrors);
 
 registerBuiltinBlocks();
 registerContribBlocks();
@@ -46,9 +61,6 @@ declare global {
 }
 
 async function init(): Promise<void> {
-  // Add error listeners first so they can catch any initialization errors
-  addErrorListeners();
-
   addListenerForUpdateSelectedElement();
   initTelemetry();
 

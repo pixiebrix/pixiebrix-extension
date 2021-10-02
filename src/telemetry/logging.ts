@@ -49,10 +49,46 @@ async function _reportError(
   }
 
   if (!isBackgroundPage()) {
-    // Log the error in the context it occurred in, so the developer doesn't have to open the background page to
-    // see the error
-    console.error("An error occurred", { error });
+    // Also log the error in the context it occurred in, so the developer
+    // doesn't have to open the background page to see it
+    console.error(error);
   }
 
   await recordError(serializeError(selectError(error)), context, null);
+}
+
+type LoggingException = (
+  errorEvent: ErrorEvent | PromiseRejectionEvent
+) => boolean;
+const exceptionsList = new Set<LoggingException>();
+const seen = new WeakSet<ErrorEvent | PromiseRejectionEvent>();
+exceptionsList.add((errorEvent) => {
+  if (seen.has(errorEvent)) {
+    // Avoid loops, let it through
+    return true;
+  }
+
+  seen.add(errorEvent);
+});
+
+function errorHandler(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
+  if ([...exceptionsList].some((shouldIgnore) => shouldIgnore(errorEvent))) {
+    return;
+  }
+
+  reportError(errorEvent);
+  errorEvent.preventDefault();
+}
+
+/**
+ * Log global, uncaught errors. Must be run as early as possible
+ * @param exceptions Boolean functions that let you exclude some errors from the global reporter
+ */
+export function logUncaughtErrors(...exceptions: LoggingException[]): void {
+  window.addEventListener("error", errorHandler);
+  window.addEventListener("unhandledrejection", errorHandler);
+
+  for (const exception of exceptions) {
+    exceptionsList.add(exception);
+  }
 }

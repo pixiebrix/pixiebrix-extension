@@ -20,19 +20,12 @@
 import { browser } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 import { readSelectedElement } from "@/background/devtools";
-import { reportError } from "@/telemetry/logging";
+import { logUncaughtErrors } from "@/telemetry/logging";
 import { updateSelectedElement } from "./devTools/getSelectedElement";
 import { once } from "lodash";
 import { serializeError } from "serialize-error";
 
-window.addEventListener("error", (e) => {
-  reportError(e);
-  return false;
-});
-
-window.addEventListener("unhandledrejection", (e) => {
-  reportError(e);
-});
+logUncaughtErrors();
 
 const { onSelectionChanged } = browser.devtools.panels.elements;
 
