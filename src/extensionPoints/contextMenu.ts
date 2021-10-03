@@ -337,11 +337,9 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           reportError(error);
           extensionLogger.error(error);
         } else {
-          // XXX: If it's not an error object, it won't have an error message
-          extensionLogger.warn(getErrorMessage(error));
+          extensionLogger.warn(error as any);
         }
 
-        // XXX: Errors that are passed to `reportError` should not be re-thrown
         throw error;
       }
     });

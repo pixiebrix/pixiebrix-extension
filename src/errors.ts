@@ -149,7 +149,7 @@ export class ContextError extends Error {
   public readonly context?: MessageContext;
 
   constructor(cause: Error, context?: MessageContext, message?: string) {
-    super(cause.message ?? message);
+    super(getErrorMessage(cause, message));
     this.name = "ContextError";
     this.cause = cause;
     this.context = context;
@@ -283,17 +283,20 @@ export function isPrivatePageError(error: unknown): boolean {
 /**
  * Return an error message corresponding to an error.
  */
-export function getErrorMessage(error: unknown): string {
+export function getErrorMessage(
+  error: unknown,
+  defaultMessage = DEFAULT_ERROR_MESSAGE
+): string {
   // Two shortcuts first
   if (!error) {
-    return DEFAULT_ERROR_MESSAGE;
+    return defaultMessage;
   }
 
   if (typeof error === "string") {
     return error;
   }
 
-  const { message = DEFAULT_ERROR_MESSAGE } = selectError(error);
+  const { message = defaultMessage } = selectError(error);
   return String(message);
 }
 
