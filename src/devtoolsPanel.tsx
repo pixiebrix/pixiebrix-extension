@@ -20,7 +20,7 @@ import React from "react";
 
 import Panel from "@/devTools/Panel";
 
-import "@/telemetry/automaticallyLogErrors";
+import "@/telemetry/automaticallyReportErrors";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@/vendors/overrides.scss";
 import "@/devTools/Panel.scss";

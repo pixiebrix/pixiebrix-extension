@@ -52,7 +52,7 @@ import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { getErrorMessage, isErrorObject } from "@/errors";
+import { isErrorObject } from "@/errors";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/options/deploymentUtils";
 

@@ -225,6 +225,10 @@ export function clone<T extends Record<string, unknown>>(object: T): T {
   return Object.assign(Object.create(null), object);
 }
 
+export function isObject(value: unknown): value is Record<string, unknown> {
+  return value && typeof value === "object";
+}
+
 export function clearObject(obj: Record<string, unknown>): void {
   for (const member in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, member)) {

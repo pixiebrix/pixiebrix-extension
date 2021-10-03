@@ -17,7 +17,7 @@
 
 // https://developer.chrome.com/extensions/devtools
 
-import "@/telemetry/automaticallyLogErrors";
+import "@/telemetry/automaticallyReportErrors";
 import { browser } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 import { readSelectedElement } from "@/background/devtools";

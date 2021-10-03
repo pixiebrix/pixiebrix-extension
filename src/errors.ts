@@ -18,6 +18,7 @@
 import { MessageContext, SerializedError } from "@/core";
 import { ErrorObject } from "serialize-error";
 import { AxiosError } from "axios";
+import { isObject } from "@/utils";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
@@ -250,9 +251,7 @@ export function isPromiseRejectionEvent(
 
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
 export function isAxiosError(error: unknown): error is AxiosError {
-  return Boolean(
-    typeof error === "object" && (error as AxiosError).isAxiosError
-  );
+  return isObject(error) && Boolean(error.isAxiosError);
 }
 
 /**

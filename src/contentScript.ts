@@ -20,7 +20,7 @@ import { uuidv4 } from "@/types/helpers";
 const start = Date.now();
 
 import "@/extensionContext";
-import { uncaughtErrorLoggingExceptions } from "@/telemetry/automaticallyLogErrors";
+import { uncaughtErrorLoggingExceptions } from "@/telemetry/automaticallyReportErrors";
 import "@/contentScript/messenger/registration";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
