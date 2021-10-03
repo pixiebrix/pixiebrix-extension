@@ -77,7 +77,6 @@ export async function enableOverlay(selector: string): Promise<void> {
     _overlay = new Overlay();
   }
 
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive on JQuery method
   const $elt = $(document).find(selector);
   _overlay.inspect($elt.toArray(), null);
 }

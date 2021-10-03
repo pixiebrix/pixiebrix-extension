@@ -34,7 +34,7 @@ import {
   KeyedConfig,
   RegistryId,
   ResolvedExtension,
-} from "./core";
+} from "@/core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
 import { Permissions } from "webextension-polyfill-ts";

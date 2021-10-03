@@ -194,7 +194,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     if (rootSelector) {
       // AwaitElementOnce doesn't work with multiple elements. Get what's currently on the page
-      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
       $root = $(document).find(rootSelector);
     }
 

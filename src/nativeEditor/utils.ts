@@ -25,7 +25,6 @@ import { MultipleElementsFoundError, NoElementsFoundError } from "@/errors";
  * @throws MultipleElementsFoundError if multiple elements are found
  */
 export function requireSingleElement(selector: string): HTMLElement {
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
   const $elt = jQuery(document).find(selector);
   if ($elt.length === 0) {
     throw new NoElementsFoundError(selector);
