@@ -30,7 +30,11 @@
       ],
 
       // Silently improve tree-shakeability and AMD-related errors like #943
-      "lodash": ["node_modules/lodash-es"]
+      "lodash": ["node_modules/lodash-es"],
+      "react-select-virtualized": [
+        "node_modules/@types/react-virtualized-select", // Enable types
+        "node_modules/react-select-virtualized" // But fallback to actual code for the bundler
+      ]
     },
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
