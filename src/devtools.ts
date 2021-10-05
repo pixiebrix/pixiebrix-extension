@@ -20,7 +20,7 @@
 import { browser } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 import { reportError } from "@/telemetry/logging";
-import { updateSelectedElement } from "./devTools/getSelectedElement";
+import { updateSelectedElement } from "@/devTools/getSelectedElement";
 import { once } from "lodash";
 import { serializeError } from "serialize-error";
 import { readSelected } from "@/contentScript/messenger/api";

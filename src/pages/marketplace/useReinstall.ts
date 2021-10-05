@@ -42,7 +42,6 @@ function selectAuths(extensions: IExtension[]): Record<RegistryId, UUID> {
       throw new Error(`Service ${id} has multiple configurations`);
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- safe because it's from Object.entries
     result[id as RegistryId] = configs[0];
   }
 

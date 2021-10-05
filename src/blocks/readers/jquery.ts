@@ -150,8 +150,7 @@ async function select(
   do {
     if ($root) {
       $elt = normalizedSelector.selector
-        ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
-          $root.find(normalizedSelector.selector)
+        ? $root.find(normalizedSelector.selector)
         : $root;
     } else {
       if (!normalizedSelector.selector) {
@@ -160,7 +159,6 @@ async function select(
         );
       }
 
-      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
       $elt = $(document).find(normalizedSelector.selector);
     }
 

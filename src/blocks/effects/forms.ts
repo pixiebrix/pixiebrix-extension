@@ -84,7 +84,6 @@ export class SetInputValue extends Effect {
     { logger }: BlockOptions
   ): Promise<void> {
     for (const { selector, value } of inputs) {
-      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
       const $input = $(document).find(selector);
       if ($input.length === 0) {
         logger.warn(`Could not find input for selector: ${selector}`);
@@ -149,7 +148,6 @@ export class FormFill extends Effect {
     }
 
     for (const [selector, value] of Object.entries(fieldSelectors)) {
-      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
       const $input = $form.find(selector);
       if ($input.length === 0) {
         logger.warn(

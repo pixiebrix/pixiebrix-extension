@@ -1,0 +1,96 @@
+$logoSize: 31px;
+
+.root {
+  flex-direction: column;
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  border-right: 2px solid #c6bfdb;
+
+  &.collapsed {
+    flex: 0 0 $logoSize;
+    align-items: center;
+    transition: transform 100ms;
+  }
+  &.expanded {
+    flex: 0 0 260px;
+    transition: transform 100ms;
+  }
+
+  &.hidden {
+    transform: translate3d(-100%, 0, 0);
+  }
+  &.hidden.showing {
+    transform: none;
+  }
+
+  label {
+    font-size: 0.875rem;
+  }
+
+  :global {
+    .list-group {
+      border-radius: 0;
+
+      .list-group-item {
+        padding-left: 12px;
+        padding-right: 12px;
+        border-right: none;
+        font-size: 0.875rem;
+      }
+    }
+  }
+}
+
+.logo {
+  background-color: #6462aa; // Make logo icon look square
+  width: $logoSize;
+  height: $logoSize;
+
+  &:hover {
+    filter: brightness(0.75);
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+
+  button {
+    border-radius: 0;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  :global(.badge) {
+    margin-top: -5px;
+  }
+}
+
+.actionsLeft {
+  display: flex;
+}
+
+.toggle {
+  border-radius: 0 !important;
+  background-color: white !important;
+  &:hover {
+    background-color: #e9ecef !important;
+  }
+
+  .expanded & {
+    padding: 0 5px !important;
+  }
+  .collapsed & {
+    padding: 5px !important;
+  }
+}
+
+.unavailable {
+  margin: 5px;
+}
+
+.extensions {
+  overflow-y: scroll;
+  flex: 1;
+}

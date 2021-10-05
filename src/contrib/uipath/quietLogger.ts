@@ -19,15 +19,8 @@
  * Replicate surface area used by UiPath appinsightsLogger so we can noop them
  */
 export class ApplicationInsights {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   trackEvent(): void {}
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   trackException(): void {}
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   trackPageView(): void {}
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   loadAppInsights(): void {}
 }
