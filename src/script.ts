@@ -54,7 +54,7 @@ import {
   SCRIPT_LOADED,
   SEARCH_WINDOW,
   SET_COMPONENT_DATA,
-} from "./messaging/constants";
+} from "@/messaging/constants";
 import detectLibraries from "@/vendors/libraryDetector/detect";
 import adapters from "@/frameworks/adapters";
 import { globalSearch } from "@/vendors/globalSearch";
@@ -71,7 +71,7 @@ import {
   noopProxy,
   ReadProxy,
   TimeoutError,
-} from "./utils";
+} from "@/utils";
 import {
   ReadableComponentAdapter,
   traverse,

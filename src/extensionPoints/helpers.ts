@@ -148,7 +148,6 @@ function pollSelector(
   const $target = $(target);
   const promise = _wait<JQuery>(
     () => {
-      // eslint-disable-next-line unicorn/no-array-callback-reference -- JQuery false positive
       const $elt = $target.find(selector);
       return $elt.length > 0 ? $elt : null;
     },
