@@ -236,6 +236,7 @@ export async function runStage(
       timestamp: new Date().toISOString(),
       templateContext: argContext as JsonObject,
       renderedArgs: blockArgs,
+      blockConfig: stage,
     });
   }
 

@@ -50,7 +50,7 @@ import { selectShowLogsContext } from "./installedPageSelectors";
 
 const { removeExtension } = optionsSlice.actions;
 
-const InstalledPage: React.FunctionComponent<{
+export const InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
   push: (path: string) => void;
   onRemove: RemoveAction;
@@ -187,7 +187,7 @@ const InstalledPage: React.FunctionComponent<{
       </Row>
       {noExtensions && <NoExtensionsPage />}
 
-      {resolvedExtensions && (
+      {resolvedExtensions?.length > 0 && (
         <ActiveBricksCard
           extensions={resolvedExtensions}
           onRemove={onRemove}

@@ -18,16 +18,11 @@
 import { Schema, UiSchema } from "@/core";
 import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
 import { Except } from "type-fest";
-import {
-  createFormikTemplate,
-  RJSF_SCHEMA_PROPERTY_NAME,
-} from "./formBuilderTestHelpers";
-import { RJSFSchema } from "./formBuilderTypes";
 import FormPreview, { FormPreviewProps } from "./FormPreview";
 
 describe("FormPreview", () => {
   const defaultProps: Except<FormPreviewProps, "activeField"> = {
-    name: RJSF_SCHEMA_PROPERTY_NAME,
+    rjsfSchema: { schema: {}, uiSchema: {} },
     setActiveField: jest.fn(),
   };
 
@@ -35,7 +30,6 @@ describe("FormPreview", () => {
     testName: "it renders empty schema",
     Component: FormPreview,
     props: defaultProps,
-    TemplateComponent: createFormikTemplate({} as RJSFSchema),
   });
 
   testItRenders(() => {
@@ -62,18 +56,15 @@ describe("FormPreview", () => {
     const uiSchema: UiSchema = {};
 
     const props: FormPreviewProps = {
-      ...defaultProps,
+      rjsfSchema: { schema, uiSchema },
       activeField: "firstName",
+      setActiveField: defaultProps.setActiveField,
     };
 
     const options: ItRendersOptions<FormPreviewProps> = {
       testName: "it renders simple schema",
       Component: FormPreview,
       props,
-      TemplateComponent: createFormikTemplate({
-        schema,
-        uiSchema,
-      } as RJSFSchema),
     };
 
     return options;
