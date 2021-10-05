@@ -45,7 +45,7 @@ import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlo
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
-import usePipelineField from "../../hooks/usePipelineField";
+import usePipelineField from "@/devTools/editor/hooks/usePipelineField";
 
 async function filterBlocks(
   blocks: IBlock[],

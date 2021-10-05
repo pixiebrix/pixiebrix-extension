@@ -17,7 +17,7 @@
 
 import { useSelector } from "react-redux";
 import { selectTraceError } from "@/devTools/editor/slices/runtimeSelectors";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { BlockPipeline } from "@/blocks/types";
 import {
   FieldHelperProps,
@@ -25,10 +25,14 @@ import {
   FieldMetaProps,
   useField,
   useFormikContext,
+  setNestedObjectValues,
 } from "formik";
 import { TraceError } from "@/telemetry/trace";
 import { isInputValidationError } from "@/blocks/errors";
 import { OutputUnit } from "@cfworker/json-schema";
+import { useAsyncEffect } from "use-async-effect";
+
+const REQUIRED_FIELD_REGEX = /^Instance does not have required property "(?<property>.+)"\.$/;
 
 function usePipelineField(
   pipelineFieldName: string
@@ -39,21 +43,9 @@ function usePipelineField(
   TraceError
 ] {
   const traceError = useSelector(selectTraceError);
-  const formikContext = useFormikContext();
 
-  useEffect(() => {
-    console.log("invoking form validation");
-    void formikContext.validateForm();
-  }, [traceError]);
-
-  const validatePipline = useCallback(
+  const validatePipeline = useCallback(
     (blockPipeline: BlockPipeline) => {
-      // ToDo
-      // 1. Move to a hook `useFieldWithErrorTrace
-      // 2. build the error from period-separated field name
-      // 3. make Formik to validate the fields when Trace changes
-      // 4. Q: how to warn about prev unsuccessful run?
-      console.log("blockPipeline.Validate. Trace Error", traceError);
       if (!traceError) {
         return;
       }
@@ -68,22 +60,27 @@ function usePipelineField(
 
       const errors: Record<string, unknown> = {};
       if (isInputValidationError(error)) {
-        const REQUIRED_FIELD_REGEX = /^Instance does not have required property "(?<property>.+)"\.$/;
+        // ToDo Build the error from period-separated field name
         for (const unit of (error.errors as unknown) as OutputUnit[]) {
           const property = REQUIRED_FIELD_REGEX.exec(unit.error)?.groups
             .property;
-          const message = "This field is required";
-          errors[blockIndex] = {
-            config: {
-              [property]: message,
-            },
-          };
+          if (property) {
+            const message = "This field is required";
+            // eslint-disable-next-line security/detect-object-injection
+            errors[blockIndex] = {
+              config: {
+                [property]: message,
+              },
+            };
+          } else {
+            // eslint-disable-next-line security/detect-object-injection
+            errors[blockIndex] = error.message;
+          }
         }
       } else {
+        // eslint-disable-next-line security/detect-object-injection
         errors[blockIndex] = error.message;
       }
-
-      console.log("blockPipeline.Validate. Errors", errors);
 
       return errors;
     },
@@ -92,8 +89,24 @@ function usePipelineField(
 
   const formikField = useField<BlockPipeline>({
     name: pipelineFieldName,
-    validate: validatePipline,
+    // @ts-expect-error working with nested errors
+    validate: validatePipeline,
   });
+
+  const formikContext = useFormikContext();
+  useAsyncEffect(
+    async (isMounted) => {
+      const validationErrors = await formikContext.validateForm();
+      if (!isMounted()) {
+        return;
+      }
+
+      if (Object.keys(validationErrors).length > 0) {
+        formikContext.setTouched(setNestedObjectValues(validationErrors, true));
+      }
+    },
+    [traceError]
+  );
 
   return [...formikField, traceError];
 }

@@ -24,8 +24,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
-import { Form as BootstrapForm } from "react-bootstrap";
-import { CustomFieldWidget } from "./FieldTemplate";
+import { Button, Form as BootstrapForm } from "react-bootstrap";
+import FieldTemplate, { CustomFieldWidget } from "./FieldTemplate";
+import { useField, useFormikContext, setNestedObjectValues } from "formik";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",
@@ -43,7 +44,7 @@ const componentMeta: ComponentMeta<typeof Form> = {
 
 const SchemaShape: yup.ObjectSchema = yup.object().shape({
   title: yup.string().optional().oneOf(["Mr.", "Ms.", "Mrs.", "other"]),
-  name: yup.string().required(),
+  name: yup.string(),
   age: yup.number().required("What's your age again?").positive().integer(),
 });
 
@@ -102,6 +103,40 @@ export const WithFormikVerticalField: ComponentStory<typeof Form> = (args) => (
 );
 WithFormikVerticalField.storyName = "With Vertical FormikField";
 
+const NameField = () => {
+  const [field, meta, helpers] = useField<string>({
+    name: "name",
+    validate: (name: string) => {
+      if (name !== "Alex") {
+        return "Name should be Alex";
+      }
+    },
+  });
+  const formikContext = useFormikContext();
+
+  const doStuff = async () => {
+    const validationErrors = await formikContext.validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      formikContext.setTouched(setNestedObjectValues(validationErrors, true));
+    }
+  };
+
+  return (
+    <>
+      <FieldTemplate
+        name="name"
+        label="Name"
+        value={field.value}
+        onChange={field.onChange}
+        onBlur={field.onBlur}
+        error={meta.error}
+        touched={meta.touched}
+      />
+      <Button onClick={doStuff}>Do stuff</Button>
+    </>
+  );
+};
+
 export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
   <Form
     validationSchema={SchemaShape}
@@ -114,7 +149,7 @@ export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
       layout="horizontal"
       placeholder="Title"
     />
-    <ConnectedFieldTemplate name="name" label="Name" description="A name" />
+    <NameField />
     <ConnectedFieldTemplate name="age" label="Age" description="Your age" />
   </Form>
 );
