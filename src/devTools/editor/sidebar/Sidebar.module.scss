@@ -72,11 +72,17 @@ $logoSize: 31px;
 }
 
 .toggle {
-  padding: 5px !important;
   border-radius: 0 !important;
   background-color: white !important;
   &:hover {
     background-color: #e9ecef !important;
+  }
+
+  .expanded & {
+    padding: 0 5px !important;
+  }
+  .collapsed & {
+    padding: 5px !important;
   }
 }
 
@@ -86,4 +92,5 @@ $logoSize: 31px;
 
 .extensions {
   overflow-y: scroll;
+  flex: 1;
 }
