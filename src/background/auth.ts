@@ -332,13 +332,7 @@ async function codeGrantFlow(
       throw new Error(parsed.get("error_description") ?? parsed.get("error"));
     }
 
-    const json: Record<string, string> = {};
-    for (const [key, value] of parsed.entries()) {
-      // Coming from the URL search parameter so will be safe
-      // eslint-disable-next-line security/detect-object-injection
-      json[key] = value;
-    }
-
+    const json = Object.fromEntries(parsed.entries());
     await setCachedAuthData(auth.id, json);
     return json as AuthData;
   } else if (typeof data === "object") {

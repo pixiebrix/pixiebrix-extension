@@ -370,7 +370,6 @@ function selectStageRoot(
   const root = rootMode === "inherit" ? defaultRoot : document;
   const $root = $(root ?? document);
 
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
   const $stageRoot = stage.root ? $root.find(stage.root) : $root;
 
   if ($stageRoot.length > 1) {
