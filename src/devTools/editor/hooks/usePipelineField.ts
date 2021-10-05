@@ -31,6 +31,8 @@ import { TraceError } from "@/telemetry/trace";
 import { isInputValidationError } from "@/blocks/errors";
 import { OutputUnit } from "@cfworker/json-schema";
 import { useAsyncEffect } from "use-async-effect";
+import { joinName } from "@/utils";
+import { set } from "lodash";
 
 const REQUIRED_FIELD_REGEX = /^Instance does not have required property "(?<property>.+)"\.$/;
 
@@ -45,14 +47,14 @@ function usePipelineField(
   const traceError = useSelector(selectTraceError);
 
   const validatePipeline = useCallback(
-    (blockPipeline: BlockPipeline) => {
+    (pipeline: BlockPipeline) => {
       if (!traceError) {
         return;
       }
 
       const { error, blockInstanceId } = traceError;
-      const blockIndex = blockPipeline.findIndex(
-        (pipelineBlock) => pipelineBlock.instanceId === blockInstanceId
+      const blockIndex = pipeline.findIndex(
+        (block) => block.instanceId === blockInstanceId
       );
       if (blockIndex === -1) {
         return;
@@ -60,22 +62,25 @@ function usePipelineField(
 
       const errors: Record<string, unknown> = {};
       if (isInputValidationError(error)) {
-        // ToDo Build the error from period-separated field name
         for (const unit of (error.errors as unknown) as OutputUnit[]) {
+          let propertyNameInPipeline: string;
+          let errorMessage: string;
+
           const property = REQUIRED_FIELD_REGEX.exec(unit.error)?.groups
             .property;
           if (property) {
-            const message = "This field is required";
-            // eslint-disable-next-line security/detect-object-injection
-            errors[blockIndex] = {
-              config: {
-                [property]: message,
-              },
-            };
+            propertyNameInPipeline = joinName(
+              String(blockIndex),
+              "config",
+              property
+            );
+            errorMessage = "Error from the last run: This field is required";
           } else {
-            // eslint-disable-next-line security/detect-object-injection
-            errors[blockIndex] = error.message;
+            propertyNameInPipeline = String(blockIndex);
+            errorMessage = error.message;
           }
+
+          set(errors, propertyNameInPipeline, errorMessage);
         }
       } else {
         // eslint-disable-next-line security/detect-object-injection
