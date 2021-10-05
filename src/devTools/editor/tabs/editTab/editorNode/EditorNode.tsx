@@ -20,7 +20,10 @@ import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import cx from "classnames";
-import { Badge } from "react-bootstrap";
+import {
+  faExclamationCircle,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
 
 export type EditorNodeProps = {
   title: string;
@@ -60,6 +63,20 @@ const EditorNode: React.FC<EditorNodeProps> = ({
     iconProp
   );
 
+  const errorBadge =
+    hasError || hasWarning ? (
+      <span className={cx("fa-layers", "fa-fw", styles.errorBadge)}>
+        <span className={styles.exclamationBackground} />
+        <FontAwesomeIcon
+          icon={hasError ? faExclamationCircle : faExclamationTriangle}
+          className={cx({
+            [styles.errorBadgeBackground]: hasError,
+            [styles.warningBadgeBackground]: hasWarning,
+          })}
+        />
+      </span>
+    ) : null;
+
   return (
     // Use our own custom style here, not bootstrap
     <div className={styles.root}>
@@ -72,15 +89,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
           [styles.activeNode]: active,
         })}
       >
-        {(hasError || hasWarning) && (
-          <Badge
-            pill
-            variant={hasError ? "danger" : "warning"}
-            className={styles.errorBadge}
-          >
-            !
-          </Badge>
-        )}
+        {errorBadge}
         {icon}
       </button>
       <div className={styles.outputKey}>{outputName}</div>
