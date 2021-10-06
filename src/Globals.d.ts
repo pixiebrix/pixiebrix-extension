@@ -23,3 +23,8 @@ declare module "*.module.scss" {
   const classes: Record<string, string>;
   export default classes;
 }
+
+declare module "react-select-virtualized" {
+  import VirtualizedSelect from "react-virtualized-select";
+  export default VirtualizedSelect;
+}

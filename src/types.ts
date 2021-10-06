@@ -34,7 +34,7 @@ import {
   KeyedConfig,
   RegistryId,
   ResolvedExtension,
-} from "./core";
+} from "@/core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
 import { Permissions } from "webextension-polyfill-ts";
@@ -215,6 +215,11 @@ export abstract class Block implements IBlock {
     return false;
   }
 
+  async isRootAware(): Promise<boolean> {
+    // Safe default
+    return true;
+  }
+
   protected constructor(
     id: string,
     name: string,
@@ -240,6 +245,11 @@ export abstract class Effect extends Block {
     super(id, name, description, icon);
   }
 
+  async isRootAware(): Promise<boolean> {
+    // Most transformers don't use the root, so have them opt-in
+    return false;
+  }
+
   abstract effect(inputs: BlockArg, env?: BlockOptions): Promise<void>;
 
   async run(value: BlockArg, options: BlockOptions): Promise<void> {
@@ -255,6 +265,11 @@ export abstract class Transformer extends Block {
     icon?: BlockIcon
   ) {
     super(id, name, description, icon);
+  }
+
+  async isRootAware(): Promise<boolean> {
+    // Most transformers don't use the root, so have them opt-in
+    return false;
   }
 
   abstract transform(value: BlockArg, options: BlockOptions): Promise<unknown>;
@@ -279,6 +294,11 @@ export abstract class Renderer extends Block {
     options: BlockOptions
   ): Promise<RenderedHTML>;
 
+  async isRootAware(): Promise<boolean> {
+    // Most renderers don't use the root, so have them opt-in
+    return false;
+  }
+
   async run(value: BlockArg, options: BlockOptions): Promise<RenderedHTML> {
     return this.render(value, options);
   }
@@ -296,6 +316,11 @@ export abstract class Reader extends Block implements IReader {
     icon?: BlockIcon
   ) {
     super(id, name, description, icon);
+  }
+
+  async isRootAware(): Promise<boolean> {
+    // Most readers use the root, so have them opt-out if they don't
+    return true;
   }
 
   abstract isAvailable($elt?: JQuery): Promise<boolean>;

@@ -17,11 +17,11 @@
 
 import React, { useContext, useMemo } from "react";
 import { UUID } from "@/core";
-import { isEmpty, pickBy } from "lodash";
-import { useField, useFormikContext } from "formik";
+import { get, isEmpty, isEqual, pickBy, startsWith } from "lodash";
+import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
-import { Nav, Tab, TabPaneProps } from "react-bootstrap";
+import { Alert, Nav, Tab, TabPaneProps } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./DataPanel.module.scss";
 import FormPreview from "@/components/formBuilder/FormPreview";
@@ -31,12 +31,17 @@ import BlockPreview, {
 } from "@/devTools/editor/tabs/effect/BlockPreview";
 import { BlockConfig } from "@/blocks/types";
 import useReduxState from "@/hooks/useReduxState";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import AuthContext from "@/auth/AuthContext";
 import { useSelector } from "react-redux";
-import { makeSelectBlockTrace } from "@/devTools/editor/slices/runtimeSelectors";
+import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
+import { JsonObject } from "type-fest";
+import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -58,7 +63,6 @@ type TabStateProps = {
   isLoading?: boolean;
   isTraceEmpty?: boolean;
   isTraceOptional?: boolean;
-  error?: unknown;
 };
 
 const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
@@ -93,42 +97,81 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
   }
 
   return (
-    <Tab.Pane {...tabProps} className="pt-3">
+    <Tab.Pane {...tabProps} className={styles.tabPane}>
       {contents}
     </Tab.Pane>
   );
 };
 
 const DataPanel: React.FC<{
-  blockFieldName: string;
+  blockPipelineFieldName: string;
+  blockPipelineIndex: number;
   instanceId: UUID;
-}> = ({ blockFieldName, instanceId }) => {
+}> = ({ blockPipelineFieldName, blockPipelineIndex, instanceId }) => {
   const { flags } = useContext(AuthContext);
 
   const showDeveloperTabs = flags.includes("page-editor-developer");
 
   const { values: formState } = useFormikContext<FormState>();
 
-  const { record } = useSelector(makeSelectBlockTrace(instanceId));
+  const blockPipeline: BlockConfig[] = get(formState, blockPipelineFieldName);
+  // eslint-disable-next-line security/detect-object-injection
+  const block = blockPipeline[blockPipelineIndex];
+
+  const traces = useSelector(selectExtensionTrace);
+  const record = traces.find((t) => t.blockInstanceId === instanceId);
+
+  const isInputStale = useMemo(() => {
+    if (record === undefined) {
+      return false;
+    }
+
+    if (traces.length !== blockPipeline.length) {
+      return true;
+    }
+
+    const currentInput = blockPipeline.slice(0, blockPipelineIndex);
+    const tracedInput = currentInput.map(
+      (block) =>
+        traces.find((t) => t.blockInstanceId === block.instanceId).blockConfig
+    );
+
+    return !isEqual(currentInput, tracedInput);
+  }, [blockPipeline, blockPipelineIndex, record, traces]);
+
+  const isCurrentStale = useMemo(() => {
+    if (isInputStale) {
+      return true;
+    }
+
+    if (record === undefined) {
+      return false;
+    }
+
+    return !isEqual(record.blockConfig, block);
+  }, [isInputStale, record, block]);
 
   const relevantContext = useMemo(
     () => pickBy(record?.templateContext ?? {}, contextFilter),
     [record?.templateContext]
   );
-  const blockFieldConfigName = `${blockFieldName}.config`;
-  const [{ value: configValue }] = useField(blockFieldConfigName);
+
   const [formBuilderActiveField, setFormBuilderActiveField] = useReduxState(
     formBuilderSelectors.activeField,
     actions.setActiveField
   );
 
-  const [{ value: blockConfig }] = useField<BlockConfig>(blockFieldName);
+  const outputObj: JsonObject =
+    record !== undefined && "output" in record
+      ? "outputKey" in record
+        ? { [`@${record.outputKey}`]: record.output }
+        : record.output
+      : null;
 
-  const [previewInfo] = usePreviewInfo(blockConfig?.id);
+  const [previewInfo] = usePreviewInfo(block?.id);
 
-  const showFormPreview = configValue?.schema && configValue?.uiSchema;
-  const showBlockPreview =
-    (record && blockConfig) || previewInfo?.traceOptional;
+  const showFormPreview = block.config?.schema && block.config?.uiSchema;
+  const showBlockPreview = record || previewInfo?.traceOptional;
 
   const defaultKey = showFormPreview ? "preview" : "output";
 
@@ -160,7 +203,20 @@ const DataPanel: React.FC<{
       </Nav>
       <Tab.Content>
         <DataTab eventKey="context" isTraceEmpty={!record}>
-          <JsonTree data={relevantContext} copyable searchable />
+          {isInputStale && (
+            <Alert variant="warning">
+              <FontAwesomeIcon icon={faExclamationTriangle} /> A previous block
+              has changed, input context may be out of date
+            </Alert>
+          )}
+          <JsonTree
+            data={relevantContext}
+            copyable
+            searchable
+            shouldExpandNode={(keyPath) =>
+              keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
+            }
+          />
         </DataTab>
         {showDeveloperTabs && (
           <>
@@ -176,13 +232,26 @@ const DataPanel: React.FC<{
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
               </div>
-              <JsonTree data={blockConfig ?? {}} />
+              <JsonTree data={block ?? {}} />
             </DataTab>
           </>
         )}
         <DataTab eventKey="rendered" isTraceEmpty={!record}>
           {record && (
-            <JsonTree data={record.renderedArgs} copyable searchable />
+            <>
+              {isInputStale && (
+                <Alert variant="warning">
+                  <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
+                  block has changed, input context may be out of date
+                </Alert>
+              )}
+              <JsonTree
+                data={record.renderedArgs}
+                copyable
+                searchable
+                label="Rendered Inputs"
+              />
+            </>
           )}
         </DataTab>
         <DataTab
@@ -190,8 +259,26 @@ const DataPanel: React.FC<{
           isTraceEmpty={!record}
           isTraceOptional={previewInfo?.traceOptional}
         >
-          {record && "output" in record && (
-            <JsonTree data={record.output} copyable searchable label="Data" />
+          {outputObj && (
+            <>
+              {isCurrentStale && (
+                <Alert variant="warning">
+                  <FontAwesomeIcon icon={faExclamationTriangle} /> This or a
+                  previous block has changed, output may be out of date
+                </Alert>
+              )}
+              <JsonTree
+                data={outputObj}
+                copyable
+                searchable
+                label="Data"
+                shouldExpandNode={(keyPath) =>
+                  keyPath.length === 1 &&
+                  "outputKey" in record &&
+                  keyPath[0] === `@${record.outputKey}`
+                }
+              />
+            </>
           )}
           {record && "error" in record && (
             <JsonTree data={record.error} label="Error" />
@@ -200,7 +287,6 @@ const DataPanel: React.FC<{
         <DataTab
           eventKey="preview"
           isTraceEmpty={false}
-          error={null}
           // Only mount if the user is viewing it, because output previews take up resources to run
           mountOnEnter
           unmountOnExit
@@ -208,7 +294,7 @@ const DataPanel: React.FC<{
           {showFormPreview ? (
             <ErrorBoundary>
               <FormPreview
-                name={blockFieldConfigName}
+                rjsfSchema={block.config as RJSFSchema}
                 activeField={formBuilderActiveField}
                 setActiveField={setFormBuilderActiveField}
               />
@@ -216,7 +302,7 @@ const DataPanel: React.FC<{
           ) : // eslint-disable-next-line unicorn/no-nested-ternary -- pre-commit removes the parens
           showBlockPreview ? (
             <ErrorBoundary>
-              <BlockPreview traceRecord={record} blockConfig={blockConfig} />
+              <BlockPreview traceRecord={record} blockConfig={block} />
             </ErrorBoundary>
           ) : (
             <div className="text-muted">

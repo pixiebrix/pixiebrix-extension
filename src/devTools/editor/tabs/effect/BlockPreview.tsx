@@ -96,6 +96,7 @@ const BlockPreview: React.FunctionComponent<{
 
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState<unknown | undefined>();
+  const [outputKey, setOutputKey] = useState<string>(blockConfig.outputKey);
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 
@@ -107,7 +108,9 @@ const BlockPreview: React.FunctionComponent<{
           blockConfig: removeEmptyValues(blockConfig),
           args,
         });
-        setOutput(result);
+        const { outputKey } = blockConfig;
+        setOutputKey(outputKey);
+        setOutput(outputKey ? { [`@${outputKey}`]: result } : result);
       } catch (error: unknown) {
         setOutput(error);
       } finally {
@@ -184,7 +187,14 @@ const BlockPreview: React.FunctionComponent<{
       )}
 
       {output && !isError && !isEmpty(output) && (
-        <JsonTree data={output} searchable />
+        <JsonTree
+          data={output}
+          searchable
+          copyable
+          shouldExpandNode={(keyPath) =>
+            keyPath.length === 1 && keyPath[0] === `@${outputKey}`
+          }
+        />
       )}
 
       {output && !isError && isEmpty(output) && (

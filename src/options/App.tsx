@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import store, { hashHistory, persistor } from "./store";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -82,6 +82,8 @@ const Layout = () => {
   // refresh is called.
   useRefresh();
 
+  const { flags } = useContext(AuthContext);
+
   return (
     <div className="w-100">
       <Navbar />
@@ -107,24 +109,41 @@ const Layout = () => {
                     path="/:sourcePage/activate/:blueprintId"
                     component={ActivateBlueprintPage}
                   />
+
                   <Route exact path="/settings" component={SettingsPage} />
-                  <Route path="/services/:id?" component={ServicesEditor} />
-                  <Route exact path="/workshop" component={WorkshopPage} />
-                  <Route
-                    exact
-                    path="/workshop/create/"
-                    component={BrickCreatePage}
-                  />
-                  <Route
-                    exact
-                    path="/workshop/bricks/:id/"
-                    component={BrickEditPage}
-                  />
-                  <Route
-                    exact
-                    path="/installed/share/:extensionId"
-                    component={InstalledPage}
-                  />
+
+                  {!flags.includes("restricted-services") && (
+                    <Route path="/services/:id?" component={ServicesEditor} />
+                  )}
+
+                  {!flags.includes("restricted-workshop") && (
+                    <Route exact path="/workshop" component={WorkshopPage} />
+                  )}
+
+                  {!flags.includes("restricted-workshop") && (
+                    <Route
+                      exact
+                      path="/workshop/create/"
+                      component={BrickCreatePage}
+                    />
+                  )}
+
+                  {!flags.includes("restricted-workshop") && (
+                    <Route
+                      exact
+                      path="/workshop/bricks/:id/"
+                      component={BrickEditPage}
+                    />
+                  )}
+
+                  {!flags.includes("restricted-marketplace") && (
+                    <Route
+                      exact
+                      path="/installed/share/:extensionId"
+                      component={InstalledPage}
+                    />
+                  )}
+
                   <Route component={InstalledPage} />
                 </Switch>
               </ErrorBoundary>

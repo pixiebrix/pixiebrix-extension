@@ -15,18 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLatestRunByExtensionId } from "@/telemetry/trace";
+import {
+  getLatestRunByExtensionId,
+  TraceError,
+  TraceRecord,
+  TraceSuccess,
+} from "@/telemetry/trace";
 import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
-import runtimeSlice, {
-  selectRunId,
-} from "@/devTools/editor/slices/runtimeSlice";
+import runtimeSlice from "@/devTools/editor/slices/runtimeSlice";
 import { selectActiveExtension } from "@/devTools/editor/slices/editorSelectors";
 import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
+import { isEqual } from "lodash";
 
 const { setExtensionTrace } = runtimeSlice.actions;
 
 const TRACE_RELOAD_MILLIS = 350;
+
+/**
+ * Select sufficient data from trace to determine if two traces include the same data (i.e., they include both they
+ * entry and exit data).
+ */
+function selectTraceMetadata(record: TraceRecord) {
+  return {
+    runId: record.runId,
+    timestamp: record.timestamp,
+    isError: Boolean((record as TraceError).error),
+    isSuccess: Boolean((record as TraceSuccess).output),
+  };
+}
 
 /**
  * Hook that refreshes the trace information in the Redux store
@@ -38,10 +55,15 @@ function useExtensionTrace() {
   const extensionTrace = useSelector(selectExtensionTrace);
 
   const refreshTrace = async () => {
-    const records = await getLatestRunByExtensionId(extensionId);
+    const lastRun = await getLatestRunByExtensionId(extensionId);
     // Keep the Redux log clean. Don't setExtensionTrace unless we have to
-    if (selectRunId(records) !== selectRunId(extensionTrace)) {
-      dispatch(setExtensionTrace({ extensionId, records }));
+    if (
+      !isEqual(
+        lastRun.map((x) => selectTraceMetadata(x)),
+        extensionTrace.map((x) => selectTraceMetadata(x))
+      )
+    ) {
+      dispatch(setExtensionTrace({ extensionId, records: lastRun }));
     }
   };
 

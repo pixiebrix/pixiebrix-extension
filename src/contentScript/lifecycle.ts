@@ -28,6 +28,7 @@ import { browser } from "webextension-polyfill-ts";
 import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { clearExtensionTraces } from "@/background/trace";
+import { isDeploymentActive } from "@/options/deploymentUtils";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
@@ -204,11 +205,17 @@ async function loadExtensions() {
 
   const options = await loadOptions();
 
-  const externalized = await Promise.all(
-    options.extensions.map(async (x) => resolveDefinitions(x))
+  // Exclude disabled deployments first (because the organization admin might have disabled the deployment because it
+  // was failing to install/load on the  page)
+  const activeExtensions = options.extensions.filter((extension) =>
+    isDeploymentActive(extension)
   );
 
-  const extensionMap = groupBy(externalized, (x) => x.extensionPointId);
+  const resolvedExtensions = await Promise.all(
+    activeExtensions.map(async (x) => resolveDefinitions(x))
+  );
+
+  const extensionMap = groupBy(resolvedExtensions, (x) => x.extensionPointId);
 
   await Promise.all(
     Object.entries(extensionMap).map(async (entry) => {
@@ -272,7 +279,6 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
     while (
       rules.some((rule) =>
         rule.loadingSelectors.some(
-          // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
           (selector) => $document.find(selector).length > 0
         )
       )

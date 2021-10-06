@@ -6,10 +6,10 @@ exports[`FormEditor renders empty schema 1`] = `
     action="#"
   >
     <div
-      class="form-group row"
+      class="horizontalFormGroup form-group row"
     >
       <label
-        class="form-label col-form-label col-lg-3"
+        class="horizontalLabel form-label col-form-label col-lg-3"
         for="rjsfSchema.schema.title"
       >
         Form Title
@@ -26,10 +26,10 @@ exports[`FormEditor renders empty schema 1`] = `
       </div>
     </div>
     <div
-      class="form-group row"
+      class="horizontalFormGroup form-group row"
     >
       <label
-        class="form-label col-form-label col-lg-3"
+        class="horizontalLabel form-label col-form-label col-lg-3"
         for="rjsfSchema.schema.description"
       >
         Form Description
@@ -47,7 +47,7 @@ exports[`FormEditor renders empty schema 1`] = `
     </div>
     <hr />
     <div
-      class="row"
+      class="addRow row"
     >
       <div
         class="col"
@@ -76,10 +76,10 @@ exports[`FormEditor renders empty schema 1`] = `
       </div>
     </div>
     <div
-      class="row"
+      class="currFieldRow row"
     >
       <div
-        class="col-xl-3"
+        class="currField col-xl-3"
       >
         <h6>
           Current Field
@@ -110,10 +110,10 @@ exports[`FormEditor renders simple schema 1`] = `
     action="#"
   >
     <div
-      class="form-group row"
+      class="horizontalFormGroup form-group row"
     >
       <label
-        class="form-label col-form-label col-lg-3"
+        class="horizontalLabel form-label col-form-label col-lg-3"
         for="rjsfSchema.schema.title"
       >
         Form Title
@@ -130,10 +130,10 @@ exports[`FormEditor renders simple schema 1`] = `
       </div>
     </div>
     <div
-      class="form-group row"
+      class="horizontalFormGroup form-group row"
     >
       <label
-        class="form-label col-form-label col-lg-3"
+        class="horizontalLabel form-label col-form-label col-lg-3"
         for="rjsfSchema.schema.description"
       >
         Form Description
@@ -151,7 +151,7 @@ exports[`FormEditor renders simple schema 1`] = `
     </div>
     <hr />
     <div
-      class="row"
+      class="addRow row"
     >
       <div
         class="col"
@@ -180,10 +180,10 @@ exports[`FormEditor renders simple schema 1`] = `
       </div>
     </div>
     <div
-      class="row"
+      class="currFieldRow row"
     >
       <div
-        class="col-xl-3"
+        class="currField col-xl-3"
       >
         <h6>
           Current Field
@@ -224,12 +224,14 @@ exports[`FormEditor renders simple schema 1`] = `
         </small>
       </div>
     </div>
-    <div>
+    <div
+      class="root"
+    >
       <div
-        class="form-group row"
+        class="horizontalFormGroup form-group row"
       >
         <label
-          class="form-label col-form-label col-lg-3"
+          class="horizontalLabel form-label col-form-label col-lg-3"
           for="rjsfSchema.firstName"
         >
           Name
@@ -252,10 +254,10 @@ exports[`FormEditor renders simple schema 1`] = `
         </div>
       </div>
       <div
-        class="form-group row"
+        class="horizontalFormGroup form-group row"
       >
         <label
-          class="form-label col-form-label col-lg-3"
+          class="horizontalLabel form-label col-form-label col-lg-3"
           for="rjsfSchema.schema.properties.firstName.title"
         >
           Label
@@ -277,10 +279,10 @@ exports[`FormEditor renders simple schema 1`] = `
         </div>
       </div>
       <div
-        class="form-group row"
+        class="horizontalFormGroup form-group row"
       >
         <label
-          class="form-label col-form-label col-lg-3"
+          class="horizontalLabel form-label col-form-label col-lg-3"
           for="rjsfSchema.schema.properties.firstName.description"
         >
           Field Description
@@ -302,10 +304,10 @@ exports[`FormEditor renders simple schema 1`] = `
         </div>
       </div>
       <div
-        class="form-group row"
+        class="horizontalFormGroup form-group row"
       >
         <label
-          class="form-label col-form-label col-lg-3"
+          class="horizontalLabel form-label col-form-label col-lg-3"
           for="rjsfSchema.schema.properties.firstName.uiType"
         >
           Input Type
@@ -392,10 +394,10 @@ exports[`FormEditor renders simple schema 1`] = `
         </div>
       </div>
       <div
-        class="form-group row"
+        class="horizontalFormGroup form-group row"
       >
         <label
-          class="form-label col-form-label col-lg-3"
+          class="horizontalLabel form-label col-form-label col-lg-3"
           for="rjsfSchema.schema.properties.firstName.default"
         >
           Default value
@@ -413,10 +415,16 @@ exports[`FormEditor renders simple schema 1`] = `
         </div>
       </div>
       <div
-        class="form-group row"
+        class="horizontalFormGroup form-group row"
       >
+        <label
+          class="horizontalLabel form-label col-form-label col-lg-3"
+          for="rjsfSchema.schema.required"
+        >
+          Required Field?
+        </label>
         <div
-          class="col-sm-3"
+          class="col-lg-9"
         >
           <div
             class="switch btn off btn-light"
@@ -440,19 +448,13 @@ exports[`FormEditor renders simple schema 1`] = `
             </div>
           </div>
         </div>
-        <label
-          class="col-sm-9"
-          for="rjsfSchema.schema.required"
-        >
-          Required Field?
-        </label>
       </div>
     </div>
     <div
-      class="form-group row"
+      class="horizontalFormGroup form-group row"
     >
       <label
-        class="form-label col-form-label col-lg-3"
+        class="horizontalLabel form-label col-form-label col-lg-3"
         for="layoutButtons"
       >
         Field Order

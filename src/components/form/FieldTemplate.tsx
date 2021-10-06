@@ -23,7 +23,7 @@ import {
   Row,
 } from "react-bootstrap";
 import { Except } from "type-fest";
-import SwitchButton from "@/components/form/switchButton/SwitchButton";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import styles from "./FieldTemplate.module.scss";
 import FormTheme from "@/components/form/FormTheme";
 import { getErrorMessage } from "@/errors";
@@ -33,11 +33,11 @@ export type FieldProps<
 > = FormControlProps &
   React.ComponentProps<As> & {
     name: string;
-    layout?: "horizontal" | "vertical" | "switch" | undefined;
-    label?: ReactNode | undefined;
-    description?: ReactNode | undefined;
-    error?: string | undefined;
-    touched?: boolean | undefined;
+    layout?: "horizontal" | "vertical" | "switch";
+    label?: ReactNode;
+    description?: ReactNode;
+    error?: string;
+    touched?: boolean;
     blankValue?: unknown;
   };
 
@@ -146,10 +146,16 @@ const RenderedField: React.FC<FieldProps> = ({
 const RenderedSwitch: React.FC<FieldRenderProps> = ({
   name,
   label,
-  value,
-  onChange,
+  ...restFieldProps
 }) => (
-  <SwitchButton name={name} label={label} value={value} onChange={onChange} />
+  <BootstrapForm.Group as={Row} controlId={name}>
+    <Col sm="3">
+      <SwitchButtonWidget name={name} {...restFieldProps} />
+    </Col>
+    <Col sm="9" as="label" htmlFor={name}>
+      {label}
+    </Col>
+  </BootstrapForm.Group>
 );
 
 const FieldTemplate: React.FC<FieldProps> = ({ layout, ...restProps }) => {

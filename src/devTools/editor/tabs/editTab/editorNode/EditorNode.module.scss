@@ -23,7 +23,7 @@
   align-items: center;
 }
 
-.box {
+.button {
   display: flex;
   flex-direction: column;
   border: 2px solid black;
@@ -32,6 +32,7 @@
   height: 60px;
   align-items: center;
   justify-content: center;
+  position: relative;
 
   &:hover {
     cursor: pointer;
@@ -73,24 +74,29 @@
   max-width: 120px;
 }
 
-.remove {
-  border: none;
-  border-radius: 50%;
-  position: relative;
-  color: red;
-  background-color: white;
-  left: 28px;
-  top: 10px;
-  margin-top: -10px;
+.errorBadge {
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translate3d(50%, -50%, 0);
+  width: 24px;
+  height: 24px;
 
-  &:hover {
-    cursor: pointer;
-    color: hotpink;
-    box-shadow: 1px 1px 1px gray;
-
-    &:active {
-      box-shadow: none;
-      color: red;
-    }
+  & > svg {
+    height: 24px;
+    width: 24px !important;
   }
+}
+.exclamationBackground {
+  display: inline-block;
+  background: #ffffff;
+  height: 18px;
+  margin-top: 4px;
+  width: 6px;
+}
+.warningBadgeBackground {
+  color: #efa31d;
+}
+.errorBadgeBackground {
+  color: #fc3939;
 }

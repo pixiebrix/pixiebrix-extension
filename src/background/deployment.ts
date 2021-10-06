@@ -38,20 +38,24 @@ import { ExtensionOptionsState } from "@/store/extensions";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "./util";
+import { parse as parseSemVer, satisfies, SemVer } from "semver";
 
 const { reducer, actions } = optionsSlice;
 
-const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
+const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
-type ActiveDeployment = {
-  deployment: string;
-  blueprint: string;
+/**
+ * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
+ */
+type InstalledDeployment = {
+  deployment: UUID;
+  blueprint: RegistryId;
   blueprintVersion: string;
 };
 
-export function activeDeployments(
+export function selectInstalledDeployments(
   extensions: Array<Pick<IExtension, "_deployment" | "_recipe">>
-): ActiveDeployment[] {
+): InstalledDeployment[] {
   return uniqBy(
     extensions
       .filter((x) => x._deployment?.id != null)
@@ -79,20 +83,20 @@ function installDeployment(
   let returnState = state;
   const installed = selectExtensions({ options: state });
 
+  // Uninstall existing versions of the extensions
   for (const extension of installed) {
     if (extension._recipe.id === deployment.package.package_id) {
-      const identifier = {
-        extensionPointId: extension.extensionPointId,
+      const extensionRef = {
         extensionId: extension.id,
       };
 
-      void uninstallContextMenu(identifier).catch(reportError);
+      void uninstallContextMenu(extensionRef).catch(reportError);
 
-      returnState = reducer(returnState, actions.removeExtension(identifier));
+      returnState = reducer(returnState, actions.removeExtension(extensionRef));
     }
   }
 
-  // Install the blueprint with the service definition
+  // Install the deployment's blueprint with the service definition
   returnState = reducer(
     returnState,
     actions.installRecipe({
@@ -130,31 +134,59 @@ function makeDeploymentTimestampLookup(extensions: IExtension[]) {
   return timestamps;
 }
 
+/**
+ * Return true if the deployment can be automatically installed
+ */
+function canAutomaticallyInstall({
+  deployment,
+  hasPermissions,
+  extensionVersion,
+}: {
+  deployment: Deployment;
+  hasPermissions: boolean;
+  extensionVersion: SemVer;
+}): boolean {
+  if (!hasPermissions) {
+    return false;
+  }
+
+  const requiredRange = deployment.package.config.metadata.extensionVersion;
+  return !requiredRange || satisfies(extensionVersion, requiredRange);
+}
+
 async function updateDeployments() {
   if (!(await isLinked())) {
     return;
   }
 
+  // Always get the freshest options slice from the local storage
   const { extensions } = await loadOptions();
 
+  // For a user has to go to the Active Bricks page to activate their first deployment
   if (!extensions.some((x) => x._deployment?.id)) {
     console.debug("No deployments installed");
     return;
   }
+
+  const { version: extensionVersionString } = browser.runtime.getManifest();
+  const extensionVersion = parseSemVer(extensionVersionString);
 
   const { data: deployments } = await (await getLinkedApiClient()).post<
     Deployment[]
   >("/api/deployments/", {
     uid: await getUID(),
     version: await getExtensionVersion(),
-    active: activeDeployments(extensions),
+    active: selectInstalledDeployments(extensions),
   });
 
   const timestamps = makeDeploymentTimestampLookup(extensions);
 
+  // This check also detects changes to the `active` flag of the deployment, because the updated_at is bumped whenever
+  // the active flag changes
   const updatedDeployments = deployments.filter(
-    (x: Deployment) =>
-      !timestamps.has(x.id) || new Date(x.updated_at) > timestamps.get(x.id)
+    (deployment) =>
+      !timestamps.has(deployment.id) ||
+      new Date(deployment.updated_at) > timestamps.get(deployment.id)
   );
 
   if (updatedDeployments.length === 0) {
@@ -162,7 +194,7 @@ async function updateDeployments() {
     return;
   }
 
-  // Fetch the current brick definitions, which will have the current permissions
+  // Fetch the current brick definitions, which will have the current permissions and extensionVersion requirements
   try {
     await refreshRegistries();
   } catch (error: unknown) {
@@ -182,9 +214,8 @@ async function updateDeployments() {
     }))
   );
 
-  const [automatic, manual] = partition(
-    deploymentRequirements,
-    (x) => x.hasPermissions
+  const [automatic, manual] = partition(deploymentRequirements, (x) =>
+    canAutomaticallyInstall({ ...x, extensionVersion })
   );
 
   let automaticError: unknown;

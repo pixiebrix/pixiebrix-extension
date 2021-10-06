@@ -20,7 +20,7 @@ import { getBaseURL } from "@/services/baseService";
 import { getExtensionToken } from "@/auth/token";
 import { ExtensionNotLinkedError, SuspiciousOperationError } from "@/errors";
 import { isAbsoluteUrl } from "@/utils";
-import { IExtension, UUID } from "@/core";
+import { IExtension } from "@/core";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL
@@ -103,9 +103,4 @@ export async function getApiClient(): Promise<AxiosInstance> {
 export async function saveUserExtension(extension: IExtension): Promise<void> {
   const client = await getLinkedApiClient();
   await client.put(`/api/extensions/${extension.id}/`, extension);
-}
-
-export async function deleteUserExtension(id: UUID): Promise<void> {
-  const client = await getLinkedApiClient();
-  await client.delete(`/api/extensions/${id}/`);
 }

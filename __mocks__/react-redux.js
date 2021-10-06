@@ -22,5 +22,7 @@
 const reactRedux = jest.createMockFromModule("react-redux");
 
 export const useDispatch = jest.fn(() => jest.fn());
+export const connect = jest.fn(() => jest.fn());
+export const useSelector = jest.fn();
 
 export default reactRedux;

@@ -32,10 +32,10 @@ import type { ButtonProps } from "react-bootstrap";
 import useFetch from "@/hooks/useFetch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
-import { useOrganization } from "@/hooks/organization";
 import { sortBy } from "lodash";
 import Pagination from "@/components/pagination/Pagination";
 import { Organization } from "@/types/contract";
+import { useGetOrganizationsQuery } from "@/services/api";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -174,10 +174,10 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installedRecipes,
   recipesPerPage = 10,
 }) => {
-  const { organizations } = useOrganization();
+  const { data: organizations = [] } = useGetOrganizationsQuery();
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
   const [query, setQuery] = useState("");
-  const { scope } = useContext(AuthContext);
+  const { scope, flags } = useContext(AuthContext);
   const [page, setPage] = useState(0);
 
   const recipes = useMemo(() => {
@@ -218,17 +218,19 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
           </div>
         </Col>
 
-        <Col className="text-right">
-          <a
-            href="https://www.pixiebrix.com/marketplace"
-            className="btn btn-info"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
-            Open Public Marketplace
-          </a>
-        </Col>
+        {!flags.includes("restricted-marketplace") && (
+          <Col className="text-right">
+            <a
+              href="https://www.pixiebrix.com/marketplace"
+              className="btn btn-info"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
+              Open Public Marketplace
+            </a>
+          </Col>
+        )}
       </Row>
 
       <Row>

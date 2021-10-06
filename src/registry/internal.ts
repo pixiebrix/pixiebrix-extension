@@ -23,6 +23,7 @@ import {
   IExtensionPoint,
   InnerDefinitions,
   RegistryId,
+  EmptyConfig,
 } from "@/core";
 import { produce } from "immer";
 import objectHash from "object-hash";
@@ -192,11 +193,11 @@ async function ensureInner(
 /**
  * Return a new copy of the extension with its inner references re-written.
  */
-export async function resolveDefinitions(
-  extension: IExtension
-): Promise<ResolvedExtension> {
+export async function resolveDefinitions<T extends Config = EmptyConfig>(
+  extension: IExtension<T>
+): Promise<ResolvedExtension<T>> {
   if (isEmpty(extension.definitions)) {
-    return extension as ResolvedExtension;
+    return extension as ResolvedExtension<T>;
   }
 
   console.debug("Resolving definitions for extension: %s", extension.id, {
@@ -214,7 +215,7 @@ export async function resolveDefinitions(
     if (definitions.has(draft.extensionPointId)) {
       draft.extensionPointId = definitions.get(draft.extensionPointId).id;
     }
-  }) as Promise<ResolvedExtension>;
+  }) as Promise<ResolvedExtension<T>>;
 }
 
 /**

@@ -42,7 +42,6 @@ function selectAuths(extensions: IExtension[]): Record<RegistryId, UUID> {
       throw new Error(`Service ${id} has multiple configurations`);
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- safe because it's from Object.entries
     result[id as RegistryId] = configs[0];
   }
 
@@ -68,12 +67,9 @@ function useReinstall(): Reinstall {
       // Uninstall first to avoid duplicates
       await Promise.all(
         recipeExtensions.map(async (extension) => {
-          await uninstallContextMenu({ extensionId: extension.id });
-          dispatch(
-            removeExtension({
-              extensionId: extension.id,
-            })
-          );
+          const extensionRef = { extensionId: extension.id };
+          await uninstallContextMenu(extensionRef);
+          dispatch(removeExtension(extensionRef));
         })
       );
 

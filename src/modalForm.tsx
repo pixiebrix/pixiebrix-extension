@@ -25,6 +25,6 @@ import { render } from "react-dom";
 import ModalForm from "@/blocks/transformers/modalForm/ModalForm";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./modalForm.scss";
+import "@/modalForm.scss";
 
 render(<ModalForm />, document.querySelector("#container"));

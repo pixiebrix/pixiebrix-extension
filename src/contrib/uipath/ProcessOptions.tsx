@@ -15,48 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
-import {
-  UIPATH_PROPERTIES,
-  UIPATH_SERVICE_IDS,
-} from "@/contrib/uipath/process";
+import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
 import { SanitizedServiceConfiguration, Schema } from "@/core";
 import { useField } from "formik";
 import { proxyService } from "@/background/requests";
-import useDependency from "@/services/useDependency";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { Option } from "@/components/form/widgets/SelectWidget";
-import { ODataResponseData, Release, Robot } from "./uipathContract";
-import { releaseSchema } from "@/contrib/uipath/typeUtils";
+import { ODataResponseData, Robot } from "./uipathContract";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
-import { useAsyncState } from "@/hooks/common";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
-import { optionalFactory } from "@/contrib/remoteOptionUtils";
-
-type ReleaseOption = Option & { data: Release };
-
-async function fetchReleases(
-  config: SanitizedServiceConfiguration
-): Promise<ReleaseOption[]> {
-  const response = await proxyService<ODataResponseData<Release>>(config, {
-    url: "/odata/Releases",
-    method: "get",
-  });
-  const releases = response.data.value;
-  return releases.map((x) => ({
-    value: x.Key,
-    label: `${x.Name} - ${x.ProcessVersion}`,
-    data: x,
-  }));
-}
-
-const optionalFetchReleases = optionalFactory(fetchReleases);
+import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
+import cachePromise from "@/utils/cachePromise";
 
 async function fetchRobots(
   config: SanitizedServiceConfiguration
@@ -69,34 +45,6 @@ async function fetchRobots(
   return (robots ?? []).map((x) => ({ value: x.Id, label: String(x.Name) }));
 }
 
-export function useSelectedRelease(releaseKeyFieldName: string) {
-  const [{ value: releaseKey }] = useField<string>(releaseKeyFieldName);
-
-  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_IDS);
-
-  const releasesPromise = useMemo(
-    async () => optionalFetchReleases(hasPermissions ? config : null),
-    [config, hasPermissions]
-  );
-
-  const [selectedRelease] = useAsyncState(async () => {
-    const options = await releasesPromise;
-    const { data: release } = (options as ReleaseOption[]).find(
-      (option) => option.data.Key === releaseKey
-    );
-    const schema = release ? releaseSchema(release) : null;
-    return {
-      release,
-      schema,
-    };
-  }, [releasesPromise, releaseKey]);
-
-  return {
-    selectedRelease,
-    releasesPromise,
-  };
-}
-
 const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
@@ -107,6 +55,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   const [{ value: strategy }, , strategyHelpers] = useField<string>(
     configName("strategy")
   );
+
   const [{ value: jobsCount }, , jobsCountHelpers] = useField<number>(
     configName("jobsCount")
   );
@@ -120,6 +69,19 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       jobsCountHelpers.setValue(1);
     }
   }, [strategy, jobsCount, jobsCountHelpers, strategyHelpers]);
+
+  const robotOptionsFactory = useCallback(
+    async (config: SanitizedServiceConfiguration) => {
+      if (config == null) {
+        return [];
+      }
+
+      return cachePromise(["uipath:fetchRobots", config], async () =>
+        fetchRobots(config)
+      );
+    },
+    []
+  );
 
   return (
     <RequireServiceConfig
@@ -147,7 +109,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
               name={configName("releaseKey")}
               description="One or more robots"
               as={RemoteMultiSelectWidget}
-              optionsFactory={fetchRobots}
+              optionsFactory={robotOptionsFactory}
               blankValue={[]}
               config={config}
             />

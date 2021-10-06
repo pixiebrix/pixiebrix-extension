@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -23,6 +23,7 @@ import {
   faCaretRight,
   faCheck,
   faList,
+  faPause,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
@@ -39,11 +40,22 @@ import styles from "./ExtensionGroup.module.scss";
 import ExtensionRows from "./ExtensionRows";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
+import AuthContext from "@/auth/AuthContext";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
   extensions: ResolvedExtension[];
+  /**
+   * True iff the group corresponds to a managed Deployment
+   * @see Deployment
+   * @see DeploymentContext
+   */
   managed?: boolean;
+  /**
+   * True if the extension group is temporarily disabled. (Currently only deployments can be disabled without
+   * uninstalling them).
+   */
+  paused?: boolean;
   startExpanded?: boolean;
   groupMessageContext: MessageContext;
   onRemove: RemoveAction;
@@ -51,12 +63,14 @@ const ExtensionGroup: React.FunctionComponent<{
 }> = ({
   label,
   extensions,
-  managed,
+  managed = false,
+  paused = false,
   startExpanded,
   groupMessageContext,
   onRemove,
   onExportBlueprint,
 }) => {
+  const { flags } = useContext(AuthContext);
   const notify = useNotifications();
   const dispatch = useDispatch();
 
@@ -95,6 +109,14 @@ const ExtensionGroup: React.FunctionComponent<{
       );
     }
 
+    if (paused) {
+      return (
+        <>
+          <FontAwesomeIcon icon={faPause} /> Paused
+        </>
+      );
+    }
+
     if (managed) {
       return (
         <>
@@ -110,7 +132,7 @@ const ExtensionGroup: React.FunctionComponent<{
         <FontAwesomeIcon icon={faCheck} /> Active
       </>
     );
-  }, [managed, hasPermissions, requestPermissions]);
+  }, [paused, managed, hasPermissions, requestPermissions]);
 
   const onViewLogs = () => {
     dispatch(
@@ -157,6 +179,9 @@ const ExtensionGroup: React.FunctionComponent<{
                     <FontAwesomeIcon icon={faTimes} /> Uninstall
                   </>
                 ),
+                // #1532: temporary approach to controlling whether or not deployments can be uninstalled. In
+                // the future we'll want this to depend on the member's role within the deployment's organization
+                hide: managed && flags.includes("restricted-uninstall"),
                 action: async () => {
                   await removeMany(extensions);
                 },

@@ -24,8 +24,8 @@ import userEvent from "@testing-library/user-event";
 import { Organization } from "@/types/contract";
 
 jest.mock("@/hooks/useNotifications");
-jest.mock("@/hooks/organization", () => ({
-  useOrganization: () => ({ organizations: [] as Organization[] }),
+jest.mock("@/services/api", () => ({
+  useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
 }));
 
 test("renders modal", async () => {

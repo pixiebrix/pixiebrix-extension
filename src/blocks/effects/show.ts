@@ -39,7 +39,6 @@ export class ShowEffect extends Effect {
   );
 
   async effect({ selector }: { selector: string }): Promise<void> {
-    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
     const $elt = $(document).find(selector);
     $elt.show();
   }

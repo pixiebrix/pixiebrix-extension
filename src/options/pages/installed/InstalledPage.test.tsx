@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,14 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.checkbox {
-  position: absolute;
-  top: 0;
-  pointer-events: none;
-  display: none;
-}
+import React from "react";
 
-.label {
-  display: flex;
-  align-items: center;
-}
+import { render } from "@testing-library/react";
+import { InstalledPage } from "./InstalledPage";
+import { StaticRouter } from "react-router-dom";
+
+describe("InstalledPage", () => {
+  afterAll(() => {
+    jest.resetAllMocks();
+  });
+
+  jest.mock("@/hooks/common", () => ({
+    useAsyncState: jest.fn().mockReturnValue([[], false, null, jest.fn()]),
+  }));
+
+  test("doesn't show ActiveBrick card when no extensions installed", () => {
+    const { container } = render(
+      <StaticRouter>
+        <InstalledPage extensions={[]} push={jest.fn()} onRemove={jest.fn()} />
+      </StaticRouter>
+    );
+    expect(container.querySelector(".ActiveBricksCard")).toBeNull();
+  });
+});

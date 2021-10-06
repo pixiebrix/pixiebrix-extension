@@ -28,7 +28,7 @@ import {
 import { DevToolsContext } from "@/devTools/context";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { useSelectedRelease } from "@/contrib/uipath/ProcessOptions";
+import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";

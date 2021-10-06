@@ -21,24 +21,21 @@ import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { FieldProps, IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import FormPreviewStringField from "./FormPreviewStringField";
-import { useField } from "formik";
 import { UI_ORDER, UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
 
 export type FormPreviewProps = {
-  name: string;
+  rjsfSchema: RJSFSchema;
   activeField?: string;
   setActiveField: SetActiveField;
 };
 
 const FormPreview: React.FC<FormPreviewProps> = ({
-  name,
+  rjsfSchema,
   activeField,
   setActiveField,
 }) => {
-  const [{ value: rjsfSchema }] = useField<RJSFSchema>(name);
-
   const [data, setData] = useState(null);
   const onDataChanged = ({ formData }: IChangeEvent<unknown>) => {
     setData(formData);
