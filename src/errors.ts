@@ -314,6 +314,8 @@ export function selectError(error: unknown): ErrorObject | Error {
     return error;
   }
 
+  console.warn("A non-Error was thrown", { error });
+
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error message'`, which should never be written
   return new Error(String(error));
