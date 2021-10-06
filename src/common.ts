@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSendScriptMessage } from "./messaging/chrome";
+import { createSendScriptMessage } from "@/messaging/chrome";
 import {
   DETECT_FRAMEWORK_VERSIONS,
   FrameworkMeta,
   READ_WINDOW,
   SEARCH_WINDOW,
-} from "./messaging/constants";
+} from "@/messaging/constants";
 
 type ReadSpec = <T extends Record<string, string>>(arg: {
   pathSpec: T;

@@ -76,8 +76,7 @@ export async function runReaderBlock({
 }) {
   const root = isNullOrBlank(rootSelector)
     ? document
-    : // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery find method
-      $(document).find(rootSelector).get(0);
+    : $(document).find(rootSelector).get(0);
 
   if (id === "@pixiebrix/context-menu-data") {
     // HACK: special handling for context menu built-in
@@ -116,8 +115,7 @@ export async function runReader({
 
   const root = isNullOrBlank(rootSelector)
     ? document
-    : // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
-      $(document).find(rootSelector).get(0);
+    : $(document).find(rootSelector).get(0);
 
   return makeRead(config)(root);
 }

@@ -21,7 +21,7 @@ import "@/telemetry/automaticallyReportErrors";
 import { browser } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 import { readSelectedElement } from "@/background/devtools";
-import { updateSelectedElement } from "./devTools/getSelectedElement";
+import { updateSelectedElement } from "@/devTools/getSelectedElement";
 import { once } from "lodash";
 import { serializeError } from "serialize-error";
 

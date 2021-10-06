@@ -25,7 +25,6 @@ declare module "*.module.scss" {
 }
 
 declare module "react-select-virtualized" {
-  // eslint-disable-next-line import/no-unresolved -- Type-only import
   import VirtualizedSelect from "react-virtualized-select";
   export default VirtualizedSelect;
 }

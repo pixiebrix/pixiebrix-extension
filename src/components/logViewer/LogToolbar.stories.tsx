@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line filenames/match-exported
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import LogToolbar from "./LogToolbar";

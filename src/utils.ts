@@ -303,13 +303,10 @@ export interface ReadProxy {
 export const noopProxy: ReadProxy = {
   toJS: identity,
   get: (value, prop) => {
-    if (
-      typeof value === "object" &&
-      Object.prototype.hasOwnProperty.call(value, prop)
-    ) {
+    if (isObject(value) && Object.prototype.hasOwnProperty.call(value, prop)) {
       // Checking visibility of the property above
-      // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-explicit-any
-      return (value as any)[prop];
+      // eslint-disable-next-line security/detect-object-injection
+      return value[prop];
     }
   },
 };

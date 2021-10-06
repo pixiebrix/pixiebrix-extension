@@ -30,10 +30,10 @@ import "@/vendors/notify";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
 import { markTabAsReady, whoAmI } from "@/background/messenger/api";
-import { ENSURE_CONTENT_SCRIPT_READY } from "./messaging/constants";
-import { addListenerForUpdateSelectedElement } from "./devTools/getSelectedElement";
 import { showConnectionLost } from "./contentScript/connection";
 import { isConnectionError } from "./errors";
+import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
+import { addListenerForUpdateSelectedElement } from "@/devTools/getSelectedElement";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();

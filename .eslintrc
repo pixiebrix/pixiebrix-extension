@@ -5,7 +5,6 @@
     "pixiebrix"
   ],
   "rules": {
-    "quotes": ["error", "double", { "avoidEscape": true }],
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-confusing-void-expression": "warn",
@@ -28,6 +27,7 @@
     "@typescript-eslint/consistent-type-assertions": "warn",
     "@typescript-eslint/no-dynamic-delete": "warn",
     "@typescript-eslint/no-redeclare": "warn",
+    "@typescript-eslint/no-implicit-any-catch": "warn",
 
     "jsx-a11y/click-events-have-key-events": "warn",
     "jsx-a11y/no-static-element-interactions": "warn",
@@ -72,16 +72,7 @@
         "node": true,
         "jest": true
       },
-      "rules": {
-        "@typescript-eslint/no-require-imports": "off",
-        "@typescript-eslint/no-var-requires": "off",
-        "unicorn/prefer-module": "off",
-
-        // the webpack/testing files only run on the CI server, so don't need to watch for these:
-        "security/detect-object-injection": "off",
-        "security/detect-child-process": "off",
-        "security/detect-unsafe-regex": "off"
-      }
+      "extends": ["pixiebrix/server"]
     }
   ]
 }

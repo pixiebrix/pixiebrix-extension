@@ -279,7 +279,6 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
     while (
       rules.some((rule) =>
         rule.loadingSelectors.some(
-          // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
           (selector) => $document.find(selector).length > 0
         )
       )

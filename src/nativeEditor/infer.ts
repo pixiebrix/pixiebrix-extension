@@ -533,7 +533,6 @@ export function inferSelectors(
  * Returns true if selector uniquely identifies an element on the page
  */
 function isUniqueSelector(selector: string): boolean {
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
   return $(document).find(selector).length === 1;
 }
 

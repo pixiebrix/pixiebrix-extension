@@ -596,7 +596,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
       let elementCount = 0;
       for (const dependency of dependencies) {
-        // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $dependency = $(document).find(dependency);
         if ($dependency.length > 0) {
           for (const element of $dependency) {
@@ -786,7 +785,6 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
     if (typeof position === "object") {
       if (position.sibling) {
-        // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $sibling = $menu.find(position.sibling);
         if ($sibling.length > 1) {
           throw new Error(
