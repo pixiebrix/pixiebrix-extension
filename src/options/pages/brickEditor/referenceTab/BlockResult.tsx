@@ -22,6 +22,8 @@ import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import styles from "./BlockResult.module.scss";
 import { OfficialBadge } from "@/components/OfficialBadge";
 import BrickIcon from "@/components/BrickIcon";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const BlockResult: React.FunctionComponent<{
   block: ReferenceEntry;
@@ -37,11 +39,21 @@ const BlockResult: React.FunctionComponent<{
         <BrickIcon brick={block} />
       </div>
       <div className={cx("flex-grow-1", styles.titleColumn)}>
-        <div className={styles.ellipsis}>{block.name}</div>
-        <code className={cx("small", styles.id)}>{block.id}</code>
-      </div>
-      <div className="flex-grow-0">
-        <OfficialBadge id={block.id} />
+        <div className="d-flex justify-content-between">
+          <div className={cx(styles.ellipsis, "mb-1")}>{block.name}</div>
+          <OfficialBadge id={block.id} />
+        </div>
+        <div className="d-flex justify-content-between align-items-center">
+          <code className={cx(styles.id, "flex-shrink-1 small")}>
+            {block.id}
+          </code>
+          <div className={cx(styles.sharing)}>
+            <div className={cx(styles.ellipsis, "small text-right pl-2")}>
+              <FontAwesomeIcon icon={faGlobe} className="mr-1" />
+              Public
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </ListGroup.Item>
