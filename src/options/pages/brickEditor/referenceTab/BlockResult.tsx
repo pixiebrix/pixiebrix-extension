@@ -97,35 +97,33 @@ const BlockResult: React.FunctionComponent<{
   active?: boolean;
   onSelect: () => void;
   organizations: Organization[];
-}> = ({ block, onSelect, active, organizations }) => {
-  return (
-    <ListGroup.Item
-      onClick={onSelect}
-      className={cx(styles.root, { [styles.active]: active, active })}
-    >
-      <div className="d-flex">
-        <div className="mr-2 text-muted">
-          <BrickIcon brick={block} />
+}> = ({ block, onSelect, active, organizations }) => (
+  <ListGroup.Item
+    onClick={onSelect}
+    className={cx(styles.root, { [styles.active]: active, active })}
+  >
+    <div className="d-flex">
+      <div className="mr-2 text-muted">
+        <BrickIcon brick={block} />
+      </div>
+      <div className={cx("flex-grow-1", styles.titleColumn)}>
+        <div className="d-flex justify-content-between">
+          <div className={cx(styles.ellipsis, "mb-1")}>{block.name}</div>
+          <OfficialBadge id={block.id} />
         </div>
-        <div className={cx("flex-grow-1", styles.titleColumn)}>
-          <div className="d-flex justify-content-between">
-            <div className={cx(styles.ellipsis, "mb-1")}>{block.name}</div>
-            <OfficialBadge id={block.id} />
-          </div>
-          <div className="d-flex justify-content-between align-items-center">
-            <code className={cx(styles.id, "flex-shrink-1 small")}>
-              {block.id}
-            </code>
-            <div className={cx(styles.sharing)}>
-              <div className={cx(styles.ellipsis, "small text-right pl-2")}>
-                <SharingTag block={block} organizations={organizations} />
-              </div>
+        <div className="d-flex justify-content-between align-items-center">
+          <code className={cx(styles.id, "flex-shrink-1 small")}>
+            {block.id}
+          </code>
+          <div className={cx(styles.sharing)}>
+            <div className={cx(styles.ellipsis, "small text-right pl-2")}>
+              <SharingTag block={block} organizations={organizations} />
             </div>
           </div>
         </div>
       </div>
-    </ListGroup.Item>
-  );
-};
+    </div>
+  </ListGroup.Item>
+);
 
 export default BlockResult;
