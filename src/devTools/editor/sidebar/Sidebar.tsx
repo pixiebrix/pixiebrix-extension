@@ -242,7 +242,7 @@ const transitionProps: CSSTransitionProps = {
     exit: styles.exit,
     exitActive: styles.exitActive,
   },
-  timeout: 5000,
+  timeout: 500,
   unmountOnExit: true,
   mountOnEnter: true,
 };

@@ -15,7 +15,7 @@ $logoSize: 31px;
   }
   &.expanded {
     flex: 0 0 260px;
-    width: 260px;
+    width: 260px; // Preserve width during the transition
   }
 
   &.enter {
@@ -29,7 +29,7 @@ $logoSize: 31px;
     transform: none;
   }
   &.exitActive {
-    position: absolute;
+    position: absolute; // Take out of the flow during the transition
     transform: translateX(-100%);
     transition: transform 400ms;
     z-index: 1000; // Appear over the content when it overlaps
