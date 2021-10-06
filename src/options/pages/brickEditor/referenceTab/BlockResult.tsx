@@ -32,6 +32,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "@/registry/localRegistry";
 import { useAsyncState } from "@/hooks/common";
 import { Organization } from "@/types/contract";
+import { Sharing } from "@/core";
 
 export const SharingTag: React.FunctionComponent<{
   block: ReferenceEntry;
@@ -40,7 +41,7 @@ export const SharingTag: React.FunctionComponent<{
   const [sharing] = useAsyncState(async () => {
     const brickPackage = await find(block.id);
     if (brickPackage?.config) {
-      return brickPackage.config.sharing;
+      return brickPackage.config.sharing as Sharing;
     }
 
     return null;

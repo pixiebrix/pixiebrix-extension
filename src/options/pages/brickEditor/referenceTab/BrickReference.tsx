@@ -70,8 +70,6 @@ const BrickReference: React.FunctionComponent<{
 
     const brickPackage = await find(selected.id);
     if (brickPackage?.config) {
-      console.log("Sharing:");
-      console.log(brickPackage.config.sharing);
       delete brickPackage.config.sharing;
       return brickToYaml(brickPackage.config);
     }
