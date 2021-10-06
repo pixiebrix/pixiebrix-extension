@@ -16,16 +16,14 @@
  */
 
 /**
- * Log global, uncaught errors. Must be imported as early as possible
+ * Must be imported as early as possible. Do not add "init" function or it will run too late
  */
 
-import { reportError } from "./logging";
+import { reportError } from "@/telemetry/logging";
 
 function errorHandler(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
   if (
-    [...uncaughtErrorLoggingExceptions].some((shouldIgnore) =>
-      shouldIgnore(errorEvent)
-    )
+    [...uncaughtErrorToIgnore].some((shouldIgnore) => shouldIgnore(errorEvent))
   ) {
     return;
   }
@@ -43,7 +41,7 @@ function avoidLoops(errorEvent: ErrorEvent | PromiseRejectionEvent) {
   seen.add(errorEvent);
 }
 
-export const uncaughtErrorLoggingExceptions = new Set([avoidLoops]);
+export const uncaughtErrorToIgnore = new Set([avoidLoops]);
 const seen = new WeakSet<ErrorEvent | PromiseRejectionEvent>();
 
 window.addEventListener("error", errorHandler);

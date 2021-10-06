@@ -20,7 +20,7 @@ import { uuidv4 } from "@/types/helpers";
 const start = Date.now();
 
 import "@/extensionContext";
-import { uncaughtErrorLoggingExceptions } from "@/telemetry/automaticallyReportErrors";
+import { uncaughtErrorToIgnore } from "@/telemetry/reportUncaughtErrors";
 import "@/contentScript/messenger/registration";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
@@ -49,7 +49,7 @@ function ignoreConnectionErrors(
 }
 
 // Must be run as early as possible
-uncaughtErrorLoggingExceptions.add(ignoreConnectionErrors);
+uncaughtErrorToIgnore.add(ignoreConnectionErrors);
 
 registerBuiltinBlocks();
 registerContribBlocks();
