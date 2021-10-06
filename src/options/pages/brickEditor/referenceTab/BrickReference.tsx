@@ -67,7 +67,12 @@ const BrickReference: React.FunctionComponent<{
     }
 
     const brickPackage = await find(selected.id);
-    return brickPackage?.config ? brickToYaml(brickPackage.config) : null;
+    if (brickPackage?.config) {
+      delete brickPackage.config.sharing;
+      return brickToYaml(brickPackage.config);
+    }
+
+    return null;
   }, [selected]);
 
   const fuse: Fuse<IBlock | IService> = useMemo(

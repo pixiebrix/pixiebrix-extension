@@ -106,7 +106,7 @@ const BrickDetail: React.FunctionComponent<{
           <div className="ml-4">
             <a
               href={`https://pixiebrix.com/marketplace/${listing.id}`}
-              className="btn btn-outline-info text-nowrap"
+              className="btn btn-sm btn-outline-info text-nowrap"
               target="_blank"
               rel="noopener noreferrer"
             >
