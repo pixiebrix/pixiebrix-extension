@@ -37,6 +37,7 @@ import { isOfficial } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import { find } from "@/registry/localRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
+import { useGetOrganizationsQuery } from "@/services/api";
 
 const BrickReference: React.FunctionComponent<{
   bricks: ReferenceEntry[];
@@ -44,6 +45,7 @@ const BrickReference: React.FunctionComponent<{
 }> = ({ bricks, initialSelected }) => {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<ReferenceEntry>(initialSelected);
+  const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const sortedBricks = useMemo(
     () =>
@@ -68,6 +70,8 @@ const BrickReference: React.FunctionComponent<{
 
     const brickPackage = await find(selected.id);
     if (brickPackage?.config) {
+      console.log("Sharing:");
+      console.log(brickPackage.config.sharing);
       delete brickPackage.config.sharing;
       return brickToYaml(brickPackage.config);
     }
@@ -126,6 +130,7 @@ const BrickReference: React.FunctionComponent<{
                 onSelect={() => {
                   setSelected(result);
                 }}
+                organizations={organizations}
               />
             ))}
           </ListGroup>
