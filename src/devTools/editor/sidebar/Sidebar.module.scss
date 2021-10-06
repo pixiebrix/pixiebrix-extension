@@ -6,22 +6,33 @@ $logoSize: 31px;
   justify-content: flex-start;
   height: 100%;
   border-right: 2px solid #c6bfdb;
+  background: white;
 
   &.collapsed {
     flex: 0 0 $logoSize;
     align-items: center;
-    transition: transform 100ms;
+    z-index: 2000;
   }
   &.expanded {
     flex: 0 0 260px;
-    transition: transform 100ms;
+    width: 260px;
   }
 
-  &.hidden {
+  &.enter {
     transform: translate3d(-100%, 0, 0);
   }
-  &.hidden.showing {
+  &.enterActive {
     transform: none;
+    transition: transform 400ms;
+  }
+  &.exit {
+    transform: none;
+  }
+  &.exitActive {
+    position: absolute;
+    transform: translate3d(-100%, 0, 0);
+    transition: transform 400ms;
+    z-index: 1000;
   }
 
   label {
@@ -47,7 +58,7 @@ $logoSize: 31px;
   width: $logoSize;
   height: $logoSize;
 
-  &:hover {
+  :hover > & {
     filter: brightness(0.75);
   }
 }
@@ -72,17 +83,17 @@ $logoSize: 31px;
 }
 
 .toggle {
+  border: none !important;
   border-radius: 0 !important;
-  background-color: white !important;
+  width: $logoSize;
+  padding: 0 !important;
+
   &:hover {
     background-color: #e9ecef !important;
   }
 
-  .expanded & {
-    padding: 0 5px !important;
-  }
-  .collapsed & {
-    padding: 5px !important;
+  svg {
+    margin: 5px;
   }
 }
 
