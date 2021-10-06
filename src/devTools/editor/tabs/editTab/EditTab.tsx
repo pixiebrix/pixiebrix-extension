@@ -18,7 +18,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
-import { getIn, useField, useFormikContext } from "formik";
+import { getIn, useFormikContext } from "formik";
 import { BlockPipeline } from "@/blocks/types";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
@@ -45,8 +45,7 @@ import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlo
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
-import { useSelector } from "react-redux";
-import { selectTraceError } from "@/devTools/editor/slices/runtimeSelectors";
+import usePipelineField from "@/devTools/editor/hooks/usePipelineField";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -88,7 +87,8 @@ const EditTab: React.FC<{
     { value: blockPipeline = [] },
     { error: blockPipelineError },
     pipelineFieldHelpers,
-  ] = useField<BlockPipeline>(pipelineFieldName);
+    traceError,
+  ] = usePipelineField(pipelineFieldName);
 
   const blockFieldName = useMemo(
     () => `${pipelineFieldName}[${activeNodeIndex - 1}]`,
@@ -137,7 +137,6 @@ const EditTab: React.FC<{
     setFormValues(nextState);
   };
 
-  const traceError = useSelector(selectTraceError);
   const blockNodes: EditorNodeProps[] = zip(blockPipeline, resolvedBlocks).map(
     ([action, block], index) =>
       block
