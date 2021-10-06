@@ -34,7 +34,8 @@
     "identity",
     "tabs",
     "webNavigation",
-    "contextMenus"
+    "contextMenus",
+    "https://*.pixiebrix.com/*"
   ],
   "devtools_page": "devtools.html",
   "externally_connectable": {
