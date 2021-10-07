@@ -161,18 +161,18 @@ const EditTab: React.FC<{
       // eslint-disable-next-line security/detect-object-injection -- uuid
       const blockConfig = extension.pipelineBlocks[instanceId];
       // eslint-disable-next-line security/detect-object-injection -- uuid
-      const iBlock = resolvedBlocks[instanceId];
+      const block = resolvedBlocks[instanceId];
       const nodeId = instanceId;
-      return iBlock
+      return block
         ? {
             nodeId,
             title: isNullOrBlank(blockConfig.label)
-              ? iBlock?.name
+              ? block?.name
               : blockConfig.label,
             outputKey: blockConfig.outputKey,
             icon: (
               <BrickIcon
-                brick={iBlock}
+                brick={block}
                 size="2x"
                 // This makes brick icons that use basic font awesome icons
                 //   inherit the editor node layout color scheme.
@@ -181,8 +181,8 @@ const EditTab: React.FC<{
                 faIconClass={styles.brickFaIcon}
               />
             ),
-            // eslint-disable-next-line security/detect-object-injection
             hasError:
+              // eslint-disable-next-line security/detect-object-injection -- uuid
               pipelineBlocksErrors && Boolean(pipelineBlocksErrors[instanceId]),
             hasWarning: traceError?.blockInstanceId === instanceId,
             onClick: () => {
