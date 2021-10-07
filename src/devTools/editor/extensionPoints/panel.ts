@@ -163,8 +163,10 @@ function selectExtension(
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<PanelConfig> {
   const config: PanelConfig = {
+    heading: extension.heading,
     body: pipelineFromExtension(extension),
-    ...extension,
+    collapsible: extension.collapsible,
+    shadowDOM: extension.shadowDOM,
   };
   return removeEmptyValues({
     id: uuid,

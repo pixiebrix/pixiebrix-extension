@@ -158,8 +158,10 @@ function selectExtension(
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<MenuItemExtensionConfig> {
   const config: MenuItemExtensionConfig = {
+    caption: extension.caption,
+    icon: extension.icon,
     action: pipelineFromExtension(extension),
-    ...extension,
+    dynamicCaption: extension.dynamicCaption,
   };
   return removeEmptyValues({
     id: uuid,
