@@ -16,6 +16,7 @@
  */
 
 import { IExtension } from "@/core";
+import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 
 const config = {
@@ -65,3 +66,18 @@ export const extensionFactory: (
   active: true,
   ...extensionProps,
 });
+
+export const traceErrorFactory: (
+  traceErrorProps?: Partial<TraceError>
+) => TraceError = (traceErrorProps) =>
+  ({
+    timestamp: "2021-10-07T12:52:16.189Z",
+    extensionId: uuidv4(),
+    runId: uuidv4(),
+    blockInstanceId: uuidv4(),
+    blockId: validateRegistryId("testing/block-id"),
+    error: {
+      message: "Trace error for tests",
+    },
+    ...traceErrorProps,
+  } as TraceError);
