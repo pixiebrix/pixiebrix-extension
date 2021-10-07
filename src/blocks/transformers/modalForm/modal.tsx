@@ -106,7 +106,7 @@ export class ModalTransformer extends Transformer {
     frameSrc.searchParams.set("nonce", nonce);
     frameSrc.searchParams.set(
       "opener",
-      JSON.stringify({ tabId: tab.id, frameId: frameId })
+      JSON.stringify({ tabId: tab.id, frameId })
     );
 
     // Using `<style>` will avoid overriding the site’s inline styles
