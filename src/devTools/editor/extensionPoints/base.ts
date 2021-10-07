@@ -131,7 +131,6 @@ export function makeInitialBaseState(
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     services: [],
     extension: {
-      title: "",
       pipelineBlocks: {},
       pipelineOrder: [],
     },
