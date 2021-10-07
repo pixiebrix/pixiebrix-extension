@@ -152,9 +152,7 @@ const EditTab: React.FC<{
 
   const blockNodes: EditorNodeProps[] = extension.pipelineOrder.map(
     (instanceId) => {
-      // eslint-disable-next-line security/detect-object-injection -- uuid
       const blockConfig = extension.pipelineBlocks[instanceId];
-      // eslint-disable-next-line security/detect-object-injection -- uuid
       const iBlock = resolvedBlocks[instanceId];
       const nodeId = instanceId;
       return iBlock
@@ -175,9 +173,7 @@ const EditTab: React.FC<{
                 faIconClass={styles.brickFaIcon}
               />
             ),
-            // eslint-disable-next-line security/detect-object-injection
-            hasError:
-              pipelineBlocksErrors && Boolean(pipelineBlocksErrors[instanceId]),
+            hasError: Boolean(pipelineBlocksErrors?.[instanceId]),
             hasWarning: traceError?.blockInstanceId === instanceId,
             onClick: () => {
               setActiveNodeId(instanceId);
