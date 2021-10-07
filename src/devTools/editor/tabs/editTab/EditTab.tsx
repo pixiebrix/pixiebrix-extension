@@ -247,6 +247,7 @@ const EditTab: React.FC<{
         );
       });
       setFormValues(nextState);
+      setActiveNodeId(newBlock.instanceId);
     },
     [extension, values, setFormValues]
   );
