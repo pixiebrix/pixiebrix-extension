@@ -36,7 +36,6 @@ import { find as findBrick } from "@/registry/localRegistry";
 import React from "react";
 import { createSitePattern } from "@/permissions/patterns";
 import {
-  BaseExtensionState,
   BaseFormState,
   ElementType,
   SingleLayerReaderConfig,
@@ -44,7 +43,6 @@ import {
 import { Except } from "type-fest";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import {
-  BlockConfig,
   BlockPipeline,
   NormalizedAvailability,
   ReaderConfig,
@@ -90,21 +88,11 @@ export function makeIsAvailable(url: string): NormalizedAvailability {
 /**
  * Enrich a BlockPipeline with instanceIds for use in tracing.
  */
-export function withInstanceIds(
-  blocks: BlockPipeline
-): [Record<UUID, BlockConfig>, UUID[]] {
-  const pipelineBlocks: Record<UUID, BlockConfig> = {};
-  const pipelineOrder: UUID[] = [];
-  const pipeline = blocks.map((blockConfig) => ({
+export function withInstanceIds(blocks: BlockPipeline): BlockPipeline {
+  return blocks.map((blockConfig) => ({
     ...blockConfig,
     instanceId: uuidv4(),
   }));
-  for (const block of pipeline) {
-    pipelineOrder.push(block.instanceId);
-    pipelineBlocks[block.instanceId] = block;
-  }
-
-  return [pipelineBlocks, pipelineOrder];
 }
 
 /**
@@ -131,8 +119,7 @@ export function makeInitialBaseState(
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     services: [],
     extension: {
-      pipelineBlocks: {},
-      pipelineOrder: [],
+      blockPipeline: [],
     },
   };
 }
@@ -317,14 +304,4 @@ export function getImplicitReader(type: ElementType): SingleLayerReaderConfig {
  */
 export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
   return reader as SingleLayerReaderConfig;
-}
-
-export function pipelineFromExtension(
-  extension: BaseExtensionState
-): BlockPipeline {
-  return extension.pipelineOrder.map(
-    (id) =>
-      // eslint-disable-next-line security/detect-object-injection -- uuid
-      extension.pipelineBlocks[id]
-  );
 }

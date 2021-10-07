@@ -111,9 +111,12 @@ const DataPanel: React.FC<{
 
   const { values: formState } = useFormikContext<FormState>();
 
-  const { pipelineOrder, pipelineBlocks } = formState.extension;
+  const { blockPipeline } = formState.extension;
+  const blockIndex = blockPipeline.findIndex(
+    (x) => x.instanceId === instanceId
+  );
   // eslint-disable-next-line security/detect-object-injection
-  const block = pipelineBlocks[instanceId];
+  const block = blockPipeline[blockIndex];
 
   const traces = useSelector(selectExtensionTrace);
   const record = traces.find((trace) => trace.blockInstanceId === instanceId);
@@ -123,24 +126,19 @@ const DataPanel: React.FC<{
       return false;
     }
 
-    if (traces.length !== pipelineOrder.length) {
+    if (traces.length !== blockPipeline.length) {
       return true;
     }
 
-    const blockIndex = pipelineOrder.indexOf(instanceId);
-    const currentInput = pipelineOrder
-      .slice(0, blockIndex)
-      // eslint-disable-next-line security/detect-object-injection -- uuid
-      .map((uuid) => pipelineBlocks[uuid]);
-    const tracedInput = pipelineOrder
-      .slice(0, blockIndex)
-      .map(
-        (uuid) =>
-          traces.find((trace) => trace.blockInstanceId === uuid).blockConfig
-      );
+    const currentInput = blockPipeline.slice(0, blockIndex);
+    const tracedInput = currentInput.map(
+      (block) =>
+        traces.find((trace) => trace.blockInstanceId === block.instanceId)
+          .blockConfig
+    );
 
     return !isEqual(currentInput, tracedInput);
-  }, [instanceId, pipelineBlocks, pipelineOrder, record, traces]);
+  }, [blockIndex, blockPipeline, record, traces]);
 
   const isCurrentStale = useMemo(() => {
     if (isInputStale) {
@@ -166,7 +164,8 @@ const DataPanel: React.FC<{
 
   const outputObj: JsonObject =
     record !== undefined && "output" in record
-      ? "outputKey" in record
+      ? // eslint-disable-next-line unicorn/no-nested-ternary -- prettier disagrees
+        "outputKey" in record
         ? { [`@${record.outputKey}`]: record.output }
         : record.output
       : null;

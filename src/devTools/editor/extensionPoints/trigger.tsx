@@ -25,7 +25,6 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-  pipelineFromExtension,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
@@ -93,8 +92,7 @@ function fromNativeElement(
       },
     },
     extension: {
-      pipelineBlocks: {},
-      pipelineOrder: [],
+      blockPipeline: [],
     },
   };
 }
@@ -130,7 +128,7 @@ function selectExtension(
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<TriggerConfig> {
   const config: TriggerConfig = {
-    action: pipelineFromExtension(extension),
+    action: extension.blockPipeline,
   };
   return removeEmptyValues({
     id: uuid,
@@ -178,8 +176,7 @@ async function fromExtensionPoint(
     services: [],
 
     extension: {
-      pipelineBlocks: {},
-      pipelineOrder: [],
+      blockPipeline: [],
     },
 
     extensionPoint: {
@@ -206,9 +203,7 @@ async function fromExtension(
 
   const { rootSelector, trigger, reader } = extensionPoint.definition;
 
-  const [pipelineBlocks, pipelineOrder] = withInstanceIds(
-    castArray(config.config.action)
-  );
+  const blockPipeline = withInstanceIds(castArray(config.config.action));
 
   return {
     uuid: config.id,
@@ -220,8 +215,7 @@ async function fromExtension(
     services: config.services,
 
     extension: {
-      pipelineBlocks,
-      pipelineOrder,
+      blockPipeline,
     },
 
     extensionPoint: {

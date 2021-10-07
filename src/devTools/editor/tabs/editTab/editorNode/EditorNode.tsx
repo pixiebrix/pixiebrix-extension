@@ -24,13 +24,8 @@ import {
   faExclamationCircle,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
-import { UUID } from "@/core";
 
-export const FOUNDATION_NODE_ID = "foundation" as UUID;
-export const APPEND_NODE_ID = "append" as UUID;
-
-export type EditorNodeProps = {
-  nodeId: UUID;
+export type NodeProps = {
   title: string;
   outputKey?: string;
   icon?: IconProp | React.ReactNode;
@@ -50,7 +45,7 @@ function isFontAwesomeIcon(
   );
 }
 
-const EditorNode: React.FC<EditorNodeProps> = ({
+const EditorNode: React.FC<NodeProps> = ({
   onClick,
   icon: iconProp,
   title,

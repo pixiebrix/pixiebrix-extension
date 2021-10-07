@@ -20,16 +20,13 @@ import { BlockType, getType } from "@/blocks/util";
 import { freshIdentifier } from "@/utils";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { selectReaderIds } from "@/blocks/readers/readerUtils";
-import { pipelineFromExtension } from "@/devTools/editor/extensionPoints/base";
 
 export function collectRegistryIds(form: FormState): RegistryId[] {
-  const pipeline = pipelineFromExtension(form.extension);
-
   return [
     form.extensionPoint.metadata.id,
     ...selectReaderIds(form.extensionPoint.definition.reader),
     ...form.services.map((x) => x.id),
-    ...pipeline.map((x) => x.id),
+    ...form.extension.blockPipeline.map((x) => x.id),
   ];
 }
 

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata, UUID } from "@/core";
+import { IExtension, Metadata } from "@/core";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
@@ -25,7 +25,6 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-  pipelineFromExtension,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
@@ -51,7 +50,7 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
-import { BlockConfig } from "@/blocks/types";
+import { BlockPipeline } from "@/blocks/types";
 
 const wizard: WizardStep[] = [
   { step: "Edit", Component: EditTab },
@@ -63,8 +62,7 @@ export interface ActionPanelFormState extends BaseFormState {
 
   extension: {
     heading: string;
-    pipelineBlocks: Record<UUID, BlockConfig>;
-    pipelineOrder: UUID[];
+    blockPipeline: BlockPipeline;
   };
 }
 
@@ -89,8 +87,7 @@ function fromNativeElement(
     },
     extension: {
       heading,
-      pipelineBlocks: {},
-      pipelineOrder: [],
+      blockPipeline: [],
     },
   };
 }
@@ -125,7 +122,7 @@ function selectExtension(
 ): IExtension<ActionPanelConfig> {
   const config: ActionPanelConfig = {
     heading: extension.heading,
-    body: pipelineFromExtension(extension),
+    body: extension.blockPipeline,
   };
   return removeEmptyValues({
     id: uuid,
@@ -169,8 +166,7 @@ export async function fromExtensionPoint(
 
     extension: {
       heading,
-      pipelineBlocks: {},
-      pipelineOrder: [],
+      blockPipeline: [],
     },
 
     extensionPoint: {
@@ -193,9 +189,7 @@ async function fromExtension(
     "actionPanel"
   >(config, "actionPanel");
 
-  const [pipelineBlocks, pipelineOrder] = withInstanceIds(
-    castArray(config.config.body)
-  );
+  const blockPipeline = withInstanceIds(castArray(config.config.body));
 
   return {
     uuid: config.id,
@@ -208,8 +202,7 @@ async function fromExtension(
 
     extension: {
       heading: config.config.heading,
-      pipelineBlocks,
-      pipelineOrder,
+      blockPipeline,
     },
 
     extensionPoint: {

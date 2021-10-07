@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata, UUID } from "@/core";
+import { IExtension, Metadata } from "@/core";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
@@ -25,7 +25,6 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-  pipelineFromExtension,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
@@ -54,7 +53,7 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
-import { BlockConfig, NormalizedAvailability } from "@/blocks/types";
+import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration";
 
@@ -88,8 +87,7 @@ export interface PanelFormState extends BaseFormState {
 
   extension: {
     heading: string;
-    pipelineBlocks: Record<UUID, BlockConfig>;
-    pipelineOrder: UUID[];
+    blockPipeline: BlockPipeline;
     collapsible?: boolean;
     shadowDOM?: boolean;
   };
@@ -124,8 +122,7 @@ function fromNativeElement(
       heading: panel.panel.heading,
       collapsible: panel.panel.collapsible ?? false,
       shadowDOM: panel.panel.shadowDOM ?? true,
-      pipelineBlocks: {},
-      pipelineOrder: [],
+      blockPipeline: [],
     },
   };
 }
@@ -164,7 +161,7 @@ function selectExtension(
 ): IExtension<PanelConfig> {
   const config: PanelConfig = {
     heading: extension.heading,
-    body: pipelineFromExtension(extension),
+    body: extension.blockPipeline,
     collapsible: extension.collapsible,
     shadowDOM: extension.shadowDOM,
   };
@@ -212,8 +209,7 @@ async function fromExtensionPoint(
     extension: {
       heading,
       collapsible: boolean(collapsible ?? false),
-      pipelineBlocks: {},
-      pipelineOrder: [],
+      blockPipeline: [],
     },
 
     // There's no containerInfo for the page because the user did not select it during the session
@@ -243,9 +239,7 @@ async function fromExtension(
     "panel"
   >(config, "panel");
 
-  const [pipelineBlocks, pipelineOrder] = withInstanceIds(
-    castArray(config.config.body)
-  );
+  const blockPipeline = withInstanceIds(castArray(config.config.body));
 
   return {
     uuid: config.id,
@@ -259,8 +253,7 @@ async function fromExtension(
     extension: {
       heading: config.config.heading ?? "",
       ...config.config,
-      pipelineBlocks,
-      pipelineOrder,
+      blockPipeline,
     },
 
     containerInfo: null,

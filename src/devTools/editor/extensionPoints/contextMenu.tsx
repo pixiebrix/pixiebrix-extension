@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata, UUID } from "@/core";
+import { IExtension, Metadata } from "@/core";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
@@ -25,7 +25,6 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-  pipelineFromExtension,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
@@ -50,7 +49,7 @@ import {
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Menus } from "webextension-polyfill-ts";
-import { BlockConfig, NormalizedAvailability } from "@/blocks/types";
+import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
@@ -76,8 +75,7 @@ export interface ContextMenuFormState extends BaseFormState {
 
   extension: {
     title: string;
-    pipelineBlocks: Record<UUID, BlockConfig>;
-    pipelineOrder: UUID[];
+    blockPipeline: BlockPipeline;
   };
 }
 
@@ -108,8 +106,7 @@ function fromNativeElement(
     },
     extension: {
       title,
-      pipelineBlocks: {},
-      pipelineOrder: [],
+      blockPipeline: [],
     },
   };
 }
@@ -151,7 +148,7 @@ function selectExtension(
 ): IExtension<ContextMenuConfig> {
   const config: ContextMenuConfig = {
     title: extension.title,
-    action: pipelineFromExtension(extension),
+    action: extension.blockPipeline,
   };
   return removeEmptyValues({
     id: uuid,
@@ -183,9 +180,7 @@ async function fromExtension(
     reader,
   } = extensionPoint.definition;
 
-  const [pipelineBlocks, pipelineOrder] = withInstanceIds(
-    castArray(extensionConfig.action)
-  );
+  const blockPipeline = withInstanceIds(castArray(extensionConfig.action));
 
   return {
     uuid: config.id,
@@ -198,8 +193,7 @@ async function fromExtension(
 
     extension: {
       ...extensionConfig,
-      pipelineBlocks,
-      pipelineOrder,
+      blockPipeline,
     },
 
     extensionPoint: {
@@ -242,8 +236,7 @@ async function fromExtensionPoint(
 
     extension: {
       title: defaultOptions.title ?? "Custom Action",
-      pipelineBlocks: {},
-      pipelineOrder: [],
+      blockPipeline: [],
     },
 
     extensionPoint: {
