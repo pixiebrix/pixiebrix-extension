@@ -42,6 +42,7 @@ import { browser } from "webextension-polyfill-ts";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import useNotifications from "@/hooks/useNotifications";
 import { ReferenceEntry } from "./brickEditorTypes";
+import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -190,6 +191,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
               </Nav.Link>
               {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}
               <Nav.Link eventKey="reference">Reference</Nav.Link>
+              <Nav.Link eventKey="history">History</Nav.Link>
             </Nav>
           </Card.Header>
 
@@ -225,6 +227,10 @@ const Editor: React.FunctionComponent<OwnProps> = ({
                 bricks={bricks}
                 initialSelected={selectedReference}
               />
+            </Tab.Pane>
+
+            <Tab.Pane eventKey="history" className="p-3">
+              <BrickHistory />
             </Tab.Pane>
           </Tab.Content>
         </Tab.Container>
