@@ -28,3 +28,8 @@ declare module "react-select-virtualized" {
   import VirtualizedSelect from "react-virtualized-select";
   export default VirtualizedSelect;
 }
+
+// Missing from TS types, but it's a standard
+interface HTMLDialogElement extends HTMLElement {
+  showModal(): void;
+}
