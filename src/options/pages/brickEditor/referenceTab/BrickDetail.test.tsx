@@ -20,6 +20,11 @@ import { render } from "@testing-library/react";
 import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/blocks/renderers/table";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
+import { MarketplaceListing } from "@/types/contract";
+
+jest.mock("@/services/api", () => ({
+  useGetMarketplaceListingsQuery: () => ({ data: [] as MarketplaceListing[] }),
+}));
 
 test.each([
   ["empty", {}],
