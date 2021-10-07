@@ -25,29 +25,6 @@ import { registerForm } from "@/contentScript/modalForms";
 import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";
 
-function ModalFrame({ src = "" }) {
-  return (
-    <dialog
-      ref={(dialog) => dialog.showModal()}
-      style={{
-        border: 0,
-        width: "500px",
-        height: "100vh", // TODO: Replace with frame auto-sizer via messaging
-        display: "flex", // Fit iframe inside
-        background: "none",
-      }}
-    >
-      <iframe
-        src={src}
-        style={{
-          border: "0",
-          flexGrow: 1, // Fit dialog
-        }}
-      />
-    </dialog>
-  );
-}
-
 export class ModalTransformer extends Transformer {
   defaultOutputKey = "form";
 
@@ -125,7 +102,27 @@ export class ModalTransformer extends Transformer {
     const container = document.createElement("div");
     const shadowRoot = container.attachShadow({ mode: "closed" });
     document.body.append(container, style);
-    render(<ModalFrame src={String(frameSrc)} />, shadowRoot);
+    render(
+      <dialog
+        ref={(dialog) => dialog.showModal()}
+        style={{
+          border: 0,
+          width: "500px",
+          height: "100vh", // TODO: Replace with frame auto-sizer via messaging
+          display: "flex", // Fit iframe inside
+          background: "none",
+        }}
+      >
+        <iframe
+          src={frameSrc.href}
+          style={{
+            border: "0",
+            flexGrow: 1, // Fit dialog
+          }}
+        />
+      </dialog>,
+      shadowRoot
+    );
 
     try {
       return await registerForm(nonce, {
