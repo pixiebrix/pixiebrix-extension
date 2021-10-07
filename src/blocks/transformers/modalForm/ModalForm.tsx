@@ -30,16 +30,9 @@ import { Target } from "@/types";
 
 const ModalLayout: React.FC = ({ children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
-  <>
-    <div className="modal fade show" style={{ display: "block" }}>
-      <div className="modal-dialog">
-        <div className="modal-content">
-          <div className="modal-body">{children}</div>
-        </div>
-      </div>
-    </div>
-    <div className="modal-backdrop fade show" id="backdrop"></div>
-  </>
+  <div className="modal-content">
+    <div className="modal-body">{children}</div>
+  </div>
 );
 
 const ModalForm: React.FC = () => {

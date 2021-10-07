@@ -31,20 +31,17 @@ function ModalFrame({ src = "" }) {
       ref={(dialog) => dialog.showModal()}
       style={{
         border: 0,
-        maxWidth: "none",
-        maxHeight: "none",
-        width: "100%",
-        height: "100%",
-        display: "flex",
+        width: "500px",
+        height: "100vh", // TODO: Replace with frame auto-sizer via messaging
+        display: "flex", // Fit iframe inside
         background: "none",
-        padding: "0",
       }}
     >
       <iframe
         src={src}
         style={{
           border: "0",
-          flexGrow: 1,
+          flexGrow: 1, // Fit dialog
         }}
       />
     </dialog>
@@ -103,23 +100,30 @@ export class ModalTransformer extends Transformer {
     // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?
 
     const nonce = uuidv4();
-
-    const tab = await whoAmI();
-
-    // Disable scrollbars in a way that doesn't override inline styles on HTML
-    // TODO: Some sites may prefer "html", we need to find the scrollable element dynamically
-    const [style] = $("<style>body {overflow: hidden !important}</style>");
+    const { tab, frameId } = await whoAmI();
 
     const frameSrc = new URL(browser.runtime.getURL("modalForm.html"));
     frameSrc.searchParams.set("nonce", nonce);
     frameSrc.searchParams.set(
       "opener",
-      JSON.stringify({ tabId: tab.tab.id, frameId: tab.frameId })
+      JSON.stringify({ tabId: tab.id, frameId: frameId })
     );
+
+    // Using `<style>` will avoid overriding the site’s inline styles
+    const style = document.createElement("style");
+
+    const scrollableRoot =
+      window.getComputedStyle(document.body).overflowY === "scroll"
+        ? "body"
+        : "html";
+    style.textContent += `${scrollableRoot} {overflow: hidden !important}`; // Disable scrollbar
+
+    // Preserve space initially taken by scrollbar
+    const scrollbarWidth = window.innerWidth - document.body.clientWidth;
+    style.textContent += `html {padding-inline-end: ${scrollbarWidth}px  !important}`;
 
     const container = document.createElement("div");
     const shadowRoot = container.attachShadow({ mode: "closed" });
-
     document.body.append(container, style);
     render(<ModalFrame src={String(frameSrc)} />, shadowRoot);
 
