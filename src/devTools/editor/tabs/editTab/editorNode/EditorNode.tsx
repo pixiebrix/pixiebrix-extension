@@ -24,8 +24,12 @@ import {
   faExclamationCircle,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
+import { UUID } from "@/core";
+
+export type NodeId = "foundation" | "append" | UUID;
 
 export type EditorNodeProps = {
+  nodeId: NodeId;
   title: string;
   outputKey?: string;
   icon?: IconProp | React.ReactNode;

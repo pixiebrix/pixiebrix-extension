@@ -18,15 +18,18 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
-import { getIn, useFormikContext } from "formik";
-import { BlockPipeline } from "@/blocks/types";
-import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
+import { useFormikContext } from "formik";
+import { BlockConfig } from "@/blocks/types";
+import {
+  EditorNodeProps,
+  NodeId,
+} from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { compact, zip } from "lodash";
-import { IBlock, OutputKey } from "@/core";
+import { IBlock, OutputKey, UUID } from "@/core";
 import hash from "object-hash";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
@@ -40,12 +43,15 @@ import BrickIcon from "@/components/BrickIcon";
 import { isNullOrBlank } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
-import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
+import {
+  isInnerExtensionPoint,
+  pipelineFromExtension,
+} from "@/devTools/editor/extensionPoints/base";
 import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlockConfigs";
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
-import usePipelineField from "@/devTools/editor/hooks/usePipelineField";
+import usePipelineBlocksField from "@/devTools/editor/hooks/usePipelineBlocksField";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -64,14 +70,12 @@ const blockConfigTheme: ThemeProps = {
 
 const EditTab: React.FC<{
   eventKey: string;
-  editable?: Set<string>;
-  pipelineFieldName?: string;
-}> = ({ eventKey, pipelineFieldName = "extension.body" }) => {
+}> = ({ eventKey }) => {
   useExtensionTrace();
   // ToDo Figure out how to properly bind field validation errors to Formik state // useRuntimeErrors(pipelineFieldName);
 
   const { values, setValues: setFormValues } = useFormikContext<FormState>();
-  const { extensionPoint, type: elementType } = values;
+  const { extensionPoint, type: elementType, extension } = values;
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
@@ -81,71 +85,94 @@ const EditTab: React.FC<{
 
   const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
 
-  const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
+  const [activeNodeId, setActiveNodeId] = useState<NodeId>("foundation");
 
-  const [
-    { value: blockPipeline = [] },
-    { error: blockPipelineError },
-    pipelineFieldHelpers,
-    traceError,
-  ] = usePipelineField(pipelineFieldName);
+  const [, pipelineBlocksErrors, , traceError] = usePipelineBlocksField();
 
   const blockFieldName = useMemo(
-    () => `${pipelineFieldName}[${activeNodeIndex - 1}]`,
-    [pipelineFieldName, activeNodeIndex]
+    () => `extension.pipelineBlocks[${activeNodeId}]`,
+    [activeNodeId]
   );
 
   // Load once
   const [allBlocks] = useAsyncState(async () => blockRegistry.all(), [], []);
 
-  const pipelineIdHash = hash(blockPipeline.map((x) => x.id));
+  const pipelineIdHash = hash(
+    Object.values(extension.pipelineBlocks).map((x) => x.id)
+  );
   const resolvedBlocks = useMemo(
-    () =>
-      blockPipeline.map(({ id }) =>
-        (allBlocks ?? []).find((block) => block.id === id)
-      ),
+    () => {
+      const resolved: Record<UUID, IBlock> = {};
+      for (const blockConfig of Object.values(extension.pipelineBlocks)) {
+        resolved[blockConfig.instanceId] = allBlocks.find(
+          (x) => x.id === blockConfig.id
+        );
+      }
+
+      return resolved;
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using actionsHash since we only use the actions ids
     [allBlocks, pipelineIdHash]
   );
 
-  const [blockTypes] = useAsyncState(
-    async () =>
-      Promise.all(resolvedBlocks.map(async (block) => getType(block))),
-    [resolvedBlocks]
+  const [showAppendNode] = useAsyncState(
+    async () => {
+      if (!resolvedBlocks || Object.keys(resolvedBlocks).length === 0) {
+        return true;
+      }
+
+      const id = extension.pipelineOrder[extension.pipelineOrder.length - 1];
+      // eslint-disable-next-line security/detect-object-injection -- uuid
+      const lastType = await getType(resolvedBlocks[id]);
+      return lastType !== "renderer";
+    },
+    [resolvedBlocks, extension.pipelineOrder],
+    false
   );
 
-  const onSelectNode =
-    // Wrapper only accepting a number (i.e., does not accept a state update method)
-    useCallback((index: number) => {
-      setActiveNodeIndex(index);
-    }, []);
-
-  const removeBlock = (pipelineIndex: number) => {
+  const removeBlock = (instanceIdToRemove: UUID) => {
+    let prevNodeId: NodeId;
     let nextState = produce(values, (draft) => {
-      const pipeline = getIn(draft, pipelineFieldName) as BlockPipeline;
-      pipeline.splice(pipelineIndex, 1);
+      const index = draft.extension.pipelineOrder.indexOf(instanceIdToRemove);
+      if (index === 0) {
+        prevNodeId = "foundation";
+      } else {
+        prevNodeId = draft.extension.pipelineOrder[index - 1];
+      }
+
+      draft.extension.pipelineOrder.splice(index, 1);
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection -- uuid
+      delete draft.extension.pipelineBlocks[instanceIdToRemove];
     });
 
     nextState = produceExcludeUnusedDependencies(nextState);
 
     // Set the active node before setting the form values, otherwise there's a race condition based on the React state
     // causing a re-render vs. the Formik state causing a re-render
-    if (activeNodeIndex > pipelineIndex) {
-      setActiveNodeIndex(activeNodeIndex - 1);
+    if (activeNodeId === instanceIdToRemove) {
+      setActiveNodeId(prevNodeId);
     }
 
     setFormValues(nextState);
   };
 
-  const blockNodes: EditorNodeProps[] = zip(blockPipeline, resolvedBlocks).map(
-    ([action, block], index) =>
-      block
+  const blockNodes: EditorNodeProps[] = extension.pipelineOrder.map(
+    (instanceId) => {
+      // eslint-disable-next-line security/detect-object-injection -- uuid
+      const blockConfig = extension.pipelineBlocks[instanceId];
+      // eslint-disable-next-line security/detect-object-injection -- uuid
+      const iBlock = resolvedBlocks[instanceId];
+      const nodeId = instanceId;
+      return iBlock
         ? {
-            title: isNullOrBlank(action.label) ? block?.name : action.label,
-            outputKey: action.outputKey,
+            nodeId,
+            title: isNullOrBlank(blockConfig.label)
+              ? iBlock?.name
+              : blockConfig.label,
+            outputKey: blockConfig.outputKey,
             icon: (
               <BrickIcon
-                brick={block}
+                brick={iBlock}
                 size="2x"
                 // This makes brick icons that use basic font awesome icons
                 //   inherit the editor node layout color scheme.
@@ -155,30 +182,34 @@ const EditTab: React.FC<{
               />
             ),
             // eslint-disable-next-line security/detect-object-injection
-            hasError: Boolean(blockPipelineError?.[index]),
-            hasWarning: traceError?.blockInstanceId === action.instanceId,
+            hasError:
+              pipelineBlocksErrors && Boolean(pipelineBlocksErrors[instanceId]),
+            hasWarning: traceError?.blockInstanceId === instanceId,
             onClick: () => {
-              onSelectNode(index + 1);
+              setActiveNodeId(instanceId);
             },
           }
         : {
+            nodeId,
             title: "Loading...",
-          }
+          };
+    }
   );
 
-  const initialNode: EditorNodeProps = useMemo(
+  const foundationNode: EditorNodeProps = useMemo(
     () => ({
+      nodeId: "foundation",
       outputKey: "input",
       title: label,
       icon,
       onClick: () => {
-        onSelectNode(0);
+        setActiveNodeId("foundation");
       },
     }),
-    [icon, label, onSelectNode]
+    [icon, label]
   );
 
-  const nodes: EditorNodeProps[] = [initialNode, ...blockNodes];
+  const nodes: EditorNodeProps[] = [foundationNode, ...blockNodes];
 
   const [relevantBlocksToAdd] = useAsyncState(async () => {
     const excludeTypes: BlockType[] = ["actionPanel", "panel"].includes(
@@ -190,30 +221,35 @@ const EditTab: React.FC<{
   }, [allBlocks, elementType]);
 
   const addBlock = useCallback(
-    async (block: IBlock, nodeIndex: number) => {
-      const pipelineIndex = nodeIndex - 1;
-      const prev = blockPipeline.slice(0, pipelineIndex);
-      const next = blockPipeline.slice(pipelineIndex, blockPipeline.length);
-      const newBlock = {
+    async (block: IBlock, beforeInstanceId?: UUID) => {
+      const insertIndex = beforeInstanceId
+        ? extension.pipelineOrder.indexOf(beforeInstanceId)
+        : extension.pipelineOrder.length;
+      const newBlock: BlockConfig = {
         id: block.id,
         outputKey: await generateFreshOutputKey(
           block,
           compact([
             "input" as OutputKey,
-            ...blockPipeline.map((x) => x.outputKey),
+            ...pipelineFromExtension(extension).map((x) => x.outputKey),
           ])
         ),
         instanceId: uuidv4(),
         config:
           getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
       };
-      pipelineFieldHelpers.setValue([...prev, newBlock, ...next]);
-      onSelectNode(nodeIndex);
+      const nextState = produce(values, (draft) => {
+        draft.extension.pipelineBlocks[newBlock.instanceId] = newBlock;
+        draft.extension.pipelineOrder.splice(
+          insertIndex,
+          0,
+          newBlock.instanceId
+        );
+      });
+      setFormValues(nextState);
     },
-    [onSelectNode, pipelineFieldHelpers, blockPipeline]
+    [extension, values, setFormValues]
   );
-
-  const blockInstanceId = blockPipeline[activeNodeIndex - 1]?.instanceId;
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
@@ -221,20 +257,16 @@ const EditTab: React.FC<{
         <div className={styles.nodeLayout}>
           <EditorNodeLayout
             nodes={nodes}
-            activeNodeIndex={activeNodeIndex}
-            showAppend={
-              !blockTypes ||
-              blockTypes?.length === 0 ||
-              blockTypes[blockTypes.length - 1] !== "renderer"
-            }
+            activeNodeId={activeNodeId}
             relevantBlocksToAdd={relevantBlocksToAdd}
             addBlock={addBlock}
+            showAppend={showAppendNode}
           />
         </div>
         <div className={styles.configPanel}>
           <ErrorBoundary>
             <FormTheme.Provider value={blockConfigTheme}>
-              {activeNodeIndex === 0 && (
+              {activeNodeId === "foundation" && (
                 <>
                   <Col>
                     <ConnectedFieldTemplate
@@ -246,13 +278,14 @@ const EditTab: React.FC<{
                 </>
               )}
 
-              {activeNodeIndex > 0 && (
+              {activeNodeId !== "foundation" && activeNodeId !== "append" && (
                 <EditorNodeConfigPanel
-                  key={blockPipeline[activeNodeIndex - 1].instanceId}
+                  key={activeNodeId}
                   blockFieldName={blockFieldName}
-                  blockId={resolvedBlocks[activeNodeIndex - 1].id}
+                  // eslint-disable-next-line security/detect-object-injection -- RegistryId
+                  blockId={extension.pipelineBlocks[activeNodeId].id}
                   onRemoveNode={() => {
-                    removeBlock(activeNodeIndex - 1);
+                    removeBlock(activeNodeId);
                   }}
                 />
               )}
@@ -260,17 +293,16 @@ const EditTab: React.FC<{
           </ErrorBoundary>
         </div>
         <div className={styles.dataPanel}>
-          {activeNodeIndex === 0 ? (
+          {activeNodeId === "foundation" ? (
             <FoundationDataPanel
-              firstBlockInstanceId={blockPipeline[0]?.instanceId}
+              firstBlockInstanceId={
+                extension.pipelineBlocks[extension.pipelineOrder[0]]?.instanceId
+              }
             />
           ) : (
-            <DataPanel
-              key={blockInstanceId}
-              blockPipelineFieldName={pipelineFieldName}
-              blockPipelineIndex={activeNodeIndex - 1}
-              instanceId={blockInstanceId}
-            />
+            activeNodeId !== "append" && (
+              <DataPanel key={activeNodeId} instanceId={activeNodeId} />
+            )
           )}
         </div>
       </div>

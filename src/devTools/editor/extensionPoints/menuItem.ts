@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IconConfig, IExtension, Metadata } from "@/core";
+import { IconConfig, IExtension, Metadata, UUID } from "@/core";
 import {
   ButtonDefinition,
   ButtonSelectionResult,
@@ -29,6 +29,7 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+  pipelineFromExtension,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
@@ -54,16 +55,12 @@ import {
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import { BlockConfig, NormalizedAvailability } from "@/blocks/types";
 import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfiguration";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 
 const wizard: WizardStep[] = [
-  {
-    step: "Edit",
-    Component: EditTab,
-    extraProps: { pipelineFieldName: "extension.action" },
-  },
+  { step: "Edit", Component: EditTab },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -90,9 +87,10 @@ export interface ActionFormState extends BaseFormState {
 
   extension: {
     caption: string;
+    pipelineBlocks: Record<UUID, BlockConfig>;
+    pipelineOrder: UUID[];
     dynamicCaption?: boolean;
     icon?: IconConfig;
-    action: BlockPipeline;
   };
 }
 
@@ -121,8 +119,9 @@ function fromNativeElement(
     },
     extension: {
       caption: button.item.caption,
+      pipelineBlocks: {},
+      pipelineOrder: [],
       dynamicCaption: false,
-      action: [],
     },
   };
 }
@@ -158,6 +157,10 @@ function selectExtension(
   }: ActionFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<MenuItemExtensionConfig> {
+  const config: MenuItemExtensionConfig = {
+    action: pipelineFromExtension(extension),
+    ...extension,
+  };
   return removeEmptyValues({
     id: uuid,
     apiVersion,
@@ -166,8 +169,8 @@ function selectExtension(
     label,
     services,
     config: options.includeInstanceIds
-      ? extension
-      : excludeInstanceIds(extension, "action"),
+      ? config
+      : excludeInstanceIds(config, "action"),
   });
 }
 
@@ -191,7 +194,8 @@ async function fromExtensionPoint(
     extension: {
       caption:
         extensionPoint.definition.defaultOptions?.caption ?? "Custom Action",
-      action: [],
+      pipelineBlocks: {},
+      pipelineOrder: [],
     },
 
     // There's no containerInfo for the page because the user did not select it during the session
@@ -221,6 +225,10 @@ export async function fromExtension(
     "menuItem"
   >(config, "menuItem");
 
+  const [pipelineBlocks, pipelineOrder] = withInstanceIds(
+    castArray(config.config.action)
+  );
+
   return {
     uuid: config.id,
     apiVersion: config.apiVersion,
@@ -232,7 +240,8 @@ export async function fromExtension(
 
     extension: {
       ...config.config,
-      action: withInstanceIds(castArray(config.config.action)),
+      pipelineBlocks,
+      pipelineOrder,
     },
 
     containerInfo: null,

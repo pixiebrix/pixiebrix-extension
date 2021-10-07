@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata } from "@/core";
+import { IExtension, Metadata, UUID } from "@/core";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
@@ -25,6 +25,7 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+  pipelineFromExtension,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
@@ -53,16 +54,12 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import { BlockConfig, NormalizedAvailability } from "@/blocks/types";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration";
 
 const wizard: WizardStep[] = [
-  {
-    step: "Edit",
-    Component: EditTab,
-    extraProps: { pipelineFieldName: "extension.body" },
-  },
+  { step: "Edit", Component: EditTab },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -91,7 +88,8 @@ export interface PanelFormState extends BaseFormState {
 
   extension: {
     heading: string;
-    body: BlockPipeline;
+    pipelineBlocks: Record<UUID, BlockConfig>;
+    pipelineOrder: UUID[];
     collapsible?: boolean;
     shadowDOM?: boolean;
   };
@@ -126,7 +124,8 @@ function fromNativeElement(
       heading: panel.panel.heading,
       collapsible: panel.panel.collapsible ?? false,
       shadowDOM: panel.panel.shadowDOM ?? true,
-      body: [],
+      pipelineBlocks: {},
+      pipelineOrder: [],
     },
   };
 }
@@ -163,6 +162,10 @@ function selectExtension(
   }: PanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<PanelConfig> {
+  const config: PanelConfig = {
+    body: pipelineFromExtension(extension),
+    ...extension,
+  };
   return removeEmptyValues({
     id: uuid,
     apiVersion,
@@ -171,8 +174,8 @@ function selectExtension(
     label,
     services,
     config: options.includeInstanceIds
-      ? extension
-      : excludeInstanceIds(extension, "body"),
+      ? config
+      : excludeInstanceIds(config, "body"),
   });
 }
 
@@ -207,7 +210,8 @@ async function fromExtensionPoint(
     extension: {
       heading,
       collapsible: boolean(collapsible ?? false),
-      body: [],
+      pipelineBlocks: {},
+      pipelineOrder: [],
     },
 
     // There's no containerInfo for the page because the user did not select it during the session
@@ -237,6 +241,10 @@ async function fromExtension(
     "panel"
   >(config, "panel");
 
+  const [pipelineBlocks, pipelineOrder] = withInstanceIds(
+    castArray(config.config.body)
+  );
+
   return {
     uuid: config.id,
     apiVersion: config.apiVersion,
@@ -247,9 +255,10 @@ async function fromExtension(
     services: config.services,
 
     extension: {
+      heading: config.config.heading ?? "",
       ...config.config,
-      heading: config.config.heading,
-      body: withInstanceIds(castArray(config.config.body)),
+      pipelineBlocks,
+      pipelineOrder,
     },
 
     containerInfo: null,

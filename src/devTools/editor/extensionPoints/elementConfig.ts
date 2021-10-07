@@ -29,7 +29,7 @@ import { FrameworkMeta } from "@/messaging/constants";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
-import { NormalizedAvailability } from "@/blocks/types";
+import { BlockConfig, NormalizedAvailability } from "@/blocks/types";
 
 export type ElementType =
   | "menuItem"
@@ -54,6 +54,11 @@ export interface BaseExtensionPointState {
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;
   };
+}
+
+export interface BaseExtensionState {
+  pipelineBlocks: Record<UUID, BlockConfig>;
+  pipelineOrder: UUID[];
 }
 
 export interface BaseFormState {
@@ -93,7 +98,7 @@ export interface BaseFormState {
 
   extensionPoint: BaseExtensionPointState;
 
-  extension: unknown;
+  extension: BaseExtensionState;
 }
 
 /**

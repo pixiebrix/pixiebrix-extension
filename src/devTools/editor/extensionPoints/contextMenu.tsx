@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata } from "@/core";
+import { IExtension, Metadata, UUID } from "@/core";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
@@ -25,6 +25,7 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+  pipelineFromExtension,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
@@ -49,17 +50,13 @@ import {
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Menus } from "webextension-polyfill-ts";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import { BlockConfig, NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
 
 const wizard: WizardStep[] = [
-  {
-    step: "Edit",
-    Component: EditTab,
-    extraProps: { pipelineFieldName: "extension.action" },
-  },
+  { step: "Edit", Component: EditTab },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -79,7 +76,8 @@ export interface ContextMenuFormState extends BaseFormState {
 
   extension: {
     title: string;
-    action: BlockPipeline;
+    pipelineBlocks: Record<UUID, BlockConfig>;
+    pipelineOrder: UUID[];
   };
 }
 
@@ -110,7 +108,8 @@ function fromNativeElement(
     },
     extension: {
       title,
-      action: [],
+      pipelineBlocks: {},
+      pipelineOrder: [],
     },
   };
 }
@@ -150,6 +149,10 @@ function selectExtension(
   }: ContextMenuFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ContextMenuConfig> {
+  const config: ContextMenuConfig = {
+    title: extension.title,
+    action: pipelineFromExtension(extension),
+  };
   return removeEmptyValues({
     id: uuid,
     apiVersion,
@@ -158,8 +161,8 @@ function selectExtension(
     label,
     services,
     config: options.includeInstanceIds
-      ? extension
-      : excludeInstanceIds(extension, "action"),
+      ? config
+      : excludeInstanceIds(config, "action"),
   });
 }
 
@@ -180,6 +183,10 @@ async function fromExtension(
     reader,
   } = extensionPoint.definition;
 
+  const [pipelineBlocks, pipelineOrder] = withInstanceIds(
+    castArray(extensionConfig.action)
+  );
+
   return {
     uuid: config.id,
     apiVersion: config.apiVersion,
@@ -191,7 +198,8 @@ async function fromExtension(
 
     extension: {
       ...extensionConfig,
-      action: withInstanceIds(castArray(extensionConfig.action)),
+      pipelineBlocks,
+      pipelineOrder,
     },
 
     extensionPoint: {
@@ -234,7 +242,8 @@ async function fromExtensionPoint(
 
     extension: {
       title: defaultOptions.title ?? "Custom Action",
-      action: [],
+      pipelineBlocks: {},
+      pipelineOrder: [],
     },
 
     extensionPoint: {

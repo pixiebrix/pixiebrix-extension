@@ -19,6 +19,7 @@ import React, { useCallback } from "react";
 import styles from "./EditorNodeLayout.module.scss";
 import EditorNode, {
   EditorNodeProps,
+  NodeId,
 } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -26,7 +27,7 @@ import {
   faPlus,
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { IBlock, RegistryId } from "@/core";
+import { IBlock, RegistryId, UUID } from "@/core";
 import BlockModal from "@/components/brickModal/BrickModal";
 import useBrickRecommendations from "@/devTools/editor/tabs/editTab/useBrickRecommendations";
 
@@ -37,7 +38,13 @@ const renderAppend = ({ show }: { show: () => void }) => (
       size="lg"
       className={styles.appendArrow}
     />
-    <EditorNode muted title="Add" icon={faPlus} onClick={show} />
+    <EditorNode
+      muted
+      title="Add"
+      icon={faPlus}
+      onClick={show}
+      nodeId="append"
+    />
   </>
 );
 
@@ -49,17 +56,11 @@ const addBrickCaption = (
 
 const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];
-  activeNodeIndex: number;
+  activeNodeId: NodeId;
   relevantBlocksToAdd: IBlock[];
-  addBlock: (block: IBlock, atIndex: number) => void;
+  addBlock: (block: IBlock, beforeInstanceId?: UUID) => void;
   showAppend: boolean;
-}> = ({
-  nodes,
-  activeNodeIndex,
-  relevantBlocksToAdd,
-  addBlock,
-  showAppend,
-}) => {
+}> = ({ nodes, activeNodeId, relevantBlocksToAdd, addBlock, showAppend }) => {
   const recommendations: RegistryId[] = useBrickRecommendations();
 
   const renderInsert = useCallback(
@@ -79,31 +80,32 @@ const EditorNodeLayout: React.FC<{
   return (
     <div className={styles.root}>
       {nodes.length > 0 &&
-        nodes.map((nodeProps, index) => (
-          <React.Fragment key={index}>
-            {index !== 0 && (
-              <BlockModal
-                bricks={relevantBlocksToAdd}
-                renderButton={renderInsert}
-                recommendations={recommendations}
-                selectCaption={addBrickCaption}
-                onSelect={(block) => {
-                  addBlock(block, index);
-                }}
-              />
-            )}
-            <EditorNode active={index === activeNodeIndex} {...nodeProps} />
-          </React.Fragment>
-        ))}
+        nodes.map((nodeProps, index) => {
+          const { nodeId } = nodeProps;
+          return (
+            <React.Fragment key={index}>
+              {nodeId !== "foundation" && nodeId !== "append" && (
+                <BlockModal
+                  bricks={relevantBlocksToAdd}
+                  renderButton={renderInsert}
+                  recommendations={recommendations}
+                  selectCaption={addBrickCaption}
+                  onSelect={(block) => {
+                    addBlock(block, nodeId);
+                  }}
+                />
+              )}
+              <EditorNode active={nodeId === activeNodeId} {...nodeProps} />
+            </React.Fragment>
+          );
+        })}
       {showAppend && (
         <BlockModal
           bricks={relevantBlocksToAdd}
           renderButton={renderAppend}
           recommendations={recommendations}
           selectCaption={addBrickCaption}
-          onSelect={(block) => {
-            addBlock(block, nodes.length);
-          }}
+          onSelect={addBlock}
         />
       )}
     </div>
