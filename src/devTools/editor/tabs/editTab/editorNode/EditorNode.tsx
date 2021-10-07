@@ -26,10 +26,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { UUID } from "@/core";
 
-export type NodeId = "foundation" | "append" | UUID;
+export const FOUNDATION_NODE_ID = "foundation" as UUID;
+export const APPEND_NODE_ID = "append" as UUID;
 
 export type EditorNodeProps = {
-  nodeId: NodeId;
+  nodeId: UUID;
   title: string;
   outputKey?: string;
   icon?: IconProp | React.ReactNode;

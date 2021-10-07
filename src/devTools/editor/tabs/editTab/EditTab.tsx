@@ -21,8 +21,9 @@ import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/Ed
 import { useFormikContext } from "formik";
 import { BlockConfig } from "@/blocks/types";
 import {
+  APPEND_NODE_ID,
   EditorNodeProps,
-  NodeId,
+  FOUNDATION_NODE_ID,
 } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
@@ -85,7 +86,7 @@ const EditTab: React.FC<{
 
   const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
 
-  const [activeNodeId, setActiveNodeId] = useState<NodeId>("foundation");
+  const [activeNodeId, setActiveNodeId] = useState<UUID>(FOUNDATION_NODE_ID);
 
   const [, pipelineBlocksErrors, , traceError] = usePipelineBlocksField();
 
@@ -131,11 +132,11 @@ const EditTab: React.FC<{
   );
 
   const removeBlock = (instanceIdToRemove: UUID) => {
-    let prevNodeId: NodeId;
+    let prevNodeId: UUID;
     let nextState = produce(values, (draft) => {
       const index = draft.extension.pipelineOrder.indexOf(instanceIdToRemove);
       if (index === 0) {
-        prevNodeId = "foundation";
+        prevNodeId = FOUNDATION_NODE_ID;
       } else {
         prevNodeId = draft.extension.pipelineOrder[index - 1];
       }
@@ -198,12 +199,12 @@ const EditTab: React.FC<{
 
   const foundationNode: EditorNodeProps = useMemo(
     () => ({
-      nodeId: "foundation",
+      nodeId: FOUNDATION_NODE_ID,
       outputKey: "input",
       title: label,
       icon,
       onClick: () => {
-        setActiveNodeId("foundation");
+        setActiveNodeId(FOUNDATION_NODE_ID);
       },
     }),
     [icon, label]
@@ -267,7 +268,7 @@ const EditTab: React.FC<{
         <div className={styles.configPanel}>
           <ErrorBoundary>
             <FormTheme.Provider value={blockConfigTheme}>
-              {activeNodeId === "foundation" && (
+              {activeNodeId === FOUNDATION_NODE_ID && (
                 <>
                   <Col>
                     <ConnectedFieldTemplate
@@ -279,29 +280,30 @@ const EditTab: React.FC<{
                 </>
               )}
 
-              {activeNodeId !== "foundation" && activeNodeId !== "append" && (
-                <EditorNodeConfigPanel
-                  key={activeNodeId}
-                  blockFieldName={blockFieldName}
-                  // eslint-disable-next-line security/detect-object-injection -- RegistryId
-                  blockId={extension.pipelineBlocks[activeNodeId].id}
-                  onRemoveNode={() => {
-                    removeBlock(activeNodeId);
-                  }}
-                />
-              )}
+              {activeNodeId !== FOUNDATION_NODE_ID &&
+                activeNodeId !== APPEND_NODE_ID && (
+                  <EditorNodeConfigPanel
+                    key={activeNodeId}
+                    blockFieldName={blockFieldName}
+                    // eslint-disable-next-line security/detect-object-injection -- RegistryId
+                    blockId={extension.pipelineBlocks[activeNodeId].id}
+                    onRemoveNode={() => {
+                      removeBlock(activeNodeId);
+                    }}
+                  />
+                )}
             </FormTheme.Provider>
           </ErrorBoundary>
         </div>
         <div className={styles.dataPanel}>
-          {activeNodeId === "foundation" ? (
+          {activeNodeId === FOUNDATION_NODE_ID ? (
             <FoundationDataPanel
               firstBlockInstanceId={
                 extension.pipelineBlocks[extension.pipelineOrder[0]]?.instanceId
               }
             />
           ) : (
-            activeNodeId !== "append" && (
+            activeNodeId !== APPEND_NODE_ID && (
               <DataPanel key={activeNodeId} instanceId={activeNodeId} />
             )
           )}

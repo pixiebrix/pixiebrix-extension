@@ -18,8 +18,9 @@
 import React, { useCallback } from "react";
 import styles from "./EditorNodeLayout.module.scss";
 import EditorNode, {
+  APPEND_NODE_ID,
   EditorNodeProps,
-  NodeId,
+  FOUNDATION_NODE_ID,
 } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -43,7 +44,7 @@ const renderAppend = ({ show }: { show: () => void }) => (
       title="Add"
       icon={faPlus}
       onClick={show}
-      nodeId="append"
+      nodeId={APPEND_NODE_ID}
     />
   </>
 );
@@ -56,7 +57,7 @@ const addBrickCaption = (
 
 const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];
-  activeNodeId: NodeId;
+  activeNodeId: UUID;
   relevantBlocksToAdd: IBlock[];
   addBlock: (block: IBlock, beforeInstanceId?: UUID) => void;
   showAppend: boolean;
@@ -84,7 +85,7 @@ const EditorNodeLayout: React.FC<{
           const { nodeId } = nodeProps;
           return (
             <React.Fragment key={index}>
-              {nodeId !== "foundation" && nodeId !== "append" && (
+              {nodeId !== FOUNDATION_NODE_ID && nodeId !== APPEND_NODE_ID && (
                 <BlockModal
                   bricks={relevantBlocksToAdd}
                   renderButton={renderInsert}
