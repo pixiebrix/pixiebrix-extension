@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useFormikContext } from "formik";
@@ -72,7 +72,6 @@ const EditTab: React.FC<{
   eventKey: string;
 }> = ({ eventKey }) => {
   useExtensionTrace();
-  // ToDo Figure out how to properly bind field validation errors to Formik state // useRuntimeErrors(pipelineFieldName);
 
   const { values, setValues: setFormValues } = useFormikContext<FormState>();
   const { extensionPoint, type: elementType, extension } = values;
@@ -83,16 +82,9 @@ const EditTab: React.FC<{
     [extensionPoint.metadata.id]
   );
 
-  const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
-
   const [activeNodeId, setActiveNodeId] = useState<NodeId>("foundation");
 
   const [, pipelineBlocksErrors, , traceError] = usePipelineBlocksField();
-
-  const blockFieldName = useMemo(
-    () => `extension.pipelineBlocks[${activeNodeId}]`,
-    [activeNodeId]
-  );
 
   // Load once
   const [allBlocks] = useAsyncState(async () => blockRegistry.all(), [], []);
@@ -156,6 +148,8 @@ const EditTab: React.FC<{
     setFormValues(nextState);
   };
 
+  const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
+
   const blockNodes: EditorNodeProps[] = extension.pipelineOrder.map(
     (instanceId) => {
       // eslint-disable-next-line security/detect-object-injection -- uuid
@@ -196,18 +190,15 @@ const EditTab: React.FC<{
     }
   );
 
-  const foundationNode: EditorNodeProps = useMemo(
-    () => ({
-      nodeId: "foundation",
-      outputKey: "input",
-      title: label,
-      icon,
-      onClick: () => {
-        setActiveNodeId("foundation");
-      },
-    }),
-    [icon, label]
-  );
+  const foundationNode: EditorNodeProps = {
+    nodeId: "foundation",
+    outputKey: "input",
+    title: label,
+    icon,
+    onClick: () => {
+      setActiveNodeId("foundation");
+    },
+  };
 
   const nodes: EditorNodeProps[] = [foundationNode, ...blockNodes];
 
@@ -220,37 +211,32 @@ const EditTab: React.FC<{
     return filterBlocks(allBlocks, { excludeTypes });
   }, [allBlocks, elementType]);
 
-  const addBlock = useCallback(
-    async (block: IBlock, beforeInstanceId?: UUID) => {
-      const insertIndex = beforeInstanceId
-        ? extension.pipelineOrder.indexOf(beforeInstanceId)
-        : extension.pipelineOrder.length;
-      const newBlock: BlockConfig = {
-        id: block.id,
-        outputKey: await generateFreshOutputKey(
-          block,
-          compact([
-            "input" as OutputKey,
-            ...pipelineFromExtension(extension).map((x) => x.outputKey),
-          ])
-        ),
-        instanceId: uuidv4(),
-        config:
-          getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
-      };
-      const nextState = produce(values, (draft) => {
-        draft.extension.pipelineBlocks[newBlock.instanceId] = newBlock;
-        draft.extension.pipelineOrder.splice(
-          insertIndex,
-          0,
-          newBlock.instanceId
-        );
-      });
-      setFormValues(nextState);
-      setActiveNodeId(newBlock.instanceId);
-    },
-    [extension, values, setFormValues]
-  );
+  const addBlock = async (block: IBlock, beforeInstanceId?: UUID) => {
+    const insertIndex = beforeInstanceId
+      ? extension.pipelineOrder.indexOf(beforeInstanceId)
+      : extension.pipelineOrder.length;
+    const newBlock: BlockConfig = {
+      id: block.id,
+      outputKey: await generateFreshOutputKey(
+        block,
+        compact([
+          "input" as OutputKey,
+          ...pipelineFromExtension(extension).map((x) => x.outputKey),
+        ])
+      ),
+      instanceId: uuidv4(),
+      config:
+        getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
+    };
+    const nextState = produce(values, (draft) => {
+      draft.extension.pipelineBlocks[newBlock.instanceId] = newBlock;
+      draft.extension.pipelineOrder.splice(insertIndex, 0, newBlock.instanceId);
+    });
+    setFormValues(nextState);
+    setActiveNodeId(newBlock.instanceId);
+  };
+
+  const blockFieldName = `extension.pipelineBlocks[${activeNodeId}]`;
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>

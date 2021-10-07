@@ -33,15 +33,10 @@ import {
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
-import { getType } from "@/blocks/util";
+import { BlockType, getType } from "@/blocks/util";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
-type ComponentKind =
-  | "reader"
-  | "component"
-  | "effect"
-  | "transform"
-  | "renderer";
+type ComponentKind = BlockType | "component";
 
 const METHOD_MAP: Map<ComponentKind, string> = new Map([
   ["reader", "read"],
@@ -142,6 +137,7 @@ class ExternalBlock extends Block {
 
     try {
       const block = await blockRegistry.lookup(last.id);
+      // FIXME getType returns BlockType, how can it become ComponentKind?
       return await getType(block);
     } catch {
       return null;
