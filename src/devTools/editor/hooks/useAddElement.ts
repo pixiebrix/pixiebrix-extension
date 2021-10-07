@@ -21,18 +21,18 @@ import { DevToolsContext } from "@/devTools/context";
 import AuthContext from "@/auth/AuthContext";
 import { useToasts } from "react-toast-notifications";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
-import * as nativeOperations from "@/background/devtools";
 import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
 import { reportError } from "@/telemetry/logging";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { getErrorMessage } from "@/errors";
-import { getCurrentURL } from "@/devTools/utils";
+import { getCurrentURL, thisTab } from "@/devTools/utils";
+import { updateDynamicElement } from "@/contentScript/messenger/api";
 
 type AddElement = (config: ElementConfig) => void;
 
 function useAddElement(): AddElement {
   const dispatch = useDispatch();
-  const { port, tabState } = useContext(DevToolsContext);
+  const { tabState } = useContext(DevToolsContext);
   const { scope, flags = [] } = useContext(AuthContext);
   const { addToast } = useToasts();
 
@@ -53,7 +53,7 @@ function useAddElement(): AddElement {
       }
 
       try {
-        const element = await config.selectNativeElement(port);
+        const element = await config.selectNativeElement(thisTab);
         const url = await getCurrentURL();
 
         const metadata = internalExtensionPointMetaFactory();
@@ -65,8 +65,8 @@ function useAddElement(): AddElement {
           tabState.meta.frameworks ?? []
         );
 
-        await nativeOperations.updateDynamicElement(
-          port,
+        await updateDynamicElement(
+          thisTab,
           config.asDynamicElement(initialState)
         );
 
@@ -90,7 +90,7 @@ function useAddElement(): AddElement {
         dispatch(actions.toggleInsert(null));
       }
     },
-    [dispatch, port, tabState.meta?.frameworks, scope, addToast, flags]
+    [dispatch, tabState.meta?.frameworks, scope, addToast, flags]
   );
 }
 

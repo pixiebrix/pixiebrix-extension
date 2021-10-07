@@ -39,7 +39,7 @@ import {
   runBlockInContentScript,
 } from "@/contentScript/messenger/api";
 
-const CONTENT_MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
+const RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
 const MESSAGE_RUN_BLOCK_BROADCAST = `${MESSAGE_PREFIX}RUN_BLOCK_BROADCAST`;
@@ -211,7 +211,7 @@ handlers.set(
 
     const target = nonceToTarget.get(nonce);
     console.debug(
-      `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
+      `Sending ${RUN_BLOCK} to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
     );
     return runBlockInContentScript(target, {
       sourceTabId: sender.tab.id,
@@ -233,7 +233,7 @@ handlers.set(
     // For now, only support top-level frame as target
     await waitReady({ tabId: target, frameId: 0 });
     console.debug(
-      `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
+      `Sending ${RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
     );
     return runBlockInContentScript(
       { tabId: target, frameId: 0 },

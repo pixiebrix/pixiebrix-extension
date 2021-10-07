@@ -82,7 +82,7 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
   };
 
   // `onReadyNotification` is not expected to throw. It resolves on `abort` simply to
-  // clean up the listeners, but by then nothing is await this promise anyway.
+  // clean up the listeners, but by then nothing is awaiting this promise anyway.
   browser.runtime.onMessage.addListener(onMessage);
   signal.addEventListener("abort", resolve);
 
