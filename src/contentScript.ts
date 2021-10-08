@@ -47,7 +47,7 @@ function ignoreConnectionErrors(
   }
 }
 
-// Must be run as early as possible
+// Must run as early as possible
 uncaughtErrorHandlers.add(ignoreConnectionErrors);
 
 registerBuiltinBlocks();
