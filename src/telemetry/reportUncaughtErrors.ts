@@ -39,6 +39,7 @@ function avoidLoops(errorEvent: ErrorEvent | PromiseRejectionEvent): boolean {
   return wasSeen;
 }
 
+/** Set of predicates that will run for each uncaught error to determine whether to ignore them */
 export const uncaughtErrorToIgnore = new Set([avoidLoops]);
 const seen = new WeakSet<ErrorEvent | PromiseRejectionEvent>();
 
