@@ -308,6 +308,7 @@ async function codeGrantFlow(
       },
     });
   } catch (error: unknown) {
+    console.error(error);
     throw new Error(`Error getting OAuth2 token: ${getErrorMessage(error)}`);
   }
 
