@@ -14,23 +14,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, Suspense } from "react";
 import { Col, Row } from "react-bootstrap";
 import Select from "react-select";
-import { useParams } from "react-router";
 import useFetch from "@/hooks/useFetch";
 import { PackageVersion, Package } from "@/types/contract";
-import { diff as DiffEditor } from "react-ace";
+import DiffEditor from "@/vendors/DiffEditor";
 
-import "ace-builds/src-noconflict/mode-yaml";
-import "ace-builds/src-noconflict/theme-chrome";
-
-const BrickHistory: React.FunctionComponent = () => {
-  const { id } = useParams<{ id: string }>();
+const BrickHistory: React.FunctionComponent<{
+  brick: Package;
+}> = ({ brick }) => {
   const { data: packageVersions = [] } = useFetch<PackageVersion[]>(
-    `/api/bricks/${id}/versions/`
+    `/api/bricks/${brick.id}/versions/`
   );
-  const { data: brick } = useFetch<Package>(`/api/bricks/${id}`);
   const [versionA, setVersionA] = useState(null);
   const [versionB, setVersionB] = useState(null);
 
@@ -57,39 +53,47 @@ const BrickHistory: React.FunctionComponent = () => {
   }, [currentVersion]);
 
   return (
-    <Row>
-      <Col xs={12} className="pb-3">
-        Compare past versions of this brick by selecting the versions below.
-      </Col>
-      <Col xs={4}>
-        <Select
-          placeholder="Select a version"
-          options={versionOptions.filter((option) => option !== versionB)}
-          value={versionA}
-          onChange={(option) => {
-            setVersionA(option);
-          }}
-        />
-      </Col>
-      <Col xs={4}>
-        <Select
-          placeholder="Select a version"
-          options={versionOptions.filter((option) => option !== versionA)}
-          onChange={(option) => {
-            setVersionB(option);
-          }}
-        />
-      </Col>
-      <Col xs={6}>{versionA?.value.raw_config}</Col>
-      <Col xs={6}>{versionB?.value.raw_config}</Col>
-
-      <DiffEditor
-        value={["hello world?", "hello world!"]}
-        theme="chrome"
-        mode="yaml"
-        name="diff_editor"
-      />
-    </Row>
+    <>
+      <Row>
+        <Col xs={12} className="pb-3">
+          Compare past versions of this brick by selecting the versions below.
+        </Col>
+        <Col xs={4}>
+          <Select
+            placeholder="Select a version"
+            options={versionOptions.filter((option) => option !== versionB)}
+            value={versionA}
+            onChange={(option) => {
+              setVersionA(option);
+            }}
+          />
+        </Col>
+        <Col xs={4}>
+          <Select
+            placeholder="Select a version"
+            options={versionOptions.filter((option) => option !== versionA)}
+            onChange={(option) => {
+              setVersionB(option);
+            }}
+          />
+        </Col>
+        <Col xs={6}>{versionA?.value.raw_config}</Col>
+        <Col xs={6}>{versionB?.value.raw_config}</Col>
+        <Col xs={12}>
+          <Suspense fallback={<div>Loading history...</div>}>
+            <DiffEditor
+              value={[
+                versionA ? versionA.value.raw_config : "",
+                versionB ? versionB.value.raw_config : "",
+              ]}
+              theme="chrome"
+              mode="yaml"
+              name="DIFF_EDITOR_DIV"
+            />
+          </Suspense>
+        </Col>
+      </Row>
+    </>
   );
 };
 
