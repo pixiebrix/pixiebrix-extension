@@ -29,11 +29,11 @@ import { faPlus, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { reportEvent } from "@/telemetry/events";
-import * as nativeOperations from "@/background/devtools";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
-import { getCurrentURL } from "@/devTools/utils";
+import { getCurrentURL, thisTab } from "@/devTools/utils";
 import styles from "./GenericInsertPane.module.scss";
+import { updateDynamicElement } from "@/contentScript/messenger/api";
 
 const { addElement } = editorSlice.actions;
 
@@ -50,10 +50,7 @@ const GenericInsertPane: React.FunctionComponent<{
       try {
         dispatch(addElement(state));
 
-        await nativeOperations.updateDynamicElement(
-          port,
-          config.asDynamicElement(state)
-        );
+        await updateDynamicElement(thisTab, config.asDynamicElement(state));
 
         // TODO: report if created new, or using existing foundation
         reportEvent("PageEditorStart", {

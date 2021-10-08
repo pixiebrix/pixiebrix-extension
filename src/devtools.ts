@@ -20,20 +20,21 @@
 import "@/telemetry/reportUncaughtErrors";
 import { browser } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
-import { readSelectedElement } from "@/background/devtools";
 import { updateSelectedElement } from "@/devTools/getSelectedElement";
 import { once } from "lodash";
 import { serializeError } from "serialize-error";
+import { readSelected } from "@/contentScript/messenger/api";
+import { thisTab } from "@/devTools/utils";
 
 const { onSelectionChanged } = browser.devtools.panels.elements;
 
 async function updateElementProperties(): Promise<void> {
   // This call is instant because sidebar and port has connected earlier
-  const { sidebar, port } = await connectSidebarPane();
+  const { sidebar } = await connectSidebarPane();
   void sidebar.setObject({ state: "loading..." });
   try {
     await updateSelectedElement();
-    await sidebar.setObject(await readSelectedElement(port));
+    await sidebar.setObject(await readSelected(thisTab));
   } catch (error: unknown) {
     await sidebar.setObject({ error: serializeError(error) });
   }

@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { DevToolsContext } from "@/devTools/context";
 import { useDebouncedCallback } from "use-debounce";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import * as nativeOperations from "@/background/devtools";
 import { useAsyncEffect } from "use-async-effect";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { Button } from "react-bootstrap";
+import { updateDynamicElement } from "@/contentScript/messenger/api";
+import { thisTab } from "@/devTools/utils";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
@@ -54,8 +54,6 @@ const ReloadToolbar: React.FunctionComponent<{
   disabled: boolean;
   refreshMillis?: number;
 }> = ({ element, refreshMillis = DEFAULT_RELOAD_MILLIS, disabled }) => {
-  const { port } = useContext(DevToolsContext);
-
   const run = useCallback(async () => {
     const { asDynamicElement: factory } = ADAPTERS.get(element.type);
     if (disabled) {
@@ -64,8 +62,8 @@ const ReloadToolbar: React.FunctionComponent<{
       });
     }
 
-    await nativeOperations.updateDynamicElement(port, factory(element));
-  }, [element, port, disabled]);
+    await updateDynamicElement(thisTab, factory(element));
+  }, [element, disabled]);
 
   const debouncedRun = useDebouncedCallback(run, refreshMillis, {
     // If we could distinguish between types of edits, it might be reasonable to set leading: true. But in
@@ -92,7 +90,7 @@ const ReloadToolbar: React.FunctionComponent<{
     }
 
     await debouncedRun();
-  }, [debouncedRun, port, automaticUpdate, element, disabled]);
+  }, [debouncedRun, automaticUpdate, element, disabled]);
 
   if (automaticUpdate) {
     return null;

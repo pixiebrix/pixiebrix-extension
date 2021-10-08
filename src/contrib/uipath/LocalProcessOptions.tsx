@@ -21,10 +21,6 @@ import { UIPATH_PROPERTIES as REMOTE_UIPATH_PROPERTIES } from "@/contrib/uipath/
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncEffect } from "use-async-effect";
-import {
-  getUiPathProcesses,
-  initUiPathRobot,
-} from "@/background/devtools/protocol";
 import { DevToolsContext } from "@/devTools/context";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
@@ -33,6 +29,8 @@ import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
+import { thisTab } from "@/devTools/utils";
+import { getProcesses, initRobot } from "@/contentScript/messenger/api";
 
 function useLocalRobot() {
   const { port } = useContext(DevToolsContext);
@@ -49,7 +47,7 @@ function useLocalRobot() {
     }
 
     try {
-      const { available, consentCode } = await initUiPathRobot(port);
+      const { available, consentCode } = await initRobot(thisTab);
       setConsentCode(consentCode);
       setRobotAvailable(available);
     } catch (error: unknown) {
@@ -68,7 +66,6 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
-  const { port } = useContext(DevToolsContext);
   const configName = partial(joinName, name, configKey);
 
   const [{ value: releaseKey }] = useField<string>(configName("releaseKey"));
@@ -78,11 +75,11 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const processesPromise = useMemo(async () => {
     if (robotAvailable) {
-      return getUiPathProcesses(port);
+      return getProcesses(thisTab);
     }
 
     return [];
-  }, [port, robotAvailable]);
+  }, [robotAvailable]);
 
   if (!robotAvailable) {
     return (
