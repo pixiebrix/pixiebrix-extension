@@ -47,7 +47,6 @@ import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
-import * as nativeOperations from "@/background/devtools";
 import {
   BaseFormState,
   ElementConfig,
@@ -57,6 +56,7 @@ import { ElementInfo } from "@/nativeEditor/frameworks";
 import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfiguration";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import { insertButton } from "@/contentScript/messenger/api";
 
 const wizard: WizardStep[] = [
   { step: "Edit", Component: EditTab },
@@ -267,7 +267,7 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   icon: faMousePointer,
   baseClass: MenuItemExtensionPoint,
   EditorNode: MenuItemConfiguration,
-  selectNativeElement: nativeOperations.insertButton,
+  selectNativeElement: insertButton,
   wizard,
   fromExtensionPoint,
   fromNativeElement,

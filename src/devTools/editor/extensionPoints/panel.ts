@@ -45,7 +45,6 @@ import { uuidv4 } from "@/types/helpers";
 import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
-import * as nativeOperations from "@/background/devtools";
 import {
   BaseFormState,
   ElementConfig,
@@ -56,6 +55,7 @@ import { MenuPosition } from "@/extensionPoints/menuItemExtension";
 import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration";
+import { insertPanel } from "@/contentScript/messenger/api";
 
 const wizard: WizardStep[] = [
   { step: "Edit", Component: EditTab },
@@ -279,7 +279,7 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   label: "Panel",
   icon: faWindowMaximize,
   baseClass: PanelExtensionPoint,
-  selectNativeElement: nativeOperations.insertPanel,
+  selectNativeElement: insertPanel,
   EditorNode: PanelConfiguration,
   wizard,
   fromNativeElement,
