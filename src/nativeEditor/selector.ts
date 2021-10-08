@@ -155,9 +155,8 @@ export async function userSelectElement(
           position: fixed;
           z-index: 100000000;
           inset: 0;
-          animation-duration: 1500ms;
-          animation-name: pbGlow;
-          animation-iteration-count: infinite;
+          /* Sine curve to make the pulse smooth */
+          animation: 600ms cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate pbGlow;
         }
 
         @keyframes pbGlow {
