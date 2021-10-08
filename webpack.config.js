@@ -168,7 +168,7 @@ function customizeManifest(manifest, isProduction) {
   }
 
   if (!isProduction) {
-    // React Dev Tools app. See https://github.com/pixiebrix/pixiebrix-extension/wiki/Local-build-setup#stand-alone
+    // React Dev Tools app. See https://github.com/pixiebrix/pixiebrix-extension/wiki/Development-commands#react-dev-tools
     policy.add("script-src", "http://localhost:8097");
     policy.add("connect-src", "ws://localhost:8097/");
     policy.add("img-src", "https://pixiebrix-marketplace-dev.s3.amazonaws.com");
