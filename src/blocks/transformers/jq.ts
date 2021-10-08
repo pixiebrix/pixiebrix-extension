@@ -20,7 +20,6 @@ import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { InputValidationError } from "@/blocks/errors";
-import { OutputUnit } from "@cfworker/json-schema";
 import { isErrorObject } from "@/errors";
 
 export class JQTransformer extends Transformer {

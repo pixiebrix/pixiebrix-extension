@@ -209,6 +209,7 @@ async function select(
     );
     return normalizedSelector.multi ? values : values[0];
   }
+
   if ($elt === $(document)) {
     throw new Error("Cannot process document as an element");
   }

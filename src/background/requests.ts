@@ -290,9 +290,10 @@ export async function proxyService<TData>(
       }
 
       // XXX: most likely the browser blocked the network request (or perhaps the response timed out)
-      const msg = "No response received; see browser network log for error.";
-      console.error(msg);
-      throw new RemoteServiceError(msg, null);
+      throw new RemoteServiceError(
+        "No response received; see browser network log for error.",
+        null
+      );
     }
   }
 

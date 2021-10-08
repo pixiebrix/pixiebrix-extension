@@ -62,6 +62,7 @@ export function liftBackground<
       if (isErrorResponse(handlerResult)) {
         throw deserializeError(handlerResult.$$error);
       }
+
       return handlerResult as R;
     } finally {
       (detect.isBackgroundPage as any).mockReturnValue(false);
