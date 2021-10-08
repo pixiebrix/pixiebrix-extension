@@ -151,49 +151,26 @@ export async function userSelectElement(
       styleElement.innerHTML = `
         html:not(:hover):before {
           content: '';
+          border: solid 0px rgba(182, 109, 255, 0.3);
           position: fixed;
           z-index: 100000000;
           inset: 0;
-          animation-duration: 500ms;
+          animation-duration: 1500ms;
           animation-name: pbGlow;
           animation-iteration-count: infinite;
         }
 
         @keyframes pbGlow {
           from {
-            box-shadow: inset 0 0 10px #fff, inset 0 0 30px rgba(182, 109, 255, 0.2), inset 0 0 50px rgba(182, 109, 255, 0.2);
-          }
-          50% {
-            box-shadow: inset 0 0 10px #fff, inset 0 0 30px rgb(182 109 255), inset 0 0 50px rgb(182 109 255);
-          }
-          to {
-            box-shadow: inset 0 0 10px #fff, inset 0 0 30px rgba(182, 109, 255, 0.2), inset 0 0 50px rgba(182, 109, 255, 0.2);
-          }
-        }`;
-
-      styleElement.innerHTML = `
-        html:not(:hover):before {
-          content: '';
-          border: solid 0px rgba(182, 109, 255, 0.2);
-          position: fixed;
-          z-index: 100000000;
-          inset: 0;
-          animation-duration: 500ms;
-          animation-name: pbGlow;
-          animation-iteration-count: infinite;
-        }
-
-        @keyframes pbGlow {
-          from {
-            border-width: 20px;
+            border-width: 10px;
           }
 
           50% {
-            border-width: 7px;
+            border-width: 25px;
           }
 
           to {
-            border-width: 20px;
+            border-width: 10px;
           }
         }`;
       doc.body.append(styleElement);
