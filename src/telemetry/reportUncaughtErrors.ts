@@ -17,16 +17,18 @@
 
 /**
  * How to use this module: It must be imported as early as possible in each entrypoint, once.
- * Refactor beware: Do not add "init" function or it will run too late.
  */
 
 import { reportError } from "@/telemetry/logging";
 
-function errorHandler(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
-  if (
-    [...uncaughtErrorToIgnore].some((shouldIgnore) => shouldIgnore(errorEvent))
-  ) {
-    return;
+function defaultErrorHandler(
+  errorEvent: ErrorEvent | PromiseRejectionEvent
+): void {
+  for (const handler of uncaughtErrorHandlers) {
+    handler(errorEvent);
+    if (errorEvent.defaultPrevented) {
+      return;
+    }
   }
 
   reportError(errorEvent);
@@ -34,14 +36,25 @@ function errorHandler(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
 }
 
 const seen = new WeakSet<ErrorEvent | PromiseRejectionEvent>();
-function avoidLoops(errorEvent: ErrorEvent | PromiseRejectionEvent): boolean {
-  const wasSeen = seen.has(errorEvent);
-  seen.add(errorEvent);
-  return wasSeen;
+function avoidLoops(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
+  if (seen.has(errorEvent)) {
+    errorEvent.preventDefault();
+  } else {
+    seen.add(errorEvent);
+  }
 }
 
-/** Set of predicates that will run for each uncaught error to determine whether to ignore them */
-export const uncaughtErrorToIgnore = new Set([avoidLoops]);
+/**
+ * Set of error event handlers to run before the default one.
+ * They can call `event.preventDefault()` to avoid reporting the error.
+ */
+export const uncaughtErrorHandlers = new Set([avoidLoops]);
 
-window.addEventListener("error", errorHandler);
-window.addEventListener("unhandledrejection", errorHandler);
+/*
+Refactor beware: Do not add an `init` function or it will run too late.
+When imported, the file will be executed immediately, whereas if it exports
+an `init` function will be called after every top-level imports (and their deps)
+has been executed.
+*/
+window.addEventListener("error", defaultErrorHandler);
+window.addEventListener("unhandledrejection", defaultErrorHandler);

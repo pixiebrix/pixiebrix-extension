@@ -20,7 +20,7 @@ import { uuidv4 } from "@/types/helpers";
 const start = Date.now();
 
 import "@/extensionContext";
-import { uncaughtErrorToIgnore } from "@/telemetry/reportUncaughtErrors";
+import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 import "@/contentScript/messenger/registration";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
@@ -40,18 +40,15 @@ const uuid = uuidv4();
 
 function ignoreConnectionErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
-) {
+): void {
   if (isConnectionError(errorEvent)) {
     showConnectionLost();
     errorEvent.preventDefault();
-    return true; // Ignore error, don't report
   }
-
-  return false; // Let error be reported
 }
 
 // Must be run as early as possible
-uncaughtErrorToIgnore.add(ignoreConnectionErrors);
+uncaughtErrorHandlers.add(ignoreConnectionErrors);
 
 registerBuiltinBlocks();
 registerContribBlocks();
