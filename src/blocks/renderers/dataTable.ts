@@ -56,8 +56,8 @@ function makeDataTable<TRow extends Record<string, unknown>>(
     }
 
     return `
-    <style>
-    table.blueTable {
+<style>
+table.blueTable {
   border: 1px solid #1C6EA4;
   background-color: #EEEEEE;
   width: 100%;
@@ -114,7 +114,7 @@ table.blueTable tfoot .links a{
   padding: 2px 8px;
   border-radius: 5px;
 }
-    </style>
+</style>
         <table class="blueTable">
             <thead>
             <tr>

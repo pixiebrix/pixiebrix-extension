@@ -790,7 +790,9 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
           throw new Error(
             `Multiple sibling elements for selector: ${position.sibling}`
           );
-        } else if ($sibling.length === 1) {
+        }
+
+        if ($sibling.length === 1) {
           $sibling.before($menuItem);
         } else {
           // Didn't find the sibling, so just try inserting it at the end
@@ -830,7 +832,9 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
           selector,
           "Multiple elements found for reader selector"
         );
-      } else if ($elt.length === 0) {
+      }
+
+      if ($elt.length === 0) {
         throw new NoElementsFoundError(
           selector,
           "No elements found for reader selector"

@@ -197,7 +197,9 @@ async function select(
       normalizedSelector.selector,
       "Multiple elements found for selector. To return a list of values, supply multi=true"
     );
-  } else if ("find" in normalizedSelector) {
+  }
+
+  if ("find" in normalizedSelector) {
     const values = await Promise.all(
       $elt
         .map(async function () {
@@ -206,18 +208,17 @@ async function select(
         .toArray()
     );
     return normalizedSelector.multi ? values : values[0];
-  } else {
-    if ($elt === $(document)) {
-      throw new Error("Cannot process document as an element");
-    }
-
-    const values = $elt
-      .map(function () {
-        return processElement($(this) as JQuery, normalizedSelector);
-      })
-      .toArray();
-    return normalizedSelector.multi ? values : values[0];
   }
+  if ($elt === $(document)) {
+    throw new Error("Cannot process document as an element");
+  }
+
+  const values = $elt
+    .map(function () {
+      return processElement($(this) as JQuery, normalizedSelector);
+    })
+    .toArray();
+  return normalizedSelector.multi ? values : values[0];
 }
 
 export async function readJQuery(
