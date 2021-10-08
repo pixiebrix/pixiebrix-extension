@@ -20,7 +20,6 @@ import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { Runtime } from "webextension-polyfill-ts";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
-import { enableDataOverlay, disableOverlay } from "@/background/devtools";
 import { ListGroup } from "react-bootstrap";
 import { getLabel } from "@/devTools/editor/sidebar/common";
 import {
@@ -29,6 +28,8 @@ import {
   UnsavedChangesIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
 import { UUID } from "@/core";
+import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
+import { thisTab } from "@/devTools/utils";
 
 /**
  * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
@@ -39,23 +40,20 @@ const DynamicEntry: React.FunctionComponent<{
   port: Runtime.Port;
   available: boolean;
   activeElement: string | null;
-}> = ({ port, item, available, activeElement }) => {
+}> = ({ item, available, activeElement }) => {
   const dispatch = useDispatch();
 
   const isDirty = useSelector<RootState>(
     (x) => x.editor.dirty[item.uuid] ?? false
   );
 
-  const showOverlay = useCallback(
-    async (uuid: UUID) => {
-      await enableDataOverlay(port, uuid);
-    },
-    [port]
-  );
+  const showOverlay = useCallback(async (uuid: UUID) => {
+    await enableOverlay(thisTab, `[data-uuid="${uuid}"]`);
+  }, []);
 
   const hideOverlay = useCallback(async () => {
-    await disableOverlay(port);
-  }, [port]);
+    await disableOverlay(thisTab);
+  }, []);
 
   return (
     <ListGroup.Item

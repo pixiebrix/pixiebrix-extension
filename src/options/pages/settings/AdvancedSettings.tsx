@@ -105,12 +105,16 @@ const AdvancedSettings: React.FunctionComponent = () => {
         <Button variant="info" onClick={reload}>
           Reload Extension
         </Button>
+
         <Button variant="info" onClick={update}>
           Check Updates
         </Button>
-        <Button variant="warning" onClick={clear}>
-          Clear Token
-        </Button>
+
+        {!flags.includes("restricted-clear-token") && (
+          <Button variant="warning" onClick={clear}>
+            Clear Token
+          </Button>
+        )}
       </Card.Footer>
     </Card>
   );

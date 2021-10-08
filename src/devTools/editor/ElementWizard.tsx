@@ -22,10 +22,8 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
 import { groupBy } from "lodash";
-import { checkAvailable } from "@/background/devtools";
 import { Badge, Form, Nav, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
@@ -38,6 +36,8 @@ import LogContext from "@/components/logViewer/LogContext";
 import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import styles from "./ElementWizard.module.scss";
+import { thisTab } from "@/devTools/utils";
+import { checkAvailable } from "@/contentScript/messenger/api";
 
 const LOG_STEP_NAME = "Logs";
 
@@ -85,8 +85,6 @@ const ElementWizard: React.FunctionComponent<{
   element: FormState;
   editable: Set<string>;
 }> = ({ element, editable, installed }) => {
-  const { port } = useContext(DevToolsContext);
-
   const wizard = useMemo(() => ADAPTERS.get(element.type).wizard, [
     element.type,
   ]);
@@ -101,8 +99,8 @@ const ElementWizard: React.FunctionComponent<{
 
   const availableDefinition = element.extensionPoint.definition.isAvailable;
   const [available] = useAsyncState(
-    async () => checkAvailable(port, availableDefinition),
-    [port, availableDefinition]
+    async () => checkAvailable(thisTab, availableDefinition),
+    [availableDefinition]
   );
 
   const {
@@ -151,15 +149,12 @@ const ElementWizard: React.FunctionComponent<{
             disabled={isSubmitting || !isValid}
           />
 
-          <ReloadToolbar
-            element={element}
-            disabled={isSubmitting || !isValid}
-          />
+          <ReloadToolbar element={element} disabled={isSubmitting} />
 
           <ActionToolbar
             installed={installed}
             element={element}
-            disabled={isSubmitting || !isValid}
+            disabled={isSubmitting}
           />
         </Nav>
 

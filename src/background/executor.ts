@@ -39,7 +39,7 @@ import {
   runBlockInContentScript,
 } from "@/contentScript/messenger/api";
 
-const CONTENT_MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
+const RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
 const MESSAGE_RUN_BLOCK_BROADCAST = `${MESSAGE_PREFIX}RUN_BLOCK_BROADCAST`;
@@ -211,7 +211,7 @@ handlers.set(
 
     const target = nonceToTarget.get(nonce);
     console.debug(
-      `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
+      `Sending ${RUN_BLOCK} to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
     );
     return runBlockInContentScript(target, {
       sourceTabId: sender.tab.id,
@@ -233,7 +233,7 @@ handlers.set(
     // For now, only support top-level frame as target
     await waitReady({ tabId: target, frameId: 0 });
     console.debug(
-      `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
+      `Sending ${RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
     );
     return runBlockInContentScript(
       { tabId: target, frameId: 0 },
@@ -319,6 +319,14 @@ export async function whoAmI(
 
 const DEFAULT_MAX_RETRIES = 5;
 
+// Partial error messages for determining whether an error indicates the target is not ready yet
+const NOT_READY_PARTIAL_MESSAGES = [
+  // Chrome/browser message
+  "Could not establish connection",
+  // `webext-messenger` error
+  "No handlers registered in receiving end",
+];
+
 async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
   send: T,
   maxRetries = DEFAULT_MAX_RETRIES
@@ -330,7 +338,9 @@ async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
       // eslint-disable-next-line no-await-in-loop -- retry loop
       return await send();
     } catch (error: unknown) {
-      if (getErrorMessage(error).includes("Could not establish connection")) {
+      const message = getErrorMessage(error);
+
+      if (NOT_READY_PARTIAL_MESSAGES.some((query) => message.includes(query))) {
         console.debug(`Target not ready. Retrying in ${100 * (retries + 1)}ms`);
         // eslint-disable-next-line no-await-in-loop -- retry loop
         await sleep(250 * (retries + 1));

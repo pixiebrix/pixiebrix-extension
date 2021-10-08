@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BlockConfig } from "@/blocks/types";
 import { AsyncState, useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { runBlock } from "@/background/devtools";
-import { DevToolsContext } from "@/devTools/context";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
 import GridLoader from "react-spinners/GridLoader";
@@ -39,6 +37,8 @@ import { BlockType, getType } from "@/blocks/util";
 import { removeEmptyValues } from "@/devTools/editor/extensionPoints/base";
 import { UnknownObject } from "@/types";
 import { IBlock, RegistryId } from "@/core";
+import { runBlock } from "@/contentScript/messenger/api";
+import { thisTab } from "@/devTools/utils";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -92,8 +92,6 @@ const BlockPreview: React.FunctionComponent<{
   blockConfig: BlockConfig;
   previewRefreshMillis?: 250;
 }> = ({ blockConfig, traceRecord, previewRefreshMillis }) => {
-  const { port } = useContext(DevToolsContext);
-
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState<unknown | undefined>();
   const [outputKey, setOutputKey] = useState<string>(blockConfig.outputKey);
@@ -104,7 +102,7 @@ const BlockPreview: React.FunctionComponent<{
     async (blockConfig: BlockConfig, args: UnknownObject) => {
       setIsRunning(true);
       try {
-        const result = await runBlock(port, {
+        const result = await runBlock(thisTab, {
           blockConfig: removeEmptyValues(blockConfig),
           args,
         });
