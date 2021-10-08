@@ -161,16 +161,8 @@ export async function userSelectElement(
         }
 
         @keyframes pbGlow {
-          from {
-            border-width: 10px;
-          }
-
-          50% {
-            border-width: 25px;
-          }
-
           to {
-            border-width: 10px;
+            border-width: 25px;
           }
         }`;
       doc.body.append(styleElement);
