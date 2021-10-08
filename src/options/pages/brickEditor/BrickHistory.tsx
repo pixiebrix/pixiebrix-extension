@@ -20,6 +20,10 @@ import Select from "react-select";
 import { useParams } from "react-router";
 import useFetch from "@/hooks/useFetch";
 import { PackageVersion, Package } from "@/types/contract";
+import { diff as DiffEditor } from "react-ace";
+
+import "ace-builds/src-noconflict/mode-yaml";
+import "ace-builds/src-noconflict/theme-chrome";
 
 const BrickHistory: React.FunctionComponent = () => {
   const { id } = useParams<{ id: string }>();
@@ -78,6 +82,13 @@ const BrickHistory: React.FunctionComponent = () => {
       </Col>
       <Col xs={6}>{versionA?.value.raw_config}</Col>
       <Col xs={6}>{versionB?.value.raw_config}</Col>
+
+      <DiffEditor
+        value={["hello world?", "hello world!"]}
+        theme="chrome"
+        mode="yaml"
+        name="diff_editor"
+      />
     </Row>
   );
 };
