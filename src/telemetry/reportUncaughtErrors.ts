@@ -33,6 +33,7 @@ function errorHandler(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
   errorEvent.preventDefault();
 }
 
+const seen = new WeakSet<ErrorEvent | PromiseRejectionEvent>();
 function avoidLoops(errorEvent: ErrorEvent | PromiseRejectionEvent): boolean {
   const wasSeen = seen.has(errorEvent);
   seen.add(errorEvent);
@@ -41,7 +42,6 @@ function avoidLoops(errorEvent: ErrorEvent | PromiseRejectionEvent): boolean {
 
 /** Set of predicates that will run for each uncaught error to determine whether to ignore them */
 export const uncaughtErrorToIgnore = new Set([avoidLoops]);
-const seen = new WeakSet<ErrorEvent | PromiseRejectionEvent>();
 
 window.addEventListener("error", errorHandler);
 window.addEventListener("unhandledrejection", errorHandler);
