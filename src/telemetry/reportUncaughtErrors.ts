@@ -16,7 +16,8 @@
  */
 
 /**
- * Must be imported as early as possible. Do not add "init" function or it will run too late
+ * How to use this module: It must be imported as early as possible in each entrypoint, once.
+ * Refactor beware: Do not add "init" function or it will run too late.
  */
 
 import { reportError } from "@/telemetry/logging";
@@ -32,13 +33,10 @@ function errorHandler(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
   errorEvent.preventDefault();
 }
 
-function avoidLoops(errorEvent: ErrorEvent | PromiseRejectionEvent) {
-  if (seen.has(errorEvent)) {
-    // Avoid loops, let it through
-    return true;
-  }
-
+function avoidLoops(errorEvent: ErrorEvent | PromiseRejectionEvent): boolean {
+  const wasSeen = seen.has(errorEvent);
   seen.add(errorEvent);
+  return wasSeen;
 }
 
 export const uncaughtErrorToIgnore = new Set([avoidLoops]);

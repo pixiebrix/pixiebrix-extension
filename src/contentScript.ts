@@ -44,8 +44,10 @@ function ignoreConnectionErrors(
   if (isConnectionError(errorEvent)) {
     showConnectionLost();
     errorEvent.preventDefault();
-    return true; // Ignore event
+    return true; // Ignore error, don't report
   }
+
+  return false; // Let error be reported
 }
 
 // Must be run as early as possible
