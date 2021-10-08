@@ -151,7 +151,7 @@ export async function userSelectElement(
       styleElement.innerHTML = `
         html:not(:hover):before {
           content: '';
-          border: solid 0px rgba(182, 109, 255, 0.3);
+          border: solid 10px rgba(182, 109, 255, 0.3);
           position: fixed;
           z-index: 100000000;
           inset: 0;
