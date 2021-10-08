@@ -14,11 +14,44 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import Select from "react-select";
+import { useParams } from "react-router";
+import useFetch from "@/hooks/useFetch";
+import { PackageVersion, Package } from "@/types/contract";
 
 const BrickHistory: React.FunctionComponent = () => {
+  const { id } = useParams<{ id: string }>();
+  const { data: packageVersions = [] } = useFetch<PackageVersion[]>(
+    `/api/bricks/${id}/versions/`
+  );
+  const { data: brick } = useFetch<Package>(`/api/bricks/${id}`);
+  const [versionA, setVersionA] = useState(null);
+  const [versionB, setVersionB] = useState(null);
+
+  const versionOptions = useMemo(
+    () =>
+      packageVersions.map((packageVersion) => ({
+        value: packageVersion,
+        label:
+          packageVersion.version === brick?.version
+            ? `${packageVersion.version} (current)`
+            : packageVersion.version,
+      })),
+    [packageVersions, brick]
+  );
+
+  const currentVersion = useMemo(
+    () =>
+      versionOptions.find((option) => option.value.version === brick?.version),
+    [versionOptions, brick]
+  );
+
+  useEffect(() => {
+    setVersionA(currentVersion);
+  }, [currentVersion]);
+
   return (
     <Row>
       <Col xs={12} className="pb-3">
@@ -27,21 +60,24 @@ const BrickHistory: React.FunctionComponent = () => {
       <Col xs={4}>
         <Select
           placeholder="Select a version"
-          options={[
-            { value: 1, label: "one" },
-            { value: 2, label: "two" },
-          ]}
+          options={versionOptions}
+          value={versionA}
+          onChange={(option) => {
+            setVersionA(option);
+          }}
         />
       </Col>
       <Col xs={4}>
         <Select
           placeholder="Select a version"
-          options={[
-            { value: 1, label: "one" },
-            { value: 2, label: "two" },
-          ]}
+          options={versionOptions}
+          onChange={(option) => {
+            setVersionB(option);
+          }}
         />
       </Col>
+      <Col xs={6}>{versionA?.value.raw_config}</Col>
+      <Col xs={6}>{versionB?.value.raw_config}</Col>
     </Row>
   );
 };
