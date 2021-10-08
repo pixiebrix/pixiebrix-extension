@@ -175,7 +175,9 @@ export function fromJS(component: Config): IBlock {
       "Component definition is missing a 'kind' property",
       null
     );
-  } else if (component.kind === "reader") {
+  }
+
+  if (component.kind === "reader") {
     return readerFactory(component);
   }
 

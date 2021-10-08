@@ -38,7 +38,9 @@ function selectAuths(extensions: IExtension[]): Record<RegistryId, UUID> {
     const configs = uniq(auths.map(({ config }) => config));
     if (configs.length === 0) {
       throw new Error(`Service ${id} is not configured`);
-    } else if (configs.length > 1) {
+    }
+
+    if (configs.length > 1) {
       throw new Error(`Service ${id} has multiple configurations`);
     }
 

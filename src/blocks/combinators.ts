@@ -374,7 +374,9 @@ function selectStageRoot(
 
   if ($stageRoot.length > 1) {
     throw new BusinessError(`Multiple roots found for ${stage.root}`);
-  } else if ($stageRoot.length === 0) {
+  }
+
+  if ($stageRoot.length === 0) {
     const rootDescriptor = (defaultRoot as HTMLElement).tagName ?? "document";
     throw new BusinessError(
       `No roots found for ${stage.root} (root=${rootDescriptor})`

@@ -70,7 +70,9 @@ const ArrayWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = ({
 
   if (Array.isArray(schema.items)) {
     throw new TypeError("Support for arrays of mixed types is not implemented");
-  } else if (typeof schema.items === "boolean") {
+  }
+
+  if (typeof schema.items === "boolean") {
     throw new TypeError("Schema required for items");
   }
 

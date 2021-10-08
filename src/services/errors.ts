@@ -56,9 +56,9 @@ export class NotConfiguredError extends BusinessError {
 }
 
 export class RemoteServiceError extends BusinessError {
-  response: AxiosResponse | null;
+  response: AxiosResponse;
 
-  constructor(message: string, response: AxiosResponse | null) {
+  constructor(message: string, response?: AxiosResponse) {
     super(message);
     this.name = "RemoteServiceError";
     this.response = response;
