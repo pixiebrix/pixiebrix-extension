@@ -82,7 +82,7 @@ const EditTab: React.FC<{
 
   const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
 
-  const [blockPipeline, pipelineErrors, , traceError] = usePipelineField();
+  const { blockPipeline, blockPipelineErrors, traceError } = usePipelineField();
 
   const [activeNodeId, setActiveNodeId] = useState<NodeId>(FOUNDATION_NODE_ID);
   const activeBlockIndex = useMemo(() => {
@@ -182,7 +182,7 @@ const EditTab: React.FC<{
               />
             ),
             // eslint-disable-next-line security/detect-object-injection -- uuid
-            hasError: Boolean(pipelineErrors?.[index]),
+            hasError: Boolean(blockPipelineErrors?.[index]),
             hasWarning: traceError?.blockInstanceId === blockConfig.instanceId,
             onClick: () => {
               setActiveNodeId(blockConfig.instanceId);

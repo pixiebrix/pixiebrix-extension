@@ -26,16 +26,15 @@ import { OutputUnit } from "@cfworker/json-schema";
 import { useAsyncEffect } from "use-async-effect";
 import { joinName } from "@/utils";
 import { set } from "lodash";
-import { UUID } from "@/core";
 
 const REQUIRED_FIELD_REGEX = /^Instance does not have required property "(?<property>.+)"\.$/;
 
-function usePipelineField(): [
-  BlockPipeline,
-  Record<number, unknown>,
-  (value: BlockPipeline, shouldValidate?: boolean) => void,
-  TraceError
-] {
+function usePipelineField(): {
+  blockPipeline: BlockPipeline;
+  blockPipelineErrors: unknown[];
+  setBlockPipeline: (value: BlockPipeline, shouldValidate: boolean) => void;
+  traceError: TraceError;
+} {
   const traceError = useSelector(selectTraceError);
 
   const validatePipelineBlocks = useCallback(
@@ -105,12 +104,12 @@ function usePipelineField(): [
     [traceError]
   );
 
-  return [
-    formikField[0].value,
-    (formikField[1].error as unknown) as Record<UUID, unknown>,
-    formikField[2].setValue,
+  return {
+    blockPipeline: formikField[0].value,
+    blockPipelineErrors: (formikField[1].error as unknown) as unknown[],
+    setBlockPipeline: formikField[2].setValue,
     traceError,
-  ];
+  };
 }
 
 export default usePipelineField;
