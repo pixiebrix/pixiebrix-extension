@@ -18,6 +18,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout, {
+  FOUNDATION_NODE_ID,
   LayoutNodeProps,
   NodeId,
 } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
@@ -83,9 +84,9 @@ const EditTab: React.FC<{
 
   const [blockPipeline, pipelineErrors, , traceError] = usePipelineField();
 
-  const [activeNodeId, setActiveNodeId] = useState<NodeId>("foundation");
+  const [activeNodeId, setActiveNodeId] = useState<NodeId>(FOUNDATION_NODE_ID);
   const activeBlockIndex = useMemo(() => {
-    if (activeNodeId === "foundation") {
+    if (activeNodeId === FOUNDATION_NODE_ID) {
       return 0;
     }
 
@@ -138,7 +139,7 @@ const EditTab: React.FC<{
         (block) => block.instanceId === nodeIdToRemove
       );
       if (index === 0) {
-        prevNodeId = "foundation";
+        prevNodeId = FOUNDATION_NODE_ID;
       } else {
         prevNodeId = draft.extension.blockPipeline[index - 1].instanceId;
       }
@@ -196,12 +197,12 @@ const EditTab: React.FC<{
 
   const foundationNode: LayoutNodeProps = useMemo(
     () => ({
-      nodeId: "foundation",
+      nodeId: FOUNDATION_NODE_ID,
       outputKey: "input",
       title: label,
       icon,
       onClick: () => {
-        setActiveNodeId("foundation");
+        setActiveNodeId(FOUNDATION_NODE_ID);
       },
     }),
     [icon, label]
@@ -260,7 +261,7 @@ const EditTab: React.FC<{
         <div className={styles.configPanel}>
           <ErrorBoundary>
             <FormTheme.Provider value={blockConfigTheme}>
-              {activeNodeId === "foundation" && (
+              {activeNodeId === FOUNDATION_NODE_ID && (
                 <>
                   <Col>
                     <ConnectedFieldTemplate
@@ -272,7 +273,7 @@ const EditTab: React.FC<{
                 </>
               )}
 
-              {activeNodeId !== "foundation" && (
+              {activeNodeId !== FOUNDATION_NODE_ID && (
                 <EditorNodeConfigPanel
                   key={activeNodeId}
                   blockFieldName={blockFieldName}
@@ -288,7 +289,7 @@ const EditTab: React.FC<{
           </ErrorBoundary>
         </div>
         <div className={styles.dataPanel}>
-          {activeNodeId === "foundation" ? (
+          {activeNodeId === FOUNDATION_NODE_ID ? (
             <FoundationDataPanel
               firstBlockInstanceId={blockPipeline[0]?.instanceId}
             />

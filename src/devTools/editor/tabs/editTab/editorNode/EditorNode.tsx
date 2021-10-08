@@ -25,7 +25,7 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 
-export type NodeProps = {
+export type EditorNodeProps = {
   title: string;
   outputKey?: string;
   icon?: IconProp | React.ReactNode;
@@ -45,7 +45,7 @@ function isFontAwesomeIcon(
   );
 }
 
-const EditorNode: React.FC<NodeProps> = ({
+const EditorNode: React.FC<EditorNodeProps> = ({
   onClick,
   icon: iconProp,
   title,

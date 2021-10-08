@@ -18,7 +18,7 @@
 import React, { useCallback } from "react";
 import styles from "./EditorNodeLayout.module.scss";
 import EditorNode, {
-  NodeProps,
+  EditorNodeProps,
 } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -47,9 +47,11 @@ const addBrickCaption = (
   </span>
 );
 
-export type NodeId = "foundation" | UUID;
+export type NodeId = UUID;
 
-export type LayoutNodeProps = NodeProps & { nodeId: NodeId };
+export const FOUNDATION_NODE_ID = "foundation" as UUID;
+
+export type LayoutNodeProps = EditorNodeProps & { nodeId: NodeId };
 
 const EditorNodeLayout: React.FC<{
   nodes: LayoutNodeProps[];
@@ -81,7 +83,7 @@ const EditorNodeLayout: React.FC<{
           const { nodeId } = nodeProps;
           return (
             <React.Fragment key={index}>
-              {nodeId !== "foundation" && (
+              {nodeId !== FOUNDATION_NODE_ID && (
                 <BlockModal
                   bricks={relevantBlocksToAdd}
                   renderButton={renderInsert}
