@@ -60,7 +60,7 @@ const BrickHistory: React.FunctionComponent = () => {
       <Col xs={4}>
         <Select
           placeholder="Select a version"
-          options={versionOptions}
+          options={versionOptions.filter((option) => option !== versionB)}
           value={versionA}
           onChange={(option) => {
             setVersionA(option);
@@ -70,7 +70,7 @@ const BrickHistory: React.FunctionComponent = () => {
       <Col xs={4}>
         <Select
           placeholder="Select a version"
-          options={versionOptions}
+          options={versionOptions.filter((option) => option !== versionA)}
           onChange={(option) => {
             setVersionB(option);
           }}
