@@ -19,21 +19,14 @@ import { IBlock, OutputKey, RegistryId, SafeString } from "@/core";
 import { BlockType, getType } from "@/blocks/util";
 import { freshIdentifier } from "@/utils";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { castArray } from "lodash";
-import { BlockPipeline } from "@/blocks/types";
 import { selectReaderIds } from "@/blocks/readers/readerUtils";
 
 export function collectRegistryIds(form: FormState): RegistryId[] {
-  const extension = form.extension as any;
-  const pipeline = castArray(
-    extension.action ?? extension.body ?? []
-  ) as BlockPipeline;
-
   return [
     form.extensionPoint.metadata.id,
     ...selectReaderIds(form.extensionPoint.definition.reader),
     ...form.services.map((x) => x.id),
-    ...pipeline.map((x) => x.id),
+    ...form.extension.blockPipeline.map((x) => x.id),
   ];
 }
 

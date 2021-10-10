@@ -127,14 +127,16 @@ export class AddUpdateContact extends Effect {
         params: { q: `${firstname} ${lastname} ${company}`.trim(), count: 5 },
         method: "get",
       });
+      if (contacts.length > 1) {
+        throw new BusinessError("Multiple Hubspot contacts found");
+      }
+
       if (contacts.length === 1) {
         await proxyHubspot({
           url: `https://api.hubapi.com/contacts/v1/contact/vid/${contacts[0].vid}/profile`,
           method: "post",
           data: { properties },
         });
-      } else if (contacts.length > 1) {
-        throw new BusinessError("Multiple Hubspot contacts found");
       } else {
         await proxyHubspot({
           url: "https://api.hubapi.com/contacts/v1/contact/",
@@ -208,6 +210,9 @@ export class AddUpdateCompany extends Effect {
         },
       },
     });
+    if (results.length > 1) {
+      throw new BusinessError("Multiple Hubspot companies found");
+    }
 
     if (results.length === 1) {
       await proxyHubspot({
@@ -215,8 +220,6 @@ export class AddUpdateCompany extends Effect {
         method: "put",
         data: { properties },
       });
-    } else if (results.length > 1) {
-      throw new BusinessError("Multiple Hubspot companies found");
     } else {
       await proxyHubspot({
         url: "https://api.hubapi.com/companies/v2/companies",

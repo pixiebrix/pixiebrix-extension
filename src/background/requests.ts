@@ -204,14 +204,14 @@ async function proxyRequest<T>(
       //  the proxy doesn't return header information from the remote service
       proxyResponseToAxiosResponse(remoteResponse)
     );
-  } else {
-    // The json payload from the proxy is the response from the remote server
-    return {
-      data: remoteResponse.json as T,
-      status: remoteResponse.status_code,
-      $$proxied: true,
-    };
   }
+
+  // The json payload from the proxy is the response from the remote server
+  return {
+    data: remoteResponse.json as T,
+    status: remoteResponse.status_code,
+    $$proxied: true,
+  };
 }
 
 const UNAUTHORIZED_STATUS_CODES = [401, 403];
@@ -268,7 +268,9 @@ export async function proxyService<TData>(
 ): Promise<RemoteResponse<TData>> {
   if (serviceConfig != null && typeof serviceConfig !== "object") {
     throw new Error("expected configured service for serviceConfig");
-  } else if (!serviceConfig) {
+  }
+
+  if (!serviceConfig) {
     // No service configuration provided. Perform request directly without authentication
     if (!isAbsoluteUrl(requestConfig.url) && requestConfig.baseURL == null) {
       throw new Error("expected absolute URL for request without service");
@@ -279,22 +281,19 @@ export async function proxyService<TData>(
         requestConfig
       )) as SanitizedResponse<TData>;
     } catch (error: unknown) {
-      if (isAxiosError(error)) {
-        if (error.response) {
-          throw new RemoteServiceError(
-            error.response.statusText,
-            error.response
-          );
-        } else {
-          // XXX: most likely the browser blocked the network request (or perhaps the response timed out)
-          const msg =
-            "No response received; see browser network log for error.";
-          console.error(msg);
-          throw new RemoteServiceError(msg, null);
-        }
+      if (!isAxiosError(error)) {
+        throw error;
       }
 
-      throw error;
+      if (error.response) {
+        throw new RemoteServiceError(error.response.statusText, error.response);
+      }
+
+      // XXX: most likely the browser blocked the network request (or perhaps the response timed out)
+      console.error(error);
+      throw new RemoteServiceError(
+        "No response received; see browser network log for error."
+      );
     }
   }
 

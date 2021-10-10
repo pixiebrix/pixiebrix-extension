@@ -250,7 +250,7 @@ export async function openTab(
   createProperties: Tabs.CreateCreatePropertiesType
 ): Promise<void> {
   // Natively links the new tab to its opener + opens it right next to it
-  const openerTabId = this.tab.id;
+  const openerTabId = this.trace[0].tab.id;
   const tab = await browser.tabs.create({ ...createProperties, openerTabId });
 
   // FIXME: include frame information here
@@ -259,8 +259,7 @@ export async function openTab(
 }
 
 export async function markTabAsReady(this: MessengerMeta) {
-  // eslint-disable-next-line @typescript-eslint/no-this-alias, unicorn/no-this-assignment -- Not applicable to this pattern
-  const sender = this;
+  const sender = this.trace[0];
   const tabId = sender.tab.id;
   const { frameId } = sender;
   console.debug(`Marked tab ${tabId} (frame: ${frameId}) as ready`, {
@@ -303,19 +302,19 @@ function initExecutor(): void {
 }
 
 export async function activateTab(this: MessengerMeta): Promise<void> {
-  await browser.tabs.update(this.tab.id, {
+  await browser.tabs.update(this.trace[0].tab.id, {
     active: true,
   });
 }
 
 export async function closeTab(this: MessengerMeta): Promise<void> {
-  await browser.tabs.remove(this.tab.id);
+  await browser.tabs.remove(this.trace[0].tab.id);
 }
 
 export async function whoAmI(
   this: MessengerMeta
 ): Promise<Runtime.MessageSender> {
-  return this;
+  return this.trace[0];
 }
 
 const DEFAULT_MAX_RETRIES = 5;
