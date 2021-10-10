@@ -17,23 +17,14 @@
 
 // https://developer.chrome.com/extensions/devtools
 
+import "@/telemetry/reportUncaughtErrors";
 import { browser } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
-import { reportError } from "@/telemetry/logging";
 import { updateSelectedElement } from "@/devTools/getSelectedElement";
 import { once } from "lodash";
 import { serializeError } from "serialize-error";
 import { readSelected } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
-
-window.addEventListener("error", (e) => {
-  reportError(e);
-  return false;
-});
-
-window.addEventListener("unhandledrejection", (e) => {
-  reportError(e);
-});
 
 const { onSelectionChanged } = browser.devtools.panels.elements;
 
