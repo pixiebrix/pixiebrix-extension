@@ -19,14 +19,7 @@ import { useSelector } from "react-redux";
 import { selectTraceError } from "@/devTools/editor/slices/runtimeSelectors";
 import { useCallback } from "react";
 import { BlockPipeline } from "@/blocks/types";
-import {
-  FieldHelperProps,
-  FieldInputProps,
-  FieldMetaProps,
-  useField,
-  useFormikContext,
-  setNestedObjectValues,
-} from "formik";
+import { useField, useFormikContext, setNestedObjectValues } from "formik";
 import { TraceError } from "@/telemetry/trace";
 import { isInputValidationError } from "@/blocks/errors";
 import { OutputUnit } from "@cfworker/json-schema";
@@ -36,17 +29,15 @@ import { set } from "lodash";
 
 const REQUIRED_FIELD_REGEX = /^Instance does not have required property "(?<property>.+)"\.$/;
 
-function usePipelineField(
-  pipelineFieldName: string
-): [
-  FieldInputProps<BlockPipeline>,
-  FieldMetaProps<BlockPipeline>,
-  FieldHelperProps<BlockPipeline>,
-  TraceError
-] {
+function usePipelineField(): {
+  blockPipeline: BlockPipeline;
+  blockPipelineErrors: unknown[];
+  setBlockPipeline: (value: BlockPipeline, shouldValidate: boolean) => void;
+  traceError: TraceError;
+} {
   const traceError = useSelector(selectTraceError);
 
-  const validatePipeline = useCallback(
+  const validatePipelineBlocks = useCallback(
     (pipeline: BlockPipeline) => {
       if (!traceError) {
         return;
@@ -93,9 +84,9 @@ function usePipelineField(
   );
 
   const formikField = useField<BlockPipeline>({
-    name: pipelineFieldName,
+    name: "extension.blockPipeline",
     // @ts-expect-error working with nested errors
-    validate: validatePipeline,
+    validate: validatePipelineBlocks,
   });
 
   const formikContext = useFormikContext();
@@ -113,7 +104,12 @@ function usePipelineField(
     [traceError]
   );
 
-  return [...formikField, traceError];
+  return {
+    blockPipeline: formikField[0].value,
+    blockPipelineErrors: (formikField[1].error as unknown) as unknown[],
+    setBlockPipeline: formikField[2].setValue,
+    traceError,
+  };
 }
 
 export default usePipelineField;

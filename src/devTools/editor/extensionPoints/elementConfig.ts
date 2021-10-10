@@ -28,7 +28,7 @@ import { FrameworkMeta } from "@/messaging/constants";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
-import { NormalizedAvailability } from "@/blocks/types";
+import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import { Target } from "@/types";
 
 export type ElementType =
@@ -54,6 +54,10 @@ export interface BaseExtensionPointState {
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;
   };
+}
+
+export interface BaseExtensionState {
+  blockPipeline: BlockPipeline;
 }
 
 export interface BaseFormState {
@@ -93,7 +97,7 @@ export interface BaseFormState {
 
   extensionPoint: BaseExtensionPointState;
 
-  extension: unknown;
+  extension: BaseExtensionState;
 }
 
 /**

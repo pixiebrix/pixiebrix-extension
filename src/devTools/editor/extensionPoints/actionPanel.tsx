@@ -47,35 +47,22 @@ import ActionPanelConfiguration from "@/devTools/editor/tabs/actionPanel/ActionP
 import {
   BaseFormState,
   ElementConfig,
-  SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import { BlockPipeline } from "@/blocks/types";
 
 const wizard: WizardStep[] = [
-  {
-    step: "Edit",
-    Component: EditTab,
-    extraProps: { pipelineFieldName: "extension.body" },
-  },
+  { step: "Edit", Component: EditTab },
   { step: "Logs", Component: LogsTab },
 ];
 
 export interface ActionPanelFormState extends BaseFormState {
   type: "actionPanel";
 
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      isAvailable: NormalizedAvailability;
-      reader: SingleLayerReaderConfig;
-    };
-  };
-
   extension: {
     heading: string;
-    body: BlockPipeline;
+    blockPipeline: BlockPipeline;
   };
 }
 
@@ -100,7 +87,7 @@ function fromNativeElement(
     },
     extension: {
       heading,
-      body: [],
+      blockPipeline: [],
     },
   };
 }
@@ -133,6 +120,10 @@ function selectExtension(
   }: ActionPanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ActionPanelConfig> {
+  const config: ActionPanelConfig = {
+    heading: extension.heading,
+    body: extension.blockPipeline,
+  };
   return removeEmptyValues({
     id: uuid,
     apiVersion,
@@ -141,8 +132,8 @@ function selectExtension(
     label,
     services,
     config: options.includeInstanceIds
-      ? extension
-      : excludeInstanceIds(extension, "body"),
+      ? config
+      : excludeInstanceIds(config, "body"),
   });
 }
 
@@ -175,7 +166,7 @@ export async function fromExtensionPoint(
 
     extension: {
       heading,
-      body: [],
+      blockPipeline: [],
     },
 
     extensionPoint: {
@@ -198,6 +189,8 @@ async function fromExtension(
     "actionPanel"
   >(config, "actionPanel");
 
+  const blockPipeline = withInstanceIds(castArray(config.config.body));
+
   return {
     uuid: config.id,
     apiVersion: config.apiVersion,
@@ -208,9 +201,8 @@ async function fromExtension(
     services: config.services,
 
     extension: {
-      ...config.config,
       heading: config.config.heading,
-      body: withInstanceIds(castArray(config.config.body)),
+      blockPipeline,
     },
 
     extensionPoint: {
