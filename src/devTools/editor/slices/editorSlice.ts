@@ -25,6 +25,14 @@ import { ContextMenuFormState } from "@/devTools/editor/extensionPoints/contextM
 import { getErrorMessage } from "@/errors";
 import { clearExtensionTraces } from "@/background/trace";
 import { RegistryId, UUID } from "@/core";
+import {
+  ElementUIState,
+  makeInitialElementUIState,
+} from "@/devTools/editor/uiState/uiState";
+import {
+  FOUNDATION_NODE_ID,
+  NodeId,
+} from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 
 export type FormState =
   | ActionFormState
@@ -74,6 +82,11 @@ export interface EditorState {
    * Is the user using the new page editor beta UI?
    */
   isBetaUI: boolean;
+
+  /**
+   * The current UI state of each element, indexed by element Id
+   */
+  elementUIStates: Record<UUID, ElementUIState>;
 }
 
 export const initialState: EditorState = {
@@ -86,6 +99,7 @@ export const initialState: EditorState = {
   dirty: {},
   inserting: null,
   isBetaUI: false,
+  elementUIStates: {},
 };
 
 export const editorSlice = createSlice({
@@ -108,6 +122,7 @@ export const editorSlice = createSlice({
       state.beta = false;
       state.activeElement = element.uuid;
       state.selectionSeq++;
+      state.elementUIStates[element.uuid] = makeInitialElementUIState();
     },
     betaError: (state, action: PayloadAction<{ error: string }>) => {
       state.error = action.payload.error;
@@ -125,9 +140,8 @@ export const editorSlice = createSlice({
       state.selectionSeq++;
     },
     selectInstalled: (state, actions: PayloadAction<FormState>) => {
-      const index = state.elements.findIndex(
-        (x) => x.uuid === actions.payload.uuid
-      );
+      const { uuid } = actions.payload;
+      const index = state.elements.findIndex((x) => x.uuid === uuid);
       if (index >= 0) {
         // Safe because we're getting it from findIndex
         // eslint-disable-next-line security/detect-object-injection
@@ -138,8 +152,13 @@ export const editorSlice = createSlice({
 
       state.error = null;
       state.beta = null;
-      state.activeElement = actions.payload.uuid;
+      state.activeElement = uuid;
       state.selectionSeq++;
+      // eslint-disable-next-line security/detect-object-injection -- uuid
+      if (state.elementUIStates[uuid] === undefined) {
+        // eslint-disable-next-line security/detect-object-injection -- uuid
+        state.elementUIStates[uuid] = makeInitialElementUIState();
+      }
     },
     resetInstalled: (state, actions: PayloadAction<FormState>) => {
       const { uuid } = actions.payload;
@@ -171,6 +190,9 @@ export const editorSlice = createSlice({
       state.beta = null;
       state.activeElement = action.payload;
       state.selectionSeq++;
+      if (state.elementUIStates[action.payload] === undefined) {
+        state.elementUIStates[action.payload] = makeInitialElementUIState();
+      }
     },
     markSaved: (state, action: PayloadAction<UUID>) => {
       const element = state.elements.find((x) => action.payload === x.uuid);
@@ -214,12 +236,56 @@ export const editorSlice = createSlice({
 
       // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- is uuid, and also using immer
       delete state.dirty[uuid];
+      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- is uuid, and also using immer
+      delete state.elementUIStates[uuid];
 
       // Make sure we're not keeping any private data around from Page Editor sessions
       void clearExtensionTraces(uuid);
     },
     setBetaUIEnabled: (state, action: PayloadAction<boolean>) => {
       state.isBetaUI = action.payload;
+    },
+    addElementNodeUIState: (state, action: PayloadAction<UUID>) => {
+      const elementUIState = state.elementUIStates[state.activeElement];
+      const nodeId = action.payload;
+      // eslint-disable-next-line security/detect-object-injection -- uuid
+      elementUIState.nodeUIStates[nodeId] = {
+        nodeId,
+        activeDataPanelTabKey: null,
+      };
+      elementUIState.activeNodeId = nodeId;
+    },
+    // Remember to update the active node separately before calling this
+    removeElementNodeUIState: (state, action: PayloadAction<UUID>) => {
+      const elementUIState = state.elementUIStates[state.activeElement];
+      const nodeIdToRemove = action.payload;
+      // Guard against errors
+      if (elementUIState.activeNodeId === nodeIdToRemove) {
+        elementUIState.activeNodeId = FOUNDATION_NODE_ID;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection -- uuid
+      delete elementUIState.nodeUIStates[nodeIdToRemove];
+    },
+    setElementActiveNodeId: (state, action: PayloadAction<NodeId>) => {
+      const elementUIState = state.elementUIStates[state.activeElement];
+      const nodeId = action.payload;
+      // eslint-disable-next-line security/detect-object-injection -- uuid
+      if (elementUIState.nodeUIStates[nodeId] === undefined) {
+        // eslint-disable-next-line security/detect-object-injection -- uuid
+        elementUIState.nodeUIStates[nodeId] = {
+          nodeId,
+          activeDataPanelTabKey: null,
+        };
+      }
+
+      state.elementUIStates[state.activeElement].activeNodeId = action.payload;
+    },
+    setNodeDataPanelTabSelected: (state, action: PayloadAction<string>) => {
+      const elementUIState = state.elementUIStates[state.activeElement];
+      const nodeUIState =
+        elementUIState.nodeUIStates[elementUIState.activeNodeId];
+      nodeUIState.activeDataPanelTabKey = action.payload;
     },
   },
 });

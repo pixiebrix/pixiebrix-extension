@@ -74,7 +74,12 @@ const Logo: React.FunctionComponent = () => (
 
 type SidebarProps = Except<
   EditorState,
-  "error" | "dirty" | "knownEditable" | "selectionSeq" | "isBetaUI"
+  | "error"
+  | "dirty"
+  | "knownEditable"
+  | "selectionSeq"
+  | "isBetaUI"
+  | "elementUIStates"
 > & {
   installed: IExtension[];
 };

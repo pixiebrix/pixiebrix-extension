@@ -20,7 +20,7 @@ import { UUID } from "@/core";
 import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
 import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
-import { actions } from "@/devTools/editor/slices/formBuilderSlice";
+import { actions as formActions } from "@/devTools/editor/slices/formBuilderSlice";
 import { Alert, Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./DataPanel.module.scss";
@@ -35,13 +35,17 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
+import {
+  actions as editorActions,
+  FormState,
+} from "@/devTools/editor/slices/editorSlice";
 import AuthContext from "@/auth/AuthContext";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
+import { selectNodeDataPanelTabSelected } from "@/devTools/editor/uiState/uiState";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -116,7 +120,7 @@ const DataPanel: React.FC<{
 
   const [formBuilderActiveField, setFormBuilderActiveField] = useReduxState(
     formBuilderSelectors.activeField,
-    actions.setActiveField
+    formActions.setActiveField
   );
 
   const outputObj: JsonObject =
@@ -132,10 +136,16 @@ const DataPanel: React.FC<{
   const showFormPreview = block.config?.schema && block.config?.uiSchema;
   const showBlockPreview = record || previewInfo?.traceOptional;
 
-  const defaultKey = showFormPreview ? "preview" : "output";
+  const savedActiveKey = useSelector(selectNodeDataPanelTabSelected);
+  const dispatch = useDispatch();
+  const handleSelect = (eventKey: string) => {
+    dispatch(editorActions.setNodeDataPanelTabSelected(eventKey));
+  };
+
+  const defaultKey = savedActiveKey ?? (showFormPreview ? "preview" : "output");
 
   return (
-    <Tab.Container defaultActiveKey={defaultKey}>
+    <Tab.Container defaultActiveKey={defaultKey} onSelect={handleSelect}>
       <Nav variant="tabs">
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>

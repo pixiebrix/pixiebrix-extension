@@ -18,9 +18,9 @@
 import React, { useContext } from "react";
 import AuthContext from "@/auth/AuthContext";
 import { useFormikContext } from "formik";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { UUID } from "@/core";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { makeSelectBlockTrace } from "@/devTools/editor/slices/runtimeSelectors";
 import { Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
@@ -28,6 +28,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import styles from "./DataPanel.module.scss";
 import ExtensionPointPreview from "@/devTools/editor/tabs/effect/ExtensionPointPreview";
+import { selectNodeDataPanelTabSelected } from "@/devTools/editor/uiState/uiState";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
@@ -43,10 +44,16 @@ const FoundationDataPanel: React.FC<{
     makeSelectBlockTrace(firstBlockInstanceId)
   );
 
-  const defaultActiveKey = firstBlockTraceRecord ? "output" : "preview";
+  const savedActiveKey = useSelector(selectNodeDataPanelTabSelected);
+  const dispatch = useDispatch();
+  const handleSelect = (eventKey: string) => {
+    dispatch(actions.setNodeDataPanelTabSelected(eventKey));
+  };
+
+  const defaultKey = savedActiveKey ?? (firstBlockTraceRecord ? "output" : "preview");
 
   return (
-    <Tab.Container defaultActiveKey={defaultActiveKey}>
+    <Tab.Container defaultActiveKey={defaultKey} onSelect={handleSelect}>
       <Nav variant="tabs">
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
