@@ -16,7 +16,7 @@
  */
 
 /**
- * How to use this module: It must be imported as early as possible in each entrypoint, once.
+ * @file This file must be imported as early as possible in each entrypoint, once
  */
 
 import { reportError } from "@/telemetry/logging";
