@@ -25,9 +25,6 @@ import {
   BlockArg,
   IBlock,
   IReader,
-  isEffectBlock,
-  isReader,
-  isRendererBlock,
   Logger,
   MessageContext,
   OutputKey,
@@ -66,6 +63,7 @@ import { TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
 import { recordTraceEntry, recordTraceExit } from "@/background/trace";
 import { uuidv4 } from "@/types/helpers";
+import { getType } from "@/blocks/util";
 
 /** Return block definitions for all blocks referenced in a pipeline */
 export async function blockList(
@@ -190,7 +188,9 @@ export async function runStage(
     extensionId: logger.context.extensionId,
   };
 
-  if (isReader(block)) {
+  const blockType = await getType(block);
+
+  if (blockType === "reader") {
     // `reducePipeline` is responsible for passing the correct root into runStage based based on the BlockConfig
     if ((stage.window ?? "self") === "self") {
       blockArgs = { root };
@@ -272,7 +272,7 @@ export async function runStage(
     );
   }
 
-  if (isRendererBlock(block) && headless) {
+  if (blockType === "renderer" && headless) {
     throw new HeadlessModeError(block.id, blockArgs, args, logger.context);
   }
 
@@ -448,6 +448,7 @@ export async function reducePipeline(
       }
 
       const block = await blockRegistry.lookup(stage.id);
+      const blockType = await getType(block);
 
       const output = await runStage(block, stage, currentArgs, {
         root: stageRoot,
@@ -503,7 +504,7 @@ export async function reducePipeline(
         }
       }
 
-      if (isEffectBlock(block)) {
+      if (blockType === "effect") {
         if (stage.outputKey) {
           logger.warn(`Ignoring output key for effect ${block.id}`);
         }
