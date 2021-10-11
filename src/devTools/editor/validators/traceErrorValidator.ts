@@ -15,19 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { BlockPipeline } from "@/blocks/types";
 import { TraceError } from "@/telemetry/trace";
+import traceErrorGeneralValidator from "./traceErrorGeneralValidator";
+import traceErrorInputValidator from "./traceErrorInputValidator";
 
-function traceErrorGeneralValidator(
+function traceErrorValidator(
   pipelineErrors: Record<string, unknown>,
   errorTraceEntry: TraceError,
-  blockIndex: number
+  pipeline: BlockPipeline
 ) {
-  const blockIndexString = String(blockIndex);
-  // eslint-disable-next-line security/detect-object-injection
-  if (!pipelineErrors[blockIndexString]) {
-    // eslint-disable-next-line security/detect-object-injection
-    pipelineErrors[blockIndexString] = errorTraceEntry.error.message;
+  if (!errorTraceEntry) {
+    return;
   }
+
+  const { blockInstanceId } = errorTraceEntry;
+  const blockIndex = pipeline.findIndex(
+    (block) => block.instanceId === blockInstanceId
+  );
+  if (blockIndex === -1) {
+    return;
+  }
+
+  traceErrorInputValidator(pipelineErrors, errorTraceEntry, blockIndex);
+  traceErrorGeneralValidator(pipelineErrors, errorTraceEntry, blockIndex);
 }
 
-export default traceErrorGeneralValidator;
+export default traceErrorValidator;

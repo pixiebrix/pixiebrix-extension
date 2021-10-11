@@ -14,20 +14,3 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import { TraceError } from "@/telemetry/trace";
-
-function traceErrorGeneralValidator(
-  pipelineErrors: Record<string, unknown>,
-  errorTraceEntry: TraceError,
-  blockIndex: number
-) {
-  const blockIndexString = String(blockIndex);
-  // eslint-disable-next-line security/detect-object-injection
-  if (!pipelineErrors[blockIndexString]) {
-    // eslint-disable-next-line security/detect-object-injection
-    pipelineErrors[blockIndexString] = errorTraceEntry.error.message;
-  }
-}
-
-export default traceErrorGeneralValidator;

@@ -82,11 +82,14 @@ const EditTab: React.FC<{
 
   const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
 
+  // Load once
+  const [allBlocks] = useAsyncState(async () => blockRegistry.all(), [], []);
+
   const {
     blockPipeline,
     blockPipelineErrors,
     errorTraceEntry,
-  } = usePipelineField();
+  } = usePipelineField(allBlocks);
 
   const [activeNodeId, setActiveNodeId] = useState<NodeId>(FOUNDATION_NODE_ID);
   const activeBlockIndex = useMemo(() => {
@@ -103,9 +106,6 @@ const EditTab: React.FC<{
     () => `extension.blockPipeline[${activeBlockIndex}]`,
     [activeBlockIndex]
   );
-
-  // Load once
-  const [allBlocks] = useAsyncState(async () => blockRegistry.all(), [], []);
 
   const pipelineIdHash = hash(blockPipeline.map((x) => x.id));
   const resolvedBlocks = useMemo(

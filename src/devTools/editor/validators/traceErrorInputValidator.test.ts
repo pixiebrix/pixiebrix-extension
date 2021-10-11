@@ -5,13 +5,8 @@ test("ignores non input errors", () => {
   const pipelineErrors: Record<string, any> = {};
   const errorTraceEntry = traceErrorFactory();
 
-  const hasInputErrors = traceErrorInputValidator(
-    pipelineErrors,
-    errorTraceEntry,
-    0
-  );
+  traceErrorInputValidator(pipelineErrors, errorTraceEntry, 0);
 
-  expect(hasInputErrors).toBe(false);
   expect(pipelineErrors).toEqual({});
 });
 
@@ -30,13 +25,8 @@ test("figures required property error", () => {
     error: traceError,
   });
 
-  const hasInputErrors = traceErrorInputValidator(
-    pipelineErrors,
-    errorTraceEntry,
-    0
-  );
+  traceErrorInputValidator(pipelineErrors, errorTraceEntry, 0);
 
-  expect(hasInputErrors).toBe(true);
   // @ts-expect-error -- pipelineErrors[0] has 'config'
   expect(pipelineErrors[0].config[property]).toEqual(
     "Error from the last run: This field is required"
@@ -58,12 +48,7 @@ test("sets unknown input error on the block level", () => {
     error: traceError,
   });
 
-  const hasInputErrors = traceErrorInputValidator(
-    pipelineErrors,
-    errorTraceEntry,
-    0
-  );
+  traceErrorInputValidator(pipelineErrors, errorTraceEntry, 0);
 
-  expect(hasInputErrors).toBe(true);
   expect(pipelineErrors[0]).toEqual(errorMessage);
 });

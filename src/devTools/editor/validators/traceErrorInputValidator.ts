@@ -33,11 +33,11 @@ function traceErrorInputValidator(
   pipelineErrors: Record<string, unknown>,
   errorTraceEntry: TraceError,
   blockIndex: number
-): boolean {
+) {
   const { error: traceError } = errorTraceEntry;
 
   if (!isInputValidationError(traceError)) {
-    return false;
+    return;
   }
 
   const blockIndexString = String(blockIndex);
@@ -50,15 +50,13 @@ function traceErrorInputValidator(
         "config",
         property
       );
-      const errorMessage = "Error from the last run: This field is required";
+      const errorMessage = "Error from the last run: This field is required.";
       set(pipelineErrors, propertyNameInPipeline, errorMessage);
     } else if (unit.error) {
       // eslint-disable-next-line security/detect-object-injection
       pipelineErrors[blockIndexString] = unit.error;
     }
   }
-
-  return true;
 }
 
 export default traceErrorInputValidator;

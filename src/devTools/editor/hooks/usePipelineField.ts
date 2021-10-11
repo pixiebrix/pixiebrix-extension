@@ -22,39 +22,37 @@ import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { useField, useFormikContext, setNestedObjectValues } from "formik";
 import { TraceError } from "@/telemetry/trace";
 import { useAsyncEffect } from "use-async-effect";
-import traceErrorInputValidator from "@/devTools/editor/validators/traceErrorInputValidator";
-import traceErrorGeneralValidator from "@/devTools/editor/validators/traceErrorGeneralValidator";
+import outputKeyValidator from "@/devTools/editor/validators/outputKeyValidator";
+import { IBlock } from "@/core";
+import traceErrorValidator from "@/devTools/editor/validators/traceErrorValidator";
+import { isEmpty } from "lodash";
+
+export type PipelineErrors = string | Record<string, unknown>;
 
 const pipelineBlocksFieldName = "extension.blockPipeline";
 
-function usePipelineField(): {
+function usePipelineField(
+  allBlocks: IBlock[]
+): {
   blockPipeline: BlockPipeline;
-  blockPipelineErrors: string | Record<string, unknown>;
+  blockPipelineErrors: PipelineErrors;
   errorTraceEntry: TraceError;
 } {
   const errorTraceEntry = useSelector(selectTraceError);
 
   const validatePipelineBlocks = useCallback(
-    (pipeline: BlockPipeline) => {
-      if (!errorTraceEntry) {
-        return;
-      }
-
-      const { blockInstanceId } = errorTraceEntry;
-      const blockIndex = pipeline.findIndex(
-        (block) => block.instanceId === blockInstanceId
-      );
-      if (blockIndex === -1) {
-        return;
-      }
-
+    async (pipeline: BlockPipeline): Promise<void | PipelineErrors> => {
       const formikErrors: Record<string, unknown> = {};
-      traceErrorInputValidator(formikErrors, errorTraceEntry, blockIndex);
-      traceErrorGeneralValidator(formikErrors, errorTraceEntry, blockIndex);
 
-      return formikErrors;
+      const resolvedBlocks = pipeline.map(({ id }) =>
+        (allBlocks ?? []).find((block) => block.id === id)
+      );
+      await outputKeyValidator(formikErrors, pipeline, resolvedBlocks);
+      traceErrorValidator(formikErrors, errorTraceEntry, pipeline);
+
+      return isEmpty(formikErrors) ? undefined : formikErrors;
     },
-    [errorTraceEntry]
+    [errorTraceEntry, allBlocks]
   );
 
   const [{ value: blockPipeline }, { error: blockPipelineErrors }] = useField<
