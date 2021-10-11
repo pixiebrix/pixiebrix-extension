@@ -243,7 +243,7 @@
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.7.2",
     "webpack-merge": "^5.8.0",
-    "webpack-target-webextension": "^0.4.3",
+    "webpack-target-webextension": "^1.0.0",
     "yaml-jest-transform": "^1.0.0",
     "yaml-loader": "^0.6.0",
     "zip-dir": "^2.0.0"
