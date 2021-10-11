@@ -30,29 +30,26 @@ function setOutputKeyError(
   blockIndex: number,
   errorMessage: string
 ) {
-  const propertyNameInPipeline = joinName(
-    String(blockIndex),
-    "config",
-    "outputKey"
-  );
+  const propertyNameInPipeline = joinName(String(blockIndex), "outputKey");
   set(pipelineErrors, propertyNameInPipeline, errorMessage);
 }
 
 async function outputKeyValidator(
   pipelineErrors: Record<string, unknown>,
   pipeline: BlockPipeline,
-  blocks: IBlock[]
+  resolvedBlocks: IBlock[]
 ) {
-  if (blocks.length !== pipeline.length) {
+  if (resolvedBlocks.length !== pipeline.length) {
     return;
   }
 
   for (let blockIndex = 0; blockIndex !== pipeline.length; ++blockIndex) {
     let errorMessage: string;
     const pipelineBlock = pipeline[blockIndex];
-    const resolvedBlock = blocks[blockIndex];
+    const resolvedBlock = resolvedBlocks[blockIndex];
     // eslint-disable-next-line no-await-in-loop
     const blockType = await getType(resolvedBlock);
+
     if (blockTypesWithEmptyOutputKey.includes(blockType)) {
       if (!pipelineBlock.outputKey) {
         continue;
@@ -65,7 +62,7 @@ async function outputKeyValidator(
       continue;
     } else {
       errorMessage =
-        "Must start with a letter and only includes letters and numbers.";
+        "Must start with a letter and only include letters and numbers.";
     }
 
     setOutputKeyError(pipelineErrors, blockIndex, errorMessage);

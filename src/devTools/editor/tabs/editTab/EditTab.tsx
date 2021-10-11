@@ -185,9 +185,10 @@ const EditTab: React.FC<{
                 faIconClass={styles.brickFaIcon}
               />
             ),
-            hasError: Boolean(
-              (blockPipelineErrors as Record<string, unknown>)?.[String(index)]
-            ),
+            hasError:
+              // If blockPipelineErrors is a string, it means the error is on the pipeline level
+              typeof blockPipelineErrors !== "string" &&
+              Boolean(blockPipelineErrors?.[String(index)]),
             hasWarning:
               errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
             onClick: () => {

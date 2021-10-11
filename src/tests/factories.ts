@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { IExtension } from "@/core";
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
@@ -69,8 +70,8 @@ export const extensionFactory: (
 
 export const traceErrorFactory: (
   traceErrorProps?: Partial<TraceError>
-) => TraceError = (traceErrorProps) =>
-  ({
+) => TraceError = (traceErrorProps) => {
+  const errorTraceEntry: TraceError = {
     timestamp: "2021-10-07T12:52:16.189Z",
     extensionId: uuidv4(),
     runId: uuidv4(),
@@ -80,4 +81,19 @@ export const traceErrorFactory: (
       message: "Trace error for tests",
     },
     ...traceErrorProps,
-  } as TraceError);
+  } as TraceError;
+
+  return errorTraceEntry;
+};
+
+export const pipelineFactory: () => BlockPipeline = () => {
+  const pipelineBlock: BlockConfig = {
+    id: validateRegistryId("testing/block-1"),
+  } as BlockConfig;
+
+  const anotherBlock: BlockConfig = {
+    id: validateRegistryId("testing/block-2"),
+  } as BlockConfig;
+
+  return [pipelineBlock, anotherBlock];
+};

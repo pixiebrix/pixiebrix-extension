@@ -14,3 +14,75 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import { BlockType } from "@/blocks/util";
+import { IBlock, OutputKey } from "@/core";
+import { pipelineFactory } from "@/tests/factories";
+import { isEmpty } from "lodash";
+import outputKeyValidator from "./outputKeyValidator";
+
+test("returns when doesn't resolved blocks do not match pipeline blocks", async () => {
+  const pipelineErrors: Record<string, unknown> = {};
+  await outputKeyValidator(pipelineErrors, pipelineFactory(), []);
+
+  expect(isEmpty(pipelineErrors)).toBe(true);
+});
+
+test.each([
+  ["effect", "effect"],
+  ["renderer", "render"],
+] as Array<[BlockType, string]>)(
+  "validates output key is empty for %s",
+  async (blockType: BlockType, blockProperty: string) => {
+    const pipelineErrors: Record<string, unknown> = {};
+    const pipeline = pipelineFactory();
+    pipeline[1].outputKey = "not empty" as OutputKey;
+    const block = ({
+      [blockProperty]: jest.fn(),
+    } as unknown) as IBlock;
+    await outputKeyValidator(pipelineErrors, pipeline, [block, block]);
+
+    expect(pipelineErrors[0]).toBeUndefined();
+    expect((pipelineErrors[1] as any).outputKey).toBe(
+      `OutputKey must be empty for ${blockType} block.`
+    );
+  }
+);
+
+test.each([
+  ["reader", "read"],
+  ["transform", "transform"],
+] as Array<[BlockType, string]>)(
+  "validates output key is not empty for %s",
+  async (blockType: BlockType, blockProperty: string) => {
+    const pipelineErrors: Record<string, unknown> = {};
+    const pipeline = pipelineFactory();
+    pipeline[0].outputKey = "validOutputKey" as OutputKey;
+    const block = ({
+      [blockProperty]: jest.fn(),
+    } as unknown) as IBlock;
+    await outputKeyValidator(pipelineErrors, pipeline, [block, block]);
+
+    expect(pipelineErrors[0]).toBeUndefined();
+    expect((pipelineErrors[1] as any).outputKey).toBe(
+      "This field is required."
+    );
+  }
+);
+
+test.each(["1", "1a", "a1?", "abc?"])(
+  'raises error with invalid output key "%s"',
+  async (invalidOutputKey: string) => {
+    const pipelineErrors: Record<string, unknown> = {};
+    const pipeline = pipelineFactory();
+    pipeline[0].outputKey = "validOutputKey" as OutputKey;
+    pipeline[1].outputKey = invalidOutputKey as OutputKey;
+    const block = ({} as unknown) as IBlock;
+    await outputKeyValidator(pipelineErrors, pipeline, [block, block]);
+
+    expect(pipelineErrors[0]).toBeUndefined();
+    expect((pipelineErrors[1] as any).outputKey).toBe(
+      "Must start with a letter and only include letters and numbers."
+    );
+  }
+);

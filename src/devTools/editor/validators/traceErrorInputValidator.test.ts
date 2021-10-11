@@ -29,7 +29,7 @@ test("figures required property error", () => {
 
   // @ts-expect-error -- pipelineErrors[0] has 'config'
   expect(pipelineErrors[0].config[property]).toEqual(
-    "Error from the last run: This field is required"
+    "Error from the last run: This field is required."
   );
 });
 

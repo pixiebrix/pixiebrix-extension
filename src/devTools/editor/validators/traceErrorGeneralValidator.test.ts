@@ -24,7 +24,6 @@ test("sets block error", () => {
 
   traceErrorGeneralValidator(pipelineErrors, errorTraceEntry, 0);
 
-  // eslint-disable-next-line security/detect-object-injection
   expect(pipelineErrors[0]).toBe(errorTraceEntry.error.message);
 });
 
