@@ -82,8 +82,9 @@ class ExternalBlock extends Block {
 
   readonly defaultOptions: Record<string, unknown>;
 
-  readonly effect?: typeof this.run;
-  readonly transform?: typeof this.run;
+  readonly effect?: ExternalBlock["run"];
+
+  readonly transform?: ExternalBlock["run"];
 
   constructor(component: ComponentConfig) {
     const { id, name, description, icon } = component.metadata;
