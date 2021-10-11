@@ -82,7 +82,6 @@ class ExternalBlock extends Block {
 
   readonly defaultOptions: Record<string, unknown>;
 
-  readonly read?: typeof this.run;
   readonly effect?: typeof this.run;
   readonly transform?: typeof this.run;
 
