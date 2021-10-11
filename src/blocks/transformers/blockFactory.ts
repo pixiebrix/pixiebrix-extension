@@ -28,32 +28,26 @@ import {
   Config,
   IBlock,
   Metadata,
+  RegistryId,
   Schema,
 } from "@/core";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
-import { getType } from "@/blocks/util";
+import { BlockType, getType } from "@/blocks/util";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
-type ComponentKind =
-  | "reader"
-  | "component"
-  | "effect"
-  | "transform"
-  | "renderer";
-
-interface ComponentConfig {
+type ComponentConfig = {
   apiVersion?: ApiVersion;
-  kind: ComponentKind;
+  kind: "component";
   metadata: Metadata;
   defaultOptions: Record<string, string>;
   pipeline: BlockConfig | BlockPipeline;
   inputSchema: Schema;
   outputSchema?: Schema;
   // Mapping from `key` -> `serviceId`
-  services?: Record<string, string>;
-}
+  services?: Record<string, RegistryId>;
+};
 
 function validateBlockDefinition(
   component: unknown
@@ -82,9 +76,6 @@ class ExternalBlock extends Block {
 
   readonly defaultOptions: Record<string, unknown>;
 
-  readonly effect?: typeof this.run;
-  readonly transform?: typeof this.run;
-
   constructor(component: ComponentConfig) {
     const { id, name, description, icon } = component.metadata;
     super(id, name, description, icon);
@@ -92,20 +83,6 @@ class ExternalBlock extends Block {
     this.component = component;
     this.inputSchema = this.component.inputSchema;
     this.outputSchema = this.component.outputSchema;
-
-    const kind: ComponentKind = component.kind ?? "transform";
-
-    switch (kind) {
-      case "effect":
-        this.effect = this.run;
-        break;
-      case "transform":
-        this.transform = this.run;
-        break;
-      case "reader":
-        throw new Error("Cannot deserialize reader as block");
-      default:
-    }
   }
 
   async isPure(): Promise<boolean> {
@@ -134,7 +111,7 @@ class ExternalBlock extends Block {
     return awareness.some((x) => x);
   }
 
-  async inferType(): Promise<ComponentKind | null> {
+  async inferType(): Promise<BlockType | null> {
     const pipeline = castArray(this.component.pipeline);
     const last = pipeline[pipeline.length - 1];
 
