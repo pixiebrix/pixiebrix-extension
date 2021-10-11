@@ -43,12 +43,6 @@ type ComponentKind =
   | "transform"
   | "renderer";
 
-const METHOD_MAP: Map<ComponentKind, string> = new Map([
-  ["reader", "read"],
-  ["effect", "effect"],
-  ["transform", "transform"],
-]);
-
 interface ComponentConfig {
   apiVersion?: ApiVersion;
   kind: ComponentKind;
@@ -88,6 +82,10 @@ class ExternalBlock extends Block {
 
   readonly defaultOptions: Record<string, unknown>;
 
+  readonly read?: typeof this.run;
+  readonly effect?: typeof this.run;
+  readonly transform?: typeof this.run;
+
   constructor(component: ComponentConfig) {
     const { id, name, description, icon } = component.metadata;
     super(id, name, description, icon);
@@ -96,18 +94,19 @@ class ExternalBlock extends Block {
     this.inputSchema = this.component.inputSchema;
     this.outputSchema = this.component.outputSchema;
 
-    const kind = component.kind ?? ("transform" as ComponentKind);
+    const kind: ComponentKind = component.kind ?? "transform";
 
-    if (kind === "reader") {
-      throw new Error("Cannot deserialize reader as block");
+    switch (kind) {
+      case "effect":
+        this.effect = this.run;
+        break;
+      case "transform":
+        this.transform = this.run;
+        break;
+      case "reader":
+        throw new Error("Cannot deserialize reader as block");
+      default:
     }
-
-    // @ts-expect-error we're being dynamic here to set the corresponding method for the kind since
-    // we use that method to distinguish between block types in places
-    this[METHOD_MAP.get(kind)] = async (
-      renderedInputs: BlockArg,
-      options: BlockOptions
-    ) => this.run(renderedInputs, options);
   }
 
   async isPure(): Promise<boolean> {
