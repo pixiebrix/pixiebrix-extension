@@ -38,13 +38,6 @@ function noopMouseHandler(event: MouseEvent) {
   event.stopPropagation();
 }
 
-function onPointerDown(event: MouseEvent) {
-  event.preventDefault();
-  event.stopPropagation();
-
-  console.log("Pointer down:", event.target);
-}
-
 export async function userSelectElement(
   root?: HTMLElement
 ): Promise<HTMLElement[]> {
@@ -99,6 +92,13 @@ export async function userSelectElement(
       }
     }
 
+    function onPointerDown(event: MouseEvent) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      console.log("Pointer down:", event.target);
+    }
+
     function onPointerOver(event: MouseEvent) {
       event.preventDefault();
       event.stopPropagation();
@@ -108,6 +108,14 @@ export async function userSelectElement(
       }
 
       overlay.inspect([event.target as HTMLElement], null);
+    }
+
+    function onPointerLeave(event: MouseEvent) {
+      console.log("pointer leave");
+      if (event.target === window.document) {
+        console.log("hiding overlay");
+        hideOverlay();
+      }
     }
 
     function escape(event: KeyboardEvent) {
@@ -130,6 +138,7 @@ export async function userSelectElement(
       window.addEventListener("mouseup", noopMouseHandler, true);
       window.addEventListener("pointerdown", onPointerDown, true);
       window.addEventListener("pointerover", onPointerOver, true);
+      window.document.addEventListener("pointerleave", onPointerLeave, true);
       window.addEventListener("pointerup", noopMouseHandler, true);
       window.addEventListener("keyup", escape, true);
     }
@@ -141,6 +150,7 @@ export async function userSelectElement(
       window.removeEventListener("mouseup", noopMouseHandler, true);
       window.removeEventListener("pointerdown", onPointerDown, true);
       window.removeEventListener("pointerover", onPointerOver, true);
+      window.document.removeEventListener("pointerleave", onPointerLeave, true);
       window.removeEventListener("pointerup", noopMouseHandler, true);
       window.removeEventListener("keyup", escape, true);
     }
