@@ -22,7 +22,6 @@ import "@/extensionContext";
 // Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/rollbar";
 
-import "webpack-target-webextension/lib/background";
 import "webext-dynamic-content-scripts";
 
 import "@/background/messenger/registration";

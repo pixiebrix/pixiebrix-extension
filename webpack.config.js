@@ -248,6 +248,9 @@ module.exports = (env, options) =>
       path: path.resolve("dist"),
       globalObject: "window",
       chunkFilename: "bundles/[name].bundle.js",
+      environment: {
+        dynamicImport: true,
+      },
     },
     entry: {
       // All of these entries require the `vendors.js` file to be included first
