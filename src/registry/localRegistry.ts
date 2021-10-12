@@ -17,7 +17,6 @@
 
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy, groupBy } from "lodash";
-import { liftBackground } from "@/background/protocol";
 
 const STORAGE_KEY = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
@@ -99,56 +98,50 @@ function latestVersion(versions: Package[]): Package | null {
     : null;
 }
 
-export const getKind = liftBackground(
-  "REGISTRY_GET_KIND",
-  async (kind: Kind) => {
-    const db = await getBrickDB();
-    const bricks = await db.getAllFromIndex(BRICK_STORE, "kind", kind);
-    return Object.entries(groupBy(bricks, (x) => x.id)).map(([, versions]) =>
-      latestVersion(versions)
-    );
-  }
-);
+export async function getKind(kind: Kind) {
+  const db = await getBrickDB();
+  const bricks = await db.getAllFromIndex(BRICK_STORE, "kind", kind);
+  return Object.entries(groupBy(bricks, (x) => x.id)).map(([, versions]) =>
+    latestVersion(versions)
+  );
+}
 
-export const getLocal = liftBackground("REGISTRY_GET_LOCAL", async () => {
+export async function getLocal() {
   const db = await getBrickDB();
   return db.getAllFromIndex(BRICK_STORE, "scope", LOCAL_SCOPE);
-});
+}
 
-export const add = liftBackground("REGISTRY_PUT", async (obj: Package) => {
+export async function add(obj: Package) {
   const db = await getBrickDB();
   await db.put(BRICK_STORE, obj);
-});
+}
 
-export const syncRemote = liftBackground(
-  "REGISTRY_SYNC",
-  async (kind: Kind, objs: Package[]) => {
-    const db = await getBrickDB();
-    const tx = db.transaction(BRICK_STORE, "readwrite");
+export async function syncRemote(kind: Kind, objs: Package[]) {
+  const db = await getBrickDB();
+  const tx = db.transaction(BRICK_STORE, "readwrite");
 
-    const current = await tx.store.getAll();
+  const current = await tx.store.getAll();
 
-    let deleteCnt = 0;
-    for (const obj of current) {
-      if (obj.kind === kind && obj.scope !== LOCAL_SCOPE) {
-        void tx.store.delete(getKey(obj));
-        deleteCnt++;
-      }
+  let deleteCnt = 0;
+  for (const obj of current) {
+    if (obj.kind === kind && obj.scope !== LOCAL_SCOPE) {
+      void tx.store.delete(getKey(obj));
+      deleteCnt++;
     }
-
-    for (const obj of objs) {
-      void tx.store.put(obj);
-    }
-
-    await tx.done;
-
-    console.debug(
-      `Replaced ${deleteCnt} ${kind} entries with ${objs.length} entries`
-    );
   }
-);
 
-export const find = liftBackground("REGISTRY_FIND", async (id: string) => {
+  for (const obj of objs) {
+    void tx.store.put(obj);
+  }
+
+  await tx.done;
+
+  console.debug(
+    `Replaced ${deleteCnt} ${kind} entries with ${objs.length} entries`
+  );
+}
+
+export async function find(id: string) {
   if (id == null) {
     throw new Error("id is required");
   }
@@ -161,4 +154,4 @@ export const find = liftBackground("REGISTRY_FIND", async (id: string) => {
   const db = await getBrickDB();
   const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
   return latestVersion(versions);
-});
+}

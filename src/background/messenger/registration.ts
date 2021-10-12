@@ -31,6 +31,7 @@ import {
   whoAmI,
   openTab,
 } from "@/background/executor";
+import * as registry from "@/registry/localRegistry";
 
 expectContext("background");
 
@@ -48,6 +49,11 @@ declare global {
     CLOSE_TAB: typeof closeTab;
     MARK_TAB_AS_READY: typeof markTabAsReady;
     OPEN_TAB: typeof openTab;
+    REGISTRY_GET_KIND: typeof registry.getKind;
+    REGISTRY_GET_LOCAL: typeof registry.getLocal;
+    REGISTRY_PUT: typeof registry.add;
+    REGISTRY_SYNC: typeof registry.syncRemote;
+    REGISTRY_FIND: typeof registry.find;
   }
 }
 
@@ -61,4 +67,9 @@ registerMethods({
   CLOSE_TAB: closeTab,
   MARK_TAB_AS_READY: markTabAsReady,
   OPEN_TAB: openTab,
+  REGISTRY_GET_KIND: registry.getKind,
+  REGISTRY_GET_LOCAL: registry.getLocal,
+  REGISTRY_PUT: registry.add,
+  REGISTRY_SYNC: registry.syncRemote,
+  REGISTRY_FIND: registry.find,
 });
