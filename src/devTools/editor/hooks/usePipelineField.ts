@@ -18,12 +18,12 @@
 import { useSelector } from "react-redux";
 import { selectTraceError } from "@/devTools/editor/slices/runtimeSelectors";
 import { useCallback } from "react";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { BlockPipeline } from "@/blocks/types";
 import { useField, useFormikContext, setNestedObjectValues } from "formik";
 import { TraceError } from "@/telemetry/trace";
 import { useAsyncEffect } from "use-async-effect";
-import outputKeyValidator from "@/devTools/editor/validators/outputKeyValidator";
-import traceErrorValidator from "@/devTools/editor/validators/traceErrorValidator";
+import validateOutputKey from "@/devTools/editor/validation/validateOutputKey";
+import applyTraceError from "@/devTools/editor/validation/applyTraceError";
 import { isEmpty } from "lodash";
 import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
@@ -51,8 +51,8 @@ function usePipelineField(
     (pipeline: BlockPipeline): void | PipelineErrors => {
       const formikErrors: Record<string, unknown> = {};
 
-      outputKeyValidator(formikErrors, pipeline, allBlocks);
-      traceErrorValidator(formikErrors, errorTraceEntry, pipeline);
+      validateOutputKey(formikErrors, pipeline, allBlocks);
+      applyTraceError(formikErrors, errorTraceEntry, pipeline);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;
     },

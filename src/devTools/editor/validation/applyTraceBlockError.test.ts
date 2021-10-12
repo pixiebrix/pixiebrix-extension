@@ -16,13 +16,13 @@
  */
 
 import { traceErrorFactory } from "@/tests/factories";
-import traceErrorGeneralValidator from "./traceErrorGeneralValidator";
+import applyTraceBlockError from "./applyTraceBlockError";
 
 test("sets block error", () => {
   const pipelineErrors: Record<string, unknown> = {};
   const errorTraceEntry = traceErrorFactory();
 
-  traceErrorGeneralValidator(pipelineErrors, errorTraceEntry, 0);
+  applyTraceBlockError(pipelineErrors, errorTraceEntry, 0);
 
   expect(pipelineErrors[0]).toBe(errorTraceEntry.error.message);
 });
@@ -40,7 +40,7 @@ test("doesn't override nested error", () => {
     [blockIndex]: nestedBlockError,
   };
 
-  traceErrorGeneralValidator(pipelineErrors, errorTraceEntry, blockIndex);
+  applyTraceBlockError(pipelineErrors, errorTraceEntry, blockIndex);
 
   // eslint-disable-next-line security/detect-object-injection
   expect(pipelineErrors[blockIndex]).toBe(nestedBlockError);

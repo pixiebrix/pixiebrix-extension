@@ -29,7 +29,7 @@ const requiredFieldRegex = /^Instance does not have required property "(?<proper
  * @param blockIndex Index of block that generated the Trace Error.
  * @returns True if errors found, false otherwise.
  */
-function traceErrorInputValidator(
+function applyTraceInputError(
   pipelineErrors: Record<string, unknown>,
   errorTraceEntry: TraceError,
   blockIndex: number
@@ -57,4 +57,4 @@ function traceErrorInputValidator(
   }
 }
 
-export default traceErrorInputValidator;
+export default applyTraceInputError;

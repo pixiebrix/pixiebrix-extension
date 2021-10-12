@@ -17,7 +17,7 @@
 
 import { TraceError } from "@/telemetry/trace";
 
-function traceErrorGeneralValidator(
+function applyTraceBlockError(
   pipelineErrors: Record<string, unknown>,
   errorTraceEntry: TraceError,
   blockIndex: number
@@ -29,4 +29,4 @@ function traceErrorGeneralValidator(
   }
 }
 
-export default traceErrorGeneralValidator;
+export default applyTraceBlockError;

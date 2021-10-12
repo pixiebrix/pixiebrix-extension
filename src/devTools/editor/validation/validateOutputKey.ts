@@ -34,7 +34,7 @@ function setOutputKeyError(
   set(pipelineErrors, propertyNameInPipeline, errorMessage);
 }
 
-function outputKeyValidator(
+function validateOutputKey(
   pipelineErrors: Record<string, unknown>,
   pipeline: BlockPipeline,
   allBlocks: BlocksMap
@@ -69,4 +69,4 @@ function outputKeyValidator(
   }
 }
 
-export default outputKeyValidator;
+export default validateOutputKey;

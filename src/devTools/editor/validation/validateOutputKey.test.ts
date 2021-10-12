@@ -18,12 +18,12 @@
 import { BlockType } from "@/blocks/util";
 import { OutputKey } from "@/core";
 import { blockFactory, pipelineFactory } from "@/tests/factories";
-import outputKeyValidator from "./outputKeyValidator";
+import validateOutputKey from "./validateOutputKey";
 
 describe("outputKeyValidator", () => {
   test("returns when no blocks given", async () => {
     const pipelineErrors: Record<string, unknown> = {};
-    outputKeyValidator(pipelineErrors, pipelineFactory(), {});
+    validateOutputKey(pipelineErrors, pipelineFactory(), {});
 
     expect(pipelineErrors).toEqual({});
   });
@@ -31,7 +31,7 @@ describe("outputKeyValidator", () => {
   test("returns when pipeline is empty", async () => {
     const pipelineErrors: Record<string, unknown> = {};
     const block = blockFactory();
-    outputKeyValidator(pipelineErrors, [], {
+    validateOutputKey(pipelineErrors, [], {
       [block.id]: {
         block,
         type: null,
@@ -53,7 +53,7 @@ describe("outputKeyValidator", () => {
       const block = blockFactory({
         [blockProperty]: jest.fn(),
       });
-      outputKeyValidator(pipelineErrors, pipeline, {
+      validateOutputKey(pipelineErrors, pipeline, {
         [block.id]: {
           block,
           type: blockType,
@@ -79,7 +79,7 @@ describe("outputKeyValidator", () => {
       const block = blockFactory({
         [blockProperty]: jest.fn(),
       });
-      outputKeyValidator(pipelineErrors, pipeline, {
+      validateOutputKey(pipelineErrors, pipeline, {
         [block.id]: {
           block,
           type: blockType,
@@ -101,7 +101,7 @@ describe("outputKeyValidator", () => {
       pipeline[0].outputKey = "validOutputKey" as OutputKey;
       pipeline[1].outputKey = invalidOutputKey as OutputKey;
       const block = blockFactory();
-      outputKeyValidator(pipelineErrors, pipeline, {
+      validateOutputKey(pipelineErrors, pipeline, {
         [block.id]: {
           block,
           type: null,

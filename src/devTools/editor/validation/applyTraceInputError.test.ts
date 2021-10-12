@@ -1,11 +1,11 @@
 import { traceErrorFactory } from "@/tests/factories";
-import traceErrorInputValidator from "./traceErrorInputValidator";
+import applyTraceInputError from "./applyTraceInputError";
 
 test("ignores non input errors", () => {
   const pipelineErrors: Record<string, any> = {};
   const errorTraceEntry = traceErrorFactory();
 
-  traceErrorInputValidator(pipelineErrors, errorTraceEntry, 0);
+  applyTraceInputError(pipelineErrors, errorTraceEntry, 0);
 
   expect(pipelineErrors).toEqual({});
 });
@@ -25,7 +25,7 @@ test("figures required property error", () => {
     error: traceError,
   });
 
-  traceErrorInputValidator(pipelineErrors, errorTraceEntry, 0);
+  applyTraceInputError(pipelineErrors, errorTraceEntry, 0);
 
   // @ts-expect-error -- pipelineErrors[0] has 'config'
   expect(pipelineErrors[0].config[property]).toEqual(
@@ -48,7 +48,7 @@ test("sets unknown input error on the block level", () => {
     error: traceError,
   });
 
-  traceErrorInputValidator(pipelineErrors, errorTraceEntry, 0);
+  applyTraceInputError(pipelineErrors, errorTraceEntry, 0);
 
   expect(pipelineErrors[0]).toEqual(errorMessage);
 });

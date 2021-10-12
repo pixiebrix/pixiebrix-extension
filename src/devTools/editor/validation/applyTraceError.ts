@@ -17,10 +17,10 @@
 
 import { BlockPipeline } from "@/blocks/types";
 import { TraceError } from "@/telemetry/trace";
-import traceErrorGeneralValidator from "./traceErrorGeneralValidator";
-import traceErrorInputValidator from "./traceErrorInputValidator";
+import applyTraceBlockError from "./applyTraceBlockError";
+import applyTraceInputError from "./applyTraceInputError";
 
-function traceErrorValidator(
+function applyTraceError(
   pipelineErrors: Record<string, unknown>,
   errorTraceEntry: TraceError,
   pipeline: BlockPipeline
@@ -37,8 +37,8 @@ function traceErrorValidator(
     return;
   }
 
-  traceErrorInputValidator(pipelineErrors, errorTraceEntry, blockIndex);
-  traceErrorGeneralValidator(pipelineErrors, errorTraceEntry, blockIndex);
+  applyTraceInputError(pipelineErrors, errorTraceEntry, blockIndex);
+  applyTraceBlockError(pipelineErrors, errorTraceEntry, blockIndex);
 }
 
-export default traceErrorValidator;
+export default applyTraceError;
