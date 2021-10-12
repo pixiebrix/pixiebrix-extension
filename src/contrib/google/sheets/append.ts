@@ -16,17 +16,13 @@
  */
 
 import { Effect } from "@/types";
-import {
-  appendRows,
-  createTab,
-  getHeaders,
-} from "@/contrib/google/sheets/handlers";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { unary } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/sheetsHelpers";
+import { sheets } from "@/background/messenger/api";
 
 type CellValue = string | number | null;
 
@@ -139,7 +135,7 @@ export class GoogleSheetsAppend extends Effect {
     let currentHeaders: string[];
 
     try {
-      currentHeaders = await getHeaders({ spreadsheetId, tabName });
+      currentHeaders = await sheets.getHeaders({ spreadsheetId, tabName });
       console.debug(
         `Found headers for ${tabName}: ${currentHeaders.join(", ")}`
       );
@@ -151,16 +147,16 @@ export class GoogleSheetsAppend extends Effect {
       }
 
       logger.info(`Creating tab ${tabName}`);
-      await createTab(spreadsheetId, tabName);
+      await sheets.createTab(spreadsheetId, tabName);
     }
 
     if (!currentHeaders || currentHeaders.every((x) => isNullOrBlank(x))) {
       logger.info(`Writing header row for ${tabName}`);
-      await appendRows(spreadsheetId, tabName, [valueHeaders]);
+      await sheets.appendRows(spreadsheetId, tabName, [valueHeaders]);
       currentHeaders = valueHeaders;
     }
 
-    await appendRows(spreadsheetId, tabName, [
+    await sheets.appendRows(spreadsheetId, tabName, [
       makeValues(currentHeaders, rowValues),
     ]);
   }
