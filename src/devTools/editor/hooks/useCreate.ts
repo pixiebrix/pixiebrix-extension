@@ -18,7 +18,6 @@
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
-import { AxiosError } from "axios";
 import { optionsSlice } from "@/options/slices";
 import { FormikHelpers } from "formik";
 import { AddToast, useToasts } from "react-toast-notifications";
@@ -31,7 +30,7 @@ import { reportEvent } from "@/telemetry/events";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { extensionPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage, isAxiosError } from "@/errors";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import {
@@ -58,19 +57,17 @@ async function upsertConfig(
 
   if (packageUUID) {
     await client.put(`api/bricks/${packageUUID}/`, data);
-    return;
+  } else {
+    await client.post("api/bricks/", data);
   }
-
-  await client.post("api/bricks/", data);
 }
 
 function selectErrorMessage(error: unknown): string {
   // FIXME: should this logic be in getErrorMessage?
-  if (typeof error === "object" && (error as AxiosError).isAxiosError) {
-    const error_ = error as AxiosError;
+  if (isAxiosError(error)) {
     return (
-      error_.response?.data.config?.toString() ??
-      error_.response?.statusText ??
+      error.response?.data.config?.toString() ??
+      error.response?.statusText ??
       "No response from PixieBrix server"
     );
   }
@@ -133,8 +130,8 @@ export function useCreate(): CreateCallback {
       { setSubmitting, setStatus }: FormikHelpers<FormState>
     ) => {
       const onStepError = (error: unknown, step: string) => {
-        const message = selectErrorMessage(error);
         reportError(error);
+        const message = selectErrorMessage(error);
         console.warn("Error %s: %s", step, message, { error });
         setStatus(`Error ${step}: ${message}`);
         addToast(`Error ${step}: ${message}`, {

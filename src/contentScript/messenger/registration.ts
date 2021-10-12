@@ -102,7 +102,7 @@ declare global {
     HANDLE_NAVIGATE: typeof handleNavigate;
     SHOW_NOTIFICATION: typeof showNotification;
     LINK_CHILD_TAB: typeof linkChildTab;
-    CONTENT_MESSAGE_RUN_BLOCK: typeof runBlockInContentScript;
+    RUN_BLOCK: typeof runBlockInContentScript;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
   }
@@ -144,7 +144,7 @@ registerMethods({
   SHOW_NOTIFICATION: showNotification,
 
   LINK_CHILD_TAB: linkChildTab,
-  CONTENT_MESSAGE_RUN_BLOCK: runBlockInContentScript,
+  RUN_BLOCK: runBlockInContentScript,
   CANCEL_SELECT_ELEMENT: cancelSelect,
   SELECT_ELEMENT: selectElement,
 });

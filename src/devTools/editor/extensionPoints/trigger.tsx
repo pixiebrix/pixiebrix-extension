@@ -49,17 +49,13 @@ import {
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
 
 const wizard: WizardStep[] = [
-  {
-    step: "Edit",
-    Component: EditTab,
-    extraProps: { pipelineFieldName: "extension.action" },
-  },
+  { step: "Edit", Component: EditTab },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -74,10 +70,6 @@ export interface TriggerFormState extends BaseFormState {
       reader: SingleLayerReaderConfig;
       isAvailable: NormalizedAvailability;
     };
-  };
-
-  extension: {
-    action: BlockPipeline;
   };
 }
 
@@ -100,7 +92,7 @@ function fromNativeElement(
       },
     },
     extension: {
-      action: [],
+      blockPipeline: [],
     },
   };
 }
@@ -135,6 +127,9 @@ function selectExtension(
   }: TriggerFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<TriggerConfig> {
+  const config: TriggerConfig = {
+    action: extension.blockPipeline,
+  };
   return removeEmptyValues({
     id: uuid,
     apiVersion,
@@ -143,8 +138,8 @@ function selectExtension(
     label,
     services,
     config: options.includeInstanceIds
-      ? extension
-      : excludeInstanceIds(extension, "action"),
+      ? config
+      : excludeInstanceIds(config, "action"),
   });
 }
 
@@ -181,7 +176,7 @@ async function fromExtensionPoint(
     services: [],
 
     extension: {
-      action: [],
+      blockPipeline: [],
     },
 
     extensionPoint: {
@@ -208,6 +203,8 @@ async function fromExtension(
 
   const { rootSelector, trigger, reader } = extensionPoint.definition;
 
+  const blockPipeline = withInstanceIds(castArray(config.config.action));
+
   return {
     uuid: config.id,
     apiVersion: config.apiVersion,
@@ -218,8 +215,7 @@ async function fromExtension(
     services: config.services,
 
     extension: {
-      ...config.config,
-      action: withInstanceIds(castArray(config.config.action)),
+      blockPipeline,
     },
 
     extensionPoint: {

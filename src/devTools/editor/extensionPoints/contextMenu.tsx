@@ -55,11 +55,7 @@ import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
 
 const wizard: WizardStep[] = [
-  {
-    step: "Edit",
-    Component: EditTab,
-    extraProps: { pipelineFieldName: "extension.action" },
-  },
+  { step: "Edit", Component: EditTab },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -79,7 +75,7 @@ export interface ContextMenuFormState extends BaseFormState {
 
   extension: {
     title: string;
-    action: BlockPipeline;
+    blockPipeline: BlockPipeline;
   };
 }
 
@@ -110,7 +106,7 @@ function fromNativeElement(
     },
     extension: {
       title,
-      action: [],
+      blockPipeline: [],
     },
   };
 }
@@ -150,6 +146,10 @@ function selectExtension(
   }: ContextMenuFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ContextMenuConfig> {
+  const config: ContextMenuConfig = {
+    title: extension.title,
+    action: extension.blockPipeline,
+  };
   return removeEmptyValues({
     id: uuid,
     apiVersion,
@@ -158,8 +158,8 @@ function selectExtension(
     label,
     services,
     config: options.includeInstanceIds
-      ? extension
-      : excludeInstanceIds(extension, "action"),
+      ? config
+      : excludeInstanceIds(config, "action"),
   });
 }
 
@@ -180,6 +180,8 @@ async function fromExtension(
     reader,
   } = extensionPoint.definition;
 
+  const blockPipeline = withInstanceIds(castArray(extensionConfig.action));
+
   return {
     uuid: config.id,
     apiVersion: config.apiVersion,
@@ -191,7 +193,7 @@ async function fromExtension(
 
     extension: {
       ...extensionConfig,
-      action: withInstanceIds(castArray(extensionConfig.action)),
+      blockPipeline,
     },
 
     extensionPoint: {
@@ -234,7 +236,7 @@ async function fromExtensionPoint(
 
     extension: {
       title: defaultOptions.title ?? "Custom Action",
-      action: [],
+      blockPipeline: [],
     },
 
     extensionPoint: {

@@ -28,3 +28,19 @@ declare module "react-select-virtualized" {
   import VirtualizedSelect from "react-virtualized-select";
   export default VirtualizedSelect;
 }
+
+declare module "@/vendors/initialize" {
+  /** Attach a MutationObserver specifically for a selector */
+  const initialize: (
+    selector: string,
+    callback: (this: Element, index: number, element: Element) => void | false,
+    options?: { target?: Element | Document; observer?: MutationObserverInit }
+  ) => MutationObserver;
+
+  export default initialize;
+}
+
+// Missing from TS types, but it's a standard
+interface HTMLDialogElement extends HTMLElement {
+  showModal(): void;
+}

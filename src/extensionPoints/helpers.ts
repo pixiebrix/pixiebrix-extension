@@ -16,7 +16,6 @@
  */
 
 import { castArray, noop, once } from "lodash";
-// @ts-expect-error no type definitions
 import initialize from "@/vendors/initialize";
 import { sleep, waitAnimationFrame } from "@/utils";
 import { MessageContext, ResolvedExtension } from "@/core";
