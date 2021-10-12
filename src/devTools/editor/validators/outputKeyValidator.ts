@@ -19,7 +19,8 @@ import { BlockPipeline } from "@/blocks/types";
 import { BlockType, getType } from "@/blocks/util";
 import { IBlock } from "@/core";
 import { joinName } from "@/utils";
-import { set } from "lodash";
+import { memoize, set } from "lodash";
+import hash from "object-hash";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 
@@ -45,6 +46,15 @@ async function getPipelineBlockTypes(
   );
 }
 
+// Note: allBlocks is not included in cache key, hence the cache must be cleared when allBlocks changes
+const memoizeGetPipelineBlockTypes = memoize(
+  getPipelineBlockTypes,
+  (pipeline: BlockPipeline) => hash(pipeline.map((x) => x.id))
+);
+export function clearOutputKeyValidatorValidatorCache() {
+  memoizeGetPipelineBlockTypes.cache.clear();
+}
+
 async function outputKeyValidator(
   pipelineErrors: Record<string, unknown>,
   pipeline: BlockPipeline,
@@ -55,7 +65,7 @@ async function outputKeyValidator(
     return;
   }
 
-  const blockTypes = await getPipelineBlockTypes(pipeline, allBlocks);
+  const blockTypes = await memoizeGetPipelineBlockTypes(pipeline, allBlocks);
 
   for (let blockIndex = 0; blockIndex !== pipeline.length; ++blockIndex) {
     let errorMessage: string;

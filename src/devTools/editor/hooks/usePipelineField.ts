@@ -17,12 +17,14 @@
 
 import { useSelector } from "react-redux";
 import { selectTraceError } from "@/devTools/editor/slices/runtimeSelectors";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { useField, useFormikContext, setNestedObjectValues } from "formik";
 import { TraceError } from "@/telemetry/trace";
 import { useAsyncEffect } from "use-async-effect";
-import outputKeyValidator from "@/devTools/editor/validators/outputKeyValidator";
+import outputKeyValidator, {
+  clearOutputKeyValidatorValidatorCache,
+} from "@/devTools/editor/validators/outputKeyValidator";
 import { IBlock } from "@/core";
 import traceErrorValidator from "@/devTools/editor/validators/traceErrorValidator";
 import { isEmpty } from "lodash";
@@ -39,6 +41,10 @@ function usePipelineField(
   errorTraceEntry: TraceError;
 } {
   const errorTraceEntry = useSelector(selectTraceError);
+
+  useEffect(() => {
+    clearOutputKeyValidatorValidatorCache();
+  }, [allBlocks]);
 
   const validatePipelineBlocks = useCallback(
     async (pipeline: BlockPipeline): Promise<void | PipelineErrors> => {
