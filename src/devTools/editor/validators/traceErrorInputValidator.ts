@@ -40,13 +40,11 @@ function traceErrorInputValidator(
     return;
   }
 
-  const blockIndexString = String(blockIndex);
-
   for (const unit of traceError.errors) {
     const property = requiredFieldRegex.exec(unit.error)?.groups.property;
     if (property) {
       const propertyNameInPipeline = joinName(
-        blockIndexString,
+        String(blockIndex),
         "config",
         property
       );
@@ -54,7 +52,7 @@ function traceErrorInputValidator(
       set(pipelineErrors, propertyNameInPipeline, errorMessage);
     } else if (unit.error) {
       // eslint-disable-next-line security/detect-object-injection
-      pipelineErrors[blockIndexString] = unit.error;
+      pipelineErrors[blockIndex] = unit.error;
     }
   }
 }

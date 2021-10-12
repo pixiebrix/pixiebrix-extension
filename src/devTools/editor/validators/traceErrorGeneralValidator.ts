@@ -22,11 +22,10 @@ function traceErrorGeneralValidator(
   errorTraceEntry: TraceError,
   blockIndex: number
 ) {
-  const blockIndexString = String(blockIndex);
   // eslint-disable-next-line security/detect-object-injection
-  if (!pipelineErrors[blockIndexString]) {
+  if (!pipelineErrors[blockIndex]) {
     // eslint-disable-next-line security/detect-object-injection
-    pipelineErrors[blockIndexString] = errorTraceEntry.error.message;
+    pipelineErrors[blockIndex] = errorTraceEntry.error.message;
   }
 }
 
