@@ -28,9 +28,8 @@ import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { compact, zip } from "lodash";
-import { IBlock, OutputKey, UUID } from "@/core";
-import hash from "object-hash";
+import { compact, isEmpty } from "lodash";
+import { IBlock, OutputKey, RegistryId, UUID } from "@/core";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
@@ -50,16 +49,13 @@ import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/Founda
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
 import usePipelineField from "@/devTools/editor/hooks/usePipelineField";
 
-async function filterBlocks(
-  blocks: IBlock[],
-  { excludeTypes = [] }: { excludeTypes: BlockType[] }
-): Promise<IBlock[]> {
-  const types = await Promise.all(blocks.map(async (block) => getType(block)));
-  // Exclude null to exclude foundations
-  return zip(blocks, types)
-    .filter(([, type]) => type != null && !excludeTypes.includes(type))
-    .map(([block]) => block);
-}
+type BlocksMap = Record<
+  RegistryId,
+  {
+    block: IBlock;
+    type: BlockType;
+  }
+>;
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -82,13 +78,29 @@ const EditTab: React.FC<{
   const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
 
   // Load once
-  const [allBlocks] = useAsyncState(async () => blockRegistry.all(), [], []);
+  const [allBlocks] = useAsyncState<BlocksMap>(
+    async () => {
+      const blocksMap: BlocksMap = {};
+      const blocks = await blockRegistry.all();
+      for (const block of blocks) {
+        blocksMap[block.id] = {
+          block,
+          // eslint-disable-next-line no-await-in-loop
+          type: await getType(block),
+        };
+      }
+
+      return blocksMap;
+    },
+    [],
+    {}
+  );
 
   const {
     blockPipeline,
     blockPipelineErrors,
     errorTraceEntry,
-  } = usePipelineField(allBlocks);
+  } = usePipelineField(Object.values(allBlocks).map(({ block }) => block));
 
   const [activeNodeId, setActiveNodeId] = useState<NodeId>(FOUNDATION_NODE_ID);
   const activeBlockIndex = useMemo(() => {
@@ -106,32 +118,22 @@ const EditTab: React.FC<{
     [activeBlockIndex]
   );
 
-  const pipelineIdHash = hash(blockPipeline.map((x) => x.id));
-  const resolvedBlocks = useMemo(
-    () =>
-      blockPipeline.map(({ id }) =>
-        (allBlocks ?? []).find((block) => block.id === id)
-      ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- using actionsHash since we only use the actions ids
-    [allBlocks, pipelineIdHash]
-  );
-
   const [showAppendNode] = useAsyncState(
     async () => {
-      if (!resolvedBlocks || resolvedBlocks.length === 0) {
+      if (isEmpty(allBlocks)) {
         return true;
       }
 
       const lastId = blockPipeline[blockPipeline.length - 1].id;
-      const lastResolved = resolvedBlocks.find((block) => block.id === lastId);
-      if (!lastResolved) {
+      // eslint-disable-next-line security/detect-object-injection
+      const lastBlock = allBlocks[lastId];
+      if (!lastBlock?.block) {
         return true;
       }
 
-      const lastType = await getType(lastResolved);
-      return lastType !== "renderer";
+      return lastBlock.type !== "renderer";
     },
-    [resolvedBlocks, blockPipeline],
+    [allBlocks, blockPipeline],
     false
   );
 
@@ -163,8 +165,7 @@ const EditTab: React.FC<{
 
   const blockNodes: LayoutNodeProps[] = blockPipeline.map(
     (blockConfig, index) => {
-      // eslint-disable-next-line security/detect-object-injection
-      const block = resolvedBlocks[index];
+      const block = allBlocks[blockConfig.id]?.block;
       const nodeId = blockConfig.instanceId;
       return block
         ? {
@@ -218,12 +219,15 @@ const EditTab: React.FC<{
   const nodes: LayoutNodeProps[] = [foundationNode, ...blockNodes];
 
   const [relevantBlocksToAdd] = useAsyncState(async () => {
-    const excludeTypes: BlockType[] = ["actionPanel", "panel"].includes(
+    const excludeType: BlockType = ["actionPanel", "panel"].includes(
       elementType
     )
-      ? ["effect"]
-      : ["renderer"];
-    return filterBlocks(allBlocks, { excludeTypes });
+      ? "effect"
+      : "renderer";
+
+    return Object.values(allBlocks)
+      .filter(({ type }) => type != null && type !== excludeType)
+      .map(({ block }) => block);
   }, [allBlocks, elementType]);
 
   const addBlock = useCallback(
