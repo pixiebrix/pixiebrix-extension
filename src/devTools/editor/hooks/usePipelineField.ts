@@ -29,7 +29,7 @@ import { IBlock } from "@/core";
 import traceErrorValidator from "@/devTools/editor/validators/traceErrorValidator";
 import { isEmpty } from "lodash";
 
-export type PipelineErrors = string | Record<string, unknown>;
+export type PipelineErrors = string | Record<string | number, unknown>;
 
 const pipelineBlocksFieldName = "extension.blockPipeline";
 
