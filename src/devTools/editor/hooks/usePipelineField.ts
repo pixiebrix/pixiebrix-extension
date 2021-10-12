@@ -27,6 +27,13 @@ import traceErrorValidator from "@/devTools/editor/validators/traceErrorValidato
 import { isEmpty } from "lodash";
 import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
+/*
+ * PipelineErrors is Formik error... thing.
+ * It can be a string, a record of strings, or a record of records... i.e. it is dynamic and depends on the level of the state tree where the error happens.
+ * Speaking about `PipelineErrors[0]`, the error state normally is not an array, but since the pipeline is an array we use numbers (index) to get the error related to a block.
+ * Despite it looks like an array (the top-level may look like an array - have numbers for property names), it is an object.
+ * For instance, it doesn't have a `length` property.
+ */
 export type PipelineErrors = string | Record<string | number, unknown>;
 
 const pipelineBlocksFieldName = "extension.blockPipeline";
