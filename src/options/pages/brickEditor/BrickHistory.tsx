@@ -15,18 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useMemo, useState, Suspense } from "react";
-import { Col, Row, Card } from "react-bootstrap";
 import Select from "react-select";
 import useFetch from "@/hooks/useFetch";
 import { PackageVersion, Package } from "@/types/contract";
 import DiffEditor from "@/vendors/DiffEditor";
 import objectHash from "object-hash";
 import "./BrickHistory.scss";
-import { useParams } from "react-router";
 
-const BrickHistory: React.FunctionComponent = () => {
-  const { id } = useParams<{ id: string }>();
-  const { data: brick } = useFetch<Package>(`/api/bricks/${id}`);
+const BrickHistory: React.FunctionComponent<{
+  brick: Package;
+}> = ({ brick }) => {
   const { data: packageVersions = [] } = useFetch<PackageVersion[]>(
     `/api/bricks/${brick?.id}/versions/`
   );
@@ -36,7 +34,7 @@ const BrickHistory: React.FunctionComponent = () => {
   const versionOptions = useMemo(
     () =>
       packageVersions.map((packageVersion) => ({
-        value: packageVersion,
+        value: packageVersion.raw_config,
         label:
           packageVersion.version === brick?.version
             ? `${packageVersion.version} (current)`
@@ -46,16 +44,22 @@ const BrickHistory: React.FunctionComponent = () => {
   );
 
   const currentVersion = useMemo(
-    () =>
-      versionOptions.find((option) => option.value.version === brick?.version),
-    [versionOptions, brick]
+    () => versionOptions.find((option) => option.label.includes("current")),
+    [versionOptions]
   );
 
   useEffect(() => {
-    setTimeout(() => {
-      setVersionA(currentVersion);
-    }, 2000);
+    setVersionA(currentVersion);
   }, [currentVersion]);
+
+  const diffValues = [
+    versionA ? versionA.value : "",
+    versionB ? versionB.value : "",
+  ];
+
+  const key = objectHash({ a: versionA?.label, b: versionB?.label });
+
+  console.log("BrickHistory", { diffValues, key });
 
   return (
     <div>
@@ -83,23 +87,18 @@ const BrickHistory: React.FunctionComponent = () => {
           />
         </div>
       </div>
-      {versionA ? (
+      {versionA && versionB && (
         <Suspense fallback={<div>Loading history...</div>}>
           <DiffEditor
-            value={[
-              versionA ? versionA.value.raw_config : "",
-              versionB ? versionB.value.raw_config : "",
-            ]}
-            key={objectHash({ versionA, versionB, brick, packageVersions })}
+            value={diffValues}
+            key={key}
             width="100%"
             theme="chrome"
             mode="yaml"
-            name="DIFF_EDITOR_DIV"
+            name={`DIFF_EDITOR_DIV_${key}`}
             readOnly
           />
         </Suspense>
-      ) : (
-        <div>Loading history...</div>
       )}
     </div>
   );
