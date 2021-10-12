@@ -17,15 +17,21 @@
 
 import { BlockType } from "@/blocks/util";
 import { IBlock, OutputKey } from "@/core";
-import { pipelineFactory } from "@/tests/factories";
-import { isEmpty } from "lodash";
+import { blockFactory, pipelineFactory } from "@/tests/factories";
 import outputKeyValidator from "./outputKeyValidator";
 
-test("returns when doesn't resolved blocks do not match pipeline blocks", async () => {
+test("returns when no blocks given", async () => {
   const pipelineErrors: Record<string, unknown> = {};
   await outputKeyValidator(pipelineErrors, pipelineFactory(), []);
 
-  expect(isEmpty(pipelineErrors)).toBe(true);
+  expect(pipelineErrors).toEqual({});
+});
+
+test("returns when pipeline is empty", async () => {
+  const pipelineErrors: Record<string, unknown> = {};
+  await outputKeyValidator(pipelineErrors, [], [{} as IBlock]);
+
+  expect(pipelineErrors).toEqual({});
 });
 
 test.each([
@@ -37,10 +43,10 @@ test.each([
     const pipelineErrors: Record<string, unknown> = {};
     const pipeline = pipelineFactory();
     pipeline[1].outputKey = "not empty" as OutputKey;
-    const block = ({
+    const block = blockFactory({
       [blockProperty]: jest.fn(),
-    } as unknown) as IBlock;
-    await outputKeyValidator(pipelineErrors, pipeline, [block, block]);
+    });
+    await outputKeyValidator(pipelineErrors, pipeline, [block]);
 
     expect(pipelineErrors[0]).toBeUndefined();
     expect((pipelineErrors[1] as any).outputKey).toBe(
@@ -58,10 +64,10 @@ test.each([
     const pipelineErrors: Record<string, unknown> = {};
     const pipeline = pipelineFactory();
     pipeline[0].outputKey = "validOutputKey" as OutputKey;
-    const block = ({
+    const block = blockFactory({
       [blockProperty]: jest.fn(),
-    } as unknown) as IBlock;
-    await outputKeyValidator(pipelineErrors, pipeline, [block, block]);
+    });
+    await outputKeyValidator(pipelineErrors, pipeline, [block]);
 
     expect(pipelineErrors[0]).toBeUndefined();
     expect((pipelineErrors[1] as any).outputKey).toBe(
@@ -77,8 +83,7 @@ test.each(["1", "1a", "a1?", "abc?"])(
     const pipeline = pipelineFactory();
     pipeline[0].outputKey = "validOutputKey" as OutputKey;
     pipeline[1].outputKey = invalidOutputKey as OutputKey;
-    const block = ({} as unknown) as IBlock;
-    await outputKeyValidator(pipelineErrors, pipeline, [block, block]);
+    await outputKeyValidator(pipelineErrors, pipeline, [blockFactory()]);
 
     expect(pipelineErrors[0]).toBeUndefined();
     expect((pipelineErrors[1] as any).outputKey).toBe(
@@ -86,3 +91,41 @@ test.each(["1", "1a", "a1?", "abc?"])(
     );
   }
 );
+
+describe("sequential calls", () => {
+  test("validates different pipelines", async () => {
+    const allBlocks = [blockFactory()];
+
+    const pipelineErrors1: Record<string, unknown> = {};
+    const pipeline1 = pipelineFactory({
+      outputKey: "validOutputKey" as OutputKey,
+    });
+    await outputKeyValidator(pipelineErrors1, pipeline1, allBlocks);
+    expect(pipelineErrors1).toEqual({});
+
+    const pipelineErrors2: Record<string, unknown> = {};
+    const pipeline2 = pipelineFactory({
+      outputKey: "not valid OutputKey" as OutputKey,
+    });
+    await outputKeyValidator(pipelineErrors2, pipeline2, allBlocks);
+    expect(pipelineErrors2[0]).toBeDefined();
+    expect(pipelineErrors2[1]).toBeDefined();
+  });
+
+  test("validates with different blocks", async () => {
+    const pipeline = pipelineFactory({
+      outputKey: "not valid OutputKey" as OutputKey,
+    });
+
+    const pipelineErrors1: Record<string, unknown> = {};
+    const allBlocks1: IBlock[] = [];
+    await outputKeyValidator(pipelineErrors1, pipeline, allBlocks1);
+    expect(pipelineErrors1).toEqual({});
+
+    const pipelineErrors2: Record<string, unknown> = {};
+    const allBlocks2 = [blockFactory()];
+    await outputKeyValidator(pipelineErrors2, pipeline, allBlocks2);
+    expect(pipelineErrors2[0]).toBeDefined();
+    expect(pipelineErrors2[1]).toBeDefined();
+  });
+});

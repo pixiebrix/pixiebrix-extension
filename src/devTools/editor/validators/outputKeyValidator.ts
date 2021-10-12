@@ -34,21 +34,33 @@ function setOutputKeyError(
   set(pipelineErrors, propertyNameInPipeline, errorMessage);
 }
 
+async function getPipelineBlockTypes(
+  pipeline: BlockPipeline,
+  allBlocks: IBlock[]
+) {
+  return Promise.all(
+    pipeline
+      .map(({ id }) => allBlocks.find((block) => block.id === id))
+      .map(async (block) => (block ? getType(block) : null))
+  );
+}
+
 async function outputKeyValidator(
   pipelineErrors: Record<string, unknown>,
   pipeline: BlockPipeline,
-  resolvedBlocks: IBlock[]
+  allBlocks: IBlock[]
 ) {
-  if (resolvedBlocks.length !== pipeline.length) {
+  // No blocks, no validation
+  if (pipeline.length === 0 || allBlocks.length === 0) {
     return;
   }
+
+  const blockTypes = await getPipelineBlockTypes(pipeline, allBlocks);
 
   for (let blockIndex = 0; blockIndex !== pipeline.length; ++blockIndex) {
     let errorMessage: string;
     const pipelineBlock = pipeline[blockIndex];
-    const resolvedBlock = resolvedBlocks[blockIndex];
-    // eslint-disable-next-line no-await-in-loop
-    const blockType = await getType(resolvedBlock);
+    const blockType = blockTypes[blockIndex];
 
     if (blockTypesWithEmptyOutputKey.includes(blockType)) {
       if (!pipelineBlock.outputKey) {

@@ -16,7 +16,7 @@
  */
 
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
-import { IExtension } from "@/core";
+import { IBlock, IExtension } from "@/core";
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 
@@ -68,6 +68,8 @@ export const extensionFactory: (
   ...extensionProps,
 });
 
+export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
+
 export const traceErrorFactory: (
   traceErrorProps?: Partial<TraceError>
 ) => TraceError = (traceErrorProps) => {
@@ -76,7 +78,7 @@ export const traceErrorFactory: (
     extensionId: uuidv4(),
     runId: uuidv4(),
     blockInstanceId: uuidv4(),
-    blockId: validateRegistryId("testing/block-id"),
+    blockId: TEST_BLOCK_ID,
     error: {
       message: "Trace error for tests",
     },
@@ -86,14 +88,28 @@ export const traceErrorFactory: (
   return errorTraceEntry;
 };
 
-export const pipelineFactory: () => BlockPipeline = () => {
+export const pipelineFactory: (
+  blockConfigProps?: Partial<BlockConfig>
+) => BlockPipeline = (blockConfigProps) => {
   const pipelineBlock: BlockConfig = {
-    id: validateRegistryId("testing/block-1"),
+    instanceId: uuidv4(),
+    id: TEST_BLOCK_ID,
+    ...blockConfigProps,
   } as BlockConfig;
 
   const anotherBlock: BlockConfig = {
-    id: validateRegistryId("testing/block-2"),
+    instanceId: uuidv4(),
+    id: TEST_BLOCK_ID,
+    ...blockConfigProps,
   } as BlockConfig;
 
   return [pipelineBlock, anotherBlock];
 };
+
+export const blockFactory: (blockProps?: Partial<IBlock>) => IBlock = (
+  blockProps
+) =>
+  ({
+    id: TEST_BLOCK_ID,
+    ...blockProps,
+  } as IBlock);

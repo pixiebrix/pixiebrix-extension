@@ -44,10 +44,7 @@ function usePipelineField(
     async (pipeline: BlockPipeline): Promise<void | PipelineErrors> => {
       const formikErrors: Record<string, unknown> = {};
 
-      const resolvedBlocks = pipeline.map(({ id }) =>
-        (allBlocks ?? []).find((block) => block.id === id)
-      );
-      await outputKeyValidator(formikErrors, pipeline, resolvedBlocks);
+      await outputKeyValidator(formikErrors, pipeline, allBlocks ?? []);
       traceErrorValidator(formikErrors, errorTraceEntry, pipeline);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;
