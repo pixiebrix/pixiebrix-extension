@@ -28,9 +28,8 @@ import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { compact, zip } from "lodash";
+import { compact, isEmpty } from "lodash";
 import { IBlock, OutputKey, UUID } from "@/core";
-import hash from "object-hash";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
@@ -49,17 +48,7 @@ import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
 import usePipelineField from "@/devTools/editor/hooks/usePipelineField";
-
-async function filterBlocks(
-  blocks: IBlock[],
-  { excludeTypes = [] }: { excludeTypes: BlockType[] }
-): Promise<IBlock[]> {
-  const types = await Promise.all(blocks.map(async (block) => getType(block)));
-  // Exclude null to exclude foundations
-  return zip(blocks, types)
-    .filter(([, type]) => type != null && !excludeTypes.includes(type))
-    .map(([block]) => block);
-}
+import { BlocksMap } from "./editTabTypes";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -69,7 +58,6 @@ const EditTab: React.FC<{
   eventKey: string;
 }> = ({ eventKey }) => {
   useExtensionTrace();
-  // ToDo Figure out how to properly bind field validation errors to Formik state // useRuntimeErrors(pipelineFieldName);
 
   const { values, setValues: setFormValues } = useFormikContext<FormState>();
   const { extensionPoint, type: elementType } = values;
@@ -82,7 +70,30 @@ const EditTab: React.FC<{
 
   const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
 
-  const { blockPipeline, blockPipelineErrors, traceError } = usePipelineField();
+  // Load once
+  const [allBlocks] = useAsyncState<BlocksMap>(
+    async () => {
+      const blocksMap: BlocksMap = {};
+      const blocks = await blockRegistry.all();
+      for (const block of blocks) {
+        blocksMap[block.id] = {
+          block,
+          // eslint-disable-next-line no-await-in-loop
+          type: await getType(block),
+        };
+      }
+
+      return blocksMap;
+    },
+    [],
+    {}
+  );
+
+  const {
+    blockPipeline,
+    blockPipelineErrors,
+    errorTraceEntry,
+  } = usePipelineField(allBlocks);
 
   const [activeNodeId, setActiveNodeId] = useState<NodeId>(FOUNDATION_NODE_ID);
   const activeBlockIndex = useMemo(() => {
@@ -100,35 +111,22 @@ const EditTab: React.FC<{
     [activeBlockIndex]
   );
 
-  // Load once
-  const [allBlocks] = useAsyncState(async () => blockRegistry.all(), [], []);
-
-  const pipelineIdHash = hash(blockPipeline.map((x) => x.id));
-  const resolvedBlocks = useMemo(
-    () =>
-      blockPipeline.map(({ id }) =>
-        (allBlocks ?? []).find((block) => block.id === id)
-      ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- using actionsHash since we only use the actions ids
-    [allBlocks, pipelineIdHash]
-  );
-
   const [showAppendNode] = useAsyncState(
     async () => {
-      if (!resolvedBlocks || resolvedBlocks.length === 0) {
+      if (isEmpty(allBlocks)) {
         return true;
       }
 
       const lastId = blockPipeline[blockPipeline.length - 1].id;
-      const lastResolved = resolvedBlocks.find((block) => block.id === lastId);
-      if (!lastResolved) {
+      // eslint-disable-next-line security/detect-object-injection
+      const lastBlock = allBlocks[lastId];
+      if (!lastBlock?.block) {
         return true;
       }
 
-      const lastType = await getType(lastResolved);
-      return lastType !== "renderer";
+      return lastBlock.type !== "renderer";
     },
-    [resolvedBlocks, blockPipeline],
+    [allBlocks, blockPipeline],
     false
   );
 
@@ -160,8 +158,7 @@ const EditTab: React.FC<{
 
   const blockNodes: LayoutNodeProps[] = blockPipeline.map(
     (blockConfig, index) => {
-      // eslint-disable-next-line security/detect-object-injection
-      const block = resolvedBlocks[index];
+      const block = allBlocks[blockConfig.id]?.block;
       const nodeId = blockConfig.instanceId;
       return block
         ? {
@@ -181,9 +178,13 @@ const EditTab: React.FC<{
                 faIconClass={styles.brickFaIcon}
               />
             ),
-            // eslint-disable-next-line security/detect-object-injection -- uuid
-            hasError: Boolean(blockPipelineErrors?.[index]),
-            hasWarning: traceError?.blockInstanceId === blockConfig.instanceId,
+            hasError:
+              // If blockPipelineErrors is a string, it means the error is on the pipeline level
+              typeof blockPipelineErrors !== "string" &&
+              // eslint-disable-next-line security/detect-object-injection
+              Boolean(blockPipelineErrors?.[index]),
+            hasWarning:
+              errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
             onClick: () => {
               setActiveNodeId(blockConfig.instanceId);
             },
@@ -211,12 +212,15 @@ const EditTab: React.FC<{
   const nodes: LayoutNodeProps[] = [foundationNode, ...blockNodes];
 
   const [relevantBlocksToAdd] = useAsyncState(async () => {
-    const excludeTypes: BlockType[] = ["actionPanel", "panel"].includes(
+    const excludeType: BlockType = ["actionPanel", "panel"].includes(
       elementType
     )
-      ? ["effect"]
-      : ["renderer"];
-    return filterBlocks(allBlocks, { excludeTypes });
+      ? "effect"
+      : "renderer";
+
+    return Object.values(allBlocks)
+      .filter(({ type }) => type != null && type !== excludeType)
+      .map(({ block }) => block);
   }, [allBlocks, elementType]);
 
   const addBlock = useCallback(
