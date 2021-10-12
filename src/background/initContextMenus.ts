@@ -26,52 +26,6 @@ import { IExtension, ResolvedExtension } from "@/core";
 import { resolveDefinitions } from "@/registry/internal";
 import { allSettledValues } from "@/utils";
 import { expectContext } from "@/utils/expectContext";
-import { isDeploymentActive } from "@/options/deploymentUtils";
-import { compact, uniq } from "lodash";
-// NOTE: Call the method directly, don't go through the messenger API
-import { ensureContextMenu } from "@/background/contextMenus";
-
-// Adapted from ContextMenuExtensionPoint.ensureMenu
-// There's a bug in webext-messenger where message from the background page to itself aren't being delivered
-// https://github.com/pixiebrix/pixiebrix-extension/issues/1542
-async function ensureMenu(
-  extensionPoint: ContextMenuExtensionPoint,
-  extension: ResolvedExtension<ContextMenuConfig>
-): Promise<void> {
-  expectContext("background");
-
-  const { title } = extension.config;
-
-  // Check for null/undefined to preserve backward compatability
-  if (!isDeploymentActive(extension)) {
-    return;
-  }
-
-  const patterns = compact(
-    uniq([
-      ...extensionPoint.documentUrlPatterns,
-      ...(extensionPoint.permissions?.origins ?? []),
-    ])
-  );
-
-  console.debug(
-    "ensureContextMenu for %s: %s (%s)",
-    extensionPoint,
-    extension.id,
-    extension.label ?? "No Label",
-    {
-      patterns,
-    }
-  );
-
-  // NOTE: Call the method directly, don't go through the messenger API
-  await ensureContextMenu({
-    extensionId: extension.id,
-    contexts: extensionPoint.contexts ?? ["all"],
-    title,
-    documentUrlPatterns: patterns,
-  });
-}
 
 async function preload(extensions: IExtension[]): Promise<void> {
   expectContext("background");
@@ -83,9 +37,8 @@ async function preload(extensions: IExtension[]): Promise<void> {
         resolved.extensionPointId
       );
       if (extensionPoint instanceof ContextMenuExtensionPoint) {
-        await ensureMenu(
-          extensionPoint,
-          resolved as ResolvedExtension<ContextMenuConfig>
+        await extensionPoint.ensureMenu(
+          (definition as unknown) as ResolvedExtension<ContextMenuConfig>
         );
       }
     })

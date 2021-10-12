@@ -20,13 +20,14 @@ import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useAsyncState } from "@/hooks/common";
-import {
-  checkAvailable,
-  getInstalledExtensionPointIds,
-} from "@/background/devtools";
 import { zip } from "lodash";
 import hash from "object-hash";
 import { resolveDefinitions } from "@/registry/internal";
+import { thisTab } from "@/devTools/utils";
+import {
+  checkAvailable,
+  getInstalledExtensionPointIds,
+} from "@/contentScript/messenger/api";
 
 export interface InstallState {
   availableInstalledIds: Set<UUID> | undefined;
@@ -39,7 +40,6 @@ function useInstallState(
   elements: FormState[]
 ): InstallState {
   const {
-    port,
     tabState: { navSequence, meta },
   } = useContext(DevToolsContext);
 
@@ -47,7 +47,7 @@ function useInstallState(
     async () => {
       if (meta) {
         const extensionPointIds = new Set(
-          await getInstalledExtensionPointIds(port)
+          await getInstalledExtensionPointIds(thisTab)
         );
         const resolved = await Promise.all(
           installed.map(async (extension) => resolveDefinitions(extension))
@@ -62,7 +62,7 @@ function useInstallState(
 
       return new Set<UUID>();
     },
-    [port, navSequence, meta, installed],
+    [navSequence, meta, installed],
     new Set<UUID>()
   );
 
@@ -73,7 +73,10 @@ function useInstallState(
       if (meta) {
         const availability = await Promise.all(
           elements.map(async (element) =>
-            checkAvailable(port, element.extensionPoint.definition.isAvailable)
+            checkAvailable(
+              thisTab,
+              element.extensionPoint.definition.isAvailable
+            )
           )
         );
         return new Set<UUID>(
@@ -86,7 +89,6 @@ function useInstallState(
       return new Set<UUID>();
     },
     [
-      port,
       meta,
       navSequence,
       hash(

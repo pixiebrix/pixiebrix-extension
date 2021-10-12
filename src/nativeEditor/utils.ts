@@ -28,7 +28,9 @@ export function requireSingleElement(selector: string): HTMLElement {
   const $elt = jQuery(document).find(selector);
   if ($elt.length === 0) {
     throw new NoElementsFoundError(selector);
-  } else if ($elt.length > 1) {
+  }
+
+  if ($elt.length > 1) {
     throw new MultipleElementsFoundError(selector);
   }
 

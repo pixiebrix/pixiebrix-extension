@@ -47,7 +47,6 @@ import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
-import * as nativeOperations from "@/background/devtools";
 import {
   BaseFormState,
   ElementConfig,
@@ -57,13 +56,10 @@ import { ElementInfo } from "@/nativeEditor/frameworks";
 import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfiguration";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import { insertButton } from "@/contentScript/messenger/api";
 
 const wizard: WizardStep[] = [
-  {
-    step: "Edit",
-    Component: EditTab,
-    extraProps: { pipelineFieldName: "extension.action" },
-  },
+  { step: "Edit", Component: EditTab },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -90,9 +86,9 @@ export interface ActionFormState extends BaseFormState {
 
   extension: {
     caption: string;
+    blockPipeline: BlockPipeline;
     dynamicCaption?: boolean;
     icon?: IconConfig;
-    action: BlockPipeline;
   };
 }
 
@@ -121,8 +117,8 @@ function fromNativeElement(
     },
     extension: {
       caption: button.item.caption,
+      blockPipeline: [],
       dynamicCaption: false,
-      action: [],
     },
   };
 }
@@ -158,6 +154,12 @@ function selectExtension(
   }: ActionFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<MenuItemExtensionConfig> {
+  const config: MenuItemExtensionConfig = {
+    caption: extension.caption,
+    icon: extension.icon,
+    action: extension.blockPipeline,
+    dynamicCaption: extension.dynamicCaption,
+  };
   return removeEmptyValues({
     id: uuid,
     apiVersion,
@@ -166,8 +168,8 @@ function selectExtension(
     label,
     services,
     config: options.includeInstanceIds
-      ? extension
-      : excludeInstanceIds(extension, "action"),
+      ? config
+      : excludeInstanceIds(config, "action"),
   });
 }
 
@@ -191,7 +193,7 @@ async function fromExtensionPoint(
     extension: {
       caption:
         extensionPoint.definition.defaultOptions?.caption ?? "Custom Action",
-      action: [],
+      blockPipeline: [],
     },
 
     // There's no containerInfo for the page because the user did not select it during the session
@@ -221,6 +223,8 @@ export async function fromExtension(
     "menuItem"
   >(config, "menuItem");
 
+  const blockPipeline = withInstanceIds(castArray(config.config.action));
+
   return {
     uuid: config.id,
     apiVersion: config.apiVersion,
@@ -232,7 +236,7 @@ export async function fromExtension(
 
     extension: {
       ...config.config,
-      action: withInstanceIds(castArray(config.config.action)),
+      blockPipeline,
     },
 
     containerInfo: null,
@@ -263,7 +267,7 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   icon: faMousePointer,
   baseClass: MenuItemExtensionPoint,
   EditorNode: MenuItemConfiguration,
-  selectNativeElement: nativeOperations.insertButton,
+  selectNativeElement: insertButton,
   wizard,
   fromExtensionPoint,
   fromNativeElement,

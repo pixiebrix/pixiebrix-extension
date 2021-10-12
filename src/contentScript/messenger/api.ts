@@ -74,9 +74,7 @@ export const showNotification = getContentScriptMethod("SHOW_NOTIFICATION");
 export const linkChildTab = getContentScriptMethod("LINK_CHILD_TAB", {
   isNotification: true,
 });
-export const runBlockInContentScript = getContentScriptMethod(
-  "CONTENT_MESSAGE_RUN_BLOCK"
-);
+export const runBlockInContentScript = getContentScriptMethod("RUN_BLOCK");
 export const cancelSelect = getContentScriptMethod("CANCEL_SELECT_ELEMENT");
 export const selectElement = getContentScriptMethod("SELECT_ELEMENT");
 

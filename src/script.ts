@@ -37,10 +37,10 @@ if (window[PAGESCRIPT_SYMBOL]) {
     // eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
     `PixieBrix pageScript already installed: ${window[PAGESCRIPT_SYMBOL]}`
   );
-} else {
-  // eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
-  window[PAGESCRIPT_SYMBOL] = uuidv4();
 }
+
+// eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
+window[PAGESCRIPT_SYMBOL] = uuidv4();
 
 import jQuery from "jquery";
 import { isEmpty, identity, castArray, cloneDeep } from "lodash";

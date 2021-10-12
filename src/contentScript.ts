@@ -20,8 +20,8 @@ import { uuidv4 } from "@/types/helpers";
 const start = Date.now();
 
 import "@/extensionContext";
+import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 import "@/contentScript/messenger/registration";
-import addErrorListeners from "@/contentScript/errors";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
@@ -30,11 +30,25 @@ import "@/vendors/notify";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
 import { markTabAsReady, whoAmI } from "@/background/messenger/api";
+import { showConnectionLost } from "@/contentScript/connection";
+import { isConnectionError } from "@/errors";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { addListenerForUpdateSelectedElement } from "@/devTools/getSelectedElement";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();
+
+function ignoreConnectionErrors(
+  errorEvent: ErrorEvent | PromiseRejectionEvent
+): void {
+  if (isConnectionError(errorEvent)) {
+    showConnectionLost();
+    errorEvent.preventDefault();
+  }
+}
+
+// Must run as early as possible
+uncaughtErrorHandlers.add(ignoreConnectionErrors);
 
 registerBuiltinBlocks();
 registerContribBlocks();
@@ -46,9 +60,6 @@ declare global {
 }
 
 async function init(): Promise<void> {
-  // Add error listeners first so they can catch any initialization errors
-  addErrorListeners();
-
   addListenerForUpdateSelectedElement();
   initTelemetry();
 

@@ -84,5 +84,5 @@ export async function handleRejection(
     );
   }
 
-  return new Error(getErrorMessage(error.result.error ?? "Unknown error"));
+  return new Error(getErrorMessage(error.result.error));
 }

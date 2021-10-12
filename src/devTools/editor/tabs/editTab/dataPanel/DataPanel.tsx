@@ -17,7 +17,7 @@
 
 import React, { useContext, useMemo } from "react";
 import { UUID } from "@/core";
-import { get, isEmpty, isEqual, pickBy, startsWith } from "lodash";
+import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
 import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
@@ -29,7 +29,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockPreview, {
   usePreviewInfo,
 } from "@/devTools/editor/tabs/effect/BlockPreview";
-import { BlockConfig } from "@/blocks/types";
 import useReduxState from "@/hooks/useReduxState";
 import {
   faExclamationTriangle,
@@ -104,22 +103,23 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
 };
 
 const DataPanel: React.FC<{
-  blockPipelineFieldName: string;
-  blockPipelineIndex: number;
   instanceId: UUID;
-}> = ({ blockPipelineFieldName, blockPipelineIndex, instanceId }) => {
+}> = ({ instanceId }) => {
   const { flags } = useContext(AuthContext);
 
   const showDeveloperTabs = flags.includes("page-editor-developer");
 
   const { values: formState } = useFormikContext<FormState>();
 
-  const blockPipeline: BlockConfig[] = get(formState, blockPipelineFieldName);
+  const { blockPipeline } = formState.extension;
+  const blockIndex = blockPipeline.findIndex(
+    (x) => x.instanceId === instanceId
+  );
   // eslint-disable-next-line security/detect-object-injection
-  const block = blockPipeline[blockPipelineIndex];
+  const block = blockPipeline[blockIndex];
 
   const traces = useSelector(selectExtensionTrace);
-  const record = traces.find((t) => t.blockInstanceId === instanceId);
+  const record = traces.find((trace) => trace.blockInstanceId === instanceId);
 
   const isInputStale = useMemo(() => {
     if (record === undefined) {
@@ -130,14 +130,15 @@ const DataPanel: React.FC<{
       return true;
     }
 
-    const currentInput = blockPipeline.slice(0, blockPipelineIndex);
+    const currentInput = blockPipeline.slice(0, blockIndex);
     const tracedInput = currentInput.map(
       (block) =>
-        traces.find((t) => t.blockInstanceId === block.instanceId).blockConfig
+        traces.find((trace) => trace.blockInstanceId === block.instanceId)
+          .blockConfig
     );
 
     return !isEqual(currentInput, tracedInput);
-  }, [blockPipeline, blockPipelineIndex, record, traces]);
+  }, [blockIndex, blockPipeline, record, traces]);
 
   const isCurrentStale = useMemo(() => {
     if (isInputStale) {
@@ -163,7 +164,8 @@ const DataPanel: React.FC<{
 
   const outputObj: JsonObject =
     record !== undefined && "output" in record
-      ? "outputKey" in record
+      ? // eslint-disable-next-line unicorn/no-nested-ternary -- prettier disagrees
+        "outputKey" in record
         ? { [`@${record.outputKey}`]: record.output }
         : record.output
       : null;

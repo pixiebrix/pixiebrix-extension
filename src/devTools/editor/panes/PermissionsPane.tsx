@@ -25,14 +25,14 @@ import AsyncButton from "@/components/AsyncButton";
 import { getCurrentURL } from "@/devTools/utils";
 
 const PermissionsPane: React.FunctionComponent = () => {
-  const { port, connect } = useContext(DevToolsContext);
+  const { connect } = useContext(DevToolsContext);
 
   const onRequestPermission = useCallback(async () => {
     const url = await getCurrentURL();
     if (await requestPermissions({ origins: [url] })) {
       await connect();
     }
-  }, [connect, port]);
+  }, [connect]);
 
   return (
     <Centered>
