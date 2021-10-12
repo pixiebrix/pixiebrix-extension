@@ -15,17 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useMemo, useState, Suspense } from "react";
-import { Col, Row } from "react-bootstrap";
+import { Col, Row, Card } from "react-bootstrap";
 import Select from "react-select";
 import useFetch from "@/hooks/useFetch";
 import { PackageVersion, Package } from "@/types/contract";
 import DiffEditor from "@/vendors/DiffEditor";
+import objectHash from "object-hash";
+import "./BrickHistory.scss";
+import { useParams } from "react-router";
 
-const BrickHistory: React.FunctionComponent<{
-  brick: Package;
-}> = ({ brick }) => {
+const BrickHistory: React.FunctionComponent = () => {
+  const { id } = useParams<{ id: string }>();
+  const { data: brick } = useFetch<Package>(`/api/bricks/${id}`);
   const { data: packageVersions = [] } = useFetch<PackageVersion[]>(
-    `/api/bricks/${brick.id}/versions/`
+    `/api/bricks/${brick?.id}/versions/`
   );
   const [versionA, setVersionA] = useState(null);
   const [versionB, setVersionB] = useState(null);
@@ -49,17 +52,20 @@ const BrickHistory: React.FunctionComponent<{
   );
 
   useEffect(() => {
-    setVersionA(currentVersion);
+    setTimeout(() => {
+      setVersionA(currentVersion);
+    }, 2000);
   }, [currentVersion]);
 
   return (
-    <>
-      <Row>
-        <Col xs={12} className="pb-3">
+    <div>
+      <div className="p-3">
+        <p>
           Compare past versions of this brick by selecting the versions below.
-        </Col>
-        <Col xs={4}>
+        </p>
+        <div className="d-flex justify-content-start">
           <Select
+            className="versionSelector mr-4"
             placeholder="Select a version"
             options={versionOptions.filter((option) => option !== versionB)}
             value={versionA}
@@ -67,33 +73,35 @@ const BrickHistory: React.FunctionComponent<{
               setVersionA(option);
             }}
           />
-        </Col>
-        <Col xs={4}>
           <Select
+            className="versionSelector"
             placeholder="Select a version"
             options={versionOptions.filter((option) => option !== versionA)}
             onChange={(option) => {
               setVersionB(option);
             }}
           />
-        </Col>
-        <Col xs={6}>{versionA?.value.raw_config}</Col>
-        <Col xs={6}>{versionB?.value.raw_config}</Col>
-        <Col xs={12}>
-          <Suspense fallback={<div>Loading history...</div>}>
-            <DiffEditor
-              value={[
-                versionA ? versionA.value.raw_config : "",
-                versionB ? versionB.value.raw_config : "",
-              ]}
-              theme="chrome"
-              mode="yaml"
-              name="DIFF_EDITOR_DIV"
-            />
-          </Suspense>
-        </Col>
-      </Row>
-    </>
+        </div>
+      </div>
+      {versionA ? (
+        <Suspense fallback={<div>Loading history...</div>}>
+          <DiffEditor
+            value={[
+              versionA ? versionA.value.raw_config : "",
+              versionB ? versionB.value.raw_config : "",
+            ]}
+            key={objectHash({ versionA, versionB, brick, packageVersions })}
+            width="100%"
+            theme="chrome"
+            mode="yaml"
+            name="DIFF_EDITOR_DIV"
+            readOnly
+          />
+        </Suspense>
+      ) : (
+        <div>Loading history...</div>
+      )}
+    </div>
   );
 };
 

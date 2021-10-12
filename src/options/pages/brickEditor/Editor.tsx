@@ -108,8 +108,6 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const [editorWidth, setEditorWidth] = useState();
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
-  const { id } = useParams<{ id: string }>();
-  const { data: brick } = useFetch<Package>(`/api/bricks/${id}`);
 
   const [bricks] = useAsyncState(async () => {
     const [extensionPoints, bricks, services] = await Promise.all([
@@ -195,7 +193,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
               </Nav.Link>
               {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}
               <Nav.Link eventKey="reference">Reference</Nav.Link>
-              {brick && <Nav.Link eventKey="history">History</Nav.Link>}
+              <Nav.Link eventKey="brickhistory">History</Nav.Link>
             </Nav>
           </Card.Header>
 
@@ -233,11 +231,9 @@ const Editor: React.FunctionComponent<OwnProps> = ({
               />
             </Tab.Pane>
 
-            {brick && (
-              <Tab.Pane eventKey="history" className="p-3">
-                <BrickHistory brick={brick} />
-              </Tab.Pane>
-            )}
+            <Tab.Pane eventKey="brickhistory" className="p-0">
+              <BrickHistory />
+            </Tab.Pane>
           </Tab.Content>
         </Tab.Container>
       </Card>
