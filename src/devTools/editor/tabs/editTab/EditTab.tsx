@@ -29,7 +29,7 @@ import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { compact, isEmpty } from "lodash";
-import { IBlock, OutputKey, RegistryId, UUID } from "@/core";
+import { IBlock, OutputKey, UUID } from "@/core";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
@@ -48,14 +48,7 @@ import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
 import usePipelineField from "@/devTools/editor/hooks/usePipelineField";
-
-type BlocksMap = Record<
-  RegistryId,
-  {
-    block: IBlock;
-    type: BlockType;
-  }
->;
+import { BlocksMap } from "./editTabTypes";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -100,7 +93,7 @@ const EditTab: React.FC<{
     blockPipeline,
     blockPipelineErrors,
     errorTraceEntry,
-  } = usePipelineField(Object.values(allBlocks).map(({ block }) => block));
+  } = usePipelineField(allBlocks);
 
   const [activeNodeId, setActiveNodeId] = useState<NodeId>(FOUNDATION_NODE_ID);
   const activeBlockIndex = useMemo(() => {

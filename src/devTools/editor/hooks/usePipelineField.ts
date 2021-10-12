@@ -17,24 +17,22 @@
 
 import { useSelector } from "react-redux";
 import { selectTraceError } from "@/devTools/editor/slices/runtimeSelectors";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { useField, useFormikContext, setNestedObjectValues } from "formik";
 import { TraceError } from "@/telemetry/trace";
 import { useAsyncEffect } from "use-async-effect";
-import outputKeyValidator, {
-  clearOutputKeyValidatorValidatorCache,
-} from "@/devTools/editor/validators/outputKeyValidator";
-import { IBlock } from "@/core";
+import outputKeyValidator from "@/devTools/editor/validators/outputKeyValidator";
 import traceErrorValidator from "@/devTools/editor/validators/traceErrorValidator";
 import { isEmpty } from "lodash";
+import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
 export type PipelineErrors = string | Record<string | number, unknown>;
 
 const pipelineBlocksFieldName = "extension.blockPipeline";
 
 function usePipelineField(
-  allBlocks: IBlock[]
+  allBlocks: BlocksMap
 ): {
   blockPipeline: BlockPipeline;
   blockPipelineErrors: PipelineErrors;
@@ -42,15 +40,11 @@ function usePipelineField(
 } {
   const errorTraceEntry = useSelector(selectTraceError);
 
-  useEffect(() => {
-    clearOutputKeyValidatorValidatorCache();
-  }, [allBlocks]);
-
   const validatePipelineBlocks = useCallback(
-    async (pipeline: BlockPipeline): Promise<void | PipelineErrors> => {
+    (pipeline: BlockPipeline): void | PipelineErrors => {
       const formikErrors: Record<string, unknown> = {};
 
-      await outputKeyValidator(formikErrors, pipeline, allBlocks ?? []);
+      outputKeyValidator(formikErrors, pipeline, allBlocks);
       traceErrorValidator(formikErrors, errorTraceEntry, pipeline);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;

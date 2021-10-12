@@ -16,11 +16,10 @@
  */
 
 import { BlockPipeline } from "@/blocks/types";
-import { BlockType, getType } from "@/blocks/util";
-import { IBlock } from "@/core";
+import { BlockType } from "@/blocks/util";
 import { joinName } from "@/utils";
-import { memoize, set } from "lodash";
-import hash from "object-hash";
+import { isEmpty, set } from "lodash";
+import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 
@@ -35,49 +34,28 @@ function setOutputKeyError(
   set(pipelineErrors, propertyNameInPipeline, errorMessage);
 }
 
-async function getPipelineBlockTypes(
-  pipeline: BlockPipeline,
-  allBlocks: IBlock[]
-) {
-  return Promise.all(
-    pipeline
-      .map(({ id }) => allBlocks.find((block) => block.id === id))
-      .map(async (block) => (block ? getType(block) : null))
-  );
-}
-
-// Note: allBlocks is not included in cache key, hence the cache must be cleared when allBlocks changes
-const memoizeGetPipelineBlockTypes = memoize(
-  getPipelineBlockTypes,
-  (pipeline: BlockPipeline) => hash(pipeline.map((x) => x.id))
-);
-export function clearOutputKeyValidatorValidatorCache() {
-  memoizeGetPipelineBlockTypes.cache.clear();
-}
-
-async function outputKeyValidator(
+function outputKeyValidator(
   pipelineErrors: Record<string, unknown>,
   pipeline: BlockPipeline,
-  allBlocks: IBlock[]
+  allBlocks: BlocksMap
 ) {
   // No blocks, no validation
-  if (pipeline.length === 0 || allBlocks.length === 0) {
+  if (pipeline.length === 0 || isEmpty(allBlocks)) {
     return;
   }
 
-  const blockTypes = await memoizeGetPipelineBlockTypes(pipeline, allBlocks);
-
   for (let blockIndex = 0; blockIndex !== pipeline.length; ++blockIndex) {
     let errorMessage: string;
+    // eslint-disable-next-line security/detect-object-injection
     const pipelineBlock = pipeline[blockIndex];
-    const blockType = blockTypes[blockIndex];
+    const blockType = allBlocks[pipelineBlock.id]?.type;
 
     if (blockTypesWithEmptyOutputKey.includes(blockType)) {
       if (!pipelineBlock.outputKey) {
         continue;
       }
 
-      errorMessage = `OutputKey must be empty for ${blockType} block.`;
+      errorMessage = `OutputKey must be empty for "${blockType}" block.`;
     } else if (!pipelineBlock.outputKey) {
       errorMessage = "This field is required.";
     } else if (outputKeyRegex.test(pipelineBlock.outputKey)) {
