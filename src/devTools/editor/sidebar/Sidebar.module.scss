@@ -11,28 +11,28 @@ $logoSize: 31px;
   &.collapsed {
     flex: 0 0 $logoSize;
     align-items: center;
-    z-index: 2000; // Always on top of the expanded one
   }
   &.expanded {
     flex: 0 0 260px;
     width: 260px; // Preserve width during the transition
+    z-index: 1000; // Always on top of the collapsed one *and* of the content
+    &.enter,
+    &.exit.exitActive {
+      // Both `exit` and `exitActive` are needed
+      clip-path: inset(0 100% 0 0);
+    }
+    &.exitActive,
+    &.enterActive {
+      transition: clip-path 400ms;
+    }
+    &.enterActive,
+    &.exit {
+      clip-path: inset(0 0 0 0);
+    }
   }
 
-  &.enter {
-    transform: translateX(-100%);
-  }
-  &.enterActive {
-    transform: none;
-    transition: transform 400ms;
-  }
-  &.exit {
-    transform: none;
-  }
   &.exitActive {
     position: absolute; // Take out of the flow during the transition
-    transform: translateX(-100%);
-    transition: transform 400ms;
-    z-index: 1000; // Appear over the content when it overlaps
   }
 
   label {
