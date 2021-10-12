@@ -139,7 +139,7 @@ export class GoogleSheetsAppend extends Effect {
     let currentHeaders: string[];
 
     try {
-      currentHeaders = await getHeaders(spreadsheetId, tabName);
+      currentHeaders = await getHeaders({ spreadsheetId, tabName });
       console.debug(
         `Found headers for ${tabName}: ${currentHeaders.join(", ")}`
       );

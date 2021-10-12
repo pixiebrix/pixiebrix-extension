@@ -19,6 +19,7 @@
 import { registerMethods } from "webext-messenger";
 import { browser } from "webextension-polyfill-ts";
 import { expectContext } from "@/utils/expectContext";
+import * as sheets from "@/contrib/google/sheets/handlers";
 import {
   ensureContextMenu,
   uninstallContextMenu,
@@ -36,9 +37,16 @@ expectContext("background");
 
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;
-
 declare global {
   interface MessengerMethods {
+    GOOGLE_SHEETS_GET_TAB_NAMES: typeof sheets.getTabNames;
+    GOOGLE_SHEETS_GET_SHEET_PROPERTIES: typeof sheets.getSheetProperties;
+    GOOGLE_SHEETS_GET_HEADERS: typeof sheets.getHeaders;
+    GOOGLE_SHEETS_CREATE_TAB: typeof sheets.createTab;
+    GOOGLE_SHEETS_APPEND_ROWS: typeof sheets.appendRows;
+    GOOGLE_SHEETS_BATCH_UPDATE: typeof sheets.batchUpdate;
+    GOOGLE_SHEETS_BATCH_GET: typeof sheets.batchGet;
+
     CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
@@ -52,6 +60,14 @@ declare global {
 }
 
 registerMethods({
+  GOOGLE_SHEETS_GET_TAB_NAMES: sheets.getTabNames,
+  GOOGLE_SHEETS_GET_SHEET_PROPERTIES: sheets.getSheetProperties,
+  GOOGLE_SHEETS_GET_HEADERS: sheets.getHeaders,
+  GOOGLE_SHEETS_CREATE_TAB: sheets.createTab,
+  GOOGLE_SHEETS_APPEND_ROWS: sheets.appendRows,
+  GOOGLE_SHEETS_BATCH_UPDATE: sheets.batchUpdate,
+  GOOGLE_SHEETS_BATCH_GET: sheets.batchGet,
+
   CONTAINS_PERMISSIONS: browser.permissions.contains,
   UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
   ENSURE_CONTEXT_MENU: ensureContextMenu,

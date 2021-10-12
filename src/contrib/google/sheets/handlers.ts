@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftBackground } from "@/background/protocol";
-import { liftBackground as liftDevtools } from "@/background/devtools/internal";
 import { ensureAuth, handleRejection } from "@/contrib/google/auth";
 import { columnToLetter } from "@/contrib/google/sheets/sheetsHelpers";
 
@@ -35,93 +33,86 @@ export const DISCOVERY_DOCS = [
   "https://sheets.googleapis.com/$discovery/rest?version=v4",
 ];
 
-const actionId = (x: string) => `GOOGLE_SHEETS_${x}`;
-
-export const createTab = liftBackground(
-  actionId("CREATE_TAB"),
-  async (spreadsheetId: string, tabName: string) => {
-    const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
-    try {
-      return (await gapi.client.sheets.spreadsheets.batchUpdate({
-        spreadsheetId,
-        resource: {
-          requests: [
-            {
-              addSheet: {
-                properties: {
-                  title: tabName,
-                },
+export async function createTab(spreadsheetId: string, tabName: string) {
+  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+  try {
+    return (await gapi.client.sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      resource: {
+        requests: [
+          {
+            addSheet: {
+              properties: {
+                title: tabName,
               },
             },
-          ],
-        },
-      })) as BatchUpdateSpreadsheetResponse;
-    } catch (error: unknown) {
-      throw await handleRejection(token, error);
-    }
+          },
+        ],
+      },
+    })) as BatchUpdateSpreadsheetResponse;
+  } catch (error: unknown) {
+    throw await handleRejection(token, error);
   }
-);
+}
 
-export const appendRows = liftBackground(
-  actionId("APPEND_ROWS"),
-  async (spreadsheetId: string, tabName: string, values: any[]) => {
-    const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
-    try {
-      return (await gapi.client.sheets.spreadsheets.values.append({
-        spreadsheetId,
-        range: tabName,
-        valueInputOption: "USER_ENTERED",
-        resource: {
-          majorDimension: "ROWS",
-          values,
-        },
-      })) as AppendValuesResponse;
-    } catch (error: unknown) {
-      throw await handleRejection(token, error);
-    }
+export async function appendRows(
+  spreadsheetId: string,
+  tabName: string,
+  values: any[]
+) {
+  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+  try {
+    return (await gapi.client.sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: tabName,
+      valueInputOption: "USER_ENTERED",
+      resource: {
+        majorDimension: "ROWS",
+        values,
+      },
+    })) as AppendValuesResponse;
+  } catch (error: unknown) {
+    throw await handleRejection(token, error);
   }
-);
+}
 
-export const batchUpdate = liftBackground(
-  actionId("BATCH_UPDATE"),
-  async (spreadsheetId: string, requests: any[]) => {
-    const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
-    try {
-      return (await gapi.client.sheets.spreadsheets.batchUpdate({
-        spreadsheetId,
-        resource: {
-          requests,
-        },
-      })) as BatchUpdateSpreadsheetResponse;
-    } catch (error: unknown) {
-      throw await handleRejection(token, error);
-    }
+export async function batchUpdate(spreadsheetId: string, requests: any[]) {
+  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+  try {
+    return (await gapi.client.sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      resource: {
+        requests,
+      },
+    })) as BatchUpdateSpreadsheetResponse;
+  } catch (error: unknown) {
+    throw await handleRejection(token, error);
   }
-);
+}
 
-export const batchGet = liftBackground(
-  actionId("BATCH_GET"),
-  async (spreadsheetId: string, ranges: string | string[]) => {
-    const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
-    try {
-      const sheetRequest = gapi.client.sheets.spreadsheets.values.batchGet({
-        spreadsheetId,
-        ranges,
+export async function batchGet(
+  spreadsheetId: string,
+  ranges: string | string[]
+) {
+  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+  try {
+    const sheetRequest = gapi.client.sheets.spreadsheets.values.batchGet({
+      spreadsheetId,
+      ranges,
+    });
+    return await new Promise<BatchGetValuesResponse>((resolve, reject) => {
+      sheetRequest.execute((r) => {
+        if (r.status >= 300 || (r as any).code >= 300) {
+          reject(r);
+        } else {
+          resolve(r.result);
+        }
       });
-      return await new Promise<BatchGetValuesResponse>((resolve, reject) => {
-        sheetRequest.execute((r) => {
-          if (r.status >= 300 || (r as any).code >= 300) {
-            reject(r);
-          } else {
-            resolve(r.result);
-          }
-        });
-      });
-    } catch (error: unknown) {
-      throw await handleRejection(token, error);
-    }
+    });
+  } catch (error: unknown) {
+    throw await handleRejection(token, error);
   }
-);
+}
 
 export async function getSheetProperties(
   spreadsheetId: string
@@ -162,7 +153,7 @@ export async function getSheetProperties(
   }
 }
 
-async function getTabNames(spreadsheetId: string): Promise<string[]> {
+export async function getTabNames(spreadsheetId: string): Promise<string[]> {
   const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
 
   if (!gapi.client.sheets) {
@@ -199,28 +190,13 @@ async function getTabNames(spreadsheetId: string): Promise<string[]> {
   }
 }
 
-export const devtoolsProtocol = {
-  getTabNames: liftDevtools("GET_TAB_NAMES", () => getTabNames),
-  getSheetProperties: liftDevtools(
-    "GET_SHEET_PROPERTIES",
-    () => getSheetProperties
-  ),
-  getHeaders: liftDevtools(
-    "GET_HEADERS",
-    () => async ({
-      spreadsheetId,
-      tabName,
-    }: {
-      spreadsheetId: string;
-      tabName: string;
-    }) => getHeaders(spreadsheetId, tabName)
-  ),
-};
-
-export async function getHeaders(
-  spreadsheetId: string,
-  tabName: string
-): Promise<string[]> {
+export async function getHeaders({
+  spreadsheetId,
+  tabName,
+}: {
+  spreadsheetId: string;
+  tabName: string;
+}): Promise<string[]> {
   // Lookup the headers in the first row so we can determine where to put the values
   const response = await batchGet(
     spreadsheetId,

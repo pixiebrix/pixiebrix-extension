@@ -38,6 +38,16 @@ export const activateTab = getMethod("ACTIVATE_TAB");
 export const closeTab = getMethod("CLOSE_TAB");
 export const markTabAsReady = getMethod("MARK_TAB_AS_READY");
 
+export const sheets = {
+  getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES"),
+  getSheetProperties: getMethod("GOOGLE_SHEETS_GET_SHEET_PROPERTIES"),
+  getHeaders: getMethod("GOOGLE_SHEETS_GET_HEADERS"),
+  createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB"),
+  appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS"),
+  batchUpdate: getMethod("GOOGLE_SHEETS_BATCH_UPDATE"),
+  batchGet: getMethod("GOOGLE_SHEETS_BATCH_GET"),
+};
+
 /**
  * Uninstall context menu and return whether or not the context menu was uninstalled.
  */
