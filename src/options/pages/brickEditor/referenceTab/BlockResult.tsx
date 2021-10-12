@@ -23,9 +23,8 @@ import styles from "./BlockResult.module.scss";
 import { OfficialBadge } from "@/components/OfficialBadge";
 import BrickIcon from "@/components/BrickIcon";
 import {
-  faEye,
+  faEyeSlash,
   faGlobe,
-  faToolbox,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -61,11 +60,7 @@ export const SharingTag: React.FunctionComponent<{
   }, [organizations, sharing]);
 
   const label = useMemo(() => {
-    if (!sharing) {
-      return { text: "Built-in", icon: faToolbox };
-    }
-
-    if (sharing.public) {
+    if (!sharing || sharing.public) {
       return { text: "Public", icon: faGlobe };
     }
 
@@ -74,7 +69,7 @@ export const SharingTag: React.FunctionComponent<{
     }
 
     if (!sharing.public) {
-      return { text: "Personal", icon: faEye };
+      return { text: "Personal", icon: faEyeSlash };
     }
 
     return null;
