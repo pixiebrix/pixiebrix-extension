@@ -26,7 +26,7 @@ const requiredFieldRegex = /^Instance does not have required property "(?<proper
  * Gets Input validation error from the Trace
  * @param pipelineErrors Pipeline validation errors for the Formik context.
  * @param traceError Serialized error from running the block ({@link TraceError.error}).
- * @param blockInstanceId Index of block that generated the Trace Error.
+ * @param blockIndex Index of block that generated the Trace Error.
  * @returns True if errors found, false otherwise.
  */
 function traceErrorInputValidator(

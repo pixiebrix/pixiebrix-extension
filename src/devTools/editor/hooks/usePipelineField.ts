@@ -59,9 +59,10 @@ function usePipelineField(
     [errorTraceEntry, allBlocks]
   );
 
-  const [{ value: blockPipeline }, { error: blockPipelineErrors }] = useField<
-    BlockConfig[]
-  >({
+  const [
+    { value: blockPipeline },
+    { error: blockPipelineErrors },
+  ] = useField<BlockPipeline>({
     name: pipelineBlocksFieldName,
     // @ts-expect-error working with nested errors
     validate: validatePipelineBlocks,
