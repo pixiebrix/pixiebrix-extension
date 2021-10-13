@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import Centered from "@/devTools/editor/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,32 +26,36 @@ import { getCurrentURL } from "@/devTools/utils";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { connect } = useContext(DevToolsContext);
+  const [rejected, setRejected] = useState(false);
 
   const onRequestPermission = useCallback(async () => {
     const url = await getCurrentURL();
     if (await requestPermissions({ origins: [url] })) {
       await connect();
+    } else {
+      setRejected(true);
     }
   }, [connect]);
 
   return (
-    <Centered>
-      <div className="PaneTitle">
-        PixieBrix does not have access to the page
-      </div>
+    <Centered vertically={true}>
       <p>
         <AsyncButton onClick={onRequestPermission}>
-          <FontAwesomeIcon icon={faShieldAlt} /> Grant Permanent Access
+          <FontAwesomeIcon icon={faShieldAlt} /> Enable PixieBrix on this page
         </AsyncButton>
       </p>
-      <p>
-        Or grant temporary access by clicking on the PixieBrix extension menu
-        item in your browser&apos;s extensions dropdown.
-      </p>
-      <p className="text-info">
-        <FontAwesomeIcon icon={faInfoCircle} /> You can revoke access to a site
-        at any time on PixieBrix&apos;s Settings page
-      </p>
+      {rejected && (
+        <>
+          <p>
+            You can also grant temporary access by clicking on the PixieBrix
+            extension menu item in your browser&apos;s extensions dropdown.
+          </p>
+          <p className="text-info">
+            <FontAwesomeIcon icon={faInfoCircle} /> You can revoke access to a
+            site at any time on PixieBrix&apos;s Settings page
+          </p>
+        </>
+      )}
     </Centered>
   );
 };
