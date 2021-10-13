@@ -228,15 +228,16 @@ const EditTab: React.FC<{
       const insertIndex = beforeInstanceId
         ? blockPipeline.findIndex((x) => x.instanceId === beforeInstanceId)
         : blockPipeline.length;
+      const outputKey = await generateFreshOutputKey(
+        block,
+        compact([
+          "input" as OutputKey,
+          ...blockPipeline.map((x) => x.outputKey),
+        ])
+      );
       const newBlock: BlockConfig = {
         id: block.id,
-        outputKey: await generateFreshOutputKey(
-          block,
-          compact([
-            "input" as OutputKey,
-            ...blockPipeline.map((x) => x.outputKey),
-          ])
-        ),
+        ...(outputKey && { outputKey }),
         instanceId: uuidv4(),
         config:
           getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
