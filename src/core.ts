@@ -690,23 +690,9 @@ export type RawConfig = {
   metadata: Metadata;
 };
 
-export function isReader(block: IBlock): block is IReader {
-  return "read" in block;
-}
-
-export function isRendererBlock(
-  // eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
-  block: IBlock & { render?: Function }
-): boolean {
-  return typeof block.render === "function";
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
-export function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
-  return typeof block.effect === "function";
-}
-
 /**
  * Brick is an inclusive term for entities with an id + version.
+ *
+ * (In the backend these are called `Package`s and `PackageVersion`s)
  */
 export type IBrick = IBlock | IService | IExtensionPoint;

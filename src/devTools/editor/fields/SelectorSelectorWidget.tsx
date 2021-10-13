@@ -15,15 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
-import { DevToolsContext } from "@/devTools/context";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { compact, isEmpty, sortBy, uniqBy } from "lodash";
-import {
-  disableOverlay,
-  enableSelectorOverlay,
-  selectElement,
-} from "@/background/devtools";
 import { getErrorMessage } from "@/errors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -37,6 +31,13 @@ import { Framework } from "@/messaging/constants";
 import { SelectMode } from "@/nativeEditor/selector";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { useField } from "formik";
+import {
+  disableOverlay,
+  enableOverlay,
+  selectElement,
+  cancelSelect,
+} from "@/contentScript/messenger/api";
+import { thisTab } from "@/devTools/utils";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;
@@ -102,7 +103,6 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
   const defaultSort = selectMode === "element";
   const sort = rawSort ?? defaultSort;
 
-  const { port } = useContext(DevToolsContext);
   const notify = useNotifications();
   const [element, setElement] = useState(initialElement);
   const [isSelecting, setSelecting] = useState(false);
@@ -112,22 +112,15 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
     return sort ? sortBy(raw, (x) => x.value.length) : raw;
   }, [element, sort]);
 
-  const enableSelector = useCallback(
-    (selector: string) => {
-      try {
-        void enableSelectorOverlay(port, selector);
-      } catch {
-        // The enableSelector function throws errors on invalid selector
-        // values, so we're eating everything here since this fires any
-        // time the user types in the input.
-      }
-    },
-    [port]
-  );
+  const enableSelector = useCallback((selector: string) => {
+    if (selector.trim()) {
+      void enableOverlay(thisTab, selector);
+    }
+  }, []);
 
   const disableSelector = useCallback(() => {
-    void disableOverlay(port);
-  }, [port]);
+    void disableOverlay(thisTab);
+  }, []);
 
   const onHighlighted = useCallback(
     (suggestion: ElementSuggestion | null) => {
@@ -152,7 +145,7 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
   const select = useCallback(async () => {
     setSelecting(true);
     try {
-      const selected = await selectElement(port, {
+      const selected = await selectElement(thisTab, {
         framework,
         mode: selectMode,
         traverseUp,
@@ -184,7 +177,6 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
       setSelecting(false);
     }
   }, [
-    port,
     sort,
     framework,
     notify,
@@ -195,6 +187,15 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
     setValue,
     root,
   ]);
+
+  useEffect(
+    () => () => {
+      if (isSelecting) {
+        void cancelSelect(thisTab);
+      }
+    },
+    [isSelecting]
+  );
 
   return (
     <div className="d-flex">

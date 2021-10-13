@@ -45,5 +45,11 @@ export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU");
 export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU");
 export const openTab = getMethod("OPEN_TAB");
 
+export const registry = {
+  getKind: getMethod("REGISTRY_GET_KIND"),
+  syncRemote: getMethod("REGISTRY_SYNC"),
+  find: getMethod("REGISTRY_FIND"),
+};
+
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;

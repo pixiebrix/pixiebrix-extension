@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension } from "@/core";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { IBlock, IExtension } from "@/core";
+import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 
 const config = {
@@ -65,3 +67,49 @@ export const extensionFactory: (
   active: true,
   ...extensionProps,
 });
+
+export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
+
+export const traceErrorFactory: (
+  traceErrorProps?: Partial<TraceError>
+) => TraceError = (traceErrorProps) => {
+  const errorTraceEntry: TraceError = {
+    timestamp: "2021-10-07T12:52:16.189Z",
+    extensionId: uuidv4(),
+    runId: uuidv4(),
+    blockInstanceId: uuidv4(),
+    blockId: TEST_BLOCK_ID,
+    error: {
+      message: "Trace error for tests",
+    },
+    ...traceErrorProps,
+  } as TraceError;
+
+  return errorTraceEntry;
+};
+
+export const pipelineFactory: (
+  blockConfigProps?: Partial<BlockConfig>
+) => BlockPipeline = (blockConfigProps) => {
+  const pipelineBlock: BlockConfig = {
+    instanceId: uuidv4(),
+    id: TEST_BLOCK_ID,
+    ...blockConfigProps,
+  } as BlockConfig;
+
+  const anotherBlock: BlockConfig = {
+    instanceId: uuidv4(),
+    id: TEST_BLOCK_ID,
+    ...blockConfigProps,
+  } as BlockConfig;
+
+  return [pipelineBlock, anotherBlock];
+};
+
+export const blockFactory: (blockProps?: Partial<IBlock>) => IBlock = (
+  blockProps
+) =>
+  ({
+    id: TEST_BLOCK_ID,
+    ...blockProps,
+  } as IBlock);

@@ -20,7 +20,6 @@ import pTimeout from "p-timeout";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 import {
-  detectFrameworks,
   checkTargetPermissions,
   ensureScript,
   navigationEvent,
@@ -33,8 +32,9 @@ import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
 import { sleep } from "@/utils";
 import { getErrorMessage } from "@/errors";
-import { getCurrentURL } from "@/devTools/utils";
+import { getCurrentURL, thisTab } from "@/devTools/utils";
 import { Except } from "type-fest";
+import { detectFrameworks } from "@/contentScript/messenger/api";
 
 interface FrameMeta {
   url: string;
@@ -146,7 +146,10 @@ async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
   let frameworks: FrameworkMeta[] = [];
   try {
     console.debug(`connectToFrame: detecting frameworks on ${url}`);
-    frameworks = await runInMillis(async () => detectFrameworks(port), 500);
+    frameworks = await runInMillis(
+      async () => detectFrameworks(thisTab, null),
+      500
+    );
   } catch (error: unknown) {
     console.debug(`connectToFrame: error detecting frameworks ${url}`, {
       error,

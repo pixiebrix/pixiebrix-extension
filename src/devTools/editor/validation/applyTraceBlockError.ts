@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -16,27 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isConnectionError } from "@/errors";
-import { showConnectionLost } from "@/contentScript/connection";
-import { reportError } from "@/telemetry/logging";
+import { TraceError } from "@/telemetry/trace";
 
-function addErrorListeners(): void {
-  window.addEventListener("error", (error) => {
-    if (isConnectionError(error)) {
-      showConnectionLost();
-    } else {
-      reportError(error);
-      return false;
-    }
-  });
-
-  window.addEventListener("unhandledrejection", (error) => {
-    if (isConnectionError(error)) {
-      showConnectionLost();
-    } else {
-      reportError(error);
-    }
-  });
+function applyTraceBlockError(
+  pipelineErrors: Record<string, unknown>,
+  errorTraceEntry: TraceError,
+  blockIndex: number
+) {
+  // eslint-disable-next-line security/detect-object-injection
+  if (!pipelineErrors[blockIndex]) {
+    // eslint-disable-next-line security/detect-object-injection
+    pipelineErrors[blockIndex] = errorTraceEntry.error.message;
+  }
 }
 
-export default addErrorListeners;
+export default applyTraceBlockError;

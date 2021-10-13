@@ -49,9 +49,9 @@ async function _reportError(
   }
 
   if (!isBackgroundPage()) {
-    // Log the error in the context it occurred in, so the developer doesn't have to open the background page to
-    // see the error
-    console.error("An error occurred", { error });
+    // Also log the error in the context it occurred in, so the developer
+    // doesn't have to open the background page to see it
+    console.error(error);
   }
 
   await recordError(serializeError(selectError(error)), context, null);

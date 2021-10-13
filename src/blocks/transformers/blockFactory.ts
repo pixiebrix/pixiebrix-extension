@@ -28,38 +28,26 @@ import {
   Config,
   IBlock,
   Metadata,
+  RegistryId,
   Schema,
 } from "@/core";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
-import { getType } from "@/blocks/util";
+import { BlockType, getType } from "@/blocks/util";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
-type ComponentKind =
-  | "reader"
-  | "component"
-  | "effect"
-  | "transform"
-  | "renderer";
-
-const METHOD_MAP: Map<ComponentKind, string> = new Map([
-  ["reader", "read"],
-  ["effect", "effect"],
-  ["transform", "transform"],
-]);
-
-interface ComponentConfig {
+type ComponentConfig = {
   apiVersion?: ApiVersion;
-  kind: ComponentKind;
+  kind: "component";
   metadata: Metadata;
   defaultOptions: Record<string, string>;
   pipeline: BlockConfig | BlockPipeline;
   inputSchema: Schema;
   outputSchema?: Schema;
   // Mapping from `key` -> `serviceId`
-  services?: Record<string, string>;
-}
+  services?: Record<string, RegistryId>;
+};
 
 function validateBlockDefinition(
   component: unknown
@@ -95,19 +83,6 @@ class ExternalBlock extends Block {
     this.component = component;
     this.inputSchema = this.component.inputSchema;
     this.outputSchema = this.component.outputSchema;
-
-    const kind = component.kind ?? ("transform" as ComponentKind);
-
-    if (kind === "reader") {
-      throw new Error("Cannot deserialize reader as block");
-    }
-
-    // @ts-expect-error we're being dynamic here to set the corresponding method for the kind since
-    // we use that method to distinguish between block types in places
-    this[METHOD_MAP.get(kind)] = async (
-      renderedInputs: BlockArg,
-      options: BlockOptions
-    ) => this.run(renderedInputs, options);
   }
 
   async isPure(): Promise<boolean> {
@@ -136,7 +111,7 @@ class ExternalBlock extends Block {
     return awareness.some((x) => x);
   }
 
-  async inferType(): Promise<ComponentKind | null> {
+  async inferType(): Promise<BlockType | null> {
     const pipeline = castArray(this.component.pipeline);
     const last = pipeline[pipeline.length - 1];
 
@@ -175,7 +150,9 @@ export function fromJS(component: Config): IBlock {
       "Component definition is missing a 'kind' property",
       null
     );
-  } else if (component.kind === "reader") {
+  }
+
+  if (component.kind === "reader") {
     return readerFactory(component);
   }
 

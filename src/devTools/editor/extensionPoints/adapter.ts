@@ -17,7 +17,7 @@
 
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { IExtension } from "@/core";
-import { find as findBrick } from "@/registry/localRegistry";
+import { registry } from "@/background/messenger/api";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import menuItemExtension from "@/devTools/editor/extensionPoints/menuItem";
 import triggerExtension from "@/devTools/editor/extensionPoints/trigger";
@@ -45,7 +45,7 @@ export async function selectType(extension: IExtension): Promise<ElementType> {
     ] as unknown) as ExtensionPointConfig).definition.type;
   }
 
-  const brick = await findBrick(extension.extensionPointId);
+  const brick = await registry.find(extension.extensionPointId);
   if (!brick) {
     console.error("Cannot find extension point", {
       extensionPointId: extension.extensionPointId,
