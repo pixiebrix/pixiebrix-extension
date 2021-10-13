@@ -17,14 +17,11 @@
 
 import chromeP from "webext-polyfill-kinda";
 import { getErrorMessage } from "@/errors";
-import { expectContext } from "@/utils/expectContext";
 
 export async function ensureAuth(
   scopes: string[],
   { interactive = true } = {}
 ): Promise<string> {
-  expectContext("background");
-
   if (!globalThis.gapi) {
     throw new TypeError("Google API not loaded");
   }
