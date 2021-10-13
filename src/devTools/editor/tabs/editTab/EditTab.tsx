@@ -160,39 +160,46 @@ const EditTab: React.FC<{
     (blockConfig, index) => {
       const block = allBlocks[blockConfig.id]?.block;
       const nodeId = blockConfig.instanceId;
-      return block
-        ? {
-            nodeId,
-            title: isNullOrBlank(blockConfig.label)
-              ? block?.name
-              : blockConfig.label,
-            outputKey: blockConfig.outputKey,
-            icon: (
-              <BrickIcon
-                brick={block}
-                size="2x"
-                // This makes brick icons that use basic font awesome icons
-                //   inherit the editor node layout color scheme.
-                // Customized SVG icons are unaffected and keep their branded
-                //   color schemes.
-                faIconClass={styles.brickFaIcon}
-              />
-            ),
-            hasError:
-              // If blockPipelineErrors is a string, it means the error is on the pipeline level
-              typeof blockPipelineErrors !== "string" &&
-              // eslint-disable-next-line security/detect-object-injection
-              Boolean(blockPipelineErrors?.[index]),
-            hasWarning:
-              errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
-            onClick: () => {
-              setActiveNodeId(blockConfig.instanceId);
-            },
-          }
-        : {
-            nodeId,
-            title: "Loading...",
-          };
+
+      if (!block) {
+        return {
+          nodeId,
+          title: "Loading...",
+        };
+      }
+
+      const newBlock: LayoutNodeProps = {
+        nodeId,
+        title: isNullOrBlank(blockConfig.label)
+          ? block?.name
+          : blockConfig.label,
+        icon: (
+          <BrickIcon
+            brick={block}
+            size="2x"
+            // This makes brick icons that use basic font awesome icons
+            //   inherit the editor node layout color scheme.
+            // Customized SVG icons are unaffected and keep their branded
+            //   color schemes.
+            faIconClass={styles.brickFaIcon}
+          />
+        ),
+        hasError:
+          // If blockPipelineErrors is a string, it means the error is on the pipeline level
+          typeof blockPipelineErrors !== "string" &&
+          // eslint-disable-next-line security/detect-object-injection
+          Boolean(blockPipelineErrors?.[index]),
+        hasWarning: errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
+        onClick: () => {
+          setActiveNodeId(blockConfig.instanceId);
+        },
+      };
+
+      if (blockConfig.outputKey) {
+        newBlock.outputKey = blockConfig.outputKey;
+      }
+
+      return newBlock;
     }
   );
 
@@ -237,11 +244,14 @@ const EditTab: React.FC<{
       );
       const newBlock: BlockConfig = {
         id: block.id,
-        ...(outputKey && { outputKey }),
         instanceId: uuidv4(),
         config:
           getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
       };
+      if (outputKey) {
+        newBlock.outputKey = outputKey;
+      }
+
       const nextState = produce(values, (draft) => {
         draft.extension.blockPipeline.splice(insertIndex, 0, newBlock);
       });
