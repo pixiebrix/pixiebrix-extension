@@ -159,6 +159,9 @@ const BrickDetail: React.FunctionComponent<{
               mode="yaml"
               theme="chrome"
               width="100%"
+              // Prevent scrolling by allowing the AceEditor height to auto fit content
+              // https://github.com/securingsincity/react-ace/issues/415#issuecomment-436623269
+              maxLines={Number.POSITIVE_INFINITY}
               readOnly
             />
           </Suspense>

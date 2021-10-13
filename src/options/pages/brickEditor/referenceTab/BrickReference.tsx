@@ -133,7 +133,7 @@ const BrickReference: React.FunctionComponent<{
             ))}
           </ListGroup>
         </Col>
-        <Col md={8} className={cx("p-5")}>
+        <Col md={8} className={cx("pt-4 px-3")}>
           {selected ? (
             <BrickDetail
               brick={selected}
