@@ -52,12 +52,6 @@ declare global {
     REGISTRY_GET_KIND: typeof registry.getKind;
     REGISTRY_SYNC: typeof registry.syncRemote;
     REGISTRY_FIND: typeof registry.find;
-
-    // REGISTRY_GET_LOCAL and REGISTRY_PUT are for supporting local bricks that aren't synced with the server. This
-    // feature is not implemented yet, but there's some parts of it floating around.
-    // See https://github.com/pixiebrix/pixiebrix-extension/issues/14
-    REGISTRY_GET_LOCAL: typeof registry.getLocal;
-    REGISTRY_PUT: typeof registry.add;
   }
 }
 
@@ -72,8 +66,6 @@ registerMethods({
   MARK_TAB_AS_READY: markTabAsReady,
   OPEN_TAB: openTab,
   REGISTRY_GET_KIND: registry.getKind,
-  REGISTRY_GET_LOCAL: registry.getLocal,
-  REGISTRY_PUT: registry.add,
   REGISTRY_SYNC: registry.syncRemote,
   REGISTRY_FIND: registry.find,
 });

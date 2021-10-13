@@ -47,8 +47,6 @@ export const openTab = getMethod("OPEN_TAB");
 
 export const registry = {
   getKind: getMethod("REGISTRY_GET_KIND"),
-  getLocal: getMethod("REGISTRY_GET_LOCAL"),
-  add: getMethod("REGISTRY_PUT"),
   syncRemote: getMethod("REGISTRY_SYNC"),
   find: getMethod("REGISTRY_FIND"),
 };
