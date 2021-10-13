@@ -47,7 +47,9 @@ import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlo
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
-import usePipelineField from "@/devTools/editor/hooks/usePipelineField";
+import usePipelineField, {
+  PIPELINE_BLOCKS_FIELD_NAME,
+} from "@/devTools/editor/hooks/usePipelineField";
 import { BlocksMap } from "./editTabTypes";
 
 const blockConfigTheme: ThemeProps = {
@@ -93,7 +95,7 @@ const EditTab: React.FC<{
     blockPipeline,
     blockPipelineErrors,
     errorTraceEntry,
-  } = usePipelineField(allBlocks);
+  } = usePipelineField(allBlocks, elementType);
 
   const [activeNodeId, setActiveNodeId] = useState<NodeId>(FOUNDATION_NODE_ID);
   const activeBlockIndex = useMemo(() => {
@@ -106,10 +108,7 @@ const EditTab: React.FC<{
     );
   }, [activeNodeId, blockPipeline]);
 
-  const blockFieldName = useMemo(
-    () => `extension.blockPipeline[${activeBlockIndex}]`,
-    [activeBlockIndex]
-  );
+  const blockFieldName = `${PIPELINE_BLOCKS_FIELD_NAME}[${activeBlockIndex}]`;
 
   const [showAppendNode] = useAsyncState(
     async () => {

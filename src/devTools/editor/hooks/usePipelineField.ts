@@ -23,6 +23,7 @@ import { useField, useFormikContext, setNestedObjectValues } from "formik";
 import { TraceError } from "@/telemetry/trace";
 import { useAsyncEffect } from "use-async-effect";
 import validateOutputKey from "@/devTools/editor/validation/validateOutputKey";
+import validateRenderers from "@/devTools/editor/validation/validateRenderers";
 import applyTraceError from "@/devTools/editor/validation/applyTraceError";
 import { isEmpty } from "lodash";
 import {
@@ -30,11 +31,13 @@ import {
   FormikError,
   FormikErrorTree,
 } from "@/devTools/editor/tabs/editTab/editTabTypes";
+import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 
-const pipelineBlocksFieldName = "extension.blockPipeline";
+export const PIPELINE_BLOCKS_FIELD_NAME = "extension.blockPipeline";
 
 function usePipelineField(
-  allBlocks: BlocksMap
+  allBlocks: BlocksMap,
+  elementType: ElementType
 ): {
   blockPipeline: BlockPipeline;
   blockPipelineErrors: FormikError;
@@ -47,18 +50,19 @@ function usePipelineField(
       const formikErrors: FormikErrorTree = {};
 
       validateOutputKey(formikErrors, pipeline, allBlocks);
+      validateRenderers(formikErrors, pipeline, allBlocks, elementType);
       applyTraceError(formikErrors, errorTraceEntry, pipeline);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;
     },
-    [errorTraceEntry, allBlocks]
+    [allBlocks, elementType, errorTraceEntry]
   );
 
   const [
     { value: blockPipeline },
     { error: blockPipelineErrors },
   ] = useField<BlockPipeline>({
-    name: pipelineBlocksFieldName,
+    name: PIPELINE_BLOCKS_FIELD_NAME,
     // @ts-expect-error working with nested errors
     validate: validatePipelineBlocks,
   });
