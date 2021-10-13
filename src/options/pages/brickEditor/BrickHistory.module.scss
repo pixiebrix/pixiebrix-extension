@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-.codeMarker {
+:global(.codeMarker) {
   background: #fff677;
   position: absolute;
 }
@@ -22,4 +22,5 @@
 .versionSelector {
   z-index: 100;
   min-width: 25%;
+  margin-right: 1.5rem;
 }

@@ -20,7 +20,7 @@ import useFetch from "@/hooks/useFetch";
 import { PackageVersion, Package } from "@/types/contract";
 import DiffEditor from "@/vendors/DiffEditor";
 import objectHash from "object-hash";
-import "./BrickHistory.scss";
+import styles from "./BrickHistory.module.scss";
 import { UUID } from "@/core";
 
 export interface PackageVersionOption {
@@ -93,7 +93,7 @@ const BrickHistory: React.FunctionComponent<{
         </p>
         <div className="d-flex justify-content-start">
           <Select
-            className="versionSelector mr-4"
+            className={styles.versionSelector}
             placeholder="Select a version"
             options={versionOptions}
             value={versionA}
@@ -106,7 +106,7 @@ const BrickHistory: React.FunctionComponent<{
             }}
           />
           <Select
-            className="versionSelector"
+            className={styles.versionSelector}
             placeholder="Select a version"
             options={versionOptions}
             onChange={(option) => {
