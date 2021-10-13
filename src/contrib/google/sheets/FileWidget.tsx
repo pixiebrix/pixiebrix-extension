@@ -154,13 +154,18 @@ const FileWidget: CustomFieldWidget<OwnProps> = ({
   return (
     <InputGroup>
       {doc ? (
-        <Form.Control type="text" disabled value={doc.name} />
+        // There's a time when doc.name is blank, so we're getting warnings about controlled/uncontrolled components
+        <Form.Control
+          type="text"
+          disabled
+          value={doc.name ?? field.value ?? ""}
+        />
       ) : (
         <Form.Control
           type="text"
           disabled
-          value={field.value ?? ""}
           {...field}
+          value={field.value ?? ""}
         />
       )}
       <InputGroup.Append>
