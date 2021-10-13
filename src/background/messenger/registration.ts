@@ -32,6 +32,7 @@ import {
   openTab,
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
+import * as browserAction from "@/background/browserAction";
 
 expectContext("background");
 
@@ -52,6 +53,10 @@ declare global {
     REGISTRY_GET_KIND: typeof registry.getKind;
     REGISTRY_SYNC: typeof registry.syncRemote;
     REGISTRY_FIND: typeof registry.find;
+    REGISTER_ACTION_FRAME: typeof browserAction.registerActionFrame;
+    FORWARD_FRAME_NOTIFICATION: typeof browserAction.forwardFrameNotification;
+    SHOW_ACTION_FRAME: typeof browserAction.showActionFrame;
+    HIDE_ACTION_FRAME: typeof browserAction.hideActionFrame;
   }
 }
 
@@ -68,4 +73,8 @@ registerMethods({
   REGISTRY_GET_KIND: registry.getKind,
   REGISTRY_SYNC: registry.syncRemote,
   REGISTRY_FIND: registry.find,
+  REGISTER_ACTION_FRAME: browserAction.registerActionFrame,
+  FORWARD_FRAME_NOTIFICATION: browserAction.forwardFrameNotification,
+  SHOW_ACTION_FRAME: browserAction.showActionFrame,
+  HIDE_ACTION_FRAME: browserAction.hideActionFrame,
 });
