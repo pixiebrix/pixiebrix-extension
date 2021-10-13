@@ -113,7 +113,7 @@ const EditTab: React.FC<{
 
   const [showAppendNode] = useAsyncState(
     async () => {
-      if (isEmpty(allBlocks)) {
+      if (isEmpty(allBlocks) || isEmpty(blockPipeline)) {
         return true;
       }
 
