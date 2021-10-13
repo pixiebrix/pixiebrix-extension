@@ -15,13 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React, { useEffect, useMemo, useState, Suspense } from "react";
-import Select from "react-select";
+import Select, { components, OptionProps } from "react-select";
 import useFetch from "@/hooks/useFetch";
 import { PackageVersion, Package } from "@/types/contract";
 import DiffEditor from "@/vendors/DiffEditor";
 import objectHash from "object-hash";
 import "./BrickHistory.scss";
 import { UUID } from "@/core";
+
+export interface PackageVersionOption {
+  value: string;
+  label: string;
+  created_at: string;
+}
+
+const CustomSingleValue: React.FunctionComponent<{
+  data: PackageVersionOption;
+}> = ({ data }) => (
+  <div className="d-flex align-items-center">
+    <span>{data.label}&nbsp;</span>{" "}
+    <span className="small text-muted">{data.created_at}</span>
+  </div>
+);
+
+const { Option } = components;
+const CustomSingleOption: React.FunctionComponent = (
+  props: OptionProps<never, never>
+) => (
+  <Option {...props}>
+    <CustomSingleValue data={props.data} />
+  </Option>
+);
 
 const BrickHistory: React.FunctionComponent<{
   brickId: UUID;
@@ -37,15 +61,16 @@ const BrickHistory: React.FunctionComponent<{
     () =>
       (packageVersions ?? []).map((packageVersion) => {
         const date = new Date(packageVersion.created_at);
-        const formatted_date = `${date.getDate()}/${
+        const formatted_date = `${
           date.getMonth() + 1
-        }/${date.getFullYear()}`;
+        }/${date.getDate()}/${date.getFullYear()}`;
         return {
           value: packageVersion.raw_config,
           label:
             packageVersion.version === brick?.version
-              ? `${packageVersion.version} (current) - ${formatted_date}`
-              : `${packageVersion.version} - ${formatted_date}`,
+              ? `${packageVersion.version} (current)`
+              : `${packageVersion.version}`,
+          created_at: formatted_date,
         };
       }),
     [packageVersions, brick]
@@ -75,6 +100,10 @@ const BrickHistory: React.FunctionComponent<{
             onChange={(option) => {
               setVersionA(option);
             }}
+            components={{
+              Option: CustomSingleOption,
+              SingleValue: CustomSingleValue,
+            }}
           />
           <Select
             className="versionSelector"
@@ -83,6 +112,10 @@ const BrickHistory: React.FunctionComponent<{
             onChange={(option) => {
               setVersionB(option);
             }}
+            components={{
+              Option: CustomSingleOption,
+              SingleValue: CustomSingleValue,
+            }}
           />
         </div>
       </div>
@@ -90,7 +123,7 @@ const BrickHistory: React.FunctionComponent<{
         <Suspense fallback={<div>Loading history...</div>}>
           <DiffEditor
             value={[versionA?.value ?? "", versionB?.value ?? ""]}
-            key={objectHash({ a: versionA?.label, b: versionB?.label })}
+            key={objectHash({ a: versionA, b: versionB })}
             width="100%"
             theme="chrome"
             mode="yaml"
