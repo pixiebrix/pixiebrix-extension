@@ -30,20 +30,19 @@ import CodeEditor from "./CodeEditor";
 import SharingTable from "./Sharing";
 import { sortBy } from "lodash";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
-import { MessageContext } from "@/core";
+import { MessageContext, UUID } from "@/core";
 import BrickReference from "@/options/pages/brickEditor/referenceTab/BrickReference";
 import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { fetch } from "@/hooks/fetch";
-import { Brick, Package } from "@/types/contract";
+import { Brick } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import useNotifications from "@/hooks/useNotifications";
 import { ReferenceEntry } from "./brickEditorTypes";
 import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
-import useFetch from "@/hooks/useFetch";
 import { useParams } from "react-router";
 
 const SharingIcon: React.FunctionComponent<{
@@ -108,8 +107,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const [editorWidth, setEditorWidth] = useState();
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
-  const { id } = useParams<{ id: string }>();
-  const { data: brick } = useFetch<Package>(`/api/bricks/${id}`);
+  const { id: brickId } = useParams<{ id: UUID }>();
 
   const [bricks] = useAsyncState(async () => {
     const [extensionPoints, bricks, services] = await Promise.all([
@@ -195,7 +193,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
               </Nav.Link>
               {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}
               <Nav.Link eventKey="reference">Reference</Nav.Link>
-              <Nav.Link eventKey="history" disabled={brick == null}>
+              <Nav.Link eventKey="history" disabled={!brickId}>
                 History
               </Nav.Link>
             </Nav>
@@ -236,7 +234,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
             </Tab.Pane>
 
             <Tab.Pane eventKey="history" className="p-0">
-              <BrickHistory brick={brick} />
+              <BrickHistory brickId={brickId} />
             </Tab.Pane>
           </Tab.Content>
         </Tab.Container>

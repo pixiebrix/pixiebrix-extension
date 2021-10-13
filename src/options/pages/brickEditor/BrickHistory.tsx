@@ -21,25 +21,33 @@ import { PackageVersion, Package } from "@/types/contract";
 import DiffEditor from "@/vendors/DiffEditor";
 import objectHash from "object-hash";
 import "./BrickHistory.scss";
+import { UUID } from "@/core";
 
 const BrickHistory: React.FunctionComponent<{
-  brick: Package;
-}> = ({ brick }) => {
-  const { data: packageVersions = [] } = useFetch<PackageVersion[]>(
-    `/api/bricks/${brick?.id}/versions/`
+  brickId: UUID;
+}> = ({ brickId }) => {
+  const { data: brick } = useFetch<Package>(`/api/bricks/${brickId}`);
+  const { data: packageVersions } = useFetch<PackageVersion[]>(
+    `/api/bricks/${brickId}/versions/`
   );
   const [versionA, setVersionA] = useState(null);
   const [versionB, setVersionB] = useState(null);
 
   const versionOptions = useMemo(
     () =>
-      packageVersions.map((packageVersion) => ({
-        value: packageVersion.raw_config,
-        label:
-          packageVersion.version === brick?.version
-            ? `${packageVersion.version} (current)`
-            : packageVersion.version,
-      })),
+      (packageVersions ?? []).map((packageVersion) => {
+        const date = new Date(packageVersion.created_at);
+        const formatted_date = `${date.getDate()}/${
+          date.getMonth() + 1
+        }/${date.getFullYear()}`;
+        return {
+          value: packageVersion.raw_config,
+          label:
+            packageVersion.version === brick?.version
+              ? `${packageVersion.version} (current) - ${formatted_date}`
+              : `${packageVersion.version} - ${formatted_date}`,
+        };
+      }),
     [packageVersions, brick]
   );
 
@@ -52,15 +60,6 @@ const BrickHistory: React.FunctionComponent<{
     setVersionA(currentVersion);
   }, [currentVersion]);
 
-  const diffValues = [
-    versionA ? versionA.value : "",
-    versionB ? versionB.value : "",
-  ];
-
-  const key = objectHash({ a: versionA?.label, b: versionB?.label });
-
-  console.log("BrickHistory", { diffValues, key });
-
   return (
     <div>
       <div className="p-3">
@@ -71,7 +70,7 @@ const BrickHistory: React.FunctionComponent<{
           <Select
             className="versionSelector mr-4"
             placeholder="Select a version"
-            options={versionOptions.filter((option) => option !== versionB)}
+            options={versionOptions}
             value={versionA}
             onChange={(option) => {
               setVersionA(option);
@@ -80,7 +79,7 @@ const BrickHistory: React.FunctionComponent<{
           <Select
             className="versionSelector"
             placeholder="Select a version"
-            options={versionOptions.filter((option) => option !== versionA)}
+            options={versionOptions}
             onChange={(option) => {
               setVersionB(option);
             }}
@@ -90,12 +89,12 @@ const BrickHistory: React.FunctionComponent<{
       {versionA && versionB && (
         <Suspense fallback={<div>Loading history...</div>}>
           <DiffEditor
-            value={diffValues}
-            key={key}
+            value={[versionA?.value ?? "", versionB?.value ?? ""]}
+            key={objectHash({ a: versionA?.label, b: versionB?.label })}
             width="100%"
             theme="chrome"
             mode="yaml"
-            name={`DIFF_EDITOR_DIV_${key}`}
+            name={"DIFF_EDITOR_DIV"}
             readOnly
           />
         </Suspense>
