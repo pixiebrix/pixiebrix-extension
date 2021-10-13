@@ -17,13 +17,8 @@
  */
 
 import { fetch } from "@/hooks/fetch";
-import {
-  find,
-  getKind,
-  PACKAGE_NAME_REGEX,
-  Kind,
-  syncRemote,
-} from "@/registry/localRegistry";
+import { PACKAGE_NAME_REGEX, Kind } from "@/registry/localRegistry";
+import { registry } from "@/background/messenger/api";
 import { groupBy } from "lodash";
 import { RegistryPackage } from "@/types/contract";
 import { getErrorMessage } from "@/errors";
@@ -74,7 +69,7 @@ export class Registry<
   }
 
   async exists(id: Id): Promise<boolean> {
-    return this.cache.has(id) || (await find(id)) != null;
+    return this.cache.has(id) || (await registry.find(id)) != null;
   }
 
   async lookup(id: Id): Promise<Item> {
@@ -88,7 +83,7 @@ export class Registry<
       return cached;
     }
 
-    const raw = await find(id);
+    const raw = await registry.find(id);
 
     if (!raw) {
       console.debug(
@@ -124,7 +119,7 @@ export class Registry<
   async all(): Promise<Item[]> {
     await Promise.allSettled(
       [...this.kinds.values()].map(async (kind) => {
-        for (const raw of await getKind(kind)) {
+        for (const raw of await registry.getKind(kind)) {
           const parsed = this.parse(raw.config);
           if (parsed) {
             this.register(parsed);
@@ -211,7 +206,7 @@ export class Registry<
     await Promise.all(
       Object.entries(groupBy(packages, (x) => x.kind)).map(
         async ([kind, kindPackages]) => {
-          await syncRemote(kind as Kind, kindPackages);
+          await registry.syncRemote(kind as Kind, kindPackages);
         }
       )
     );
