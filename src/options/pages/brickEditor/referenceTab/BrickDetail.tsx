@@ -90,13 +90,15 @@ const BrickDetail: React.FunctionComponent<{
     [schema]
   );
 
+  console.log("Brick:", brick);
+
   return (
     <div className={styles.root}>
       <div className="d-flex justify-content-between">
         <div>
           <h3 className="text-left">
             {brick.name}&nbsp;
-            <BrickIcon brick={brick} />
+            <BrickIcon key={brick.id} brick={brick} />
           </h3>
           <p>
             <code className="p-0">{brick.id}</code>
