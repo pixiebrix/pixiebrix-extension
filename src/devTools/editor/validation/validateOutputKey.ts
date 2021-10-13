@@ -19,14 +19,17 @@ import { BlockPipeline } from "@/blocks/types";
 import { BlockType } from "@/blocks/util";
 import { joinName } from "@/utils";
 import { isEmpty, set } from "lodash";
-import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
+import {
+  BlocksMap,
+  FormikErrorTree,
+} from "@/devTools/editor/tabs/editTab/editTabTypes";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 
 const blockTypesWithEmptyOutputKey: BlockType[] = ["effect", "renderer"];
 
 function setOutputKeyError(
-  pipelineErrors: Record<string, unknown>,
+  pipelineErrors: FormikErrorTree,
   blockIndex: number,
   errorMessage: string
 ) {
@@ -35,7 +38,7 @@ function setOutputKeyError(
 }
 
 function validateOutputKey(
-  pipelineErrors: Record<string, unknown>,
+  pipelineErrors: FormikErrorTree,
   pipeline: BlockPipeline,
   allBlocks: BlocksMap
 ) {
