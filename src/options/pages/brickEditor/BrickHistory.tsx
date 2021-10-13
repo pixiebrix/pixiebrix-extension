@@ -50,7 +50,7 @@ const CustomSingleOption: React.FunctionComponent = (
 const BrickHistory: React.FunctionComponent<{
   brickId: UUID;
 }> = ({ brickId }) => {
-  const { data: brick } = useFetch<Package>(`/api/bricks/${brickId}`);
+  const { data: brick } = useFetch<Package>(`/api/bricks/${brickId}/`);
   const { data: packageVersions } = useFetch<PackageVersion[]>(
     `/api/bricks/${brickId}/versions/`
   );
