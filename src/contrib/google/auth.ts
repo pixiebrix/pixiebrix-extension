@@ -22,7 +22,7 @@ export async function ensureAuth(
   scopes: string[],
   { interactive = true } = {}
 ): Promise<string> {
-  if (typeof gapi === "undefined") {
+  if (!globalThis.gapi) {
     throw new TypeError("Google API not loaded");
   }
 
