@@ -16,11 +16,14 @@
  */
 
 .blockResults {
+  height: 100%;
+  overflow: auto;
+
   &:global(.list-group) {
     border-radius: 0;
   }
 }
 
 .detailColumn {
-  padding: 1.5rem 1.5rem 0;
+  padding: 2rem 2rem 0 !important;
 }

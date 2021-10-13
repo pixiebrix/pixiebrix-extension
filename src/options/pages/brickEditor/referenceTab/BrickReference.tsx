@@ -32,7 +32,6 @@ import GridLoader from "react-spinners/GridLoader";
 import BrickDetail from "./BrickDetail";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import BlockResult from "./BlockResult";
-import cx from "classnames";
 import { isOfficial } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import { find } from "@/registry/localRegistry";
@@ -117,9 +116,7 @@ const BrickReference: React.FunctionComponent<{
               }}
             />
           </InputGroup>
-          <ListGroup
-            className={cx("overflow-auto", "h-100", styles.blockResults)}
-          >
+          <ListGroup className={styles.blockResults}>
             {results.map((result) => (
               <BlockResult
                 key={result.id}

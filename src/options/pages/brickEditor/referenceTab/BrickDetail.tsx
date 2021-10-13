@@ -106,14 +106,14 @@ const BrickDetail: React.FunctionComponent<{
         </div>
         {listing && (
           <div className="ml-4">
-            <a
+            <Button
               href={`https://pixiebrix.com/marketplace/${listing.id}`}
-              className="btn btn-sm btn-link text-info text-nowrap"
+              size="sm"
+              variant="link"
               target="_blank"
-              rel="noopener noreferrer"
             >
               <FontAwesomeIcon icon={faExternalLinkAlt} /> View in Marketplace
-            </a>
+            </Button>
           </div>
         )}
       </div>
