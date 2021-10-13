@@ -22,6 +22,8 @@ const STORAGE_KEY = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
 const VERSION = 1;
 
+// `LOCAL_SCOPE` is for supporting local bricks that aren't synced with the server. This feature is not implemented yet,
+// but there's some parts of it floating around. See https://github.com/pixiebrix/pixiebrix-extension/issues/14
 export const LOCAL_SCOPE = "@local";
 
 export const PACKAGE_NAME_REGEX = /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
@@ -106,11 +108,15 @@ export async function getKind(kind: Kind) {
   );
 }
 
+// `getLocal` is for supporting local bricks that aren't synced with the server. This feature is not implemented yet,
+// but there's some parts of it floating around. See https://github.com/pixiebrix/pixiebrix-extension/issues/14
 export async function getLocal() {
   const db = await getBrickDB();
   return db.getAllFromIndex(BRICK_STORE, "scope", LOCAL_SCOPE);
 }
 
+// `getLocal` is for supporting local bricks that aren't synced with the server. This feature is not implemented yet,
+// but there's some parts of it floating around. See https://github.com/pixiebrix/pixiebrix-extension/issues/14
 export async function add(obj: Package) {
   const db = await getBrickDB();
   await db.put(BRICK_STORE, obj);

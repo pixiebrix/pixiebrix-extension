@@ -50,10 +50,14 @@ declare global {
     MARK_TAB_AS_READY: typeof markTabAsReady;
     OPEN_TAB: typeof openTab;
     REGISTRY_GET_KIND: typeof registry.getKind;
-    REGISTRY_GET_LOCAL: typeof registry.getLocal;
-    REGISTRY_PUT: typeof registry.add;
     REGISTRY_SYNC: typeof registry.syncRemote;
     REGISTRY_FIND: typeof registry.find;
+
+    // REGISTRY_GET_LOCAL and REGISTRY_PUT are for supporting local bricks that aren't synced with the server. This
+    // feature is not implemented yet, but there's some parts of it floating around.
+    // See https://github.com/pixiebrix/pixiebrix-extension/issues/14
+    REGISTRY_GET_LOCAL: typeof registry.getLocal;
+    REGISTRY_PUT: typeof registry.add;
   }
 }
 
