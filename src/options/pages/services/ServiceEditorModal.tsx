@@ -136,6 +136,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
                   name="label"
                   label="Label"
                   description="A label to help identify this integration"
+                  blankValue=""
                 />
                 <FieldTemplate
                   label="Integration"

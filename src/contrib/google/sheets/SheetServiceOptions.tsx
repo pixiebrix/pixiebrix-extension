@@ -15,25 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { validateRegistryId } from "@/types/helpers";
+import { SheetMeta } from "@/contrib/google/sheets/types";
 
 export const SERVICE_GOOGLE_SHEET_ID = validateRegistryId("google/sheet");
 
 const SheetServiceOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
-}) => (
-  <div className="my-2">
-    <ConnectedFieldTemplate
-      name={`${name}.spreadsheetId`}
-      description="The ID of the spreadsheet to update."
-      label="Google Sheet"
-      as={FileWidget}
-    />
-  </div>
-);
+}) => {
+  const [doc, setDoc] = useState<SheetMeta>(null);
+
+  const handleSelect = useCallback(
+    (doc: SheetMeta) => {
+      setDoc(doc);
+    },
+    [doc]
+  );
+
+  return (
+    <div className="my-2">
+      <ConnectedFieldTemplate
+        name={`${name}.spreadsheetId`}
+        description="The ID of the spreadsheet to update."
+        label="Google Sheet"
+        as={FileWidget}
+        onSelect={handleSelect}
+        doc={doc}
+      />
+    </div>
+  );
+};
 
 export default SheetServiceOptions;
