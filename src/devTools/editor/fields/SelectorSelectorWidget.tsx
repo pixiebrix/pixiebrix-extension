@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { compact, isEmpty, sortBy, uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors";
@@ -35,6 +35,7 @@ import {
   disableOverlay,
   enableOverlay,
   selectElement,
+  cancelSelect,
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
 
@@ -186,6 +187,15 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
     setValue,
     root,
   ]);
+
+  useEffect(
+    () => () => {
+      if (isSelecting) {
+        void cancelSelect(thisTab);
+      }
+    },
+    [isSelecting]
+  );
 
   return (
     <div className="d-flex">
