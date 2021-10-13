@@ -25,8 +25,8 @@ export async function ensureAuth(
 ): Promise<string> {
   expectContext("background");
 
-  if (!gapi) {
-    throw new Error("Google API not loaded. Are you using Chrome?");
+  if (!globalThis.gapi) {
+    throw new TypeError("Google API not loaded");
   }
 
   try {

@@ -46,6 +46,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
+import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -223,26 +224,25 @@ const SidebarCollapsed: React.FunctionComponent<{
   expandSidebar: () => void;
 }> = ({ expandSidebar }) => (
   <div className={cx(styles.root, styles.collapsed)}>
-    <Logo />
     <button
       className={cx("navbar-toggler", styles.toggle)}
       type="button"
       onClick={expandSidebar}
     >
+      <Logo />
       <FontAwesomeIcon icon={faAngleDoubleRight} />
     </button>
   </div>
 );
 
-const transitionProps = {
+const transitionProps: CSSTransitionProps = {
   classNames: {
-    enter: styles.hidden,
-    enterActive: styles.showing,
+    enter: styles.enter,
+    enterActive: styles.enterActive,
+    exit: styles.exit,
+    exitActive: styles.exitActive,
   },
-  timeout: {
-    enter: 100,
-    exit: 0,
-  },
+  timeout: 500,
   unmountOnExit: true,
   mountOnEnter: true,
 };

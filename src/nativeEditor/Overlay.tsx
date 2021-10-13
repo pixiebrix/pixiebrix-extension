@@ -315,10 +315,6 @@ export default class Overlay {
 
     if (!name) {
       name = elements[0].nodeName.toLowerCase();
-      // const ownerName = getOwnerDisplayName(elements[0]);
-      // if (ownerName) {
-      //     name += ' (in ' + ownerName + ')';
-      // }
     }
 
     this.tip.updateText(
@@ -396,7 +392,6 @@ function getNestedBoundingClientRect(
 ): Rect {
   const ownerIframe = getOwnerIframe(node);
   if (ownerIframe) {
-    // && ownerIframe !== boundaryWindow) {
     const rects = [node.getBoundingClientRect()];
     let currentIframe = ownerIframe;
     let onlyOneMore = false;

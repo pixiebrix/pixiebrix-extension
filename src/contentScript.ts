@@ -30,8 +30,8 @@ import "@/vendors/notify";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
 import { markTabAsReady, whoAmI } from "@/background/messenger/api";
-import { showConnectionLost } from "./contentScript/connection";
-import { isConnectionError } from "./errors";
+import { showConnectionLost } from "@/contentScript/connection";
+import { isConnectionError } from "@/errors";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { addListenerForUpdateSelectedElement } from "@/devTools/getSelectedElement";
 
