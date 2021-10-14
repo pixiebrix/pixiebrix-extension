@@ -122,8 +122,8 @@ const Entry: React.FunctionComponent<
             <div>
               <p className="mb-1 mt-1">{description}</p>
             </div>
-            <div className="small">
-              <p className="mb-1 mt-1">
+            <div className="small d-flex align-items-end">
+              <p className="mb-1 mt-1 pl-5 text-nowrap">
                 {organization ? (
                   <>
                     <FontAwesomeIcon icon={faUsers} /> {organization.name}

@@ -15,11 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isOfficial } from "@/blocks/util";
-import { RegistryId } from "@/core";
 import React from "react";
-import { Badge } from "react-bootstrap";
 
-export const OfficialBadge: React.FunctionComponent<{
-  id: RegistryId;
-}> = ({ id }) => isOfficial(id) && <Badge variant="info py-1">Official</Badge>;
+const DiffEditor = React.lazy(
+  async () =>
+    import(
+      /* webpackChunkName: "ace-editor" */
+      "./DiffEditorSync"
+    )
+);
+
+export default DiffEditor;

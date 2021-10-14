@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isOfficial } from "@/blocks/util";
-import { RegistryId } from "@/core";
-import React from "react";
-import { Badge } from "react-bootstrap";
+import { diff as DiffEditorSync } from "react-ace";
 
-export const OfficialBadge: React.FunctionComponent<{
-  id: RegistryId;
-}> = ({ id }) => isOfficial(id) && <Badge variant="info py-1">Official</Badge>;
+import "ace-builds/src-noconflict/mode-yaml";
+import "ace-builds/src-noconflict/theme-chrome";
+
+/**
+ * Bundles DiffEditor. Use "./DiffEditor.tsx" for dynamic import.
+ */
+export default DiffEditorSync;

@@ -18,7 +18,7 @@
 import { validateRegistryId } from "@/types/helpers";
 import { Transformer, UnknownObject } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
-import { batchGet } from "@/contrib/google/sheets/handlers";
+import { sheets } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors";
 import { zip } from "lodash";
@@ -73,7 +73,7 @@ export class GoogleSheetsLookup extends Transformer {
     { spreadsheetId, tabName, header, query, multi }: BlockArg,
     { logger }: BlockOptions
   ): Promise<UnknownObject | UnknownObject[]> {
-    const response = await batchGet(spreadsheetId, tabName);
+    const response = await sheets.batchGet(spreadsheetId, tabName);
 
     const headers = response.valueRanges?.[0].values?.[0] ?? [];
 
