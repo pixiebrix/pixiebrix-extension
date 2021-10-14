@@ -36,7 +36,9 @@ export class ShowSidebar extends Effect {
 
   inputSchema: Schema = NO_PARAMS;
 
-  effect = browserAction.showActionFrame;
+  async effect(): Promise<void> {
+    await browserAction.showActionFrame();
+  }
 }
 
 export class HideSidebar extends Effect {
@@ -50,5 +52,7 @@ export class HideSidebar extends Effect {
 
   inputSchema: Schema = NO_PARAMS;
 
-  effect = browserAction.hideActionFrame;
+  async effect(): Promise<void> {
+    await browserAction.hideActionFrame();
+  }
 }
