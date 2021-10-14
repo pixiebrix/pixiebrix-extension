@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { Schema } from "@/core";
@@ -25,9 +25,8 @@ import { SheetMeta } from "@/contrib/google/sheets/types";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import TabField from "@/contrib/google/sheets/TabField";
-import { DevToolsContext } from "@/devTools/context";
 import { useAsyncState } from "@/hooks/common";
-import { devtoolsProtocol } from "@/contrib/google/sheets/handlers";
+import { sheets } from "@/background/messenger/api";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getErrorMessage } from "@/errors";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
@@ -41,11 +40,9 @@ const HeaderField: React.FunctionComponent<{
   doc: SheetMeta | null;
   tabName: string;
 }> = ({ name, tabName, doc }) => {
-  const { port } = useContext(DevToolsContext);
-
   const [headerSchema, , headersError] = useAsyncState(async () => {
     if (doc?.id && tabName) {
-      const headers = await devtoolsProtocol.getHeaders(port, {
+      const headers = await sheets.getHeaders({
         spreadsheetId: doc.id,
         tabName,
       });
