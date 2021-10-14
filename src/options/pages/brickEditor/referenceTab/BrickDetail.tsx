@@ -90,8 +90,6 @@ const BrickDetail: React.FunctionComponent<{
     [schema]
   );
 
-  console.log("Brick:", brick);
-
   return (
     <div className={styles.root}>
       <div className="d-flex justify-content-between">
