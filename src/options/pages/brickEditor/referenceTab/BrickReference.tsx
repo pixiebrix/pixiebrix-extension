@@ -32,11 +32,11 @@ import GridLoader from "react-spinners/GridLoader";
 import BrickDetail from "./BrickDetail";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import BlockResult from "./BlockResult";
-import cx from "classnames";
 import { isOfficial } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import { find } from "@/registry/localRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
+import { useGetOrganizationsQuery } from "@/services/api";
 
 const BrickReference: React.FunctionComponent<{
   bricks: ReferenceEntry[];
@@ -44,6 +44,7 @@ const BrickReference: React.FunctionComponent<{
 }> = ({ bricks, initialSelected }) => {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<ReferenceEntry>(initialSelected);
+  const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const sortedBricks = useMemo(
     () =>
@@ -67,7 +68,12 @@ const BrickReference: React.FunctionComponent<{
     }
 
     const brickPackage = await find(selected.id);
-    return brickPackage?.config ? brickToYaml(brickPackage.config) : null;
+    if (brickPackage?.config) {
+      delete brickPackage.config.sharing;
+      return brickToYaml(brickPackage.config);
+    }
+
+    return null;
   }, [selected]);
 
   const fuse: Fuse<IBlock | IService> = useMemo(
@@ -94,9 +100,9 @@ const BrickReference: React.FunctionComponent<{
   }, [selected, initialSelected, query, fuse, sortedBricks]);
 
   return (
-    <Container className="px-0 h-100" fluid>
+    <Container className="h-100" fluid>
       <Row className="h-100">
-        <Col md={4} className="h-100">
+        <Col md={4} className="h-100 px-0">
           <InputGroup className="mr-sm-2">
             <InputGroup.Prepend>
               <InputGroup.Text>Search</InputGroup.Text>
@@ -110,9 +116,7 @@ const BrickReference: React.FunctionComponent<{
               }}
             />
           </InputGroup>
-          <ListGroup
-            className={cx("overflow-auto", "h-100", styles.blockResults)}
-          >
+          <ListGroup className={styles.blockResults}>
             {results.map((result) => (
               <BlockResult
                 key={result.id}
@@ -121,11 +125,12 @@ const BrickReference: React.FunctionComponent<{
                 onSelect={() => {
                   setSelected(result);
                 }}
+                organizations={organizations}
               />
             ))}
           </ListGroup>
         </Col>
-        <Col md={8} className={cx("pt-4")}>
+        <Col md={8} className={styles.detailColumn}>
           {selected ? (
             <BrickDetail
               brick={selected}

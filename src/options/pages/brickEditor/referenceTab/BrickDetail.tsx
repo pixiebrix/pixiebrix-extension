@@ -21,13 +21,18 @@ import { isEmpty } from "lodash";
 import copy from "copy-to-clipboard";
 import AceEditor from "@/vendors/AceEditor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClipboard } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClipboard,
+  faExternalLinkAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import { Schema } from "@/core";
 import styles from "./BrickDetail.module.scss";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
+import BrickIcon from "@/components/BrickIcon";
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
@@ -70,6 +75,9 @@ const BrickDetail: React.FunctionComponent<{
   const schema = "schema" in brick ? brick.schema : brick.inputSchema;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const outputSchema = (brick as any).outputSchema as Schema;
+  const { data: listings = {} } = useGetMarketplaceListingsQuery();
+
+  const listing = listings[brick.id];
 
   const copyHandler = useUserAction(
     async () => {
@@ -82,11 +90,32 @@ const BrickDetail: React.FunctionComponent<{
     [schema]
   );
 
+  console.log("Brick:", brick);
+
   return (
     <div className={styles.root}>
-      <div>
-        <h3>{brick.name}</h3>
-        <code className="p-0">{brick.id}</code>
+      <div className="d-flex justify-content-between">
+        <div>
+          <h3 className="text-left">
+            {brick.name}&nbsp;
+            <BrickIcon key={brick.id} brick={brick} />
+          </h3>
+          <p>
+            <code className="p-0">{brick.id}</code>
+          </p>
+        </div>
+        {listing && (
+          <div className="ml-4">
+            <Button
+              href={`https://pixiebrix.com/marketplace/${listing.id}`}
+              size="sm"
+              variant="link"
+              target="_blank"
+            >
+              <FontAwesomeIcon icon={faExternalLinkAlt} /> View in Marketplace
+            </Button>
+          </div>
+        )}
       </div>
 
       <DetailSection title="Description">
@@ -130,6 +159,9 @@ const BrickDetail: React.FunctionComponent<{
               mode="yaml"
               theme="chrome"
               width="100%"
+              // Prevent scrolling by allowing the AceEditor height to auto fit content
+              // https://github.com/securingsincity/react-ace/issues/415#issuecomment-436623269
+              maxLines={Number.POSITIVE_INFINITY}
               readOnly
             />
           </Suspense>
