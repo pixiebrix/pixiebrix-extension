@@ -6,9 +6,9 @@ import {
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
-  "Pipeline can have only one renderer. There is another renderer defined later in the pipeline.";
+  "A panel can only have one renderer. There are one or more renderers configured after this brick.";
 export const RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE =
-  "Renderer must be placed in the very end of the pipeline.";
+  "A renderer must be the last brick in panel.";
 function validateRenderers(
   pipelineErrors: FormikErrorTree,
   pipeline: BlockPipeline,
@@ -19,7 +19,7 @@ function validateRenderers(
     return;
   }
 
-  let hasGotRenderer = false;
+  let hasRenderer = false;
   for (let blockIndex = pipeline.length - 1; blockIndex >= 0; --blockIndex) {
     // eslint-disable-next-line security/detect-object-injection
     const pipelineBlock = pipeline[blockIndex];
@@ -30,10 +30,10 @@ function validateRenderers(
       continue;
     }
 
-    if (hasGotRenderer) {
+    if (hasRenderer) {
       blockErrors.push(MULTIPLE_RENDERERS_ERROR_MESSAGE);
     } else {
-      hasGotRenderer = true;
+      hasRenderer = true;
     }
 
     if (blockIndex !== pipeline.length - 1) {
