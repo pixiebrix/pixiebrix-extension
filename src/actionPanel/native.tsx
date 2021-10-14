@@ -25,11 +25,11 @@ import {
   RendererError,
   RendererPayload,
 } from "@/actionPanel/protocol";
-import { FORWARD_FRAME_NOTIFICATION } from "@/background/browserAction";
 import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef } from "@/core";
+import { browserAction } from "@/background/messenger/api";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-extension";
@@ -164,14 +164,10 @@ function renderPanels() {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
 
-    void browser.runtime.sendMessage({
-      type: FORWARD_FRAME_NOTIFICATION,
-      meta: { $seq: seqNum },
-      payload: {
-        type: RENDER_PANELS_MESSAGE,
-        payload: { panels },
-      },
-    });
+    browserAction.forwardFrameNotification(seqNum, {
+      type: RENDER_PANELS_MESSAGE,
+      payload: { panels },
+    } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
   } else {
     console.debug(
       "Skipping renderPanels because the action panel is not visible"
