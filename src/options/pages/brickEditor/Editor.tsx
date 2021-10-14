@@ -234,7 +234,12 @@ const Editor: React.FunctionComponent<OwnProps> = ({
             </Tab.Pane>
 
             <Tab.Pane eventKey="history" className="p-0">
-              <BrickHistory brickId={brickId} />
+              {brickId ? (
+                <BrickHistory brickId={brickId} />
+              ) : (
+                // This should never be shown since we disable the tab when creating a new brick
+                <div>Save the brick to view its version history</div>
+              )}
             </Tab.Pane>
           </Tab.Content>
         </Tab.Container>
