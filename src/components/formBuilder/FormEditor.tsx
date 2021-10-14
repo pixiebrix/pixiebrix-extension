@@ -93,6 +93,8 @@ const FormEditor: React.FC<FormEditorProps> = ({
     if (nextRjsfSchema !== null) {
       setRjsfSchema(nextRjsfSchema);
     }
+
+    console.log("schema", schema);
   }, [rjsfSchema, setRjsfSchema]);
 
   // Select the first field by default
@@ -115,8 +117,6 @@ const FormEditor: React.FC<FormEditorProps> = ({
       Object.keys(schema.properties || {})
     );
     const newProperty: Schema = {
-      // @ts-expect-error -- name is valid in a property definition
-      name: propertyName,
       title: propertyName,
       type: DEFAULT_FIELD_TYPE,
     };
