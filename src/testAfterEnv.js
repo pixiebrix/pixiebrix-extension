@@ -20,3 +20,8 @@ import "@testing-library/jest-dom";
 
 global.$ = $;
 global.jQuery = $;
+
+// Fail the test on any error
+console.error = (message) => {
+  throw new Error(message);
+};
