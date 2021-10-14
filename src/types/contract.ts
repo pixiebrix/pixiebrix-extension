@@ -39,6 +39,10 @@ export type Invitation = components["schemas"]["Invitation"];
 
 export type Organization = components["schemas"]["Organization"];
 
+export type PackageVersion = components["schemas"]["PackageVersion"];
+
+export type Package = components["schemas"]["Package"];
+
 export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
   // XXX: update serialize to required id in response type
   id: UUID;
