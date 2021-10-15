@@ -125,10 +125,10 @@ const GenericInsertPane: React.FunctionComponent<{
 
         <BlockModal
           bricks={extensionPoints ?? []}
-          renderButton={({ show }) => (
+          renderButton={(onClick) => (
             <Button
               variant="info"
-              onClick={show}
+              onClick={onClick}
               disabled={!extensionPoints?.length}
               className={styles.searchButton}
             >

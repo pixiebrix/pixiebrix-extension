@@ -46,7 +46,17 @@
   }
 }
 
+.appendContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .appendArrow {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.addRightMargin {
+  margin-right: 36px; // move-buttons width + left margin
 }
