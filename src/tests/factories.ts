@@ -16,7 +16,9 @@
  */
 
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { getType } from "@/blocks/util";
 import { IBlock, IExtension } from "@/core";
+import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 
@@ -113,3 +115,16 @@ export const blockFactory: (blockProps?: Partial<IBlock>) => IBlock = (
     id: TEST_BLOCK_ID,
     ...blockProps,
   } as IBlock);
+
+export const blocksMapFactory: (
+  blockProps?: Partial<IBlock>
+) => Promise<BlocksMap> = async (blockProps) => {
+  const block = blockFactory(blockProps);
+
+  return {
+    [block.id]: {
+      block,
+      type: await getType(block),
+    },
+  };
+};

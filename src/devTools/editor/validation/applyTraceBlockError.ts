@@ -16,16 +16,17 @@
  */
 
 import { TraceError } from "@/telemetry/trace";
+import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
 function applyTraceBlockError(
-  pipelineErrors: Record<string, unknown>,
+  pipelineErrors: FormikErrorTree,
   errorTraceEntry: TraceError,
   blockIndex: number
 ) {
   // eslint-disable-next-line security/detect-object-injection
   if (!pipelineErrors[blockIndex]) {
     // eslint-disable-next-line security/detect-object-injection
-    pipelineErrors[blockIndex] = errorTraceEntry.error.message;
+    pipelineErrors[blockIndex] = errorTraceEntry.error.message as string;
   }
 }
 

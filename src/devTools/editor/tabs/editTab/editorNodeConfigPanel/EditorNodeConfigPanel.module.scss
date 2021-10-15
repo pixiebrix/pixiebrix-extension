@@ -15,14 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.topRow {
-  align-items: center;
+.errorMessage {
+  color: #dc3545;
 }
 
-.label {
-  width: 100%;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+.topRow {
+  align-items: center;
 }
 
 .removeButton {

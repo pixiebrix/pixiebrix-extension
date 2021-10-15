@@ -19,9 +19,10 @@ import { BlockPipeline } from "@/blocks/types";
 import { TraceError } from "@/telemetry/trace";
 import applyTraceBlockError from "./applyTraceBlockError";
 import applyTraceInputError from "./applyTraceInputError";
+import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
 function applyTraceError(
-  pipelineErrors: Record<string, unknown>,
+  pipelineErrors: FormikErrorTree,
   errorTraceEntry: TraceError,
   pipeline: BlockPipeline
 ) {

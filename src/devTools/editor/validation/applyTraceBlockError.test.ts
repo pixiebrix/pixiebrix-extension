@@ -17,9 +17,10 @@
 
 import { traceErrorFactory } from "@/tests/factories";
 import applyTraceBlockError from "./applyTraceBlockError";
+import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
 test("sets block error", () => {
-  const pipelineErrors: Record<string, unknown> = {};
+  const pipelineErrors: FormikErrorTree = {};
   const errorTraceEntry = traceErrorFactory();
 
   applyTraceBlockError(pipelineErrors, errorTraceEntry, 0);

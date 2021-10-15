@@ -23,47 +23,46 @@ import { useField, useFormikContext, setNestedObjectValues } from "formik";
 import { TraceError } from "@/telemetry/trace";
 import { useAsyncEffect } from "use-async-effect";
 import validateOutputKey from "@/devTools/editor/validation/validateOutputKey";
+import validateRenderers from "@/devTools/editor/validation/validateRenderers";
 import applyTraceError from "@/devTools/editor/validation/applyTraceError";
 import { isEmpty } from "lodash";
-import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
+import {
+  BlocksMap,
+  FormikError,
+  FormikErrorTree,
+} from "@/devTools/editor/tabs/editTab/editTabTypes";
+import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 
-/*
- * PipelineErrors is Formik error... thing.
- * It can be a string, a record of strings, or a record of records... i.e. it is dynamic and depends on the level of the state tree where the error happens.
- * Speaking about `PipelineErrors[0]`, the error state normally is not an array, but since the pipeline is an array we use numbers (index) to get the error related to a block.
- * Despite it looks like an array (the top-level may look like an array - have numbers for property names), it is an object.
- * For instance, it doesn't have a `length` property.
- */
-export type PipelineErrors = string | Record<string | number, unknown>;
-
-const pipelineBlocksFieldName = "extension.blockPipeline";
+export const PIPELINE_BLOCKS_FIELD_NAME = "extension.blockPipeline";
 
 function usePipelineField(
-  allBlocks: BlocksMap
+  allBlocks: BlocksMap,
+  elementType: ElementType
 ): {
   blockPipeline: BlockPipeline;
-  blockPipelineErrors: PipelineErrors;
+  blockPipelineErrors: FormikError;
   errorTraceEntry: TraceError;
 } {
   const errorTraceEntry = useSelector(selectTraceError);
 
   const validatePipelineBlocks = useCallback(
-    (pipeline: BlockPipeline): void | PipelineErrors => {
-      const formikErrors: Record<string, unknown> = {};
+    (pipeline: BlockPipeline): void | FormikErrorTree => {
+      const formikErrors: FormikErrorTree = {};
 
       validateOutputKey(formikErrors, pipeline, allBlocks);
+      validateRenderers(formikErrors, pipeline, allBlocks, elementType);
       applyTraceError(formikErrors, errorTraceEntry, pipeline);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;
     },
-    [errorTraceEntry, allBlocks]
+    [allBlocks, elementType, errorTraceEntry]
   );
 
   const [
     { value: blockPipeline },
     { error: blockPipelineErrors },
   ] = useField<BlockPipeline>({
-    name: pipelineBlocksFieldName,
+    name: PIPELINE_BLOCKS_FIELD_NAME,
     // @ts-expect-error working with nested errors
     validate: validatePipelineBlocks,
   });
