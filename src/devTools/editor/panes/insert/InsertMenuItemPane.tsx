@@ -72,10 +72,10 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
         <BlockModal
           bricks={menuItemExtensionPoints ?? []}
           caption="Select button foundation"
-          renderButton={({ show }) => (
+          renderButton={(onClick) => (
             <Button
               variant="info"
-              onClick={show}
+              onClick={onClick}
               disabled={!menuItemExtensionPoints?.length}
             >
               <FontAwesomeIcon icon={faSearch} /> Search Marketplace

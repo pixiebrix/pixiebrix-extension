@@ -23,7 +23,39 @@
   align-items: center;
 }
 
-.button {
+.buttonRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.moveButtons {
+  width: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+
+  > button {
+    border-radius: 4px;
+
+    &:first-child {
+      margin-bottom: 2px;
+    }
+
+    &:hover:enabled {
+      box-shadow: 2px 2px 2px gray;
+
+      &:active {
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+.nodeButton {
   display: flex;
   flex-direction: column;
   border: 2px solid black;
@@ -72,6 +104,10 @@
   vertical-align: top;
   margin-top: 0.25rem;
   max-width: 120px;
+}
+
+.addRightMargin {
+  margin-right: 36px; // move-buttons width + left margin
 }
 
 .errorBadge {

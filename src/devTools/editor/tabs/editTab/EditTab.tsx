@@ -19,7 +19,6 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout, {
   FOUNDATION_NODE_ID,
-  LayoutNodeProps,
   NodeId,
 } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useFormikContext } from "formik";
@@ -51,6 +50,7 @@ import usePipelineField, {
   PIPELINE_BLOCKS_FIELD_NAME,
 } from "@/devTools/editor/hooks/usePipelineField";
 import { BlocksMap } from "./editTabTypes";
+import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -186,7 +186,51 @@ const EditTab: React.FC<{
     setFormValues(nextState);
   };
 
-  const blockNodes: LayoutNodeProps[] = blockPipeline.map(
+  function moveBlockUp(instanceId: UUID) {
+    const index = blockPipeline.findIndex(
+      (block) => block.instanceId === instanceId
+    );
+    if (index < 1 || index + 1 > blockPipeline.length) {
+      return;
+    }
+
+    const nextState = produce(values, (draft) => {
+      const pipeline = draft.extension.blockPipeline;
+      // Swap the prev and current index values in the pipeline array, "up" in
+      //  the UI means a lower index in the array
+      // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+      [pipeline[index - 1], pipeline[index]] = [
+        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+        pipeline[index],
+        pipeline[index - 1],
+      ];
+    });
+    setFormValues(nextState);
+  }
+
+  function moveBlockDown(instanceId: UUID) {
+    const index = blockPipeline.findIndex(
+      (block) => block.instanceId === instanceId
+    );
+    if (index + 1 === blockPipeline.length) {
+      return;
+    }
+
+    const nextState = produce(values, (draft) => {
+      const pipeline = draft.extension.blockPipeline;
+      // Swap the current and next index values in the pipeline array, "down"
+      //  in the UI means a higher index in the array
+      // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+      [pipeline[index], pipeline[index + 1]] = [
+        pipeline[index + 1],
+        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+        pipeline[index],
+      ];
+    });
+    setFormValues(nextState);
+  }
+
+  const blockNodes: EditorNodeProps[] = blockPipeline.map(
     (blockConfig, index) => {
       const block = allBlocks[blockConfig.id]?.block;
       const nodeId = blockConfig.instanceId;
@@ -198,7 +242,7 @@ const EditTab: React.FC<{
         };
       }
 
-      const newBlock: LayoutNodeProps = {
+      const newBlock: EditorNodeProps = {
         nodeId,
         title: isNullOrBlank(blockConfig.label)
           ? block?.name
@@ -233,7 +277,7 @@ const EditTab: React.FC<{
     }
   );
 
-  const foundationNode: LayoutNodeProps = {
+  const foundationNode: EditorNodeProps = {
     nodeId: FOUNDATION_NODE_ID,
     outputKey: "input",
     title: label,
@@ -243,7 +287,7 @@ const EditTab: React.FC<{
     },
   };
 
-  const nodes: LayoutNodeProps[] = [foundationNode, ...blockNodes];
+  const nodes: EditorNodeProps[] = [foundationNode, ...blockNodes];
 
   const [relevantBlocksToAdd] = useAsyncState(async () => {
     const excludeType: BlockType = ["actionPanel", "panel"].includes(
@@ -274,6 +318,8 @@ const EditTab: React.FC<{
             relevantBlocksToAdd={relevantBlocksToAdd}
             addBlock={addBlock}
             showAppend={showAppendNode}
+            moveBlockUp={moveBlockUp}
+            moveBlockDown={moveBlockDown}
           />
         </div>
         <div className={styles.configPanel}>

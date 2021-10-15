@@ -69,10 +69,10 @@ const InsertPanelPane: React.FunctionComponent<{
         <BlockModal
           bricks={panelExtensionPoints ?? []}
           caption="Select panel foundation"
-          renderButton={({ show }) => (
+          renderButton={(onClick) => (
             <Button
               variant="info"
-              onClick={show}
+              onClick={onClick}
               disabled={!panelExtensionPoints?.length}
             >
               <FontAwesomeIcon icon={faSearch} /> Search Marketplace

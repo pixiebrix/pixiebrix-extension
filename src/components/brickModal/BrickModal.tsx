@@ -107,7 +107,7 @@ type ModalProps<T extends IBrick = IBlock> = {
 
 type ButtonProps = {
   caption?: string | React.ReactNode;
-  renderButton?: ({ show }: { show: () => void }) => React.ReactNode;
+  renderButton?: (onClick: () => void) => React.ReactNode;
 };
 
 type ItemType = {
@@ -333,10 +333,8 @@ function BrickModal<T extends IBrick>({
       {show && <ActualModal {...modalProps} close={close} />}
 
       {renderButton ? (
-        renderButton({
-          show: () => {
-            setShow(true);
-          },
+        renderButton(() => {
+          setShow(true);
         })
       ) : (
         <Button
