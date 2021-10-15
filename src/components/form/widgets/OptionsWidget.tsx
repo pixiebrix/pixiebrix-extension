@@ -23,11 +23,7 @@ import { Button, ButtonGroup, FormControl } from "react-bootstrap";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import styles from "./OptionsWidget.module.scss";
 
-type OwnProps = {
-  value: string[];
-};
-
-const OptionsWidget: CustomFieldWidget<OwnProps> = ({ name, value }) => (
+const OptionsWidget: CustomFieldWidget<string[]> = ({ name, value }) => (
   <FieldArray
     name={name}
     render={(arrayHelpers) =>
