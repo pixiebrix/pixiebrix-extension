@@ -24,10 +24,9 @@ import FieldEditor from "./FieldEditor";
 import {
   DEFAULT_FIELD_TYPE,
   generateNewPropertyName,
-  MINIMAL_SCHEMA,
-  MINIMAL_UI_SCHEMA,
   moveStringInArray,
   replaceStringInArray,
+  updateRjsfSchemaWithDefaultsIfNeeded,
 } from "./formBuilderHelpers";
 import { UI_ORDER } from "./schemaFieldNames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -50,23 +49,6 @@ export type FormEditorProps = {
   activeField?: string;
   setActiveField: SetActiveField;
 };
-
-function initDefaults(obj: RJSFSchema): void {
-  if (!obj.schema) {
-    obj.schema = MINIMAL_SCHEMA;
-  }
-
-  if (!obj.uiSchema) {
-    obj.uiSchema = MINIMAL_UI_SCHEMA;
-  }
-
-  if (!obj.uiSchema[UI_ORDER]) {
-    const propertyKeys = Object.keys(obj.schema.properties || {});
-    obj.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
-  } else if (!obj.uiSchema[UI_ORDER].includes("*")) {
-    obj.uiSchema[UI_ORDER].push("*");
-  }
-}
 
 const LayoutWidget: React.FC<{
   canMoveUp: boolean;
@@ -107,14 +89,13 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   useEffect(() => {
     // Set default values if needed
-    if (!schema || !uiSchema || !uiOrder?.includes("*")) {
-      setRjsfSchema(
-        produce(rjsfSchema, (draft) => {
-          initDefaults(draft);
-        })
-      );
+    const nextRjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded(rjsfSchema);
+    if (nextRjsfSchema !== null) {
+      setRjsfSchema(nextRjsfSchema);
     }
-  }, [rjsfSchema, schema, uiSchema, uiOrder, setRjsfSchema]);
+
+    console.log("schema", schema);
+  }, [rjsfSchema, setRjsfSchema]);
 
   // Select the first field by default
   useEffect(
@@ -136,8 +117,6 @@ const FormEditor: React.FC<FormEditorProps> = ({
       Object.keys(schema.properties || {})
     );
     const newProperty: Schema = {
-      // @ts-expect-error -- name is valid in a property definition
-      name: propertyName,
       title: propertyName,
       type: DEFAULT_FIELD_TYPE,
     };
