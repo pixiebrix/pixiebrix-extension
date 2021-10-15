@@ -8,7 +8,7 @@ import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
   "A panel can only have one renderer. There are one or more renderers configured after this brick.";
 export const RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE =
-  "A renderer must be the last brick in panel.";
+  "A renderer must be the last brick.";
 function validateRenderers(
   pipelineErrors: FormikErrorTree,
   pipeline: BlockPipeline,

@@ -76,7 +76,7 @@ const EditorNodeConfigPanel: React.FC<{
 
   return (
     <>
-      {Boolean(blockError) && (
+      {blockError && (
         <Row>
           <Col className={styles.errorMessage}>{blockError}</Col>
         </Row>
