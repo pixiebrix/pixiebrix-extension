@@ -64,16 +64,16 @@ const EditorNodeLayout: React.FC<{
   relevantBlocksToAdd: IBlock[];
   addBlock: (block: IBlock, beforeInstanceId?: UUID) => void;
   showAppend: boolean;
-  moveNodeUp: (nodeId: NodeId) => void;
-  moveNodeDown: (nodeId: NodeId) => void;
+  moveBlockUp: (instanceId: UUID) => void;
+  moveBlockDown: (instanceId: UUID) => void;
 }> = ({
   nodes,
   activeNodeId,
   relevantBlocksToAdd,
   addBlock,
   showAppend,
-  moveNodeUp,
-  moveNodeDown,
+  moveBlockUp,
+  moveBlockDown,
 }) => {
   const recommendations: RegistryId[] = useBrickRecommendations();
 
@@ -107,8 +107,18 @@ const EditorNodeLayout: React.FC<{
           // so, "up" is lower in the array, and "down" is higher in the array.
           // Also, you cannot move the foundation node, which is always at
           // index 0.
-          const canMoveUp = index > 1; // Any nodes beyond the first non-foundation node
-          const canMoveDown = index > 0 && index + 1 < nodes.length; // Not the first and not the last
+          if (nodeId !== FOUNDATION_NODE_ID) {
+            nodeProps.canMoveUp = index > 1; // Any nodes beyond the first non-foundation node
+            nodeProps.canMoveDown = index > 0 && index + 1 < nodes.length; // Not the first and not the last
+            nodeProps.onClickMoveUp = () => {
+              moveBlockUp(nodeId);
+            };
+
+            nodeProps.onClickMoveDown = () => {
+              moveBlockDown(nodeId);
+            };
+          }
+
           return (
             <React.Fragment key={index}>
               {nodeId !== FOUNDATION_NODE_ID && (
@@ -127,14 +137,6 @@ const EditorNodeLayout: React.FC<{
               <EditorNode
                 active={nodeId === activeNodeId}
                 canMoveAnything={canMoveAnything}
-                canMoveUp={canMoveUp}
-                canMoveDown={canMoveDown}
-                onClickMoveUp={() => {
-                  moveNodeUp(nodeId);
-                }}
-                onClickMoveDown={() => {
-                  moveNodeDown(nodeId);
-                }}
                 {...nodeProps}
               />
             </React.Fragment>

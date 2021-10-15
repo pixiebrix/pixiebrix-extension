@@ -186,6 +186,50 @@ const EditTab: React.FC<{
     setFormValues(nextState);
   };
 
+  function moveBlockUp(instanceId: UUID) {
+    const index = blockPipeline.findIndex(
+      (block) => block.instanceId === instanceId
+    );
+    if (index < 1 || index + 1 > blockPipeline.length) {
+      return;
+    }
+
+    const nextState = produce(values, (draft) => {
+      const pipeline = draft.extension.blockPipeline;
+      // Swap the prev and current index values in the pipeline array, "up" in
+      //  the UI means a lower index in the array
+      // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+      [pipeline[index - 1], pipeline[index]] = [
+        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+        pipeline[index],
+        pipeline[index - 1],
+      ];
+    });
+    setFormValues(nextState);
+  }
+
+  function moveBlockDown(instanceId: UUID) {
+    const index = blockPipeline.findIndex(
+      (block) => block.instanceId === instanceId
+    );
+    if (index + 1 === blockPipeline.length) {
+      return;
+    }
+
+    const nextState = produce(values, (draft) => {
+      const pipeline = draft.extension.blockPipeline;
+      // Swap the current and next index values in the pipeline array, "down"
+      //  in the UI means a higher index in the array
+      // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+      [pipeline[index], pipeline[index + 1]] = [
+        pipeline[index + 1],
+        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+        pipeline[index],
+      ];
+    });
+    setFormValues(nextState);
+  }
+
   const blockNodes: EditorNodeProps[] = blockPipeline.map(
     (blockConfig, index) => {
       const block = allBlocks[blockConfig.id]?.block;
@@ -264,58 +308,6 @@ const EditTab: React.FC<{
         (blockPipelineErrors[activeBlockIndex] as string)
       : null;
 
-  function moveNodeUp(nodeId: NodeId) {
-    if (nodeId === FOUNDATION_NODE_ID) {
-      return;
-    }
-
-    const index = blockPipeline.findIndex(
-      (block) => block.instanceId === nodeId
-    );
-    if (index < 1 || index + 1 > blockPipeline.length) {
-      return;
-    }
-
-    const nextState = produce(values, (draft) => {
-      const pipeline = draft.extension.blockPipeline;
-      // Swap the prev and current index values in the pipeline array, "up" in
-      //  the UI means a lower index in the array
-      // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-      [pipeline[index - 1], pipeline[index]] = [
-        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-        pipeline[index],
-        pipeline[index - 1],
-      ];
-    });
-    setFormValues(nextState);
-  }
-
-  function moveNodeDown(nodeId: NodeId) {
-    if (nodeId === FOUNDATION_NODE_ID) {
-      return;
-    }
-
-    const index = blockPipeline.findIndex(
-      (block) => block.instanceId === nodeId
-    );
-    if (index + 1 === blockPipeline.length) {
-      return;
-    }
-
-    const nextState = produce(values, (draft) => {
-      const pipeline = draft.extension.blockPipeline;
-      // Swap the current and next index values in the pipeline array, "down"
-      //  in the UI means a higher index in the array
-      // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-      [pipeline[index], pipeline[index + 1]] = [
-        pipeline[index + 1],
-        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-        pipeline[index],
-      ];
-    });
-    setFormValues(nextState);
-  }
-
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
@@ -326,8 +318,8 @@ const EditTab: React.FC<{
             relevantBlocksToAdd={relevantBlocksToAdd}
             addBlock={addBlock}
             showAppend={showAppendNode}
-            moveNodeUp={moveNodeUp}
-            moveNodeDown={moveNodeDown}
+            moveBlockUp={moveBlockUp}
+            moveBlockDown={moveBlockDown}
           />
         </div>
         <div className={styles.configPanel}>
