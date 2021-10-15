@@ -256,3 +256,44 @@ export const produceSchemaOnUiTypeChange = (
     }
   });
 };
+
+export const updateRjsfSchemaWithDefaultsIfNeeded = (
+  rjsfSchema: RJSFSchema
+) => {
+  const { schema, uiSchema } = rjsfSchema;
+  // eslint-disable-next-line security/detect-object-injection
+  const uiOrder = uiSchema?.[UI_ORDER];
+  const needToUpdateRequired =
+    Boolean(schema) &&
+    typeof schema.required !== "undefined" &&
+    !Array.isArray(schema.required);
+
+  if (!schema || !uiSchema || !uiOrder?.includes("*") || needToUpdateRequired) {
+    return produce(rjsfSchema, (draft) => {
+      if (!draft.schema) {
+        draft.schema = MINIMAL_SCHEMA;
+      }
+
+      if (!draft.uiSchema) {
+        draft.uiSchema = MINIMAL_UI_SCHEMA;
+      }
+
+      // eslint-disable-next-line security/detect-object-injection
+      if (!draft.uiSchema[UI_ORDER]) {
+        const propertyKeys = Object.keys(draft.schema.properties || {});
+        // eslint-disable-next-line security/detect-object-injection
+        draft.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
+        // eslint-disable-next-line security/detect-object-injection
+      } else if (!draft.uiSchema[UI_ORDER].includes("*")) {
+        // eslint-disable-next-line security/detect-object-injection
+        draft.uiSchema[UI_ORDER].push("*");
+      }
+
+      if (needToUpdateRequired) {
+        draft.schema.required = [];
+      }
+    });
+  }
+
+  return null;
+};

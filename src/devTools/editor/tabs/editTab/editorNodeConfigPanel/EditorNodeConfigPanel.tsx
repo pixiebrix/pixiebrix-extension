@@ -56,8 +56,9 @@ const EditorNodeConfigPanel: React.FC<{
    */
   blockFieldName: string;
   blockId: RegistryId;
+  blockError: string;
   onRemoveNode: () => void;
-}> = ({ blockFieldName, blockId, onRemoveNode }) => {
+}> = ({ blockFieldName, blockId, blockError, onRemoveNode }) => {
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
@@ -75,6 +76,11 @@ const EditorNodeConfigPanel: React.FC<{
 
   return (
     <>
+      {blockError && (
+        <Row>
+          <Col className={styles.errorMessage}>{blockError}</Col>
+        </Row>
+      )}
       <Row className={styles.topRow}>
         <Col xl>
           <ConnectedFieldTemplate

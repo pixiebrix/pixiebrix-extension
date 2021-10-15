@@ -46,7 +46,9 @@ import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlo
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
-import usePipelineField from "@/devTools/editor/hooks/usePipelineField";
+import usePipelineField, {
+  PIPELINE_BLOCKS_FIELD_NAME,
+} from "@/devTools/editor/hooks/usePipelineField";
 import { BlocksMap } from "./editTabTypes";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 
@@ -93,7 +95,7 @@ const EditTab: React.FC<{
     blockPipeline,
     blockPipelineErrors,
     errorTraceEntry,
-  } = usePipelineField(allBlocks);
+  } = usePipelineField(allBlocks, elementType);
 
   const [activeNodeId, setActiveNodeId] = useState<NodeId>(FOUNDATION_NODE_ID);
   const activeBlockIndex = useMemo(() => {
@@ -106,10 +108,7 @@ const EditTab: React.FC<{
     );
   }, [activeNodeId, blockPipeline]);
 
-  const blockFieldName = useMemo(
-    () => `extension.blockPipeline[${activeBlockIndex}]`,
-    [activeBlockIndex]
-  );
+  const blockFieldName = `${PIPELINE_BLOCKS_FIELD_NAME}[${activeBlockIndex}]`;
 
   const [showAppendNode] = useAsyncState(
     async () => {
@@ -128,6 +127,37 @@ const EditTab: React.FC<{
     },
     [allBlocks, blockPipeline],
     false
+  );
+
+  const addBlock = useCallback(
+    async (block: IBlock, beforeInstanceId?: UUID) => {
+      const insertIndex = beforeInstanceId
+        ? blockPipeline.findIndex((x) => x.instanceId === beforeInstanceId)
+        : blockPipeline.length;
+      const outputKey = await generateFreshOutputKey(
+        block,
+        compact([
+          "input" as OutputKey,
+          ...blockPipeline.map((x) => x.outputKey),
+        ])
+      );
+      const newBlock: BlockConfig = {
+        id: block.id,
+        instanceId: uuidv4(),
+        config:
+          getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
+      };
+      if (outputKey) {
+        newBlock.outputKey = outputKey;
+      }
+
+      const nextState = produce(values, (draft) => {
+        draft.extension.blockPipeline.splice(insertIndex, 0, newBlock);
+      });
+      setFormValues(nextState);
+      setActiveNodeId(newBlock.instanceId);
+    },
+    [blockPipeline, values, setFormValues]
   );
 
   const removeBlock = (nodeIdToRemove: NodeId) => {
@@ -203,18 +233,15 @@ const EditTab: React.FC<{
     }
   );
 
-  const foundationNode: EditorNodeProps = useMemo(
-    () => ({
-      nodeId: FOUNDATION_NODE_ID,
-      outputKey: "input",
-      title: label,
-      icon,
-      onClick: () => {
-        setActiveNodeId(FOUNDATION_NODE_ID);
-      },
-    }),
-    [icon, label]
-  );
+  const foundationNode: EditorNodeProps = {
+    nodeId: FOUNDATION_NODE_ID,
+    outputKey: "input",
+    title: label,
+    icon,
+    onClick: () => {
+      setActiveNodeId(FOUNDATION_NODE_ID);
+    },
+  };
 
   const nodes: EditorNodeProps[] = [foundationNode, ...blockNodes];
 
@@ -230,36 +257,12 @@ const EditTab: React.FC<{
       .map(({ block }) => block);
   }, [allBlocks, elementType]);
 
-  const addBlock = useCallback(
-    async (block: IBlock, beforeInstanceId?: UUID) => {
-      const insertIndex = beforeInstanceId
-        ? blockPipeline.findIndex((x) => x.instanceId === beforeInstanceId)
-        : blockPipeline.length;
-      const outputKey = await generateFreshOutputKey(
-        block,
-        compact([
-          "input" as OutputKey,
-          ...blockPipeline.map((x) => x.outputKey),
-        ])
-      );
-      const newBlock: BlockConfig = {
-        id: block.id,
-        instanceId: uuidv4(),
-        config:
-          getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
-      };
-      if (outputKey) {
-        newBlock.outputKey = outputKey;
-      }
-
-      const nextState = produce(values, (draft) => {
-        draft.extension.blockPipeline.splice(insertIndex, 0, newBlock);
-      });
-      setFormValues(nextState);
-      setActiveNodeId(newBlock.instanceId);
-    },
-    [blockPipeline, values, setFormValues]
-  );
+  const blockError: string =
+    // eslint-disable-next-line security/detect-object-injection
+    typeof blockPipelineErrors?.[activeBlockIndex] === "string"
+      ? // eslint-disable-next-line security/detect-object-injection
+        (blockPipelineErrors[activeBlockIndex] as string)
+      : null;
 
   function moveNodeUp(nodeId: NodeId) {
     if (nodeId === FOUNDATION_NODE_ID) {
@@ -330,7 +333,7 @@ const EditTab: React.FC<{
         <div className={styles.configPanel}>
           <ErrorBoundary>
             <FormTheme.Provider value={blockConfigTheme}>
-              {activeNodeId === FOUNDATION_NODE_ID && (
+              {activeNodeId === FOUNDATION_NODE_ID ? (
                 <>
                   <Col>
                     <ConnectedFieldTemplate
@@ -340,15 +343,14 @@ const EditTab: React.FC<{
                   </Col>
                   <FoundationNode isLocked={isLocked} />
                 </>
-              )}
-
-              {activeNodeId !== FOUNDATION_NODE_ID && (
+              ) : (
                 <EditorNodeConfigPanel
                   key={activeNodeId}
                   blockFieldName={blockFieldName}
                   blockId={
                     blockPipeline.find((x) => x.instanceId === activeNodeId)?.id
                   }
+                  blockError={blockError}
                   onRemoveNode={() => {
                     removeBlock(activeNodeId);
                   }}

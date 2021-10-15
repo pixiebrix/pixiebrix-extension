@@ -32,7 +32,6 @@ export const initAddingFieldCases: () => Array<
         type: "object",
         properties: {
           field1: {
-            name: "field1",
             title: "field1",
             type: "string",
           },
@@ -51,7 +50,6 @@ export const initAddingFieldCases: () => Array<
         required: ["field1"],
         properties: {
           field1: {
-            name: "field1",
             title: "field1",
             type: "string",
           },
@@ -67,12 +65,10 @@ export const initAddingFieldCases: () => Array<
         required: ["field1"],
         properties: {
           field1: {
-            name: "field1",
             title: "field1",
             type: "string",
           },
           field2: {
-            name: "field2",
             title: "field2",
             type: "string",
           },

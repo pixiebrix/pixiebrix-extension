@@ -17,101 +17,80 @@
 
 import { BlockType } from "@/blocks/util";
 import { OutputKey } from "@/core";
-import { blockFactory, pipelineFactory } from "@/tests/factories";
+import { blocksMapFactory, pipelineFactory } from "@/tests/factories";
 import validateOutputKey from "./validateOutputKey";
+import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
-describe("outputKeyValidator", () => {
-  test("returns when no blocks given", async () => {
-    const pipelineErrors: Record<string, unknown> = {};
-    validateOutputKey(pipelineErrors, pipelineFactory(), {});
+test("returns when no blocks given", async () => {
+  const pipelineErrors: FormikErrorTree = {};
+  validateOutputKey(pipelineErrors, pipelineFactory(), {});
 
-    expect(pipelineErrors).toEqual({});
-  });
-
-  test("returns when pipeline is empty", async () => {
-    const pipelineErrors: Record<string, unknown> = {};
-    const block = blockFactory();
-    validateOutputKey(pipelineErrors, [], {
-      [block.id]: {
-        block,
-        type: null,
-      },
-    });
-
-    expect(pipelineErrors).toEqual({});
-  });
-
-  test.each([
-    ["effect", "effect"],
-    ["renderer", "render"],
-  ] as Array<[BlockType, string]>)(
-    "validates output key is empty for %s",
-    async (blockType: BlockType, blockProperty: string) => {
-      const pipelineErrors: Record<string, unknown> = {};
-      const pipeline = pipelineFactory();
-      pipeline[1].outputKey = "not empty" as OutputKey;
-      const block = blockFactory({
-        [blockProperty]: jest.fn(),
-      });
-      validateOutputKey(pipelineErrors, pipeline, {
-        [block.id]: {
-          block,
-          type: blockType,
-        },
-      });
-
-      expect(pipelineErrors[0]).toBeUndefined();
-      expect((pipelineErrors[1] as any).outputKey).toBe(
-        `OutputKey must be empty for "${blockType}" block.`
-      );
-    }
-  );
-
-  test.each([
-    ["reader", "read"],
-    ["transform", "transform"],
-  ] as Array<[BlockType, string]>)(
-    "validates output key is not empty for %s",
-    async (blockType: BlockType, blockProperty: string) => {
-      const pipelineErrors: Record<string, unknown> = {};
-      const pipeline = pipelineFactory();
-      pipeline[0].outputKey = "validOutputKey" as OutputKey;
-      const block = blockFactory({
-        [blockProperty]: jest.fn(),
-      });
-      validateOutputKey(pipelineErrors, pipeline, {
-        [block.id]: {
-          block,
-          type: blockType,
-        },
-      });
-
-      expect(pipelineErrors[0]).toBeUndefined();
-      expect((pipelineErrors[1] as any).outputKey).toBe(
-        "This field is required."
-      );
-    }
-  );
-
-  test.each(["1", "1a", "a1?", "abc?"])(
-    'raises error with invalid output key "%s"',
-    async (invalidOutputKey: string) => {
-      const pipelineErrors: Record<string, unknown> = {};
-      const pipeline = pipelineFactory();
-      pipeline[0].outputKey = "validOutputKey" as OutputKey;
-      pipeline[1].outputKey = invalidOutputKey as OutputKey;
-      const block = blockFactory();
-      validateOutputKey(pipelineErrors, pipeline, {
-        [block.id]: {
-          block,
-          type: null,
-        },
-      });
-
-      expect(pipelineErrors[0]).toBeUndefined();
-      expect((pipelineErrors[1] as any).outputKey).toBe(
-        "Must start with a letter and only include letters and numbers."
-      );
-    }
-  );
+  expect(pipelineErrors).toEqual({});
 });
+
+test("returns when pipeline is empty", async () => {
+  const pipelineErrors: FormikErrorTree = {};
+  const allBlocks = await blocksMapFactory();
+  validateOutputKey(pipelineErrors, [], allBlocks);
+
+  expect(pipelineErrors).toEqual({});
+});
+
+test.each([
+  ["effect", "effect"],
+  ["renderer", "render"],
+] as Array<[BlockType, string]>)(
+  "validates output key is empty for %s",
+  async (blockType: BlockType, blockProperty: string) => {
+    const pipelineErrors: FormikErrorTree = {};
+    const pipeline = pipelineFactory();
+    pipeline[1].outputKey = "not empty" as OutputKey;
+    const allBlocks = await blocksMapFactory({
+      [blockProperty]: jest.fn(),
+    });
+    validateOutputKey(pipelineErrors, pipeline, allBlocks);
+
+    expect(pipelineErrors[0]).toBeUndefined();
+    expect((pipelineErrors[1] as any).outputKey).toBe(
+      `OutputKey must be empty for "${blockType}" block.`
+    );
+  }
+);
+
+test.each([
+  ["reader", "read"],
+  ["transform", "transform"],
+] as Array<[BlockType, string]>)(
+  "validates output key is not empty for %s",
+  async (blockType: BlockType, blockProperty: string) => {
+    const pipelineErrors: FormikErrorTree = {};
+    const pipeline = pipelineFactory();
+    pipeline[0].outputKey = "validOutputKey" as OutputKey;
+    const allBlocks = await blocksMapFactory({
+      [blockProperty]: jest.fn(),
+    });
+    validateOutputKey(pipelineErrors, pipeline, allBlocks);
+
+    expect(pipelineErrors[0]).toBeUndefined();
+    expect((pipelineErrors[1] as any).outputKey).toBe(
+      "This field is required."
+    );
+  }
+);
+
+test.each(["1", "1a", "a1?", "abc?"])(
+  'raises error with invalid output key "%s"',
+  async (invalidOutputKey: string) => {
+    const pipelineErrors: FormikErrorTree = {};
+    const pipeline = pipelineFactory();
+    pipeline[0].outputKey = "validOutputKey" as OutputKey;
+    pipeline[1].outputKey = invalidOutputKey as OutputKey;
+    const allBlocks = await blocksMapFactory();
+    validateOutputKey(pipelineErrors, pipeline, allBlocks);
+
+    expect(pipelineErrors[0]).toBeUndefined();
+    expect((pipelineErrors[1] as any).outputKey).toBe(
+      "Must start with a letter and only include letters and numbers."
+    );
+  }
+);
