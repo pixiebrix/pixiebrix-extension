@@ -19,7 +19,7 @@ import React, { useCallback, useContext, useState } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import Centered from "@/devTools/editor/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
+import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { requestPermissions } from "@/utils/permissions";
 import AsyncButton from "@/components/AsyncButton";
 import { getCurrentURL } from "@/devTools/utils";
@@ -44,17 +44,17 @@ const PermissionsPane: React.FunctionComponent = () => {
           <FontAwesomeIcon icon={faShieldAlt} /> Enable PixieBrix on this page
         </AsyncButton>
       </p>
+
+      <p className="text-muted small">
+        Your browser will prompt you to Allow permissions. <br />
+        You can revoke the permissions from the PixieBrix&apos;s options page.
+      </p>
+
       {rejected && (
-        <>
-          <p>
-            You can also grant temporary access by clicking on the PixieBrix
-            extension menu item in your browser&apos;s extensions dropdown.
-          </p>
-          <p className="text-info">
-            <FontAwesomeIcon icon={faInfoCircle} /> You can revoke access to a
-            site at any time on PixieBrix&apos;s Settings page
-          </p>
-        </>
+        <p className="text-muted small">
+          You can also grant temporary access by clicking on the PixieBrix
+          extension menu item in your browser&apos;s extensions dropdown.
+        </p>
       )}
     </Centered>
   );
