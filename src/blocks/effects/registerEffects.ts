@@ -34,6 +34,7 @@ import { CancelEffect } from "./cancel";
 import { ErrorEffect } from "./error";
 import { ShowEffect } from "./show";
 import { TelemetryEffect } from "./telemetry";
+import { ConfettiEffect } from "./confetti";
 
 function registerEffects(): void {
   registerBlock(new LogEffect());
@@ -59,6 +60,7 @@ function registerEffects(): void {
   registerBlock(new ErrorEffect());
   registerBlock(new ShowEffect());
   registerBlock(new TelemetryEffect());
+  registerBlock(new ConfettiEffect());
 }
 
 export default registerEffects;
