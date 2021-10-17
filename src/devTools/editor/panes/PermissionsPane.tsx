@@ -47,7 +47,7 @@ const PermissionsPane: React.FunctionComponent = () => {
 
       <p className="text-muted small">
         Your browser will prompt you to Allow permissions. <br />
-        You can revoke the permissions from the PixieBrix&apos;s options page.
+        You can revoke the permissions from PixieBrix&apos;s options page.
       </p>
 
       {rejected && (
