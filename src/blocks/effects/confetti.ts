@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { Schema } from "@/core";
 
 export class ConfettiEffect extends Effect {
   constructor() {
@@ -28,7 +28,7 @@ export class ConfettiEffect extends Effect {
     properties: {},
   };
 
-  async effect({}: BlockArg): Promise<void> {
+  async effect(): Promise<void> {
     const confetti = (
       await import(
         /* webpackChunkName: "confetti" */
