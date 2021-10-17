@@ -60,6 +60,7 @@ import {
   runBlockInContentScript,
 } from "@/contentScript/executor";
 import { cancelSelect, selectElement } from "@/nativeEditor/selector";
+import { runExtensionPointReader } from "@/nativeEditor/dynamic";
 
 expectContext("contentScript");
 
@@ -95,6 +96,7 @@ declare global {
 
     CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
     UPDATE_DYNAMIC_ELEMENT: typeof updateDynamicElement;
+    RUN_EXTENSION_POINT_READER: typeof runExtensionPointReader;
     ENABLE_OVERLAY: typeof enableOverlay;
     DISABLE_OVERLAY: typeof disableOverlay;
     INSTALLED_EXTENSIONS: typeof getInstalledIds;
@@ -136,6 +138,7 @@ registerMethods({
 
   CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
   UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
+  RUN_EXTENSION_POINT_READER: runExtensionPointReader,
   ENABLE_OVERLAY: enableOverlay,
   DISABLE_OVERLAY: disableOverlay,
   INSTALLED_EXTENSIONS: getInstalledIds,

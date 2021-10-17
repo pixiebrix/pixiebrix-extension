@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EmptyConfig, IExtension, IExtensionPoint, UUID } from "@/core";
+import {
+  EmptyConfig,
+  IExtension,
+  IExtensionPoint,
+  ReaderOutput,
+  UUID,
+} from "@/core";
 import { clearDynamic, runDynamic } from "@/contentScript/lifecycle";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import Overlay from "@/nativeEditor/Overlay";
@@ -25,6 +31,7 @@ import {
 } from "@/extensionPoints/types";
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { resolveDefinitions } from "@/registry/internal";
+import { expectContext } from "@/utils/expectContext";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
@@ -43,6 +50,8 @@ export async function clearDynamicElements({
 }: {
   uuid?: UUID;
 }): Promise<void> {
+  expectContext("contentScript");
+
   clearDynamic(uuid);
   if (uuid) {
     _temporaryExtensions.delete(uuid);
@@ -51,10 +60,27 @@ export async function clearDynamicElements({
   }
 }
 
+export async function runExtensionPointReader({
+  extensionPoint: extensionPointConfig,
+}: Pick<DynamicDefinition, "extensionPoint">): Promise<ReaderOutput> {
+  expectContext("contentScript");
+
+  const extensionPoint = extensionPointFactory(extensionPointConfig);
+  const reader = await extensionPoint.defaultReader();
+
+  // FIXME: this will return an incorrect value in the following scenarios:
+  //  - A menuItem uses a readerSelector (which is OK, because that param is not exposed in the Page Editor)
+  //  - A trigger that uses the element as the root (e.g., click, blur, etc.)
+  //  - A context menu, because the context depends on the selected element
+  return await reader.read(document);
+}
+
 export async function updateDynamicElement({
   extensionPoint: extensionPointConfig,
   extension: extensionConfig,
 }: DynamicDefinition): Promise<void> {
+  expectContext("contentScript");
+
   const extensionPoint = extensionPointFactory(extensionPointConfig);
 
   _temporaryExtensions.set(extensionConfig.id, extensionPoint);
@@ -69,6 +95,8 @@ export async function updateDynamicElement({
 }
 
 export async function enableOverlay(selector: string): Promise<void> {
+  expectContext("contentScript");
+
   if (_overlay == null) {
     _overlay = new Overlay();
   }
@@ -78,6 +106,8 @@ export async function enableOverlay(selector: string): Promise<void> {
 }
 
 export async function disableOverlay(): Promise<void> {
+  expectContext("contentScript");
+
   if (_overlay != null) {
     _overlay.remove();
     _overlay = null;

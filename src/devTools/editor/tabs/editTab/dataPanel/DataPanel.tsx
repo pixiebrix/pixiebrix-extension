@@ -21,7 +21,7 @@ import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
 import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
-import { Alert, Nav, Tab, TabPaneProps } from "react-bootstrap";
+import { Alert, Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./DataPanel.module.scss";
 import FormPreview from "@/components/formBuilder/FormPreview";
@@ -41,6 +41,7 @@ import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
+import DataTab from "./DataTab";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -56,50 +57,6 @@ const contextFilter = (value: unknown, key: string) => {
   // At one point, we also excluded keys that weren't prefixed with "@" as a stop-gap for encouraging the use of output
   // keys. With the introduction of ApiVersion v2, we removed that filter
   return true;
-};
-
-type TabStateProps = {
-  isLoading?: boolean;
-  isTraceEmpty?: boolean;
-  isTraceOptional?: boolean;
-};
-
-const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
-  isTraceEmpty = false,
-  isTraceOptional = false,
-  children,
-  ...tabProps
-}) => {
-  let contents;
-  if (isTraceEmpty && isTraceOptional) {
-    contents = (
-      <>
-        <div className="text-muted">
-          No trace available, run the extension to generate data
-        </div>
-
-        <div className="text-info mt-2">
-          <FontAwesomeIcon icon={faInfoCircle} />
-          &nbsp;This brick supports traceless output previews. See the Preview
-          tab for the current preview
-        </div>
-      </>
-    );
-  } else if (isTraceEmpty) {
-    contents = (
-      <div className="text-muted">
-        No trace available, run the extension to generate data
-      </div>
-    );
-  } else {
-    contents = children;
-  }
-
-  return (
-    <Tab.Pane {...tabProps} className={styles.tabPane}>
-      {contents}
-    </Tab.Pane>
-  );
 };
 
 const DataPanel: React.FC<{

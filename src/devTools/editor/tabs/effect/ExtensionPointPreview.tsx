@@ -1,0 +1,122 @@
+/*
+ * Copyright (C) 2021 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import React, { useEffect, useReducer } from "react";
+import { useDebouncedCallback } from "use-debounce";
+import GridLoader from "react-spinners/GridLoader";
+import { getErrorMessage } from "@/errors";
+import JsonTree from "@/components/jsonTree/JsonTree";
+import { UnknownObject } from "@/types";
+import { runExtensionPointReader } from "@/contentScript/messenger/api";
+import { thisTab } from "@/devTools/utils";
+import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+type PreviewState = {
+  isRunning: boolean;
+  output: unknown | null;
+  error: unknown | null;
+};
+
+const initialState: PreviewState = {
+  isRunning: false,
+  output: null,
+  error: null,
+};
+
+const previewSlice = createSlice({
+  name: "extensionPointPreview",
+  initialState,
+  reducers: {
+    startRun: (state) => {
+      state.isRunning = true;
+    },
+    runSuccess: (state, { payload }: PayloadAction<UnknownObject>) => {
+      state.isRunning = false;
+      state.output = payload;
+    },
+    runError: (state, { payload }: PayloadAction<unknown>) => {
+      state.isRunning = false;
+      state.output = null;
+      state.error = payload;
+    },
+  },
+});
+
+const ExtensionPointPreview: React.FunctionComponent<{
+  element: FormState;
+  previewRefreshMillis?: 250;
+}> = ({ element, previewRefreshMillis }) => {
+  const [{ isRunning, output, error }, dispatch] = useReducer(
+    previewSlice.reducer,
+    initialState
+  );
+
+  const debouncedRun = useDebouncedCallback(
+    async (element: FormState) => {
+      dispatch(previewSlice.actions.startRun());
+      try {
+        const { asDynamicElement: factory } = ADAPTERS.get(element.type);
+        const data = await runExtensionPointReader(thisTab, factory(element));
+        dispatch(previewSlice.actions.runSuccess({ "@input": data }));
+      } catch (error: unknown) {
+        dispatch(previewSlice.actions.runError(error));
+      }
+    },
+    previewRefreshMillis,
+    { trailing: true, leading: false }
+  );
+
+  useEffect(() => {
+    void debouncedRun(element);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
+  }, [debouncedRun, element.extensionPoint]);
+
+  if (error) {
+    return <div className="text-danger">{getErrorMessage(error)}</div>;
+  }
+
+  if (isRunning) {
+    return (
+      <div>
+        <GridLoader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-danger">{getErrorMessage(output)}</div>;
+  }
+
+  return (
+    <div>
+      {output && (
+        <JsonTree
+          data={output}
+          searchable
+          copyable
+          shouldExpandNode={(keyPath) =>
+            keyPath.length === 1 && keyPath[0] === `@input`
+          }
+        />
+      )}
+    </div>
+  );
+};
+
+export default ExtensionPointPreview;

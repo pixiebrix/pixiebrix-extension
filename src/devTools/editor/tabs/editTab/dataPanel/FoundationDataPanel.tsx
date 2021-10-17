@@ -27,6 +27,7 @@ import JsonTree from "@/components/jsonTree/JsonTree";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import styles from "./DataPanel.module.scss";
+import ExtensionPointPreview from "@/devTools/editor/tabs/effect/ExtensionPointPreview";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
@@ -43,7 +44,7 @@ const FoundationDataPanel: React.FC<{
   );
 
   return (
-    <Tab.Container defaultActiveKey="output">
+    <Tab.Container defaultActiveKey="preview">
       <Nav variant="tabs">
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
@@ -118,10 +119,7 @@ const FoundationDataPanel: React.FC<{
           )}
         </Tab.Pane>
         <Tab.Pane eventKey="preview" className={styles.tabPane}>
-          <div className="text-muted">
-            Foundations do not currently support live preview, check the Output
-            tab to see data for the latest run.
-          </div>
+          <ExtensionPointPreview element={formState} />
         </Tab.Pane>
       </Tab.Content>
     </Tab.Container>
