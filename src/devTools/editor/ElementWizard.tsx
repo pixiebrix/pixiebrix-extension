@@ -127,7 +127,9 @@ const ElementWizard: React.FunctionComponent<{
       <Form
         autoComplete="off"
         noValidate
-        onSubmit={handleSubmit}
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
         onReset={handleReset}
         className={styles.form}
       >
@@ -155,6 +157,7 @@ const ElementWizard: React.FunctionComponent<{
             installed={installed}
             element={element}
             disabled={isSubmitting}
+            onSave={handleSubmit}
           />
         </Nav>
 
