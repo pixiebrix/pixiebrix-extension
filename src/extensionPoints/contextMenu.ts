@@ -121,7 +121,7 @@ export class ContextMenuReader extends Reader {
   async read(): Promise<ReaderOutput> {
     // The actual field is set by the extension point, not the reader, because it's made available
     // by the browser API in the menu handler
-    throw new Error("Not implemented");
+    throw new Error("ContextMenuReader.read() should not be called directly");
   }
 
   outputSchema: Schema = {

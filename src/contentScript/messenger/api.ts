@@ -61,6 +61,9 @@ export const clearDynamicElements = getContentScriptMethod(
 export const updateDynamicElement = getContentScriptMethod(
   "UPDATE_DYNAMIC_ELEMENT"
 );
+export const runExtensionPointReader = getContentScriptMethod(
+  "RUN_EXTENSION_POINT_READER"
+);
 export const enableOverlay = getContentScriptMethod("ENABLE_OVERLAY");
 export const disableOverlay = getContentScriptMethod("DISABLE_OVERLAY");
 export const getInstalledExtensionPointIds = getContentScriptMethod(
