@@ -22,7 +22,11 @@ import SwitchButtonWidget from "./SwitchButtonWidget";
 const values = [true, false];
 test.each(values)("renders value %s", (value) => {
   const rendered = render(
-    <SwitchButtonWidget value={value} onChange={jest.fn()} />
+    <SwitchButtonWidget
+      name="Name for Test"
+      value={value}
+      onChange={jest.fn()}
+    />
   );
   expect(rendered.asFragment()).toMatchSnapshot();
 });

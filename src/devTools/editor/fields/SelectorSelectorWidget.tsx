@@ -53,7 +53,7 @@ export type SelectorSelectorProps = {
   isClearable?: boolean;
   sort?: boolean;
   root?: string;
-  placeholder: string;
+  placeholder?: string;
 };
 
 function getSuggestionsForElement(

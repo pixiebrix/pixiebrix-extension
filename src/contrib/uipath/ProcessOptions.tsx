@@ -36,7 +36,7 @@ import cachePromise from "@/utils/cachePromise";
 
 async function fetchRobots(
   config: SanitizedServiceConfiguration
-): Promise<Option[]> {
+): Promise<Array<Option<number>>> {
   const response = await proxyService<ODataResponseData<Robot>>(config, {
     url: "/odata/Robots",
     method: "get",
