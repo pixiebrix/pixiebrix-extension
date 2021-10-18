@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useReducer } from "react";
+import React, { useCallback, useEffect, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
@@ -26,6 +26,9 @@ import { thisTab } from "@/devTools/utils";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { faSync } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import AsyncButton from "@/components/AsyncButton";
 
 type PreviewState = {
   isRunning: boolean;
@@ -67,16 +70,20 @@ const ExtensionPointPreview: React.FunctionComponent<{
     initialState
   );
 
+  const run = useCallback(async (element: FormState) => {
+    dispatch(previewSlice.actions.startRun());
+    try {
+      const { asDynamicElement: factory } = ADAPTERS.get(element.type);
+      const data = await runExtensionPointReader(thisTab, factory(element));
+      dispatch(previewSlice.actions.runSuccess({ "@input": data }));
+    } catch (error: unknown) {
+      dispatch(previewSlice.actions.runError(error));
+    }
+  }, []);
+
   const debouncedRun = useDebouncedCallback(
     async (element: FormState) => {
-      dispatch(previewSlice.actions.startRun());
-      try {
-        const { asDynamicElement: factory } = ADAPTERS.get(element.type);
-        const data = await runExtensionPointReader(thisTab, factory(element));
-        dispatch(previewSlice.actions.runSuccess({ "@input": data }));
-      } catch (error: unknown) {
-        dispatch(previewSlice.actions.runError(error));
-      }
+      run(element);
     },
     previewRefreshMillis,
     { trailing: true, leading: false }
@@ -105,6 +112,20 @@ const ExtensionPointPreview: React.FunctionComponent<{
 
   return (
     <div>
+      {element.type === "contextMenu" && (
+        <div className="text-info">
+          <AsyncButton
+            variant="info"
+            size="sm"
+            className="mr-2"
+            onClick={async () => run(element)}
+          >
+            <FontAwesomeIcon icon={faSync} /> Refresh
+          </AsyncButton>
+          Click to use current selection/focused element
+        </div>
+      )}
+
       {output && (
         <JsonTree
           data={output}

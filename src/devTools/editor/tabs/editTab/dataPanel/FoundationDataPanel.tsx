@@ -43,8 +43,10 @@ const FoundationDataPanel: React.FC<{
     makeSelectBlockTrace(firstBlockInstanceId)
   );
 
+  const defaultActiveKey = firstBlockTraceRecord ? "output" : "preview";
+
   return (
-    <Tab.Container defaultActiveKey="preview">
+    <Tab.Container defaultActiveKey={defaultActiveKey}>
       <Nav variant="tabs">
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>

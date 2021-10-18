@@ -19,6 +19,7 @@ import {
   EmptyConfig,
   IExtension,
   IExtensionPoint,
+  IReader,
   ReaderOutput,
   UUID,
 } from "@/core";
@@ -32,6 +33,11 @@ import {
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { resolveDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
+import {
+  ContextMenuExtensionPoint,
+  ContextMenuReader,
+} from "@/extensionPoints/contextMenu";
+import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
@@ -60,18 +66,64 @@ export async function clearDynamicElements({
   }
 }
 
+/**
+ * An "implementation" of ContextMenuReader that produces the same values as the browser would for the chosen context.
+ */
+const contextMenuReaderShim = {
+  isAvailable: async () => true,
+
+  outputSchema: new ContextMenuReader().outputSchema,
+
+  read: async () => {
+    const activeElement = document.activeElement;
+
+    const linkProps =
+      activeElement?.tagName === "A"
+        ? {
+            linkText: activeElement.textContent,
+            linkUrl: activeElement.getAttribute("href"),
+          }
+        : { linkText: null, linkUrl: null };
+
+    // XXX: do we need to support SVG here too?
+    const mediaType = {
+      IMG: "image",
+      VIDEO: "video",
+      AUDIO: "audio",
+    }[activeElement?.tagName];
+
+    return {
+      mediaType,
+      // https://developer.mozilla.org/en-US/docs/Web/API/Window/getSelection#return_value
+      selectionText: document.getSelection()?.toString(),
+      srcUrl: activeElement?.getAttribute("src"),
+      documentUrl: document.location.href,
+      ...linkProps,
+    };
+  },
+};
+
 export async function runExtensionPointReader({
   extensionPoint: extensionPointConfig,
 }: Pick<DynamicDefinition, "extensionPoint">): Promise<ReaderOutput> {
   expectContext("contentScript");
 
   const extensionPoint = extensionPointFactory(extensionPointConfig);
+
+  // HACK: same as ContextMenuExtensionPoint, but with the shim reader based on the focused element/selection
+  if (extensionPoint instanceof ContextMenuExtensionPoint) {
+    extensionPoint.defaultReader = async () =>
+      new ArrayCompositeReader([
+        await extensionPoint.getBaseReader(),
+        (contextMenuReaderShim as unknown) as IReader,
+      ]);
+  }
+
   const reader = await extensionPoint.defaultReader();
 
   // FIXME: this will return an incorrect value in the following scenarios:
   //  - A menuItem uses a readerSelector (which is OK, because that param is not exposed in the Page Editor)
   //  - A trigger that uses the element as the root (e.g., click, blur, etc.)
-  //  - A context menu, because the context depends on the selected element
   return await reader.read(document);
 }
 
