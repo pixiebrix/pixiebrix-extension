@@ -134,7 +134,10 @@ const ActionPanelApp: React.FunctionComponent = () => {
             <div className="d-flex flex-row mb-2 p-2 justify-content-between align-content-center">
               <Button
                 className="action-panel-button"
-                onClick={ary(browserAction.hideActionFrame, 0)}
+                onClick={
+                  // Ignore the onClick args since they can't be serialized by the messenging framework
+                  ary(browserAction.hideActionFrame, 0)
+                }
                 size="sm"
                 variant="link"
               >
