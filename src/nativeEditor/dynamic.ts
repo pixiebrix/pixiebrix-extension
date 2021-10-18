@@ -68,7 +68,7 @@ export async function clearDynamicElements({
 }
 
 /**
- * An "implementation" of ContextMenuReader that produces the same values as the browser would for the chosen context.
+ * An "polyfill" of ContextMenuReader that produces the same values as the browser would for the chosen context.
  */
 const contextMenuReaderShim = {
   isAvailable: async () => true,
@@ -76,7 +76,7 @@ const contextMenuReaderShim = {
   outputSchema: new ContextMenuReader().outputSchema,
 
   read: async () => {
-    const activeElement = document.activeElement;
+    const { activeElement } = document;
 
     const linkProps =
       activeElement?.tagName === "A"
@@ -112,7 +112,7 @@ export async function runExtensionPointReader(
 ): Promise<ReaderOutput> {
   expectContext("contentScript");
 
-  const activeElement = document.activeElement;
+  const { activeElement } = document;
   let root: ReaderRoot = null;
 
   // Handle element-based reader context for triggers
@@ -154,9 +154,9 @@ export async function runExtensionPointReader(
 
   const reader = await extensionPoint.defaultReader();
 
-  // FIXME: this will return an incorrect value in the following scenarios:
+  // FIXME: this will return an incorrect value in the following scenario(s):
   //  - A menuItem uses a readerSelector (which is OK, because that param is not exposed in the Page Editor)
-  return await reader.read(root ?? document);
+  return reader.read(root ?? document);
 }
 
 export async function updateDynamicElement({

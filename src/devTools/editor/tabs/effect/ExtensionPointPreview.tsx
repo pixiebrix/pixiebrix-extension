@@ -99,9 +99,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
   }, []);
 
   const debouncedRun = useDebouncedCallback(
-    async (element: FormState) => {
-      run(element);
-    },
+    async (element: FormState) => run(element),
     previewRefreshMillis,
     { trailing: true, leading: false }
   );
@@ -169,7 +167,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
         searchable
         copyable
         shouldExpandNode={(keyPath) =>
-          keyPath.length === 1 && keyPath[0] === `@input`
+          keyPath.length === 1 && keyPath[0] === "@input"
         }
       />
     </div>
