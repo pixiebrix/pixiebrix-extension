@@ -40,6 +40,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import SelectWidget, {
   SelectWidgetOnChange,
+  TSelectWidget,
 } from "@/components/form/widgets/SelectWidget";
 import { castArray, isEmpty } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
@@ -290,7 +291,7 @@ const ServiceField: React.FunctionComponent<
           </a>
         </span>
       }
-      as={SelectWidget}
+      as={SelectWidget as TSelectWidget<AuthOption>}
       blankValue={null}
       options={options}
       // The SelectWidget re-looks up the option based on the value

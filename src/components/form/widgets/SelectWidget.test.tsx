@@ -15,30 +15,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fireEvent, render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import React from "react";
-import SwitchButtonWidget from "./SwitchButtonWidget";
+import selectEvent from "react-select-event";
+import SelectWidget, { Option } from "./SelectWidget";
 
-const values = [true, false];
-test.each(values)("renders value %s", (value) => {
+const options: Option[] = [
+  {
+    label: "Test label 1",
+    value: "value1",
+  },
+  {
+    label: "Test label 2",
+    value: "value2",
+  },
+];
+
+test("renders value", () => {
+  const name = "Name for Test";
   const rendered = render(
-    <SwitchButtonWidget value={value} onChange={jest.fn()} />
+    <SelectWidget
+      id="idForTest"
+      name={name}
+      options={options}
+      value={options[1].value}
+      onChange={jest.fn()}
+    />
   );
   expect(rendered.asFragment()).toMatchSnapshot();
 });
 
-test.each(values)("calls onChange", (value) => {
+test("calls onChange", async () => {
+  const id = "idForTest";
   const name = "Name for Test";
   const onChangeMock = jest.fn();
   const { container } = render(
-    <SwitchButtonWidget value={value} onChange={onChangeMock} name={name} />
+    <SelectWidget
+      id={id}
+      name={name}
+      options={options}
+      value={options[1].value}
+      onChange={onChangeMock}
+    />
   );
 
-  fireEvent.click(container.querySelector(".switch"));
+  const optionToSelect = options[0];
+  await selectEvent.select(
+    container.querySelector(`#${id}`),
+    optionToSelect.label
+  );
 
   expect(onChangeMock).toHaveBeenCalledWith({
     target: {
-      value: !value,
+      options,
+      value: optionToSelect.value,
       name,
     },
   });

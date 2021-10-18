@@ -15,32 +15,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import React, { ChangeEvent } from "react";
+import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import Select from "react-select";
 import { getErrorMessage } from "@/errors";
 
-export type Option<TValue = unknown> = {
+// Type of the Select options
+export type Option<TValue = string> = {
   label: string;
   value: TValue;
 };
 
+// Type passed as target in onChange event
+type SelectLike<TOption extends Option = Option> = {
+  value: TOption["value"];
+  name: string;
+  options: TOption[];
+};
+
+// Type of the SelectWidget.onChange event handler
 // The signature of onChange is dictated by the compatibility with Formik. for a Widget to be compatible with Formik
 // it should trigger onChange with an event, that has target and value
-export type SelectWidgetOnChange<TOption extends Option = Option> = (event: {
-  target: { value: TOption["value"]; name: string; options: TOption[] };
-}) => void;
+export type SelectWidgetOnChange<
+  TOption extends Option = Option
+> = React.ChangeEventHandler<SelectLike<TOption>>;
 
-type OwnProps<TOption extends Option = Option> = {
+// Type of the SelectWidget props
+type SelectWidgetProps<TOption extends Option> = CustomFieldWidgetProps<
+  TOption["value"],
+  SelectLike<TOption>
+> & {
   isClearable?: boolean;
   options: TOption[];
   isLoading?: boolean;
+  loadError?: unknown;
   loadingMessage?: string;
   error?: unknown;
-  onChange?: SelectWidgetOnChange<TOption>;
+  disabled?: boolean;
 };
 
-const SelectWidget: CustomFieldWidget<OwnProps> = ({
+// Type of the SelectWidget
+export type TSelectWidget<TOption extends Option> = React.FC<
+  SelectWidgetProps<TOption>
+>;
+
+const SelectWidget = <TOption extends Option>({
   id,
   options,
   isClearable = false,
@@ -50,7 +69,7 @@ const SelectWidget: CustomFieldWidget<OwnProps> = ({
   value,
   onChange,
   name,
-}) => {
+}: SelectWidgetProps<TOption>) => {
   if (loadError) {
     return (
       <div className="text-danger">
@@ -60,7 +79,9 @@ const SelectWidget: CustomFieldWidget<OwnProps> = ({
   }
 
   const patchedOnChange = ({ value }: Option) => {
-    onChange({ target: { value, name, options } });
+    onChange({ target: { value, name, options } } as ChangeEvent<
+      SelectLike<TOption>
+    >);
   };
 
   return (

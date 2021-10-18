@@ -46,7 +46,7 @@ export type CustomFieldWidgetProps<
   TValue = string | string[] | number,
   TInputElement = WidgetElement
 > = {
-  controlId?: string;
+  id?: string;
   name?: string;
   value: TValue;
   onChange: React.ChangeEventHandler<TInputElement>;
