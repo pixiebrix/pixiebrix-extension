@@ -23,10 +23,27 @@ import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { requestPermissions } from "@/utils/permissions";
 import AsyncButton from "@/components/AsyncButton";
 import { getCurrentURL } from "@/devTools/utils";
+import { useAsyncState } from "@/hooks/common";
+import { safeParseUrl } from "@/utils";
+import { parse as parseDomain } from "psl";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { connect } = useContext(DevToolsContext);
   const [rejected, setRejected] = useState(false);
+
+  const [siteLabel] = useAsyncState(
+    async () => {
+      const { hostname } = safeParseUrl(await getCurrentURL());
+      if (!hostname) {
+        return "this page";
+      }
+
+      const result = parseDomain(hostname);
+      return "domain" in result ? result.domain : "this page";
+    },
+    [],
+    "this page"
+  );
 
   const onRequestPermission = useCallback(async () => {
     const url = await getCurrentURL();
@@ -40,8 +57,8 @@ const PermissionsPane: React.FunctionComponent = () => {
   return (
     <Centered vertically={true}>
       <p>
-        <AsyncButton onClick={onRequestPermission}>
-          <FontAwesomeIcon icon={faShieldAlt} /> Enable PixieBrix on this page
+        <AsyncButton onClick={onRequestPermission} className="btn-">
+          <FontAwesomeIcon icon={faShieldAlt} /> Enable PixieBrix on {siteLabel}
         </AsyncButton>
       </p>
 
