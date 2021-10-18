@@ -29,6 +29,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
+import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
 
 type PreviewState = {
   isRunning: boolean;
@@ -52,6 +53,7 @@ const previewSlice = createSlice({
     runSuccess: (state, { payload }: PayloadAction<UnknownObject>) => {
       state.isRunning = false;
       state.output = payload;
+      state.error = null;
     },
     runError: (state, { payload }: PayloadAction<unknown>) => {
       state.isRunning = false;
@@ -74,7 +76,22 @@ const ExtensionPointPreview: React.FunctionComponent<{
     dispatch(previewSlice.actions.startRun());
     try {
       const { asDynamicElement: factory } = ADAPTERS.get(element.type);
-      const data = await runExtensionPointReader(thisTab, factory(element));
+
+      // Handle click/blur/etc.-based triggers which expect to be run a subset of elements on the page and pass through
+      // data about the element that caused the trigger
+      let rootSelector: string = null;
+      if (
+        (element as TriggerFormState).extensionPoint.definition.rootSelector
+      ) {
+        rootSelector = (element as TriggerFormState).extensionPoint.definition
+          .rootSelector;
+      }
+
+      const data = await runExtensionPointReader(
+        thisTab,
+        factory(element),
+        rootSelector
+      );
       dispatch(previewSlice.actions.runSuccess({ "@input": data }));
     } catch (error: unknown) {
       dispatch(previewSlice.actions.runError(error));
@@ -94,10 +111,6 @@ const ExtensionPointPreview: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, element.extensionPoint]);
 
-  if (error) {
-    return <div className="text-danger">{getErrorMessage(error)}</div>;
-  }
-
   if (isRunning) {
     return (
       <div>
@@ -106,36 +119,59 @@ const ExtensionPointPreview: React.FunctionComponent<{
     );
   }
 
+  const reloadTrigger =
+    element.type === "trigger" &&
+    element.extensionPoint.definition.trigger !== "load" ? (
+      <div className="text-info">
+        <AsyncButton
+          variant="info"
+          size="sm"
+          className="mr-2"
+          onClick={async () => run(element)}
+        >
+          <FontAwesomeIcon icon={faSync} /> Refresh
+        </AsyncButton>
+        Click to use focused element
+      </div>
+    ) : null;
+
+  const reloadContextMenu =
+    element.type === "contextMenu" ? (
+      <div className="text-info">
+        <AsyncButton
+          variant="info"
+          size="sm"
+          className="mr-2"
+          onClick={async () => run(element)}
+        >
+          <FontAwesomeIcon icon={faSync} /> Refresh
+        </AsyncButton>
+        Click to use current selection/focused element
+      </div>
+    ) : null;
+
   if (error) {
-    return <div className="text-danger">{getErrorMessage(output)}</div>;
+    return (
+      <div className="text-danger">
+        {reloadTrigger}
+        {reloadContextMenu}
+        {getErrorMessage(error)}
+      </div>
+    );
   }
 
   return (
     <div>
-      {element.type === "contextMenu" && (
-        <div className="text-info">
-          <AsyncButton
-            variant="info"
-            size="sm"
-            className="mr-2"
-            onClick={async () => run(element)}
-          >
-            <FontAwesomeIcon icon={faSync} /> Refresh
-          </AsyncButton>
-          Click to use current selection/focused element
-        </div>
-      )}
-
-      {output && (
-        <JsonTree
-          data={output}
-          searchable
-          copyable
-          shouldExpandNode={(keyPath) =>
-            keyPath.length === 1 && keyPath[0] === `@input`
-          }
-        />
-      )}
+      {reloadTrigger}
+      {reloadContextMenu}
+      <JsonTree
+        data={output ?? {}}
+        searchable
+        copyable
+        shouldExpandNode={(keyPath) =>
+          keyPath.length === 1 && keyPath[0] === `@input`
+        }
+      />
     </div>
   );
 };

@@ -21,6 +21,7 @@ import {
   IExtensionPoint,
   IReader,
   ReaderOutput,
+  ReaderRoot,
   UUID,
 } from "@/core";
 import { clearDynamic, runDynamic } from "@/contentScript/lifecycle";
@@ -103,10 +104,42 @@ const contextMenuReaderShim = {
   },
 };
 
-export async function runExtensionPointReader({
-  extensionPoint: extensionPointConfig,
-}: Pick<DynamicDefinition, "extensionPoint">): Promise<ReaderOutput> {
+export async function runExtensionPointReader(
+  {
+    extensionPoint: extensionPointConfig,
+  }: Pick<DynamicDefinition, "extensionPoint">,
+  rootSelector: string | undefined
+): Promise<ReaderOutput> {
   expectContext("contentScript");
+
+  const activeElement = document.activeElement;
+  let root: ReaderRoot = null;
+
+  // Handle element-based reader context for triggers
+  if (rootSelector) {
+    const $root = $(document).find(rootSelector);
+    if ($root.length === 1) {
+      // If there's a single root, use that even if it's not the active element (because that's likely the one the user
+      // is intending to use).
+      root = $root.get(0);
+    } else if ($root.length > 1 && activeElement) {
+      $root.each(function () {
+        if (activeElement === this) {
+          root = activeElement as HTMLElement;
+        }
+      });
+
+      if (root == null) {
+        throw new Error(
+          `Focused element ${activeElement.tagName} does not match the root selector. There are ${$root.length} matching elements on the page`
+        );
+      }
+    } else if ($root.length === 0) {
+      throw new Error(
+        `No elements matching selector are currently on the page: ${rootSelector}`
+      );
+    }
+  }
 
   const extensionPoint = extensionPointFactory(extensionPointConfig);
 
@@ -123,8 +156,7 @@ export async function runExtensionPointReader({
 
   // FIXME: this will return an incorrect value in the following scenarios:
   //  - A menuItem uses a readerSelector (which is OK, because that param is not exposed in the Page Editor)
-  //  - A trigger that uses the element as the root (e.g., click, blur, etc.)
-  return await reader.read(document);
+  return await reader.read(root ?? document);
 }
 
 export async function updateDynamicElement({
