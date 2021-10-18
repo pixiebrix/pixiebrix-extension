@@ -29,14 +29,15 @@ const ActionToolbar: React.FunctionComponent<{
   installed: IExtension[];
   element: FormState;
   disabled: boolean;
-}> = ({ installed, element, disabled }) => {
+  onSave: () => void;
+}> = ({ installed, element, disabled, onSave }) => {
   const remove = useRemove(element);
   const reset = useReset(installed, element);
   const { values } = useFormikContext<FormState>();
 
   return (
     <ButtonGroup className="ml-2">
-      <Button disabled={disabled} type="submit" size="sm" variant="primary">
+      <Button disabled={disabled} size="sm" variant="primary" onClick={onSave}>
         <FontAwesomeIcon icon={faSave} /> Save
       </Button>
       {values.installed && (
