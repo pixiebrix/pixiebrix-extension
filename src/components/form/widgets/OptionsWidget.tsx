@@ -40,14 +40,18 @@ const OptionsWidget: CustomFieldWidget<string[]> = ({ name, value }) => (
               className={styles.buttonGroup}
             >
               <Button
-                onClick={() => arrayHelpers.insert(index + 1, "")}
+                onClick={() => {
+                  arrayHelpers.insert(index + 1, "");
+                }}
                 variant="primary"
                 size="sm"
               >
                 <FontAwesomeIcon icon={faPlus} />
               </Button>
               <Button
-                onClick={() => arrayHelpers.remove(index)}
+                onClick={() => {
+                  arrayHelpers.remove(index);
+                }}
                 variant="danger"
                 size="sm"
               >
@@ -59,7 +63,9 @@ const OptionsWidget: CustomFieldWidget<string[]> = ({ name, value }) => (
       ) : (
         <div className={styles.emptyListContainer}>
           <Button
-            onClick={() => arrayHelpers.push("")}
+            onClick={() => {
+              arrayHelpers.push("");
+            }}
             variant="primary"
             size="sm"
           >

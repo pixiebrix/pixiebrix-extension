@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { useField } from "formik";
 import Select from "react-select";
 import { Option } from "@/components/form/widgets/SelectWidget";
@@ -27,7 +26,10 @@ import {
 } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors";
 
-type OwnProps<T = unknown> = {
+type RemoteMultiSelectWidgetProps<T = unknown> = {
+  id?: string;
+  name: string;
+  disabled?: boolean;
   isClearable?: boolean;
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>;
   config: SanitizedServiceConfiguration | null;
@@ -37,7 +39,8 @@ type OwnProps<T = unknown> = {
 /**
  * @see RemoteSelectWidget
  */
-const RemoteMultiSelectWidget: CustomFieldWidget<OwnProps> = ({
+const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProps> = ({
+  id,
   isClearable = false,
   disabled,
   optionsFactory,
@@ -60,6 +63,7 @@ const RemoteMultiSelectWidget: CustomFieldWidget<OwnProps> = ({
 
   return (
     <Select
+      inputId={id}
       isMulti
       isDisabled={disabled}
       isClearable={isClearable}

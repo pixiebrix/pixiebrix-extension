@@ -29,22 +29,19 @@ import { browser } from "webextension-polyfill-ts";
 import { Form, InputGroup } from "react-bootstrap";
 import useNotifications from "@/hooks/useNotifications";
 import { getErrorMessage } from "@/errors";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import AsyncButton from "@/components/AsyncButton";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
 
-type OwnProps = {
+type FileWidgetProps = {
+  id?: string;
+  name: string;
   doc: SheetMeta | null;
   onSelect: (doc: SheetMeta) => void;
 };
 
-const FileWidget: CustomFieldWidget<OwnProps> = ({
-  doc,
-  onSelect,
-  ...props
-}) => {
+const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
   const { port } = useContext(DevToolsContext);
   const notify = useNotifications();
 

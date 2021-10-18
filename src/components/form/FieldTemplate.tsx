@@ -48,6 +48,7 @@ export type CustomFieldWidgetProps<
 > = {
   id?: string;
   name?: string;
+  disabled?: boolean;
   value: TValue;
   onChange: React.ChangeEventHandler<TInputElement>;
 };

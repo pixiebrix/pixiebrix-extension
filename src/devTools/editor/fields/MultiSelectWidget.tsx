@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { useField } from "formik";
 import Select from "react-select";
 
@@ -25,12 +24,15 @@ type Option = {
   value: unknown;
 };
 
-type OwnProps = {
+type MultiSelectWidgetProps = {
+  id?: string;
+  name: string;
+  disabled?: boolean;
   isClearable?: boolean;
   options: Option[];
 };
 
-const MultiSelectWidget: CustomFieldWidget<OwnProps> = ({
+const MultiSelectWidget: React.FC<MultiSelectWidgetProps> = ({
   options,
   isClearable = false,
   disabled,

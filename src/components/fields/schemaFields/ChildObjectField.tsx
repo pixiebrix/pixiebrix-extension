@@ -19,7 +19,6 @@ import React from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Card } from "react-bootstrap";
 import { inputProperties } from "@/helpers";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
@@ -59,7 +58,7 @@ const ChildContainer: React.FC<{ heading: string }> = ({
   </Card>
 );
 
-const ChildObjectWidget: CustomFieldWidget<
+const ChildObjectWidget: React.FC<
   SchemaFieldProps<UnknownObject> & OwnProps
 > = ({ name, schema, schemaLoading, schemaError, heading }) => {
   if (schemaLoading) {
