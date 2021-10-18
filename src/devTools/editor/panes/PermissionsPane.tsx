@@ -23,27 +23,22 @@ import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { requestPermissions } from "@/utils/permissions";
 import AsyncButton from "@/components/AsyncButton";
 import { getCurrentURL } from "@/devTools/utils";
-import { useAsyncState } from "@/hooks/common";
 import { safeParseUrl } from "@/utils";
 import { parse as parseDomain } from "psl";
+import { useAsyncEffect } from "use-async-effect";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { connect } = useContext(DevToolsContext);
   const [rejected, setRejected] = useState(false);
+  const [siteLabel, setSiteLabel] = useState("this page");
 
-  const [siteLabel] = useAsyncState(
-    async () => {
-      const { hostname } = safeParseUrl(await getCurrentURL());
-      if (!hostname) {
-        return "this page";
-      }
-
-      const result = parseDomain(hostname);
-      return "domain" in result ? result.domain : "this page";
-    },
-    [],
-    "this page"
-  );
+  useAsyncEffect(async (isMounted) => {
+    const { hostname } = safeParseUrl(await getCurrentURL());
+    const result = parseDomain(hostname);
+    if ("domain" in result && result.domain && isMounted()) {
+      setSiteLabel(result.domain);
+    }
+  }, []);
 
   const onRequestPermission = useCallback(async () => {
     const url = await getCurrentURL();
