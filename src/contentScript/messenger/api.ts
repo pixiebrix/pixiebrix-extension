@@ -80,6 +80,3 @@ export const linkChildTab = getContentScriptMethod("LINK_CHILD_TAB", {
 export const runBlockInContentScript = getContentScriptMethod("RUN_BLOCK");
 export const cancelSelect = getContentScriptMethod("CANCEL_SELECT_ELEMENT");
 export const selectElement = getContentScriptMethod("SELECT_ELEMENT");
-
-// Temporary, webext-messenger depends on this global
-(globalThis as any).browser = browser;

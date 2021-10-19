@@ -30,6 +30,3 @@ if (isBrowserActionPanel()) {
 export const renderPanels = getContentScriptMethod(
   "ACTION_PANEL_RENDER_PANELS"
 );
-
-// Temporary, webext-messenger depends on this global
-(globalThis as any).browser = browser;

@@ -64,9 +64,6 @@ import { runExtensionPointReader } from "@/nativeEditor/dynamic";
 
 expectContext("contentScript");
 
-// Temporary, webext-messenger depends on this global
-(globalThis as any).browser = browser;
-
 declare global {
   interface MessengerMethods {
     FORM_GET_DEFINITION: typeof getFormDefinition;

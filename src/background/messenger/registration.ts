@@ -36,8 +36,6 @@ import * as registry from "@/registry/localRegistry";
 
 expectContext("background");
 
-// Temporary, webext-messenger depends on this global
-(globalThis as any).browser = browser;
 declare global {
   interface MessengerMethods {
     GOOGLE_SHEETS_GET_TAB_NAMES: typeof sheets.getTabNames;

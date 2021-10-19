@@ -23,8 +23,6 @@ import { renderPanels } from "@/actionPanel/protocol";
 
 expectContext("background");
 
-// Temporary, webext-messenger depends on this global
-(globalThis as any).browser = browser;
 declare global {
   interface MessengerMethods {
     ACTION_PANEL_RENDER_PANELS: typeof renderPanels;
