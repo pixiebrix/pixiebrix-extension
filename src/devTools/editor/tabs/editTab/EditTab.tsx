@@ -193,6 +193,7 @@ const EditTab: React.FC<{
       setActiveNodeId(prevNodeId);
     }
 
+    dispatch(actions.removeElementNodeUIState(nodeIdToRemove));
     setFormValues(nextState);
   };
 

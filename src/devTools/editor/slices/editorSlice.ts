@@ -102,6 +102,26 @@ export const initialState: EditorState = {
   elementUIStates: {},
 };
 
+function setActiveNodeIdForInitializedActiveElementUIState(
+  state: EditorState,
+  nodeId: NodeId
+) {
+  const elementUIState = state.elementUIStates[state.activeElement];
+  // eslint-disable-next-line security/detect-object-injection -- uuid
+  if (!elementUIState.nodeUIStates[nodeId]) {
+    // eslint-disable-next-line security/detect-object-injection -- uuid
+    elementUIState.nodeUIStates[nodeId] = {
+      nodeId,
+      dataPanel: {
+        activeTabKey: null,
+        tabQueries: {},
+      },
+    };
+  }
+
+  elementUIState.activeNodeId = nodeId;
+}
+
 export const editorSlice = createSlice({
   name: "editor",
   initialState,
@@ -155,7 +175,7 @@ export const editorSlice = createSlice({
       state.activeElement = uuid;
       state.selectionSeq++;
       // eslint-disable-next-line security/detect-object-injection -- uuid
-      if (state.elementUIStates[uuid] === undefined) {
+      if (!state.elementUIStates[uuid]) {
         // eslint-disable-next-line security/detect-object-injection -- uuid
         state.elementUIStates[uuid] = makeInitialElementUIState();
       }
@@ -190,7 +210,7 @@ export const editorSlice = createSlice({
       state.beta = null;
       state.activeElement = action.payload;
       state.selectionSeq++;
-      if (state.elementUIStates[action.payload] === undefined) {
+      if (!state.elementUIStates[action.payload]) {
         state.elementUIStates[action.payload] = makeInitialElementUIState();
       }
     },
@@ -245,18 +265,8 @@ export const editorSlice = createSlice({
     setBetaUIEnabled: (state, action: PayloadAction<boolean>) => {
       state.isBetaUI = action.payload;
     },
-    addElementNodeUIState: (state, action: PayloadAction<UUID>) => {
-      const elementUIState = state.elementUIStates[state.activeElement];
-      const nodeId = action.payload;
-      // eslint-disable-next-line security/detect-object-injection -- uuid
-      elementUIState.nodeUIStates[nodeId] = {
-        nodeId,
-        dataPanel: {
-          activeTabKey: null,
-          tabQueries: {},
-        },
-      };
-      elementUIState.activeNodeId = nodeId;
+    addElementNodeUIState: (state, action: PayloadAction<NodeId>) => {
+      setActiveNodeIdForInitializedActiveElementUIState(state, action.payload);
     },
     // Remember to update the active node separately before calling this
     removeElementNodeUIState: (state, action: PayloadAction<UUID>) => {
@@ -271,21 +281,7 @@ export const editorSlice = createSlice({
       delete elementUIState.nodeUIStates[nodeIdToRemove];
     },
     setElementActiveNodeId: (state, action: PayloadAction<NodeId>) => {
-      const elementUIState = state.elementUIStates[state.activeElement];
-      const nodeId = action.payload;
-      // eslint-disable-next-line security/detect-object-injection -- uuid
-      if (elementUIState.nodeUIStates[nodeId] === undefined) {
-        // eslint-disable-next-line security/detect-object-injection -- uuid
-        elementUIState.nodeUIStates[nodeId] = {
-          nodeId,
-          dataPanel: {
-            activeTabKey: null,
-            tabQueries: {},
-          },
-        };
-      }
-
-      state.elementUIStates[state.activeElement].activeNodeId = action.payload;
+      setActiveNodeIdForInitializedActiveElementUIState(state, action.payload);
     },
     setNodeDataPanelTabSelected: (state, action: PayloadAction<string>) => {
       const elementUIState = state.elementUIStates[state.activeElement];

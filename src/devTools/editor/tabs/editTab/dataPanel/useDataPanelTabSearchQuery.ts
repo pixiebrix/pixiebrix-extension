@@ -18,7 +18,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import { actions } from "@/devTools/editor/slices/editorSlice";
-import { useDebouncedCallback } from "use-debounce";
 import { selectNodeDataPanelTabSearchQuery } from "@/devTools/editor/uiState/uiState";
 import { RootState } from "@/devTools/store";
 
@@ -37,11 +36,5 @@ export default function useDataPanelTabSearchQuery(
     [dispatch, tabKey]
   );
 
-  // Debounce the calls to set redux state here
-  const debouncedSetQuery = useDebouncedCallback(setQuery, 400, {
-    trailing: true,
-    leading: false,
-  });
-
-  return [query, debouncedSetQuery];
+  return [query, setQuery];
 }
