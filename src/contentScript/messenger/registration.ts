@@ -17,7 +17,6 @@
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
-import { browser } from "webextension-polyfill-ts";
 import { expectContext } from "@/utils/expectContext";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import {

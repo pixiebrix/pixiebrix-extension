@@ -17,13 +17,12 @@
 
 /* Do not use `registerMethod` in this file */
 import { getContentScriptMethod } from "webext-messenger";
-import { browser } from "webextension-polyfill-ts";
 import { isBrowserActionPanel } from "@/chrome";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
 if (isBrowserActionPanel()) {
   console.warn(
-    "This should not have been imported in the content script. Use the API directly instead."
+    "This should not have been imported in the action panel. Use the API directly instead."
   );
 }
 

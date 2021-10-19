@@ -17,11 +17,13 @@
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
-import { browser } from "webextension-polyfill-ts";
-import { expectContext } from "@/utils/expectContext";
 import { renderPanels } from "@/actionPanel/protocol";
+import { isBrowserActionPanel } from "@/chrome";
 
-expectContext("background");
+// TODO: Use `expectContext("sidebar")` when it’s supported
+if (!isBrowserActionPanel()) {
+  throw new Error('This code can only run in the "actionPanel" context');
+}
 
 declare global {
   interface MessengerMethods {

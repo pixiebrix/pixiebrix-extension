@@ -28,7 +28,7 @@ import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef } from "@/core";
-import { renderPanels } from "./messenger/api";
+import { renderPanels } from "@/actionPanel/messenger/api";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-extension";
