@@ -20,14 +20,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FieldArray, Field } from "formik";
 import React from "react";
 import { Button, ButtonGroup, FormControl } from "react-bootstrap";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import styles from "./OptionsWidget.module.scss";
 
-type OwnProps = {
+type OptionsWidgetProps = {
+  name: string;
   value: string[];
 };
 
-const OptionsWidget: CustomFieldWidget<OwnProps> = ({ name, value }) => (
+const OptionsWidget: React.FC<OptionsWidgetProps> = ({ name, value }) => (
   <FieldArray
     name={name}
     render={(arrayHelpers) =>
@@ -44,14 +44,18 @@ const OptionsWidget: CustomFieldWidget<OwnProps> = ({ name, value }) => (
               className={styles.buttonGroup}
             >
               <Button
-                onClick={() => arrayHelpers.insert(index + 1, "")}
+                onClick={() => {
+                  arrayHelpers.insert(index + 1, "");
+                }}
                 variant="primary"
                 size="sm"
               >
                 <FontAwesomeIcon icon={faPlus} />
               </Button>
               <Button
-                onClick={() => arrayHelpers.remove(index)}
+                onClick={() => {
+                  arrayHelpers.remove(index);
+                }}
                 variant="danger"
                 size="sm"
               >
@@ -63,7 +67,9 @@ const OptionsWidget: CustomFieldWidget<OwnProps> = ({ name, value }) => (
       ) : (
         <div className={styles.emptyListContainer}>
           <Button
-            onClick={() => arrayHelpers.push("")}
+            onClick={() => {
+              arrayHelpers.push("");
+            }}
             variant="primary"
             size="sm"
           >

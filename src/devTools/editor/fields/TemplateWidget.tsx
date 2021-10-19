@@ -17,19 +17,20 @@
 
 import React, { useCallback, useRef } from "react";
 import { Form } from "react-bootstrap";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 
 export type Snippet = {
   label: string;
   value: string;
 };
 
-type OwnProps = {
+type TemplateWidgetProps = CustomFieldWidgetProps & {
+  disabled?: boolean;
   rows: number;
   snippets?: Snippet[];
 };
 
-const TemplateWidget: CustomFieldWidget<OwnProps> = ({
+const TemplateWidget: React.FC<TemplateWidgetProps> = ({
   snippets = [],
   rows = 4,
   ...props
@@ -48,7 +49,9 @@ const TemplateWidget: CustomFieldWidget<OwnProps> = ({
   }, []);
 
   const controlProps =
-    rows === 1 ? { as: "input", type: "text" } : { as: "textarea", rows };
+    rows === 1
+      ? { as: "input" as React.ElementType, type: "text" }
+      : { as: "textarea" as React.ElementType, rows };
 
   return (
     <div>

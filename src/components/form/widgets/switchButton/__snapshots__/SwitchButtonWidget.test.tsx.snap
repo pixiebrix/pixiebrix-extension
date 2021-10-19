@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders value false 1`] = `
+<DocumentFragment>
+  <div
+    class="switch btn off btn-light"
+  >
+    <div
+      class="switch-group"
+    >
+      <span
+        class="switch-on btn btn-primary"
+      >
+         
+      </span>
+      <span
+        class="switch-off btn btn-light"
+      >
+         
+      </span>
+      <span
+        class="switch-handle btn btn-light"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`renders value true 1`] = `
+<DocumentFragment>
+  <div
+    class="switch btn on btn-primary"
+  >
+    <div
+      class="switch-group"
+    >
+      <span
+        class="switch-on btn btn-primary"
+      >
+         
+      </span>
+      <span
+        class="switch-off btn btn-light"
+      >
+         
+      </span>
+      <span
+        class="switch-handle btn btn-light"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;

@@ -93,8 +93,6 @@ const FormEditor: React.FC<FormEditorProps> = ({
     if (nextRjsfSchema !== null) {
       setRjsfSchema(nextRjsfSchema);
     }
-
-    console.log("schema", schema);
   }, [rjsfSchema, setRjsfSchema]);
 
   // Select the first field by default
