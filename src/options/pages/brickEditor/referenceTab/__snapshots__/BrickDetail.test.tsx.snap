@@ -189,6 +189,44 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                   Column labels and values to show
                 </td>
               </tr>
+              <tr
+                role="row"
+              >
+                <td
+                  class="SchemaTree__table_cell"
+                  role="cell"
+                >
+                  <span
+                    class="codeCell"
+                    style="cursor: pointer; padding-left: 0rem;"
+                    title="Toggle Row Expanded"
+                  >
+                    data
+                  </span>
+                </td>
+                <td
+                  class="SchemaTree__table_cell"
+                  role="cell"
+                >
+                  <span />
+                </td>
+                <td
+                  class="SchemaTree__table_cell"
+                  role="cell"
+                >
+                  <span
+                    class="codeCell"
+                  >
+                    [array, string]
+                  </span>
+                </td>
+                <td
+                  class="SchemaTree__table_cell"
+                  role="cell"
+                >
+                  The values to show in the table
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -421,6 +459,44 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                   role="cell"
                 >
                   Column labels and values to show
+                </td>
+              </tr>
+              <tr
+                role="row"
+              >
+                <td
+                  class="SchemaTree__table_cell"
+                  role="cell"
+                >
+                  <span
+                    class="codeCell"
+                    style="cursor: pointer; padding-left: 0rem;"
+                    title="Toggle Row Expanded"
+                  >
+                    data
+                  </span>
+                </td>
+                <td
+                  class="SchemaTree__table_cell"
+                  role="cell"
+                >
+                  <span />
+                </td>
+                <td
+                  class="SchemaTree__table_cell"
+                  role="cell"
+                >
+                  <span
+                    class="codeCell"
+                  >
+                    [array, string]
+                  </span>
+                </td>
+                <td
+                  class="SchemaTree__table_cell"
+                  role="cell"
+                >
+                  The values to show in the table
                 </td>
               </tr>
             </tbody>
