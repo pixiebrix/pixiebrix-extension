@@ -17,56 +17,25 @@
 
 import React, { useContext, useMemo, useState } from "react";
 import Page from "@/layout/Page";
-import {
-  faBars,
-  faBolt,
-  faBookOpen,
-  faCloud,
-  faColumns,
-  faCube,
-  faHammer,
-  faInfoCircle,
-  faMousePointer,
-  faPlus,
-  faStoreAlt,
-  faTimes,
-  faWindowMaximize,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  Button,
-  Card,
-  Col,
-  Form,
-  InputGroup,
-  Row,
-  Table,
-} from "react-bootstrap";
+import { faHammer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import AuthContext from "@/auth/AuthContext";
 import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
-import { Kind, PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
+import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
 import { workshopSlice, WorkshopState } from "@/options/slices";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
 import "./WorkshopPage.scss";
 import { Brick } from "@/types/contract";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import useFetch from "@/hooks/useFetch";
 import { push } from "connected-react-router";
+import CustomBricksCard from "./CustomBricksCard";
+import { EnrichedBrick, NavigateProps } from "./workshopTypes";
 
 const { actions } = workshopSlice;
-
-interface OwnProps {
-  navigate: (url: string) => void;
-}
-
-interface EnrichedBrick extends Brick {
-  scope: string;
-  collection: string;
-  timestamp: number | null;
-}
 
 function selectRecent(state: { workshop: WorkshopState }) {
   return new Map((state.workshop.recent ?? []).map((x) => [x.id, x.timestamp]));
@@ -134,7 +103,7 @@ function useSearchOptions(bricks: EnrichedBrick[]) {
   };
 }
 
-const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
+const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
   navigate,
 }) => {
   const dispatch = useDispatch();
@@ -260,113 +229,7 @@ const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
   );
 };
 
-function inferIcon(kind: Kind, verboseName: string): IconProp {
-  switch (kind.toLocaleLowerCase()) {
-    case "service": {
-      return faCloud;
-    }
-
-    case "reader": {
-      return faBookOpen;
-    }
-
-    case "blueprint": {
-      return faStoreAlt;
-    }
-
-    case "foundation": {
-      // HACK: inferring from the brick naming convention instead of the type since the API doesn't return it yet
-      const normalized = verboseName.toLowerCase();
-      if (normalized.includes("trigger")) {
-        return faBolt;
-      }
-
-      if (normalized.includes("panel")) {
-        return faWindowMaximize;
-      }
-
-      if (normalized.includes("button")) {
-        return faMousePointer;
-      }
-
-      if (normalized.includes("context")) {
-        return faBars;
-      }
-
-      if (normalized.includes("menu")) {
-        return faMousePointer;
-      }
-
-      if (normalized.includes("sidebar")) {
-        return faColumns;
-      }
-
-      return faCube;
-    }
-
-    default: {
-      return faCube;
-    }
-  }
-}
-
-const KindIcon: React.FunctionComponent<{ brick: EnrichedBrick }> = ({
-  brick: { kind, verbose_name },
-}) => <FontAwesomeIcon icon={inferIcon(kind, verbose_name)} fixedWidth />;
-
-const CustomBricksCard: React.FunctionComponent<
-  OwnProps & { bricks: EnrichedBrick[]; maxRows?: number }
-> = ({ navigate, bricks, maxRows = 10 }) => (
-  <Card>
-    <Card.Header>Custom Bricks</Card.Header>
-    <Table className="WorkshopPage__BrickTable">
-      <thead>
-        <tr>
-          <th>&nbsp;</th>
-          <th>Name</th>
-          <th>Collection</th>
-          <th>Type</th>
-          <th>Version</th>
-        </tr>
-      </thead>
-      <tbody>
-        {bricks.slice(0, maxRows).map((brick) => (
-          <tr
-            key={brick.id}
-            onClick={() => {
-              navigate(`/workshop/bricks/${brick.id}`);
-            }}
-          >
-            <td className="text-right text-muted px-1">
-              <KindIcon brick={brick} />
-            </td>
-            <td>
-              <div>{brick.verbose_name}</div>
-              <div className="mt-1">
-                <code className="p-0" style={{ fontSize: "0.8rem" }}>
-                  {brick.name}
-                </code>
-              </div>
-            </td>
-            <td>{brick.collection}</td>
-            <td>{brick.kind}</td>
-            <td>{brick.version}</td>
-          </tr>
-        ))}
-        {bricks.length >= maxRows && (
-          <tr className="WorkshopPage__BrickTable__more">
-            <td colSpan={5} className="text-info text-center">
-              <FontAwesomeIcon icon={faInfoCircle} /> {bricks.length - maxRows}{" "}
-              more entries not shown
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </Table>
-  </Card>
-);
-
-const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
+const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
   const { isLoggedIn, flags } = useContext(AuthContext);
 
   return (

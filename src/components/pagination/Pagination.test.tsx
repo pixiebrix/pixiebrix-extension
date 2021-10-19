@@ -27,19 +27,19 @@ test(`renders ${MAX_DISPLAYED_PAGES} pages`, () => {
 });
 
 test.each([
-  0,
   1,
-  MAX_DISPLAYED_PAGES,
-  Math.floor(1.5 * MAX_DISPLAYED_PAGES),
-  2 * MAX_DISPLAYED_PAGES,
-  3 * MAX_DISPLAYED_PAGES - 2,
+  2,
+  MAX_DISPLAYED_PAGES + 1,
+  Math.floor(1.5 * MAX_DISPLAYED_PAGES) + 1,
+  2 * MAX_DISPLAYED_PAGES + 1,
   3 * MAX_DISPLAYED_PAGES - 1,
+  3 * MAX_DISPLAYED_PAGES,
 ])(
   `renders ${3 * MAX_DISPLAYED_PAGES} pages with %s being current`,
   (currentPage: number) => {
     const rendered = render(
       <Pagination
-        page={currentPage}
+        page={currentPage - 1}
         numPages={3 * MAX_DISPLAYED_PAGES}
         setPage={jest.fn()}
       />
