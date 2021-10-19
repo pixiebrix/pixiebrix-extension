@@ -39,28 +39,41 @@ export class TableRenderer extends Renderer {
     );
   }
 
-  inputSchema = propertiesToSchema({
-    columns: {
-      type: "array",
-      description: "Column labels and values to show",
-      items: {
-        type: "object",
-        properties: {
-          label: { type: "string" },
-          property: { type: "string" },
-          href: { type: "string" },
-        },
-        required: ["label", "property"],
+  inputSchema = propertiesToSchema(
+    {
+      data: {
+        type: "array",
+        description: "The values to show in the table",
       },
-      minItems: 1,
+      columns: {
+        type: "array",
+        description: "Column labels and values to show",
+        items: {
+          type: "object",
+          properties: {
+            label: { type: "string" },
+            property: { type: "string" },
+            href: { type: "string" },
+          },
+          required: ["label", "property"],
+        },
+        minItems: 1,
+      },
     },
-  });
+    ["columns"]
+  );
 
   async render(
-    { columns, ...blockArgs }: BlockArg,
-    { ctxt = [] }: BlockOptions
+    { columns, data: userData, ...blockArgs }: BlockArg,
+    { ctxt = [], logger }: BlockOptions
   ): Promise<string> {
-    if (!Array.isArray(ctxt)) {
+    const data = userData ?? ctxt;
+
+    if (!userData) {
+      logger.warn("Using implicit data from the previous step is deprecated");
+    }
+
+    if (!Array.isArray(data)) {
       throw new BusinessError(
         `Expected data to be an array, actual: ${typeof ctxt}`
       );
@@ -68,9 +81,9 @@ export class TableRenderer extends Renderer {
 
     const makeLinkRenderer = (href: string) => (value: any, row: Row) => {
       const anchorHref = mapArgs(href, { ...row, "@block": blockArgs });
-      return !isNullOrBlank(anchorHref)
-        ? `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${value}</a>`
-        : `${value}`;
+      return isNullOrBlank(anchorHref)
+        ? String(value)
+        : `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${value}</a>`;
     };
 
     const table = makeDataTable(
