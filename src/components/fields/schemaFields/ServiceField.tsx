@@ -41,7 +41,6 @@ import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import SelectWidget, {
   SelectLike,
   SelectWidgetOnChange,
-  TSelectWidget,
 } from "@/components/form/widgets/SelectWidget";
 import { castArray, isEmpty } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
