@@ -99,11 +99,12 @@
 
 .outputKey {
   font-family: monospace;
-  overflow-x: auto;
+  max-width: 120px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
   text-align: center;
   vertical-align: top;
   margin-top: 0.25rem;
-  max-width: 120px;
 }
 
 .addRightMargin {

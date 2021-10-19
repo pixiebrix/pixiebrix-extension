@@ -31,8 +31,9 @@
   flex-grow: 0;
   flex-shrink: 0;
   height: 100%;
-  width: 150px;
+  width: auto;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-top: 10px;
 }
 
