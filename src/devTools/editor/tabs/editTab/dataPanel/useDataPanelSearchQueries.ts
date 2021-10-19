@@ -20,6 +20,7 @@ import { selectNodeDataPanelSearchQueries } from "@/devTools/editor/uiState/uiSt
 import { useCallback } from "react";
 import { actions } from "@/devTools/editor/slices/editorSlice";
 import { produce } from "immer";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function useDataPanelSearchQueries(): [
   queriesByTab: Record<string, string>,
@@ -35,16 +36,20 @@ export default function useDataPanelSearchQueries(): [
     [dispatch]
   );
 
-  const onQueryChangedForTab = useCallback(
+  // Debounce the calls to set redux state here
+  const onQueryChangedForTab = useDebouncedCallback(
     (tabKey: string, query: string) => {
-      console.log(`tab: ${tabKey}, new query: ${query}`);
       const newQueries = produce(queriesByTab, (draft) => {
         // eslint-disable-next-line security/detect-object-injection
         draft[tabKey] = query;
       });
       setQueries(newQueries);
     },
-    [queriesByTab, setQueries]
+    400,
+    {
+      trailing: true,
+      leading: false,
+    }
   );
 
   return [queriesByTab, onQueryChangedForTab];

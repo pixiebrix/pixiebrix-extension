@@ -17,7 +17,7 @@
 
 import JSONTree from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import styles from "./JsonTree.module.scss";
@@ -78,18 +78,14 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
     return searchData(debouncedQuery, data);
   }, [debouncedQuery, data]);
 
-  useEffect(() => {
-    onSearchQueryChanged?.(debouncedQuery);
-  }, [debouncedQuery, onSearchQueryChanged]);
-
   const copyLabelRenderer = useLabelRenderer();
 
   const onChangeQuery = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(e.target.value);
-      console.log("onChange", { query: e.target.value });
+      onSearchQueryChanged?.(e.target.value);
     },
-    [setQuery]
+    [onSearchQueryChanged]
   );
 
   const labelText = query ? `Search Results: ${query}` : label;
