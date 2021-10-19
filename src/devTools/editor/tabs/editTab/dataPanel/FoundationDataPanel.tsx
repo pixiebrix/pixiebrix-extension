@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import AuthContext from "@/auth/AuthContext";
 import { useFormikContext } from "formik";
-import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { UUID } from "@/core";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { makeSelectBlockTrace } from "@/devTools/editor/slices/runtimeSelectors";
 import { Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
@@ -28,7 +28,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import styles from "./DataPanel.module.scss";
 import ExtensionPointPreview from "@/devTools/editor/tabs/effect/ExtensionPointPreview";
-import { selectNodeDataPanelTabSelected } from "@/devTools/editor/uiState/uiState";
+import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
+import useDataPanelSearchQueries from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelSearchQueries";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
@@ -44,16 +45,29 @@ const FoundationDataPanel: React.FC<{
     makeSelectBlockTrace(firstBlockInstanceId)
   );
 
-  const savedActiveKey = useSelector(selectNodeDataPanelTabSelected);
-  const dispatch = useDispatch();
-  const handleSelect = (eventKey: string) => {
-    dispatch(actions.setNodeDataPanelTabSelected(eventKey));
-  };
+  const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
+    firstBlockTraceRecord ? "output" : "preview"
+  );
 
-  const defaultKey = savedActiveKey ?? (firstBlockTraceRecord ? "output" : "preview");
+  const [
+    searchQueriesByTab,
+    onSearchQueryChangedForTab,
+  ] = useDataPanelSearchQueries();
+  const onFormikQueryChanged = useCallback(
+    (query) => {
+      onSearchQueryChangedForTab("formik", query);
+    },
+    [onSearchQueryChangedForTab]
+  );
+  const onOutputQueryChanged = useCallback(
+    (query) => {
+      onSearchQueryChangedForTab("output", query);
+    },
+    [onSearchQueryChangedForTab]
+  );
 
   return (
-    <Tab.Container defaultActiveKey={defaultKey} onSelect={handleSelect}>
+    <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <Nav variant="tabs">
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
@@ -92,7 +106,12 @@ const FoundationDataPanel: React.FC<{
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
               </div>
-              <JsonTree data={formState ?? {}} searchable />
+              <JsonTree
+                data={formState ?? {}}
+                searchable
+                initialSearchQuery={searchQueriesByTab.formik}
+                onSearchQueryChanged={onFormikQueryChanged}
+              />
             </Tab.Pane>
             <Tab.Pane eventKey="blockConfig" className={styles.tabPane}>
               <div className="text-info">
@@ -115,6 +134,8 @@ const FoundationDataPanel: React.FC<{
               data={firstBlockTraceRecord.templateContext}
               copyable
               searchable
+              initialSearchQuery={searchQueriesByTab.output}
+              onSearchQueryChanged={onOutputQueryChanged}
               label="Data"
               shouldExpandNode={(keyPath) =>
                 keyPath.length === 1 && keyPath[0] === "@input"

@@ -54,17 +54,6 @@ import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/Edito
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
 
-async function filterBlocks(
-  blocks: IBlock[],
-  { excludeTypes = [] }: { excludeTypes: BlockType[] }
-): Promise<IBlock[]> {
-  const types = await Promise.all(blocks.map(async (block) => getType(block)));
-  // Exclude null to exclude foundations
-  return zip(blocks, types)
-    .filter(([, type]) => type != null && !excludeTypes.includes(type))
-    .map(([block]) => block);
-}
-
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
 };

@@ -252,6 +252,7 @@ export const editorSlice = createSlice({
       elementUIState.nodeUIStates[nodeId] = {
         nodeId,
         activeDataPanelTabKey: null,
+        dataTabQueries: {},
       };
       elementUIState.activeNodeId = nodeId;
     },
@@ -276,6 +277,7 @@ export const editorSlice = createSlice({
         elementUIState.nodeUIStates[nodeId] = {
           nodeId,
           activeDataPanelTabKey: null,
+          dataTabQueries: {},
         };
       }
 
@@ -286,6 +288,15 @@ export const editorSlice = createSlice({
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
       nodeUIState.activeDataPanelTabKey = action.payload;
+    },
+    setNodeDataPanelSearchQueries: (
+      state,
+      action: PayloadAction<Record<string, string>>
+    ) => {
+      const elementUIState = state.elementUIStates[state.activeElement];
+      const nodeUIState =
+        elementUIState.nodeUIStates[elementUIState.activeNodeId];
+      nodeUIState.dataTabQueries = action.payload;
     },
   },
 });

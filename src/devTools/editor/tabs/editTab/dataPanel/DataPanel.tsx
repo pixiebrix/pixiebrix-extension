@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { UUID } from "@/core";
 import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
 import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
-import { actions as formActions } from "@/devTools/editor/slices/formBuilderSlice";
+import { actions } from "@/devTools/editor/slices/formBuilderSlice";
 import { Alert, Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./DataPanel.module.scss";
@@ -35,17 +35,15 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  actions as editorActions,
-  FormState,
-} from "@/devTools/editor/slices/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import AuthContext from "@/auth/AuthContext";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
-import { selectNodeDataPanelTabSelected } from "@/devTools/editor/uiState/uiState";
+import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
+import useDataPanelSearchQueries from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelSearchQueries";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -120,7 +118,7 @@ const DataPanel: React.FC<{
 
   const [formBuilderActiveField, setFormBuilderActiveField] = useReduxState(
     formBuilderSelectors.activeField,
-    formActions.setActiveField
+    actions.setActiveField
   );
 
   const outputObj: JsonObject =
@@ -136,16 +134,41 @@ const DataPanel: React.FC<{
   const showFormPreview = block.config?.schema && block.config?.uiSchema;
   const showBlockPreview = record || previewInfo?.traceOptional;
 
-  const savedActiveKey = useSelector(selectNodeDataPanelTabSelected);
-  const dispatch = useDispatch();
-  const handleSelect = (eventKey: string) => {
-    dispatch(editorActions.setNodeDataPanelTabSelected(eventKey));
-  };
+  const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
+    showFormPreview ? "preview" : "output"
+  );
 
-  const defaultKey = savedActiveKey ?? (showFormPreview ? "preview" : "output");
+  const [
+    searchQueriesByTab,
+    onSearchQueryChangedForTab,
+  ] = useDataPanelSearchQueries();
+  const onContextQueryChanged = useCallback(
+    (query) => {
+      onSearchQueryChangedForTab("context", query);
+    },
+    [onSearchQueryChangedForTab]
+  );
+  const onFormikQueryChanged = useCallback(
+    (query) => {
+      onSearchQueryChangedForTab("formik", query);
+    },
+    [onSearchQueryChangedForTab]
+  );
+  const onRenderedQueryChanged = useCallback(
+    (query) => {
+      onSearchQueryChangedForTab("rendered", query);
+    },
+    [onSearchQueryChangedForTab]
+  );
+  const onOutputQueryChanged = useCallback(
+    (query) => {
+      onSearchQueryChangedForTab("output", query);
+    },
+    [onSearchQueryChangedForTab]
+  );
 
   return (
-    <Tab.Container defaultActiveKey={defaultKey} onSelect={handleSelect}>
+    <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <Nav variant="tabs">
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
@@ -182,6 +205,8 @@ const DataPanel: React.FC<{
             data={relevantContext}
             copyable
             searchable
+            initialSearchQuery={searchQueriesByTab.context}
+            onSearchQueryChanged={onContextQueryChanged}
             shouldExpandNode={(keyPath) =>
               keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
             }
@@ -194,7 +219,12 @@ const DataPanel: React.FC<{
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
               </div>
-              <JsonTree data={formState ?? {}} searchable />
+              <JsonTree
+                data={formState ?? {}}
+                searchable
+                initialSearchQuery={searchQueriesByTab.formik}
+                onSearchQueryChanged={onFormikQueryChanged}
+              />
             </DataTab>
             <DataTab eventKey="blockConfig">
               <div className="text-info">
@@ -218,6 +248,8 @@ const DataPanel: React.FC<{
                 data={record.renderedArgs}
                 copyable
                 searchable
+                initialSearchQuery={searchQueriesByTab.rendered}
+                onSearchQueryChanged={onRenderedQueryChanged}
                 label="Rendered Inputs"
               />
             </>
@@ -240,6 +272,8 @@ const DataPanel: React.FC<{
                 data={outputObj}
                 copyable
                 searchable
+                initialSearchQuery={searchQueriesByTab.output}
+                onSearchQueryChanged={onOutputQueryChanged}
                 label="Data"
                 shouldExpandNode={(keyPath) =>
                   keyPath.length === 1 &&
