@@ -95,6 +95,8 @@
   vertical-align: top;
   margin-bottom: 0.25rem;
   max-width: 120px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 .outputKey {
