@@ -42,8 +42,14 @@ export class TableRenderer extends Renderer {
   inputSchema = propertiesToSchema(
     {
       data: {
-        type: "array",
+        // HACK: this should really just be "array", but by including string here the page editor will render a text
+        // input for the user to pass in a variable
+        type: ["array", "string"],
         description: "The values to show in the table",
+        items: {
+          type: "object",
+          additionalProperties: true,
+        },
       },
       columns: {
         type: "array",
