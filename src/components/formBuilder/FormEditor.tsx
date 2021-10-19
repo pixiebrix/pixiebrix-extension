@@ -95,15 +95,22 @@ const FormEditor: React.FC<FormEditorProps> = ({
     }
   }, [rjsfSchema, setRjsfSchema]);
 
-  // Select the first field by default
+  // Select the active field when FormEditor field changes
   useEffect(
     () => {
-      if (activeField == null && !isEmpty(schema?.properties)) {
-        setActiveField(Object.keys(schema.properties)[0]);
+      const firstInOrder = uiSchema?.[UI_ORDER]?.[0];
+      if (firstInOrder && firstInOrder !== "*") {
+        setActiveField(firstInOrder);
+        return;
+      }
+
+      const firstInProperties = Object.keys(schema?.properties || {})[0];
+      if (firstInProperties) {
+        setActiveField(firstInProperties);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run onMount
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- resetting activeField only on new name
+    [name]
   );
 
   if (!schema || !uiSchema) {
