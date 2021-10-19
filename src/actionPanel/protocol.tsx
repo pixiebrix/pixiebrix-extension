@@ -15,9 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser } from "webextension-polyfill-ts";
-import { isBrowserActionPanel } from "@/chrome";
-import { HandlerMap } from "@/messaging/protocol";
 import { reportError } from "@/telemetry/logging";
 import { RegistryId, UUID } from "@/core";
 
@@ -25,7 +22,7 @@ export const MESSAGE_PREFIX = "@@pixiebrix/browserAction/";
 
 export const RENDER_PANELS_MESSAGE = `${MESSAGE_PREFIX}RENDER_PANELS`;
 
-let seqNumber = -1;
+let lastMessageSeen = -1;
 
 /**
  * Information required to run a renderer
@@ -49,12 +46,6 @@ export type PanelEntry = {
   payload: RendererPayload | RendererError | null;
 };
 
-type RenderPanelsMessage = {
-  type: typeof RENDER_PANELS_MESSAGE;
-  meta: { $seq: number };
-  payload: { panels: PanelEntry[] };
-};
-
 export type ActionPanelStore = {
   panels: PanelEntry[];
 };
@@ -75,38 +66,33 @@ export function removeListener(fn: StoreListener): void {
   listeners.splice(0, listeners.length, ...listeners.filter((x) => x !== fn));
 }
 
-const handlers = new HandlerMap();
-
-handlers.set(RENDER_PANELS_MESSAGE, async (message: RenderPanelsMessage) => {
-  const messageSeq = message.meta.$seq;
-
-  if (messageSeq < seqNumber) {
+export async function renderPanels(
+  sequence: number,
+  panels: PanelEntry[]
+): Promise<void> {
+  if (sequence < lastMessageSeen) {
     console.debug(
       "Skipping stale message (seq: %d, current: %d)",
-      seqNumber,
-      messageSeq,
-      message
+      lastMessageSeen,
+      sequence,
+      panels
     );
     return;
   }
 
-  seqNumber = messageSeq;
+  lastMessageSeen = sequence;
 
   console.debug(
     `Running ${listeners.length} listener(s) for %s`,
     RENDER_PANELS_MESSAGE,
-    { message }
+    { panels }
   );
 
   for (const listener of listeners) {
     try {
-      listener(message.payload);
+      listener({ panels });
     } catch (error: unknown) {
       reportError(error);
     }
   }
-});
-
-if (isBrowserActionPanel()) {
-  browser.runtime.onMessage.addListener(handlers.asListener());
 }

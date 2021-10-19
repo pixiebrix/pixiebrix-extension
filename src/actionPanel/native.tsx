@@ -21,7 +21,6 @@ import { uuidv4 } from "@/types/helpers";
 import {
   ActionPanelStore,
   PanelEntry,
-  RENDER_PANELS_MESSAGE,
   RendererError,
   RendererPayload,
 } from "@/actionPanel/protocol";
@@ -29,7 +28,7 @@ import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef } from "@/core";
-import { browserAction } from "@/background/messenger/api";
+import { renderPanels } from "./messenger/api";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-extension";
@@ -157,17 +156,14 @@ export function getStore(): ActionPanelStore {
   return { panels };
 }
 
-function renderPanels() {
+function renderPanelsIfVisible() {
   expectContext("contentScript");
 
   if (isActionPanelVisible()) {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
 
-    browserAction.forwardFrameNotification(seqNum, {
-      type: RENDER_PANELS_MESSAGE,
-      payload: { panels },
-    } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
+    void renderPanels({ name: "sidebar" }, seqNum, panels);
   } else {
     console.debug(
       "Skipping renderPanels because the action panel is not visible"
@@ -181,7 +177,7 @@ export function removeExtension(extensionId: string): void {
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
   panels.push(...current.filter((x) => x.extensionId !== extensionId));
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 export function removeExtensionPoint(extensionPointId: string): void {
@@ -192,7 +188,7 @@ export function removeExtensionPoint(extensionPointId: string): void {
   panels.push(
     ...current.filter((x) => x.extensionPointId !== extensionPointId)
   );
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 /**
@@ -224,7 +220,7 @@ export function reservePanels(refs: ExtensionRef[]): void {
     }
   }
 
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 export function updateHeading(extensionId: string, heading: string): void {
@@ -237,7 +233,7 @@ export function updateHeading(extensionId: string, heading: string): void {
       entry.extensionPointId,
       { ...entry }
     );
-    renderPanels();
+    renderPanelsIfVisible();
   } else {
     console.warn(
       "updateHeading: No panel exists for extension %s",
@@ -276,7 +272,7 @@ export function upsertPanel(
     panels.push({ extensionId, extensionPointId, heading, payload });
   }
 
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 if (IS_BROWSER) {

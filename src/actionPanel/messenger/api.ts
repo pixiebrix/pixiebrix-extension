@@ -15,23 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/extensionContext";
+/* Do not use `registerMethod` in this file */
+import { getContentScriptMethod } from "webext-messenger";
+import { browser } from "webextension-polyfill-ts";
+import { isBrowserActionPanel } from "@/chrome";
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
+// TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
+if (isBrowserActionPanel()) {
+  console.warn(
+    "This should not have been imported in the content script. Use the API directly instead."
+  );
+}
 
-import App from "@/actionPanel/ActionPanelApp";
-import ReactDOM from "react-dom";
-import React from "react";
+export const renderPanels = getContentScriptMethod(
+  "ACTION_PANEL_RENDER_PANELS"
+);
 
-// Keep in order so precedence is preserved
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "@/action.scss";
-import { registerTarget } from "webext-messenger";
-
-void registerTarget("sidebar").then(() => {
-  console.debug("Registered action frame with background page");
-});
-
-ReactDOM.render(<App />, document.querySelector("#container"));
+// Temporary, webext-messenger depends on this global
+(globalThis as any).browser = browser;

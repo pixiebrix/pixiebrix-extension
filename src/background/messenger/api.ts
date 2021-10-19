@@ -55,15 +55,6 @@ export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU");
 export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU");
 export const openTab = getMethod("OPEN_TAB");
 
-export const browserAction = {
-  registerActionFrame: getMethod("REGISTER_ACTION_FRAME"),
-  forwardFrameNotification: getMethod("FORWARD_FRAME_NOTIFICATION", {
-    isNotification: true,
-  }),
-  showActionFrame: getMethod("SHOW_ACTION_FRAME"),
-  hideActionFrame: getMethod("HIDE_ACTION_FRAME"),
-};
-
 export const registry = {
   getKind: getMethod("REGISTRY_GET_KIND"),
   syncRemote: getMethod("REGISTRY_SYNC"),

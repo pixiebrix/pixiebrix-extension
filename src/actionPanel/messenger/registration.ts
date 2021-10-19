@@ -15,23 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/extensionContext";
+/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
+import { registerMethods } from "webext-messenger";
+import { browser } from "webextension-polyfill-ts";
+import { expectContext } from "@/utils/expectContext";
+import { renderPanels } from "@/actionPanel/protocol";
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
+expectContext("background");
 
-import App from "@/actionPanel/ActionPanelApp";
-import ReactDOM from "react-dom";
-import React from "react";
+// Temporary, webext-messenger depends on this global
+(globalThis as any).browser = browser;
+declare global {
+  interface MessengerMethods {
+    ACTION_PANEL_RENDER_PANELS: typeof renderPanels;
+  }
+}
 
-// Keep in order so precedence is preserved
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "@/action.scss";
-import { registerTarget } from "webext-messenger";
-
-void registerTarget("sidebar").then(() => {
-  console.debug("Registered action frame with background page");
+registerMethods({
+  ACTION_PANEL_RENDER_PANELS: renderPanels,
 });
-
-ReactDOM.render(<App />, document.querySelector("#container"));
