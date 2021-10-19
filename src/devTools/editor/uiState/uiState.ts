@@ -41,15 +41,17 @@ export interface NodeUIState {
    */
   nodeId: NodeId;
 
-  /**
-   * Which tab is active in the data panel of the editor UI
-   */
-  activeDataPanelTabKey: string | null;
+  dataPanel: {
+    /**
+     * Which tab is active in the data panel of the editor UI
+     */
+    activeTabKey: string | null;
 
-  /**
-   * Data tab search filter query, indexed by tabKey
-   */
-  dataTabQueries: Record<string, string>;
+    /**
+     * Data tab search filter query, indexed by tabKey
+     */
+    tabQueries: Record<string, string>;
+  };
 }
 
 export function makeInitialElementUIState(): ElementUIState {
@@ -58,8 +60,10 @@ export function makeInitialElementUIState(): ElementUIState {
     nodeUIStates: {
       [FOUNDATION_NODE_ID]: {
         nodeId: FOUNDATION_NODE_ID,
-        activeDataPanelTabKey: null,
-        dataTabQueries: {},
+        dataPanel: {
+          activeTabKey: null,
+          tabQueries: {},
+        },
       },
     },
   };
@@ -83,12 +87,12 @@ export function selectActiveNodeId(rootState: RootState): NodeId {
 
 export function selectNodeDataPanelTabSelected(rootState: RootState): string {
   const nodeUIState = selectActiveNodeUIState(rootState);
-  return nodeUIState.activeDataPanelTabKey;
+  return nodeUIState.dataPanel.activeTabKey;
 }
 
 export function selectNodeDataPanelSearchQueries(
   rootState: RootState
 ): Record<string, string> {
   const nodeUIState = selectActiveNodeUIState(rootState);
-  return nodeUIState.dataTabQueries;
+  return nodeUIState.dataPanel.tabQueries;
 }

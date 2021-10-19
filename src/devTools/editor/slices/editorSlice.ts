@@ -251,8 +251,10 @@ export const editorSlice = createSlice({
       // eslint-disable-next-line security/detect-object-injection -- uuid
       elementUIState.nodeUIStates[nodeId] = {
         nodeId,
-        activeDataPanelTabKey: null,
-        dataTabQueries: {},
+        dataPanel: {
+          activeTabKey: null,
+          tabQueries: {},
+        },
       };
       elementUIState.activeNodeId = nodeId;
     },
@@ -276,8 +278,10 @@ export const editorSlice = createSlice({
         // eslint-disable-next-line security/detect-object-injection -- uuid
         elementUIState.nodeUIStates[nodeId] = {
           nodeId,
-          activeDataPanelTabKey: null,
-          dataTabQueries: {},
+          dataPanel: {
+            activeTabKey: null,
+            tabQueries: {},
+          },
         };
       }
 
@@ -287,7 +291,7 @@ export const editorSlice = createSlice({
       const elementUIState = state.elementUIStates[state.activeElement];
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
-      nodeUIState.activeDataPanelTabKey = action.payload;
+      nodeUIState.dataPanel.activeTabKey = action.payload;
     },
     setNodeDataPanelSearchQueries: (
       state,
@@ -296,7 +300,7 @@ export const editorSlice = createSlice({
       const elementUIState = state.elementUIStates[state.activeElement];
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
-      nodeUIState.dataTabQueries = action.payload;
+      nodeUIState.dataPanel.tabQueries = action.payload;
     },
   },
 });
