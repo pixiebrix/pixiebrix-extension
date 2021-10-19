@@ -110,20 +110,17 @@ function lookupAuthId(
     : authOptions.find((x) => x.value === dependency.config)?.value;
 }
 
-const PIPELINE_PROPERTIES = ["action", "body"];
-
 function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
   const extensionConfig = state.extension as UnknownObject;
 
-  const identifiers = PIPELINE_PROPERTIES.flatMap((prop) => {
-    // eslint-disable-next-line security/detect-object-injection -- prop is constant
-    const pipeline = castArray(extensionConfig[prop] ?? []) as BlockPipeline;
-    return pipeline.flatMap((blockConfig) => {
-      const values = Object.values(blockConfig.config).filter(
-        (x) => typeof x === "string"
-      ) as string[];
-      return values.filter((value) => SERVICE_VAR_REGEX.test(value));
-    });
+  const pipeline = castArray(
+    extensionConfig.blockPipeline ?? []
+  ) as BlockPipeline;
+  const identifiers = pipeline.flatMap((blockConfig) => {
+    const values = Object.values(blockConfig.config).filter(
+      (x) => typeof x === "string"
+    ) as string[];
+    return values.filter((value) => SERVICE_VAR_REGEX.test(value));
   });
 
   return new Set(identifiers);
