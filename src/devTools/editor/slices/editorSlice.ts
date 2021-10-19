@@ -293,14 +293,16 @@ export const editorSlice = createSlice({
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
       nodeUIState.dataPanel.activeTabKey = action.payload;
     },
-    setNodeDataPanelSearchQueries: (
+    setNodeDataPanelTabSearchQuery: (
       state,
-      action: PayloadAction<Record<string, string>>
+      action: PayloadAction<{ tabKey: string; query: string }>
     ) => {
+      const { tabKey, query } = action.payload;
       const elementUIState = state.elementUIStates[state.activeElement];
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
-      nodeUIState.dataPanel.tabQueries = action.payload;
+      // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
+      nodeUIState.dataPanel.tabQueries[tabKey] = query;
     },
   },
 });

@@ -30,7 +30,7 @@ import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
 import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
-import useDataPanelSearchQueries from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelSearchQueries";
+import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 
 type PreviewState = {
   isRunning: boolean;
@@ -110,16 +110,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, element.extensionPoint]);
 
-  const [
-    searchQueriesByTab,
-    onSearchQueryChangedForTab,
-  ] = useDataPanelSearchQueries();
-  const onPreviewQueryChanged = useCallback(
-    (query) => {
-      onSearchQueryChangedForTab("preview", query);
-    },
-    [onSearchQueryChangedForTab]
-  );
+  const [previewQuery, setPreviewQuery] = useDataPanelTabSearchQuery("preview");
 
   if (isRunning) {
     return (
@@ -178,8 +169,8 @@ const ExtensionPointPreview: React.FunctionComponent<{
         data={output ?? {}}
         searchable
         copyable
-        initialSearchQuery={searchQueriesByTab.preview}
-        onSearchQueryChanged={onPreviewQueryChanged}
+        initialSearchQuery={previewQuery}
+        onSearchQueryChanged={setPreviewQuery}
         shouldExpandNode={(keyPath) =>
           keyPath.length === 1 && keyPath[0] === "@input"
         }

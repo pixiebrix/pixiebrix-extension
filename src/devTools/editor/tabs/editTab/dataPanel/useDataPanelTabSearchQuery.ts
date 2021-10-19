@@ -16,41 +16,32 @@
  */
 
 import { useDispatch, useSelector } from "react-redux";
-import { selectNodeDataPanelSearchQueries } from "@/devTools/editor/uiState/uiState";
 import { useCallback } from "react";
 import { actions } from "@/devTools/editor/slices/editorSlice";
-import { produce } from "immer";
 import { useDebouncedCallback } from "use-debounce";
+import { selectNodeDataPanelTabSearchQuery } from "@/devTools/editor/uiState/uiState";
+import { RootState } from "@/devTools/store";
 
-export default function useDataPanelSearchQueries(): [
-  queriesByTab: Record<string, string>,
-  onQueryChangedForTab: (tabKey: string, query: string) => void
-] {
+export default function useDataPanelTabSearchQuery(
+  tabKey: string
+): [query: string, setQuery: (query: string) => void] {
   const dispatch = useDispatch();
 
-  const queriesByTab = useSelector(selectNodeDataPanelSearchQueries);
-  const setQueries = useCallback(
-    (queriesByTab: Record<string, string>) => {
-      dispatch(actions.setNodeDataPanelSearchQueries(queriesByTab));
+  const query = useSelector((state: RootState) =>
+    selectNodeDataPanelTabSearchQuery(state, tabKey)
+  );
+  const setQuery = useCallback(
+    (query: string) => {
+      dispatch(actions.setNodeDataPanelTabSearchQuery({ tabKey, query }));
     },
-    [dispatch]
+    [dispatch, tabKey]
   );
 
   // Debounce the calls to set redux state here
-  const onQueryChangedForTab = useDebouncedCallback(
-    (tabKey: string, query: string) => {
-      const newQueries = produce(queriesByTab, (draft) => {
-        // eslint-disable-next-line security/detect-object-injection
-        draft[tabKey] = query;
-      });
-      setQueries(newQueries);
-    },
-    400,
-    {
-      trailing: true,
-      leading: false,
-    }
-  );
+  const debouncedSetQuery = useDebouncedCallback(setQuery, 400, {
+    trailing: true,
+    leading: false,
+  });
 
-  return [queriesByTab, onQueryChangedForTab];
+  return [query, debouncedSetQuery];
 }

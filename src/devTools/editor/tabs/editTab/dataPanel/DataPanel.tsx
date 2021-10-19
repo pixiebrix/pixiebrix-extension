@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { UUID } from "@/core";
 import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
 import { useFormikContext } from "formik";
@@ -43,7 +43,7 @@ import { JsonObject } from "type-fest";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
 import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
-import useDataPanelSearchQueries from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelSearchQueries";
+import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -138,34 +138,12 @@ const DataPanel: React.FC<{
     showFormPreview ? "preview" : "output"
   );
 
-  const [
-    searchQueriesByTab,
-    onSearchQueryChangedForTab,
-  ] = useDataPanelSearchQueries();
-  const onContextQueryChanged = useCallback(
-    (query) => {
-      onSearchQueryChangedForTab("context", query);
-    },
-    [onSearchQueryChangedForTab]
+  const [contextQuery, setContextQuery] = useDataPanelTabSearchQuery("context");
+  const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery("formik");
+  const [renderedQuery, setRenderedQuery] = useDataPanelTabSearchQuery(
+    "rendered"
   );
-  const onFormikQueryChanged = useCallback(
-    (query) => {
-      onSearchQueryChangedForTab("formik", query);
-    },
-    [onSearchQueryChangedForTab]
-  );
-  const onRenderedQueryChanged = useCallback(
-    (query) => {
-      onSearchQueryChangedForTab("rendered", query);
-    },
-    [onSearchQueryChangedForTab]
-  );
-  const onOutputQueryChanged = useCallback(
-    (query) => {
-      onSearchQueryChangedForTab("output", query);
-    },
-    [onSearchQueryChangedForTab]
-  );
+  const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -205,8 +183,8 @@ const DataPanel: React.FC<{
             data={relevantContext}
             copyable
             searchable
-            initialSearchQuery={searchQueriesByTab.context}
-            onSearchQueryChanged={onContextQueryChanged}
+            initialSearchQuery={contextQuery}
+            onSearchQueryChanged={setContextQuery}
             shouldExpandNode={(keyPath) =>
               keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
             }
@@ -222,8 +200,8 @@ const DataPanel: React.FC<{
               <JsonTree
                 data={formState ?? {}}
                 searchable
-                initialSearchQuery={searchQueriesByTab.formik}
-                onSearchQueryChanged={onFormikQueryChanged}
+                initialSearchQuery={formikQuery}
+                onSearchQueryChanged={setFormikQuery}
               />
             </DataTab>
             <DataTab eventKey="blockConfig">
@@ -248,8 +226,8 @@ const DataPanel: React.FC<{
                 data={record.renderedArgs}
                 copyable
                 searchable
-                initialSearchQuery={searchQueriesByTab.rendered}
-                onSearchQueryChanged={onRenderedQueryChanged}
+                initialSearchQuery={renderedQuery}
+                onSearchQueryChanged={setRenderedQuery}
                 label="Rendered Inputs"
               />
             </>
@@ -272,8 +250,8 @@ const DataPanel: React.FC<{
                 data={outputObj}
                 copyable
                 searchable
-                initialSearchQuery={searchQueriesByTab.output}
-                onSearchQueryChanged={onOutputQueryChanged}
+                initialSearchQuery={outputQuery}
+                onSearchQueryChanged={setOutputQuery}
                 label="Data"
                 shouldExpandNode={(keyPath) =>
                   keyPath.length === 1 &&

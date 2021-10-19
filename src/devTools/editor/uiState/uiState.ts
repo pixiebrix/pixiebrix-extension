@@ -90,9 +90,11 @@ export function selectNodeDataPanelTabSelected(rootState: RootState): string {
   return nodeUIState.dataPanel.activeTabKey;
 }
 
-export function selectNodeDataPanelSearchQueries(
-  rootState: RootState
-): Record<string, string> {
+export function selectNodeDataPanelTabSearchQuery(
+  rootState: RootState,
+  tabKey: string
+): string {
   const nodeUIState = selectActiveNodeUIState(rootState);
-  return nodeUIState.dataPanel.tabQueries;
+  // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
+  return nodeUIState.dataPanel.tabQueries[tabKey];
 }

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 import AuthContext from "@/auth/AuthContext";
 import { useFormikContext } from "formik";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
@@ -29,7 +29,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import styles from "./DataPanel.module.scss";
 import ExtensionPointPreview from "@/devTools/editor/tabs/effect/ExtensionPointPreview";
 import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
-import useDataPanelSearchQueries from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelSearchQueries";
+import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
@@ -49,22 +49,8 @@ const FoundationDataPanel: React.FC<{
     firstBlockTraceRecord ? "output" : "preview"
   );
 
-  const [
-    searchQueriesByTab,
-    onSearchQueryChangedForTab,
-  ] = useDataPanelSearchQueries();
-  const onFormikQueryChanged = useCallback(
-    (query) => {
-      onSearchQueryChangedForTab("formik", query);
-    },
-    [onSearchQueryChangedForTab]
-  );
-  const onOutputQueryChanged = useCallback(
-    (query) => {
-      onSearchQueryChangedForTab("output", query);
-    },
-    [onSearchQueryChangedForTab]
-  );
+  const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery("formik");
+  const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -109,8 +95,8 @@ const FoundationDataPanel: React.FC<{
               <JsonTree
                 data={formState ?? {}}
                 searchable
-                initialSearchQuery={searchQueriesByTab.formik}
-                onSearchQueryChanged={onFormikQueryChanged}
+                initialSearchQuery={formikQuery}
+                onSearchQueryChanged={setFormikQuery}
               />
             </Tab.Pane>
             <Tab.Pane eventKey="blockConfig" className={styles.tabPane}>
@@ -134,8 +120,8 @@ const FoundationDataPanel: React.FC<{
               data={firstBlockTraceRecord.templateContext}
               copyable
               searchable
-              initialSearchQuery={searchQueriesByTab.output}
-              onSearchQueryChanged={onOutputQueryChanged}
+              initialSearchQuery={outputQuery}
+              onSearchQueryChanged={setOutputQuery}
               label="Data"
               shouldExpandNode={(keyPath) =>
                 keyPath.length === 1 && keyPath[0] === "@input"
