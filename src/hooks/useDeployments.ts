@@ -30,7 +30,7 @@ import { selectInstalledDeployments } from "@/background/deployment";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
-import { browser, Permissions } from "webextension-polyfill-ts";
+import browser, { Permissions } from "webextension-polyfill";
 import { IExtension, UUID, RegistryId } from "@/core";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { satisfies } from "semver";

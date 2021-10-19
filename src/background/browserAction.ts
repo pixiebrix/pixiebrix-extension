@@ -18,7 +18,7 @@
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { safeParseUrl, sleep } from "@/utils";
 import { JsonObject, JsonValue } from "type-fest";
 import { getErrorMessage } from "@/errors";

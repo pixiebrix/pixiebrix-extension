@@ -23,7 +23,7 @@ import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { ensureAllPermissions, extensionPermissions } from "@/permissions";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { useAsyncEffect } from "use-async-effect";
 import { useDebounce } from "use-debounce";
 import { useToasts } from "react-toast-notifications";

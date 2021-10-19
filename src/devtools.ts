@@ -18,7 +18,7 @@
 // https://developer.chrome.com/extensions/devtools
 
 import "@/telemetry/reportUncaughtErrors";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { connectDevtools } from "@/devTools/protocol";
 import { updateSelectedElement } from "@/devTools/getSelectedElement";
 import { once } from "lodash";

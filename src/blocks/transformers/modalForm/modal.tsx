@@ -20,7 +20,7 @@ import { render, unmountComponentAtNode } from "react-dom";
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { registerForm } from "@/contentScript/modalForms";
 import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";

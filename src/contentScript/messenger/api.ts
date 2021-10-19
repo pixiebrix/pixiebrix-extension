@@ -17,7 +17,7 @@
 
 /* Do not use `registerMethod` in this file */
 import { getContentScriptMethod } from "webext-messenger";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { isContentScript } from "webext-detect-page";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet

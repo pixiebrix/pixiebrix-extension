@@ -32,7 +32,7 @@ import {
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { Menus, Permissions } from "webextension-polyfill-ts";
+import { Menus, Permissions, Manifest } from "webextension-polyfill";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
   ExtensionPointConfig,
@@ -46,7 +46,6 @@ import {
 } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
-import { Manifest } from "webextension-polyfill-ts/lib/manifest";
 import { getCommonAncestor } from "@/nativeEditor/infer";
 import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";

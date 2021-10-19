@@ -16,7 +16,7 @@
  */
 
 import pTimeout from "p-timeout";
-import { browser, Menus, Tabs } from "webextension-polyfill-ts";
+import browser, { Menus, Tabs } from "webextension-polyfill";
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { noop } from "lodash";
