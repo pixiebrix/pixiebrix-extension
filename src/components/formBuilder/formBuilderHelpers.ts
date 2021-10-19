@@ -205,6 +205,16 @@ export const produceSchemaOnPropertyNameChange = (
     );
     // eslint-disable-next-line security/detect-object-injection
     draft.uiSchema[UI_ORDER] = nextUiOrder;
+
+    // eslint-disable-next-line security/detect-object-injection
+    if (draft.uiSchema[propertyName]) {
+      // eslint-disable-next-line security/detect-object-injection
+      draft.uiSchema[nextPropertyName] =
+        // eslint-disable-next-line security/detect-object-injection
+        draft.uiSchema[propertyName];
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,  security/detect-object-injection
+      delete draft.uiSchema[propertyName];
+    }
   });
 
 export const produceSchemaOnUiTypeChange = (
