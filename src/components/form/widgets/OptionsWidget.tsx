@@ -20,10 +20,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FieldArray, Field } from "formik";
 import React from "react";
 import { Button, ButtonGroup, FormControl } from "react-bootstrap";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import styles from "./OptionsWidget.module.scss";
 
-const OptionsWidget: CustomFieldWidget<string[]> = ({ name, value }) => (
+type OptionsWidgetProps = {
+  name: string;
+  value: string[];
+};
+
+const OptionsWidget: React.FC<OptionsWidgetProps> = ({ name, value }) => (
   <FieldArray
     name={name}
     render={(arrayHelpers) =>
