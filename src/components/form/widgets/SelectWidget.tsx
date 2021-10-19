@@ -27,7 +27,7 @@ export type Option<TValue = string> = {
 };
 
 // Type passed as target in onChange event
-export type SelectLike<TOption extends Option = Option> = {
+export type SelectLike<TOption extends Option<TOption["value"]> = Option> = {
   value: TOption["value"];
   name: string;
   options: TOption[];
@@ -41,10 +41,9 @@ export type SelectWidgetOnChange<
 > = React.ChangeEventHandler<SelectLike<TOption>>;
 
 // Type of the SelectWidget props
-type SelectWidgetProps<TOption extends Option> = CustomFieldWidgetProps<
-  TOption["value"],
-  SelectLike<TOption>
-> & {
+type SelectWidgetProps<
+  TOption extends Option<TOption["value"]>
+> = CustomFieldWidgetProps<TOption["value"], SelectLike<TOption>> & {
   isClearable?: boolean;
   options: TOption[];
   isLoading?: boolean;
@@ -54,12 +53,7 @@ type SelectWidgetProps<TOption extends Option> = CustomFieldWidgetProps<
   disabled?: boolean;
 };
 
-// Type of the SelectWidget
-export type TSelectWidget<TOption extends Option> = React.FC<
-  SelectWidgetProps<TOption>
->;
-
-const SelectWidget = <TOption extends Option>({
+const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,
   options,
   isClearable = false,
@@ -78,7 +72,7 @@ const SelectWidget = <TOption extends Option>({
     );
   }
 
-  const patchedOnChange = ({ value }: Option) => {
+  const patchedOnChange = ({ value }: TOption) => {
     onChange({ target: { value, name, options } } as ChangeEvent<
       SelectLike<TOption>
     >);
@@ -92,7 +86,7 @@ const SelectWidget = <TOption extends Option>({
       isLoading={isLoading}
       isClearable={isClearable}
       options={options}
-      value={options?.find((option: Option) => value === option.value)}
+      value={options?.find((option: TOption) => value === option.value)}
       onChange={patchedOnChange}
     />
   );

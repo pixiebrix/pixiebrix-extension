@@ -292,7 +292,7 @@ const ServiceField: React.FunctionComponent<
           </a>
         </span>
       }
-      as={SelectWidget as TSelectWidget<AuthOption>}
+      as={SelectWidget}
       blankValue={null}
       options={options}
       // The SelectWidget re-looks up the option based on the value

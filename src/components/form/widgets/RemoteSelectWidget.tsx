@@ -19,7 +19,6 @@ import React from "react";
 import SelectWidget, {
   Option,
   SelectLike,
-  TSelectWidget,
 } from "@/components/form/widgets/SelectWidget";
 import { SanitizedServiceConfiguration } from "@/core";
 import { AsyncState, useAsyncState } from "@/hooks/common";
@@ -33,7 +32,6 @@ export type OptionsFactory<T = unknown> = (
 
 type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
   T,
-  // @ts-expect-error -- Option<T> is not assignable to Option<string>
   SelectLike<Option<T>>
 > & {
   isClearable?: boolean;
@@ -63,9 +61,6 @@ export function useOptionsResolver<T>(
   }, [config, optionsFactory]);
 }
 
-// @ts-expect-error -- Type 'Option<unknown>' does not satisfy the constraint 'Option<string>'.
-const TypedSelectWidget = SelectWidget as TSelectWidget<Option<unknown>>;
-
 /**
  * Widget for selecting values retrieved from a 3rd party API
  */
@@ -80,7 +75,7 @@ const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
   );
 
   return (
-    <TypedSelectWidget
+    <SelectWidget
       options={options}
       isLoading={isLoading}
       loadError={error}

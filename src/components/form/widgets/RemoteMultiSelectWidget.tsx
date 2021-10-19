@@ -26,12 +26,12 @@ import {
 } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors";
 
-type RemoteMultiSelectWidgetProps<T = unknown> = {
+type RemoteMultiSelectWidgetProps = {
   id?: string;
   name: string;
   disabled?: boolean;
   isClearable?: boolean;
-  optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>;
+  optionsFactory: OptionsFactory | Promise<Array<Option<unknown>>>;
   config: SanitizedServiceConfiguration | null;
   loadingMessage?: string;
 };
