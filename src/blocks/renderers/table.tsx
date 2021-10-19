@@ -70,12 +70,14 @@ export class TableRenderer extends Renderer {
     const data = userData ?? ctxt;
 
     if (!userData) {
-      logger.warn("Using implicit data from the previous step is deprecated");
+      logger.warn(
+        "Using implicit data from the previous step is deprecated, use the data parameter"
+      );
     }
 
     if (!Array.isArray(data)) {
       throw new BusinessError(
-        `Expected data to be an array, actual: ${typeof ctxt}`
+        `Expected data to be an array, actual: ${typeof data}`
       );
     }
 
@@ -94,7 +96,7 @@ export class TableRenderer extends Renderer {
       }))
     );
 
-    return table(ctxt);
+    return table(data);
 
     // Const makeLinkTemplate = ({
     //   property,
