@@ -15,19 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { InputGroup, Form, Table } from "react-bootstrap";
 import { useDebounce } from "use-debounce";
 import GridLoader from "react-spinners/GridLoader";
-import { searchWindow, detectFrameworks } from "@/background/devtools";
 import { browser } from "webextension-polyfill-ts";
-import { DevToolsContext } from "@/devTools/context";
 import { useAsyncEffect } from "use-async-effect";
 import { isEmpty } from "lodash";
+import { thisTab } from "@/devTools/utils";
+import { detectFrameworks, searchWindow } from "@/contentScript/messenger/api";
 
 function useSearchWindow(query: string) {
-  const { port } = useContext(DevToolsContext);
   const { tabId } = browser.devtools.inspectedWindow;
   const [results, setResults] = useState([]);
   const [error, setError] = useState();
@@ -38,7 +37,7 @@ function useSearchWindow(query: string) {
       setError(undefined);
       setResults(undefined);
       try {
-        const { results } = await searchWindow(port, query);
+        const { results } = await searchWindow(thisTab, query);
         if (!isMounted()) return;
         setResults(results as any);
         // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
@@ -54,14 +53,11 @@ function useSearchWindow(query: string) {
 }
 
 const Locator: React.FunctionComponent = () => {
-  const { tabId } = browser.devtools.inspectedWindow;
-  const { port } = useContext(DevToolsContext);
-
   const [query, setQuery] = useState("");
-  const [frameworks] = useAsyncState(async () => detectFrameworks(port), [
-    port,
-    tabId,
-  ]);
+  const [frameworks] = useAsyncState(
+    async () => detectFrameworks(thisTab, null),
+    []
+  );
   const [debouncedQuery] = useDebounce(query, 200);
   const [searchResults, searchError] = useSearchWindow(debouncedQuery);
 

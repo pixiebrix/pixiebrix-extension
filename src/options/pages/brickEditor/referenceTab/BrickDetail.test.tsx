@@ -20,6 +20,12 @@ import { render } from "@testing-library/react";
 import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/blocks/renderers/table";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
+import { MarketplaceListing } from "@/types/contract";
+import { waitForEffect } from "@/tests/testHelpers";
+
+jest.mock("@/services/api", () => ({
+  useGetMarketplaceListingsQuery: () => ({ data: [] as MarketplaceListing[] }),
+}));
 
 test.each([
   ["empty", {}],
@@ -30,11 +36,12 @@ test.each([
     const rendered = render(
       <BrickDetail brick={brick} brickConfig={null} isBrickConfigLoading />
     );
+    await waitForEffect();
     expect(rendered.asFragment()).toMatchSnapshot();
   }
 );
 
-test("renders @pixiebrix/table loaded", () => {
+test("renders @pixiebrix/table loaded", async () => {
   const rendered = render(
     <BrickDetail
       brick={new TableRenderer()}
@@ -42,5 +49,6 @@ test("renders @pixiebrix/table loaded", () => {
       isBrickConfigLoading={false}
     />
   );
+  await waitForEffect();
   expect(rendered.asFragment()).toMatchSnapshot();
 });

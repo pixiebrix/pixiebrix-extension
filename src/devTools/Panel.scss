@@ -54,7 +54,6 @@
   }
 
   .container-fluid {
-    padding-left: 0;
     padding-right: 0;
   }
 
@@ -78,55 +77,6 @@
       &:hover {
         color: #007bff;
       }
-    }
-  }
-
-  .Sidebar {
-    height: 100%;
-
-    border-right: 2px solid #c6bfdb;
-
-    &__extensions {
-      overflow-y: scroll;
-    }
-
-    .list-group {
-      border-radius: 0;
-
-      .list-group-item {
-        padding-left: 12px;
-        padding-right: 12px;
-        border-right: none;
-        font-size: 0.875rem;
-      }
-    }
-
-    &__actions {
-      .badge {
-        margin-top: -5px;
-      }
-    }
-
-    &__logo {
-      background-color: #6462aa; // Make logo icon look square
-    }
-    &__logo:hover {
-      filter: brightness(0.75);
-    }
-
-    &__actions button {
-      border-radius: 0;
-      margin-right: 0;
-      margin-left: 0;
-    }
-
-    label {
-      font-size: 0.875rem;
-    }
-
-    &__footer {
-      font-size: 0.875rem;
-      background-color: lightgray;
     }
   }
 

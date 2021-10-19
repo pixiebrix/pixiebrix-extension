@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -16,27 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isConnectionError } from "@/errors";
-import { showConnectionLost } from "@/contentScript/connection";
-import { reportError } from "@/telemetry/logging";
+import { diff as DiffEditorSync } from "react-ace";
 
-function addErrorListeners(): void {
-  window.addEventListener("error", (error) => {
-    if (isConnectionError(error)) {
-      showConnectionLost();
-    } else {
-      reportError(error);
-      return false;
-    }
-  });
+import "ace-builds/src-noconflict/mode-yaml";
+import "ace-builds/src-noconflict/theme-chrome";
 
-  window.addEventListener("unhandledrejection", (error) => {
-    if (isConnectionError(error)) {
-      showConnectionLost();
-    } else {
-      reportError(error);
-    }
-  });
-}
-
-export default addErrorListeners;
+/**
+ * Bundles DiffEditor. Use "./DiffEditor.tsx" for dynamic import.
+ */
+export default DiffEditorSync;

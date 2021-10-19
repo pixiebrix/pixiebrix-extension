@@ -20,21 +20,12 @@ import React from "react";
 
 import Panel from "@/devTools/Panel";
 
+import "@/telemetry/reportUncaughtErrors";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@/vendors/overrides.scss";
 import "@/devTools/Panel.scss";
-import { reportError } from "@/telemetry/logging";
 
 import initGoogle from "@/contrib/google/initGoogle";
-
-window.addEventListener("error", (e) => {
-  reportError(e);
-  return false;
-});
-
-window.addEventListener("unhandledrejection", (e) => {
-  reportError(e);
-});
 
 initGoogle();
 

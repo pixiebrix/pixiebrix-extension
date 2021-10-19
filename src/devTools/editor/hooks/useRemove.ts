@@ -27,6 +27,8 @@ import { optionsSlice } from "@/options/slices";
 import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
 import { uninstallContextMenu } from "@/background/messenger/api";
+import { thisTab } from "@/devTools/utils";
+import { clearDynamicElements } from "@/contentScript/messenger/api";
 
 /**
  * Remove the current element from the page and installed extensions
@@ -73,7 +75,7 @@ function useRemove(element: FormState): () => void {
 
       // Remove from the host page
       try {
-        await nativeOperations.clearDynamicElements(port, {
+        await clearDynamicElements(thisTab, {
           uuid: element.uuid,
         });
       } catch (error: unknown) {

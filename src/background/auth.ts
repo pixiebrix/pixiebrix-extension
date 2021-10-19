@@ -318,7 +318,9 @@ async function codeGrantFlow(
     throw new Error(
       `Error getting OAuth2 token: ${statusText ?? "Unknown error"}`
     );
-  } else if (typeof data === "string") {
+  }
+
+  if (typeof data === "string") {
     let parsed;
     try {
       parsed = new URLSearchParams(data);
@@ -332,23 +334,17 @@ async function codeGrantFlow(
       throw new Error(parsed.get("error_description") ?? parsed.get("error"));
     }
 
-    const json: Record<string, string> = {};
-    for (const [key, value] of parsed.entries()) {
-      // Coming from the URL search parameter so will be safe
-      // eslint-disable-next-line security/detect-object-injection
-      json[key] = value;
-    }
-
+    const json = Object.fromEntries(parsed.entries());
     await setCachedAuthData(auth.id, json);
     return json as AuthData;
-  } else if (typeof data === "object") {
+  }
+
+  if (typeof data === "object") {
     await setCachedAuthData(auth.id, data);
     return data as AuthData;
-  } else {
-    throw new TypeError(
-      "Error getting OAuth2 token: unexpected response format"
-    );
   }
+
+  throw new TypeError("Error getting OAuth2 token: unexpected response format");
 }
 
 export async function launchOAuth2Flow(

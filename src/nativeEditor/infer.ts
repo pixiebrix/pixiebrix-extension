@@ -533,7 +533,6 @@ export function inferSelectors(
  * Returns true if selector uniquely identifies an element on the page
  */
 function isUniqueSelector(selector: string): boolean {
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
   return $(document).find(selector).length === 1;
 }
 
@@ -686,33 +685,35 @@ export function inferButtonHTML(
     throw new BusinessError(
       "One or more prototype button-like elements required"
     );
-  } else if (selected.length > 1) {
+  }
+
+  if (selected.length > 1) {
     const children = containerChildren($container, selected);
     // Vote on the root tag
     const tag = mostCommonElement(selected.map((x) => x.tagName)).toLowerCase();
     return commonButtonHTML(tag, $(children));
-  } else {
-    const element = selected[0];
-    for (const buttonTag of [...BUTTON_SELECTORS, ...BUTTON_TAGS]) {
-      const $items = $container.children(buttonTag);
-      if (
-        $items.length > 0 &&
-        ($items.is(element) || $items.has(element).length > 0)
-      ) {
-        if (buttonTag === "input") {
-          const commonType = commonAttr($items, "type") ?? "button";
-          const inputType = ["submit", "reset"].includes(commonType)
-            ? "button"
-            : commonType;
-          return `<input type="${inputType}" value="{{{ caption }}}" />`;
-        }
-
-        return commonButtonHTML(buttonTag, $items);
-      }
-    }
-
-    throw new BusinessError(
-      `Did not find any button-like tags in container ${container.tagName}`
-    );
   }
+
+  const element = selected[0];
+  for (const buttonTag of [...BUTTON_SELECTORS, ...BUTTON_TAGS]) {
+    const $items = $container.children(buttonTag);
+    if (
+      $items.length > 0 &&
+      ($items.is(element) || $items.has(element).length > 0)
+    ) {
+      if (buttonTag === "input") {
+        const commonType = commonAttr($items, "type") ?? "button";
+        const inputType = ["submit", "reset"].includes(commonType)
+          ? "button"
+          : commonType;
+        return `<input type="${inputType}" value="{{{ caption }}}" />`;
+      }
+
+      return commonButtonHTML(buttonTag, $items);
+    }
+  }
+
+  throw new BusinessError(
+    `Did not find any button-like tags in container ${container.tagName}`
+  );
 }

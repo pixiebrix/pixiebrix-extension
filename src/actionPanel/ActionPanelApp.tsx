@@ -42,16 +42,9 @@ import { PersistGate } from "redux-persist/integration/react";
 import { reportEvent } from "@/telemetry/events";
 import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { selectEventData } from "@/telemetry/deployments";
-import { browser } from "webextension-polyfill-ts";
-import { HIDE_ACTION_FRAME } from "@/background/browserAction";
+import { browserAction } from "@/background/messenger/api";
 import { UUID } from "@/core";
-
-const closeSidebar = async () => {
-  await browser.runtime.sendMessage({
-    type: HIDE_ACTION_FRAME,
-    payload: {},
-  });
-};
+import { ary } from "lodash";
 
 const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
   panels,
@@ -141,7 +134,10 @@ const ActionPanelApp: React.FunctionComponent = () => {
             <div className="d-flex flex-row mb-2 p-2 justify-content-between align-content-center">
               <Button
                 className="action-panel-button"
-                onClick={closeSidebar}
+                onClick={
+                  // Ignore the onClick args since they can't be serialized by the messenging framework
+                  ary(browserAction.hideActionFrame, 0)
+                }
                 size="sm"
                 variant="link"
               >

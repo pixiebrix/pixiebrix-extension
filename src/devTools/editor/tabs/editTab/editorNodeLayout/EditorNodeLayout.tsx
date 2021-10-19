@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React from "react";
 import styles from "./EditorNodeLayout.module.scss";
 import EditorNode, {
   EditorNodeProps,
@@ -26,20 +26,27 @@ import {
   faPlus,
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { IBlock, RegistryId } from "@/core";
+import { IBlock, RegistryId, UUID } from "@/core";
 import BlockModal from "@/components/brickModal/BrickModal";
 import useBrickRecommendations from "@/devTools/editor/tabs/editTab/useBrickRecommendations";
+import cx from "classnames";
 
-const renderAppend = ({ show }: { show: () => void }) => (
-  <>
-    <FontAwesomeIcon
-      icon={faArrowDown}
-      size="lg"
-      className={styles.appendArrow}
-    />
-    <EditorNode muted title="Add" icon={faPlus} onClick={show} />
-  </>
-);
+function renderAppend(onClick: () => void, addRightMargin: boolean) {
+  return (
+    <div
+      className={cx(styles.appendContainer, {
+        [styles.addRightMargin]: addRightMargin,
+      })}
+    >
+      <FontAwesomeIcon
+        icon={faArrowDown}
+        size="lg"
+        className={styles.appendArrow}
+      />
+      <EditorNode muted title="Add" icon={faPlus} onClick={onClick} />
+    </div>
+  );
+}
 
 const addBrickCaption = (
   <span>
@@ -47,63 +54,101 @@ const addBrickCaption = (
   </span>
 );
 
+export type NodeId = UUID;
+
+export const FOUNDATION_NODE_ID = "foundation" as UUID;
+
 const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];
-  activeNodeIndex: number;
+  activeNodeId: NodeId;
   relevantBlocksToAdd: IBlock[];
-  addBlock: (block: IBlock, atIndex: number) => void;
+  addBlock: (block: IBlock, beforeInstanceId?: UUID) => void;
   showAppend: boolean;
+  moveBlockUp: (instanceId: UUID) => void;
+  moveBlockDown: (instanceId: UUID) => void;
 }> = ({
   nodes,
-  activeNodeIndex,
+  activeNodeId,
   relevantBlocksToAdd,
   addBlock,
   showAppend,
+  moveBlockUp,
+  moveBlockDown,
 }) => {
   const recommendations: RegistryId[] = useBrickRecommendations();
 
-  const renderInsert = useCallback(
-    ({ show }) => (
+  function renderInsert(onClick: () => void, addRightMargin: boolean) {
+    return (
       // Don't use bootstrap styling
-      <button type="button" className={styles.insertButton} onClick={show}>
+      <button
+        type="button"
+        onClick={onClick}
+        className={cx(styles.insertButton, {
+          [styles.addRightMargin]: addRightMargin,
+        })}
+      >
         <FontAwesomeIcon
           icon={faPlusCircle}
           size="lg"
           className={styles.plus}
         />
       </button>
-    ),
-    []
-  );
+    );
+  }
+
+  const canMoveAnything = nodes.length > 2;
 
   return (
     <div className={styles.root}>
       {nodes.length > 0 &&
-        nodes.map((nodeProps, index) => (
-          <React.Fragment key={index}>
-            {index !== 0 && (
-              <BlockModal
-                bricks={relevantBlocksToAdd}
-                renderButton={renderInsert}
-                recommendations={recommendations}
-                selectCaption={addBrickCaption}
-                onSelect={(block) => {
-                  addBlock(block, index);
-                }}
+        nodes.map((nodeProps, index) => {
+          const { nodeId } = nodeProps;
+          // Editor nodes are displayed from top to bottom in array order,
+          // so, "up" is lower in the array, and "down" is higher in the array.
+          // Also, you cannot move the foundation node, which is always at
+          // index 0.
+          if (nodeId !== FOUNDATION_NODE_ID) {
+            nodeProps.canMoveUp = index > 1; // Any nodes beyond the first non-foundation node
+            nodeProps.canMoveDown = index > 0 && index + 1 < nodes.length; // Not the first and not the last
+            nodeProps.onClickMoveUp = () => {
+              moveBlockUp(nodeId);
+            };
+
+            nodeProps.onClickMoveDown = () => {
+              moveBlockDown(nodeId);
+            };
+          }
+
+          return (
+            <React.Fragment key={index}>
+              {nodeId !== FOUNDATION_NODE_ID && (
+                <BlockModal
+                  bricks={relevantBlocksToAdd}
+                  renderButton={(onClick) =>
+                    renderInsert(onClick, canMoveAnything)
+                  }
+                  recommendations={recommendations}
+                  selectCaption={addBrickCaption}
+                  onSelect={(block) => {
+                    addBlock(block, nodeId);
+                  }}
+                />
+              )}
+              <EditorNode
+                active={nodeId === activeNodeId}
+                canMoveAnything={canMoveAnything}
+                {...nodeProps}
               />
-            )}
-            <EditorNode active={index === activeNodeIndex} {...nodeProps} />
-          </React.Fragment>
-        ))}
+            </React.Fragment>
+          );
+        })}
       {showAppend && (
         <BlockModal
           bricks={relevantBlocksToAdd}
-          renderButton={renderAppend}
+          renderButton={(onClick) => renderAppend(onClick, canMoveAnything)}
           recommendations={recommendations}
           selectCaption={addBrickCaption}
-          onSelect={(block) => {
-            addBlock(block, nodes.length);
-          }}
+          onSelect={addBlock}
         />
       )}
     </div>

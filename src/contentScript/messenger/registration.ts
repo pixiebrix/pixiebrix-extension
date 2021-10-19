@@ -60,6 +60,7 @@ import {
   runBlockInContentScript,
 } from "@/contentScript/executor";
 import { cancelSelect, selectElement } from "@/nativeEditor/selector";
+import { runExtensionPointReader } from "@/nativeEditor/dynamic";
 
 expectContext("contentScript");
 
@@ -95,6 +96,7 @@ declare global {
 
     CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
     UPDATE_DYNAMIC_ELEMENT: typeof updateDynamicElement;
+    RUN_EXTENSION_POINT_READER: typeof runExtensionPointReader;
     ENABLE_OVERLAY: typeof enableOverlay;
     DISABLE_OVERLAY: typeof disableOverlay;
     INSTALLED_EXTENSIONS: typeof getInstalledIds;
@@ -102,7 +104,7 @@ declare global {
     HANDLE_NAVIGATE: typeof handleNavigate;
     SHOW_NOTIFICATION: typeof showNotification;
     LINK_CHILD_TAB: typeof linkChildTab;
-    CONTENT_MESSAGE_RUN_BLOCK: typeof runBlockInContentScript;
+    RUN_BLOCK: typeof runBlockInContentScript;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
   }
@@ -136,6 +138,7 @@ registerMethods({
 
   CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
   UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
+  RUN_EXTENSION_POINT_READER: runExtensionPointReader,
   ENABLE_OVERLAY: enableOverlay,
   DISABLE_OVERLAY: disableOverlay,
   INSTALLED_EXTENSIONS: getInstalledIds,
@@ -144,7 +147,7 @@ registerMethods({
   SHOW_NOTIFICATION: showNotification,
 
   LINK_CHILD_TAB: linkChildTab,
-  CONTENT_MESSAGE_RUN_BLOCK: runBlockInContentScript,
+  RUN_BLOCK: runBlockInContentScript,
   CANCEL_SELECT_ELEMENT: cancelSelect,
   SELECT_ELEMENT: selectElement,
 });

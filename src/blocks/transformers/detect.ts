@@ -54,7 +54,6 @@ export class DetectElement extends Transformer {
   };
 
   async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
-    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
     const $result = $(document).find(selector);
     return {
       count: $result.length,

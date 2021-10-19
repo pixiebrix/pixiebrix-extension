@@ -20,9 +20,16 @@ import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import cx from "classnames";
-import { Badge } from "react-bootstrap";
+import {
+  faArrowDown,
+  faArrowUp,
+  faExclamationCircle,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
+import { NodeId } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 
 export type EditorNodeProps = {
+  nodeId?: NodeId;
   title: string;
   outputKey?: string;
   icon?: IconProp | React.ReactNode;
@@ -31,6 +38,11 @@ export type EditorNodeProps = {
   active?: boolean;
   hasError?: boolean;
   hasWarning?: boolean;
+  canMoveAnything?: boolean;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
+  onClickMoveUp?: () => void;
+  onClickMoveDown?: () => void;
 };
 
 function isFontAwesomeIcon(
@@ -51,6 +63,11 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   active,
   hasError,
   hasWarning,
+  canMoveAnything,
+  canMoveUp,
+  canMoveDown,
+  onClickMoveUp,
+  onClickMoveDown,
 }) => {
   const outputName = outputKey ? `@${outputKey}` : "";
 
@@ -60,30 +77,76 @@ const EditorNode: React.FC<EditorNodeProps> = ({
     iconProp
   );
 
+  const errorBadge =
+    hasError || hasWarning ? (
+      <span className={cx("fa-layers", "fa-fw", styles.errorBadge)}>
+        <span className={styles.exclamationBackground} />
+        <FontAwesomeIcon
+          icon={hasError ? faExclamationCircle : faExclamationTriangle}
+          className={cx({
+            [styles.errorBadgeBackground]: hasError,
+            [styles.warningBadgeBackground]: hasWarning,
+          })}
+        />
+      </span>
+    ) : null;
+
   return (
     // Use our own custom style here, not bootstrap
     <div className={styles.root}>
-      <div className={styles.title}>{title}</div>
-      <button
-        type="button"
-        onClick={onClick}
-        className={cx(styles.button, {
-          [styles.mutedNode]: muted,
-          [styles.activeNode]: active,
+      <div
+        className={cx(styles.title, {
+          [styles.addRightMargin]: canMoveAnything,
         })}
       >
-        {(hasError || hasWarning) && (
-          <Badge
-            pill
-            variant={hasError ? "danger" : "warning"}
-            className={styles.errorBadge}
-          >
-            !
-          </Badge>
+        {title}
+      </div>
+      <div className={styles.buttonRow}>
+        <button
+          type="button"
+          onClick={onClick}
+          className={cx(styles.nodeButton, {
+            [styles.mutedNode]: muted,
+            [styles.activeNode]: active,
+          })}
+        >
+          {errorBadge}
+          {icon}
+        </button>
+        {canMoveAnything && (
+          <div className={styles.moveButtons}>
+            {(canMoveUp || canMoveDown) && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClickMoveUp();
+                  }}
+                  disabled={!canMoveUp}
+                >
+                  <FontAwesomeIcon icon={faArrowUp} size="sm" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClickMoveDown();
+                  }}
+                  disabled={!canMoveDown}
+                >
+                  <FontAwesomeIcon icon={faArrowDown} size="sm" />
+                </button>
+              </>
+            )}
+          </div>
         )}
-        {icon}
-      </button>
-      <div className={styles.outputKey}>{outputName}</div>
+      </div>
+      <div
+        className={cx(styles.outputKey, {
+          [styles.addRightMargin]: canMoveAnything,
+        })}
+      >
+        {outputName}
+      </div>
     </div>
   );
 };

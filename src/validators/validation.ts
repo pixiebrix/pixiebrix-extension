@@ -123,7 +123,9 @@ export function configSchemaFactory(
         throw new TypeError(
           "Expected schema definition for items, not boolean"
         );
-      } else if (Array.isArray(schema.items)) {
+      }
+
+      if (Array.isArray(schema.items)) {
         // TODO: implement support for tuples
         // https://github.com/jquense/yup/issues/528
         return Yup.lazy((x) =>
@@ -131,14 +133,14 @@ export function configSchemaFactory(
             ? wrapRequired(Yup.array())
             : wrapRequired(Yup.string())
         );
-      } else {
-        const items = schema.items as Schema;
-        return Yup.lazy((x) =>
-          Array.isArray(x)
-            ? wrapRequired(Yup.array().of(configSchemaFactory(items)))
-            : wrapRequired(Yup.string())
-        );
       }
+
+      const items = schema.items as Schema;
+      return Yup.lazy((x) =>
+        Array.isArray(x)
+          ? wrapRequired(Yup.array().of(configSchemaFactory(items)))
+          : wrapRequired(Yup.string())
+      );
     }
 
     case "boolean": {

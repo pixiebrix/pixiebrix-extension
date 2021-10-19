@@ -27,6 +27,9 @@ export async function getType(
   block: IBlock | IService
 ): Promise<BlockType | null> {
   if ("inferType" in block) {
+    // For YAML-based blocks, can't use the method to determine the type because only the "run" method is available.
+    // The inferType method is provided ExternalBlock, which is the class used for YAML-based blocks (which have
+    // kind: component) in their YAML
     return (block as any).inferType();
   }
 

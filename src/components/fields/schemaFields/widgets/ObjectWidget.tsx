@@ -25,7 +25,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import { freshIdentifier } from "@/utils";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import ComplexObjectValue from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 import ExpressionWidget from "@/components/fields/schemaFields/widgets/ExpressionWidget";
 import SchemaFieldContext, {
@@ -191,7 +190,7 @@ export function getPropertyRow(
 
 type ObjectValue = Record<string, unknown>;
 
-const ObjectWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = (props) => {
+const ObjectWidget: React.FC<SchemaFieldProps<unknown>> = (props) => {
   const { name, schema } = props;
 
   // Allow additional properties for empty schema (empty schema allows shape)

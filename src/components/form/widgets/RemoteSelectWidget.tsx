@@ -16,10 +16,13 @@
  */
 
 import React from "react";
-import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
+import SelectWidget, {
+  Option,
+  SelectLike,
+} from "@/components/form/widgets/SelectWidget";
 import { SanitizedServiceConfiguration } from "@/core";
 import { AsyncState, useAsyncState } from "@/hooks/common";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { BusinessError } from "@/errors";
 import isPromise from "is-promise";
 
@@ -27,7 +30,10 @@ export type OptionsFactory<T = unknown> = (
   config: SanitizedServiceConfiguration
 ) => Promise<Array<Option<T>>>;
 
-type OwnProps<T = unknown> = {
+type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
+  T,
+  SelectLike<Option<T>>
+> & {
   isClearable?: boolean;
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>;
   config: SanitizedServiceConfiguration | null;
@@ -36,12 +42,12 @@ type OwnProps<T = unknown> = {
 
 export function useOptionsResolver<T>(
   config: SanitizedServiceConfiguration,
-  optionsFactory: OptionsFactory<T>
+  optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>
 ): AsyncState<Array<Option<T>>> {
   return useAsyncState<Array<Option<T>>>(async () => {
     if (isPromise(optionsFactory)) {
       console.debug("Options is a promise, returning promise directly");
-      return (optionsFactory as unknown) as Promise<Array<Option<T>>>;
+      return optionsFactory;
     }
 
     if (config) {
@@ -58,7 +64,7 @@ export function useOptionsResolver<T>(
 /**
  * Widget for selecting values retrieved from a 3rd party API
  */
-const RemoteSelectWidget: CustomFieldWidget<OwnProps> = ({
+const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
   config,
   optionsFactory,
   ...selectProps

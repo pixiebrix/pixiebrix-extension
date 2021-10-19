@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useMemo } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { setIn, useField, useFormikContext } from "formik";
 import {
@@ -39,6 +39,7 @@ import { browser } from "webextension-polyfill-ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import SelectWidget, {
+  SelectLike,
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import { castArray, isEmpty } from "lodash";
@@ -110,20 +111,17 @@ function lookupAuthId(
     : authOptions.find((x) => x.value === dependency.config)?.value;
 }
 
-const PIPELINE_PROPERTIES = ["action", "body"];
-
 function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
   const extensionConfig = state.extension as UnknownObject;
 
-  const identifiers = PIPELINE_PROPERTIES.flatMap((prop) => {
-    // eslint-disable-next-line security/detect-object-injection -- prop is constant
-    const pipeline = castArray(extensionConfig[prop] ?? []) as BlockPipeline;
-    return pipeline.flatMap((blockConfig) => {
-      const values = Object.values(blockConfig.config).filter(
-        (x) => typeof x === "string"
-      ) as string[];
-      return values.filter((value) => SERVICE_VAR_REGEX.test(value));
-    });
+  const pipeline = castArray(
+    extensionConfig.blockPipeline ?? []
+  ) as BlockPipeline;
+  const identifiers = pipeline.flatMap((blockConfig) => {
+    const values = Object.values(blockConfig.config).filter(
+      (x) => typeof x === "string"
+    ) as string[];
+    return values.filter((value) => SERVICE_VAR_REGEX.test(value));
   });
 
   return new Set(identifiers);
@@ -263,7 +261,7 @@ const ServiceField: React.FunctionComponent<
           // updates the services part of the form state
           onChange({
             target: { value: options[0].value, name: field.name, options },
-          });
+          } as ChangeEvent<SelectLike<AuthOption>>);
         }
       }
     },

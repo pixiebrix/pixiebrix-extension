@@ -74,7 +74,6 @@ export class ElementEvent extends Effect {
     { selector, event }: BlockArg,
     { logger }: BlockOptions
   ): Promise<void> {
-    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
     const $element = $(document).find(selector);
 
     if ($element.length === 0) {

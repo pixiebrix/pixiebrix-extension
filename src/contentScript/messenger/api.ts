@@ -61,6 +61,9 @@ export const clearDynamicElements = getContentScriptMethod(
 export const updateDynamicElement = getContentScriptMethod(
   "UPDATE_DYNAMIC_ELEMENT"
 );
+export const runExtensionPointReader = getContentScriptMethod(
+  "RUN_EXTENSION_POINT_READER"
+);
 export const enableOverlay = getContentScriptMethod("ENABLE_OVERLAY");
 export const disableOverlay = getContentScriptMethod("DISABLE_OVERLAY");
 export const getInstalledExtensionPointIds = getContentScriptMethod(
@@ -74,9 +77,7 @@ export const showNotification = getContentScriptMethod("SHOW_NOTIFICATION");
 export const linkChildTab = getContentScriptMethod("LINK_CHILD_TAB", {
   isNotification: true,
 });
-export const runBlockInContentScript = getContentScriptMethod(
-  "CONTENT_MESSAGE_RUN_BLOCK"
-);
+export const runBlockInContentScript = getContentScriptMethod("RUN_BLOCK");
 export const cancelSelect = getContentScriptMethod("CANCEL_SELECT_ELEMENT");
 export const selectElement = getContentScriptMethod("SELECT_ELEMENT");
 

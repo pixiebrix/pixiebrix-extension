@@ -17,13 +17,19 @@
 
 import chromeP from "webext-polyfill-kinda";
 import { getErrorMessage } from "@/errors";
+import { forbidContext } from "@/utils/expectContext";
 
 export async function ensureAuth(
   scopes: string[],
   { interactive = true } = {}
 ): Promise<string> {
-  if (!gapi) {
-    throw new Error("Google API not loaded. Are you using Chrome?");
+  forbidContext(
+    "contentScript",
+    "The Google API is not available in content scripts"
+  );
+
+  if (!globalThis.gapi) {
+    throw new TypeError("Google API not loaded");
   }
 
   try {
@@ -84,5 +90,5 @@ export async function handleRejection(
     );
   }
 
-  return new Error(getErrorMessage(error.result.error ?? "Unknown error"));
+  return new Error(getErrorMessage(error.result.error));
 }

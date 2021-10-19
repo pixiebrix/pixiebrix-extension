@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { FieldArray, useField } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
@@ -61,7 +60,7 @@ function getDefaultArrayItem(schema: Schema): unknown {
   return null;
 }
 
-const ArrayWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = ({
+const ArrayWidget: React.FC<SchemaFieldProps<unknown>> = ({
   schema,
   label,
   name,
@@ -70,7 +69,9 @@ const ArrayWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = ({
 
   if (Array.isArray(schema.items)) {
     throw new TypeError("Support for arrays of mixed types is not implemented");
-  } else if (typeof schema.items === "boolean") {
+  }
+
+  if (typeof schema.items === "boolean") {
     throw new TypeError("Schema required for items");
   }
 

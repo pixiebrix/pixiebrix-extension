@@ -22,6 +22,7 @@ import * as pageScript from "@/pageScript/protocol";
 import { requireSingleElement } from "@/nativeEditor/utils";
 
 let overlay: Overlay | null = null;
+let styleElement: HTMLStyleElement = null;
 
 export function hideOverlay(): void {
   if (overlay != null) {
@@ -32,21 +33,28 @@ export function hideOverlay(): void {
 
 let _cancelSelect: () => void = null;
 
+function noopMouseHandler(event: MouseEvent) {
+  event.preventDefault();
+  event.stopPropagation();
+}
+
 export async function userSelectElement(
   root?: HTMLElement
 ): Promise<HTMLElement[]> {
   return new Promise<HTMLElement[]>((resolve, reject) => {
     const targets: HTMLElement[] = [];
 
+    function startInspectingNative() {
+      _cancelSelect = cancel;
+      registerListenersOnWindow(window);
+      addInspectingModeStyles(window);
+    }
+
     function stopInspectingNative() {
       hideOverlay();
       _cancelSelect = null;
       removeListenersOnWindow(window);
-    }
-
-    function noopMouseHandler(event: MouseEvent) {
-      event.preventDefault();
-      event.stopPropagation();
+      removeInspectingModeStyles();
     }
 
     function onClick(event: MouseEvent) {
@@ -88,7 +96,7 @@ export async function userSelectElement(
       event.preventDefault();
       event.stopPropagation();
 
-      console.log("Pointer down:", event.target);
+      console.debug("Pointer down:", event.target);
     }
 
     function onPointerOver(event: MouseEvent) {
@@ -100,6 +108,12 @@ export async function userSelectElement(
       }
 
       overlay.inspect([event.target as HTMLElement], null);
+    }
+
+    function onPointerLeave(event: MouseEvent) {
+      if (event.target === window.document) {
+        hideOverlay();
+      }
     }
 
     function escape(event: KeyboardEvent) {
@@ -122,6 +136,7 @@ export async function userSelectElement(
       window.addEventListener("mouseup", noopMouseHandler, true);
       window.addEventListener("pointerdown", onPointerDown, true);
       window.addEventListener("pointerover", onPointerOver, true);
+      window.document.addEventListener("pointerleave", onPointerLeave, true);
       window.addEventListener("pointerup", noopMouseHandler, true);
       window.addEventListener("keyup", escape, true);
     }
@@ -133,22 +148,50 @@ export async function userSelectElement(
       window.removeEventListener("mouseup", noopMouseHandler, true);
       window.removeEventListener("pointerdown", onPointerDown, true);
       window.removeEventListener("pointerover", onPointerOver, true);
+      window.document.removeEventListener("pointerleave", onPointerLeave, true);
       window.removeEventListener("pointerup", noopMouseHandler, true);
       window.removeEventListener("keyup", escape, true);
     }
 
-    _cancelSelect = cancel;
-    registerListenersOnWindow(window);
+    function addInspectingModeStyles(window: Window) {
+      const doc = window.document;
+      styleElement = doc.createElement("style");
+      styleElement.innerHTML = `
+        html:not(:hover):before {
+          content: '';
+          border: solid 10px rgba(182, 109, 255, 0.3);
+          position: fixed;
+          z-index: 100000000;
+          inset: 0;
+          /* Sine curve to make the pulse smooth */
+          animation: 600ms cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate pbGlow;
+        }
+
+        @keyframes pbGlow {
+          to {
+            border-width: 25px;
+          }
+        }`;
+      doc.body.append(styleElement);
+    }
+
+    function removeInspectingModeStyles() {
+      if (!styleElement) {
+        return;
+      }
+
+      if (styleElement.parentNode) {
+        styleElement.remove();
+      }
+
+      styleElement = null;
+    }
+
+    startInspectingNative();
   });
 }
 
 export type SelectMode = "element" | "container";
-
-// Export const findComponent = liftContentScript(
-//     "SELECT_COMPONENT",
-//     async ({ selector, framework }: { selector: string, framework: Framework }) => {
-//     }
-// )
 
 export async function cancelSelect() {
   if (_cancelSelect) {

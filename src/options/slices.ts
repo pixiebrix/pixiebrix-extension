@@ -326,7 +326,9 @@ export const optionsSlice = createSlice({
       // Support both extensionId and id to keep the API consistent with the shape of the stored extension
       if (persistedId == null) {
         throw new Error("id or extensionId is required");
-      } else if (extensionPointId == null) {
+      }
+
+      if (extensionPointId == null) {
         throw new Error("extensionPointId is required");
       }
 

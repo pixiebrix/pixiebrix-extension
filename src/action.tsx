@@ -20,29 +20,24 @@ import "@/extensionContext";
 // Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/rollbar";
 
-import App from "./actionPanel/ActionPanelApp";
+import App from "@/actionPanel/ActionPanelApp";
 import ReactDOM from "react-dom";
 import React from "react";
-import { browser } from "webextension-polyfill-ts";
 
-import { REGISTER_ACTION_FRAME } from "@/background/browserAction";
+import { browserAction } from "@/background/messenger/api";
+import { UUID } from "@/core";
 import "@/actionPanel/protocol";
 
 // Keep in order so precedence is preserved
 import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
-import "./action.scss";
+import "@/action.scss";
 
 const url = new URL(location.href);
-const nonce = url.searchParams.get("nonce");
+const nonce = url.searchParams.get("nonce") as UUID;
 
-void browser.runtime
-  .sendMessage({
-    type: REGISTER_ACTION_FRAME,
-    payload: { nonce },
-  })
-  .then(() => {
-    console.debug("Registered action frame with background page");
-  });
+void browserAction.registerActionFrame(nonce).then(() => {
+  console.debug("Registered action frame with background page");
+});
 
 ReactDOM.render(<App />, document.querySelector("#container"));

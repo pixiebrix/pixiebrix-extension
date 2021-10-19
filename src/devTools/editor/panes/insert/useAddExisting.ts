@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
 import { reportError } from "@/telemetry/logging";
 import { useDispatch } from "react-redux";
 import { useToasts } from "react-toast-notifications";
-import { DevToolsContext } from "@/devTools/context";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
@@ -34,7 +33,6 @@ function useAddExisting<T extends { rawConfig: ExtensionPointConfig }>(
 ): (extensionPoint: { rawConfig: ExtensionPointConfig }) => Promise<void> {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
-  const { port } = useContext(DevToolsContext);
 
   return useCallback(
     async (extensionPoint: T) => {
@@ -62,7 +60,7 @@ function useAddExisting<T extends { rawConfig: ExtensionPointConfig }>(
         });
       }
     },
-    [config, port, dispatch, cancel, addToast]
+    [config, dispatch, cancel, addToast]
   );
 }
 

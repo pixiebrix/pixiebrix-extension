@@ -18,6 +18,7 @@
 import { browser } from "webextension-polyfill-ts";
 import { Primitive } from "type-fest";
 import { compact, includes, isEmpty, mapValues, pickBy } from "lodash";
+import { Target } from "@/types";
 
 function printf(string: string, arguments_: string[]): string {
   // eslint-disable-next-line unicorn/no-array-reduce -- Short and already described by "printf"
@@ -84,3 +85,15 @@ export function searchData(query: string, data: unknown): unknown {
     ? data
     : undefined;
 }
+
+/**
+ * Message target for the tab being inspected by the devtools.
+ *
+ * The Page Editor only supports editing the top-level frame.
+ */
+export const thisTab: Target = {
+  // This code might end up (unused) in non-dev bundles, so use `?.` to avoid errors from undefined values
+  tabId: globalThis.browser?.devtools?.inspectedWindow?.tabId ?? 0,
+  // The top-level frame
+  frameId: 0,
+};

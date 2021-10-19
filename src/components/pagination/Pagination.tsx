@@ -30,7 +30,6 @@ const Pagination: React.FC<{
   let displayedNumbers: number[];
   let renderLeftEllipsis: boolean;
   let renderRightEllipsis: boolean;
-  numPages = Math.ceil(numPages);
 
   if (numPages <= MAX_DISPLAYED_PAGES) {
     displayedNumbers = range(numPages);
@@ -43,8 +42,8 @@ const Pagination: React.FC<{
     let firstDisplayedPage = page - Math.floor(middlePageIndex);
     if (firstDisplayedPage < 0) {
       firstDisplayedPage = 0;
-    } else if (firstDisplayedPage + MAX_DISPLAYED_PAGES >= numPages) {
-      firstDisplayedPage = numPages - MAX_DISPLAYED_PAGES - 1;
+    } else if (firstDisplayedPage + MAX_DISPLAYED_PAGES > numPages) {
+      firstDisplayedPage = numPages - MAX_DISPLAYED_PAGES;
     }
 
     displayedNumbers = range(

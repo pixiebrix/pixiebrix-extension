@@ -20,7 +20,6 @@ import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { InputValidationError } from "@/blocks/errors";
-import { OutputUnit } from "@cfworker/json-schema";
 import { isErrorObject } from "@/errors";
 
 export class JQTransformer extends Transformer {
@@ -71,34 +70,27 @@ export class JQTransformer extends Transformer {
       // eslint-disable-next-line @typescript-eslint/return-await -- Type is `any`, it throws the rule off
       return await jq.promised.json(input, filter);
     } catch (error: unknown) {
-      if (isErrorObject(error) && error.message.includes("compile error")) {
-        const validationErrors: OutputUnit[] = [
+      if (!isErrorObject(error) || !error.message.includes("compile error")) {
+        throw error;
+      }
+
+      const message = error.stack.includes("unexpected $end")
+        ? "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?"
+        : "Invalid jq filter, see error log for details";
+
+      throw new InputValidationError(
+        message,
+        this.inputSchema,
+        { filter, data: input },
+        [
           {
             keyword: "filter",
             keywordLocation: "#/filter",
             instanceLocation: "#",
             error: error.stack,
           },
-        ];
-
-        if (error.stack.includes("unexpected $end")) {
-          throw new InputValidationError(
-            "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?",
-            this.inputSchema,
-            { filter, data: input },
-            validationErrors
-          );
-        } else {
-          throw new InputValidationError(
-            "Invalid jq filter, see error log for details",
-            this.inputSchema,
-            { filter, data: input },
-            validationErrors
-          );
-        }
-      }
-
-      throw error;
+        ]
+      );
     }
   }
 }

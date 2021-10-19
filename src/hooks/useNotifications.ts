@@ -131,7 +131,7 @@ function useNotifications(): Notifications {
 
   const notifyError = useCallback(
     (content: unknown, options: ErrorNotificationOptions = {}) => {
-      notify(getErrorMessage(content ?? "Unknown Error"), {
+      notify(getErrorMessage(content), {
         report: true,
         autoDismiss: true,
         ...options,

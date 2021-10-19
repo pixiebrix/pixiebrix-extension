@@ -32,7 +32,7 @@ import {
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { find as findBrick } from "@/registry/localRegistry";
+import { registry } from "@/background/messenger/api";
 import React from "react";
 import { createSitePattern } from "@/permissions/patterns";
 import {
@@ -118,7 +118,9 @@ export function makeInitialBaseState(
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     services: [],
-    extension: {},
+    extension: {
+      blockPipeline: [],
+    },
   };
 }
 
@@ -198,7 +200,7 @@ export async function lookupExtensionPoint<
     return innerExtensionPoint;
   }
 
-  const brick = await findBrick(config.extensionPointId);
+  const brick = await registry.find(config.extensionPointId);
   if (!brick) {
     throw new Error(
       `Cannot find extension point definition: ${config.extensionPointId}`

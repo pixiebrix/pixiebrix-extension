@@ -39,6 +39,14 @@ import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
 import { Except } from "type-fest";
+import styles from "./Sidebar.module.scss";
+import {
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
+} from "@fortawesome/free-solid-svg-icons";
+import { CSSTransition } from "react-transition-group";
+import cx from "classnames";
+import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -60,14 +68,22 @@ const DropdownEntry: React.FunctionComponent<{
   </Dropdown.Item>
 );
 
-const Sidebar: React.FunctionComponent<
-  Except<
-    EditorState,
-    "error" | "dirty" | "knownEditable" | "selectionSeq" | "isBetaUI"
-  > & {
-    installed: IExtension[];
+const Logo: React.FunctionComponent = () => (
+  <img src={logoUrl} alt="PixiBrix logo" className={styles.logo} />
+);
+
+type SidebarProps = Except<
+  EditorState,
+  "error" | "dirty" | "knownEditable" | "selectionSeq" | "isBetaUI"
+> & {
+  installed: IExtension[];
+};
+
+const SidebarExpanded: React.FunctionComponent<
+  SidebarProps & {
+    collapseSidebar: () => void;
   }
-> = ({ inserting, activeElement, installed, elements }) => {
+> = ({ inserting, activeElement, installed, elements, collapseSidebar }) => {
   const context = useContext(DevToolsContext);
   const {
     port,
@@ -117,59 +133,63 @@ const Sidebar: React.FunctionComponent<
   const addElement = useAddElement();
 
   return (
-    <div className="Sidebar d-flex flex-column vh-100">
-      <div className="Sidebar__actions flex-grow-0">
-        <div className="d-inline-flex flex-wrap">
-          <a
-            href="/options.html"
-            target="_blank"
-            title="Open PixieBrix Options"
+    <div className={cx(styles.root, styles.expanded)}>
+      <div>
+        <div className={styles.actions}>
+          <div className={styles.actionsLeft}>
+            <a
+              href="/options.html"
+              target="_blank"
+              title="Open PixieBrix Options"
+            >
+              <Logo />
+            </a>
+            <DropdownButton
+              disabled={Boolean(inserting) || !hasPermissions}
+              variant="info"
+              size="sm"
+              title="Add"
+              id="add-extension-point"
+              className="mr-2"
+            >
+              {sortBy([...ADAPTERS.values()], (x) => x.displayOrder).map(
+                (element) => (
+                  <DropdownEntry
+                    key={element.elementType}
+                    caption={element.label}
+                    icon={element.icon}
+                    beta={element.beta}
+                    onClick={() => {
+                      addElement(element);
+                    }}
+                  />
+                )
+              )}
+            </DropdownButton>
+          </div>
+          <button
+            className={cx("navbar-toggler", styles.toggle)}
+            type="button"
+            onClick={collapseSidebar}
           >
-            <img
-              src={logoUrl}
-              alt=""
-              width={31}
-              height={31}
-              className="Sidebar__logo"
-            />
-          </a>
-          <DropdownButton
-            disabled={Boolean(inserting) || !hasPermissions}
-            variant="info"
-            size="sm"
-            title="Add"
-            id="add-extension-point"
-            className="mr-2 Sidebar__actions__dropdown"
-          >
-            {sortBy([...ADAPTERS.values()], (x) => x.displayOrder).map(
-              (element) => (
-                <DropdownEntry
-                  key={element.elementType}
-                  caption={element.label}
-                  icon={element.icon}
-                  beta={element.beta}
-                  onClick={() => {
-                    addElement(element);
-                  }}
-                />
-              )
-            )}
-          </DropdownButton>
-          {unavailableCount ? (
-            <div className="my-auto">
-              <Form.Check
-                type="checkbox"
-                label={`Show ${unavailableCount} unavailable`}
-                defaultChecked={showAll}
-                onChange={(event: FormEvent<HTMLInputElement>) => {
-                  setShowAll(event.currentTarget.checked);
-                }}
-              />
-            </div>
-          ) : null}
+            <FontAwesomeIcon icon={faAngleDoubleLeft} />
+          </button>
         </div>
+
+        {unavailableCount ? (
+          <div className={styles.unavailable}>
+            <Form.Check
+              type="checkbox"
+              label={`Show ${unavailableCount} unavailable`}
+              defaultChecked={showAll}
+              onChange={(event: FormEvent<HTMLInputElement>) => {
+                setShowAll(event.currentTarget.checked);
+              }}
+            />
+          </div>
+        ) : null}
       </div>
-      <div className="Sidebar__extensions flex-grow-1">
+      <div className={styles.extensions}>
         <ListGroup>
           {entries.map((entry) =>
             isExtension(entry) ? (
@@ -197,6 +217,56 @@ const Sidebar: React.FunctionComponent<
       </div>
       <Footer />
     </div>
+  );
+};
+
+const SidebarCollapsed: React.FunctionComponent<{
+  expandSidebar: () => void;
+}> = ({ expandSidebar }) => (
+  <div className={cx(styles.root, styles.collapsed)}>
+    <button
+      className={cx("navbar-toggler", styles.toggle)}
+      type="button"
+      onClick={expandSidebar}
+    >
+      <Logo />
+      <FontAwesomeIcon icon={faAngleDoubleRight} />
+    </button>
+  </div>
+);
+
+const transitionProps: CSSTransitionProps = {
+  classNames: {
+    enter: styles.enter,
+    enterActive: styles.enterActive,
+    exit: styles.exit,
+    exitActive: styles.exitActive,
+  },
+  timeout: 500,
+  unmountOnExit: true,
+  mountOnEnter: true,
+};
+
+const Sidebar: React.FunctionComponent<SidebarProps> = (props) => {
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+  return (
+    <>
+      <CSSTransition {...transitionProps} in={collapsed}>
+        <SidebarCollapsed
+          expandSidebar={() => {
+            setCollapsed(false);
+          }}
+        />
+      </CSSTransition>
+      <CSSTransition {...transitionProps} in={!collapsed}>
+        <SidebarExpanded
+          collapseSidebar={() => {
+            setCollapsed(true);
+          }}
+          {...props}
+        />
+      </CSSTransition>
+    </>
   );
 };
 

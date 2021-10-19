@@ -596,7 +596,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
       let elementCount = 0;
       for (const dependency of dependencies) {
-        // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $dependency = $(document).find(dependency);
         if ($dependency.length > 0) {
           for (const element of $dependency) {
@@ -786,13 +785,14 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
     if (typeof position === "object") {
       if (position.sibling) {
-        // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $sibling = $menu.find(position.sibling);
         if ($sibling.length > 1) {
           throw new Error(
             `Multiple sibling elements for selector: ${position.sibling}`
           );
-        } else if ($sibling.length === 1) {
+        }
+
+        if ($sibling.length === 1) {
           $sibling.before($menuItem);
         } else {
           // Didn't find the sibling, so just try inserting it at the end
@@ -832,7 +832,9 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
           selector,
           "Multiple elements found for reader selector"
         );
-      } else if ($elt.length === 0) {
+      }
+
+      if ($elt.length === 0) {
         throw new NoElementsFoundError(
           selector,
           "No elements found for reader selector"
