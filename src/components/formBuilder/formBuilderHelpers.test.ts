@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { KEYS_OF_UI_SCHEMA, Schema, UiSchema } from "@/core";
+import { KEYS_OF_UI_SCHEMA, Schema } from "@/core";
 import {
   DEFAULT_FIELD_TYPE,
   MINIMAL_SCHEMA,
