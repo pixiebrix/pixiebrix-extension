@@ -22,9 +22,8 @@ import Select, { OptionsType } from "react-select";
 import { sortBy, uniq } from "lodash";
 import Creatable from "react-select/creatable";
 import { Form } from "react-bootstrap";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 
-const TextWidget: CustomFieldWidget<SchemaFieldProps<string>> = ({
+const TextWidget: React.FC<SchemaFieldProps<string>> = ({
   schema,
   uiSchema,
   label,

@@ -33,13 +33,12 @@ import BooleanField from "@/components/fields/schemaFields/BooleanField";
 import { isEmpty } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 
 function defaultFieldFactory<T>(
-  Widget: CustomFieldWidget<SchemaFieldProps<T>>
+  Widget: React.FC<SchemaFieldProps<T>>
 ): FieldComponent {
   const Field: React.FunctionComponent<SchemaFieldProps<unknown>> = (props) => {
     const { name, label, schema, description } = props;

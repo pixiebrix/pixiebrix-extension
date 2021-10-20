@@ -130,7 +130,7 @@ const allFieldsInitialValues = {
   story: "",
   public: false,
 };
-const selectOptions: Option[] = [
+const selectOptions: Array<Option<number>> = [
   {
     label: "Option 1",
     value: 1,
@@ -145,7 +145,7 @@ const selectOptions: Option[] = [
   },
 ];
 
-const BootstrapFormControlWidget: React.FC<CustomFieldWidget> = (props) => (
+const BootstrapFormControlWidget: CustomFieldWidget = (props) => (
   <div style={{ border: "1px solid black" }}>
     <BootstrapForm.Control type="password" {...props} />
   </div>

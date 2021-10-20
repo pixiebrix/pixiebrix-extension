@@ -105,7 +105,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
         <button
           type="button"
           onClick={onClick}
-          className={cx(styles.nodeButton, {
+          className={cx(styles.nodeButton, styles.button, {
             [styles.mutedNode]: muted,
             [styles.activeNode]: active,
           })}
@@ -122,7 +122,9 @@ const EditorNode: React.FC<EditorNodeProps> = ({
                   onClick={() => {
                     onClickMoveUp();
                   }}
+                  title="Move brick higher"
                   disabled={!canMoveUp}
+                  className={styles.button}
                 >
                   <FontAwesomeIcon icon={faArrowUp} size="sm" />
                 </button>
@@ -131,7 +133,9 @@ const EditorNode: React.FC<EditorNodeProps> = ({
                   onClick={() => {
                     onClickMoveDown();
                   }}
+                  title="Move brick lower"
                   disabled={!canMoveDown}
+                  className={styles.button}
                 >
                   <FontAwesomeIcon icon={faArrowDown} size="sm" />
                 </button>

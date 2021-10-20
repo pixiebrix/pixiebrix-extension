@@ -34,7 +34,9 @@ import { Schema, SchemaPropertyType } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
+import SelectWidget, {
+  SelectWidgetOnChange,
+} from "@/components/form/widgets/SelectWidget";
 import OptionsWidget from "@/components/form/widgets/OptionsWidget";
 import SwitchButtonWidget, {
   CheckBoxLike,
@@ -102,7 +104,7 @@ const FieldEditor: React.FC<{
     setActiveField(nextName);
   };
 
-  const onUiTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const onUiTypeChange: SelectWidgetOnChange = (event) => {
     const { value } = event.target;
     if (!value) {
       return;

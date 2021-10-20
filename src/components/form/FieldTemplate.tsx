@@ -41,9 +41,25 @@ export type FieldProps<
     blankValue?: unknown;
   };
 
-export type CustomFieldWidget<TExtra = never> = React.ComponentType<
-  FieldProps & { controlId?: string } & TExtra
->;
+type WidgetElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+export type CustomFieldWidgetProps<
+  TValue = string | string[] | number,
+  TInputElement = WidgetElement
+> = {
+  id?: string;
+  name: string;
+  disabled?: boolean;
+  value: TValue;
+  onChange: React.ChangeEventHandler<TInputElement>;
+};
+export type CustomFieldWidget<
+  TValue = string | string[] | number,
+  TInputElement = WidgetElement,
+  TFieldWidgetProps extends CustomFieldWidgetProps<
+    TValue,
+    TInputElement
+  > = CustomFieldWidgetProps<TValue, TInputElement>
+> = React.ComponentType<TFieldWidgetProps>;
 
 type FieldRenderProps = Except<FieldProps, "layout">;
 
@@ -146,11 +162,12 @@ const RenderedField: React.FC<FieldProps> = ({
 const RenderedSwitch: React.FC<FieldRenderProps> = ({
   name,
   label,
-  ...restFieldProps
+  onChange,
+  value,
 }) => (
   <BootstrapForm.Group as={Row} controlId={name}>
     <Col sm="3">
-      <SwitchButtonWidget name={name} {...restFieldProps} />
+      <SwitchButtonWidget name={name} onChange={onChange} value={value} />
     </Col>
     <Col sm="9" as="label" htmlFor={name}>
       {label}
