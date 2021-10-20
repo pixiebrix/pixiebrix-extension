@@ -90,9 +90,9 @@ export class TableRenderer extends Renderer {
       // Currently for TableRenderer we only support directly accessing the href. This matches the behavior in
       // makeDataTable's renderValue
 
-      // eslint-disable-next-line security/detect-object-injection -- check with hasOwnProperty
       const anchorHref = Object.prototype.hasOwnProperty.call(row, href)
-        ? row[href]
+        ? // eslint-disable-next-line security/detect-object-injection -- checked with hasOwnProperty
+          row[href]
         : null;
 
       return typeof anchorHref === "string" && isNullOrBlank(anchorHref)
