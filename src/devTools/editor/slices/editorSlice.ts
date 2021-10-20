@@ -33,6 +33,7 @@ import {
   FOUNDATION_NODE_ID,
   NodeId,
 } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
+import { WritableDraft } from "immer/dist/types/types-external";
 
 export type FormState =
   | ActionFormState
@@ -102,15 +103,13 @@ export const initialState: EditorState = {
   elementUIStates: {},
 };
 
-function setActiveNodeIdForInitializedActiveElementUIState(
-  state: EditorState,
+/* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
+function ensureNodeUIState(
+  state: WritableDraft<ElementUIState>,
   nodeId: NodeId
 ) {
-  const elementUIState = state.elementUIStates[state.activeElement];
-  // eslint-disable-next-line security/detect-object-injection -- uuid
-  if (!elementUIState.nodeUIStates[nodeId]) {
-    // eslint-disable-next-line security/detect-object-injection -- uuid
-    elementUIState.nodeUIStates[nodeId] = {
+  if (!state.nodeUIStates[nodeId]) {
+    state.nodeUIStates[nodeId] = {
       nodeId,
       dataPanel: {
         activeTabKey: null,
@@ -118,7 +117,40 @@ function setActiveNodeIdForInitializedActiveElementUIState(
       },
     };
   }
+}
 
+function syncElementNodeUIStates(
+  state: WritableDraft<EditorState>,
+  element: FormState
+) {
+  const elementUIState = state.elementUIStates[element.uuid];
+  const blockPipelineIds = element.extension.blockPipeline.map(
+    (x) => x.instanceId
+  );
+
+  // Pipeline block instance IDs may have changed
+  if (!blockPipelineIds.includes(elementUIState.activeNodeId)) {
+    elementUIState.activeNodeId = FOUNDATION_NODE_ID;
+  }
+
+  // Remove NodeUIStates for invalid IDs
+  for (const key of Object.keys(elementUIState.nodeUIStates)) {
+    const nodeId = key as NodeId;
+    // Don't remove the foundation NodeUIState
+    if (nodeId !== FOUNDATION_NODE_ID && !blockPipelineIds.includes(nodeId)) {
+      delete elementUIState.nodeUIStates[nodeId];
+    }
+  }
+
+  // Add missing NodeUIStates
+  for (const uuid of blockPipelineIds) {
+    ensureNodeUIState(elementUIState, uuid);
+  }
+}
+
+function setActiveNodeId(state: WritableDraft<EditorState>, nodeId: NodeId) {
+  const elementUIState = state.elementUIStates[state.activeElement];
+  ensureNodeUIState(elementUIState, nodeId);
   elementUIState.activeNodeId = nodeId;
 }
 
@@ -163,8 +195,6 @@ export const editorSlice = createSlice({
       const { uuid } = actions.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);
       if (index >= 0) {
-        // Safe because we're getting it from findIndex
-        // eslint-disable-next-line security/detect-object-injection
         state.elements[index] = actions.payload;
       } else {
         state.elements.push(actions.payload);
@@ -174,32 +204,29 @@ export const editorSlice = createSlice({
       state.beta = null;
       state.activeElement = uuid;
       state.selectionSeq++;
-      // eslint-disable-next-line security/detect-object-injection -- uuid
       if (!state.elementUIStates[uuid]) {
-        // eslint-disable-next-line security/detect-object-injection -- uuid
         state.elementUIStates[uuid] = makeInitialElementUIState();
       }
     },
     resetInstalled: (state, actions: PayloadAction<FormState>) => {
-      const { uuid } = actions.payload;
-      const index = state.elements.findIndex((x) => x.uuid === uuid);
+      const element = actions.payload;
+      const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
-        // Safe because we're getting it from findIndex
-        // eslint-disable-next-line security/detect-object-injection
-        state.elements[index] = actions.payload;
+        state.elements[index] = element;
       } else {
-        state.elements.push(actions.payload);
+        state.elements.push(element);
       }
 
-      // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
-      state.dirty[uuid] = false;
+      state.dirty[element.uuid] = false;
       state.error = null;
       state.beta = null;
-      state.activeElement = uuid;
+      state.activeElement = element.uuid;
       state.selectionSeq++;
 
       // Make sure we're not keeping any private data around from Page Editor sessions
-      void clearExtensionTraces(uuid);
+      void clearExtensionTraces(element.uuid);
+
+      syncElementNodeUIStates(state, element);
     },
     selectElement: (state, action: PayloadAction<UUID>) => {
       if (!state.elements.some((x) => action.payload === x.uuid)) {
@@ -231,17 +258,16 @@ export const editorSlice = createSlice({
     },
     // Sync the redux state with the form state
     updateElement: (state, action: PayloadAction<FormState>) => {
-      const { uuid } = action.payload;
-      const index = state.elements.findIndex((x) => x.uuid === uuid);
+      const element = action.payload;
+      const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index < 0) {
-        throw new Error(`Unknown dynamic element: ${uuid}`);
+        throw new Error(`Unknown dynamic element: ${element.uuid}`);
       }
 
-      // Safe b/c generated from findIndex
-      // eslint-disable-next-line security/detect-object-injection
-      state.elements[index] = action.payload;
-      // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
-      state.dirty[uuid] = true;
+      state.elements[index] = element;
+      state.dirty[element.uuid] = true;
+
+      syncElementNodeUIStates(state, element);
     },
     removeElement: (state, action: PayloadAction<UUID>) => {
       const uuid = action.payload;
@@ -254,9 +280,7 @@ export const editorSlice = createSlice({
         1
       );
 
-      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- is uuid, and also using immer
       delete state.dirty[uuid];
-      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- is uuid, and also using immer
       delete state.elementUIStates[uuid];
 
       // Make sure we're not keeping any private data around from Page Editor sessions
@@ -265,23 +289,23 @@ export const editorSlice = createSlice({
     setBetaUIEnabled: (state, action: PayloadAction<boolean>) => {
       state.isBetaUI = action.payload;
     },
-    addElementNodeUIState: (state, action: PayloadAction<NodeId>) => {
-      setActiveNodeIdForInitializedActiveElementUIState(state, action.payload);
-    },
-    // Remember to update the active node separately before calling this
-    removeElementNodeUIState: (state, action: PayloadAction<UUID>) => {
+    removeElementNodeUIState: (
+      state,
+      action: PayloadAction<{
+        nodeIdToRemove: NodeId;
+        newActiveNodeId?: NodeId;
+      }>
+    ) => {
       const elementUIState = state.elementUIStates[state.activeElement];
-      const nodeIdToRemove = action.payload;
-      // Guard against errors
-      if (elementUIState.activeNodeId === nodeIdToRemove) {
-        elementUIState.activeNodeId = FOUNDATION_NODE_ID;
-      }
+      const { nodeIdToRemove, newActiveNodeId } = action.payload;
 
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection -- uuid
+      const activeNodeId = newActiveNodeId ?? FOUNDATION_NODE_ID;
+      setActiveNodeId(state, activeNodeId);
+
       delete elementUIState.nodeUIStates[nodeIdToRemove];
     },
     setElementActiveNodeId: (state, action: PayloadAction<NodeId>) => {
-      setActiveNodeIdForInitializedActiveElementUIState(state, action.payload);
+      setActiveNodeId(state, action.payload);
     },
     setNodeDataPanelTabSelected: (state, action: PayloadAction<string>) => {
       const elementUIState = state.elementUIStates[state.activeElement];
@@ -297,10 +321,10 @@ export const editorSlice = createSlice({
       const elementUIState = state.elementUIStates[state.activeElement];
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
-      // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
       nodeUIState.dataPanel.tabQueries[tabKey] = query;
     },
   },
 });
+/* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */
 
 export const { actions } = editorSlice;

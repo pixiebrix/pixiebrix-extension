@@ -189,11 +189,12 @@ const EditTab: React.FC<{
 
     // Set the active node before setting the form values, otherwise there's a race condition based on the React state
     // causing a re-render vs. the Formik state causing a re-render
-    if (activeNodeId === nodeIdToRemove) {
-      setActiveNodeId(prevNodeId);
-    }
-
-    dispatch(actions.removeElementNodeUIState(nodeIdToRemove));
+    dispatch(
+      actions.removeElementNodeUIState({
+        nodeIdToRemove,
+        newActiveNodeId: prevNodeId,
+      })
+    );
     setFormValues(nextState);
   };
 

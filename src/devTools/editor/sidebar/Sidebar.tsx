@@ -16,7 +16,7 @@
  */
 
 import React, { FormEvent, useContext, useMemo, useState } from "react";
-import { EditorState } from "@/devTools/editor/slices/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { sortBy } from "lodash";
 import {
@@ -27,7 +27,7 @@ import {
   ListGroup,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IExtension } from "@/core";
+import { IExtension, UUID } from "@/core";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import hash from "object-hash";
 import logoUrl from "@/icons/custom-icons/favicon.svg";
@@ -38,7 +38,6 @@ import DynamicEntry from "@/devTools/editor/sidebar/DynamicEntry";
 import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
-import { Except } from "type-fest";
 import styles from "./Sidebar.module.scss";
 import {
   faAngleDoubleLeft,
@@ -72,23 +71,24 @@ const Logo: React.FunctionComponent = () => (
   <img src={logoUrl} alt="PixiBrix logo" className={styles.logo} />
 );
 
-type SidebarProps = Except<
-  EditorState,
-  | "error"
-  | "dirty"
-  | "knownEditable"
-  | "selectionSeq"
-  | "isBetaUI"
-  | "elementUIStates"
-> & {
+interface SidebarProps {
+  isInsertingElement: boolean;
+  activeElement: UUID | null;
+  readonly elements: FormState[];
   installed: IExtension[];
-};
+}
 
 const SidebarExpanded: React.FunctionComponent<
   SidebarProps & {
     collapseSidebar: () => void;
   }
-> = ({ inserting, activeElement, installed, elements, collapseSidebar }) => {
+> = ({
+  isInsertingElement,
+  activeElement,
+  installed,
+  elements,
+  collapseSidebar,
+}) => {
   const context = useContext(DevToolsContext);
   const {
     port,
@@ -150,7 +150,7 @@ const SidebarExpanded: React.FunctionComponent<
               <Logo />
             </a>
             <DropdownButton
-              disabled={Boolean(inserting) || !hasPermissions}
+              disabled={isInsertingElement || !hasPermissions}
               variant="info"
               size="sm"
               title="Add"
