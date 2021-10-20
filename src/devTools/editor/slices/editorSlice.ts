@@ -105,6 +105,15 @@ export const initialState: EditorState = {
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
+function ensureElementUIState(
+  state: WritableDraft<EditorState>,
+  elementId: UUID
+) {
+  if (!state.elementUIStates[elementId]) {
+    state.elementUIStates[elementId] = makeInitialElementUIState();
+  }
+}
+
 function ensureNodeUIState(
   state: WritableDraft<ElementUIState>,
   nodeId: NodeId
@@ -199,9 +208,7 @@ export const editorSlice = createSlice({
       state.beta = null;
       state.activeElement = uuid;
       state.selectionSeq++;
-      if (!state.elementUIStates[uuid]) {
-        state.elementUIStates[uuid] = makeInitialElementUIState();
-      }
+      ensureElementUIState(state, uuid);
     },
     resetInstalled: (state, actions: PayloadAction<FormState>) => {
       const element = actions.payload;
@@ -224,17 +231,16 @@ export const editorSlice = createSlice({
       syncElementNodeUIStates(state, element);
     },
     selectElement: (state, action: PayloadAction<UUID>) => {
-      if (!state.elements.some((x) => action.payload === x.uuid)) {
+      const elementId = action.payload;
+      if (!state.elements.some((x) => x.uuid === elementId)) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
 
       state.error = null;
       state.beta = null;
-      state.activeElement = action.payload;
+      state.activeElement = elementId;
       state.selectionSeq++;
-      if (!state.elementUIStates[action.payload]) {
-        state.elementUIStates[action.payload] = makeInitialElementUIState();
-      }
+      ensureElementUIState(state, elementId);
     },
     markSaved: (state, action: PayloadAction<UUID>) => {
       const element = state.elements.find((x) => action.payload === x.uuid);
