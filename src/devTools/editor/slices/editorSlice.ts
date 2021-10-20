@@ -105,6 +105,7 @@ export const editorSlice = createSlice({
       state.inserting = null;
       state.elements.push(element);
       state.error = null;
+      state.dirty[element.uuid] = true;
       state.beta = false;
       state.activeElement = element.uuid;
       state.selectionSeq++;
