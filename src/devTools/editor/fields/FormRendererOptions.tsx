@@ -23,6 +23,7 @@ import FormEditor from "@/components/formBuilder/FormEditor";
 import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import useReduxState from "@/hooks/useReduxState";
+import ConfigErrorBoundary from "@/devTools/editor/fields/ConfigErrorBoundary";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -44,11 +45,13 @@ const FormRendererOptions: React.FC<{
 
   return (
     <div>
-      <FormEditor
-        name={configName}
-        activeField={activeField}
-        setActiveField={setActiveField}
-      />
+      <ConfigErrorBoundary>
+        <FormEditor
+          name={configName}
+          activeField={activeField}
+          setActiveField={setActiveField}
+        />
+      </ConfigErrorBoundary>
 
       <SchemaField
         name={`${configName}.recordId`}

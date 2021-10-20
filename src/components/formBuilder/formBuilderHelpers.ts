@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SafeString, Schema, SchemaPropertyType, UiSchema } from "@/core";
+import {
+  KEYS_OF_UI_SCHEMA,
+  SafeString,
+  Schema,
+  SchemaPropertyType,
+  UiSchema,
+} from "@/core";
 import { RJSFSchema, SelectStringOption } from "./formBuilderTypes";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
@@ -153,27 +159,40 @@ export const validateNextPropertyName = (
   propertyName: string,
   nextPropertyName: string
 ) => {
-  let error: string = null;
-
-  if (nextPropertyName !== propertyName) {
-    if (nextPropertyName === "") {
-      error = "Name cannot be empty.";
-    }
-
-    if (nextPropertyName.includes(".")) {
-      error = "Name must not contain periods.";
-    }
-
-    const existingProperties = Object.keys(schema.properties);
-    if (existingProperties.includes(nextPropertyName)) {
-      error = `Name must be unique. Another property "${
-        // eslint-disable-next-line security/detect-object-injection
-        (schema.properties[nextPropertyName] as Schema).title
-      }" already has the name "${nextPropertyName}".`;
-    }
+  if (nextPropertyName === propertyName) {
+    return null;
   }
 
-  return error;
+  if (nextPropertyName === "") {
+    return "Name cannot be empty.";
+  }
+
+  if (nextPropertyName.includes(".")) {
+    return "Name must not contain periods.";
+  }
+
+  if (
+    schema.properties &&
+    Object.prototype.hasOwnProperty.call(schema.properties, nextPropertyName)
+  ) {
+    return `Name must be unique. Another property "${
+      // eslint-disable-next-line security/detect-object-injection -- checked with hasOwnProperty
+      (schema.properties[nextPropertyName] as Schema).title
+    }" already has the name "${nextPropertyName}".`;
+  }
+
+  if (
+    // Checked Own Properties already.
+    // If the property with nextPropertyName is defined nevertheless, there's something wrong with the new name.
+    typeof (schema.properties ?? {})[String(nextPropertyName)] !==
+      "undefined" ||
+    // Will break the UI Schema
+    KEYS_OF_UI_SCHEMA.includes(nextPropertyName)
+  ) {
+    return "Such property name is forbidden.";
+  }
+
+  return null;
 };
 
 export const produceSchemaOnPropertyNameChange = (
@@ -182,11 +201,10 @@ export const produceSchemaOnPropertyNameChange = (
   nextPropertyName: string
 ) =>
   produce(rjsfSchema, (draft) => {
-    // eslint-disable-next-line security/detect-object-injection
+    // Relying on Immer to protect against object injections
+    /* eslint-disable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
     draft.schema.properties[nextPropertyName] =
-      // eslint-disable-next-line security/detect-object-injection
       draft.schema.properties[propertyName];
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,  security/detect-object-injection
     delete draft.schema.properties[propertyName];
 
     if (draft.schema.required?.includes(propertyName)) {
@@ -198,13 +216,17 @@ export const produceSchemaOnPropertyNameChange = (
     }
 
     const nextUiOrder = replaceStringInArray(
-      // eslint-disable-next-line security/detect-object-injection
       draft.uiSchema[UI_ORDER],
       propertyName,
       nextPropertyName
     );
-    // eslint-disable-next-line security/detect-object-injection
     draft.uiSchema[UI_ORDER] = nextUiOrder;
+
+    if (draft.uiSchema[propertyName]) {
+      draft.uiSchema[nextPropertyName] = draft.uiSchema[propertyName];
+      delete draft.uiSchema[propertyName];
+    }
+    /* eslint-enable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
   });
 
 export const produceSchemaOnUiTypeChange = (
@@ -215,7 +237,8 @@ export const produceSchemaOnUiTypeChange = (
   const { propertyType, uiWidget, propertyFormat } = parseUiType(nextUiType);
 
   return produce(rjsfSchema, (draft) => {
-    // eslint-disable-next-line security/detect-object-injection
+    // Relying on Immer to protect against object injections
+    /* eslint-disable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
     const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
     draftPropertySchema.type = propertyType;
 
@@ -225,7 +248,6 @@ export const produceSchemaOnUiTypeChange = (
       delete draftPropertySchema.format;
     }
 
-    // eslint-disable-next-line security/detect-object-injection
     const propertySchema = rjsfSchema.schema.properties[propertyName] as Schema;
     if (
       propertySchema.type !== propertyType ||
@@ -235,17 +257,12 @@ export const produceSchemaOnUiTypeChange = (
     }
 
     if (uiWidget) {
-      // eslint-disable-next-line security/detect-object-injection
       if (!draft.uiSchema[propertyName]) {
-        // eslint-disable-next-line security/detect-object-injection
         draft.uiSchema[propertyName] = {};
       }
 
-      // eslint-disable-next-line security/detect-object-injection
       draft.uiSchema[propertyName][UI_WIDGET] = uiWidget;
-      // eslint-disable-next-line security/detect-object-injection
     } else if (draft.uiSchema[propertyName]) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, security/detect-object-injection
       delete draft.uiSchema[propertyName][UI_WIDGET];
     }
 
@@ -254,6 +271,7 @@ export const produceSchemaOnUiTypeChange = (
     } else {
       delete draftPropertySchema.enum;
     }
+    /* eslint-enable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
   });
 };
 
@@ -261,7 +279,7 @@ export const updateRjsfSchemaWithDefaultsIfNeeded = (
   rjsfSchema: RJSFSchema
 ) => {
   const { schema, uiSchema } = rjsfSchema;
-  // eslint-disable-next-line security/detect-object-injection
+  // eslint-disable-next-line security/detect-object-injection -- UI_ORDER is a known property
   const uiOrder = uiSchema?.[UI_ORDER];
   const needToUpdateRequired =
     Boolean(schema) &&
@@ -270,6 +288,8 @@ export const updateRjsfSchemaWithDefaultsIfNeeded = (
 
   if (!schema || !uiSchema || !uiOrder?.includes("*") || needToUpdateRequired) {
     return produce(rjsfSchema, (draft) => {
+      // Relying on Immer to protect against object injections
+      /* eslint-disable security/detect-object-injection */
       if (!draft.schema) {
         draft.schema = MINIMAL_SCHEMA;
       }
@@ -278,20 +298,17 @@ export const updateRjsfSchemaWithDefaultsIfNeeded = (
         draft.uiSchema = MINIMAL_UI_SCHEMA;
       }
 
-      // eslint-disable-next-line security/detect-object-injection
       if (!draft.uiSchema[UI_ORDER]) {
         const propertyKeys = Object.keys(draft.schema.properties || {});
-        // eslint-disable-next-line security/detect-object-injection
         draft.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
-        // eslint-disable-next-line security/detect-object-injection
       } else if (!draft.uiSchema[UI_ORDER].includes("*")) {
-        // eslint-disable-next-line security/detect-object-injection
         draft.uiSchema[UI_ORDER].push("*");
       }
 
       if (needToUpdateRequired) {
         draft.schema.required = [];
       }
+      /* eslint-enable security/detect-object-injection */
     });
   }
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useMemo } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { setIn, useField, useFormikContext } from "formik";
 import {
@@ -39,6 +39,7 @@ import { browser } from "webextension-polyfill-ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import SelectWidget, {
+  SelectLike,
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import { castArray, isEmpty } from "lodash";
@@ -260,7 +261,7 @@ const ServiceField: React.FunctionComponent<
           // updates the services part of the form state
           onChange({
             target: { value: options[0].value, name: field.name, options },
-          });
+          } as ChangeEvent<SelectLike<AuthOption>>);
         }
       }
     },

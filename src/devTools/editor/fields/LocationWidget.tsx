@@ -15,17 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { useField } from "formik";
 import React from "react";
-import type { SelectMode } from "@/nativeEditor/selector";
-import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
+import SelectorSelectorWidget, {
+  SelectorSelectorProps,
+} from "@/devTools/editor/fields/SelectorSelectorWidget";
 
-type OwnProps = {
-  selectMode?: SelectMode;
-};
-
-const LocationWidget: CustomFieldWidget<OwnProps> = ({
+const LocationWidget: React.FC<SelectorSelectorProps> = ({
   selectMode = "container",
   ...props
 }) => {

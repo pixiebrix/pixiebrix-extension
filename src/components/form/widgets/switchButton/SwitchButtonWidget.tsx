@@ -24,7 +24,11 @@ export type CheckBoxLike = {
   value: boolean;
 };
 
-const SwitchButtonWidget: CustomFieldWidget = ({ name, onChange, value }) => {
+const SwitchButtonWidget: CustomFieldWidget<boolean, CheckBoxLike> = ({
+  name,
+  onChange,
+  value,
+}) => {
   const patchedOnChange = (checked: boolean) => {
     onChange({
       target: { value: checked, name },

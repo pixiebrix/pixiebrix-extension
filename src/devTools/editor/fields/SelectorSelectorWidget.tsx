@@ -29,7 +29,6 @@ import { ElementInfo } from "@/nativeEditor/frameworks";
 import SelectorListItem from "@/devTools/editor/fields/selectorListItem/SelectorListItem";
 import { Framework } from "@/messaging/constants";
 import { SelectMode } from "@/nativeEditor/selector";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { useField } from "formik";
 import {
   disableOverlay,
@@ -45,6 +44,8 @@ interface ElementSuggestion extends SuggestionTypeBase {
 }
 
 export type SelectorSelectorProps = {
+  name: string;
+  disabled?: boolean;
   initialElement?: ElementInfo;
   framework?: Framework;
   selectMode?: SelectMode;
@@ -52,7 +53,7 @@ export type SelectorSelectorProps = {
   isClearable?: boolean;
   sort?: boolean;
   root?: string;
-  disabled?: boolean;
+  placeholder?: string;
 };
 
 function getSuggestionsForElement(
@@ -83,7 +84,7 @@ function renderSuggestion(suggestion: ElementSuggestion): React.ReactNode {
   );
 }
 
-const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
+const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   name,
   initialElement,
   framework,

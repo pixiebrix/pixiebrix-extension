@@ -16,11 +16,9 @@
  */
 
 .root {
-  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+  align-items: stretch;
   padding-bottom: 6px;
 }
 
@@ -37,12 +35,10 @@
 
   &:hover {
     color: #a462e6;
-    box-shadow: 1px 1px 1px gray;
+  }
 
-    &:active {
-      box-shadow: none;
-      color: #b66dff;
-    }
+  &:active {
+    color: #b66dff;
   }
 }
 

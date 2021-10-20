@@ -168,6 +168,52 @@ export const initRenamingCases = () => {
         },
       },
     ],
+    [
+      {
+        schema: {
+          title: "A form",
+          type: "object",
+          properties: {
+            [fieldName]: {
+              type: "string",
+              title: "First name",
+            },
+            anotherFieldName: {
+              type: "string",
+              title: "Another field name",
+            },
+          },
+        },
+        uiSchema: {
+          "ui:order": [fieldName, "*"],
+          [fieldName]: {
+            "ui:widget": "textarea",
+          },
+        },
+      },
+      {
+        schema: {
+          title: "A form",
+          type: "object",
+          properties: {
+            [newFieldName]: {
+              type: "string",
+              title: "First name",
+            },
+            anotherFieldName: {
+              type: "string",
+              title: "Another field name",
+            },
+          },
+        },
+        uiSchema: {
+          "ui:order": [newFieldName, "*"],
+          [newFieldName]: {
+            "ui:widget": "textarea",
+          },
+        },
+      },
+    ],
   ];
 
   return renamingCases;
