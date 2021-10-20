@@ -22,6 +22,7 @@ import {
   Metadata,
   RegistryId,
   ServiceDependency,
+  UserOptions,
   UUID,
 } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
@@ -92,6 +93,15 @@ export interface BaseFormState {
    * User-provided name to identify the extension
    */
   label: string;
+
+  /**
+   * The options the user provided when installing the extension as a blueprint from the marketplace.
+   *
+   * Not currently exposed in the page editor.
+   *
+   * @since 1.4.3
+   */
+  optionsArgs: UserOptions;
 
   services: ServiceDependency[];
 

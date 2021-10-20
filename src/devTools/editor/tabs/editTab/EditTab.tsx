@@ -323,7 +323,13 @@ const EditTab: React.FC<{
           />
         </div>
         <div className={styles.configPanel}>
-          <ErrorBoundary>
+          <ErrorBoundary
+            key={
+              // Pass key to error boundary so that switching the node can potentially avoid the bad state without
+              // having to reload the whole page editor frame
+              activeNodeId
+            }
+          >
             <FormTheme.Provider value={blockConfigTheme}>
               {activeNodeId === FOUNDATION_NODE_ID ? (
                 <>

@@ -22,8 +22,10 @@ import {
   ButtonSelectionResult,
 } from "@/nativeEditor/insertButton";
 import {
+  baseFromExtension,
+  baseSelectExtension,
   baseSelectExtensionPoint,
-  excludeInstanceIds,
+  omitEditorMetadata,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
@@ -144,32 +146,20 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  {
-    uuid,
-    apiVersion,
-    label,
-    extensionPoint,
-    extension,
-    services,
-  }: ActionFormState,
+  { extension, ...state }: ActionFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<MenuItemExtensionConfig> {
   const config: MenuItemExtensionConfig = {
     caption: extension.caption,
     icon: extension.icon,
-    action: extension.blockPipeline,
+    action: options.includeInstanceIds
+      ? extension.blockPipeline
+      : omitEditorMetadata(extension.blockPipeline),
     dynamicCaption: extension.dynamicCaption,
   };
   return removeEmptyValues({
-    id: uuid,
-    apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: null,
-    label,
-    services,
-    config: options.includeInstanceIds
-      ? config
-      : excludeInstanceIds(config, "action"),
+    ...baseSelectExtension(state),
+    config,
   });
 }
 
@@ -189,6 +179,8 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} button`,
 
     services: [],
+
+    optionsArgs: {},
 
     extension: {
       caption:
@@ -226,13 +218,7 @@ export async function fromExtension(
   const blockPipeline = withInstanceIds(castArray(config.config.action));
 
   return {
-    uuid: config.id,
-    apiVersion: config.apiVersion,
-    installed: true,
-    type: extensionPoint.definition.type,
-    label: config.label,
-
-    services: config.services,
+    ...baseFromExtension(config, extensionPoint.definition.type),
 
     extension: {
       ...config.config,

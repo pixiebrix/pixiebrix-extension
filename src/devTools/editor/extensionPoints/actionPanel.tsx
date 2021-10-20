@@ -18,8 +18,10 @@
 
 import { IExtension, Metadata } from "@/core";
 import {
+  baseFromExtension,
+  baseSelectExtension,
   baseSelectExtensionPoint,
-  excludeInstanceIds,
+  omitEditorMetadata,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
@@ -110,30 +112,18 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  {
-    uuid,
-    label,
-    extensionPoint,
-    extension,
-    services,
-    apiVersion,
-  }: ActionPanelFormState,
+  { extension, ...state }: ActionPanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ActionPanelConfig> {
   const config: ActionPanelConfig = {
     heading: extension.heading,
-    body: extension.blockPipeline,
+    body: options.includeInstanceIds
+      ? extension.blockPipeline
+      : omitEditorMetadata(extension.blockPipeline),
   };
   return removeEmptyValues({
-    id: uuid,
-    apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: null,
-    label,
-    services,
-    config: options.includeInstanceIds
-      ? config
-      : excludeInstanceIds(config, "body"),
+    ...baseSelectExtension(state),
+    config,
   });
 }
 
@@ -164,6 +154,8 @@ export async function fromExtensionPoint(
 
     services: [],
 
+    optionsArgs: {},
+
     extension: {
       heading,
       blockPipeline: [],
@@ -192,13 +184,7 @@ async function fromExtension(
   const blockPipeline = withInstanceIds(castArray(config.config.body));
 
   return {
-    uuid: config.id,
-    apiVersion: config.apiVersion,
-    installed: true,
-    type: extensionPoint.definition.type,
-    label: config.label,
-
-    services: config.services,
+    ...baseFromExtension(config, extensionPoint.definition.type),
 
     extension: {
       heading: config.config.heading,

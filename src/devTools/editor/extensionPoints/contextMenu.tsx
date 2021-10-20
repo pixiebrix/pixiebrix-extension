@@ -18,8 +18,10 @@
 
 import { IExtension, Metadata } from "@/core";
 import {
+  baseFromExtension,
+  baseSelectExtension,
   baseSelectExtensionPoint,
-  excludeInstanceIds,
+  omitEditorMetadata,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
@@ -136,30 +138,18 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  {
-    uuid,
-    apiVersion,
-    label,
-    extensionPoint,
-    extension,
-    services,
-  }: ContextMenuFormState,
+  { extension, ...state }: ContextMenuFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ContextMenuConfig> {
   const config: ContextMenuConfig = {
     title: extension.title,
-    action: extension.blockPipeline,
+    action: options.includeInstanceIds
+      ? extension.blockPipeline
+      : omitEditorMetadata(extension.blockPipeline),
   };
   return removeEmptyValues({
-    id: uuid,
-    apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: null,
-    label,
-    services,
-    config: options.includeInstanceIds
-      ? config
-      : excludeInstanceIds(config, "action"),
+    ...baseSelectExtension(state),
+    config,
   });
 }
 
@@ -183,13 +173,7 @@ async function fromExtension(
   const blockPipeline = withInstanceIds(castArray(extensionConfig.action));
 
   return {
-    uuid: config.id,
-    apiVersion: config.apiVersion,
-    installed: true,
-    type: "contextMenu",
-    label: config.label,
-
-    services: config.services,
+    ...baseFromExtension(config, extensionPoint.definition.type),
 
     extension: {
       ...extensionConfig,
@@ -233,6 +217,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} context menu`,
 
     services: [],
+    optionsArgs: {},
 
     extension: {
       title: defaultOptions.title ?? "Custom Action",

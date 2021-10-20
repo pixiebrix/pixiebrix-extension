@@ -16,12 +16,11 @@
  */
 
 import React, { Component } from "react";
-import { Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
 import { UnknownObject } from "@/types";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface State {
   hasError: boolean;
@@ -29,7 +28,7 @@ interface State {
   stack: string;
 }
 
-class ErrorBoundary extends Component<UnknownObject, State> {
+class ConfigErrorBoundary extends Component<UnknownObject, State> {
   constructor(props: UnknownObject) {
     super(props);
     this.state = { hasError: false, errorMessage: undefined, stack: undefined };
@@ -51,22 +50,16 @@ class ErrorBoundary extends Component<UnknownObject, State> {
   render(): React.ReactNode {
     if (this.state.hasError) {
       return (
-        <>
-          <h1>Something went wrong.</h1>
-          <div>
-            <p>{this.state.errorMessage}</p>
+        <div className="mb-3">
+          <h3>Unable to edit configuration</h3>
+
+          <div className="text-info">
+            <FontAwesomeIcon icon={faInfoCircle} />
+            &nbsp; This brick configuration appears to use some features that
+            are not currently supported in the Page Editor. Please visit the
+            Workshop to modify the configuration
           </div>
-          <div>
-            <Button
-              onClick={() => {
-                location.reload();
-              }}
-            >
-              <FontAwesomeIcon icon={faRedo} /> Reload the Page
-            </Button>
-          </div>
-          <div className="mt-2">{this.state.stack}</div>
-        </>
+        </div>
       );
     }
 
@@ -74,4 +67,4 @@ class ErrorBoundary extends Component<UnknownObject, State> {
   }
 }
 
-export default ErrorBoundary;
+export default ConfigErrorBoundary;

@@ -23,6 +23,7 @@ import { actions as elementWizardActions } from "@/devTools/editor/slices/formBu
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import FormEditor from "@/components/formBuilder/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
+import ConfigErrorBoundary from "@/devTools/editor/fields/ConfigErrorBoundary";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 
@@ -51,11 +52,13 @@ const FormModalOptions: React.FC<{
 
   return (
     <div>
-      <FormEditor
-        name={configName}
-        activeField={activeField}
-        setActiveField={setActiveField}
-      />
+      <ConfigErrorBoundary>
+        <FormEditor
+          name={configName}
+          activeField={activeField}
+          setActiveField={setActiveField}
+        />
+      </ConfigErrorBoundary>
 
       <SchemaField
         name={`${configName}.cancelable`}
