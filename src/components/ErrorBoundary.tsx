@@ -51,7 +51,7 @@ class ErrorBoundary extends Component<UnknownObject, State> {
   render(): React.ReactNode {
     if (this.state.hasError) {
       return (
-        <>
+        <div>
           <h1>Something went wrong.</h1>
           <div>
             <p>{this.state.errorMessage}</p>
@@ -65,8 +65,13 @@ class ErrorBoundary extends Component<UnknownObject, State> {
               <FontAwesomeIcon icon={faRedo} /> Reload the Page
             </Button>
           </div>
-          <div className="mt-2">{this.state.stack}</div>
-        </>
+          <pre className="mt-2">
+            {this.state.stack.replaceAll(
+              `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
+              ""
+            )}
+          </pre>
+        </div>
       );
     }
 
