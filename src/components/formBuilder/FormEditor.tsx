@@ -41,7 +41,6 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import styles from "./FormEditor.module.scss";
 import { joinName } from "@/utils";
-import { isEmpty } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
 
 export type FormEditorProps = {
