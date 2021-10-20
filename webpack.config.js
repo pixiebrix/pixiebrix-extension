@@ -277,6 +277,7 @@ module.exports = (env, options) =>
         "react",
         "react-dom",
         "webextension-polyfill",
+        "@/extensionContext",
         "jquery",
         "lodash-es",
         "js-beautify",
