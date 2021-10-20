@@ -10,7 +10,7 @@
     "lint": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
     "watch": "concurrently 'npm:watch:*' -r",
     "watch:webpack": "ENV_FILE='.env.development' webpack --mode development --watch",
-    "watch:typescript": "tsc --noEmit --watch",
+    "watch:typescript": "tsc --noEmit --watch --preserveWatchOutput",
     "build": "concurrently npm:build:webpack npm:build:typescript -r",
     "build:webpack": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production",
     "build:typescript": "tsc --noEmit",
