@@ -17,7 +17,7 @@
 
 import JSONTree from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import styles from "./JsonTree.module.scss";
@@ -119,4 +119,4 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   );
 };
 
-export default memo(JsonTree);
+export default JsonTree;
