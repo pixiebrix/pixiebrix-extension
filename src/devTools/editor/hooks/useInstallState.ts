@@ -46,6 +46,7 @@ function useInstallState(
   const [availableInstalledIds] = useAsyncState(
     async () => {
       if (meta) {
+        debugger;
         const extensionPointIds = new Set(
           await getInstalledExtensionPointIds(thisTab)
         );
