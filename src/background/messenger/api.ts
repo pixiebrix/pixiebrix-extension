@@ -69,6 +69,3 @@ export const registry = {
   syncRemote: getMethod("REGISTRY_SYNC"),
   find: getMethod("REGISTRY_FIND"),
 };
-
-// Temporary, webext-messenger depends on this global
-(globalThis as any).browser = browser;

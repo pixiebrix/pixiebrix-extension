@@ -17,5 +17,9 @@
 
 import { browser } from "webextension-polyfill-ts";
 
+// `webext-messenger` depends on this global
+// It's also useful while debugging
+(globalThis as any).browser = browser;
+
 // https://webpack.js.org/guides/public-path/#on-the-fly
 __webpack_public_path__ = browser.runtime.getURL("/");
