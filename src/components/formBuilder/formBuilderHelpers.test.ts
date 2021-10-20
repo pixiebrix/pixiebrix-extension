@@ -15,12 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { KEYS_OF_UI_SCHEMA, Schema, UiSchema } from "@/core";
 import {
+  DEFAULT_FIELD_TYPE,
   MINIMAL_SCHEMA,
   MINIMAL_UI_SCHEMA,
   produceSchemaOnPropertyNameChange,
   replaceStringInArray,
   updateRjsfSchemaWithDefaultsIfNeeded,
+  validateNextPropertyName,
 } from "./formBuilderHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
 import { initRenamingCases } from "./formEditor.testCases";
@@ -129,4 +132,53 @@ describe("produceSchemaOnPropertyNameChange", () => {
       expect(actualSchema).toEqual(expectedSchema);
     }
   );
+});
+
+describe("validateNextPropertyName", () => {
+  const schema: Schema = {
+    ...MINIMAL_SCHEMA,
+    properties: {
+      field1: {
+        title: "Field 1",
+        type: DEFAULT_FIELD_TYPE,
+      },
+      field2: {
+        title: "Field 2",
+        type: DEFAULT_FIELD_TYPE,
+      },
+    },
+  };
+
+  test("Accept same name.", () => {
+    const name = "field1";
+    const actual = validateNextPropertyName(schema, name, name);
+    expect(actual).toBeNull();
+  });
+
+  test("Don't accept empty name.", () => {
+    const actual = validateNextPropertyName(schema, "field1", "");
+    expect(actual).toBe("Name cannot be empty.");
+  });
+
+  test("Don't accept periods.", () => {
+    const actual = validateNextPropertyName(schema, "field1", "field.1");
+    expect(actual).toBe("Name must not contain periods.");
+  });
+
+  test("Don't accept duplicates.", () => {
+    const actual = validateNextPropertyName(schema, "field1", "field2");
+    expect(actual).toBe(
+      'Name must be unique. Another property "Field 2" already has the name "field2".'
+    );
+  });
+
+  test.each([
+    "constructor",
+    "__proto__",
+    "__defineGetter__",
+    ...KEYS_OF_UI_SCHEMA,
+  ])("Don't allow special names [%s]", (nextPropertyName) => {
+    const actual = validateNextPropertyName(schema, "field1", nextPropertyName);
+    expect(actual).toBe("Such property name is forbidden.");
+  });
 });
