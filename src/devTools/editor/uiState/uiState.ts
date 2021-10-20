@@ -54,17 +54,21 @@ export interface NodeUIState {
   };
 }
 
+export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
+  return {
+    nodeId,
+    dataPanel: {
+      activeTabKey: null,
+      tabQueries: {},
+    },
+  };
+}
+
 export function makeInitialElementUIState(): ElementUIState {
   return {
     activeNodeId: FOUNDATION_NODE_ID,
     nodeUIStates: {
-      [FOUNDATION_NODE_ID]: {
-        nodeId: FOUNDATION_NODE_ID,
-        dataPanel: {
-          activeTabKey: null,
-          tabQueries: {},
-        },
-      },
+      [FOUNDATION_NODE_ID]: makeInitialNodeUIState(FOUNDATION_NODE_ID),
     },
   };
 }

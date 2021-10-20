@@ -28,6 +28,7 @@ import { RegistryId, UUID } from "@/core";
 import {
   ElementUIState,
   makeInitialElementUIState,
+  makeInitialNodeUIState,
 } from "@/devTools/editor/uiState/uiState";
 import {
   FOUNDATION_NODE_ID,
@@ -109,13 +110,7 @@ function ensureNodeUIState(
   nodeId: NodeId
 ) {
   if (!state.nodeUIStates[nodeId]) {
-    state.nodeUIStates[nodeId] = {
-      nodeId,
-      dataPanel: {
-        activeTabKey: null,
-        tabQueries: {},
-      },
-    };
+    state.nodeUIStates[nodeId] = makeInitialNodeUIState(nodeId);
   }
 }
 
