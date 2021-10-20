@@ -71,12 +71,12 @@ const Logo: React.FunctionComponent = () => (
   <img src={logoUrl} alt="PixiBrix logo" className={styles.logo} />
 );
 
-interface SidebarProps {
+type SidebarProps = {
   isInsertingElement: boolean;
   activeElement: UUID | null;
   readonly elements: FormState[];
   installed: IExtension[];
-}
+};
 
 const SidebarExpanded: React.FunctionComponent<
   SidebarProps & {
