@@ -60,12 +60,14 @@ export async function engineRenderer(
 
     case "var": {
       return (template, ctxt) => {
-        const prop = getPropByPath(ctxt as UnknownObject, template);
-        if (prop && typeof prop === "object" && "__service" in prop) {
+        const value = getPropByPath(ctxt as UnknownObject, template);
+        if (value && typeof value === "object" && "__service" in value) {
           // If we're returning the root service context, return the service itself for use with proxyService
           // @ts-expect-error not sure why the "in" check isn't working
           return prop.__service;
         }
+
+        return value;
       };
     }
 

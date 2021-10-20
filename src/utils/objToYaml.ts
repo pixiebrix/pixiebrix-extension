@@ -17,11 +17,11 @@
 
 import { sortBy } from "lodash";
 import { removeUndefined } from "@/utils";
-import { dump } from "js-yaml";
+import { dumpBrickYaml } from "@/runtime/brickYaml";
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- don't need/want index signature
 export const objToYaml = (obj: object) =>
-  dump(removeUndefined(obj), {
+  dumpBrickYaml(removeUndefined(obj), {
     quotingType: '"',
   });
 

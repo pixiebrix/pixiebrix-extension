@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import yaml from "js-yaml";
 import { castArray } from "lodash";
 import { useCallback } from "react";
 import { useHistory } from "react-router";
@@ -32,6 +31,7 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { getErrorMessage, isAxiosError } from "@/errors";
 import { UUID } from "@/core";
 import { clearServiceCache } from "@/background/requests";
+import { loadBrickYaml } from "@/runtime/brickYaml";
 
 type SubmitOptions = {
   create: boolean;
@@ -83,7 +83,7 @@ function useSubmitBrick({
     async (values, { setErrors, resetForm }) => {
       const { config, reactivate: reinstallBlueprint } = values;
 
-      const json = yaml.load(config) as Definition | RecipeDefinition;
+      const json = loadBrickYaml(config) as Definition | RecipeDefinition;
       const { kind, metadata } = json;
 
       try {

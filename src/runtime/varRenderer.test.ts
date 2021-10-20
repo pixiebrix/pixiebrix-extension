@@ -16,8 +16,6 @@
  */
 
 import { isSimplePath } from "./pathHelpers";
-import { renderImplicit } from "./mapArgs";
-import Mustache from "mustache";
 
 test("can detect path", () => {
   expect(isSimplePath("array.0", { array: [] })).toBeTruthy();
@@ -35,20 +33,4 @@ test("first path must exist in context", () => {
   expect(isSimplePath("@anOutputKey", { anOutputKey: "foo" })).toBeFalsy();
   expect(isSimplePath("kebab-case", { kebab_case: "foo" })).toBeFalsy();
   expect(isSimplePath("snake_case", { "snake-case": "foo" })).toBeFalsy();
-});
-
-test("prefer path to renderer", () => {
-  expect(
-    renderImplicit({ foo: "array.0" }, { array: ["bar"] }, Mustache.render)
-  ).toEqual({
-    foo: "bar",
-  });
-});
-
-test("don't render non-matching path", () => {
-  expect(
-    renderImplicit({ foo: "array.0" }, { otherVar: ["bar"] }, Mustache.render)
-  ).toEqual({
-    foo: "array.0",
-  });
 });
