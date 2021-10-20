@@ -27,7 +27,7 @@ import { ErrorObject } from "serialize-error";
 import { Permissions } from "webextension-polyfill-ts";
 import { pick } from "lodash";
 
-export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
+export type TemplateEngine = "mustache" | "nunjucks" | "handlebars" | "var";
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
@@ -42,8 +42,9 @@ export type SchemaPropertyType = JSONSchema7TypeName;
  *
  * - v1: original, implicit templating and dataflow
  * - v2: introduces explicitDataFlow
+ * - v3: introduces explicit expressions
  */
-export type ApiVersion = "v1" | "v2";
+export type ApiVersion = "v1" | "v2" | "v3";
 
 export type RenderedHTML = string;
 

@@ -16,7 +16,6 @@
  */
 
 import {
-  apiVersionOptions,
   blockList,
   makeServiceContext,
   mergeReaders,
@@ -57,6 +56,7 @@ import { HeadlessModeError } from "@/blocks/errors";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { cloneDeep } from "lodash";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 
 export type ActionPanelConfig = {
   heading: string;

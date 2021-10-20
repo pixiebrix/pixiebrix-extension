@@ -17,7 +17,6 @@
 
 import { ExtensionPoint } from "@/types";
 import {
-  apiVersionOptions,
   blockList,
   makeServiceContext,
   mergeReaders,
@@ -51,6 +50,7 @@ import { notifyError } from "@/contentScript/notify";
 import JQuery from "jquery";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;

@@ -25,7 +25,6 @@ import {
   mergeReaders,
   blockList,
   makeServiceContext,
-  apiVersionOptions,
 } from "@/blocks/combinators";
 import { reportError } from "@/telemetry/logging";
 import {
@@ -66,9 +65,11 @@ import { getNavigationId } from "@/contentScript/context";
 import { rejectOnCancelled, PromiseCancelled } from "@/utils";
 import { PanelDefinition } from "@/extensionPoints/panelExtension";
 import getSvgIcon from "@/icons/getSvgIcon";
-import { engineRenderer } from "@/utils/renderers";
 import { selectEventData } from "@/telemetry/deployments";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { engineRenderer } from "@/runtime/renderers";
+import { mapArgs } from "@/runtime/mapArgs";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -460,7 +461,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       icon = { id: "box", size: 18 },
     } = extension.config;
 
-    const renderTemplate = await engineRenderer(extension.templateEngine);
+    const versionOptions = apiVersionOptions(extension.apiVersion);
+
+    const implicitRender = versionOptions.explicitRender
+      ? null
+      : await engineRenderer(extension.templateEngine);
 
     let html: string;
 
@@ -480,7 +485,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           validate: true,
           serviceArgs: serviceContext,
           optionsArgs: extension.optionsArgs,
-          ...apiVersionOptions(extension.apiVersion),
+          ...versionOptions,
         }
       );
 
@@ -495,7 +500,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       const serviceContext = await makeServiceContext(extension.services);
       const extensionContext = { ...ctxt, ...serviceContext };
       html = Mustache.render(this.getTemplate(), {
-        caption: renderTemplate(caption, extensionContext),
+        caption: (await mapArgs(caption, extensionContext, {
+          implicitRender,
+        })) as string,
         icon: icon ? await getSvgIcon(icon) : null,
       });
     } else {

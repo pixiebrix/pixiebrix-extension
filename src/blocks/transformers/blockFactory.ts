@@ -20,7 +20,7 @@ import { readerFactory } from "@/blocks/readers/factory";
 import { Validator, Schema as ValidatorSchema } from "@cfworker/json-schema";
 import { ValidationError } from "@/errors";
 import { castArray } from "lodash";
-import { apiVersionOptions, reducePipeline } from "@/blocks/combinators";
+import { reducePipeline } from "@/blocks/combinators";
 import {
   ApiVersion,
   BlockArg,
@@ -36,6 +36,7 @@ import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
 import { BlockType, getType } from "@/blocks/util";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 
 type ComponentConfig = {
   apiVersion?: ApiVersion;

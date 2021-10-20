@@ -26,7 +26,6 @@ import {
   mergeReaders,
   blockList,
   makeServiceContext,
-  apiVersionOptions,
 } from "@/blocks/combinators";
 import { boolean } from "@/utils";
 import {
@@ -56,6 +55,7 @@ import { notifyError } from "@/contentScript/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 
 export type PanelConfig = {
   heading?: string;

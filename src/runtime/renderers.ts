@@ -18,11 +18,12 @@
 import { TemplateEngine } from "@/core";
 import Mustache from "mustache";
 import { mapKeys, once } from "lodash";
+import { getPropByPath } from "@/runtime/pathHelpers";
+import { UnknownObject } from "@/types";
 
 const hyphenRegex = /-/gi;
 
-// eslint-disable-next-line @typescript-eslint/ban-types -- we don't need key logic
-export type Renderer = (template: string, context: object) => string;
+export type Renderer = (template: string, context: unknown) => unknown;
 
 const ensureNunjucks = once(async () => {
   const { default: nunjucks } = await import("nunjucks");
@@ -31,7 +32,7 @@ const ensureNunjucks = once(async () => {
 });
 
 export async function engineRenderer(
-  templateEngine: TemplateEngine = "mustache"
+  templateEngine: TemplateEngine
 ): Promise<Renderer | undefined> {
   switch (templateEngine.toLowerCase()) {
     case "mustache": {
@@ -42,7 +43,7 @@ export async function engineRenderer(
       const nunjucks = await ensureNunjucks();
       return (template, ctxt) => {
         // Convert top level data from kebab case to snake case in order to be valid identifiers
-        const snakeCased = mapKeys(ctxt, (value, key) =>
+        const snakeCased = mapKeys(ctxt as UnknownObject, (value, key) =>
           key.replace(hyphenRegex, "_")
         );
         return nunjucks.renderString(template, snakeCased);
@@ -54,6 +55,17 @@ export async function engineRenderer(
       return (template, ctxt) => {
         const compiledTemplate = handlebars.compile(template);
         return compiledTemplate(ctxt);
+      };
+    }
+
+    case "var": {
+      return (template, ctxt) => {
+        const prop = getPropByPath(ctxt as UnknownObject, template);
+        if (prop && typeof prop === "object" && "__service" in prop) {
+          // If we're returning the root service context, return the service itself for use with proxyService
+          // @ts-expect-error not sure why the "in" check isn't working
+          return prop.__service;
+        }
       };
     }
 

@@ -16,12 +16,10 @@
  */
 
 import blockRegistry from "@/blocks/registry";
-import { mapArgs } from "@/helpers";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import CompositeReader from "@/blocks/readers/CompositeReader";
 import { locate } from "@/background/locator";
 import {
-  ApiVersion,
   BlockArg,
   IBlock,
   IReader,
@@ -57,13 +55,15 @@ import {
   PipelineConfigurationError,
   RemoteExecutionError,
 } from "@/blocks/errors";
-import { engineRenderer } from "@/utils/renderers";
+import { engineRenderer } from "@/runtime/renderers";
 import { BlockConfig, BlockPipeline, ReaderConfig } from "./types";
 import { TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
 import { recordTraceEntry, recordTraceExit } from "@/background/trace";
 import { uuidv4 } from "@/types/helpers";
 import { getType } from "@/blocks/util";
+import { mapArgs } from "@/runtime/mapArgs";
+import { ApiVersionOptions } from "@/runtime/apiVersionOptions";
 
 /** Return block definitions for all blocks referenced in a pipeline */
 export async function blockList(
@@ -82,19 +82,6 @@ export async function blockList(
     })
   );
 }
-
-/**
- * Options controlled by the apiVersion directive in brick definitions.
- * @see ApiVersion
- */
-type ApiVersionOptions = {
-  /**
-   * If set to `true`, data only flows via output keys. The last output of the last stage is returned.
-   * @since apiVersion 2
-   * @since 1.4.0
-   */
-  explicitDataFlow?: boolean;
-};
 
 type ReduceOptions = ApiVersionOptions & {
   /**
@@ -148,7 +135,10 @@ const defaultTraceOptions: TraceOptions = {
   blockInstanceId: undefined,
 };
 
-type StageOptions = {
+type StageOptions = Pick<
+  ApiVersionOptions,
+  "explicitArg" | "explicitRender"
+> & {
   context: RenderedArgs;
   validate: boolean;
   logValues: boolean;
@@ -169,6 +159,8 @@ export async function runStage(
     logValues,
     logger,
     headless,
+    explicitArg,
+    explicitRender,
     trace = defaultTraceOptions,
   }: StageOptions
 ): Promise<unknown> {
@@ -208,15 +200,18 @@ export async function runStage(
       );
     }
   } else {
-    // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
+    if (!explicitArg && !isPlainObject(args)) {
+      // HACK: hack from older versions to avoid applying a list to the config for blocks that pass a list to
+      // the next block. (Because originally in PixieBrix there was so way to explicitly pass list variables
+      // via outputKeys/variable expressions).
+      blockArgs = stageConfig;
+    }
 
-    blockArgs = isPlainObject(args)
-      ? mapArgs(
-          stageConfig,
-          argContext,
-          await engineRenderer(stage.templateEngine)
-        )
-      : stageConfig;
+    blockArgs = await mapArgs(stageConfig, argContext, {
+      implicitRender: explicitRender
+        ? null
+        : await engineRenderer(stage.templateEngine),
+    });
 
     if (logValues) {
       logger.debug(
@@ -337,26 +332,6 @@ function arraySchema(itemSchema: Schema): Schema {
 }
 
 /**
- * Return reducePipeline option settings based on the PixieBrix brick definition API version
- * @see ReduceOptions
- * @see ApiVersionOptions
- */
-export function apiVersionOptions(
-  version: ApiVersion = "v1"
-): ApiVersionOptions {
-  switch (version) {
-    case "v2": {
-      return { explicitDataFlow: true };
-    }
-
-    case "v1":
-    default: {
-      return { explicitDataFlow: false };
-    }
-  }
-}
-
-/**
  * Select the root element for a stage based on the rootMode and root
  * @see BlockConfig.rootMode
  * @see BlockConfig.root
@@ -370,6 +345,7 @@ function selectStageRoot(
   const root = rootMode === "inherit" ? defaultRoot : document;
   const $root = $(root ?? document);
 
+  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jQuery
   const $stageRoot = stage.root ? $root.find(stage.root) : $root;
 
   if ($stageRoot.length > 1) {
@@ -393,15 +369,18 @@ export async function reducePipeline(
   logger: Logger,
   root: ReaderRoot = null,
   {
+    runId = uuidv4(),
     validate = true,
     // Don't default `logValues`, will set async below using `getLoggingConfig` if not provided
     logValues,
     headless = false,
     optionsArgs = {},
     serviceArgs = {},
+    // Default to the `apiVersion: v1, v2` data passing behavior and renderer behavior
+    explicitArg = false,
+    explicitRender = false,
     // Default to the `apiVersion: v1` data flow behavior
     explicitDataFlow = false,
-    runId = uuidv4(),
   }: ReduceOptions = {}
 ): Promise<unknown> {
   const extraContext: RenderedArgs = {
@@ -432,13 +411,16 @@ export async function reducePipeline(
       const stageRoot = selectStageRoot(stage, root);
 
       if ("if" in stage) {
-        const renderer = await engineRenderer(stage.templateEngine);
+        const render = explicitRender
+          ? null
+          : await engineRenderer(stage.templateEngine);
 
-        const { if: condition } = mapArgs(
+        const { if: condition } = (await mapArgs(
           { if: stage.if },
           { ...extraContext, ...currentArgs },
-          renderer
-        );
+          { implicitRender: render }
+        )) as { if: unknown };
+
         if (!boolean(condition)) {
           logger.debug(
             `Skipping stage #${index + 1} ${stage.id} because condition not met`
@@ -456,6 +438,8 @@ export async function reducePipeline(
         logValues,
         validate,
         headless,
+        explicitArg,
+        explicitRender,
         logger: stageLogger,
         trace: {
           runId,

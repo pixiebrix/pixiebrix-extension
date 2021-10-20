@@ -21,7 +21,6 @@ import {
   partial,
   partialRight,
   negate,
-  identity,
   countBy,
   maxBy,
   entries,
@@ -35,7 +34,6 @@ import {
   compact,
 } from "lodash";
 import { Primitive } from "type-fest";
-import { getErrorMessage } from "@/errors";
 import { SafeString } from "@/core";
 
 /**
@@ -293,83 +291,6 @@ export class InvalidPathError extends Error {
     this.name = "InvalidPathError";
     this.path = path;
   }
-}
-
-export interface ReadProxy {
-  toJS: (value: unknown) => unknown;
-  get: (value: unknown, prop: number | string) => unknown;
-}
-
-export const noopProxy: ReadProxy = {
-  toJS: identity,
-  get: (value, prop) => {
-    if (isObject(value) && Object.prototype.hasOwnProperty.call(value, prop)) {
-      // Checking visibility of the property above
-      // eslint-disable-next-line security/detect-object-injection
-      return value[prop];
-    }
-  },
-};
-
-export function getPropByPath(
-  obj: Record<string, unknown>,
-  path: string,
-  {
-    args = {},
-    proxy = noopProxy,
-  }: { args?: Record<string, unknown>; proxy?: ReadProxy } | undefined = {}
-): unknown {
-  // Consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
-
-  const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
-
-  let value: unknown = obj;
-  const rawParts = path.trim().split(".");
-
-  for (const [index, rawPart] of rawParts.entries()) {
-    const previous = value;
-
-    // Handle null coalescing syntax
-    let part: string | number = rawPart;
-    let coalesce = false;
-    let numeric = false;
-
-    if (rawPart.endsWith("?")) {
-      part = rawPart.slice(0, -1);
-      coalesce = true;
-    }
-
-    if (/^\d+$/.test(part) && Array.isArray(value)) {
-      part = Number.parseInt(part, 10);
-      numeric = true;
-    }
-
-    if (!(typeof value == "object" || (Array.isArray(previous) && numeric))) {
-      throw new InvalidPathError(`Invalid path ${path}`, path);
-    }
-
-    value = get(value, part);
-
-    if (value == null) {
-      if (coalesce || index === rawParts.length - 1) {
-        return null;
-      }
-
-      throw new InvalidPathError(`${path} undefined (missing ${part})`, path);
-    }
-
-    if (typeof value === "function") {
-      try {
-        value = value.apply(previous, args);
-      } catch (error: unknown) {
-        throw new Error(
-          `Error running method ${part}: ${getErrorMessage(error)}`
-        );
-      }
-    }
-  }
-
-  return cleanValue(toJS(value));
 }
 
 export function isNullOrBlank(value: unknown): boolean {

@@ -16,7 +16,6 @@
  */
 
 import {
-  apiVersionOptions,
   blockList,
   makeServiceContext,
   mergeReaders,
@@ -55,6 +54,7 @@ import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { isErrorObject } from "@/errors";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/options/deploymentUtils";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 
 export type ContextMenuConfig = {
   title: string;
