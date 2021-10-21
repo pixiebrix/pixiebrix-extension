@@ -83,10 +83,6 @@ const DataPanel: React.FC<{
       return false;
     }
 
-    if (traces.length !== blockPipeline.length) {
-      return true;
-    }
-
     const currentInput = blockPipeline.slice(0, blockIndex);
     const tracedInput = currentInput.map(
       (block) =>
