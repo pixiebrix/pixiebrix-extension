@@ -42,6 +42,8 @@ import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors"
 import { JsonObject } from "type-fest";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
+import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
+import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -91,7 +93,7 @@ const DataPanel: React.FC<{
     const tracedInput = currentInput.map(
       (block) =>
         traces.find((trace) => trace.blockInstanceId === block.instanceId)
-          .blockConfig
+          ?.blockConfig
     );
 
     return !isEqual(currentInput, tracedInput);
@@ -132,10 +134,19 @@ const DataPanel: React.FC<{
   const showFormPreview = block.config?.schema && block.config?.uiSchema;
   const showBlockPreview = record || previewInfo?.traceOptional;
 
-  const defaultKey = showFormPreview ? "preview" : "output";
+  const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
+    showFormPreview ? "preview" : "output"
+  );
+
+  const [contextQuery, setContextQuery] = useDataPanelTabSearchQuery("context");
+  const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery("formik");
+  const [renderedQuery, setRenderedQuery] = useDataPanelTabSearchQuery(
+    "rendered"
+  );
+  const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
 
   return (
-    <Tab.Container defaultActiveKey={defaultKey}>
+    <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <Nav variant="tabs">
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
@@ -172,6 +183,8 @@ const DataPanel: React.FC<{
             data={relevantContext}
             copyable
             searchable
+            initialSearchQuery={contextQuery}
+            onSearchQueryChanged={setContextQuery}
             shouldExpandNode={(keyPath) =>
               keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
             }
@@ -184,7 +197,12 @@ const DataPanel: React.FC<{
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
               </div>
-              <JsonTree data={formState ?? {}} searchable />
+              <JsonTree
+                data={formState ?? {}}
+                searchable
+                initialSearchQuery={formikQuery}
+                onSearchQueryChanged={setFormikQuery}
+              />
             </DataTab>
             <DataTab eventKey="blockConfig">
               <div className="text-info">
@@ -208,6 +226,8 @@ const DataPanel: React.FC<{
                 data={record.renderedArgs}
                 copyable
                 searchable
+                initialSearchQuery={renderedQuery}
+                onSearchQueryChanged={setRenderedQuery}
                 label="Rendered Inputs"
               />
             </>
@@ -230,6 +250,8 @@ const DataPanel: React.FC<{
                 data={outputObj}
                 copyable
                 searchable
+                initialSearchQuery={outputQuery}
+                onSearchQueryChanged={setOutputQuery}
                 label="Data"
                 shouldExpandNode={(keyPath) =>
                   keyPath.length === 1 &&

@@ -39,6 +39,7 @@ import { UnknownObject } from "@/types";
 import { IBlock, RegistryId } from "@/core";
 import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
+import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -130,6 +131,8 @@ const BlockPreview: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
 
+  const [previewQuery, setPreviewQuery] = useDataPanelTabSearchQuery("preview");
+
   if (blockInfo?.type === "renderer") {
     return (
       <div className="text-muted">
@@ -189,6 +192,8 @@ const BlockPreview: React.FunctionComponent<{
           data={output}
           searchable
           copyable
+          initialSearchQuery={previewQuery}
+          onSearchQueryChanged={setPreviewQuery}
           shouldExpandNode={(keyPath) =>
             keyPath.length === 1 && keyPath[0] === `@${outputKey}`
           }

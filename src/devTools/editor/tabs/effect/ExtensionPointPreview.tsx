@@ -30,6 +30,7 @@ import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
 import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
+import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 
 type PreviewState = {
   isRunning: boolean;
@@ -109,6 +110,8 @@ const ExtensionPointPreview: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, element.extensionPoint]);
 
+  const [previewQuery, setPreviewQuery] = useDataPanelTabSearchQuery("preview");
+
   if (isRunning) {
     return (
       <div>
@@ -166,6 +169,8 @@ const ExtensionPointPreview: React.FunctionComponent<{
         data={output ?? {}}
         searchable
         copyable
+        initialSearchQuery={previewQuery}
+        onSearchQueryChanged={setPreviewQuery}
         shouldExpandNode={(keyPath) =>
           keyPath.length === 1 && keyPath[0] === "@input"
         }
