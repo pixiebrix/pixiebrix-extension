@@ -87,7 +87,7 @@ const DataPanel: React.FC<{
     const tracedInput = currentInput.map(
       (block) =>
         traces.find((trace) => trace.blockInstanceId === block.instanceId)
-          .blockConfig
+          ?.blockConfig
     );
 
     return !isEqual(currentInput, tracedInput);
