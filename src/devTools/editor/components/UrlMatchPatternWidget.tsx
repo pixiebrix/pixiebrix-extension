@@ -64,9 +64,9 @@ export const DEFAULT_SHORTCUTS: Shortcut[] = [
 const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
   const { name, disabled } = props;
 
-  // The generic type CustomFieldWidget doesn't seem to support exposing custom props for the widget?
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // XXX: the generic type CustomFieldWidget doesn't seem to support exposing custom props for the widget
   const shortcuts =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ((props as any).shortcuts as Shortcut[]) ?? DEFAULT_SHORTCUTS;
 
   // XXX: can we use props.onChange here? Maybe not unless we construct an event?
