@@ -29,6 +29,11 @@ declare module "react-select-virtualized" {
   export default VirtualizedSelect;
 }
 
+declare module "generate-schema" {
+  import { UnknownObject } from "@/types";
+  const json: (title: string, obj: unknown) => UnknownObject;
+}
+
 declare module "@/vendors/initialize" {
   /** Attach a MutationObserver specifically for a selector */
   const initialize: (
