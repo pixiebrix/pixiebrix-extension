@@ -81,12 +81,10 @@ const DataPanel: React.FC<{
   const record = traces.find((trace) => trace.blockInstanceId === instanceId);
 
   const isInputStale = useMemo(() => {
-    if (record === undefined) {
+    // Don't show the warning if there are no traces. Also, this block can't have a
+    // stale input if it's the first block in the pipeline.
+    if (record === undefined || blockIndex === 0) {
       return false;
-    }
-
-    if (traces.length !== blockPipeline.length) {
-      return true;
     }
 
     const currentInput = blockPipeline.slice(0, blockIndex);
