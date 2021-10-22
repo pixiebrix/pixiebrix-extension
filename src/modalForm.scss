@@ -15,6 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+:root {
+  // Required due to a Chrome bug in dark mode
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/1650
+  // https://stackoverflow.com/a/69671458/288906
+  color-scheme: light dark;
+  body {
+    // Resets the color-scheme because our theme doesn't actually support dark mode
+    color-scheme: normal;
+  }
+}
+
 body {
   height: 100vh;
   background-color: transparent;
