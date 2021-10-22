@@ -19,17 +19,22 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { Schema } from "@/core";
-import { useGetDatabasesQuery, useGetOrganizationsQuery } from "@/services/api";
 import { validateRegistryId } from "@/types/helpers";
 import { joinName } from "@/utils";
 import { partial } from "lodash";
 import React from "react";
 
-export const DATABASE_GET_ID = validateRegistryId("@pixiebrix/data/get");
+export const DATABASE_PUT_ID = validateRegistryId("@pixiebrix/data/put");
 
 const keySchema: Schema = {
   type: "string",
   description: "The unique key for the record",
+};
+
+const valueSchema: Schema = {
+  type: "object",
+  description: "The data to store in the database",
+  additionalProperties: true,
 };
 
 const databaseIdSchema: Schema = {
@@ -37,38 +42,11 @@ const databaseIdSchema: Schema = {
   description: "The database id",
 };
 
-const DatabaseGetOptions: React.FC<{
+const DatabasePutOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
   const configName = partial(joinName, name, configKey);
-  const {
-    data: databases,
-    isLoading: isLoadingDatabases,
-  } = useGetDatabasesQuery();
-  const {
-    data: organizations,
-    isLoading: isLoadingOrganizations,
-  } = useGetOrganizationsQuery();
-
-  console.log("use", databases, organizations);
-
-  const databaseOptions =
-    databases && organizations
-      ? databases.map((db) => {
-          const organization = organizations.find(
-            (o) => o.id === db.organization_id
-          );
-          const dbName = organization
-            ? `${db.name} [${organization.name}]`
-            : db.name;
-
-          return {
-            label: dbName,
-            value: db.id,
-          };
-        })
-      : [];
 
   return (
     <div>
@@ -78,8 +56,22 @@ const DatabaseGetOptions: React.FC<{
         name={configName("databaseId")}
         label="Database Id"
         as={SelectWidget}
-        options={databaseOptions}
-        isLoading={isLoadingDatabases || isLoadingOrganizations}
+        options={[
+          {
+            label: "option 1",
+            value: 1,
+          },
+          {
+            label: "option 2",
+            value: 2,
+          },
+        ]}
+      />
+
+      <SchemaField
+        name={configName("valueSchema")}
+        label="Value"
+        schema={valueSchema}
       />
 
       <ConnectedFieldTemplate
@@ -97,4 +89,4 @@ const DatabaseGetOptions: React.FC<{
   );
 };
 
-export default DatabaseGetOptions;
+export default DatabasePutOptions;

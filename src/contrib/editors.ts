@@ -42,6 +42,9 @@ import LookupSpreadsheetOptions from "@/contrib/google/sheets/LookupSpreadsheetO
 import DatabaseGetOptions, {
   DATABASE_GET_ID,
 } from "@/devTools/editor/fields/DatabaseGetOptions";
+import DatabasePutOptions, {
+  DATABASE_PUT_ID,
+} from "@/devTools/editor/fields/DatabasePutOptions";
 
 optionsRegistry.set(SERVICE_GOOGLE_SHEET_ID, SheetServiceOptions);
 optionsRegistry.set(ZAPIER_ID, PushOptions);
@@ -53,4 +56,5 @@ optionsRegistry.set(AUTOMATION_ANYWHERE_RUN_BOT_ID, BotOptions);
 optionsRegistry.set(FORM_MODAL_ID, FormModalOptions);
 optionsRegistry.set(FORM_RENDERER_ID, FormRendererOptions);
 optionsRegistry.set(DATABASE_GET_ID, DatabaseGetOptions);
+optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
 optionsRegistry.set(COMPONENT_READER_ID, ComponentReaderOptions);

@@ -26,6 +26,7 @@ import {
   Organization,
   SanitizedAuth,
 } from "@/types/contract";
+import { components } from "@/types/swagger";
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
 const appBaseQuery = (): BaseQueryFn<{
@@ -55,6 +56,9 @@ export const appApi = createApi({
   reducerPath: "appApi",
   baseQuery: appBaseQuery(),
   endpoints: (builder) => ({
+    getDatabases: builder.query<components["schemas"]["Database"][], void>({
+      query: () => ({ url: "/api/databases/", method: "get" }),
+    }),
     getServices: builder.query<ServiceDefinition[], void>({
       query: () => ({ url: "/api/services/", method: "get" }),
     }),
@@ -84,6 +88,7 @@ export const appApi = createApi({
 });
 
 export const {
+  useGetDatabasesQuery,
   useGetServicesQuery,
   useGetServiceAuthsQuery,
   useGetMarketplaceListingsQuery,
