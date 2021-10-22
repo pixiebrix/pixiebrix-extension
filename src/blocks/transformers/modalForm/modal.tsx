@@ -118,6 +118,7 @@ export class ModalTransformer extends Transformer {
           style={{
             border: "0",
             flexGrow: 1, // Fit dialog
+            colorScheme: "normal", // Match parent color scheme #1650
           }}
         />
       </dialog>,
