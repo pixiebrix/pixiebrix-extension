@@ -46,7 +46,7 @@ import {
   NormalizedAvailability,
   ReaderConfig,
 } from "@/blocks/types";
-import { deepPickBy, freshIdentifier } from "@/utils";
+import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 
 export interface WizardStep {
   step: string;
@@ -189,6 +189,24 @@ export function selectIsAvailable(
   return {
     matchPatterns,
     selectors,
+  };
+}
+
+/**
+ * Exclude malformed matchPatterns and selectors from an isAvailable section that may have found their way over from the
+ * Page Editor.
+ *
+ * Currently excludes:
+ * - Null values
+ * - Blank values
+ */
+export function cleanIsAvailable({
+  matchPatterns = [],
+  selectors = [],
+}: NormalizedAvailability): NormalizedAvailability {
+  return {
+    matchPatterns: matchPatterns.filter((x) => !isNullOrBlank(x)),
+    selectors: selectors.filter((x) => !isNullOrBlank(x)),
   };
 }
 

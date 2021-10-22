@@ -22,13 +22,23 @@ import { useCallback } from "react";
 import { uninstallContextMenu } from "@/background/messenger/api";
 import { optionsSlice } from "@/options/slices";
 import { groupBy, uniq } from "lodash";
-import { IExtension, UUID, RegistryId } from "@/core";
+import { IExtension, UUID, RegistryId, UserOptions } from "@/core";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
 type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
 
+function selectOptions(extensions: IExtension[]): UserOptions {
+  // For a given recipe, all of the extensions receive the same options during the install process (even if they don't
+  // use the options), so we can just take the optionsArgs for any of the extensions
+  return extensions[0]?.optionsArgs ?? {};
+}
+
 function selectAuths(extensions: IExtension[]): Record<RegistryId, UUID> {
+  // The extensions for the recipe will only have the services that are declared on each extension. So we have to take
+  // the union of the service credentials. There's currently no way in the UX that the service auths could become
+  // inconsistent for a given service key, but guard against that case anyway.
+
   const serviceAuths = groupBy(
     extensions.flatMap((x) => x.services),
     (x) => x.id
@@ -65,21 +75,24 @@ function useReinstall(): Reinstall {
       }
 
       const currentAuths = selectAuths(recipeExtensions);
+      const currentOptions = selectOptions(recipeExtensions);
 
-      // Uninstall first to avoid duplicates
-      await Promise.all(
-        recipeExtensions.map(async (extension) => {
-          const extensionRef = { extensionId: extension.id };
-          await uninstallContextMenu(extensionRef);
-          dispatch(removeExtension(extensionRef));
-        })
-      );
+      // Uninstall first to avoid duplicates. Use a loop instead of Promise.all to ensure the sequence that each pair
+      // of calls that uninstallContextMenu + dispatch occur in. We were having problems with the context menu not
+      // unregistered from some of the tabs
+      for (const extension of recipeExtensions) {
+        const extensionRef = { extensionId: extension.id };
+        // eslint-disable-next-line no-await-in-loop -- see comment above
+        await uninstallContextMenu(extensionRef);
+        dispatch(removeExtension(extensionRef));
+      }
 
       dispatch(
         installRecipe({
           recipe,
           extensionPoints: recipe.extensionPoints,
           services: currentAuths,
+          optionsArgs: currentOptions,
         })
       );
     },
