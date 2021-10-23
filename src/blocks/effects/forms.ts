@@ -29,17 +29,34 @@ function setValue(
   value: unknown,
   { dispatchEvent = true }: { dispatchEvent?: boolean } = {}
 ) {
-  if ($input.is(":radio") || $input.is(":checkbox")) {
-    $input.prop("checked", boolean(value));
-  } else {
-    $input.val(String(value));
-  }
+  for (const field of $input) {
+    if (field.isContentEditable) {
+      field.textContent = String(value);
+      if (dispatchEvent) {
+        field.dispatchEvent(new InputEvent("input", { bubbles: true }));
+      }
 
-  if (dispatchEvent) {
-    $input.each(function () {
-      const event = new Event("change", { bubbles: true });
-      this.dispatchEvent(event);
-    });
+      continue;
+    }
+
+    if (!(field instanceof HTMLInputElement)) {
+      console.warn(
+        "The selected element is not an input field nor an editable element",
+        { field }
+      );
+      continue;
+    }
+
+    if (field.type === "radio" || field.type === "checkbox") {
+      field.checked = boolean(value);
+    } else {
+      $(field).val(String(value));
+    }
+
+    if (dispatchEvent) {
+      field.dispatchEvent(new Event("change", { bubbles: true }));
+      field.dispatchEvent(new InputEvent("input", { bubbles: true }));
+    }
   }
 }
 
