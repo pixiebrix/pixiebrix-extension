@@ -109,6 +109,9 @@ export type OptionsState =
   | LegacyExtensionObjectState
   | ExtensionOptionsState;
 
+/**
+ * Throw a `TypeError` if the Redux state has not been migrated.
+ */
 export function requireLatestState(
   state: OptionsState
 ): asserts state is LegacyExtensionObjectState | ExtensionOptionsState {

@@ -31,6 +31,7 @@ import {
   selectIsAvailable,
   withInstanceIds,
   WizardStep,
+  cleanIsAvailable,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
@@ -132,7 +133,7 @@ function selectExtensionPoint(
       documentUrlPatterns,
       contexts,
       reader,
-      isAvailable,
+      isAvailable: cleanIsAvailable(isAvailable),
     },
   });
 }
