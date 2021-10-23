@@ -52,7 +52,10 @@ function setValue(
       continue;
     }
 
-    if ("checked" in field) {
+    if (
+      field instanceof HTMLInputElement &&
+      ["radio", "checkbox"].includes(field.type)
+    ) {
       field.checked = boolean(value);
     } else {
       $(field).val(String(value));
