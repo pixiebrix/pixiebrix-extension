@@ -24,6 +24,7 @@ import { browser } from "webextension-polyfill-ts";
 import { registerForm } from "@/contentScript/modalForms";
 import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";
+import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 
 export class ModalTransformer extends Transformer {
   defaultOutputKey = "form";
@@ -96,8 +97,7 @@ export class ModalTransformer extends Transformer {
     style.textContent += `${scrollableRoot} {overflow: hidden !important}`; // Disable scrollbar
 
     // Preserve space initially taken by scrollbar
-    const scrollbarWidth = window.innerWidth - document.body.clientWidth;
-    style.textContent += `html {padding-inline-end: ${scrollbarWidth}px  !important}`;
+    style.textContent += `html {padding-inline-end: ${scrollbarWidth()}px  !important}`;
 
     const container = document.createElement("div");
     const shadowRoot = container.attachShadow({ mode: "closed" });
