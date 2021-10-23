@@ -39,7 +39,12 @@ function setValue(
       continue;
     }
 
-    if (!(field instanceof HTMLInputElement)) {
+    if (
+      !(
+        field instanceof HTMLInputElement ||
+        field instanceof HTMLTextAreaElement
+      )
+    ) {
       console.warn(
         "The selected element is not an input field nor an editable element",
         { field }
@@ -47,7 +52,7 @@ function setValue(
       continue;
     }
 
-    if (field.type === "radio" || field.type === "checkbox") {
+    if ("checked" in field) {
       field.checked = boolean(value);
     } else {
       $(field).val(String(value));
