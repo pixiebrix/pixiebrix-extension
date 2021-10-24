@@ -23,6 +23,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { joinName } from "@/utils";
 import { partial } from "lodash";
 import React from "react";
+import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
 
 export const DATABASE_PUT_ID = validateRegistryId("@pixiebrix/data/put");
 
@@ -37,9 +38,8 @@ const valueSchema: Schema = {
   additionalProperties: true,
 };
 
-const databaseIdSchema: Schema = {
-  type: "string",
-  description: "The database id",
+const serviceSchema: Schema = {
+  $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/api",
 };
 
 const DatabasePutOptions: React.FC<{
@@ -48,25 +48,22 @@ const DatabasePutOptions: React.FC<{
 }> = ({ name, configKey }) => {
   const configName = partial(joinName, name, configKey);
 
+  const {
+    databaseOptions,
+    isLoading: isLoadingDatabaseOptions,
+  } = useDatabaseOptions();
+
   return (
     <div>
-      <SchemaField name={configName("key")} label="Key" schema={keySchema} />
-
       <ConnectedFieldTemplate
         name={configName("databaseId")}
         label="Database Id"
         as={SelectWidget}
-        options={[
-          {
-            label: "option 1",
-            value: 1,
-          },
-          {
-            label: "option 2",
-            value: 2,
-          },
-        ]}
+        options={databaseOptions}
+        isLoading={isLoadingDatabaseOptions}
       />
+
+      <SchemaField name={configName("key")} label="Key" schema={keySchema} />
 
       <SchemaField
         name={configName("valueSchema")}
@@ -74,16 +71,10 @@ const DatabasePutOptions: React.FC<{
         schema={valueSchema}
       />
 
-      <ConnectedFieldTemplate
-        name={configName("service")}
-        label={"Service"}
-        placeholder="@pixiebrix/api"
-      />
-
       <SchemaField
-        name={configName("databaseId")}
-        label="Database Id"
-        schema={databaseIdSchema}
+        name={configName("service")}
+        label="Service"
+        schema={serviceSchema}
       />
     </div>
   );

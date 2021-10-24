@@ -19,11 +19,11 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { Schema } from "@/core";
-import { useGetDatabasesQuery, useGetOrganizationsQuery } from "@/services/api";
-import { validateRegistryId } from "@/types/helpers";
 import { joinName } from "@/utils";
 import { partial } from "lodash";
 import React from "react";
+import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
+import { validateRegistryId } from "@/types/helpers";
 
 export const DATABASE_GET_ID = validateRegistryId("@pixiebrix/data/get");
 
@@ -32,9 +32,8 @@ const keySchema: Schema = {
   description: "The unique key for the record",
 };
 
-const databaseIdSchema: Schema = {
-  type: "string",
-  description: "The database id",
+const serviceSchema: Schema = {
+  $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/api",
 };
 
 const DatabaseGetOptions: React.FC<{
@@ -42,56 +41,28 @@ const DatabaseGetOptions: React.FC<{
   configKey: string;
 }> = ({ name, configKey }) => {
   const configName = partial(joinName, name, configKey);
+
   const {
-    data: databases,
-    isLoading: isLoadingDatabases,
-  } = useGetDatabasesQuery();
-  const {
-    data: organizations,
-    isLoading: isLoadingOrganizations,
-  } = useGetOrganizationsQuery();
-
-  console.log("use", databases, organizations);
-
-  const databaseOptions =
-    databases && organizations
-      ? databases.map((db) => {
-          const organization = organizations.find(
-            (o) => o.id === db.organization_id
-          );
-          const dbName = organization
-            ? `${db.name} [${organization.name}]`
-            : db.name;
-
-          return {
-            label: dbName,
-            value: db.id,
-          };
-        })
-      : [];
+    databaseOptions,
+    isLoading: isLoadingDatabaseOptions,
+  } = useDatabaseOptions();
 
   return (
     <div>
-      <SchemaField name={configName("key")} label="Key" schema={keySchema} />
-
       <ConnectedFieldTemplate
         name={configName("databaseId")}
         label="Database Id"
         as={SelectWidget}
         options={databaseOptions}
-        isLoading={isLoadingDatabases || isLoadingOrganizations}
+        isLoading={isLoadingDatabaseOptions}
       />
 
-      <ConnectedFieldTemplate
-        name={configName("service")}
-        label={"Service"}
-        placeholder="@pixiebrix/api"
-      />
+      <SchemaField name={configName("key")} label="Key" schema={keySchema} />
 
       <SchemaField
-        name={configName("databaseId")}
-        label="Database Id"
-        schema={databaseIdSchema}
+        name={configName("service")}
+        label="Service"
+        schema={serviceSchema}
       />
     </div>
   );

@@ -56,9 +56,11 @@ export const appApi = createApi({
   reducerPath: "appApi",
   baseQuery: appBaseQuery(),
   endpoints: (builder) => ({
-    getDatabases: builder.query<components["schemas"]["Database"][], void>({
-      query: () => ({ url: "/api/databases/", method: "get" }),
-    }),
+    getDatabases: builder.query<Array<components["schemas"]["Database"]>, void>(
+      {
+        query: () => ({ url: "/api/databases/", method: "get" }),
+      }
+    ),
     getServices: builder.query<ServiceDefinition[], void>({
       query: () => ({ url: "/api/services/", method: "get" }),
     }),
