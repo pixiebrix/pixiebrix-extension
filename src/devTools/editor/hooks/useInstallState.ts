@@ -45,19 +45,23 @@ function useInstallState(
 
   const [availableInstalledIds] = useAsyncState(
     async () => {
-      if (meta) {
-        const extensionPointIds = new Set(
-          await getInstalledExtensionPointIds(thisTab)
-        );
-        const resolved = await Promise.all(
-          installed.map(async (extension) => resolveDefinitions(extension))
-        );
-        const available = resolved
-          .filter((x) => extensionPointIds.has(x.extensionPointId))
-          .map((x) => x.id);
-        return new Set<UUID>(
-          installed.filter((x) => available.includes(x.id)).map((x) => x.id)
-        );
+      try {
+        if (meta) {
+          const extensionPointIds = new Set(
+            await getInstalledExtensionPointIds(thisTab)
+          );
+          const resolved = await Promise.all(
+            installed.map(async (extension) => resolveDefinitions(extension))
+          );
+          const available = resolved
+            .filter((x) => extensionPointIds.has(x.extensionPointId))
+            .map((x) => x.id);
+          return new Set<UUID>(
+            installed.filter((x) => available.includes(x.id)).map((x) => x.id)
+          );
+        }
+      } catch (error) {
+        console.error(error);
       }
 
       return new Set<UUID>();
