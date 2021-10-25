@@ -15,20 +15,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getPropByPath } from "@/runtime/pathHelpers";
+import { getPropByPath, isSimplePath } from "@/runtime/pathHelpers";
 
-test("can get array element by index", () => {
-  expect(getPropByPath({ array: [1, 2, 3] }, "array.0")).toBe(1);
+describe("getPropByPath", () => {
+  test("can get array element by index", () => {
+    expect(getPropByPath({ array: [1, 2, 3] }, "array.0")).toBe(1);
+  });
+
+  test("can get integer object property", () => {
+    expect(getPropByPath({ array: { 0: "foo" } }, "array.0")).toBe("foo");
+  });
+
+  test("can get object path in array", () => {
+    expect(getPropByPath({ array: [{ key: "foo" }] }, "array.0.key")).toBe(
+      "foo"
+    );
+  });
+
+  test("can apply null coalescing to array index", () => {
+    expect(
+      getPropByPath({ array: [{ key: "foo" }] }, "array.1?.key")
+    ).toBeNull();
+  });
 });
 
-test("can get integer object property", () => {
-  expect(getPropByPath({ array: { 0: "foo" } }, "array.0")).toBe("foo");
-});
+describe("isSimplePath", () => {
+  test("can detect path", () => {
+    expect(isSimplePath("array.0", { array: [] })).toBeTruthy();
+    expect(
+      isSimplePath("@anOutputKey", { "@anOutputKey": "foo" })
+    ).toBeTruthy();
+    expect(isSimplePath("kebab-case", { "kebab-case": "foo" })).toBeTruthy();
+    expect(isSimplePath("snake_case", { snake_case: "foo" })).toBeTruthy();
+  });
 
-test("can get object path in array", () => {
-  expect(getPropByPath({ array: [{ key: "foo" }] }, "array.0.key")).toBe("foo");
-});
+  test("can detect path with optional chaining", () => {
+    expect(isSimplePath("array?.0", { array: [] })).toBeTruthy();
+  });
 
-test("can apply null coalescing to array index", () => {
-  expect(getPropByPath({ array: [{ key: "foo" }] }, "array.1?.key")).toBeNull();
+  test("first path must exist in context", () => {
+    expect(isSimplePath("array", {})).toBeFalsy();
+    expect(isSimplePath("@anOutputKey", { anOutputKey: "foo" })).toBeFalsy();
+    expect(isSimplePath("kebab-case", { kebab_case: "foo" })).toBeFalsy();
+    expect(isSimplePath("snake_case", { "snake-case": "foo" })).toBeFalsy();
+  });
 });

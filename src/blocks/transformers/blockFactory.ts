@@ -20,7 +20,7 @@ import { readerFactory } from "@/blocks/readers/factory";
 import { Validator, Schema as ValidatorSchema } from "@cfworker/json-schema";
 import { ValidationError } from "@/errors";
 import { castArray } from "lodash";
-import { InitialValues, reducePipeline } from "@/runtime/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import {
   ApiVersion,
   BlockArg,

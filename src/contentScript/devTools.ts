@@ -25,7 +25,7 @@ import {
   blockReducer,
   IntermediateState,
   ReduceOptions,
-} from "@/runtime/combinators";
+} from "@/runtime/reducePipeline";
 import { ApiVersion, BlockArgContext, IReader, RegistryId } from "@/core";
 import { selectedElement } from "@/devTools/getSelectedElement";
 import { isNullOrBlank, resolveObj } from "@/utils";

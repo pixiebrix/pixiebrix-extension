@@ -22,17 +22,18 @@ import { BlockType } from "@/blocks/util";
 /**
  * A block configuration with the corresponding resolved IBlock and BlockType.
  * @see BlockConfig
- * @see BlockPipeline
  * @see BlockType
  */
 export type ResolvedBlockConfig = {
-  config: BlockConfig;
   block: IBlock;
+  config: BlockConfig;
   type: BlockType;
 };
 
 /**
  * Assume that a value matches the expected arg for any block.
+ *
+ * For use in tests and JavaScript bricks that manually create a call to an individual brick.
  */
 export function unsafeAssumeValidArg(value: unknown): BlockArg {
   return value as BlockArg;

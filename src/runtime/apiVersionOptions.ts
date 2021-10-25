@@ -48,6 +48,10 @@ export type ApiVersionOptions = {
   /**
    * `true` to throw an error if JSON Schema validation fails against the inputSchema for a brick. Logs a warning
    * if the errors don't match the outputSchema (if an outputSchema is provided)
+   *
+   * Historically input validation was controlled by a `validate` flag in the reducePipeline options, which callers had
+   * to remember to provide. We had been enforcing validation since 1.2.0 or potentially even earlier.
+   *
    * @since apiVersion 3
    * @since 1.5.0
    */

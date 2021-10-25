@@ -20,7 +20,7 @@ import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, once, debounce, cloneDeep } from "lodash";
-import { InitialValues, reducePipeline } from "@/runtime/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { reportError } from "@/telemetry/logging";
 import {
   awaitElementOnce,

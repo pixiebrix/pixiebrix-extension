@@ -21,7 +21,7 @@ import Mustache from "mustache";
 import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, cloneDeep } from "lodash";
-import { InitialValues, reducePipeline } from "@/runtime/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { boolean } from "@/utils";
 import {
   awaitElementOnce,

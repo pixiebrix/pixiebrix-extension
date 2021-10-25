@@ -52,7 +52,7 @@ import {
   selectBlockRootElement,
   shouldRunBlock,
   throwIfInvalidInput,
-} from "@/runtime/combinatorUtils";
+} from "@/runtime/runtimeUtils";
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { UnknownObject } from "@/types";

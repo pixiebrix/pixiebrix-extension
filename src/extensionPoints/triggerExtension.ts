@@ -16,7 +16,7 @@
  */
 
 import { ExtensionPoint } from "@/types";
-import { InitialValues, reducePipeline } from "@/runtime/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import {
   IBlock,
   ResolvedExtension,
