@@ -19,7 +19,7 @@ import { UnknownObject } from "@/types";
 import { Renderer, engineRenderer } from "./renderers";
 import { isPlainObject, mapValues, pickBy } from "lodash";
 import { getPropByPath, isSimplePath } from "./pathHelpers";
-import { TemplateEngine } from "@/core";
+import { Expression, TemplateEngine } from "@/core";
 import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
 
@@ -31,11 +31,6 @@ const rendererTypes: TemplateEngine[] = [
 ];
 
 type Args = string | UnknownObject | UnknownObject[];
-
-type Expression = {
-  __type__: TemplateEngine;
-  __value__: string;
-};
 
 /**
  * Returns true if value represents an explicit expression

@@ -62,7 +62,9 @@ import { PanelDefinition } from "@/extensionPoints/panelExtension";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
-import apiVersionOptions from "@/runtime/apiVersionOptions";
+import apiVersionOptions, {
+  DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+} from "@/runtime/apiVersionOptions";
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
 import { blockList } from "@/blocks/util";
@@ -463,7 +465,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const implicitRender = versionOptions.explicitRender
       ? null
-      : await engineRenderer(extension.templateEngine);
+      : await engineRenderer(
+          extension.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE
+        );
 
     let html: string;
 

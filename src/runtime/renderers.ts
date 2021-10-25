@@ -34,6 +34,10 @@ const ensureNunjucks = once(async () => {
 export async function engineRenderer(
   templateEngine: TemplateEngine
 ): Promise<Renderer | undefined> {
+  if (templateEngine == null) {
+    throw new Error("templateEngine is required");
+  }
+
   switch (templateEngine.toLowerCase()) {
     case "mustache": {
       return Mustache.render;

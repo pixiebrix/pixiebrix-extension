@@ -31,7 +31,10 @@ import {
 } from "@/core";
 import { isEmpty } from "lodash";
 import { BlockConfig, BlockWindow } from "@/blocks/types";
-import { ApiVersionOptions } from "@/runtime/apiVersionOptions";
+import {
+  ApiVersionOptions,
+  DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+} from "@/runtime/apiVersionOptions";
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
 import { BusinessError } from "@/errors";
@@ -110,7 +113,9 @@ export async function shouldRunBlock(
   if (blockConfig.if !== undefined) {
     const render = explicitRender
       ? null
-      : await engineRenderer(blockConfig.templateEngine);
+      : await engineRenderer(
+          blockConfig.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE
+        );
 
     const { if: condition } = (await mapArgs({ if: blockConfig.if }, context, {
       implicitRender: render,

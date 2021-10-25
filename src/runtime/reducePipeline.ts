@@ -44,7 +44,10 @@ import { JsonObject } from "type-fest";
 import { recordTraceEntry, recordTraceExit } from "@/background/trace";
 import { uuidv4 } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
-import { ApiVersionOptions } from "@/runtime/apiVersionOptions";
+import {
+  ApiVersionOptions,
+  DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+} from "@/runtime/apiVersionOptions";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
   logIfInvalidOutput,
@@ -281,10 +284,17 @@ async function renderBlockArg(
     return config.config as RenderedArgs;
   }
 
-  const blockArgs = (await mapArgs(stageTemplate, state.context, {
+  // Match the override behavior in v1, where the output from previous block would override anything in the context
+  const ctxt = explicitArg
+    ? state.context
+    : { ...state.context, ...(state.previousOutput as UnknownObject) };
+
+  const blockArgs = (await mapArgs(stageTemplate, ctxt, {
     implicitRender: explicitRender
       ? null
-      : await engineRenderer(config.templateEngine),
+      : await engineRenderer(
+          config.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE
+        ),
   })) as RenderedArgs;
 
   if (logValues) {
@@ -547,7 +557,7 @@ export async function reducePipeline(
   } as unknown) as BlockArgContext;
 
   // When using explicit data flow, the first block (and other blocks) use `@input` in the context to get the inputs
-  let output: unknown = explicitDataFlow ? {} : context;
+  let output: unknown = explicitDataFlow ? {} : input;
 
   const pipelineArray = castArray(pipeline);
 

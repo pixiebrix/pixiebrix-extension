@@ -17,6 +17,8 @@
 
 import { ApiVersion } from "@/core";
 
+export const DEFAULT_IMPLICIT_TEMPLATE_ENGINE = "mustache";
+
 /**
  * Options controlled by the apiVersion directive in brick definitions.
  * @see ApiVersion

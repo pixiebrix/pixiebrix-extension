@@ -16,7 +16,7 @@
  */
 
 import { BlockConfig } from "@/blocks/types";
-import { BlockArg, IBlock } from "@/core";
+import { BlockArg, IBlock, OutputKey } from "@/core";
 import { BlockType } from "@/blocks/util";
 
 /**
@@ -37,4 +37,14 @@ export type ResolvedBlockConfig = {
  */
 export function unsafeAssumeValidArg(value: unknown): BlockArg {
   return value as BlockArg;
+}
+
+const OUTPUT_KEY_REGEX = /[A-Z_a-z]\w{0,30}/;
+
+export function validateOutputKey(key: string): OutputKey {
+  if (OUTPUT_KEY_REGEX.test(key)) {
+    return key as OutputKey;
+  }
+
+  throw new TypeError("Not a valid output key");
 }

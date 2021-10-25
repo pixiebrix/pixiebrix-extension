@@ -102,6 +102,11 @@ export interface Meta {
   [index: string]: unknown;
 }
 
+export type Expression = {
+  __type__: TemplateEngine;
+  __value__: string;
+};
+
 /**
  * Standard message format for cross-context messaging.
  *
@@ -177,8 +182,8 @@ export type BlockOptions = {
  * @see IBlock.run
  * @see reducePipeline
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- values have been matched against the provided schema
 export type BlockArg<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
   T extends Record<string, any> = Record<string, any>
 > = T & {
   _blockArgBrand: never;

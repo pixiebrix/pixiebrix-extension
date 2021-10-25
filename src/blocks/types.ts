@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OutputKey, RegistryId, TemplateEngine, UUID } from "@/core";
+import {
+  Expression,
+  OutputKey,
+  RegistryId,
+  TemplateEngine,
+  UUID,
+} from "@/core";
 import { UnknownObject } from "@/types";
 
 export type Availability = {
@@ -109,7 +115,7 @@ export type BlockConfig = {
    * (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
    * provided, the step is run unconditionally.
    */
-  if?: string | boolean | number;
+  if?: string | boolean | number | Expression;
 
   /**
    * (Optional) whether the block should inherit the current root element, or if it should use the document
