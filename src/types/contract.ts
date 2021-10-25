@@ -41,6 +41,8 @@ export type Organization = components["schemas"]["Organization"] & {
   isAdmin: boolean;
 };
 
+export type Group = components["schemas"]["Group"];
+
 export type Database = components["schemas"]["Database"];
 
 export type PackageVersion = components["schemas"]["PackageVersion"];

@@ -15,17 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Modal } from "react-bootstrap";
 import Form from "@/components/form/Form";
 import * as yup from "yup";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import GridLoader from "react-spinners/GridLoader";
 import {
+  useAddDatabaseToGroupMutation,
   useCreateDatabaseMutation,
+  useGetGroupsQuery,
   useGetOrganizationsQuery,
+  appApi,
 } from "@/services/api";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
+import { useField } from "formik";
+import DatabaseGroupSelect from "./DatabaseGroupSelect";
 
 type DatabaseCreateModalProps = {
   onClose: () => void;
@@ -34,19 +39,20 @@ type DatabaseCreateModalProps = {
 type DatabaseConfig = {
   name: string;
   organizationId: string;
+  groupId: string;
 };
 
 const DatabaseSchema: yup.ObjectSchema<DatabaseConfig> = yup.object().shape({
   name: yup.string().required(),
-  organizationId: yup.string().required(),
+  organizationId: yup.string(),
+  groupId: yup.string(),
 });
 
 const initialValues: DatabaseConfig = {
   name: "",
   organizationId: "",
+  groupId: "",
 };
-
-const personalOptionId = "personal";
 
 const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
   onClose,
@@ -58,12 +64,24 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
 
   const [createDatabase] = useCreateDatabaseMutation();
 
-  const onSave = async ({ name, organizationId }: DatabaseConfig) => {
-    await createDatabase({
+  const [addDatabaseToGroup] = useAddDatabaseToGroupMutation();
+
+  const onSave = async ({ name, organizationId, groupId }: DatabaseConfig) => {
+    const result = await createDatabase({
       name,
-      organizationId:
-        organizationId === personalOptionId ? null : organizationId,
+      organizationId,
     });
+
+    if ("error" in result) {
+      console.error(result.error);
+    }
+
+    const newDb = result.data;
+
+    if (groupId) {
+      await addDatabaseToGroup({ groupId, databaseIds: [newDb.id] });
+    }
+
     onClose();
   };
 
@@ -78,7 +96,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
     ...organizationOptions,
     {
       label: "Personal",
-      value: personalOptionId,
+      value: "",
     },
   ];
 
@@ -109,6 +127,8 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
               as={SelectWidget}
               options={organizationOptions}
             />
+
+            <DatabaseGroupSelect />
           </Form>
         )}
       </Modal.Body>

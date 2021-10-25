@@ -23,6 +23,7 @@ import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
 import {
   Database,
+  Group,
   MarketplaceListing,
   Organization,
   SanitizedAuth,
@@ -61,6 +62,7 @@ export const appApi = createApi({
     "Services",
     "ServiceAuths",
     "Organizations",
+    "Groups",
     "MarketplaceListings",
   ],
   endpoints: (builder) => ({
@@ -76,8 +78,21 @@ export const appApi = createApi({
         url: organizationId
           ? `/api/organizations/${organizationId}/databases/`
           : "/api/databases/",
-        method: "POST",
+        method: "post",
         data: { name },
+      }),
+      invalidatesTags: ["Databases"],
+    }),
+    addDatabaseToGroup: builder.mutation<
+      Database,
+      { groupId: string; databaseIds: string[] }
+    >({
+      query: ({ groupId, databaseIds }) => ({
+        url: `/api/groups/${groupId}/databases/`,
+        method: "post",
+        data: databaseIds.map((id) => ({
+          database: id,
+        })),
       }),
       invalidatesTags: ["Databases"],
     }),
@@ -110,6 +125,16 @@ export const appApi = createApi({
           /* eslint-enable @typescript-eslint/no-explicit-any */
         })),
     }),
+    getGroups: builder.query<Group[], string>({
+      query: (organizationId) => ({
+        url: `/api/organizations/${organizationId}/groups/`,
+        method: "get",
+      }),
+      // ToDo ensure this works with multiple organizations
+      providesTags: (result, error, organizationId) => [
+        { type: "Groups", organizationId },
+      ],
+    }),
     getMarketplaceListings: builder.query<
       Record<RegistryId, MarketplaceListing>,
       void
@@ -133,8 +158,10 @@ export const appApi = createApi({
 export const {
   useGetDatabasesQuery,
   useCreateDatabaseMutation,
+  useAddDatabaseToGroupMutation,
   useGetServicesQuery,
   useGetServiceAuthsQuery,
   useGetMarketplaceListingsQuery,
   useGetOrganizationsQuery,
+  useGetGroupsQuery,
 } = appApi;
