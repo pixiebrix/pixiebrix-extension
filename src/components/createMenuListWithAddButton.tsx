@@ -36,7 +36,7 @@ const MenuListWithAddButton: React.FC<MenuListWithAddButtonProps> = ({
   </div>
 );
 
-export const createMenuListWithAddButton = (onAddClick: () => void) => {
+const createMenuListWithAddButton = (onAddClick: () => void) => {
   const MenuList: React.FC = ({ children }) => (
     <MenuListWithAddButton onAddClick={onAddClick}>
       {children}
@@ -45,4 +45,4 @@ export const createMenuListWithAddButton = (onAddClick: () => void) => {
   return MenuList;
 };
 
-export default MenuListWithAddButton;
+export default createMenuListWithAddButton;

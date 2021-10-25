@@ -32,7 +32,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { servicesSlice } from "@/options/slices";
 import useNotifications from "@/hooks/useNotifications";
-import { createMenuListWithAddButton } from "@/components/MenuListWithAddButton";
+import createMenuListWithAddButton from "@/components/createMenuListWithAddButton";
 
 const { updateServiceConfig } = servicesSlice.actions;
 

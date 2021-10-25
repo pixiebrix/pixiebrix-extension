@@ -26,7 +26,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 import { Form as BootstrapForm } from "react-bootstrap";
 import { CustomFieldWidget } from "./FieldTemplate";
-import { createMenuListWithAddButton } from "@/components/MenuListWithAddButton";
+import createMenuListWithAddButton from "@/components/createMenuListWithAddButton";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",

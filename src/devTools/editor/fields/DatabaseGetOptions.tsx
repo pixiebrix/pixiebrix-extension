@@ -24,7 +24,7 @@ import { partial } from "lodash";
 import React from "react";
 import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
 import { validateRegistryId } from "@/types/helpers";
-import { createMenuListWithAddButton } from "@/components/MenuListWithAddButton";
+import createMenuListWithAddButton from "@/components/createMenuListWithAddButton";
 
 export const DATABASE_GET_ID = validateRegistryId("@pixiebrix/data/get");
 
