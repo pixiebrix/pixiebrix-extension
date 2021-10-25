@@ -102,6 +102,11 @@ export interface Meta {
   [index: string]: unknown;
 }
 
+/**
+ * The JSON/JS representation of an explicit template/variable expression (e.g., mustache, var, etc.)
+ * @see BlockConfig
+ * @since 1.5.0
+ */
 export type Expression = {
   __type__: TemplateEngine;
   __value__: string;
