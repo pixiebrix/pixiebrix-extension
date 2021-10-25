@@ -24,6 +24,7 @@ import { partial } from "lodash";
 import React from "react";
 import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
 import { validateRegistryId } from "@/types/helpers";
+import { createMenuListWithAddButton } from "@/components/MenuListWithAddButton";
 
 export const DATABASE_GET_ID = validateRegistryId("@pixiebrix/data/get");
 
@@ -55,6 +56,11 @@ const DatabaseGetOptions: React.FC<{
         as={SelectWidget}
         options={databaseOptions}
         isLoading={isLoadingDatabaseOptions}
+        components={{
+          MenuList: createMenuListWithAddButton(() => {
+            console.log("add new item");
+          }),
+        }}
       />
 
       <SchemaField name={configName("key")} label="Key" schema={keySchema} />

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentType, useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import ServiceAuthSelector from "@/components/ServiceAuthSelector";
 import { AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
@@ -26,13 +26,13 @@ import { RawServiceConfiguration, RegistryId, UUID } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { persistor } from "@/options/store";
 import { refresh as refreshBackgroundLocator } from "@/background/locator";
-import { GroupTypeBase, MenuListComponentProps } from "react-select";
 import { Button } from "react-bootstrap";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { servicesSlice } from "@/options/slices";
 import useNotifications from "@/hooks/useNotifications";
+import { createMenuListWithAddButton } from "@/components/MenuListWithAddButton";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -102,27 +102,13 @@ const AuthWidget: React.FunctionComponent<{
     [helpers, notify, dispatch, setShow, serviceId, onRefresh]
   );
 
-  const CustomMenuList = useMemo(() => {
-    const MenuListWithAddButton: ComponentType<
-      MenuListComponentProps<AuthOption, boolean, GroupTypeBase<AuthOption>>
-    > = ({ children }) => (
-      <div>
-        {children}
-        <div className="text-center">
-          <Button
-            size="sm"
-            variant="link"
-            onClick={() => {
-              setShow(true);
-            }}
-          >
-            + Add new
-          </Button>
-        </div>
-      </div>
-    );
-    return MenuListWithAddButton;
-  }, [setShow]);
+  const CustomMenuList = useMemo(
+    () =>
+      createMenuListWithAddButton(() => {
+        setShow(true);
+      }),
+    [setShow]
+  );
 
   const initialConfiguration: RawServiceConfiguration = useMemo(
     () =>
