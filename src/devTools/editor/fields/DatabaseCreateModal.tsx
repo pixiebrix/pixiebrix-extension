@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React from "react";
 import { Button, Modal } from "react-bootstrap";
 import Form from "@/components/form/Form";
 import * as yup from "yup";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import GridLoader from "react-spinners/GridLoader";
-import { useGetOrganizationsQuery } from "@/services/api";
+import {
+  useCreateDatabaseMutation,
+  useGetOrganizationsQuery,
+} from "@/services/api";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 
 type DatabaseCreateModalProps = {
@@ -30,17 +33,17 @@ type DatabaseCreateModalProps = {
 
 type DatabaseConfig = {
   name: string;
-  organization: string;
+  organizationId: string;
 };
 
 const DatabaseSchema: yup.ObjectSchema<DatabaseConfig> = yup.object().shape({
   name: yup.string().required(),
-  organization: yup.string().required(),
+  organizationId: yup.string().required(),
 });
 
 const initialValues: DatabaseConfig = {
   name: "",
-  organization: "",
+  organizationId: "",
 };
 
 const personalOptionId = "personal";
@@ -53,16 +56,23 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
     isLoading: isLoadingOrganizations,
   } = useGetOrganizationsQuery();
 
-  const onSave = ({ name, organization }: DatabaseConfig) => {
-    console.log("saving", name, organization);
+  const [createDatabase] = useCreateDatabaseMutation();
+
+  const onSave = async ({ name, organizationId }: DatabaseConfig) => {
+    await createDatabase({
+      name,
+      organizationId:
+        organizationId === personalOptionId ? null : organizationId,
+    });
     onClose();
   };
 
-  const isLoading = isLoadingOrganizations;
-  let organizationOptions = (organizations || []).map((organization) => ({
-    label: organization.name,
-    value: organization.id,
-  }));
+  let organizationOptions = (organizations || [])
+    .filter((organization) => organization.isAdmin)
+    .map((organization) => ({
+      label: organization.name,
+      value: organization.id,
+    }));
 
   organizationOptions = [
     ...organizationOptions,
@@ -79,7 +89,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
       </Modal.Header>
 
       <Modal.Body>
-        {isLoading ? (
+        {isLoadingOrganizations ? (
           <GridLoader />
         ) : (
           <Form
@@ -94,7 +104,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
           >
             <ConnectedFieldTemplate name="name" label="Name" />
             <ConnectedFieldTemplate
-              name="organization"
+              name="organizationId"
               label="Organization"
               as={SelectWidget}
               options={organizationOptions}

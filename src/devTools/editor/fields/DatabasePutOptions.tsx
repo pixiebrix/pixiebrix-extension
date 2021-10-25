@@ -22,8 +22,9 @@ import { Schema } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { joinName } from "@/utils";
 import { partial } from "lodash";
-import React from "react";
+import React, { useState } from "react";
 import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
+import DatabaseCreateModal from "./DatabaseCreateModal";
 
 export const DATABASE_PUT_ID = validateRegistryId("@pixiebrix/data/put");
 
@@ -46,6 +47,8 @@ const DatabasePutOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
+  const [showModal, setShowModal] = useState(false);
+
   const configName = partial(joinName, name, configKey);
 
   const {
@@ -55,6 +58,14 @@ const DatabasePutOptions: React.FC<{
 
   return (
     <div>
+      {showModal && (
+        <DatabaseCreateModal
+          onClose={() => {
+            setShowModal(false);
+          }}
+        />
+      )}
+
       <ConnectedFieldTemplate
         name={configName("databaseId")}
         label="Database Id"
