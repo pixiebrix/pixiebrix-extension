@@ -39,6 +39,8 @@ export type Invitation = components["schemas"]["Invitation"];
 
 export type Organization = components["schemas"]["Organization"];
 
+export type Database = components["schemas"]["Database"];
+
 export type PackageVersion = components["schemas"]["PackageVersion"];
 
 export type Package = components["schemas"]["Package"];

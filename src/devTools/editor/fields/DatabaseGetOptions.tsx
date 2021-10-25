@@ -21,10 +21,11 @@ import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { Schema } from "@/core";
 import { joinName } from "@/utils";
 import { partial } from "lodash";
-import React from "react";
+import React, { useState } from "react";
 import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
 import { validateRegistryId } from "@/types/helpers";
 import createMenuListWithAddButton from "@/components/createMenuListWithAddButton";
+import DatabaseCreateModal from "./DatabaseCreateModal";
 
 export const DATABASE_GET_ID = validateRegistryId("@pixiebrix/data/get");
 
@@ -41,6 +42,8 @@ const DatabaseGetOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
+  const [showModal, setShowModal] = useState(false);
+
   const configName = partial(joinName, name, configKey);
 
   const {
@@ -50,6 +53,14 @@ const DatabaseGetOptions: React.FC<{
 
   return (
     <div>
+      {showModal && (
+        <DatabaseCreateModal
+          onClose={() => {
+            setShowModal(false);
+          }}
+        />
+      )}
+
       <ConnectedFieldTemplate
         name={configName("databaseId")}
         label="Database Id"
@@ -58,7 +69,7 @@ const DatabaseGetOptions: React.FC<{
         isLoading={isLoadingDatabaseOptions}
         components={{
           MenuList: createMenuListWithAddButton(() => {
-            console.log("add new item");
+            setShowModal(true);
           }),
         }}
       />
