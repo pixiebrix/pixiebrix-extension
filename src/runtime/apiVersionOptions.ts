@@ -31,7 +31,7 @@ export type ApiVersionOptions = {
 
   /**
    * The was a hack in older versions to pass primitive values and lists directly to the next block without applying
-   * any template engine. (Because originally in PixieBrix there was so way to explicitly pass list variables
+   * any template engine. (Because originally in PixieBrix there was no way to explicitly pass list variables
    * via outputKeys/variable expressions).
    * @since apiVersion 3
    * @since 1.5.0
@@ -44,6 +44,14 @@ export type ApiVersionOptions = {
    * @since 1.5.0
    */
   explicitRender?: boolean;
+
+  /**
+   * `true` to throw an error if JSON Schema validation fails against the inputSchema for a brick. Logs a warning
+   * if the errors don't match the outputSchema (if an outputSchema is provided)
+   * @since apiVersion 3
+   * @since 1.5.0
+   */
+  validateInput: boolean;
 };
 
 /**
@@ -57,6 +65,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitDataFlow: true,
         explicitArg: true,
         explicitRender: true,
+        validateInput: true,
       };
     }
 
@@ -65,6 +74,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitDataFlow: true,
         explicitArg: false,
         explicitRender: false,
+        validateInput: true,
       };
     }
 
@@ -74,6 +84,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitDataFlow: false,
         explicitArg: false,
         explicitRender: false,
+        validateInput: true,
       };
     }
   }

@@ -155,7 +155,7 @@ export interface Logger {
 
 export type ReaderRoot = HTMLElement | Document;
 
-export interface BlockOptions {
+export type BlockOptions = {
   // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
   // the inputs using yup/jsonschema, so the types should match what's expected.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -163,12 +163,58 @@ export interface BlockOptions {
   logger: Logger;
   root: ReaderRoot;
   headless?: boolean;
-}
+};
 
-// Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
-// the inputs using jsonschema, so the types should match what's expected.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BlockArg = Record<string, any>;
+/**
+ * The JSON Schema validated arguments to pass into the `run` method of an IBlock.
+ *
+ * Singular name (as opposed to plural) because it's passed as a single argument to the `run` method.
+ *
+ * Uses `any` for values so that blocks don't have to assert/cast all their argument types. The input values
+ * are validated using JSON Schema in `reducePipeline`.
+ *
+ * @see IBlock.inputSchema
+ * @see IBlock.run
+ * @see reducePipeline
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- values have been matched against the provided schema
+export type BlockArg<
+  T extends Record<string, any> = Record<string, any>
+> = T & {
+  _blockArgBrand: never;
+};
+
+/**
+ * The non-validated arguments to pass into the `run` method of an IBlock.
+ * @see BlockArg
+ */
+export type RenderedArgs = Record<string, unknown> & {
+  _renderedArgBrand: never;
+};
+
+/**
+ * Values available to a block to render its arguments.
+ * @see BlockArg
+ * @see RenderedArgs
+ * @see BlockConfig.outputKey
+ */
+export type BlockArgContext = Record<string, unknown> & {
+  _blockArgContextBrand: never;
+  "@input": Record<string, unknown>;
+  "@options"?: Record<string, unknown>;
+};
+
+/**
+ * Service context passed to blocks.
+ * @see BlockArgContext
+ */
+export type ServiceContext = Record<
+  ServiceKeyVar,
+  {
+    __service: SanitizedServiceConfiguration;
+    [prop: string]: string | SanitizedServiceConfiguration | null;
+  }
+>;
 
 export type BlockIcon = string;
 
@@ -661,9 +707,6 @@ export interface IconConfig {
 }
 
 export type UserOptions = Record<string, Primitive>;
-
-// Nice-to-have: add nominal typing to distinguish rendered vs. non-rendered args
-export type RenderedArgs = Record<string, unknown>;
 
 export interface OrganizationAuthState {
   readonly id: string;

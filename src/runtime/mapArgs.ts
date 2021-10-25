@@ -66,7 +66,7 @@ export async function renderExplicit(
     return render(config.__value__, ctxt);
   }
 
-  // Array.isArray must come become the object check because arrays are objects
+  // Array.isArray must come before the object check because arrays are objects
   if (Array.isArray(config)) {
     return Promise.all(config.map(async (x) => renderExplicit(x, ctxt)));
   }

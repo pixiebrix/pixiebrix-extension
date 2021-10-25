@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, Schema } from "@/core";
+import { RegistryId, Schema, ServiceContext, ServiceDependency } from "@/core";
+import { locate } from "@/background/locator";
+import { pickBy } from "lodash";
+import { resolveObj } from "@/utils";
 
 export const SERVICE_FIELD_REFS = [
   "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",
@@ -44,4 +47,27 @@ export function extractServiceIds(schema: Schema): RegistryId[] {
   }
 
   throw new Error("Expected $ref or anyOf in schema for service");
+}
+
+/** Build the service context by locating the dependencies */
+export async function makeServiceContext(
+  dependencies: ServiceDependency[]
+): Promise<ServiceContext> {
+  const dependencyContext = async (dependency: ServiceDependency) => {
+    const configuredService = await locate(dependency.id, dependency.config);
+    return {
+      // Our JSON validator gets mad at undefined values
+      ...pickBy(configuredService.config, (x) => x !== undefined),
+      __service: configuredService,
+    };
+  };
+
+  return resolveObj(
+    Object.fromEntries(
+      dependencies.map((dependency) => [
+        `@${dependency.outputKey}`,
+        dependencyContext(dependency),
+      ])
+    )
+  );
 }

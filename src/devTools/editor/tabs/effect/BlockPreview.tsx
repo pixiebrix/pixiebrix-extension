@@ -35,10 +35,10 @@ import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
 import { BlockType, getType } from "@/blocks/util";
 import { removeEmptyValues } from "@/devTools/editor/extensionPoints/base";
-import { UnknownObject } from "@/types";
-import { IBlock, RegistryId } from "@/core";
+import { ApiVersion, BlockArgContext, IBlock, RegistryId } from "@/core";
 import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
+import { useField } from "formik";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -96,15 +96,18 @@ const BlockPreview: React.FunctionComponent<{
   const [output, setOutput] = useState<unknown | undefined>();
   const [outputKey, setOutputKey] = useState<string>(blockConfig.outputKey);
 
+  const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
+
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 
   const debouncedRun = useDebouncedCallback(
-    async (blockConfig: BlockConfig, args: UnknownObject) => {
+    async (blockConfig: BlockConfig, context: BlockArgContext) => {
       setIsRunning(true);
       try {
         const result = await runBlock(thisTab, {
+          apiVersion,
           blockConfig: removeEmptyValues(blockConfig),
-          args,
+          context,
         });
         const { outputKey } = blockConfig;
         setOutputKey(outputKey);
@@ -125,7 +128,7 @@ const BlockPreview: React.FunctionComponent<{
 
   useEffect(() => {
     if ((context && blockInfo?.isPure) || blockInfo?.traceOptional) {
-      void debouncedRun(blockConfig, context);
+      void debouncedRun(blockConfig, (context as unknown) as BlockArgContext);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
@@ -177,7 +180,7 @@ const BlockPreview: React.FunctionComponent<{
           size="sm"
           disabled={!traceRecord}
           onClick={() => {
-            void debouncedRun(blockConfig, context);
+            void debouncedRun(blockConfig, context as BlockArgContext);
           }}
         >
           <FontAwesomeIcon icon={faSync} /> Refresh Preview

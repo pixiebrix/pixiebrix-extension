@@ -15,12 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  blockList,
-  makeServiceContext,
-  mergeReaders,
-  reducePipeline,
-} from "@/blocks/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/combinators";
 import { ExtensionPoint, Reader } from "@/types";
 import {
   IBlock,
@@ -55,6 +50,9 @@ import { isErrorObject } from "@/errors";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/options/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { blockList } from "@/blocks/util";
+import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { makeServiceContext } from "@/services/serviceUtils";
 
 export type ContextMenuConfig = {
   title: string;
@@ -318,7 +316,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
         const targetElement =
           clickedElement ?? guessSelectedElement() ?? document;
 
-        const ctxt = {
+        const input = {
           ...(await reader.read(targetElement)),
           // ClickData provides the data from schema defined above in ContextMenuReader
           ...clickData,
@@ -326,10 +324,15 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           documentUrl: document.location.href,
         };
 
-        await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
-          validate: true,
-          serviceArgs: serviceContext,
+        const initialValues: InitialValues = {
+          input,
+          root: document,
+          serviceContext,
           optionsArgs: extension.optionsArgs,
+        };
+
+        await reducePipeline(actionConfig, initialValues, {
+          logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         });
       } catch (error: unknown) {

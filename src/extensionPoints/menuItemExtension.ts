@@ -20,12 +20,7 @@ import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, once, debounce, cloneDeep } from "lodash";
-import {
-  reducePipeline,
-  mergeReaders,
-  blockList,
-  makeServiceContext,
-} from "@/blocks/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/combinators";
 import { reportError } from "@/telemetry/logging";
 import {
   awaitElementOnce,
@@ -70,6 +65,9 @@ import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
+import { blockList } from "@/blocks/util";
+import { makeServiceContext } from "@/services/serviceUtils";
+import { mergeReaders } from "@/blocks/readers/readerUtils";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -471,23 +469,26 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     if (extension.config.if) {
       // Read latest state at the time of the action
-      const ctxt = await ctxtPromise;
+      const input = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
 
-      console.debug("Checking menuItem precondition", { ctxt, serviceContext });
+      console.debug("Checking menuItem precondition", {
+        input,
+        serviceContext,
+      });
 
-      const show = await reducePipeline(
-        extension.config.if,
-        ctxt,
-        extensionLogger,
-        document,
-        {
-          validate: true,
-          serviceArgs: serviceContext,
-          optionsArgs: extension.optionsArgs,
-          ...versionOptions,
-        }
-      );
+      const initialValues: InitialValues = {
+        input,
+        serviceContext,
+        optionsArgs: extension.optionsArgs,
+        root: document,
+      };
+
+      const show = await reducePipeline(extension.config.if, initialValues, {
+        // Don't pass extension: extensionLogger because our log display doesn't handle the in-extension point
+        // conditionals yet
+        ...versionOptions,
+      });
 
       if (!show) {
         this.watchDependencies(extension);
@@ -525,13 +526,16 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       try {
         // Read latest state at the time of the action
         const reader = await this.defaultReader();
-        const ctxt = await reader.read(this.getReaderRoot($menu));
-        const serviceContext = await makeServiceContext(extension.services);
 
-        await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
-          validate: true,
-          serviceArgs: serviceContext,
+        const initialValues: InitialValues = {
+          input: await reader.read(this.getReaderRoot($menu)),
+          serviceContext: await makeServiceContext(extension.services),
           optionsArgs: extension.optionsArgs,
+          root: document,
+        };
+
+        await reducePipeline(actionConfig, initialValues, {
+          logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         });
 

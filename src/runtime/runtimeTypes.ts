@@ -15,31 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { BlockArg, Schema } from "@/core";
-import { propertiesToSchema } from "@/validators/generic";
+import { BlockConfig } from "@/blocks/types";
+import { BlockArg, IBlock } from "@/core";
+import { BlockType } from "@/blocks/util";
 
-export class ShowEffect extends Effect {
-  constructor() {
-    super(
-      "@pixiebrix/show",
-      "Show",
-      "Show one or more elements that are currently hidden on the page"
-    );
-  }
+/**
+ * A block configuration with the corresponding resolved IBlock and BlockType.
+ * @see BlockConfig
+ * @see BlockPipeline
+ * @see BlockType
+ */
+export type ResolvedBlockConfig = {
+  config: BlockConfig;
+  block: IBlock;
+  type: BlockType;
+};
 
-  inputSchema: Schema = propertiesToSchema(
-    {
-      selector: {
-        type: "string",
-        format: "selector",
-      },
-    },
-    ["selector"]
-  );
-
-  async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
-    const $elt = $(document).find(selector);
-    $elt.show();
-  }
+/**
+ * Assume that a value matches the expected arg for any block.
+ */
+export function unsafeAssumeValidArg(value: unknown): BlockArg {
+  return value as BlockArg;
 }

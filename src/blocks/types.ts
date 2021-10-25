@@ -39,6 +39,16 @@ export type ReaderConfig =
   | ReaderConfig[];
 
 /**
+ * Where to execute the brick
+ * - self: the current tab
+ * - opener: the tab that opened the current tab
+ * - target: the last tab that the current tab opened
+ * - broadcast: all tabs that PixieBrix has access to (the result is returned as an array)
+ * - remote: the server (currently only support identity, get, and http bricks)
+ */
+export type BlockWindow = "self" | "opener" | "target" | "broadcast" | "remote";
+
+/**
  * A block configuration to be executed by the PixieBrix runtime.
  * @see runStage
  * @see reducePipeline
@@ -80,13 +90,9 @@ export type BlockConfig = {
 
   /**
    * Where to execute the brick (default=`self`)
-   * - self: the current tab
-   * - opener: the tab that opened the current tab
-   * - target: the last tab that the current tab opened
-   * - broadcast: all tabs that PixieBrix has access to (the result is returned as an array)
-   * - remote: the server (currently only support identity, get, and http bricks)
+   * @see BlockWindow
    */
-  window?: "self" | "opener" | "target" | "broadcast" | "remote";
+  window?: BlockWindow;
 
   /**
    * The output key (without the preceding "@") to assign the brick output to
@@ -137,4 +143,7 @@ export type BlockConfig = {
   instanceId?: UUID;
 };
 
+/**
+ * A pipeline of blocks to execute sequentially
+ */
 export type BlockPipeline = BlockConfig[];

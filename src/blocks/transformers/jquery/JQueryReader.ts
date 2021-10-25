@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockOptions, Schema } from "@/core";
+import { BlockArg, BlockOptions, Schema } from "@/core";
 import { readJQuery, SelectorMap } from "@/blocks/readers/jquery";
 
 export class JQueryReader extends Transformer {
@@ -92,7 +92,7 @@ export class JQueryReader extends Transformer {
   }
 
   async transform(
-    { selectors }: { selectors: SelectorMap },
+    { selectors }: BlockArg<{ selectors: SelectorMap }>,
     { root }: BlockOptions
   ): Promise<unknown> {
     return readJQuery({ type: "jquery", selectors }, root);

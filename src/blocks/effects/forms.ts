@@ -80,7 +80,9 @@ export class SetInputValue extends Effect {
   };
 
   async effect(
-    { inputs }: { inputs: Array<{ selector: string; value: unknown }> },
+    {
+      inputs,
+    }: BlockArg<{ inputs: Array<{ selector: string; value: unknown }> }>,
     { logger }: BlockOptions
   ): Promise<void> {
     for (const { selector, value } of inputs) {
