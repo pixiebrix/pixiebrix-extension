@@ -29,7 +29,7 @@ import {
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import DatabaseGroupSelect from "./DatabaseGroupSelect";
 import useNotifications from "@/hooks/useNotifications";
-import { UserRole } from "@/types/contract";
+import { Organization, UserRole } from "@/types/contract";
 
 type DatabaseCreateModalProps = {
   onClose: () => void;
@@ -62,6 +62,22 @@ const initialValues: DatabaseConfig = {
   organizationId: "",
   groupId: "",
 };
+
+function getOrganizationOptions(organizations: Organization[]) {
+  const organizationOptions = (organizations ?? [])
+    .filter((organization) => organization.role === UserRole.admin)
+    .map((organization) => ({
+      label: organization.name,
+      value: organization.id,
+    }));
+
+  const personalDbOption = {
+    label: "Personal",
+    value: "",
+  };
+
+  return [...organizationOptions, personalDbOption];
+}
 
 const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
   onClose,
@@ -99,20 +115,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
     onClose();
   };
 
-  let organizationOptions = (organizations ?? [])
-    .filter((organization) => organization.role === UserRole.admin)
-    .map((organization) => ({
-      label: organization.name,
-      value: organization.id,
-    }));
-
-  organizationOptions = [
-    ...organizationOptions,
-    {
-      label: "Personal",
-      value: "",
-    },
-  ];
+  const organizationOptions = getOrganizationOptions(organizations);
 
   return (
     <Modal show onHide={onClose} backdrop="static" keyboard={false}>

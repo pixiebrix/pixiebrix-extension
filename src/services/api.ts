@@ -116,6 +116,7 @@ export const appApi = createApi({
         baseQueryReturnValue.map((apiOrganization) => ({
           ...apiOrganization,
 
+          // Mapping between the API response and the UI model.
           // We need to know the user role in the organization.
           // Currently API returns all members only for the organization where the user is an admin,
           // hence if the user is an admin, they will have role === 2,
