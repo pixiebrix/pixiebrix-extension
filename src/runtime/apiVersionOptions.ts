@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiVersion } from "@/core";
+import { ApiVersion, TemplateEngine } from "@/core";
 
-export const DEFAULT_IMPLICIT_TEMPLATE_ENGINE = "mustache";
+export const DEFAULT_IMPLICIT_TEMPLATE_ENGINE: TemplateEngine = "mustache";
 
 /**
  * Options controlled by the apiVersion directive in brick definitions.
