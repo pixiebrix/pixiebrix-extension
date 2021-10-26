@@ -26,6 +26,8 @@ import React, { useState } from "react";
 import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "./DatabaseCreateModal";
 import createMenuListWithAddButton from "@/components/createMenuListWithAddButton";
+import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 export const DATABASE_PUT_ID = validateRegistryId("@pixiebrix/data/put");
 
@@ -41,7 +43,7 @@ const valueSchema: Schema = {
 };
 
 const serviceSchema: Schema = {
-  $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/api",
+  $ref: `https://app.pixiebrix.com/schemas/services/${PIXIEBRIX_SERVICE_ID}`,
 };
 
 const DatabasePutOptions: React.FC<{
@@ -69,7 +71,7 @@ const DatabasePutOptions: React.FC<{
 
       <ConnectedFieldTemplate
         name={configName("databaseId")}
-        label="Database Id"
+        label="Database"
         as={SelectWidget}
         options={databaseOptions}
         isLoading={isLoadingDatabaseOptions}
@@ -83,12 +85,12 @@ const DatabasePutOptions: React.FC<{
       <SchemaField name={configName("key")} label="Key" schema={keySchema} />
 
       <SchemaField
-        name={configName("valueSchema")}
+        name={configName("value")}
         label="Value"
         schema={valueSchema}
       />
 
-      <SchemaField
+      <AppServiceField
         name={configName("service")}
         label="Service"
         schema={serviceSchema}

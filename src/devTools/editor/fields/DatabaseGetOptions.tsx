@@ -26,6 +26,7 @@ import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
 import { validateRegistryId } from "@/types/helpers";
 import createMenuListWithAddButton from "@/components/createMenuListWithAddButton";
 import DatabaseCreateModal from "./DatabaseCreateModal";
+import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 
 export const DATABASE_GET_ID = validateRegistryId("@pixiebrix/data/get");
 
@@ -63,7 +64,7 @@ const DatabaseGetOptions: React.FC<{
 
       <ConnectedFieldTemplate
         name={configName("databaseId")}
-        label="Database Id"
+        label="Database"
         as={SelectWidget}
         options={databaseOptions}
         isLoading={isLoadingDatabaseOptions}
@@ -76,7 +77,7 @@ const DatabaseGetOptions: React.FC<{
 
       <SchemaField name={configName("key")} label="Key" schema={keySchema} />
 
-      <SchemaField
+      <AppServiceField
         name={configName("service")}
         label="Service"
         schema={serviceSchema}
