@@ -250,6 +250,7 @@ async function renderBlockArg(
     logValues = (await getLoggingConfig()).logValues ?? false,
     logger,
     explicitArg,
+    explicitDataFlow,
     explicitRender,
   } = options;
 
@@ -285,7 +286,7 @@ async function renderBlockArg(
   }
 
   // Match the override behavior in v1, where the output from previous block would override anything in the context
-  const ctxt = explicitArg
+  const ctxt = explicitDataFlow
     ? state.context
     : { ...state.context, ...(state.previousOutput as UnknownObject) };
 
@@ -408,8 +409,13 @@ export async function blockReducer(
 
   const { runId, explicitDataFlow, logValues, logger } = options;
 
-  // FIXME: do we need to pass in the previous output here too in apiVersion 1?
-  if (!(await shouldRunBlock(blockConfig, context, options))) {
+  // Match the override behavior in v1, where the output from previous block would override anything in the context
+  const ctxt =
+    explicitDataFlow || !isPlainObject(previousOutput)
+      ? context
+      : { ...context, ...(previousOutput as UnknownObject) };
+
+  if (!(await shouldRunBlock(blockConfig, ctxt, options))) {
     logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
 
     return { output: previousOutput, context };

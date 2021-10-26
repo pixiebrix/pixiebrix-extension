@@ -85,6 +85,9 @@ function simpleInput(input: UnknownObject): InitialValues {
   };
 }
 
+/**
+ * Common reducePipeline options
+ */
 function testOptions(version: ApiVersion) {
   return {
     logger,
@@ -199,6 +202,24 @@ describe("apiVersion: v1", () => {
       testOptions("v1")
     );
     expect(result).toStrictEqual(initialContext);
+  });
+
+  test("true mustache conditional via implicit args", async () => {
+    const pipeline = [
+      {
+        id: echoBlock.id,
+        if: "{{# run }}true{{/ run }}",
+        config: {
+          message: "Ran block",
+        },
+      },
+    ];
+    const result = await reducePipeline(
+      pipeline,
+      { ...simpleInput({ run: true }), optionsArgs: {} },
+      testOptions("v1")
+    );
+    expect(result).toStrictEqual({ message: "Ran block" });
   });
 });
 
@@ -418,6 +439,24 @@ describe("apiVersion: v3", () => {
         message: {
           __type__: "mustache",
           __value__: "{{@input.inputArg}}",
+        },
+      },
+    };
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({ inputArg: "hello" }),
+      testOptions("v3")
+    );
+    expect(result).toStrictEqual({ message: "hello" });
+  });
+
+  test("apply explicit var", async () => {
+    const pipeline = {
+      id: echoBlock.id,
+      config: {
+        message: {
+          __type__: "var",
+          __value__: "@input.inputArg",
         },
       },
     };
