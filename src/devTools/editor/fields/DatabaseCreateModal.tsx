@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Button, Modal } from "react-bootstrap";
 import Form from "@/components/form/Form";
 import * as yup from "yup";
@@ -24,12 +24,9 @@ import GridLoader from "react-spinners/GridLoader";
 import {
   useAddDatabaseToGroupMutation,
   useCreateDatabaseMutation,
-  useGetGroupsQuery,
   useGetOrganizationsQuery,
-  appApi,
 } from "@/services/api";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { useField } from "formik";
 import DatabaseGroupSelect from "./DatabaseGroupSelect";
 
 type DatabaseCreateModalProps = {
@@ -74,11 +71,8 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
 
     if ("error" in result) {
       console.error(result.error);
-    }
-
-    const newDb = result.data;
-
-    if (groupId) {
+    } else if (groupId) {
+      const newDb = result.data;
       await addDatabaseToGroup({ groupId, databaseIds: [newDb.id] });
     }
 

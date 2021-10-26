@@ -25,6 +25,7 @@ import { partial } from "lodash";
 import React, { useState } from "react";
 import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "./DatabaseCreateModal";
+import createMenuListWithAddButton from "@/components/createMenuListWithAddButton";
 
 export const DATABASE_PUT_ID = validateRegistryId("@pixiebrix/data/put");
 
@@ -72,6 +73,11 @@ const DatabasePutOptions: React.FC<{
         as={SelectWidget}
         options={databaseOptions}
         isLoading={isLoadingDatabaseOptions}
+        components={{
+          MenuList: createMenuListWithAddButton(() => {
+            setShowModal(true);
+          }),
+        }}
       />
 
       <SchemaField name={configName("key")} label="Key" schema={keySchema} />

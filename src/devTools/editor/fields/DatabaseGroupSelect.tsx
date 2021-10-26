@@ -21,31 +21,39 @@ import { appApi } from "@/services/api";
 import { useField } from "formik";
 import React, { useEffect } from "react";
 
+const groupIdFieldName = "groupId";
+
 const DatabaseGroupSelect = () => {
   const [{ value: selectedOrganizationId }] = useField<string>(
     "organizationId"
   );
+  const groupField = useField<string>(groupIdFieldName);
+  const { setValue: setGroupId } = groupField[2];
+
   const [
     loadOrganizationGroups,
-    { data: groups },
+    { data: organizationGroups },
   ] = appApi.endpoints.getGroups.useLazyQuery();
-
   useEffect(() => {
     if (selectedOrganizationId) {
       loadOrganizationGroups(selectedOrganizationId, true);
     }
+
+    setGroupId("", false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- not including setGroupId, it's guaranteed to work
   }, [loadOrganizationGroups, selectedOrganizationId]);
 
-  const groupOptions = ((selectedOrganizationId && groups) || []).map(
-    (group) => ({
-      label: group.name,
-      value: group.id,
-    })
-  );
+  const groupOptions = (
+    (selectedOrganizationId && organizationGroups?.[selectedOrganizationId]) ||
+    []
+  ).map((group) => ({
+    label: group.name,
+    value: group.id,
+  }));
 
   return (
     <ConnectedFieldTemplate
-      name="groupId"
+      name={groupIdFieldName}
       label="Group"
       as={SelectWidget}
       options={groupOptions}

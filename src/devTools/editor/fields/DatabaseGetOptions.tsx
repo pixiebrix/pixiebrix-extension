@@ -18,7 +18,7 @@
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { Schema, ServiceDependency, OutputKey } from "@/core";
+import { Schema } from "@/core";
 import { joinName } from "@/utils";
 import { partial } from "lodash";
 import React, { useState } from "react";
@@ -26,9 +26,6 @@ import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
 import { validateRegistryId } from "@/types/helpers";
 import createMenuListWithAddButton from "@/components/createMenuListWithAddButton";
 import DatabaseCreateModal from "./DatabaseCreateModal";
-import useDependency from "@/services/useDependency";
-import registry from "@/services/registry";
-import { useField } from "formik";
 
 export const DATABASE_GET_ID = validateRegistryId("@pixiebrix/data/get");
 
@@ -53,29 +50,6 @@ const DatabaseGetOptions: React.FC<{
     databaseOptions,
     isLoading: isLoadingDatabaseOptions,
   } = useDatabaseOptions();
-
-  // const pixibrixApiId = validateRegistryId("@pixiebrix/api");
-  // const apiService: ServiceDependency = {
-  //   id: pixibrixApiId,
-  //   outputKey: "pixiebrix" as OutputKey,
-  //   config: null,
-  // };
-  // const [{ value }, , { setValue }] = useField<ServiceDependency>(
-  //   configName("service")
-  // );
-  // if (value?.id !== pixibrixApiId) {
-  //   setValue(apiService);
-  // }
-  // const [{ value }, , { setValue }] = useField<ServiceDependency[]>("services");
-  // if (value.every((service) => service.id !== pixibrixApiId)) {
-  //   setValue([...value, apiService]);
-  // }
-
-  // registry.lookup(pixibrixApiId).then((service) => {
-  //   console.log("service", service);
-  // });
-  // const apiDep = useDependency(pixibrixApiId);
-  // console.log("apiDep", apiDep);
 
   return (
     <div>

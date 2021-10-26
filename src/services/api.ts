@@ -36,13 +36,15 @@ const appBaseQuery = (): BaseQueryFn<{
   method: AxiosRequestConfig["method"];
   data?: AxiosRequestConfig["data"];
   requireLinked?: boolean;
-}> => async ({ url, method, data, requireLinked = false }) => {
+  meta?: unknown;
+}> => async ({ url, method, data, requireLinked = false, meta }) => {
   try {
     const client = await (requireLinked
       ? getLinkedApiClient()
       : getApiClient());
     const result = await client({ url, method, data });
-    return { data: result.data };
+
+    return { data: result.data, meta };
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       return {
@@ -125,15 +127,20 @@ export const appApi = createApi({
           /* eslint-enable @typescript-eslint/no-explicit-any */
         })),
     }),
-    getGroups: builder.query<Group[], string>({
+    getGroups: builder.query<Record<string, Group[]>, string>({
       query: (organizationId) => ({
         url: `/api/organizations/${organizationId}/groups/`,
         method: "get",
+        meta: { organizationId },
+        includeRequestData: true,
       }),
-      // ToDo ensure this works with multiple organizations
-      providesTags: (result, error, organizationId) => [
-        { type: "Groups", organizationId },
-      ],
+      providesTags: ["Groups"],
+      transformResponse: (
+        baseQueryReturnValue: Group[],
+        { organizationId }: { organizationId: string }
+      ) => ({
+        [organizationId]: baseQueryReturnValue,
+      }),
     }),
     getMarketplaceListings: builder.query<
       Record<RegistryId, MarketplaceListing>,
