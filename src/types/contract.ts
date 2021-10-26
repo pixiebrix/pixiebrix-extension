@@ -37,8 +37,12 @@ export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 
 export type Invitation = components["schemas"]["Invitation"];
 
+export enum UserRole {
+  member = 1,
+  admin = 2,
+}
 export type Organization = components["schemas"]["Organization"] & {
-  isAdmin: boolean;
+  role: UserRole;
 };
 
 export type Group = components["schemas"]["Group"];

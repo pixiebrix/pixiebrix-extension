@@ -36,6 +36,10 @@ const MenuListWithAddButton: React.FC<MenuListWithAddButtonProps> = ({
   </div>
 );
 
+/**
+ * This is meant to be used together with {@link SelectWidget} to show "Add new" button.
+ * See [From.stories.tsx](https://github.com/pixiebrix/pixiebrix-extension/blob/main/src/components/form/Form.stories.tsx#L184:L195) for usage example.
+ */
 const createMenuListWithAddButton = (onAddClick: () => void) => {
   const MenuList: React.FC = ({ children }) => (
     <MenuListWithAddButton onAddClick={onAddClick}>

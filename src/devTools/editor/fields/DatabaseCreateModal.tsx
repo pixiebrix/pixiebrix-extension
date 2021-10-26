@@ -29,6 +29,7 @@ import {
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import DatabaseGroupSelect from "./DatabaseGroupSelect";
 import useNotifications from "@/hooks/useNotifications";
+import { UserRole } from "@/types/contract";
 
 type DatabaseCreateModalProps = {
   onClose: () => void;
@@ -36,7 +37,17 @@ type DatabaseCreateModalProps = {
 
 type DatabaseConfig = {
   name: string;
+
+  /**
+   * Id of a Team for shared DB.
+   * Blank for a Personal DB
+   */
   organizationId: string;
+
+  /**
+   * Id of a Group for shared DB.
+   * Blank for a Personal DB
+   */
   groupId: string;
 };
 
@@ -67,24 +78,29 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
   const notify = useNotifications();
 
   const onSave = async ({ name, organizationId, groupId }: DatabaseConfig) => {
-    console.log("creating db", { name, organizationId, groupId });
-    const result = await createDatabase({
+    const createDatabaseResult = await createDatabase({
       name,
       organizationId,
     });
 
-    if ("error" in result) {
-      notify.error(result.error);
+    if ("error" in createDatabaseResult) {
+      notify.error(createDatabaseResult.error);
     } else if (groupId) {
-      const newDb = result.data;
-      await addDatabaseToGroup({ groupId, databaseIds: [newDb.id] });
+      const newDb = createDatabaseResult.data;
+      const addToGroupResult = await addDatabaseToGroup({
+        groupId,
+        databaseIds: [newDb.id],
+      });
+      if ("error" in addToGroupResult) {
+        notify.error(addToGroupResult.error);
+      }
     }
 
     onClose();
   };
 
-  let organizationOptions = (organizations || [])
-    .filter((organization) => organization.isAdmin)
+  let organizationOptions = (organizations ?? [])
+    .filter((organization) => organization.role === UserRole.admin)
     .map((organization) => ({
       label: organization.name,
       value: organization.id,

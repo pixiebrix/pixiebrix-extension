@@ -27,6 +27,7 @@ import {
   MarketplaceListing,
   Organization,
   SanitizedAuth,
+  UserRole,
 } from "@/types/contract";
 import { components } from "@/types/swagger";
 
@@ -114,17 +115,17 @@ export const appApi = createApi({
       ): Organization[] =>
         baseQueryReturnValue.map((apiOrganization) => ({
           ...apiOrganization,
-          /*
-           * We need to know the user role in the organization.
-           * Currently API returns all members only for the organization where the user is an admin,
-           * hence if the user is an admin, they will have role === 2,
-           * otherwise there will be no other members listed (no member with role === 2).
-           */
-          /* eslint-disable @typescript-eslint/no-explicit-any -- `organization.members` is about to be removed */
-          isAdmin: (apiOrganization as any).members?.some(
-            (member: { role: number }) => member.role === 2
-          ),
-          /* eslint-enable @typescript-eslint/no-explicit-any */
+
+          // We need to know the user role in the organization.
+          // Currently API returns all members only for the organization where the user is an admin,
+          // hence if the user is an admin, they will have role === 2,
+          // otherwise there will be no other members listed (no member with role === 2).
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `organization.members` is about to be removed
+          role: (apiOrganization as any).members?.some(
+            (member: { role: number }) => member.role === UserRole.admin
+          )
+            ? UserRole.admin
+            : UserRole.member,
         })),
     }),
     getGroups: builder.query<Record<string, Group[]>, string>({
@@ -134,7 +135,9 @@ export const appApi = createApi({
         meta: { organizationId },
         includeRequestData: true,
       }),
-      providesTags: ["Groups"],
+      providesTags: (result, error, organizationId) => [
+        { type: "Groups", id: organizationId },
+      ],
       transformResponse: (
         baseQueryReturnValue: Group[],
         { organizationId }: { organizationId: string }

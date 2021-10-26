@@ -24,7 +24,7 @@ import { partial } from "lodash";
 import React, { useState } from "react";
 import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
 import { validateRegistryId } from "@/types/helpers";
-import createMenuListWithAddButton from "@/components/createMenuListWithAddButton";
+import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import DatabaseCreateModal from "./DatabaseCreateModal";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
