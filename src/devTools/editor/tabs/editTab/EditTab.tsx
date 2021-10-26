@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout, {
   FOUNDATION_NODE_ID,
@@ -33,7 +33,7 @@ import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
 import { uuidv4 } from "@/types/helpers";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -51,6 +51,8 @@ import usePipelineField, {
 } from "@/devTools/editor/hooks/usePipelineField";
 import { BlocksMap } from "./editTabTypes";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
+import { useDispatch, useSelector } from "react-redux";
+import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -97,7 +99,15 @@ const EditTab: React.FC<{
     errorTraceEntry,
   } = usePipelineField(allBlocks, elementType);
 
-  const [activeNodeId, setActiveNodeId] = useState<NodeId>(FOUNDATION_NODE_ID);
+  const activeNodeId = useSelector(selectActiveNodeId);
+  const dispatch = useDispatch();
+  const setActiveNodeId = useCallback(
+    (nodeId: NodeId) => {
+      dispatch(actions.setElementActiveNodeId(nodeId));
+    },
+    [dispatch]
+  );
+
   const activeBlockIndex = useMemo(() => {
     if (activeNodeId === FOUNDATION_NODE_ID) {
       return 0;
@@ -179,10 +189,12 @@ const EditTab: React.FC<{
 
     // Set the active node before setting the form values, otherwise there's a race condition based on the React state
     // causing a re-render vs. the Formik state causing a re-render
-    if (activeNodeId === nodeIdToRemove) {
-      setActiveNodeId(prevNodeId);
-    }
-
+    dispatch(
+      actions.removeElementNodeUIState({
+        nodeIdToRemove,
+        newActiveNodeId: prevNodeId,
+      })
+    );
     setFormValues(nextState);
   };
 
@@ -323,7 +335,13 @@ const EditTab: React.FC<{
           />
         </div>
         <div className={styles.configPanel}>
-          <ErrorBoundary>
+          <ErrorBoundary
+            key={
+              // Pass key to error boundary so that switching the node can potentially avoid the bad state without
+              // having to reload the whole page editor frame
+              activeNodeId
+            }
+          >
             <FormTheme.Provider value={blockConfigTheme}>
               {activeNodeId === FOUNDATION_NODE_ID ? (
                 <>

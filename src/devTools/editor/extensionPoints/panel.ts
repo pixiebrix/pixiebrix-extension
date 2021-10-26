@@ -18,8 +18,10 @@
 
 import { IExtension, Metadata } from "@/core";
 import {
+  baseFromExtension,
+  baseSelectExtension,
   baseSelectExtensionPoint,
-  excludeInstanceIds,
+  omitEditorMetadata,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
@@ -149,32 +151,20 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  {
-    uuid,
-    apiVersion,
-    label,
-    extensionPoint,
-    extension,
-    services,
-  }: PanelFormState,
+  { extension, ...state }: PanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<PanelConfig> {
   const config: PanelConfig = {
     heading: extension.heading,
-    body: extension.blockPipeline,
+    body: options.includeInstanceIds
+      ? extension.blockPipeline
+      : omitEditorMetadata(extension.blockPipeline),
     collapsible: extension.collapsible,
     shadowDOM: extension.shadowDOM,
   };
   return removeEmptyValues({
-    id: uuid,
-    apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: null,
-    label,
-    services,
-    config: options.includeInstanceIds
-      ? config
-      : excludeInstanceIds(config, "body"),
+    ...baseSelectExtension(state),
+    config,
   });
 }
 
@@ -205,6 +195,8 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} panel`,
 
     services: [],
+
+    optionsArgs: {},
 
     extension: {
       heading,
@@ -242,13 +234,7 @@ async function fromExtension(
   const blockPipeline = withInstanceIds(castArray(config.config.body));
 
   return {
-    uuid: config.id,
-    apiVersion: config.apiVersion,
-    installed: true,
-    type: extensionPoint.definition.type,
-    label: config.label,
-
-    services: config.services,
+    ...baseFromExtension(config, extensionPoint.definition.type),
 
     extension: {
       heading: config.config.heading ?? "",

@@ -144,7 +144,7 @@ const Editor: React.FunctionComponent = () => {
         installed={installed}
         elements={elements}
         activeElement={activeElement}
-        inserting={inserting}
+        isInsertingElement={Boolean(inserting)}
       />
       {body}
     </div>

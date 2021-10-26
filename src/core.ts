@@ -31,6 +31,16 @@ export type TemplateEngine = "mustache" | "nunjucks" | "handlebars" | "var";
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
+export const KEYS_OF_UI_SCHEMA = [
+  "ui:order",
+  "ui:field",
+  "ui:widget",
+  "ui:options",
+  "ui:order",
+  "ui:FieldTemplate",
+  "ui:ArrayFieldTemplate",
+  "ui:ObjectFieldTemplate",
+];
 export type SchemaDefinition = JSONSchema7Definition;
 export type SchemaProperties = Record<string, SchemaDefinition>;
 export type SchemaPropertyType = JSONSchema7TypeName;

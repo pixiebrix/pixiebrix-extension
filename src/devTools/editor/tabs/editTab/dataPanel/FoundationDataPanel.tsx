@@ -28,6 +28,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import styles from "./DataPanel.module.scss";
 import ExtensionPointPreview from "@/devTools/editor/tabs/effect/ExtensionPointPreview";
+import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
+import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
@@ -43,10 +45,15 @@ const FoundationDataPanel: React.FC<{
     makeSelectBlockTrace(firstBlockInstanceId)
   );
 
-  const defaultActiveKey = firstBlockTraceRecord ? "output" : "preview";
+  const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
+    firstBlockTraceRecord ? "output" : "preview"
+  );
+
+  const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery("formik");
+  const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
 
   return (
-    <Tab.Container defaultActiveKey={defaultActiveKey}>
+    <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <Nav variant="tabs">
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
@@ -85,7 +92,12 @@ const FoundationDataPanel: React.FC<{
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
               </div>
-              <JsonTree data={formState ?? {}} searchable />
+              <JsonTree
+                data={formState ?? {}}
+                searchable
+                initialSearchQuery={formikQuery}
+                onSearchQueryChanged={setFormikQuery}
+              />
             </Tab.Pane>
             <Tab.Pane eventKey="blockConfig" className={styles.tabPane}>
               <div className="text-info">
@@ -108,6 +120,8 @@ const FoundationDataPanel: React.FC<{
               data={firstBlockTraceRecord.templateContext}
               copyable
               searchable
+              initialSearchQuery={outputQuery}
+              onSearchQueryChanged={setOutputQuery}
               label="Data"
               shouldExpandNode={(keyPath) =>
                 keyPath.length === 1 && keyPath[0] === "@input"

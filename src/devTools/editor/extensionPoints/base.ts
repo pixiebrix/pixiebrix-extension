@@ -17,7 +17,6 @@
 
 import {
   ApiVersion,
-  Config,
   EmptyConfig,
   IExtension,
   InnerDefinitionRef,
@@ -47,7 +46,7 @@ import {
   NormalizedAvailability,
   ReaderConfig,
 } from "@/blocks/types";
-import { deepPickBy, freshIdentifier } from "@/utils";
+import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 
 export interface WizardStep {
   step: string;
@@ -98,16 +97,55 @@ export function withInstanceIds(blocks: BlockPipeline): BlockPipeline {
 /**
  * Remove the automatically generated tracing ids.
  */
-export function excludeInstanceIds<T extends Config>(
-  config: T,
-  prop: keyof T
-): T {
+export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
+  return pipeline.map((blockConfig) => omit(blockConfig, "instanceId"));
+}
+
+/**
+ * Return common extension properties for the Page Editor form state
+ */
+export function baseFromExtension<T extends ElementType>(
+  config: IExtension,
+  type: T
+): Pick<
+  BaseFormState,
+  "uuid" | "apiVersion" | "installed" | "label" | "services" | "optionsArgs"
+> & { type: T } {
   return {
-    ...config,
-    // eslint-disable-next-line security/detect-object-injection -- prop checked in signature
-    [prop]: (config[prop] as BlockPipeline).map((blockConfig) =>
-      omit(blockConfig, "instanceId")
-    ),
+    uuid: config.id,
+    apiVersion: config.apiVersion,
+    installed: true,
+    label: config.label,
+    services: config.services,
+    optionsArgs: config.optionsArgs,
+    type,
+  };
+}
+
+export function baseSelectExtension({
+  uuid,
+  apiVersion,
+  extensionPoint,
+  label,
+  services,
+  optionsArgs,
+}: Except<BaseFormState, "extension">): Pick<
+  IExtension,
+  | "id"
+  | "apiVersion"
+  | "extensionPointId"
+  | "label"
+  | "services"
+  | "optionsArgs"
+> & { _recipe: null } {
+  return {
+    id: uuid,
+    apiVersion,
+    extensionPointId: extensionPoint.metadata.id,
+    _recipe: null,
+    label,
+    services,
+    optionsArgs,
   };
 }
 
@@ -118,6 +156,7 @@ export function makeInitialBaseState(
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     services: [],
+    optionsArgs: {},
     extension: {
       blockPipeline: [],
     },
@@ -150,6 +189,24 @@ export function selectIsAvailable(
   return {
     matchPatterns,
     selectors,
+  };
+}
+
+/**
+ * Exclude malformed matchPatterns and selectors from an isAvailable section that may have found their way over from the
+ * Page Editor.
+ *
+ * Currently excludes:
+ * - Null values
+ * - Blank values
+ */
+export function cleanIsAvailable({
+  matchPatterns = [],
+  selectors = [],
+}: NormalizedAvailability): NormalizedAvailability {
+  return {
+    matchPatterns: matchPatterns.filter((x) => !isNullOrBlank(x)),
+    selectors: selectors.filter((x) => !isNullOrBlank(x)),
   };
 }
 

@@ -25,6 +25,16 @@ import { ContextMenuFormState } from "@/devTools/editor/extensionPoints/contextM
 import { getErrorMessage } from "@/errors";
 import { clearExtensionTraces } from "@/background/trace";
 import { RegistryId, UUID } from "@/core";
+import {
+  ElementUIState,
+  makeInitialElementUIState,
+  makeInitialNodeUIState,
+} from "@/devTools/editor/uiState/uiState";
+import {
+  FOUNDATION_NODE_ID,
+  NodeId,
+} from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
+import { WritableDraft } from "immer/dist/types/types-external";
 
 export type FormState =
   | ActionFormState
@@ -74,6 +84,11 @@ export interface EditorState {
    * Is the user using the new page editor beta UI?
    */
   isBetaUI: boolean;
+
+  /**
+   * The current UI state of each element, indexed by element Id
+   */
+  elementUIStates: Record<UUID, ElementUIState>;
 }
 
 export const initialState: EditorState = {
@@ -86,7 +101,62 @@ export const initialState: EditorState = {
   dirty: {},
   inserting: null,
   isBetaUI: false,
+  elementUIStates: {},
 };
+
+/* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
+function ensureElementUIState(
+  state: WritableDraft<EditorState>,
+  elementId: UUID
+) {
+  if (!state.elementUIStates[elementId]) {
+    state.elementUIStates[elementId] = makeInitialElementUIState();
+  }
+}
+
+function ensureNodeUIState(
+  state: WritableDraft<ElementUIState>,
+  nodeId: NodeId
+) {
+  if (!state.nodeUIStates[nodeId]) {
+    state.nodeUIStates[nodeId] = makeInitialNodeUIState(nodeId);
+  }
+}
+
+function syncElementNodeUIStates(
+  state: WritableDraft<EditorState>,
+  element: FormState
+) {
+  const elementUIState = state.elementUIStates[element.uuid];
+  const blockPipelineIds = element.extension.blockPipeline.map(
+    (x) => x.instanceId
+  );
+
+  // Pipeline block instance IDs may have changed
+  if (!blockPipelineIds.includes(elementUIState.activeNodeId)) {
+    elementUIState.activeNodeId = FOUNDATION_NODE_ID;
+  }
+
+  // Remove NodeUIStates for invalid IDs
+  for (const key of Object.keys(elementUIState.nodeUIStates)) {
+    const nodeId = key as NodeId;
+    // Don't remove the foundation NodeUIState
+    if (nodeId !== FOUNDATION_NODE_ID && !blockPipelineIds.includes(nodeId)) {
+      delete elementUIState.nodeUIStates[nodeId];
+    }
+  }
+
+  // Add missing NodeUIStates
+  for (const uuid of blockPipelineIds) {
+    ensureNodeUIState(elementUIState, uuid);
+  }
+}
+
+function setActiveNodeId(state: WritableDraft<EditorState>, nodeId: NodeId) {
+  const elementUIState = state.elementUIStates[state.activeElement];
+  ensureNodeUIState(elementUIState, nodeId);
+  elementUIState.activeNodeId = nodeId;
+}
 
 export const editorSlice = createSlice({
   name: "editor",
@@ -105,9 +175,11 @@ export const editorSlice = createSlice({
       state.inserting = null;
       state.elements.push(element);
       state.error = null;
+      state.dirty[element.uuid] = true;
       state.beta = false;
       state.activeElement = element.uuid;
       state.selectionSeq++;
+      state.elementUIStates[element.uuid] = makeInitialElementUIState();
     },
     betaError: (state, action: PayloadAction<{ error: string }>) => {
       state.error = action.payload.error;
@@ -125,52 +197,51 @@ export const editorSlice = createSlice({
       state.selectionSeq++;
     },
     selectInstalled: (state, actions: PayloadAction<FormState>) => {
-      const index = state.elements.findIndex(
-        (x) => x.uuid === actions.payload.uuid
-      );
-      if (index >= 0) {
-        // Safe because we're getting it from findIndex
-        // eslint-disable-next-line security/detect-object-injection
-        state.elements[index] = actions.payload;
-      } else {
-        state.elements.push(actions.payload);
-      }
-
-      state.error = null;
-      state.beta = null;
-      state.activeElement = actions.payload.uuid;
-      state.selectionSeq++;
-    },
-    resetInstalled: (state, actions: PayloadAction<FormState>) => {
       const { uuid } = actions.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);
       if (index >= 0) {
-        // Safe because we're getting it from findIndex
-        // eslint-disable-next-line security/detect-object-injection
         state.elements[index] = actions.payload;
       } else {
         state.elements.push(actions.payload);
       }
 
-      // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
-      state.dirty[uuid] = false;
       state.error = null;
       state.beta = null;
       state.activeElement = uuid;
       state.selectionSeq++;
+      ensureElementUIState(state, uuid);
+    },
+    resetInstalled: (state, actions: PayloadAction<FormState>) => {
+      const element = actions.payload;
+      const index = state.elements.findIndex((x) => x.uuid === element.uuid);
+      if (index >= 0) {
+        state.elements[index] = element;
+      } else {
+        state.elements.push(element);
+      }
+
+      state.dirty[element.uuid] = false;
+      state.error = null;
+      state.beta = null;
+      state.activeElement = element.uuid;
+      state.selectionSeq++;
 
       // Make sure we're not keeping any private data around from Page Editor sessions
-      void clearExtensionTraces(uuid);
+      void clearExtensionTraces(element.uuid);
+
+      syncElementNodeUIStates(state, element);
     },
     selectElement: (state, action: PayloadAction<UUID>) => {
-      if (!state.elements.some((x) => action.payload === x.uuid)) {
+      const elementId = action.payload;
+      if (!state.elements.some((x) => x.uuid === elementId)) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
 
       state.error = null;
       state.beta = null;
-      state.activeElement = action.payload;
+      state.activeElement = elementId;
       state.selectionSeq++;
+      ensureElementUIState(state, elementId);
     },
     markSaved: (state, action: PayloadAction<UUID>) => {
       const element = state.elements.find((x) => action.payload === x.uuid);
@@ -189,17 +260,16 @@ export const editorSlice = createSlice({
     },
     // Sync the redux state with the form state
     updateElement: (state, action: PayloadAction<FormState>) => {
-      const { uuid } = action.payload;
-      const index = state.elements.findIndex((x) => x.uuid === uuid);
+      const element = action.payload;
+      const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index < 0) {
-        throw new Error(`Unknown dynamic element: ${uuid}`);
+        throw new Error(`Unknown dynamic element: ${element.uuid}`);
       }
 
-      // Safe b/c generated from findIndex
-      // eslint-disable-next-line security/detect-object-injection
-      state.elements[index] = action.payload;
-      // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
-      state.dirty[uuid] = true;
+      state.elements[index] = element;
+      state.dirty[element.uuid] = true;
+
+      syncElementNodeUIStates(state, element);
     },
     removeElement: (state, action: PayloadAction<UUID>) => {
       const uuid = action.payload;
@@ -212,8 +282,8 @@ export const editorSlice = createSlice({
         1
       );
 
-      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- is uuid, and also using immer
       delete state.dirty[uuid];
+      delete state.elementUIStates[uuid];
 
       // Make sure we're not keeping any private data around from Page Editor sessions
       void clearExtensionTraces(uuid);
@@ -221,7 +291,42 @@ export const editorSlice = createSlice({
     setBetaUIEnabled: (state, action: PayloadAction<boolean>) => {
       state.isBetaUI = action.payload;
     },
+    removeElementNodeUIState: (
+      state,
+      action: PayloadAction<{
+        nodeIdToRemove: NodeId;
+        newActiveNodeId?: NodeId;
+      }>
+    ) => {
+      const elementUIState = state.elementUIStates[state.activeElement];
+      const { nodeIdToRemove, newActiveNodeId } = action.payload;
+
+      const activeNodeId = newActiveNodeId ?? FOUNDATION_NODE_ID;
+      setActiveNodeId(state, activeNodeId);
+
+      delete elementUIState.nodeUIStates[nodeIdToRemove];
+    },
+    setElementActiveNodeId: (state, action: PayloadAction<NodeId>) => {
+      setActiveNodeId(state, action.payload);
+    },
+    setNodeDataPanelTabSelected: (state, action: PayloadAction<string>) => {
+      const elementUIState = state.elementUIStates[state.activeElement];
+      const nodeUIState =
+        elementUIState.nodeUIStates[elementUIState.activeNodeId];
+      nodeUIState.dataPanel.activeTabKey = action.payload;
+    },
+    setNodeDataPanelTabSearchQuery: (
+      state,
+      action: PayloadAction<{ tabKey: string; query: string }>
+    ) => {
+      const { tabKey, query } = action.payload;
+      const elementUIState = state.elementUIStates[state.activeElement];
+      const nodeUIState =
+        elementUIState.nodeUIStates[elementUIState.activeNodeId];
+      nodeUIState.dataPanel.tabQueries[tabKey] = query;
+    },
   },
 });
+/* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */
 
 export const { actions } = editorSlice;
