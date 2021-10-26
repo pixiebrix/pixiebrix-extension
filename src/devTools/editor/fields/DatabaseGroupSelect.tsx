@@ -18,6 +18,7 @@
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { appApi } from "@/services/api";
+import { validateUUID } from "@/types/helpers";
 import { useField } from "formik";
 import React, { useEffect } from "react";
 
@@ -44,7 +45,10 @@ const DatabaseGroupSelect = () => {
   }, [loadOrganizationGroups, selectedOrganizationId]);
 
   const groupOptions = (
-    (selectedOrganizationId && organizationGroups?.[selectedOrganizationId]) ||
+    (selectedOrganizationId &&
+      validateUUID(selectedOrganizationId) &&
+      // eslint-disable-next-line security/detect-object-injection -- validated for being a UUID
+      organizationGroups?.[selectedOrganizationId]) ||
     []
   ).map((group) => ({
     label: group.name,
@@ -58,6 +62,7 @@ const DatabaseGroupSelect = () => {
       as={SelectWidget}
       options={groupOptions}
       disabled={!selectedOrganizationId}
+      description="Select a group you belong to when creating a shared team Database."
     />
   );
 };

@@ -28,6 +28,7 @@ import {
 } from "@/services/api";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import DatabaseGroupSelect from "./DatabaseGroupSelect";
+import useNotifications from "@/hooks/useNotifications";
 
 type DatabaseCreateModalProps = {
   onClose: () => void;
@@ -63,14 +64,17 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
 
   const [addDatabaseToGroup] = useAddDatabaseToGroupMutation();
 
+  const notify = useNotifications();
+
   const onSave = async ({ name, organizationId, groupId }: DatabaseConfig) => {
+    console.log("creating db", { name, organizationId, groupId });
     const result = await createDatabase({
       name,
       organizationId,
     });
 
     if ("error" in result) {
-      console.error(result.error);
+      notify.error(result.error);
     } else if (groupId) {
       const newDb = result.data;
       await addDatabaseToGroup({ groupId, databaseIds: [newDb.id] });

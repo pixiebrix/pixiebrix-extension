@@ -27,6 +27,7 @@ import { validateRegistryId } from "@/types/helpers";
 import createMenuListWithAddButton from "@/components/createMenuListWithAddButton";
 import DatabaseCreateModal from "./DatabaseCreateModal";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 export const DATABASE_GET_ID = validateRegistryId("@pixiebrix/data/get");
 
@@ -36,7 +37,7 @@ const keySchema: Schema = {
 };
 
 const serviceSchema: Schema = {
-  $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/api",
+  $ref: `https://app.pixiebrix.com/schemas/services/${PIXIEBRIX_SERVICE_ID}`,
 };
 
 const DatabaseGetOptions: React.FC<{
@@ -77,11 +78,7 @@ const DatabaseGetOptions: React.FC<{
 
       <SchemaField name={configName("key")} label="Key" schema={keySchema} />
 
-      <AppServiceField
-        name={configName("service")}
-        label="Service"
-        schema={serviceSchema}
-      />
+      <AppServiceField name={configName("service")} schema={serviceSchema} />
     </div>
   );
 };

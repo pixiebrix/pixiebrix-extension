@@ -90,11 +90,7 @@ const DatabasePutOptions: React.FC<{
         schema={valueSchema}
       />
 
-      <AppServiceField
-        name={configName("service")}
-        label="Service"
-        schema={serviceSchema}
-      />
+      <AppServiceField name={configName("service")} schema={serviceSchema} />
     </div>
   );
 };

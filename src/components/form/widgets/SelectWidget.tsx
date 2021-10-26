@@ -80,6 +80,9 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
     >);
   };
 
+  const selectValue =
+    options?.find((option: TOption) => value === option.value) || null;
+
   return (
     <Select
       inputId={id}
@@ -88,7 +91,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
       isLoading={isLoading}
       isClearable={isClearable}
       options={options}
-      value={options?.find((option: TOption) => value === option.value)}
+      value={selectValue}
       onChange={patchedOnChange}
       components={components}
     />
