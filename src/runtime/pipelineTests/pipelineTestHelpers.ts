@@ -35,8 +35,23 @@ class EchoBlock extends Block {
   }
 }
 
+class IdentityBlock extends Block {
+  constructor() {
+    super("test/identity", "Identity Block");
+  }
+
+  inputSchema = propertiesToSchema({
+    data: {},
+  });
+
+  async run(arg: BlockArg) {
+    return arg;
+  }
+}
+
 export const echoBlock = new EchoBlock();
 export const contextBlock = new ContextBlock();
+export const identityBlock = new IdentityBlock();
 
 /**
  * Helper method to pass only `input` to reducePipeline.

@@ -36,7 +36,7 @@ type Args = string | UnknownObject | UnknownObject[];
  * Returns true if value represents an explicit expression
  * @param value
  */
-function isExpression(value: unknown): value is Expression {
+export function isExpression(value: unknown): value is Expression {
   if (
     isPlainObject(value) &&
     typeof value === "object" &&
