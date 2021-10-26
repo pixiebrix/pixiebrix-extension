@@ -62,7 +62,8 @@ export interface WizardStep {
  * Brick definition API controlling how the PixieBrix runtime interprets brick configurations
  * @see ApiVersion
  */
-export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v3";
+// Keep at v2 until the Page Editor supports v3 expressions
+export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v2";
 
 /**
  * Default definition entry for the inner definition of the extensionPoint for the extension
