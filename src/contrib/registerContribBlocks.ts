@@ -18,14 +18,6 @@
 import { registerBlock } from "@/blocks/registry";
 import { AddUpdateCompany, AddUpdateContact } from "./hubspot";
 import {
-  AddOrganization,
-  AddPerson,
-  DEAL_READER,
-  ORGANIZATION_READER,
-  PERSON_READER,
-  ResolvePerson,
-} from "./pipedrive";
-import {
   GeocodeTransformer,
   GoogleBigQueryQuery,
   GoogleSheetsAppend,
@@ -47,14 +39,6 @@ function registerContribBlocks(): void {
   // HubSpot
   registerBlock(new AddUpdateContact());
   registerBlock(new AddUpdateCompany());
-  registerBlock(new AddOrganization());
-
-  // Pipedrive
-  registerBlock(new AddPerson());
-  registerBlock(new ResolvePerson());
-  registerBlock(ORGANIZATION_READER);
-  registerBlock(PERSON_READER);
-  registerBlock(DEAL_READER);
 
   // Slack
   registerBlock(new SendSimpleSlackMessage());
