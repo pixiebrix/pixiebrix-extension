@@ -44,6 +44,7 @@ import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { selectEventData } from "@/telemetry/deployments";
 import { UUID } from "@/core";
 import { hideActionPanel } from "@/contentScript/messenger/api";
+import { whoAmI } from "@/background/messenger/api";
 
 const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
   panels,
@@ -133,7 +134,10 @@ const ActionPanelApp: React.FunctionComponent = () => {
             <div className="d-flex flex-row mb-2 p-2 justify-content-between align-content-center">
               <Button
                 className="action-panel-button"
-                onClick={async () => hideActionPanel({ name: "sidebar" })}
+                onClick={async () => {
+                  const sidebar = await whoAmI();
+                  await hideActionPanel({ tabId: sidebar.tab.id! });
+                }}
                 size="sm"
                 variant="link"
               >

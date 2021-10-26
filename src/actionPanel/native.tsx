@@ -163,8 +163,10 @@ function renderPanelsIfVisible() {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
 
+    console.log("XXX will render");
     void renderPanels({ name: "sidebar" }, seqNum, panels);
   } else {
+    console.log("XXX will skip");
     console.debug(
       "Skipping renderPanels because the action panel is not visible"
     );
