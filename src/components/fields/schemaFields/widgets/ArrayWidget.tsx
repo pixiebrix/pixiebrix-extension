@@ -60,11 +60,7 @@ function getDefaultArrayItem(schema: Schema): unknown {
   return null;
 }
 
-const ArrayWidget: React.FC<SchemaFieldProps<unknown>> = ({
-  schema,
-  label,
-  name,
-}) => {
+const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, label, name }) => {
   const [field] = useField<UnknownObject[]>(name);
 
   if (Array.isArray(schema.items)) {

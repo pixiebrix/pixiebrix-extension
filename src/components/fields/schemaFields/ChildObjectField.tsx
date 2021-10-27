@@ -26,7 +26,6 @@ import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget"
 import { Schema } from "@/core";
 import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { UnknownObject } from "@/types";
 import { joinName } from "@/utils";
 
 const FALLBACK_SCHEMA: Schema = {
@@ -58,9 +57,13 @@ const ChildContainer: React.FC<{ heading: string }> = ({
   </Card>
 );
 
-const ChildObjectWidget: React.FC<
-  SchemaFieldProps<UnknownObject> & OwnProps
-> = ({ name, schema, schemaLoading, schemaError, heading }) => {
+const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProps> = ({
+  name,
+  schema,
+  schemaLoading,
+  schemaError,
+  heading,
+}) => {
   if (schemaLoading) {
     return (
       <ChildContainer heading={heading}>
@@ -105,9 +108,9 @@ const ChildObjectWidget: React.FC<
   );
 };
 
-const ChildObjectField: React.FunctionComponent<
-  SchemaFieldProps<UnknownObject> & OwnProps
-> = (props) => (
+const ChildObjectField: React.FunctionComponent<SchemaFieldProps & OwnProps> = (
+  props
+) => (
   <ConnectedFieldTemplate
     {...props}
     description={

@@ -206,7 +206,7 @@ function produceServiceAuths(
  * @see ServiceDependency
  */
 const ServiceField: React.FunctionComponent<
-  SchemaFieldProps<ServiceKeyVar> & {
+  SchemaFieldProps & {
     /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */
     detectDefault?: boolean;
   }

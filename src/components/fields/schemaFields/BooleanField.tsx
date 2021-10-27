@@ -21,7 +21,7 @@ import { fieldLabel } from "@/components/fields/fieldUtils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
-const BooleanField: React.FunctionComponent<SchemaFieldProps<boolean>> = ({
+const BooleanField: React.FunctionComponent<SchemaFieldProps> = ({
   name,
   label,
   schema,

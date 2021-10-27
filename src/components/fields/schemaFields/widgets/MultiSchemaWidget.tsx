@@ -16,20 +16,33 @@
  */
 
 import React from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
-import { Form } from "react-bootstrap";
 
-const ExpressionWidget: React.FunctionComponent<SchemaFieldProps> = (props) => {
-  const [field, meta] = useField(props);
-  return (
-    <Form.Control
-      type="text"
-      {...props}
-      value={field.value ?? ""}
-      isInvalid={meta.error != null}
-    />
-  );
+const MultiSchemaWidget: SchemaFieldComponent = ({
+  name,
+  schema,
+  label,
+  description,
+}) => {
+  const [
+    { value: fieldValue },
+    ,
+    { setValue: setFieldValue },
+  ] = useField<unknown>(name);
+
+  const oneOf = schema.oneOf;
+  if (oneOf && Array.isArray(oneOf)) {
+    // Do we need to check for array/boolean here?
+    // Render a switcher between the types in oneOf and render a schema field for each
+  }
+
+  const anyOf = schema.anyOf;
+  if (anyOf && Array.isArray(anyOf)) {
+    // Render all schema fields at the same time - NO, handle this like anyOf
+  }
+
+  // Need to return some kind of "JSONSchema X not supported" component
 };
 
-export default ExpressionWidget;
+export default MultiSchemaWidget;

@@ -18,7 +18,7 @@
 import { Schema } from "@/core";
 import React, { createContext } from "react";
 import {
-  FieldComponent,
+  SchemaFieldComponent,
   SchemaFieldProps,
 } from "@/components/fields/schemaFields/propTypes";
 import ServiceField, {
@@ -37,10 +37,10 @@ import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 
-function defaultFieldFactory<T>(
-  Widget: React.FC<SchemaFieldProps<T>>
-): FieldComponent {
-  const Field: React.FunctionComponent<SchemaFieldProps<unknown>> = (props) => {
+function defaultFieldFactory(
+  Widget: React.FC<SchemaFieldProps>
+): SchemaFieldComponent {
+  const Field: React.FunctionComponent<SchemaFieldProps> = (props) => {
     const { name, label, schema, description } = props;
     return (
       <ConnectedFieldTemplate
@@ -62,16 +62,16 @@ const ArrayField = defaultFieldFactory(ArrayWidget);
 
 export const ObjectField = defaultFieldFactory(ObjectWidget);
 
-function makeOneOfField(oneOf: Schema): FieldComponent {
+function makeOneOfField(oneOf: Schema): SchemaFieldComponent {
   const Field = getDefaultField(oneOf);
-  const Component = (props: SchemaFieldProps<unknown>) => (
+  const Component = (props: SchemaFieldProps) => (
     <Field {...props} schema={oneOf} />
   );
   Component.displayName = Field.displayName;
   return Component;
 }
 
-export function getDefaultField(fieldSchema: Schema): FieldComponent {
+export function getDefaultField(fieldSchema: Schema): SchemaFieldComponent {
   if (isServiceField(fieldSchema)) {
     return ServiceField;
   }
@@ -116,7 +116,7 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
  */
 type CustomField = {
   match: (fieldSchema: Schema) => boolean;
-  Component: FieldComponent;
+  Component: SchemaFieldComponent;
 };
 
 /**
@@ -124,7 +124,7 @@ type CustomField = {
  */
 type CustomWidget = {
   match: (fieldSchema: Schema) => boolean;
-  Component: FieldComponent;
+  Component: SchemaFieldComponent;
 };
 
 export type CustomFieldDefinitions = {

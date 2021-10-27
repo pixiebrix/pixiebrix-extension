@@ -21,9 +21,9 @@ import { fieldLabel } from "@/components/fields/fieldUtils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
 
-const SelectorSelectorField: React.FunctionComponent<
-  SchemaFieldProps<string>
-> = (props) => {
+const SelectorSelectorField: React.FunctionComponent<SchemaFieldProps> = (
+  props
+) => {
   const { label, name, schema } = props;
   return (
     <ConnectedFieldTemplate
