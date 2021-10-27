@@ -133,9 +133,21 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
             initialValues={initialValues}
             onSubmit={onSave}
             renderSubmit={({ isSubmitting, isValid }) => (
-              <Button type="submit" disabled={!isValid || isSubmitting}>
-                Create Database
-              </Button>
+              <div className="text-right">
+                <Button
+                  variant="info"
+                  className="mr-2"
+                  onClick={() => {
+                    onClose();
+                  }}
+                >
+                  Cancel
+                </Button>
+
+                <Button type="submit" disabled={!isValid || isSubmitting}>
+                  Create Database
+                </Button>
+              </div>
             )}
           >
             <ConnectedFieldTemplate name="name" label="Name" />
