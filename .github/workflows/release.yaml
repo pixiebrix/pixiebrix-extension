@@ -36,12 +36,12 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
           AWS_DEFAULT_REGION: "us-east-2"
-      - uses: actions/upload-artifact@v2
+      - name: Save extension
+        uses: ./.github/actions/upload-zipped-artifact
         with:
           name: build-for-store
-          path: |
-            dist
-            !dist/**/*.map
+          directory: dist
+          exclusions: "*.map"
           retention-days: 5
 
   build:
@@ -70,12 +70,12 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
           AWS_DEFAULT_REGION: "us-east-2"
-      - uses: actions/upload-artifact@v2
+      - name: Save extension
+        uses: ./.github/actions/upload-zipped-artifact
         with:
           name: build-production
-          path: |
-            dist
-            !dist/**/*.map
+          directory: dist
+          exclusions: "*.map"
           retention-days: 5
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
