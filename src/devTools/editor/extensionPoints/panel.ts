@@ -48,13 +48,14 @@ import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import { NormalizedAvailability } from "@/blocks/types";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration";
 import { insertPanel } from "@/contentScript/messenger/api";
@@ -87,9 +88,8 @@ export interface PanelFormState extends BaseFormState {
     traits: PanelTraits;
   };
 
-  extension: {
+  extension: BaseExtensionState & {
     heading: string;
-    blockPipeline: BlockPipeline;
     collapsible?: boolean;
     shadowDOM?: boolean;
   };

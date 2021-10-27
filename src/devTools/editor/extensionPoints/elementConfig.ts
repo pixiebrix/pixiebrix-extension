@@ -106,8 +106,6 @@ export interface BaseFormState {
   services: ServiceDependency[];
 
   extensionPoint: BaseExtensionPointState;
-
-  extension: BaseExtensionState;
 }
 
 /**

@@ -28,6 +28,7 @@ import styles from "./BlockConfiguration.module.scss";
 import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 
 const DEFAULT_TEMPLATE_ENGINE_VALUE = "mustache";
 
@@ -102,18 +103,19 @@ const BlockConfiguration: React.FunctionComponent<{
           <ConnectedFieldTemplate
             name={templateEngineFieldName}
             label="Template engine"
-            as="select"
+            as={SelectWidget}
+            options={[
+              { label: "Mustache", value: "mustache" },
+              { label: "Handlebars", value: "handlebars" },
+              { label: "Nunjucks", value: "nunjucks" },
+            ]}
             description={
               <p>
                 The template engine controls how PixieBrix fills in{" "}
                 <code>{"{{variables}}"}</code> in the inputs.
               </p>
             }
-          >
-            <option value="mustache">Mustache</option>
-            <option value="handlebars">Handlebars</option>
-            <option value="nunjucks">Nunjucks</option>
-          </ConnectedFieldTemplate>
+          />
 
           {
             // Only show if necessary. Currently only the trigger extension point passes the element that triggered the
@@ -122,13 +124,14 @@ const BlockConfiguration: React.FunctionComponent<{
               <ConnectedFieldTemplate
                 name={joinName(name, "rootMode")}
                 label="Root Mode"
-                as="select"
+                as={SelectWidget}
+                options={[
+                  { label: "Inherit", value: "inherit" },
+                  { label: "Document", value: "document" },
+                ]}
                 blankValue="inherit"
                 description="The root mode controls which page element PixieBrix provides as the implicit element"
-              >
-                <option value="inherit">Inherit</option>
-                <option value="document">Document</option>
-              </ConnectedFieldTemplate>
+              />
             )
           }
         </Card.Body>

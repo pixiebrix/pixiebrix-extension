@@ -47,12 +47,13 @@ import {
 import { getDomain } from "@/permissions/patterns";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { Menus } from "webextension-polyfill";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import { Menus } from "webextension-polyfill-ts";
+import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
@@ -76,9 +77,8 @@ export interface ContextMenuFormState extends BaseFormState {
     };
   };
 
-  extension: {
+  extension: BaseExtensionState & {
     title: string;
-    blockPipeline: BlockPipeline;
   };
 }
 

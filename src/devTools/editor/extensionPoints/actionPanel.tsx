@@ -47,12 +47,12 @@ import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import ActionPanelConfiguration from "@/devTools/editor/tabs/actionPanel/ActionPanelConfiguration";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
-import { BlockPipeline } from "@/blocks/types";
 
 const wizard: WizardStep[] = [
   { step: "Edit", Component: EditTab },
@@ -62,9 +62,8 @@ const wizard: WizardStep[] = [
 export interface ActionPanelFormState extends BaseFormState {
   type: "actionPanel";
 
-  extension: {
+  extension: BaseExtensionState & {
     heading: string;
-    blockPipeline: BlockPipeline;
   };
 }
 

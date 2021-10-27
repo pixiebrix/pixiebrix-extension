@@ -50,12 +50,13 @@ import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import { NormalizedAvailability } from "@/blocks/types";
 import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfiguration";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import { insertButton } from "@/contentScript/messenger/api";
@@ -86,9 +87,8 @@ export interface ActionFormState extends BaseFormState {
     };
   };
 
-  extension: {
+  extension: BaseExtensionState & {
     caption: string;
-    blockPipeline: BlockPipeline;
     dynamicCaption?: boolean;
     icon?: IconConfig;
   };
