@@ -153,7 +153,7 @@ const BlockConfiguration: React.FunctionComponent<{
                   { label: "Inherit", value: "inherit" },
                   { label: "Document", value: "document" },
                 ]}
-                defaultValue="inherit"
+                blankValue="inherit"
                 description="The root mode controls which page element PixieBrix provides as the implicit element"
               />
             )
@@ -174,7 +174,7 @@ const BlockConfiguration: React.FunctionComponent<{
                   { label: "Broadcast", value: "broadcast" },
                   { label: "Remote", value: "remote" },
                 ]}
-                defaultValue="self"
+                blankValue="self"
                 description={<p>Select where to execute the brick.</p>}
               />
             </>

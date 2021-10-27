@@ -40,7 +40,18 @@ export type FieldProps<
     description?: ReactNode;
     error?: string;
     touched?: boolean;
+
+    /**
+     * This value is regarded as absence of value, unset property.
+     * It will be passed to the UI input control when the value is undefined.
+     */
     blankValue?: unknown;
+
+    /**
+     * This is the default.
+     * When value is not set an onChange event will be triggered with the defaultValue.
+     * Note: this may mark you field as dirty.
+     */
     defaultValue?: unknown;
   };
 
