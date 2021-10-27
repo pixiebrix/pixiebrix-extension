@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Menus } from "webextension-polyfill-ts";
+import { Menus } from "webextension-polyfill";
 import { UUID } from "@/core";
 
 type MenuHandler = (args: Menus.OnClickData) => Promise<void>;

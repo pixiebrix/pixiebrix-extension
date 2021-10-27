@@ -18,7 +18,7 @@
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
 import { isExtensionContext } from "webext-detect-page";
-import { browser, Runtime } from "webextension-polyfill-ts";
+import browser, { Runtime } from "webextension-polyfill";
 import { forbidContext } from "@/utils/expectContext";
 import { JsonValue } from "type-fest";
 

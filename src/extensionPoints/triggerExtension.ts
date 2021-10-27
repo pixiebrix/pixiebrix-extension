@@ -36,7 +36,7 @@ import {
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";

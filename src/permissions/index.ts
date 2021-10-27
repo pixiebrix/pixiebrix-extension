@@ -21,7 +21,7 @@ import {
   RecipeDefinition,
   ResolvedExtensionPointConfig,
 } from "@/types/definitions";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { castArray, compact, uniq } from "lodash";
 import { locator } from "@/background/locator";
 import registry from "@/services/registry";

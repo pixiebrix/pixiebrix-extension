@@ -32,7 +32,7 @@ import {
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { Menus, Permissions } from "webextension-polyfill-ts";
+import { Menus, Permissions } from "webextension-polyfill";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
   ExtensionPointConfig,

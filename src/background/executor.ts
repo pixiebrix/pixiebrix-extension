@@ -20,7 +20,7 @@ import {
   RemoteBlockOptions,
   RunBlockRequestAction,
 } from "@/contentScript/executor";
-import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
+import browser, { Runtime, Tabs } from "webextension-polyfill";
 import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
 import { RegistryId, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";

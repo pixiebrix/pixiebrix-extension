@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Runtime, WebNavigation } from "webextension-polyfill-ts";
+import { Runtime, WebNavigation } from "webextension-polyfill";
 import { HandlerOptions } from "@/messaging/protocol";
 import type { Target } from "@/types";
 

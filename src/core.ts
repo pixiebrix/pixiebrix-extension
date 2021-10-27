@@ -24,7 +24,7 @@ import { UiSchema as StandardUiSchema } from "@rjsf/core";
 import { AxiosRequestConfig } from "axios";
 import { Except, Primitive } from "type-fest";
 import { ErrorObject } from "serialize-error";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { pick } from "lodash";
 
 export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";

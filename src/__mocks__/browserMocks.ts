@@ -17,6 +17,6 @@
 
 // Mock for "webextension-polyfill-ts"
 
-import type { Browser } from "webextension-polyfill-ts";
+import type { Browser } from "webextension-polyfill";
 
 export const browser: Partial<Browser> = {};

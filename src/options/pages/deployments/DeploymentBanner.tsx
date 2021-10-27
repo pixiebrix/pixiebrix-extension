@@ -21,7 +21,7 @@ import cx from "classnames";
 import useDeployments from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
 import { useRouteMatch } from "react-router";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 
 const Banner: React.FC<{ className?: string }> = ({ className, children }) => (

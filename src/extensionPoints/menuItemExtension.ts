@@ -48,7 +48,7 @@ import {
   IconConfig,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import {
   hasCancelRootCause,
