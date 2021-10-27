@@ -54,14 +54,13 @@ jobs:
           GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
-      - uses: actions/upload-artifact@v2
-        name: Save extension
+      - name: Save extension
+        uses: ./.github/actions/upload-zipped-artifact
         if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         with:
           name: build-staging
-          path: |
-            dist
-            !dist/**/*.map
+          directory: dist
+          exclusions: "*.map"
           retention-days: 5
           if-no-files-found: error
 
