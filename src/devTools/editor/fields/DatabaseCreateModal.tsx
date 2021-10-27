@@ -30,8 +30,11 @@ import SelectWidget from "@/components/form/widgets/SelectWidget";
 import DatabaseGroupSelect from "./DatabaseGroupSelect";
 import useNotifications from "@/hooks/useNotifications";
 import { Organization, UserRole } from "@/types/contract";
+import { UUID } from "@/core";
+import { validateUUID } from "@/types/helpers";
 
 type DatabaseCreateModalProps = {
+  onDatabaseCreated: (databaseId: UUID) => void;
   onClose: () => void;
 };
 
@@ -81,6 +84,7 @@ function getOrganizationOptions(organizations: Organization[]) {
 }
 
 const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
+  onDatabaseCreated,
   onClose,
 }) => {
   const {
@@ -102,18 +106,26 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
 
     if ("error" in createDatabaseResult) {
       notify.error(createDatabaseResult.error);
-    } else if (groupId) {
-      const newDb = createDatabaseResult.data;
+      onClose();
+      return;
+    }
+
+    const newDbId = validateUUID(createDatabaseResult.data.id);
+
+    if (groupId) {
       const addToGroupResult = await addDatabaseToGroup({
         groupId,
-        databaseIds: [newDb.id],
+        databaseIds: [newDbId],
       });
+
       if ("error" in addToGroupResult) {
         notify.error(addToGroupResult.error);
+        onClose();
+        return;
       }
     }
 
-    onClose();
+    onDatabaseCreated(newDbId);
   };
 
   const organizationOptions = getOrganizationOptions(organizations);

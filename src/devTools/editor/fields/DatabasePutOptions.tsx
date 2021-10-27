@@ -18,7 +18,7 @@
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { Schema } from "@/core";
+import { Schema, UUID } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { joinName } from "@/utils";
 import { partial } from "lodash";
@@ -28,6 +28,7 @@ import DatabaseCreateModal from "./DatabaseCreateModal";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { useField } from "formik";
 
 export const DATABASE_PUT_ID = validateRegistryId("@pixiebrix/data/put");
 
@@ -50,22 +51,32 @@ const DatabasePutOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
-  const [showModal, setShowModal] = useState(false);
-
   const configName = partial(joinName, name, configKey);
+  const databaseFieldName = configName("databaseId");
+
+  const [showModal, setShowModal] = useState(false);
+  const { setValue: setDatabaseId } = useField<UUID>(databaseFieldName)[2];
 
   const {
     databaseOptions,
     isLoading: isLoadingDatabaseOptions,
   } = useDatabaseOptions();
 
+  const onModalClose = () => {
+    setShowModal(false);
+  };
+
+  const onDatabaseCreated = (databaseId: UUID) => {
+    onModalClose();
+    setDatabaseId(databaseId);
+  };
+
   return (
     <div>
       {showModal && (
         <DatabaseCreateModal
-          onClose={() => {
-            setShowModal(false);
-          }}
+          onClose={onModalClose}
+          onDatabaseCreated={onDatabaseCreated}
         />
       )}
 
