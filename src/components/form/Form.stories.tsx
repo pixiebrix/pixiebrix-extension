@@ -178,7 +178,7 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       label="Select"
       description="Demonstration dropdown"
       as={SelectWidget}
-      blankValue={null}
+      defaultValue={2}
       options={selectOptions}
     />
     <ConnectedFieldTemplate

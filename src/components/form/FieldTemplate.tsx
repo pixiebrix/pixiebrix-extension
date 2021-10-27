@@ -27,6 +27,8 @@ import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchBut
 import styles from "./FieldTemplate.module.scss";
 import FormTheme from "@/components/form/FormTheme";
 import { getErrorMessage } from "@/errors";
+import { useAsyncEffect } from "use-async-effect";
+import { sleep } from "@/utils";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType
@@ -39,6 +41,7 @@ export type FieldProps<
     error?: string;
     touched?: boolean;
     blankValue?: unknown;
+    defaultValue?: unknown;
   };
 
 type WidgetElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -74,9 +77,26 @@ const RenderedField: React.FC<FieldProps> = ({
   children,
   blankValue = "",
   as: AsControl,
+  defaultValue,
+  onChange,
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
+
+  // Setting default value if needed
+  useAsyncEffect(async (isMounted) => {
+    await sleep(50);
+    if (!isMounted) {
+      return;
+    }
+
+    if (
+      typeof defaultValue !== "undefined" &&
+      (typeof value === "undefined" || value === null || value === blankValue)
+    ) {
+      onChange({ target: { value: defaultValue, name } });
+    }
+  }, []);
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
   const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
@@ -97,6 +117,7 @@ const RenderedField: React.FC<FieldProps> = ({
         isInvalid={isInvalid}
         value={nonUndefinedValue}
         as={AsControl}
+        onChange={onChange}
         {...restFieldProps}
       >
         {children}
@@ -107,6 +128,7 @@ const RenderedField: React.FC<FieldProps> = ({
         name={name}
         isInvalid={isInvalid}
         value={nonUndefinedValue}
+        onChange={onChange}
         {...restFieldProps}
       >
         {children}
