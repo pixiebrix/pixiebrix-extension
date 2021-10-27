@@ -30,9 +30,11 @@ import { useAsyncState } from "@/hooks/common";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { getType } from "@/blocks/util";
-import { partial } from "lodash";
+import { isEmpty, partial } from "lodash";
+import { BlockWindow } from "@/blocks/types";
 
 const DEFAULT_TEMPLATE_ENGINE_VALUE = "mustache";
+const DEFAULT_WINDOW_VALUE = "self";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
@@ -45,40 +47,57 @@ const BlockConfiguration: React.FunctionComponent<{
   const blockErrors = getIn(context.errors, name);
 
   const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
-  const [blockType] = useAsyncState(() => getType(block), [block]);
+  const [blockType] = useAsyncState(async () => getType(block), [block]);
 
   const [isRootAware] = useAsyncState(async () => block.isRootAware(), [block]);
 
   const templateEngineFieldName = configName("templateEngine");
-
-  const { value: templateEngineValue } = useField<TemplateEngine>(
+  const [{ value: templateEngineValue }] = useField<TemplateEngine>(
     templateEngineFieldName
-  )[0];
+  );
 
-  const templateEngineRef = useRef<HTMLDivElement>();
+  const ifFieldName = configName("if");
+  const [{ value: ifValue }] = useField<string>(ifFieldName);
 
-  const onClickTemplateEngineLink = () => {
-    if (templateEngineRef.current === undefined) {
-      return;
-    }
+  const windowFieldName = configName("window");
+  const [{ value: windowValue }] = useField<BlockWindow>(windowFieldName);
 
-    templateEngineRef.current.scrollIntoView({ behavior: "smooth" });
+  const advancedOptionsRef = useRef<HTMLDivElement>();
+
+  const scrollToAdvancedOptions = () => {
+    advancedOptionsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const customTemplateEngineSet =
+    templateEngineValue &&
+    templateEngineValue !== DEFAULT_TEMPLATE_ENGINE_VALUE;
+  const ifSet = !isEmpty(ifValue);
+  const customWindowSet = windowValue && windowValue !== DEFAULT_WINDOW_VALUE;
+  const advancedOptionsSet =
+    customTemplateEngineSet || ifSet || customWindowSet;
 
   return (
     <>
-      {templateEngineValue &&
-        templateEngineValue !== DEFAULT_TEMPLATE_ENGINE_VALUE && (
-          <div className={styles.advancedLinks}>
-            <Button
-              variant="link"
-              size="sm"
-              onClick={onClickTemplateEngineLink}
-            >
+      {advancedOptionsSet && (
+        <div className={styles.advancedLinks}>
+          {customTemplateEngineSet && (
+            <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
               {`Template Engine: ${templateEngineValue}`}
             </Button>
-          </div>
-        )}
+          )}
+          {ifSet && (
+            <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
+              {`Condition: ${ifValue}`}
+            </Button>
+          )}
+          {customWindowSet && (
+            <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
+              {`Target: ${windowValue}`}
+            </Button>
+          )}
+        </div>
+      )}
+
       <Card className={styles.card}>
         <Card.Header className={styles.cardHeader}>Input</Card.Header>
         <Card.Body>
@@ -104,7 +123,7 @@ const BlockConfiguration: React.FunctionComponent<{
         <Card.Header className={styles.cardHeader}>
           Advanced Options
         </Card.Header>
-        <Card.Body ref={templateEngineRef}>
+        <Card.Body ref={advancedOptionsRef}>
           <ConnectedFieldTemplate
             name={templateEngineFieldName}
             label="Template engine"
@@ -142,13 +161,10 @@ const BlockConfiguration: React.FunctionComponent<{
 
           {blockType !== "renderer" && (
             <>
-              <ConnectedFieldTemplate
-                name={configName("if")}
-                label="Condition"
-              />
+              <ConnectedFieldTemplate name={ifFieldName} label="Condition" />
 
               <ConnectedFieldTemplate
-                name={configName("window")}
+                name={windowFieldName}
                 label="Target"
                 as={SelectWidget}
                 options={[
