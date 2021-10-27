@@ -47,7 +47,6 @@ import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import {
-  BaseExtensionState,
   BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
@@ -74,7 +73,6 @@ export interface TriggerFormState extends BaseFormState {
       isAvailable: NormalizedAvailability;
     };
   };
-  extension: BaseExtensionState;
 }
 
 function fromNativeElement(

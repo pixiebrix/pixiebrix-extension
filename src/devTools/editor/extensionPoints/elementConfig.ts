@@ -22,7 +22,6 @@ import {
   Metadata,
   RegistryId,
   ServiceDependency,
-  TemplateEngine,
   UserOptions,
   UUID,
 } from "@/core";
@@ -30,11 +29,7 @@ import { FrameworkMeta } from "@/messaging/constants";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
-import {
-  BlockPipeline,
-  BlockWindow,
-  NormalizedAvailability,
-} from "@/blocks/types";
+import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import { Target } from "@/types";
 
 export type ElementType =
@@ -64,12 +59,11 @@ export interface BaseExtensionPointState {
 
 export interface BaseExtensionState {
   blockPipeline: BlockPipeline;
-  templateEngine?: TemplateEngine;
-  window?: BlockWindow;
-  if?: string;
 }
 
-export interface BaseFormState {
+export interface BaseFormState<
+  TExtension extends BaseExtensionState = BaseExtensionState
+> {
   /**
    * The apiVersion of the brick definition, controlling how PixieBrix interprets brick definitions
    * @see ApiVersion
@@ -114,6 +108,8 @@ export interface BaseFormState {
   services: ServiceDependency[];
 
   extensionPoint: BaseExtensionPointState;
+
+  extension: TExtension;
 }
 
 /**

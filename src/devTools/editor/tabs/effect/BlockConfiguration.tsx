@@ -31,7 +31,7 @@ import { FormState } from "@/devTools/editor/slices/editorSlice";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { getType } from "@/blocks/util";
 import { isEmpty, partial } from "lodash";
-import { BlockWindow } from "@/blocks/types";
+import { BlockIf, BlockWindow } from "@/blocks/types";
 
 const DEFAULT_TEMPLATE_ENGINE_VALUE = "mustache";
 const DEFAULT_WINDOW_VALUE = "self";
@@ -57,7 +57,7 @@ const BlockConfiguration: React.FunctionComponent<{
   );
 
   const ifFieldName = configName("if");
-  const [{ value: ifValue }] = useField<string>(ifFieldName);
+  const [{ value: ifValue }] = useField<BlockIf>(ifFieldName);
 
   const windowFieldName = configName("window");
   const [{ value: windowValue }] = useField<BlockWindow>(windowFieldName);

@@ -46,6 +46,8 @@ export type ReaderConfig =
 
 export type BlockWindow = "self" | "opener" | "target" | "broadcast" | "remote";
 
+export type BlockIf = string | boolean | number | Expression;
+
 /**
  * Where to execute the brick
  * - self: the current tab
@@ -117,7 +119,7 @@ export type BlockConfig = {
    * (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
    * provided, the step is run unconditionally.
    */
-  if?: string | boolean | number | Expression;
+  if?: BlockIf;
 
   /**
    * (Optional) whether the block should inherit the current root element, or if it should use the document

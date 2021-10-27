@@ -63,7 +63,11 @@ const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
-export interface ContextMenuFormState extends BaseFormState {
+type Extension = BaseExtensionState & {
+  title: string;
+};
+
+export interface ContextMenuFormState extends BaseFormState<Extension> {
   type: "contextMenu";
 
   extensionPoint: {
@@ -75,10 +79,6 @@ export interface ContextMenuFormState extends BaseFormState {
       reader: SingleLayerReaderConfig;
       isAvailable: NormalizedAvailability;
     };
-  };
-
-  extension: BaseExtensionState & {
-    title: string;
   };
 }
 

@@ -71,7 +71,13 @@ export type PanelTraits = {
   };
 };
 
-export interface PanelFormState extends BaseFormState {
+type Extension = BaseExtensionState & {
+  heading: string;
+  collapsible?: boolean;
+  shadowDOM?: boolean;
+};
+
+export interface PanelFormState extends BaseFormState<Extension> {
   type: "panel";
 
   containerInfo: ElementInfo;
@@ -86,12 +92,6 @@ export interface PanelFormState extends BaseFormState {
       isAvailable: NormalizedAvailability;
     };
     traits: PanelTraits;
-  };
-
-  extension: BaseExtensionState & {
-    heading: string;
-    collapsible?: boolean;
-    shadowDOM?: boolean;
   };
 }
 

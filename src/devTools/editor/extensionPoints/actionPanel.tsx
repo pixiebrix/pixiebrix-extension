@@ -59,7 +59,11 @@ const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
-export interface ActionPanelFormState extends BaseFormState {
+type Extension = BaseExtensionState & {
+  heading: string;
+};
+
+export interface ActionPanelFormState extends BaseFormState<Extension> {
   type: "actionPanel";
 
   extension: BaseExtensionState & {

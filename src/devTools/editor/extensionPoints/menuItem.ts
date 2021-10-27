@@ -66,7 +66,13 @@ const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
-export interface ActionFormState extends BaseFormState {
+type Extension = BaseExtensionState & {
+  caption: string;
+  dynamicCaption?: boolean;
+  icon?: IconConfig;
+};
+
+export interface ActionFormState extends BaseFormState<Extension> {
   type: "menuItem";
 
   containerInfo: ElementInfo;
@@ -85,12 +91,6 @@ export interface ActionFormState extends BaseFormState {
         mode: "default" | "inherit";
       };
     };
-  };
-
-  extension: BaseExtensionState & {
-    caption: string;
-    dynamicCaption?: boolean;
-    icon?: IconConfig;
   };
 }
 
