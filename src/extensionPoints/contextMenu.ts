@@ -46,7 +46,7 @@ import {
 } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
-import { Manifest } from "webextension-polyfill-ts/lib/manifest";
+import { Manifest } from "webextension-polyfill";
 import { getCommonAncestor } from "@/nativeEditor/infer";
 import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";

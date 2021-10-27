@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser, { Tabs } from "webextension-polyfill";
+import browser, { Tabs, Windows } from "webextension-polyfill";
 import { isFirefox } from "webext-detect-page";
 
 const POPUP_WIDTH_PX = 400; // Makes the native prompt appear centered
@@ -44,7 +44,7 @@ async function openTab(url: string, openerTabId: number): Promise<Tabs.Tab> {
 
 async function openPopup(
   url: string,
-  opener: browser.windows.Window
+  opener: Windows.Window
 ): Promise<Tabs.Tab> {
   // `top` and `left are ignored in .create on Firefox, but attempt anyway.
   // If present, the popup will be centered on screen rather than on the window.
@@ -66,7 +66,7 @@ async function openPopup(
  * Return true if popups are expected to work properly for the user agent / operating system.
  */
 async function detectPopupSupport(
-  currentWindow: browser.windows.Window
+  currentWindow: Windows.Window
 ): Promise<boolean> {
   // Firefox on Mac seems to be unable to handle popups in fullscreen mode, changing the macOS "space"
   // back to the desktop

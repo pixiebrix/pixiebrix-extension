@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Mock for "webextension-polyfill-ts"
+// Mock for "webextension-polyfill"
 
 import type { Browser } from "webextension-polyfill";
 
-export const browser: Partial<Browser> = {};
+const browser: Partial<Browser> = {};
+
+export default browser;

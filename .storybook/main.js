@@ -39,7 +39,7 @@ module.exports = {
       "@contrib": path.resolve(rootDir, "contrib"),
       "@schemas": path.resolve(rootDir, "schemas"),
       vendors: path.resolve(rootDir, "src/vendors"),
-      "webextension-polyfill-ts": path.resolve(
+      "webextension-polyfil": path.resolve(
         rootDir,
         "src/__mocks__/browserMocks.ts"
       ),

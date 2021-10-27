@@ -18,7 +18,7 @@
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
-import browser from "webextension-polyfill";
+import browser, { Tabs } from "webextension-polyfill";
 import { safeParseUrl, sleep } from "@/utils";
 import { JsonObject, JsonValue } from "type-fest";
 import { getErrorMessage } from "@/errors";
@@ -54,7 +54,7 @@ const tabNonces = new Map<number, string | void>();
 const tabFrames = new Map<number, number>();
 
 const webstores = ["chrome.google.com", "addons.mozilla.org"];
-async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
+async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   const { protocol, hostname } = safeParseUrl(tab.url);
   if (webstores.includes(hostname)) {
     void showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE_WEBSTORE", tab.index);
