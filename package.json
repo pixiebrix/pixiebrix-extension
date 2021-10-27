@@ -239,6 +239,7 @@
     "type-fest": "^2.0.0",
     "typescript": "^4.3.5",
     "typescript-plugin-css-modules": "^3.4.0",
+    "webext-dynamic-content-scripts": "^8.0.1-0",
     "webpack": "^5.46.0",
     "webpack-build-notifier": "^2.3.0",
     "webpack-bundle-analyzer": "^4.4.2",
