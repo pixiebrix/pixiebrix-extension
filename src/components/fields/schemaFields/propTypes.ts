@@ -21,9 +21,7 @@ import React from "react";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html
 
-export type FieldComponent<T = unknown> = React.FunctionComponent<
-  SchemaFieldProps<T>
->;
+export type SchemaFieldComponent = React.FunctionComponent<SchemaFieldProps>;
 
 export const schemaPropTypes = {
   type: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
@@ -32,8 +30,10 @@ export const schemaPropTypes = {
   enum: PropTypes.array,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO: Use the generic or drop it from FieldProps usage
-export interface SchemaFieldProps<TValue> {
+export interface SchemaFieldProps {
+  /**
+   * The field name; generally used to identify this field in the form state
+   */
   name: string;
 
   /**

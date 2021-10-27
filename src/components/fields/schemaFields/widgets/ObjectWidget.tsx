@@ -190,7 +190,7 @@ export function getPropertyRow(
 
 type ObjectValue = Record<string, unknown>;
 
-const ObjectWidget: React.FC<SchemaFieldProps<unknown>> = (props) => {
+const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
   const { name, schema } = props;
 
   // Allow additional properties for empty schema (empty schema allows shape)

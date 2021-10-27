@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import React from "react";
+import { Form } from "react-bootstrap";
 
-const UnsupportedWidget: React.FC<SchemaFieldProps> = ({ schema }) => (
-  <div>Unsupported field type: {schema.type ?? "No type found"}</div>
-);
+const IntegerWidget: React.FC = () => <Form.Control type="number" step="1" />;
 
-export default UnsupportedWidget;
+export default IntegerWidget;
