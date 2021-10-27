@@ -50,8 +50,6 @@ import {
   SERVICE_FIELD_REFS,
 } from "@/services/serviceUtils";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { UnknownObject } from "@/types";
-import { BlockPipeline } from "@/blocks/types";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
@@ -112,11 +110,7 @@ function lookupAuthId(
 }
 
 function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
-  const extensionConfig = state.extension as UnknownObject;
-
-  const pipeline = castArray(
-    extensionConfig.blockPipeline ?? []
-  ) as BlockPipeline;
+  const pipeline = castArray(state.extension.blockPipeline ?? []);
   const identifiers = pipeline.flatMap((blockConfig) => {
     const values = Object.values(blockConfig.config).filter(
       (x) => typeof x === "string"
