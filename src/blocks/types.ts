@@ -44,6 +44,8 @@ export type ReaderConfig =
   | { [key: string]: ReaderConfig }
   | ReaderConfig[];
 
+export type BlockWindow = "self" | "opener" | "target" | "broadcast" | "remote";
+
 /**
  * Where to execute the brick
  * - self: the current tab

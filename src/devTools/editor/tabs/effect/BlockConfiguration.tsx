@@ -29,6 +29,8 @@ import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
+import { getType } from "@/blocks/util";
+import { partial } from "lodash";
 
 const DEFAULT_TEMPLATE_ENGINE_VALUE = "mustache";
 
@@ -36,15 +38,18 @@ const BlockConfiguration: React.FunctionComponent<{
   name: string;
   blockId: RegistryId;
 }> = ({ name, blockId }) => {
+  const configName = partial(joinName, name);
+
   const context = useFormikContext<FormState>();
 
   const blockErrors = getIn(context.errors, name);
 
   const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
+  const [blockType] = useAsyncState(() => getType(block), [block]);
 
   const [isRootAware] = useAsyncState(async () => block.isRootAware(), [block]);
 
-  const templateEngineFieldName = joinName(name, "templateEngine");
+  const templateEngineFieldName = configName("templateEngine");
 
   const { value: templateEngineValue } = useField<TemplateEngine>(
     templateEngineFieldName
@@ -122,7 +127,7 @@ const BlockConfiguration: React.FunctionComponent<{
             // event through for the reader root
             isRootAware && context.values.type === "trigger" && (
               <ConnectedFieldTemplate
-                name={joinName(name, "rootMode")}
+                name={configName("rootMode")}
                 label="Root Mode"
                 as={SelectWidget}
                 options={[
@@ -134,6 +139,29 @@ const BlockConfiguration: React.FunctionComponent<{
               />
             )
           }
+
+          {blockType !== "renderer" && (
+            <>
+              <ConnectedFieldTemplate
+                name={configName("if")}
+                label="Condition"
+              />
+
+              <ConnectedFieldTemplate
+                name={configName("window")}
+                label="Target"
+                as={SelectWidget}
+                options={[
+                  { label: "Self", value: "self" },
+                  { label: "Opener", value: "opener" },
+                  { label: "Target", value: "target" },
+                  { label: "Broadcast", value: "broadcast" },
+                  { label: "Remote", value: "remote" },
+                ]}
+                description={<p>Select where to execute the brick.</p>}
+              />
+            </>
+          )}
         </Card.Body>
       </Card>
     </>

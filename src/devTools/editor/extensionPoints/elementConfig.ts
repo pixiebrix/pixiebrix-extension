@@ -22,6 +22,7 @@ import {
   Metadata,
   RegistryId,
   ServiceDependency,
+  TemplateEngine,
   UserOptions,
   UUID,
 } from "@/core";
@@ -29,7 +30,11 @@ import { FrameworkMeta } from "@/messaging/constants";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import {
+  BlockPipeline,
+  BlockWindow,
+  NormalizedAvailability,
+} from "@/blocks/types";
 import { Target } from "@/types";
 
 export type ElementType =
@@ -59,6 +64,9 @@ export interface BaseExtensionPointState {
 
 export interface BaseExtensionState {
   blockPipeline: BlockPipeline;
+  templateEngine?: TemplateEngine;
+  window?: BlockWindow;
+  if?: string;
 }
 
 export interface BaseFormState {
