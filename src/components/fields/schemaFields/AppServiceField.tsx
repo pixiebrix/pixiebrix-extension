@@ -67,7 +67,7 @@ const AppServiceField: React.FunctionComponent<SchemaFieldProps<unknown>> = ({
                 id: PIXIEBRIX_SERVICE_ID,
                 // XXX: in practice it the pixiebrix outputKey won't be used by any other service. However, we might
                 // consider using fresh identifier here to eliminate the possibility of colliding with a different
-                // service that is somehow using the @pixiebrix ky
+                // service that is somehow already using the @pixiebrix key
                 outputKey: PIXIEBRIX_OUTPUT_KEY,
                 // PixieBrix service does not use an ID -- the auth is automatically handled based on the logged in user
                 config: null,

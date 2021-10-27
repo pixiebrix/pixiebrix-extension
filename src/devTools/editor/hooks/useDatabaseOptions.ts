@@ -37,7 +37,7 @@ const useDatabaseOptions = () => {
             const organization = organizations.find(
               (o) => o.id === db.organization_id
             );
-            const dbName = `${db.name} - ${organization?.name || "Private"}`;
+            const dbName = `${db.name} - ${organization?.name ?? "Private"}`;
 
             return {
               label: dbName,

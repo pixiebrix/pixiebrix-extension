@@ -80,8 +80,9 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
     >);
   };
 
+  // Pass null instead of undefined if options is not defined
   const selectValue =
-    options?.find((option: TOption) => value === option.value) || null;
+    options?.find((option: TOption) => value === option.value) ?? null;
 
   return (
     <Select

@@ -21,14 +21,13 @@ import { appApi } from "@/services/api";
 import { validateUUID } from "@/types/helpers";
 import { useField } from "formik";
 import React, { useEffect } from "react";
+import { UUID } from "@/core";
 
 const groupIdFieldName = "groupId";
 
 const DatabaseGroupSelect = () => {
-  const [{ value: selectedOrganizationId }] = useField<string>(
-    "organizationId"
-  );
-  const groupField = useField<string>(groupIdFieldName);
+  const [{ value: selectedOrganizationId }] = useField<UUID>("organizationId");
+  const groupField = useField<UUID>(groupIdFieldName);
   const { setValue: setGroupId } = groupField[2];
 
   const [
@@ -40,7 +39,7 @@ const DatabaseGroupSelect = () => {
       loadOrganizationGroups(selectedOrganizationId, true);
     }
 
-    setGroupId("", false);
+    setGroupId("" as UUID, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- not including setGroupId, it's guaranteed to work
   }, [loadOrganizationGroups, selectedOrganizationId]);
 
@@ -62,7 +61,7 @@ const DatabaseGroupSelect = () => {
       as={SelectWidget}
       options={groupOptions}
       disabled={!selectedOrganizationId}
-      description="Select a group you belong to when creating a shared team Database."
+      description="A group to assign to the database. You can assign additional groups in the Admin Console. You must be a member of the group for it to appear in the Database selection dropdown"
     />
   );
 };

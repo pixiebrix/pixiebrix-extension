@@ -36,19 +36,20 @@ type DatabaseCreateModalProps = {
 };
 
 type DatabaseConfig = {
+  /**
+   * The name of the database, unique per Organization/AppUser
+   */
   name: string;
 
   /**
-   * Id of a Team for shared DB.
-   * Blank for a Personal DB
+   * UUID of an Organization for a shared DB, or null/empty for a personal DB.
    */
-  organizationId: string;
+  organizationId: string | null;
 
   /**
-   * Id of a Group for shared DB.
-   * Blank for a Personal DB
+   * UUID of a Group for a shared DB, or null/empty for a personal DB.
    */
-  groupId: string;
+  groupId: string | null;
 };
 
 const DatabaseSchema: yup.ObjectSchema<DatabaseConfig> = yup.object().shape({
