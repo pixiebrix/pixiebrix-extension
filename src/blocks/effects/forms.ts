@@ -25,7 +25,7 @@ interface setValueData {
   $input: JQuery;
   value: unknown;
   dispatchEvent?: boolean;
-  logger?: Logger;
+  logger: Logger;
 }
 /**
  * Set the value of an input, doing the right thing for check boxes, etc.
@@ -176,7 +176,7 @@ export class FormFill extends Effect {
         logger.warn(`No input ${name} exists in the form`);
       }
 
-      setValue({ $input, value, dispatchEvent: true });
+      setValue({ $input, value, logger, dispatchEvent: true });
     }
 
     for (const [selector, value] of Object.entries(fieldSelectors)) {
@@ -187,7 +187,7 @@ export class FormFill extends Effect {
         );
       }
 
-      setValue({ $input, value, dispatchEvent: true });
+      setValue({ $input, value, logger, dispatchEvent: true });
     }
 
     if (typeof submit === "boolean") {
