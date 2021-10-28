@@ -85,11 +85,11 @@ function defaultOutputKey(
   ) as OutputKey;
 }
 
-function keyToFieldValue(key: OutputKey): ServiceKeyVar {
+export function keyToFieldValue(key: OutputKey): ServiceKeyVar {
   return key == null ? null : (`@${key}` as ServiceKeyVar);
 }
 
-type ServiceSlice = Pick<FormState, "services" | "extension">;
+export type ServiceSlice = Pick<FormState, "services" | "extension">;
 
 /**
  * Return the auth id corresponding to a service variable usage
