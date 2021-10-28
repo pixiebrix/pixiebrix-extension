@@ -21,12 +21,12 @@ import { boolean } from "@/utils";
 import { BusinessError } from "@/errors";
 import { requireSingleElement } from "@/nativeEditor/utils";
 
-interface setValueData {
+type SetValueData = {
   $input: JQuery;
   value: unknown;
   dispatchEvent?: boolean;
   logger: Logger;
-}
+};
 /**
  * Set the value of an input, doing the right thing for check boxes, etc.
  */
@@ -35,7 +35,7 @@ function setValue({
   value,
   logger,
   dispatchEvent = true,
-}: setValueData) {
+}: SetValueData) {
   for (const field of $input) {
     if (field.isContentEditable) {
       field.textContent = String(value);
@@ -182,6 +182,7 @@ export class FormFill extends Effect {
     }
 
     for (const [selector, value] of Object.entries(fieldSelectors)) {
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
       const $input = $form.find(selector);
       if ($input.length === 0) {
         logger.warn(
