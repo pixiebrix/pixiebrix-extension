@@ -18,7 +18,7 @@
 
 import { loadOptions, saveOptions } from "@/options/loader";
 import { Deployment } from "@/types/contract";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { partition, uniqBy } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import { getExtensionVersion, getUID } from "@/background/telemetry";

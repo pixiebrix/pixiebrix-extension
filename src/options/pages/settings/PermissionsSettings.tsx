@@ -18,7 +18,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useToasts } from "react-toast-notifications";
 import { getAdditionalPermissions } from "webext-additional-permissions";
-import { browser, Manifest } from "webextension-polyfill-ts";
+import browser, { Manifest } from "webextension-polyfill";
 import { sortBy } from "lodash";
 import { useAsyncEffect } from "use-async-effect";
 import { Button, Card, ListGroup } from "react-bootstrap";

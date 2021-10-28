@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 
 // https://webpack.js.org/guides/public-path/#on-the-fly
 __webpack_public_path__ = browser.runtime.getURL("/");

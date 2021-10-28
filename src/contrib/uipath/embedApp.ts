@@ -19,7 +19,7 @@ import { Renderer, UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import { browser, Permissions } from "webextension-polyfill-ts";
+import browser, { Permissions } from "webextension-polyfill";
 import { executeForNonce } from "@/background/executor";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 

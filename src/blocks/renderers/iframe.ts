@@ -17,7 +17,7 @@
 
 import { Renderer } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 
 export class IFrameRenderer extends Renderer {
   constructor() {

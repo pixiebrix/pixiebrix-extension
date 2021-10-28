@@ -17,7 +17,7 @@
  */
 
 import { liftBackground } from "@/background/protocol";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { handleNavigate, reactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/util";
 

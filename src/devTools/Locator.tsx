@@ -20,7 +20,7 @@ import { useAsyncState } from "@/hooks/common";
 import { InputGroup, Form, Table } from "react-bootstrap";
 import { useDebounce } from "use-debounce";
 import GridLoader from "react-spinners/GridLoader";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { useAsyncEffect } from "use-async-effect";
 import { isEmpty } from "lodash";
 import { thisTab } from "@/devTools/utils";

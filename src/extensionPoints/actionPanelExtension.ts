@@ -30,7 +30,7 @@ import {
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/blocks/available";
 import { notifyError } from "@/contentScript/notify";
 import {

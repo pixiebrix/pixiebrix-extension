@@ -17,7 +17,7 @@
 
 import React, { useState, useCallback } from "react";
 import pTimeout from "p-timeout";
-import { browser, Runtime } from "webextension-polyfill-ts";
+import browser, { Runtime } from "webextension-polyfill";
 import { connectDevtools } from "@/devTools/protocol";
 import {
   checkTargetPermissions,

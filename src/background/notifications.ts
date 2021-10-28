@@ -16,7 +16,7 @@
  */
 
 import { liftBackground } from "@/background/protocol";
-import { browser, Notifications } from "webextension-polyfill-ts";
+import browser, { Notifications } from "webextension-polyfill";
 
 export const createNotification = liftBackground(
   "CREATE_NOTIFICATION",

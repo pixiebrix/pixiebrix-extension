@@ -51,7 +51,7 @@ import {
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { Menus } from "webextension-polyfill-ts";
+import { Menus } from "webextension-polyfill";
 import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";

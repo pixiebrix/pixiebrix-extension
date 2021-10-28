@@ -44,7 +44,7 @@ import {
 } from "@/extensionPoints/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { PanelComponent, render } from "@/extensionPoints/dom";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import { notifyError } from "@/contentScript/notify";
 import getSvgIcon from "@/icons/getSvgIcon";

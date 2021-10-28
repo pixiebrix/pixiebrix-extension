@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser, Runtime } from "webextension-polyfill-ts";
+import browser, { Runtime } from "webextension-polyfill";
 import { registerPort } from "@/background/devtools";
 import { PORT_NAME } from "@/background/devtools/contract";
 import { installPortListeners } from "@/background/devtools/external";

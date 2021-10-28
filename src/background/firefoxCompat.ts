@@ -17,12 +17,12 @@
  */
 
 import { isFirefox } from "webext-detect-page";
-import { browser } from "webextension-polyfill-ts";
+import browser, { Menus } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 
 const FIREFOX_OPTIONS_MENU_ID = "PIXIEBRIX_FIREFOX_OPTIONS";
 
-function onContextMenuClick({ menuItemId }: browser.contextMenus.OnClickData) {
+function onContextMenuClick({ menuItemId }: Menus.OnClickData) {
   if (menuItemId === FIREFOX_OPTIONS_MENU_ID) {
     void browser.runtime.openOptionsPage();
   }
