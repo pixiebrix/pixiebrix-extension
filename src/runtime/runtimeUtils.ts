@@ -73,7 +73,7 @@ export async function throwIfInvalidInput(
 }
 
 /**
- * Log an error `output` doesn't match the blocks outputSchema
+ * Log an error if `output` doesn't match the blocks outputSchema
  */
 export async function logIfInvalidOutput(
   block: IBlock,

@@ -95,7 +95,7 @@ export class TableRenderer extends Renderer {
           row[href]
         : null;
 
-      return typeof anchorHref === "string" && isNullOrBlank(anchorHref)
+      return typeof anchorHref === "string" && !isNullOrBlank(anchorHref)
         ? `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${String(
             value
           )}</a>`

@@ -131,7 +131,7 @@ class ExternalBlock extends Block {
 
     const initialValues: InitialValues = {
       input: arg,
-      // OptionsArgs are set at the blueprint level. For composite bricks, they options should be passed in
+      // OptionsArgs are set at the blueprint level. For composite bricks, the options should be passed in
       // at part of the brick inputs
       optionsArgs: undefined,
       // Services are passed as inputs to the brick
