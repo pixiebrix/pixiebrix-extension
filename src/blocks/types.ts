@@ -44,10 +44,6 @@ export type ReaderConfig =
   | { [key: string]: ReaderConfig }
   | ReaderConfig[];
 
-export type BlockWindow = "self" | "opener" | "target" | "broadcast" | "remote";
-
-export type BlockIf = string | boolean | number | Expression;
-
 /**
  * Where to execute the brick
  * - self: the current tab
@@ -57,6 +53,11 @@ export type BlockIf = string | boolean | number | Expression;
  * - remote: the server (currently only support identity, get, and http bricks)
  */
 export type BlockWindow = "self" | "opener" | "target" | "broadcast" | "remote";
+
+/**
+ * Condition expression written in templateEngine for deciding if the step should be run.
+ */
+export type BlockIf = string | boolean | number | Expression;
 
 /**
  * A block configuration to be executed by the PixieBrix runtime.
