@@ -26,6 +26,7 @@ import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage } from "@/errors";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
+import { BlockArg } from "@/core";
 
 registerContribBlocks();
 registerBuiltinBlocks();
@@ -65,7 +66,7 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
     const { blockId, ctxt, args } = panel.payload;
     console.debug("Render panel body", panel.payload);
     const block = await blockRegistry.lookup(blockId);
-    const body = await block.run(args, {
+    const body = await block.run(args as BlockArg, {
       ctxt,
       root: null,
       logger: new ConsoleLogger(),

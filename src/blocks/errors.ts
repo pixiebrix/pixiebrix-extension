@@ -49,8 +49,8 @@ export class HeadlessModeError extends Error {
 
   constructor(
     blockId: RegistryId,
-    args: unknown,
-    ctxt: unknown,
+    args: unknown, // BlockArg
+    ctxt: unknown, // BlockArgsContext
     loggerContext: MessageContext
   ) {
     super(`${blockId} is a renderer`);

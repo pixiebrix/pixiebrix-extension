@@ -17,8 +17,11 @@
 
 import { IBlock, IService, RegistryId, Schema } from "@/core";
 import { UnknownObject } from "@/types";
-import { mapValues, pickBy } from "lodash";
+import { castArray, mapValues, pickBy } from "lodash";
 import { removeUndefined } from "@/utils";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { PipelineConfigurationError } from "@/blocks/errors";
+import blockRegistry from "@/blocks/registry";
 
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 
@@ -78,4 +81,22 @@ export function defaultBlockConfig(schema: Schema): UnknownObject {
   }
 
   return {};
+}
+
+/** Return block definitions for all blocks referenced in a pipeline */
+export async function blockList(
+  config: BlockConfig | BlockPipeline
+): Promise<IBlock[]> {
+  return Promise.all(
+    castArray(config).map(async ({ id }) => {
+      if (id == null) {
+        throw new PipelineConfigurationError(
+          "Pipeline stage is missing a block id",
+          config
+        );
+      }
+
+      return blockRegistry.lookup(id);
+    })
+  );
 }

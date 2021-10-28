@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReadProxy } from "@/utils";
+import { ReadProxy } from "@/runtime/pathHelpers";
 
 type ComponentData = Record<string, unknown>;
 

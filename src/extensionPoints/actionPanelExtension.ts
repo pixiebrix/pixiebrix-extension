@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  apiVersionOptions,
-  blockList,
-  makeServiceContext,
-  mergeReaders,
-  reducePipeline,
-} from "@/blocks/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { ExtensionPoint } from "@/types";
 import {
   IBlock,
@@ -57,6 +51,10 @@ import { HeadlessModeError } from "@/blocks/errors";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { cloneDeep } from "lodash";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { blockList } from "@/blocks/util";
+import { makeServiceContext } from "@/services/serviceUtils";
+import { mergeReaders } from "@/blocks/readers/readerUtils";
 
 export type ActionPanelConfig = {
   heading: string;
@@ -130,12 +128,17 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
     updateHeading(extension.id, heading);
 
+    const initialValues: InitialValues = {
+      input: readerContext,
+      optionsArgs: extension.optionsArgs,
+      root: document,
+      serviceContext,
+    };
+
     try {
-      await reducePipeline(body, readerContext, extensionLogger, document, {
-        validate: true,
-        serviceArgs: serviceContext,
-        optionsArgs: extension.optionsArgs,
+      await reducePipeline(body, initialValues, {
         headless: true,
+        logger: extensionLogger,
         ...apiVersionOptions(extension.apiVersion),
       });
       // We're expecting a HeadlessModeError (or other error) to be thrown in the line above

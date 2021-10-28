@@ -16,13 +16,7 @@
  */
 
 import { ExtensionPoint } from "@/types";
-import {
-  apiVersionOptions,
-  blockList,
-  makeServiceContext,
-  mergeReaders,
-  reducePipeline,
-} from "@/blocks/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import {
   IBlock,
   ResolvedExtension,
@@ -51,6 +45,10 @@ import { notifyError } from "@/contentScript/notify";
 import JQuery from "jquery";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { blockList } from "@/blocks/util";
+import { makeServiceContext } from "@/services/serviceUtils";
+import { mergeReaders } from "@/blocks/readers/readerUtils";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -135,13 +133,16 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     const { action: actionConfig } = extension.config;
 
-    const serviceContext = await makeServiceContext(extension.services);
+    const initialValues: InitialValues = {
+      input: ctxt,
+      root,
+      serviceContext: await makeServiceContext(extension.services),
+      optionsArgs: extension.optionsArgs,
+    };
 
     try {
-      await reducePipeline(actionConfig, ctxt, extensionLogger, root, {
-        validate: true,
-        serviceArgs: serviceContext,
-        optionsArgs: extension.optionsArgs,
+      await reducePipeline(actionConfig, initialValues, {
+        logger: extensionLogger,
         ...apiVersionOptions(extension.apiVersion),
       });
       extensionLogger.info("Successfully ran trigger");

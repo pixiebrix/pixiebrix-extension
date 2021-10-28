@@ -327,7 +327,7 @@ export abstract class Reader extends Block implements IReader {
 
   abstract read(root: HTMLElement | Document): Promise<ReaderOutput>;
 
-  async run({ root }: { root: HTMLElement | Document }): Promise<ReaderOutput> {
+  async run({ root }: BlockArg): Promise<ReaderOutput> {
     return this.read(root);
   }
 }

@@ -21,13 +21,7 @@ import Mustache from "mustache";
 import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, cloneDeep } from "lodash";
-import {
-  reducePipeline,
-  mergeReaders,
-  blockList,
-  makeServiceContext,
-  apiVersionOptions,
-} from "@/blocks/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { boolean } from "@/utils";
 import {
   awaitElementOnce,
@@ -56,6 +50,10 @@ import { notifyError } from "@/contentScript/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { blockList } from "@/blocks/util";
+import { makeServiceContext } from "@/services/serviceUtils";
+import { mergeReaders } from "@/blocks/readers/readerUtils";
 
 export type PanelConfig = {
   heading?: string;
@@ -374,18 +372,18 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const installBody = async () => {
       if (!isBodyInstalled) {
         isBodyInstalled = true;
-        const rendererPromise = reducePipeline(
-          body,
-          readerContext,
-          extensionLogger,
-          document,
-          {
-            validate: true,
-            serviceArgs: serviceContext,
-            optionsArgs: extension.optionsArgs,
-            ...apiVersionOptions(extension.apiVersion),
-          }
-        ) as Promise<PanelComponent>;
+
+        const initialValues: InitialValues = {
+          input: extension.optionsArgs,
+          optionsArgs: extension.optionsArgs,
+          serviceContext,
+          root: document,
+        };
+
+        const rendererPromise = reducePipeline(body, initialValues, {
+          logger: extensionLogger,
+          ...apiVersionOptions(extension.apiVersion),
+        }) as Promise<PanelComponent>;
 
         try {
           const bodyOrComponent = await errorBoundary(

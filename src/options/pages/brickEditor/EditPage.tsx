@@ -25,7 +25,6 @@ import Editor from "./Editor";
 import { truncate } from "lodash";
 import GridLoader from "react-spinners/GridLoader";
 import useSubmitBrick from "./useSubmitBrick";
-import yaml from "js-yaml";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import "./EditPage.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,6 +35,7 @@ import { HotKeys } from "react-hotkeys";
 import { workshopSlice } from "@/options/slices";
 import useLogContext from "@/options/pages/brickEditor/useLogContext";
 import useFetch from "@/hooks/useFetch";
+import { loadBrickYaml } from "@/runtime/brickYaml";
 
 const { touchBrick } = workshopSlice.actions;
 
@@ -60,7 +60,7 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
       return { isBlueprint: false, isInstalled: false, config: undefined };
     }
 
-    const configJSON = yaml.load(config) as RawConfig;
+    const configJSON = loadBrickYaml(config) as RawConfig;
     const isBlueprint = configJSON.kind === "recipe";
     if (isBlueprint) {
       return {
