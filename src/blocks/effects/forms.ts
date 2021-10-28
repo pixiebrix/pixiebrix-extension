@@ -16,30 +16,62 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { BlockArg, BlockOptions, Logger, Schema } from "@/core";
 import { boolean } from "@/utils";
 import { BusinessError } from "@/errors";
 import { requireSingleElement } from "@/nativeEditor/utils";
 
+type SetValueData = {
+  $input: JQuery;
+  value: unknown;
+  dispatchEvent?: boolean;
+  logger: Logger;
+};
 /**
  * Set the value of an input, doing the right thing for check boxes, etc.
  */
-function setValue(
-  $input: JQuery,
-  value: unknown,
-  { dispatchEvent = true }: { dispatchEvent?: boolean } = {}
-) {
-  if ($input.is(":radio") || $input.is(":checkbox")) {
-    $input.prop("checked", boolean(value));
-  } else {
-    $input.val(String(value));
-  }
+function setValue({
+  $input,
+  value,
+  logger,
+  dispatchEvent = true,
+}: SetValueData) {
+  for (const field of $input) {
+    if (field.isContentEditable) {
+      field.textContent = String(value);
+      if (dispatchEvent) {
+        field.dispatchEvent(new InputEvent("input", { bubbles: true }));
+      }
 
-  if (dispatchEvent) {
-    $input.each(function () {
-      const event = new Event("change", { bubbles: true });
-      this.dispatchEvent(event);
-    });
+      continue;
+    }
+
+    if (
+      !(
+        field instanceof HTMLInputElement ||
+        field instanceof HTMLTextAreaElement
+      )
+    ) {
+      logger.warn(
+        "The selected element is not an input field nor an editable element",
+        { field }
+      );
+      continue;
+    }
+
+    if (
+      field instanceof HTMLInputElement &&
+      ["radio", "checkbox"].includes(field.type)
+    ) {
+      field.checked = boolean(value);
+    } else {
+      $(field).val(String(value));
+    }
+
+    if (dispatchEvent) {
+      field.dispatchEvent(new Event("change", { bubbles: true }));
+      field.dispatchEvent(new InputEvent("input", { bubbles: true }));
+    }
   }
 }
 
@@ -90,7 +122,7 @@ export class SetInputValue extends Effect {
       if ($input.length === 0) {
         logger.warn(`Could not find input for selector: ${selector}`);
       } else {
-        setValue($input, value, { dispatchEvent: true });
+        setValue({ $input, value, logger, dispatchEvent: true });
       }
     }
   }
@@ -146,10 +178,11 @@ export class FormFill extends Effect {
         logger.warn(`No input ${name} exists in the form`);
       }
 
-      setValue($input, value, { dispatchEvent: true });
+      setValue({ $input, value, logger, dispatchEvent: true });
     }
 
     for (const [selector, value] of Object.entries(fieldSelectors)) {
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
       const $input = $form.find(selector);
       if ($input.length === 0) {
         logger.warn(
@@ -157,7 +190,7 @@ export class FormFill extends Effect {
         );
       }
 
-      setValue($input, value, { dispatchEvent: true });
+      setValue({ $input, value, logger, dispatchEvent: true });
     }
 
     if (typeof submit === "boolean") {
