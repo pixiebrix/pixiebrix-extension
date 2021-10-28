@@ -22,7 +22,7 @@ import {
   SerializableResponse,
   toErrorResponse,
 } from "@/messaging/protocol";
-import { browser, Runtime, WebNavigation } from "webextension-polyfill-ts";
+import browser, { Runtime, WebNavigation } from "webextension-polyfill";
 import { allowBackgroundSender } from "@/background/protocol";
 import {
   BackgroundEventType,

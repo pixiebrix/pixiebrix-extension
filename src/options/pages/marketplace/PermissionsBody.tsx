@@ -21,7 +21,7 @@ import { selectOptionalPermissions } from "@/utils/permissions";
 import GridLoader from "react-spinners/GridLoader";
 import { Card, Table } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { getErrorMessage } from "@/errors";
 
 const PermissionsBody: React.FunctionComponent<{

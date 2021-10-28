@@ -20,7 +20,7 @@ import { readerFactory } from "@/blocks/readers/factory";
 import { Validator, Schema as ValidatorSchema } from "@cfworker/json-schema";
 import { ValidationError } from "@/errors";
 import { castArray } from "lodash";
-import { apiVersionOptions, reducePipeline } from "@/blocks/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import {
   ApiVersion,
   BlockArg,
@@ -36,6 +36,7 @@ import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
 import { BlockType, getType } from "@/blocks/util";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 
 type ComponentConfig = {
   apiVersion?: ApiVersion;
@@ -123,24 +124,26 @@ class ExternalBlock extends Block {
     }
   }
 
-  async run(renderedInputs: BlockArg, options: BlockOptions): Promise<unknown> {
+  async run(arg: BlockArg, options: BlockOptions): Promise<unknown> {
     options.logger.debug("Running component pipeline", {
-      renderedInputs,
+      arg,
     });
 
-    return reducePipeline(
-      this.component.pipeline,
-      renderedInputs,
-      options.logger,
-      options.root,
-      {
-        headless: options.headless,
-        // OptionsArgs are set at the blueprint level. For composite bricks, they options should be passed in
-        // at part of the brick inputs
-        optionsArgs: undefined,
-        ...apiVersionOptions(this.component.apiVersion),
-      }
-    );
+    const initialValues: InitialValues = {
+      input: arg,
+      // OptionsArgs are set at the blueprint level. For composite bricks, the options should be passed in
+      // at part of the brick inputs
+      optionsArgs: undefined,
+      // Services are passed as inputs to the brick
+      serviceContext: undefined,
+      root: options.root,
+    };
+
+    return reducePipeline(this.component.pipeline, initialValues, {
+      logger: options.logger,
+      headless: options.headless,
+      ...apiVersionOptions(this.component.apiVersion),
+    });
   }
 }
 

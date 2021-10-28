@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { Schema } from "@/core";
+import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class ShowEffect extends Effect {
@@ -38,7 +38,7 @@ export class ShowEffect extends Effect {
     ["selector"]
   );
 
-  async effect({ selector }: { selector: string }): Promise<void> {
+  async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
     const $elt = $(document).find(selector);
     $elt.show();
   }

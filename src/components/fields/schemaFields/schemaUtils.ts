@@ -17,6 +17,8 @@
 
 import { Schema } from "@/core";
 
+type SchemaProperties = Record<string, Schema>;
+
 type TypePredicate = (schema: Schema) => boolean;
 
 export const textPredicate = (schema: Schema) => schema.type === "string";
@@ -26,4 +28,31 @@ export function findOneOf(schema: Schema, predicate: TypePredicate): Schema {
   return schema.oneOf?.find(
     (x) => typeof x === "object" && predicate(x)
   ) as Schema;
+}
+
+/**
+ * Wrap a JSON Schema as an array schema.
+ */
+export function arraySchema(itemSchema: Schema): Schema {
+  return {
+    type: "array",
+    items: itemSchema,
+  };
+}
+
+/**
+ * Return as an object schema
+ * @param schemaOrProperties
+ */
+export function castSchema(
+  schemaOrProperties: Schema | SchemaProperties
+): Schema {
+  if (schemaOrProperties.type && schemaOrProperties.properties) {
+    return schemaOrProperties as Schema;
+  }
+
+  return {
+    type: "object",
+    properties: schemaOrProperties as SchemaProperties,
+  };
 }

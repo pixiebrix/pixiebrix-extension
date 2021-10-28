@@ -20,6 +20,7 @@ import { proxyService } from "@/background/requests";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { PropError } from "@/errors";
+import { AxiosRequestConfig } from "axios";
 
 export class RemoteMethod extends Transformer {
   constructor() {
@@ -76,7 +77,10 @@ export class RemoteMethod extends Transformer {
       );
     }
 
-    const { data } = await proxyService(service, requestConfig);
+    const { data } = await proxyService(
+      service,
+      requestConfig as AxiosRequestConfig
+    );
     return data;
   }
 }

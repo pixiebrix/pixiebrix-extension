@@ -5,6 +5,9 @@
     "pixiebrix"
   ],
   "rules": {
+    // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
+    "import/no-named-as-default-member": "off",
+
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-confusing-void-expression": "warn",

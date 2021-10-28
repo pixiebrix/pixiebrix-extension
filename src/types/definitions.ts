@@ -27,7 +27,7 @@ import {
   TemplateEngine,
   UUID,
 } from "@/core";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { UiSchema } from "@rjsf/core";
 
 export type ExtensionPointConfig = {

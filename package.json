@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.4.4-alpha.1",
+  "version": "1.4.5-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -40,6 +40,7 @@
     "@rjsf/bootstrap-4": "^3.1.0",
     "@rjsf/core": "^3.0.0",
     "@uipath/robot": "1.2.5",
+    "@xobotyi/scrollbar-width": "^1.9.5",
     "ace-builds": "^1.4.12",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
@@ -133,11 +134,11 @@
     "webext-additional-permissions": "^2.1.0",
     "webext-content-scripts": "^0.9.0",
     "webext-detect-page": "^3.0.2",
-    "webext-dynamic-content-scripts": "^8.0.0",
-    "webext-messenger": "^0.11.0",
+    "webext-dynamic-content-scripts": "^8.0.1",
+    "webext-messenger": "^0.13.0",
     "webext-patterns": "^1.1.1",
     "webext-polyfill-kinda": "^0.1.0",
-    "webextension-polyfill-ts": "^0.26.0",
+    "webextension-polyfill": "^0.8.0",
     "whatwg-mimetype": "^3.0.0"
   },
   "devDependencies": {
@@ -155,7 +156,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.2.1",
-    "@types/chrome": "0.0.159",
+    "@types/chrome": "0.0.161",
     "@types/data-urls": "^2.0.1",
     "@types/dompurify": "^2.2.3",
     "@types/file-saver": "^2.0.3",
@@ -198,6 +199,7 @@
     "@types/simple-icons": "^5.0.1",
     "@types/url-join": "^4.0.1",
     "@types/uuid": "^8.3.1",
+    "@types/webextension-polyfill": "^0.8.1",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.16.2",
     "@types/yup": "^0.29.13",

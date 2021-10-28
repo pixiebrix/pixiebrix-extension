@@ -21,7 +21,7 @@
 import { AuthData, updateExtensionAuth } from "@/auth/token";
 import { liftBackground } from "@/background/protocol";
 import { liftExternal } from "@/contentScript/externalProtocol";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { isFirefox } from "webext-detect-page";
 import { reportEvent } from "@/telemetry/events";
 import { getUID } from "@/background/telemetry";

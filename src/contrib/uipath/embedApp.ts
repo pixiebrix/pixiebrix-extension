@@ -19,8 +19,9 @@ import { Renderer, UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import { browser, Permissions } from "webextension-polyfill-ts";
+import browser, { Permissions } from "webextension-polyfill";
 import { executeForNonce } from "@/background/executor";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 
 export class UiPathAppRenderer extends Renderer {
   constructor() {
@@ -92,18 +93,18 @@ export class UiPathAppRenderer extends Renderer {
       executeForNonce(
         nonce,
         "@pixiebrix/forms/set",
-        {
+        unsafeAssumeValidArg({
           inputs: Object.entries(inputs).map(([key, value]) => ({
             selector: `[placeholder="in:${key}"]`,
             value,
           })),
-        },
+        }),
         {
           isAvailable: {
             // UiPath apps lazy load the inputs, so make sure they've been rendered before trying
             // to set the values
             selectors: [
-              !isEmpty(inputs) ? ".root-container input" : ".root-container",
+              isEmpty(inputs) ? ".root-container" : ".root-container input",
             ],
           },
           ctxt: {},

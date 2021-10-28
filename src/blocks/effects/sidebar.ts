@@ -17,7 +17,7 @@
 
 import { Effect } from "@/types";
 import { Schema } from "@/core";
-import { browserAction } from "@/background/messenger/api";
+import { hideActionPanel, showActionPanel } from "@/actionPanel/native";
 
 const NO_PARAMS: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -37,7 +37,7 @@ export class ShowSidebar extends Effect {
   inputSchema: Schema = NO_PARAMS;
 
   async effect(): Promise<void> {
-    await browserAction.showActionFrame();
+    showActionPanel();
   }
 }
 
@@ -53,6 +53,6 @@ export class HideSidebar extends Effect {
   inputSchema: Schema = NO_PARAMS;
 
   async effect(): Promise<void> {
-    await browserAction.hideActionFrame();
+    hideActionPanel();
   }
 }

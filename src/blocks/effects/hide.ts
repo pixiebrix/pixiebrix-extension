@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { Schema } from "@/core";
+import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class HideEffect extends Effect {
@@ -45,10 +45,10 @@ export class HideEffect extends Effect {
   async effect({
     selector,
     mode = "hide",
-  }: {
+  }: BlockArg<{
     selector: string;
     mode?: "hide" | "remove";
-  }): Promise<void> {
+  }>): Promise<void> {
     const $elt = $(document).find(selector);
     if (mode === "hide") {
       $elt.hide();

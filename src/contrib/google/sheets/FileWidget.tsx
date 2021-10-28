@@ -25,7 +25,7 @@ import { sheets } from "@/background/messenger/api";
 import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/handlers";
 import { ensureAuth } from "@/contrib/google/auth";
 import { isOptionsPage } from "webext-detect-page";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { Form, InputGroup } from "react-bootstrap";
 import useNotifications from "@/hooks/useNotifications";
 import { getErrorMessage } from "@/errors";

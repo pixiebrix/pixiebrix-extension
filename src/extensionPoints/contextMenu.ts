@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  apiVersionOptions,
-  blockList,
-  makeServiceContext,
-  mergeReaders,
-  reducePipeline,
-} from "@/blocks/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { ExtensionPoint, Reader } from "@/types";
 import {
   IBlock,
@@ -32,7 +26,7 @@ import {
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { Menus, Permissions } from "webextension-polyfill-ts";
+import { Menus, Permissions, Manifest } from "webextension-polyfill";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
   ExtensionPointConfig,
@@ -46,7 +40,6 @@ import {
 } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
-import { Manifest } from "webextension-polyfill-ts/lib/manifest";
 import { getCommonAncestor } from "@/nativeEditor/infer";
 import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
@@ -55,6 +48,10 @@ import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { isErrorObject } from "@/errors";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/options/deploymentUtils";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { blockList } from "@/blocks/util";
+import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { makeServiceContext } from "@/services/serviceUtils";
 
 export type ContextMenuConfig = {
   title: string;
@@ -318,7 +315,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
         const targetElement =
           clickedElement ?? guessSelectedElement() ?? document;
 
-        const ctxt = {
+        const input = {
           ...(await reader.read(targetElement)),
           // ClickData provides the data from schema defined above in ContextMenuReader
           ...clickData,
@@ -326,10 +323,15 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           documentUrl: document.location.href,
         };
 
-        await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
-          validate: true,
-          serviceArgs: serviceContext,
+        const initialValues: InitialValues = {
+          input,
+          root: document,
+          serviceContext,
           optionsArgs: extension.optionsArgs,
+        };
+
+        await reducePipeline(actionConfig, initialValues, {
+          logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         });
       } catch (error: unknown) {

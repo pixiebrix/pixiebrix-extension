@@ -38,7 +38,7 @@ import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { fetch } from "@/hooks/fetch";
 import { Brick } from "@/types/contract";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import useNotifications from "@/hooks/useNotifications";
 import { ReferenceEntry } from "./brickEditorTypes";

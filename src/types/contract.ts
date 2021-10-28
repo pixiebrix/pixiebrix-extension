@@ -37,7 +37,23 @@ export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 
 export type Invitation = components["schemas"]["Invitation"];
 
-export type Organization = components["schemas"]["Organization"];
+export enum UserRole {
+  member = 1,
+  admin = 2,
+  developer = 3,
+  restricted = 4,
+}
+
+export type Organization = components["schemas"]["Organization"] & {
+  // The `role` property is added in the Redux RTK definition for getOrganizations (see api.ts)
+  // WARNING: currently this role is only accurate for Admin. All other users are passed as Restricted even if they have
+  // a Member or Developer role on the team
+  role: UserRole;
+};
+
+export type Group = components["schemas"]["Group"];
+
+export type Database = components["schemas"]["Database"];
 
 export type PackageVersion = components["schemas"]["PackageVersion"];
 

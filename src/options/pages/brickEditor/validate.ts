@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import yaml from "js-yaml";
 import { KIND_SCHEMAS, validateKind } from "@/validators/generic";
 import { ValidationResult } from "@cfworker/json-schema";
 import { getErrorMessage } from "@/errors";
+import { loadBrickYaml } from "@/runtime/brickYaml";
 
 type PartialSchema = {
   kind?: string;
@@ -41,7 +41,7 @@ export async function validateSchema(
   let json: PartialSchema;
 
   try {
-    json = yaml.load(value) as PartialSchema;
+    json = loadBrickYaml(value) as PartialSchema;
   } catch (error: unknown) {
     return {
       config: [`Invalid YAML: ${getErrorMessage(error)}`],

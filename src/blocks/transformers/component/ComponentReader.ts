@@ -74,6 +74,9 @@ export class ComponentReader extends Transformer {
   }
 
   async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
-    return frameworkReadFactory(args.framework)(args as FrameworkConfig, root);
+    return frameworkReadFactory(args.framework)(
+      (args as unknown) as FrameworkConfig,
+      root
+    );
   }
 }

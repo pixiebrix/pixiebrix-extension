@@ -16,7 +16,13 @@
  */
 
 import { ReaderConfig } from "@/blocks/types";
-import { RegistryId } from "@/core";
+import { IReader, RegistryId } from "@/core";
+import blockRegistry from "@/blocks/registry";
+import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
+import { isPlainObject, mapValues } from "lodash";
+import CompositeReader from "@/blocks/readers/CompositeReader";
+import { resolveObj } from "@/utils";
+import { BusinessError } from "@/errors";
 
 export function selectReaderIds(config: ReaderConfig): RegistryId[] {
   if (typeof config === "string") {
@@ -32,4 +38,27 @@ export function selectReaderIds(config: ReaderConfig): RegistryId[] {
   }
 
   return [];
+}
+
+/** Instantiate a reader from a reader configuration. */
+export async function mergeReaders(
+  readerConfig: ReaderConfig
+): Promise<IReader> {
+  if (typeof readerConfig === "string") {
+    return blockRegistry.lookup(readerConfig) as Promise<IReader>;
+  }
+
+  if (Array.isArray(readerConfig)) {
+    return new ArrayCompositeReader(
+      await Promise.all(readerConfig.map(async (x) => mergeReaders(x)))
+    );
+  }
+
+  if (isPlainObject(readerConfig)) {
+    return new CompositeReader(
+      await resolveObj(mapValues(readerConfig, mergeReaders))
+    );
+  }
+
+  throw new BusinessError("Unexpected value for readerConfig");
 }

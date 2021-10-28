@@ -20,9 +20,9 @@ import {
   RemoteBlockOptions,
   RunBlockRequestAction,
 } from "@/contentScript/executor";
-import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
+import browser, { Runtime, Tabs } from "webextension-polyfill";
 import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
-import { RegistryId, RenderedArgs } from "@/core";
+import { BlockArg, RegistryId } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError, getErrorMessage } from "@/errors";
@@ -358,7 +358,7 @@ async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
 export async function executeForNonce(
   nonce: string,
   blockId: string,
-  blockArgs: RenderedArgs,
+  blockArgs: BlockArg,
   options: RemoteBlockOptions
 ): Promise<unknown> {
   console.debug(`Running ${blockId} in content script with nonce ${nonce}`);
@@ -382,7 +382,7 @@ export async function executeForNonce(
 
 export async function executeInTarget(
   blockId: string,
-  blockArgs: RenderedArgs,
+  blockArgs: BlockArg,
   options: RemoteBlockOptions
 ): Promise<unknown> {
   console.debug(`Running ${blockId} in the target tab`);
@@ -405,7 +405,7 @@ export async function executeInTarget(
 
 export async function executeInAll(
   blockId: string,
-  blockArgs: RenderedArgs,
+  blockArgs: BlockArg,
   options: RemoteBlockOptions
 ): Promise<unknown> {
   console.debug(`Running ${blockId} in all ready tabs`);
@@ -421,7 +421,7 @@ export async function executeInAll(
 
 export async function executeInOpener(
   blockId: string,
-  blockArgs: RenderedArgs,
+  blockArgs: BlockArg,
   options: RemoteBlockOptions
 ): Promise<unknown> {
   console.debug(`Running ${blockId} in the opener tab`);
@@ -437,7 +437,7 @@ export async function executeInOpener(
 
 export const executeOnServer = liftBackground(
   "EXECUTE_ON_SERVER",
-  async (blockId: RegistryId, blockArgs: RenderedArgs) => {
+  async (blockId: RegistryId, blockArgs: BlockArg) => {
     console.debug(`Running ${blockId} on the server`);
     return (await getLinkedApiClient()).post<{
       data?: JsonObject;

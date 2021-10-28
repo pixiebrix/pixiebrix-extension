@@ -17,7 +17,7 @@
 
 import React, { ChangeEvent } from "react";
 import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
-import Select from "react-select";
+import Select, { SelectComponentsConfig } from "react-select";
 import { getErrorMessage } from "@/errors";
 
 // Type of the Select options
@@ -51,6 +51,7 @@ type SelectWidgetProps<
   loadingMessage?: string;
   error?: unknown;
   disabled?: boolean;
+  components?: SelectComponentsConfig<TOption, boolean>;
 };
 
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
@@ -63,6 +64,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   value,
   onChange,
   name,
+  components,
 }: SelectWidgetProps<TOption>) => {
   if (loadError) {
     return (
@@ -78,6 +80,10 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
     >);
   };
 
+  // Pass null instead of undefined if options is not defined
+  const selectValue =
+    options?.find((option: TOption) => value === option.value) ?? null;
+
   return (
     <Select
       inputId={id}
@@ -86,8 +92,9 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
       isLoading={isLoading}
       isClearable={isClearable}
       options={options}
-      value={options?.find((option: TOption) => value === option.value)}
+      value={selectValue}
       onChange={patchedOnChange}
+      components={components}
     />
   );
 };

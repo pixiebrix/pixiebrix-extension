@@ -28,7 +28,7 @@ import {
   PromiseHandler,
   TabId,
 } from "@/background/devtools/contract";
-import { browser, Runtime, WebNavigation } from "webextension-polyfill-ts";
+import browser, { Runtime, WebNavigation } from "webextension-polyfill";
 import { uuidv4 } from "@/types/helpers";
 import { SimpleEvent } from "@/hooks/events";
 import { forbidContext } from "@/utils/expectContext";

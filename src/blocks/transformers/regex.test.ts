@@ -16,29 +16,36 @@
  */
 
 import { RegexTransformer } from "./regex";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 
 const transformer = new RegexTransformer();
 
 test("unmatched returns empty dict", async () => {
-  const result = await transformer.transform({
-    regex: "(?<name>ABC)",
-    input: "XYZ",
-  });
+  const result = await transformer.transform(
+    unsafeAssumeValidArg({
+      regex: "(?<name>ABC)",
+      input: "XYZ",
+    })
+  );
   expect(result).toEqual({});
 });
 
 test("matches name", async () => {
-  const result = await transformer.transform({
-    regex: "(?<name>ABC)",
-    input: "ABC",
-  });
+  const result = await transformer.transform(
+    unsafeAssumeValidArg({
+      regex: "(?<name>ABC)",
+      input: "ABC",
+    })
+  );
   expect(result).toEqual({ name: "ABC" });
 });
 
 test("handle multiple", async () => {
-  const result = await transformer.transform({
-    regex: "(?<name>ABC)",
-    input: ["ABC", "XYZ"],
-  });
+  const result = await transformer.transform(
+    unsafeAssumeValidArg({
+      regex: "(?<name>ABC)",
+      input: ["ABC", "XYZ"],
+    })
+  );
   expect(result).toEqual([{ name: "ABC" }, {}]);
 });

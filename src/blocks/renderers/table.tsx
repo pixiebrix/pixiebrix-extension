@@ -20,7 +20,6 @@ import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, BlockOptions } from "@/core";
 import { isNullOrBlank } from "@/utils";
 import { BusinessError } from "@/errors";
-import { mapArgs } from "@/helpers";
 import makeDataTable, { Row } from "@/blocks/renderers/dataTable";
 
 // Type ColumnDefinition = {
@@ -70,7 +69,7 @@ export class TableRenderer extends Renderer {
   );
 
   async render(
-    { columns, data: userData, ...blockArgs }: BlockArg,
+    { columns, data: userData }: BlockArg,
     { ctxt = [], logger }: BlockOptions
   ): Promise<string> {
     const data = userData ?? ctxt;
@@ -87,11 +86,20 @@ export class TableRenderer extends Renderer {
       );
     }
 
-    const makeLinkRenderer = (href: string) => (value: any, row: Row) => {
-      const anchorHref = mapArgs(href, { ...row, "@block": blockArgs });
-      return isNullOrBlank(anchorHref)
-        ? String(value)
-        : `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${value}</a>`;
+    const makeLinkRenderer = (href: string) => (value: unknown, row: Row) => {
+      // Currently for TableRenderer we only support directly accessing the href. This matches the behavior in
+      // makeDataTable's renderValue
+
+      const anchorHref = Object.prototype.hasOwnProperty.call(row, href)
+        ? // eslint-disable-next-line security/detect-object-injection -- checked with hasOwnProperty
+          row[href]
+        : null;
+
+      return typeof anchorHref === "string" && !isNullOrBlank(anchorHref)
+        ? `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${String(
+            value
+          )}</a>`
+        : String(value);
     };
 
     const table = makeDataTable(

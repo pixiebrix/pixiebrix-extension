@@ -16,13 +16,13 @@
  */
 
 import { proxyService } from "@/background/requests";
-import { Effect } from "@/types";
-import { BlockOptions, Schema, SchemaProperties } from "@/core";
+import { Effect, UnknownObject } from "@/types";
+import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { validateInput } from "@/validators/generic";
 import { Webhook } from "@/contrib/zapier/contract";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors";
 
@@ -62,7 +62,7 @@ export class PushZap extends Effect {
   permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
 
   async effect(
-    { pushKey, data }: { pushKey: string; data: Record<string, unknown> },
+    { pushKey, data }: BlockArg<{ pushKey: string; data: UnknownObject }>,
     options: BlockOptions
   ): Promise<void> {
     const { data: webhooks } = await proxyService<{
