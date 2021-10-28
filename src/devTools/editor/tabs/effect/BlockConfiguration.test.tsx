@@ -15,10 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { createFormikTemplate } from "@/tests/formHelpers";
+import { validateRegistryId } from "@/types/helpers";
+import { render } from "@testing-library/react";
+import React from "react";
+import BlockConfiguration, {
+  DEFAULT_TEMPLATE_ENGINE_VALUE,
+  DEFAULT_WINDOW_VALUE,
+} from "./BlockConfiguration";
 import styles from "./BlockConfiguration.module.scss";
 
+const BLOCK_FIELD_NAME = "block";
+const BLOCK_ID = validateRegistryId("tests/block");
+
 describe("Advanced options", () => {
-  test("doesn't show advanced links by default", () => {
-    expect(true).toBe(false);
+  test.each([
+    {},
+    {
+      templateEngine: DEFAULT_TEMPLATE_ENGINE_VALUE,
+    },
+    {
+      window: DEFAULT_WINDOW_VALUE,
+    },
+  ])("doesn't show advanced links by default", (blockConfig) => {
+    const FormikTemplate = createFormikTemplate({
+      [BLOCK_FIELD_NAME]: blockConfig,
+    });
+
+    const { container } = render(
+      <FormikTemplate>
+        <BlockConfiguration name={BLOCK_FIELD_NAME} blockId={BLOCK_ID} />
+      </FormikTemplate>
+    );
+
+    const advancedLinksContainer = container.querySelector(
+      `.${styles.advancedLinks}`
+    );
+
+    expect(advancedLinksContainer).toBeNull();
   });
 });

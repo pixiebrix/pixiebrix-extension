@@ -33,8 +33,8 @@ import { getType } from "@/blocks/util";
 import { isEmpty, partial } from "lodash";
 import { BlockIf, BlockWindow } from "@/blocks/types";
 
-const DEFAULT_TEMPLATE_ENGINE_VALUE = "mustache";
-const DEFAULT_WINDOW_VALUE = "self";
+export const DEFAULT_TEMPLATE_ENGINE_VALUE = "mustache";
+export const DEFAULT_WINDOW_VALUE = "self";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
