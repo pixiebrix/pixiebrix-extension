@@ -32,7 +32,7 @@ const DatabaseGroupSelect = () => {
 
   const [
     loadOrganizationGroups,
-    { data: organizationGroups },
+    { data: organizationGroups, isLoading: isGroupsLoading },
   ] = appApi.endpoints.getGroups.useLazyQuery();
   useEffect(() => {
     if (selectedOrganizationId) {
@@ -60,6 +60,7 @@ const DatabaseGroupSelect = () => {
       label="Group"
       as={SelectWidget}
       options={groupOptions}
+      isLoading={isGroupsLoading}
       disabled={!selectedOrganizationId}
       description="A group to assign to the database. You can assign additional groups in the Admin Console. You must be a member of the group for it to appear in the Database selection dropdown"
     />

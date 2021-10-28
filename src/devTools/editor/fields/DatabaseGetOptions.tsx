@@ -15,83 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { Schema, UUID } from "@/core";
-import { joinName } from "@/utils";
-import { partial } from "lodash";
-import React, { useState } from "react";
-import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
+import React from "react";
 import { validateRegistryId } from "@/types/helpers";
-import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
-import DatabaseCreateModal from "./DatabaseCreateModal";
-import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { useField } from "formik";
+import DatabaseOptions, { DatabaseGetPutOptionsProps } from "./DatabaseOptions";
 
 export const DATABASE_GET_ID = validateRegistryId("@pixiebrix/data/get");
 
-const keySchema: Schema = {
-  type: "string",
-  description: "The unique key for the record",
-};
-
-const serviceSchema: Schema = {
-  $ref: `https://app.pixiebrix.com/schemas/services/${PIXIEBRIX_SERVICE_ID}`,
-};
-
-const DatabaseGetOptions: React.FC<{
-  name: string;
-  configKey: string;
-}> = ({ name, configKey }) => {
-  const configName = partial(joinName, name, configKey);
-  const databaseFieldName = configName("databaseId");
-
-  const [showModal, setShowModal] = useState(false);
-  const { setValue: setDatabaseId } = useField<UUID>(databaseFieldName)[2];
-
-  const {
-    databaseOptions,
-    isLoading: isLoadingDatabaseOptions,
-  } = useDatabaseOptions();
-
-  const onModalClose = () => {
-    setShowModal(false);
-  };
-
-  const onDatabaseCreated = (databaseId: UUID) => {
-    onModalClose();
-    setDatabaseId(databaseId);
-  };
-
-  return (
-    <div>
-      {showModal && (
-        <DatabaseCreateModal
-          onClose={onModalClose}
-          onDatabaseCreated={onDatabaseCreated}
-        />
-      )}
-
-      <ConnectedFieldTemplate
-        name={databaseFieldName}
-        label="Database"
-        as={SelectWidget}
-        options={databaseOptions}
-        isLoading={isLoadingDatabaseOptions}
-        components={{
-          MenuList: createMenuListWithAddButton(() => {
-            setShowModal(true);
-          }),
-        }}
-      />
-
-      <SchemaField name={configName("key")} label="Key" schema={keySchema} />
-
-      <AppServiceField name={configName("service")} schema={serviceSchema} />
-    </div>
-  );
-};
+const DatabaseGetOptions: React.FC<DatabaseGetPutOptionsProps> = (props) => (
+  <DatabaseOptions showValueField={false} {...props} />
+);
 
 export default DatabaseGetOptions;
