@@ -24,8 +24,8 @@ import { requireSingleElement } from "@/nativeEditor/utils";
 interface setValueData {
   $input: JQuery;
   value: unknown;
-  dispatchEvent: boolean;
-  logger: Logger;
+  dispatchEvent?: boolean;
+  logger?: Logger;
 }
 /**
  * Set the value of an input, doing the right thing for check boxes, etc.
