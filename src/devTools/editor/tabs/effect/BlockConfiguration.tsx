@@ -47,6 +47,10 @@ const BlockConfiguration: React.FunctionComponent<{
   const blockErrors = getIn(context.errors, name);
 
   const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
+
+  // Conditionally show Advanced options "Condition" and "Target" depending on the value of blockType.
+  // If blockType is undefined, don't show the options.
+  // If error happens, behavior is undefined.
   const [blockType] = useAsyncState(async () => getType(block), [block]);
 
   const [isRootAware] = useAsyncState(async () => block.isRootAware(), [block]);
@@ -82,17 +86,17 @@ const BlockConfiguration: React.FunctionComponent<{
         <div className={styles.advancedLinks}>
           {customTemplateEngineSet && (
             <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
-              {`Template Engine: ${templateEngineValue}`}
+              Template Engine: {templateEngineValue}
             </Button>
           )}
           {ifSet && (
             <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
-              {`Condition: ${ifValue}`}
+              Condition: {ifValue}
             </Button>
           )}
           {customWindowSet && (
             <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
-              {`Target: ${windowValue}`}
+              Target: {windowValue}
             </Button>
           )}
         </div>
@@ -159,7 +163,7 @@ const BlockConfiguration: React.FunctionComponent<{
             )
           }
 
-          {blockType !== "renderer" && (
+          {blockType && blockType !== "renderer" && (
             <>
               <ConnectedFieldTemplate name={ifFieldName} label="Condition" />
 
