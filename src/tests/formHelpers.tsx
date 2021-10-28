@@ -15,25 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Form, Formik } from "formik";
+import { Form, Formik, FormikValues } from "formik";
 import React, { PropsWithChildren } from "react";
-import { RJSFSchema } from "./formBuilderTypes";
 import { fireEvent, screen } from "@testing-library/react";
 import { waitForEffect } from "@/tests/testHelpers";
 
 export const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
 export const createFormikTemplate = (
-  rjsfSchema: RJSFSchema,
+  initialValues: FormikValues,
   onSubmit = jest.fn()
 ) => {
   const FormikTemplate = ({ children }: PropsWithChildren<unknown>) => (
-    <Formik
-      initialValues={{
-        [RJSF_SCHEMA_PROPERTY_NAME]: rjsfSchema,
-      }}
-      onSubmit={onSubmit}
-    >
+    <Formik initialValues={initialValues} onSubmit={onSubmit}>
       <Form>
         {children}
         <button type="submit">Submit</button>
