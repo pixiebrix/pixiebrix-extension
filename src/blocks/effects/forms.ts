@@ -16,19 +16,26 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { BlockArg, BlockOptions, Logger, Schema } from "@/core";
 import { boolean } from "@/utils";
 import { BusinessError } from "@/errors";
 import { requireSingleElement } from "@/nativeEditor/utils";
 
+interface setValueData {
+  $input: JQuery;
+  value: unknown;
+  dispatchEvent: boolean;
+  logger: Logger;
+}
 /**
  * Set the value of an input, doing the right thing for check boxes, etc.
  */
-function setValue(
-  $input: JQuery,
-  value: unknown,
-  { dispatchEvent = true }: { dispatchEvent?: boolean } = {}
-) {
+function setValue({
+  $input,
+  value,
+  logger,
+  dispatchEvent = true,
+}: setValueData) {
   for (const field of $input) {
     if (field.isContentEditable) {
       field.textContent = String(value);
@@ -45,7 +52,7 @@ function setValue(
         field instanceof HTMLTextAreaElement
       )
     ) {
-      console.warn(
+      logger.warn(
         "The selected element is not an input field nor an editable element",
         { field }
       );
@@ -113,7 +120,7 @@ export class SetInputValue extends Effect {
       if ($input.length === 0) {
         logger.warn(`Could not find input for selector: ${selector}`);
       } else {
-        setValue($input, value, { dispatchEvent: true });
+        setValue({ $input, value, logger, dispatchEvent: true });
       }
     }
   }
@@ -169,7 +176,7 @@ export class FormFill extends Effect {
         logger.warn(`No input ${name} exists in the form`);
       }
 
-      setValue($input, value, { dispatchEvent: true });
+      setValue({ $input, value, dispatchEvent: true });
     }
 
     for (const [selector, value] of Object.entries(fieldSelectors)) {
@@ -180,7 +187,7 @@ export class FormFill extends Effect {
         );
       }
 
-      setValue($input, value, { dispatchEvent: true });
+      setValue({ $input, value, dispatchEvent: true });
     }
 
     if (typeof submit === "boolean") {
