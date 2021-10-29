@@ -17,9 +17,10 @@
 
 import React from "react";
 
-import { render } from "@testing-library/react";
+import { getByText, queryByText, render, screen } from "@testing-library/react";
 import { InstalledPage } from "./InstalledPage";
 import { StaticRouter } from "react-router-dom";
+import AuthContext from "@/auth/AuthContext";
 
 describe("InstalledPage", () => {
   afterAll(() => {
@@ -37,5 +38,73 @@ describe("InstalledPage", () => {
       </StaticRouter>
     );
     expect(container.querySelector(".ActiveBricksCard")).toBeNull();
+  });
+});
+
+describe("User Onboarding", () => {
+  afterAll(() => {
+    jest.resetAllMocks();
+  });
+
+  // TODO: Change me
+  jest.mock("@/hooks/common", () => ({
+    useAsyncState: jest.fn().mockReturnValue([[], false, null, jest.fn()]),
+  }));
+  // Conditions to consider:
+  // User has organization
+  //    a. and has deployments assigned to them
+  //    b. has the restricted marketplace flag
+  //    c. on team with team blueprints
+  //    d. user team has no team blueprints
+  // User does not have organization
+  //    a. and has bricks
+  //    b. and does not have bricks
+
+  test("user with restricted-onboarding flag doesn't see marketplace", () => {
+    const { container } = render(
+      <AuthContext.Provider
+        value={{
+          flags: ["restricted-onboarding"],
+        }}
+      >
+        <StaticRouter>
+          <InstalledPage
+            extensions={[]}
+            push={jest.fn()}
+            onRemove={jest.fn()}
+          />
+        </StaticRouter>
+      </AuthContext.Provider>
+    );
+
+    const activeBricksCard = queryByText(
+      container,
+      "Activate an Official Template"
+    );
+    expect(activeBricksCard).toBeNull();
+  });
+
+  test("user without restricted-onboarding flag sees marketplace", () => {
+    const { container } = render(
+      <AuthContext.Provider
+        value={{
+          flags: [],
+        }}
+      >
+        <StaticRouter>
+          <InstalledPage
+            extensions={[]}
+            push={jest.fn()}
+            onRemove={jest.fn()}
+          />
+        </StaticRouter>
+      </AuthContext.Provider>
+    );
+
+    const activeBricksCard = queryByText(
+      container,
+      "Activate an Official Template"
+    );
+    expect(activeBricksCard);
   });
 });

@@ -31,7 +31,7 @@ import { reportEvent } from "@/telemetry/events";
 import { reactivate } from "@/background/navigation";
 import { Dispatch } from "redux";
 import { selectExtensions } from "@/options/selectors";
-import NoExtensionsPage from "@/options/pages/installed/NoExtensionsPage";
+import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 import { OptionsState } from "@/store/extensions";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
@@ -185,7 +185,7 @@ export const InstalledPage: React.FunctionComponent<{
           </div>
         </Col>
       </Row>
-      {noExtensions && <NoExtensionsPage />}
+      {noExtensions && <OnboardingPage />}
 
       {resolvedExtensions?.length > 0 && (
         <ActiveBricksCard
