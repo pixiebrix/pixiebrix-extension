@@ -142,14 +142,14 @@ const RenderedField: React.FC<FieldProps> = ({
       {label && (
         <BootstrapForm.Label
           column
-          lg="3"
+          lg="2"
           className={styles.horizontalLabel}
           htmlFor={controlId}
         >
           {label}
         </BootstrapForm.Label>
       )}
-      <Col lg={label ? "9" : "12"}>
+      <Col lg={label ? "10" : "12"}>
         {formControl}
         {description && (
           <BootstrapForm.Text className="text-muted">

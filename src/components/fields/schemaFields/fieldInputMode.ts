@@ -16,6 +16,8 @@
  */
 
 import { TemplateEngine } from "@/core";
+import { UnknownObject } from "@/types";
+import { isExpression } from "@/runtime/mapArgs";
 
 export type FieldInputMode =
   | "string"
@@ -23,8 +25,47 @@ export type FieldInputMode =
   | "boolean"
   | "array"
   | "object"
-  | "omit" // An input option to remove a certain property
+  | "omit" // An input option to remove a property
   | TemplateEngine;
+
+export function isTemplateEngine(
+  inputMode: FieldInputMode
+): inputMode is TemplateEngine {
+  return ["mustache", "nunjucks", "handlebars", "var"].includes(inputMode);
+}
+
+export function inferInputMode(
+  fieldConfig: UnknownObject,
+  fieldName: string
+): FieldInputMode {
+  const hasField = fieldName in fieldConfig;
+  if (!hasField) {
+    return "omit";
+  }
+
+  // eslint-disable-next-line security/detect-object-injection -- config field names
+  const value = fieldConfig[fieldName];
+
+  if (isExpression(value)) {
+    return value.__type__;
+  }
+
+  if (Array.isArray(value)) {
+    return "array";
+  }
+
+  const typeOf: string = typeof value;
+  if (
+    typeOf === "string" ||
+    typeOf === "number" ||
+    typeOf === "boolean" ||
+    typeOf === "object"
+  ) {
+    return typeOf;
+  }
+
+  return "string";
+}
 
 /*
 XX

@@ -42,6 +42,11 @@ export interface SchemaFieldProps {
   schema: Schema;
 
   /**
+   * Is this field required?
+   */
+  isRequired?: boolean;
+
+  /**
    * A label for the field. If not provided, the label is automatically generated from the field name/schema.
    * @see fieldLabel
    */

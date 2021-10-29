@@ -15,50 +15,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
-import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
+import React, { useCallback, useMemo } from "react";
+import { inferInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import SelectWidget, {
   Option,
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import { Field, getIn, useField, useFormikContext } from "formik";
-import { TemplateEngine } from "@/core";
+import { Expression, TemplateEngine } from "@/core";
 import { Col, Form, Row } from "react-bootstrap";
 import { isExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { produce } from "immer";
-import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
+import {
+  SchemaFieldComponent,
+  SchemaFieldProps,
+} from "@/components/fields/schemaFields/propTypes";
+import { JSONSchema7Array } from "json-schema";
+import LoadingWidget from "@/components/fields/schemaFields/widgets/LoadingWidget";
+import styles from "./TemplateToggleWidget.module.scss";
 
 interface InputModeOptionBase<
   As extends React.ElementType = React.ElementType
 > {
   Widget: As;
+  defaultValue?: unknown;
 }
 
 export type StringOption = InputModeOptionBase &
   Option<"string" | TemplateEngine> & {
-    defaultValue: string;
+    defaultValue: string | Expression;
   };
 export type NumberOption = InputModeOptionBase &
   Option<"number"> & {
-    defaultValue: number;
+    defaultValue: number | Expression;
   };
 export type BooleanOption = InputModeOptionBase &
   Option<"boolean"> & {
-    defaultValue: boolean;
+    defaultValue: boolean | Expression;
   };
 export type ArrayOption = InputModeOptionBase &
   Option<"array"> & {
-    defaultValue: unknown[];
+    defaultValue: JSONSchema7Array | Expression;
   };
 export type ObjectOption = InputModeOptionBase &
   Option<"object"> & {
-    defaultValue: UnknownObject;
+    defaultValue: UnknownObject | Expression;
   };
-export type OmitOption = InputModeOptionBase &
-  Option<"omit"> & {
-    defaultValue: null;
-  };
+export type OmitOption = InputModeOptionBase & Option<"omit">;
 
 export type InputModeOption =
   | StringOption
@@ -68,55 +72,45 @@ export type InputModeOption =
   | ObjectOption
   | OmitOption;
 
-interface TemplateToggleWidgetProps {
+type TemplateToggleWidgetProps = SchemaFieldProps & {
   name: string;
   inputModeOptions: InputModeOption[];
   overrideWidget?: SchemaFieldComponent;
-}
+};
 
-function getInputModeForValue(value: unknown): FieldInputMode {
-  if (value === undefined) {
-    return "omit";
-  }
-
-  if (isExpression(value)) {
-    return value.__type__;
-  }
-
-  if (Array.isArray(value)) {
-    return "array";
-  }
-
-  const typeOf: string = typeof value;
-  if (
-    typeOf === "string" ||
-    typeOf === "number" ||
-    typeOf === "boolean" ||
-    typeOf === "object"
-  ) {
-    return typeOf;
-  }
-
-  return "string";
-}
-
+/**
+ * Show a field toggle that lets a user choose the type of data input, along with the chosen input
+ *
+ * @param name The field name in form state
+ * @param inputModeOptions Options for types of inputs allowed for this field
+ * @param overrideWidget Widget that overrides the input for the "literal" data type input option (e.g. string, number, etc)
+ * @param props SchemaFieldProps
+ */
 const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   name,
   inputModeOptions,
   overrideWidget,
+  ...props
 }) => {
   const [{ value }, , { setValue }] = useField<unknown>(name);
   const fieldName = name.includes(".")
-    ? name.slice(name.lastIndexOf("."))
+    ? name.slice(name.lastIndexOf(".") + 1)
     : name;
   const parentFieldName = name.includes(".")
     ? name.slice(0, name.lastIndexOf("."))
     : undefined;
   const { values, setValues } = useFormikContext<UnknownObject>();
+  const parentValues = parentFieldName
+    ? getIn(values, parentFieldName)
+    : values;
 
-  const inputMode = getInputModeForValue(value);
+  const inputMode = useMemo(() => inferInputMode(parentValues, fieldName), [
+    fieldName,
+    parentValues,
+  ]);
+
   const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
-  const Widget = overrideWidget ?? selectedOption.Widget;
+  const Widget = overrideWidget ?? selectedOption?.Widget ?? LoadingWidget;
 
   const onModeChange: SelectWidgetOnChange<InputModeOption> = useCallback(
     ({ target: { value: newInputMode } }) => {
@@ -124,20 +118,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
         (x) => x.value === newInputMode
       );
 
-      if (
-        ["string", "number", "boolean", "array", "object"].includes(
-          newInputMode
-        )
-      ) {
-        setValue(defaultValue);
-      } else if (
-        ["mustache", "nunjucks", "handlebars", "var"].includes(newInputMode)
-      ) {
-        setValue({
-          __type__: newInputMode,
-          __value__: "",
-        });
-      } else if (newInputMode === "omit") {
+      if (newInputMode === "omit") {
         const newFormState = produce(values, (draft) => {
           if (parentFieldName) {
             const parentField = getIn(draft, parentFieldName);
@@ -151,35 +132,49 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
           }
         });
         setValues(newFormState);
+        return;
       }
+
+      // Already handled "omit" and returned above.
+      // Also, template option defaultValues handle the object
+      // structure already, so we can set the value directly here
+      // for both literals and template inputs.
+      setValue(defaultValue);
     },
     [fieldName, inputModeOptions, parentFieldName, setValue, setValues, values]
   );
 
-  const onChangeForTemplate = (templateEngine: TemplateEngine) => {
-    const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-      setValue({
-        __type__: templateEngine,
-        __value__: e.target.value,
-      });
-    };
+  const onChangeForTemplate = useCallback(
+    (templateEngine: TemplateEngine) => {
+      const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        setValue({
+          __type__: templateEngine,
+          __value__: e.target.value,
+        });
+      };
 
-    return onChange;
-  };
-
-  const field = isExpression(value) ? (
-    <Form.Control
-      name={name}
-      value={value.__value__}
-      onChange={onChangeForTemplate(value.__type__)}
-    />
-  ) : (
-    <Field name={name} as={Widget} />
+      return onChange;
+    },
+    [setValue]
   );
+
+  const field = useMemo(() => {
+    if (isExpression(value)) {
+      return (
+        <Form.Control
+          name={name}
+          value={value.__value__}
+          onChange={onChangeForTemplate(value.__type__)}
+        />
+      );
+    }
+
+    return <Field name={name} as={Widget} {...props} />;
+  }, [Widget, name, onChangeForTemplate, props, value]);
 
   return (
     <Row>
-      <Col lg="3">
+      <Col lg="3" className={styles.selectCol}>
         <SelectWidget
           name={`${name}.inputModeSelector`}
           value={inputMode}

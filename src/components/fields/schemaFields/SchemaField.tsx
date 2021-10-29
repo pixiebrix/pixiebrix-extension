@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo } from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { Schema } from "@/core";
 import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
@@ -23,112 +23,191 @@ import TemplateToggleWidget, {
   InputModeOption,
   StringOption,
 } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
-import FieldTemplate, { FieldProps } from "@/components/form/FieldTemplate";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { makeFieldLabel } from "@/components/fields/schemaFields/schemaFieldUtils";
 import OmitFieldWidget from "@/components/fields/schemaFields/widgets/OmitFieldWidget";
-import { Form } from "react-bootstrap";
 import IntegerWidget from "@/components/fields/schemaFields/widgets/IntegerWidget";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
+import ServiceField, {
+  isServiceField,
+} from "@/components/fields/schemaFields/ServiceField";
+import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
+import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
+import { isEmpty, uniq } from "lodash";
+import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
+import { useField } from "formik";
+import UnsupportedWidget from "@/components/fields/schemaFields/widgets/UnsupportedWidget";
 
 const varOption: StringOption = {
   label: "Connect @ data",
   value: "var",
-  Widget: Form.Control,
-  defaultValue: "",
+  Widget: TextWidget,
+  defaultValue: {
+    __type__: "var",
+    __value__: "",
+  },
 };
 
-function getToggleOptionsForSchema(
-  name: string,
-  schema: Schema
+function getToggleOptions(
+  fieldSchema: Schema,
+  isRequired = false
 ): InputModeOption[] {
   const opts: InputModeOption[] = [];
 
-  const splits = name.split(".");
-  const fieldName = splits[splits.length - 1];
+  if (Array.isArray(fieldSchema.type)) {
+    const { type, ...rest } = fieldSchema;
+    return type.flatMap((type) => getToggleOptions({ type, ...rest }));
+  }
 
-  // Need to handle multi-schema: schema.anyOf | schema.oneOf | Array.isArray(schema.type)
+  if (fieldSchema.type === "array") {
+    opts.push(
+      {
+        label: "Item list",
+        value: "array",
+        Widget: ArrayWidget,
+        defaultValue: Array.isArray(fieldSchema.default)
+          ? fieldSchema.default
+          : [],
+      },
+      varOption
+    );
+  }
 
-  if (schema.type === "boolean") {
+  if (
+    fieldSchema.type === "object" ||
+    // An empty field schema supports any value. For now, provide an object field since this just shows up
+    // in the @pixiebrix/http brick.
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/709
+    isEmpty(fieldSchema)
+  ) {
+    opts.push(
+      {
+        label: "Object properties",
+        value: "object",
+        Widget: ObjectWidget,
+        defaultValue: (typeof fieldSchema.default === "object"
+          ? fieldSchema.default
+          : {}) as Record<string, unknown>,
+      },
+      varOption
+    );
+  }
+
+  if (fieldSchema.type === "boolean") {
     opts.push(
       {
         label: "True/False",
         value: "boolean",
         Widget: SwitchButtonWidget,
         defaultValue:
-          typeof schema.default === "boolean" ? schema.default : false,
+          typeof fieldSchema.default === "boolean"
+            ? fieldSchema.default
+            : false,
       },
       varOption
     );
   }
 
-  if (schema.type === "string") {
+  if (fieldSchema.type === "string") {
     opts.push(
       {
-        label: "Plain text",
+        label: "Text",
         value: "string",
-        Widget: Form.Control,
+        Widget: TextWidget,
         defaultValue:
-          typeof schema.default === "string" ? String(schema.default) : "",
+          typeof fieldSchema.default === "string"
+            ? String(fieldSchema.default)
+            : "",
       },
       varOption,
       {
         label: "Mustache template",
         value: "mustache",
-        Widget: Form.Control,
-        defaultValue: "",
+        Widget: TextWidget,
+        defaultValue: {
+          __type__: "mustache",
+          __value__: "",
+        },
       },
       {
         label: "Nunjucks template",
         value: "nunjucks",
-        Widget: Form.Control,
-        defaultValue: "",
+        Widget: TextWidget,
+        defaultValue: {
+          __type__: "nunjucks",
+          __value__: "",
+        },
       },
       {
         label: "Handlebars template",
         value: "handlebars",
-        Widget: Form.Control,
-        defaultValue: "",
+        Widget: TextWidget,
+        defaultValue: {
+          __type__: "handlebars",
+          __value__: "",
+        },
       }
     );
   }
 
-  if (schema.type === "integer") {
+  if (fieldSchema.type === "integer") {
     opts.push(
       {
         label: "Enter a whole number",
         value: "number",
         Widget: IntegerWidget,
-        defaultValue: typeof schema.default === "number" ? schema.default : 0,
+        defaultValue:
+          typeof fieldSchema.default === "number" ? fieldSchema.default : 0,
       },
       varOption
     );
   }
 
-  if (schema.type === "number") {
+  if (fieldSchema.type === "number") {
     opts.push(
       {
         label: "Enter a number",
         value: "number",
         Widget: NumberWidget,
-        defaultValue: typeof schema.default === "number" ? schema.default : 0,
+        defaultValue:
+          typeof fieldSchema.default === "number" ? fieldSchema.default : 0,
       },
       varOption
     );
   }
 
-  // Handle Array and Object
+  if (fieldSchema.anyOf?.length > 0) {
+    const anyOfOptions = fieldSchema.anyOf.flatMap((subSchema) => {
+      if (typeof subSchema === "boolean") {
+        return [];
+      }
 
-  if (!schema.required?.includes(fieldName)) {
+      return getToggleOptions(subSchema);
+    });
+    opts.push(...anyOfOptions);
+  }
+
+  if (fieldSchema.oneOf?.length > 0) {
+    const oneOfOptions = fieldSchema.oneOf.flatMap((subSchema) => {
+      if (typeof subSchema === "boolean") {
+        return [];
+      }
+
+      return getToggleOptions(subSchema);
+    });
+    opts.push(...oneOfOptions);
+  }
+
+  if (!isRequired) {
     opts.push({
       label: "Omit",
       value: "omit",
       Widget: OmitFieldWidget,
-      defaultValue: null,
     });
   }
 
-  return opts;
+  return uniq(opts);
 }
 
 /**
@@ -137,31 +216,64 @@ function getToggleOptionsForSchema(
  * @see SchemaFieldContext
  * @see getDefaultField
  */
-const SchemaField: SchemaFieldComponent = ({
-  name,
-  schema,
-  label,
-  description,
-}) => {
+const SchemaField: SchemaFieldComponent = (props) => {
+  const { name, schema, isRequired, label, description } = props;
+
   const { customWidgets } = useContext(SchemaFieldContext);
   const overrideWidget = useMemo(
     () => customWidgets.find((x) => x.match(schema))?.Component,
     [schema, customWidgets]
   );
+  const inputModeOptions = useMemo(() => getToggleOptions(schema, isRequired), [
+    isRequired,
+    schema,
+  ]);
+  const { setValue } = useField(name)[2];
+  const stableSetValue = useCallback(
+    (value: unknown) => {
+      setValue(value);
+    },
+    // See formik issue: https://github.com/formium/formik/issues/2268
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
-  const props: FieldProps = {
-    name,
-    label: makeFieldLabel(name, schema, label),
-    description: description ?? schema.description,
-    as: TemplateToggleWidget,
-    inputModeOptions: getToggleOptionsForSchema(name, schema),
-    overrideWidget,
-  };
-  if (schema.default) {
-    props.defaultValue = schema.default;
+  useEffect(() => {
+    // Initialize required fields to prevent inferring an "omit" input
+    if (isRequired) {
+      stableSetValue(inputModeOptions[0].defaultValue);
+    }
+  }, [inputModeOptions, isRequired, stableSetValue]);
+
+  if (isServiceField(schema)) {
+    return <ServiceField {...props} />;
   }
 
-  return <FieldTemplate {...props} />;
+  const fieldLabel = makeFieldLabel(name, schema, label);
+  const fieldDescription = description ?? schema.description;
+
+  if (isEmpty(inputModeOptions)) {
+    return (
+      <FieldTemplate
+        name={name}
+        label={fieldLabel}
+        description={fieldDescription}
+        as={UnsupportedWidget}
+      />
+    );
+  }
+
+  return (
+    <FieldTemplate
+      name={name}
+      label={fieldLabel}
+      description={fieldDescription}
+      as={TemplateToggleWidget}
+      inputModeOptions={inputModeOptions}
+      overrideWidget={overrideWidget}
+      {...props}
+    />
+  );
 };
 
 export default SchemaField;
