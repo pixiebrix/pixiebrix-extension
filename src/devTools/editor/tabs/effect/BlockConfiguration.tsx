@@ -17,9 +17,9 @@
 
 import React, { useRef } from "react";
 import { RegistryId, TemplateEngine } from "@/core";
-import { getIn, useField, useFormikContext } from "formik";
+import { getIn, useFormikContext } from "formik";
 import { useBlockOptions } from "@/hooks/useBlockOptions";
-import { Button, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverrides";
 import GridLoader from "react-spinners/GridLoader";
@@ -30,11 +30,12 @@ import { useAsyncState } from "@/hooks/common";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 import { getType } from "@/blocks/util";
-import { isEmpty, partial } from "lodash";
-import { BlockIf, BlockWindow } from "@/blocks/types";
-
-export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";
-export const DEFAULT_WINDOW_VALUE: BlockWindow = "self";
+import { partial } from "lodash";
+import { BlockWindow } from "@/blocks/types";
+import AdvancedLinks, {
+  DEFAULT_TEMPLATE_ENGINE_VALUE,
+  DEFAULT_WINDOW_VALUE,
+} from "./AdvancedLinks";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
@@ -55,52 +56,11 @@ const BlockConfiguration: React.FunctionComponent<{
 
   const [isRootAware] = useAsyncState(async () => block.isRootAware(), [block]);
 
-  const templateEngineFieldName = configName("templateEngine");
-  const [{ value: templateEngineValue }] = useField<TemplateEngine>(
-    templateEngineFieldName
-  );
-
-  const ifFieldName = configName("if");
-  const [{ value: ifValue }] = useField<BlockIf>(ifFieldName);
-
-  const windowFieldName = configName("window");
-  const [{ value: windowValue }] = useField<BlockWindow>(windowFieldName);
-
   const advancedOptionsRef = useRef<HTMLDivElement>();
-
-  const scrollToAdvancedOptions = () => {
-    advancedOptionsRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const customTemplateEngineSet =
-    templateEngineValue &&
-    templateEngineValue !== DEFAULT_TEMPLATE_ENGINE_VALUE;
-  const ifSet = !isEmpty(ifValue);
-  const customWindowSet = windowValue && windowValue !== DEFAULT_WINDOW_VALUE;
-  const advancedOptionsSet =
-    customTemplateEngineSet || ifSet || customWindowSet;
 
   return (
     <>
-      {advancedOptionsSet && (
-        <div className={styles.advancedLinks}>
-          {customTemplateEngineSet && (
-            <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
-              Template Engine: {templateEngineValue}
-            </Button>
-          )}
-          {ifSet && (
-            <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
-              Condition: {ifValue}
-            </Button>
-          )}
-          {customWindowSet && (
-            <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
-              Target: {windowValue}
-            </Button>
-          )}
-        </div>
-      )}
+      <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
 
       <Card className={styles.card}>
         <Card.Header className={styles.cardHeader}>Input</Card.Header>
@@ -129,7 +89,7 @@ const BlockConfiguration: React.FunctionComponent<{
         </Card.Header>
         <Card.Body ref={advancedOptionsRef}>
           <ConnectedFieldTemplate
-            name={templateEngineFieldName}
+            name={configName("templateEngine")}
             label="Template engine"
             as={SelectWidget}
             options={
@@ -139,6 +99,7 @@ const BlockConfiguration: React.FunctionComponent<{
                 { label: "Nunjucks", value: "nunjucks" },
               ] as Array<Option<TemplateEngine>>
             }
+            blankValue={DEFAULT_TEMPLATE_ENGINE_VALUE}
             description={
               <p>
                 The template engine controls how PixieBrix fills in{" "}
@@ -167,10 +128,13 @@ const BlockConfiguration: React.FunctionComponent<{
 
           {blockType && blockType !== "renderer" && (
             <>
-              <ConnectedFieldTemplate name={ifFieldName} label="Condition" />
+              <ConnectedFieldTemplate
+                name={configName("if")}
+                label="Condition"
+              />
 
               <ConnectedFieldTemplate
-                name={windowFieldName}
+                name={configName("window")}
                 label="Target"
                 as={SelectWidget}
                 options={
@@ -182,7 +146,7 @@ const BlockConfiguration: React.FunctionComponent<{
                     { label: "Remote", value: "remote" },
                   ] as Array<Option<BlockWindow>>
                 }
-                blankValue="self"
+                blankValue={DEFAULT_WINDOW_VALUE}
                 description={<p>Select where to execute the brick.</p>}
               />
             </>

@@ -18,17 +18,34 @@
 import { createFormikTemplate } from "@/tests/formHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { render, screen } from "@testing-library/react";
-import React from "react";
-import BlockConfiguration, {
+import { FormikValues } from "formik";
+import React, { useRef } from "react";
+import AdvancedLinks, {
   DEFAULT_TEMPLATE_ENGINE_VALUE,
   DEFAULT_WINDOW_VALUE,
-} from "./BlockConfiguration";
-import styles from "./BlockConfiguration.module.scss";
+} from "./AdvancedLinks";
+import styles from "./AdvancedLinks.module.scss";
 
 const BLOCK_FIELD_NAME = "block";
-const BLOCK_ID = validateRegistryId("tests/block");
 
 describe("Advanced options", () => {
+  function renderAdvancedLinks(blockConfig: FormikValues) {
+    const FormikTemplate = createFormikTemplate({
+      [BLOCK_FIELD_NAME]: blockConfig,
+    });
+
+    const ComponentUnderTest = () => {
+      const scrollToRef = useRef<HTMLElement>();
+      return (
+        <FormikTemplate>
+          <AdvancedLinks name={BLOCK_FIELD_NAME} scrollToRef={scrollToRef} />
+        </FormikTemplate>
+      );
+    };
+
+    return render(<ComponentUnderTest />);
+  }
+
   test.each([
     {},
     {
@@ -38,15 +55,7 @@ describe("Advanced options", () => {
       window: DEFAULT_WINDOW_VALUE,
     },
   ])("doesn't show advanced links by default", (blockConfig) => {
-    const FormikTemplate = createFormikTemplate({
-      [BLOCK_FIELD_NAME]: blockConfig,
-    });
-
-    const { container } = render(
-      <FormikTemplate>
-        <BlockConfiguration name={BLOCK_FIELD_NAME} blockId={BLOCK_ID} />
-      </FormikTemplate>
-    );
+    const { container } = renderAdvancedLinks(blockConfig);
 
     const advancedLinksContainer = container.querySelector(
       `.${styles.advancedLinks}`
@@ -75,15 +84,7 @@ describe("Advanced options", () => {
       "Target: target",
     ],
   ])("shows changed advanced options", (blockConfig, expectedOptionText) => {
-    const FormikTemplate = createFormikTemplate({
-      [BLOCK_FIELD_NAME]: blockConfig,
-    });
-
-    render(
-      <FormikTemplate>
-        <BlockConfiguration name={BLOCK_FIELD_NAME} blockId={BLOCK_ID} />
-      </FormikTemplate>
-    );
+    renderAdvancedLinks(blockConfig);
 
     const linkButton = screen.getByText(expectedOptionText);
 
