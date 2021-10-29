@@ -38,6 +38,11 @@ export type FieldProps<
     description?: ReactNode;
     error?: string;
     touched?: boolean;
+
+    /**
+     * This value is regarded as absence of value, unset property.
+     * It will be passed to the UI input control when the value is undefined.
+     */
     blankValue?: unknown;
   };
 

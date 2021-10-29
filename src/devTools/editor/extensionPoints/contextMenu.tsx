@@ -47,12 +47,13 @@ import {
 import { getDomain } from "@/permissions/patterns";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Menus } from "webextension-polyfill";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
@@ -62,7 +63,11 @@ const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
-export interface ContextMenuFormState extends BaseFormState {
+type Extension = BaseExtensionState & {
+  title: string;
+};
+
+export interface ContextMenuFormState extends BaseFormState<Extension> {
   type: "contextMenu";
 
   extensionPoint: {
@@ -74,11 +79,6 @@ export interface ContextMenuFormState extends BaseFormState {
       reader: SingleLayerReaderConfig;
       isAvailable: NormalizedAvailability;
     };
-  };
-
-  extension: {
-    title: string;
-    blockPipeline: BlockPipeline;
   };
 }
 

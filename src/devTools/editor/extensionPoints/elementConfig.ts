@@ -61,7 +61,9 @@ export interface BaseExtensionState {
   blockPipeline: BlockPipeline;
 }
 
-export interface BaseFormState {
+export interface BaseFormState<
+  TExtension extends BaseExtensionState = BaseExtensionState
+> {
   /**
    * The apiVersion of the brick definition, controlling how PixieBrix interprets brick definitions
    * @see ApiVersion
@@ -107,7 +109,7 @@ export interface BaseFormState {
 
   extensionPoint: BaseExtensionPointState;
 
-  extension: BaseExtensionState;
+  extension: TExtension;
 }
 
 /**

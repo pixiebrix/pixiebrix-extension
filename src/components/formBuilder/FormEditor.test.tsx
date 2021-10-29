@@ -24,9 +24,8 @@ import { Except } from "type-fest";
 import {
   createFormikTemplate,
   fireTextInput,
-  RJSF_SCHEMA_PROPERTY_NAME,
   fireFormSubmit,
-} from "./formBuilderTestHelpers";
+} from "@/tests/formHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
 import FormEditor, { FormEditorProps } from "./FormEditor";
 import {
@@ -35,6 +34,8 @@ import {
   initRenamingCases,
 } from "./formEditor.testCases";
 import selectEvent from "react-select-event";
+
+const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
 describe("FormEditor", () => {
   const defaultProps: Except<FormEditorProps, "activeField"> = {
@@ -47,7 +48,9 @@ describe("FormEditor", () => {
       testName: "empty schema",
       Component: FormEditor,
       props: defaultProps,
-      TemplateComponent: createFormikTemplate({} as RJSFSchema),
+      TemplateComponent: createFormikTemplate({
+        [RJSF_SCHEMA_PROPERTY_NAME]: {} as RJSFSchema,
+      }),
       isAsync: true,
     });
 
@@ -84,9 +87,11 @@ describe("FormEditor", () => {
         Component: FormEditor,
         props,
         TemplateComponent: createFormikTemplate({
-          schema,
-          uiSchema,
-        } as RJSFSchema),
+          [RJSF_SCHEMA_PROPERTY_NAME]: {
+            schema,
+            uiSchema,
+          } as RJSFSchema,
+        }),
         isAsync: true,
       };
 
@@ -110,9 +115,11 @@ describe("FormEditor", () => {
       },
     };
     const FormikTemplate = createFormikTemplate({
-      schema,
-      uiSchema: {},
-    } as RJSFSchema);
+      [RJSF_SCHEMA_PROPERTY_NAME]: {
+        schema,
+        uiSchema: {},
+      } as RJSFSchema,
+    });
 
     render(
       <FormikTemplate>
@@ -157,9 +164,11 @@ describe("FormEditor", () => {
       },
     };
     const FormikTemplate = createFormikTemplate({
-      schema,
-      uiSchema: {},
-    } as RJSFSchema);
+      [RJSF_SCHEMA_PROPERTY_NAME]: {
+        schema,
+        uiSchema: {},
+      } as RJSFSchema,
+    });
 
     render(
       <FormikTemplate>
@@ -186,7 +195,10 @@ describe("FormEditor", () => {
     async (activeField, initialSchema, expectedSchema) => {
       const onSubmitMock = jest.fn();
 
-      const FormikTemplate = createFormikTemplate(initialSchema, onSubmitMock);
+      const FormikTemplate = createFormikTemplate(
+        { [RJSF_SCHEMA_PROPERTY_NAME]: initialSchema },
+        onSubmitMock
+      );
 
       render(
         <FormikTemplate>
@@ -214,7 +226,7 @@ describe("FormEditor", () => {
     const fieldName = "firstName";
     const onSubmitMock = jest.fn();
     const FormikTemplate = createFormikTemplate(
-      initOneFieldSchemaCase(fieldName),
+      { [RJSF_SCHEMA_PROPERTY_NAME]: initOneFieldSchemaCase(fieldName) },
       onSubmitMock
     );
 
@@ -257,7 +269,10 @@ describe("FormEditor", () => {
       const newFieldName = "newFieldName";
 
       const onSubmitMock = jest.fn();
-      const FormikTemplate = createFormikTemplate(initialSchema, onSubmitMock);
+      const FormikTemplate = createFormikTemplate(
+        { [RJSF_SCHEMA_PROPERTY_NAME]: initialSchema },
+        onSubmitMock
+      );
 
       render(
         <FormikTemplate>
@@ -283,7 +298,7 @@ describe("FormEditor", () => {
     const fieldName = "firstName";
     const onSubmitMock = jest.fn();
     const FormikTemplate = createFormikTemplate(
-      initOneFieldSchemaCase(fieldName),
+      { [RJSF_SCHEMA_PROPERTY_NAME]: initOneFieldSchemaCase(fieldName) },
       onSubmitMock
     );
 

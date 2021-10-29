@@ -50,12 +50,13 @@ import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import { NormalizedAvailability } from "@/blocks/types";
 import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfiguration";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import { insertButton } from "@/contentScript/messenger/api";
@@ -65,7 +66,13 @@ const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
-export interface ActionFormState extends BaseFormState {
+type Extension = BaseExtensionState & {
+  caption: string;
+  dynamicCaption?: boolean;
+  icon?: IconConfig;
+};
+
+export interface ActionFormState extends BaseFormState<Extension> {
   type: "menuItem";
 
   containerInfo: ElementInfo;
@@ -84,13 +91,6 @@ export interface ActionFormState extends BaseFormState {
         mode: "default" | "inherit";
       };
     };
-  };
-
-  extension: {
-    caption: string;
-    blockPipeline: BlockPipeline;
-    dynamicCaption?: boolean;
-    icon?: IconConfig;
   };
 }
 

@@ -17,9 +17,9 @@
 
 import React, { useRef } from "react";
 import { RegistryId, TemplateEngine } from "@/core";
-import { getIn, useField, useFormikContext } from "formik";
+import { getIn, useFormikContext } from "formik";
 import { useBlockOptions } from "@/hooks/useBlockOptions";
-import { Button, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverrides";
 import GridLoader from "react-spinners/GridLoader";
@@ -28,51 +28,40 @@ import styles from "./BlockConfiguration.module.scss";
 import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-
-const DEFAULT_TEMPLATE_ENGINE_VALUE = "mustache";
+import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
+import { getType } from "@/blocks/util";
+import { partial } from "lodash";
+import { BlockWindow } from "@/blocks/types";
+import AdvancedLinks, {
+  DEFAULT_TEMPLATE_ENGINE_VALUE,
+  DEFAULT_WINDOW_VALUE,
+} from "./AdvancedLinks";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
   blockId: RegistryId;
 }> = ({ name, blockId }) => {
+  const configName = partial(joinName, name);
+
   const context = useFormikContext<FormState>();
 
   const blockErrors = getIn(context.errors, name);
 
   const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
 
+  // Conditionally show Advanced options "Condition" and "Target" depending on the value of blockType.
+  // If blockType is undefined, don't show the options.
+  // If error happens, behavior is undefined.
+  const [blockType] = useAsyncState(async () => getType(block), [block]);
+
   const [isRootAware] = useAsyncState(async () => block.isRootAware(), [block]);
 
-  const templateEngineFieldName = joinName(name, "templateEngine");
-
-  const { value: templateEngineValue } = useField<TemplateEngine>(
-    templateEngineFieldName
-  )[0];
-
-  const templateEngineRef = useRef<HTMLDivElement>();
-
-  const onClickTemplateEngineLink = () => {
-    if (templateEngineRef.current === undefined) {
-      return;
-    }
-
-    templateEngineRef.current.scrollIntoView({ behavior: "smooth" });
-  };
+  const advancedOptionsRef = useRef<HTMLDivElement>();
 
   return (
     <>
-      {templateEngineValue &&
-        templateEngineValue !== DEFAULT_TEMPLATE_ENGINE_VALUE && (
-          <div className={styles.advancedLinks}>
-            <Button
-              variant="link"
-              size="sm"
-              onClick={onClickTemplateEngineLink}
-            >
-              {`Template Engine: ${templateEngineValue}`}
-            </Button>
-          </div>
-        )}
+      <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
+
       <Card className={styles.card}>
         <Card.Header className={styles.cardHeader}>Input</Card.Header>
         <Card.Body>
@@ -98,39 +87,70 @@ const BlockConfiguration: React.FunctionComponent<{
         <Card.Header className={styles.cardHeader}>
           Advanced Options
         </Card.Header>
-        <Card.Body ref={templateEngineRef}>
+        <Card.Body ref={advancedOptionsRef}>
           <ConnectedFieldTemplate
-            name={templateEngineFieldName}
+            name={configName("templateEngine")}
             label="Template engine"
-            as="select"
+            as={SelectWidget}
+            options={
+              [
+                { label: "Mustache", value: "mustache" },
+                { label: "Handlebars", value: "handlebars" },
+                { label: "Nunjucks", value: "nunjucks" },
+              ] as Array<Option<TemplateEngine>>
+            }
+            blankValue={DEFAULT_TEMPLATE_ENGINE_VALUE}
             description={
               <p>
                 The template engine controls how PixieBrix fills in{" "}
                 <code>{"{{variables}}"}</code> in the inputs.
               </p>
             }
-          >
-            <option value="mustache">Mustache</option>
-            <option value="handlebars">Handlebars</option>
-            <option value="nunjucks">Nunjucks</option>
-          </ConnectedFieldTemplate>
+          />
 
           {
             // Only show if necessary. Currently only the trigger extension point passes the element that triggered the
             // event through for the reader root
             isRootAware && context.values.type === "trigger" && (
               <ConnectedFieldTemplate
-                name={joinName(name, "rootMode")}
+                name={configName("rootMode")}
                 label="Root Mode"
-                as="select"
+                as={SelectWidget}
+                options={[
+                  { label: "Inherit", value: "inherit" },
+                  { label: "Document", value: "document" },
+                ]}
                 blankValue="inherit"
                 description="The root mode controls which page element PixieBrix provides as the implicit element"
-              >
-                <option value="inherit">Inherit</option>
-                <option value="document">Document</option>
-              </ConnectedFieldTemplate>
+              />
             )
           }
+
+          {blockType && blockType !== "renderer" && (
+            <>
+              <ConnectedFieldTemplate
+                name={configName("if")}
+                label="Condition"
+              />
+
+              <ConnectedFieldTemplate
+                name={configName("window")}
+                label="Target"
+                as={SelectWidget}
+                options={
+                  [
+                    { label: "Self", value: "self" },
+                    { label: "Opener", value: "opener" },
+                    { label: "Target", value: "target" },
+                    { label: "Broadcast", value: "broadcast" },
+                    { label: "Remote", value: "remote" },
+                  ] as Array<Option<BlockWindow>>
+                }
+                blankValue={DEFAULT_WINDOW_VALUE}
+                description={<p>Select where to execute the brick.</p>}
+              />
+            </>
+          )}
         </Card.Body>
       </Card>
     </>

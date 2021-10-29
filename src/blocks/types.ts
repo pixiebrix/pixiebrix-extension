@@ -51,8 +51,15 @@ export type ReaderConfig =
  * - target: the last tab that the current tab opened
  * - broadcast: all tabs that PixieBrix has access to (the result is returned as an array)
  * - remote: the server (currently only support identity, get, and http bricks)
+ * @see {@link BlockConfig.window}
  */
 export type BlockWindow = "self" | "opener" | "target" | "broadcast" | "remote";
+
+/**
+ * Condition expression written in templateEngine for deciding if the step should be run.
+ * @see {@link BlockConfig.if}
+ */
+export type BlockIf = string | boolean | number | Expression;
 
 /**
  * A block configuration to be executed by the PixieBrix runtime.
@@ -114,8 +121,9 @@ export type BlockConfig = {
   /**
    * (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
    * provided, the step is run unconditionally.
+   * @see BlockIf
    */
-  if?: string | boolean | number | Expression;
+  if?: BlockIf;
 
   /**
    * (Optional) whether the block should inherit the current root element, or if it should use the document

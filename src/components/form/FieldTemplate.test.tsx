@@ -19,7 +19,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import FieldTemplate, { CustomFieldWidget, FieldProps } from "./FieldTemplate";
 import styles from "./FieldTemplate.module.scss";
-import { fireTextInput } from "@/components/formBuilder/formBuilderTestHelpers";
+import { fireTextInput } from "@/tests/formHelpers";
 
 const testLabel = "Test label";
 const testValue = "Test value";
