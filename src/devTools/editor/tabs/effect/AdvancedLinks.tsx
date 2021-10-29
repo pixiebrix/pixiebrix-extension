@@ -20,8 +20,7 @@ import { TemplateEngine } from "@/core";
 import { joinName } from "@/utils";
 import { useField } from "formik";
 import { partial } from "lodash";
-import React from "react";
-import { MutableRefObject } from "react";
+import React, { MutableRefObject } from "react";
 import { Button } from "react-bootstrap";
 import styles from "./AdvancedLinks.module.scss";
 

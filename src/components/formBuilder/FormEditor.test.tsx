@@ -25,7 +25,7 @@ import {
   createFormikTemplate,
   fireTextInput,
   fireFormSubmit,
-} from "../../tests/formHelpers";
+} from "@/tests/formHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
 import FormEditor, { FormEditorProps } from "./FormEditor";
 import {
