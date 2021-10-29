@@ -16,7 +16,6 @@
  */
 
 import { createFormikTemplate } from "@/tests/formHelpers";
-import { validateRegistryId } from "@/types/helpers";
 import { render, screen } from "@testing-library/react";
 import { FormikValues } from "formik";
 import React, { useRef } from "react";
