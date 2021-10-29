@@ -17,7 +17,7 @@
 
 import { createFormikTemplate } from "@/tests/formHelpers";
 import { validateRegistryId } from "@/types/helpers";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import React from "react";
 import BlockConfiguration, {
   DEFAULT_TEMPLATE_ENGINE_VALUE,
@@ -53,5 +53,40 @@ describe("Advanced options", () => {
     );
 
     expect(advancedLinksContainer).toBeNull();
+  });
+
+  test.each([
+    [
+      {
+        templateEngine: "nunjucks",
+      },
+      "Template Engine: nunjucks",
+    ],
+    [
+      {
+        if: "true",
+      },
+      "Condition: true",
+    ],
+    [
+      {
+        window: "target",
+      },
+      "Target: target",
+    ],
+  ])("shows changed advanced options", (blockConfig, expectedOptionText) => {
+    const FormikTemplate = createFormikTemplate({
+      [BLOCK_FIELD_NAME]: blockConfig,
+    });
+
+    render(
+      <FormikTemplate>
+        <BlockConfiguration name={BLOCK_FIELD_NAME} blockId={BLOCK_ID} />
+      </FormikTemplate>
+    );
+
+    const linkButton = screen.getByText(expectedOptionText);
+
+    expect(linkButton).not.toBeNull();
   });
 });

@@ -28,13 +28,13 @@ import styles from "./BlockConfiguration.module.scss";
 import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
+import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 import { getType } from "@/blocks/util";
 import { isEmpty, partial } from "lodash";
 import { BlockIf, BlockWindow } from "@/blocks/types";
 
-export const DEFAULT_TEMPLATE_ENGINE_VALUE = "mustache";
-export const DEFAULT_WINDOW_VALUE = "self";
+export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";
+export const DEFAULT_WINDOW_VALUE: BlockWindow = "self";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
@@ -132,11 +132,13 @@ const BlockConfiguration: React.FunctionComponent<{
             name={templateEngineFieldName}
             label="Template engine"
             as={SelectWidget}
-            options={[
-              { label: "Mustache", value: "mustache" },
-              { label: "Handlebars", value: "handlebars" },
-              { label: "Nunjucks", value: "nunjucks" },
-            ]}
+            options={
+              [
+                { label: "Mustache", value: "mustache" },
+                { label: "Handlebars", value: "handlebars" },
+                { label: "Nunjucks", value: "nunjucks" },
+              ] as Array<Option<TemplateEngine>>
+            }
             description={
               <p>
                 The template engine controls how PixieBrix fills in{" "}
@@ -171,13 +173,15 @@ const BlockConfiguration: React.FunctionComponent<{
                 name={windowFieldName}
                 label="Target"
                 as={SelectWidget}
-                options={[
-                  { label: "Self", value: "self" },
-                  { label: "Opener", value: "opener" },
-                  { label: "Target", value: "target" },
-                  { label: "Broadcast", value: "broadcast" },
-                  { label: "Remote", value: "remote" },
-                ]}
+                options={
+                  [
+                    { label: "Self", value: "self" },
+                    { label: "Opener", value: "opener" },
+                    { label: "Target", value: "target" },
+                    { label: "Broadcast", value: "broadcast" },
+                    { label: "Remote", value: "remote" },
+                  ] as Array<Option<BlockWindow>>
+                }
                 blankValue="self"
                 description={<p>Select where to execute the brick.</p>}
               />
