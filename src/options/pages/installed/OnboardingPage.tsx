@@ -16,28 +16,28 @@
  */
 
 import React, { useContext } from "react";
-import { Card, Col, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Button, Card, Col, Popover, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faClipboardCheck,
-  faExternalLinkAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import AuthContext from "@/auth/AuthContext";
+import { Organization } from "@/types/contract";
 
 const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
   <Col>
-    <h4>Activate an Official Template</h4>
+    <h4>Activate an Official Blueprint</h4>
     <p>
       <span className="text-primary">
         The easiest way to start using PixieBrix!
       </span>{" "}
-      Activate a pre-made template from the Templates page.
+      Activate a pre-made blueprint from the Marketplace.
     </p>
-    <Link to={"/templates"} className="btn btn-info">
-      View Templates&nbsp;
-      <FontAwesomeIcon icon={faClipboardCheck} />
-    </Link>
+    <Button
+      href="https://pixiebrix.com/marketplace/"
+      variant="info"
+      target="_blank"
+    >
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Browse the Marketplace
+    </Button>
   </Col>
 );
 
@@ -54,8 +54,25 @@ const CreateBrickColumn: React.FunctionComponent = () => (
       target="_blank"
       rel="noopener noreferrer"
     >
-      Open Quickstart Guide&nbsp;
-      <FontAwesomeIcon icon={faExternalLinkAlt} />
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Open Quickstart Guide
+    </a>
+  </Col>
+);
+
+const ActivateFromDeploymentBanner: React.FunctionComponent = () => (
+  <Col>
+    <h4>Activate Team Blueprints</h4>
+    <p>
+      It looks like your team has bricks that are ready to activate! Click the
+      &quot;Activate&quot; button in the banner above.
+    </p>
+    <a
+      className="btn btn-info"
+      href="https://docs.pixiebrix.com/quick-start-guide"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Open Quickstart Guide
     </a>
   </Col>
 );
@@ -79,7 +96,10 @@ const OnboardingVideoCard: React.FunctionComponent = () => (
   </Card>
 );
 
-const OnboardingPage: React.FunctionComponent = () => {
+const OnboardingPage: React.FunctionComponent<{
+  organizations: Organization[];
+  hasDeployments: boolean;
+}> = ({ organizations, hasDeployments }) => {
   const { flags } = useContext(AuthContext);
 
   return (

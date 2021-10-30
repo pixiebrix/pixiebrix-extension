@@ -17,10 +17,16 @@
 
 import React from "react";
 
-import { getByText, queryByText, render, screen } from "@testing-library/react";
+import { queryByText, render } from "@testing-library/react";
 import { InstalledPage } from "./InstalledPage";
 import { StaticRouter } from "react-router-dom";
 import AuthContext from "@/auth/AuthContext";
+import { Organization } from "@/types/contract";
+
+// TODO: Return different organization data per onboarding test
+jest.mock("@/services/api", () => ({
+  useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
+}));
 
 describe("InstalledPage", () => {
   afterAll(() => {
@@ -79,7 +85,7 @@ describe("User Onboarding", () => {
 
     const activeBricksCard = queryByText(
       container,
-      "Activate an Official Template"
+      "Activate an Official Blueprint"
     );
     expect(activeBricksCard).toBeNull();
   });
@@ -103,7 +109,7 @@ describe("User Onboarding", () => {
 
     const activeBricksCard = queryByText(
       container,
-      "Activate an Official Template"
+      "Activate an Official Blueprint"
     );
     expect(activeBricksCard);
   });

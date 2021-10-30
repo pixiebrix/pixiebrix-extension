@@ -47,6 +47,8 @@ import ExtensionLogsModal from "./ExtensionLogsModal";
 import { RootState } from "@/options/store";
 import { LogsContext } from "./installedPageSlice";
 import { selectShowLogsContext } from "./installedPageSelectors";
+import { useGetOrganizationsQuery } from "@/services/api";
+import useDeployments from "@/hooks/useDeployments";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -56,6 +58,8 @@ export const InstalledPage: React.FunctionComponent<{
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove, push }) => {
   const { flags } = useContext(AuthContext);
+  const { data: organizations = [] } = useGetOrganizationsQuery();
+  const { hasUpdate, update, extensionUpdateRequired } = useDeployments();
 
   const [allExtensions, , cloudError] = useAsyncState(
     async () => {
@@ -167,9 +171,15 @@ export const InstalledPage: React.FunctionComponent<{
                   </>
                 ) : (
                   <>
-                    You can find more to activate on the{" "}
-                    <Link to={"/templates"}>Templates</Link> page. Or, follow
-                    the{" "}
+                    You can find more to activate in the{" "}
+                    <a
+                      href="https://pixiebrix.com/marketplace/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Marketplace
+                    </a>
+                    . Or, follow the{" "}
                     <a
                       href="https://docs.pixiebrix.com/quick-start-guide"
                       target="_blank"
@@ -185,7 +195,12 @@ export const InstalledPage: React.FunctionComponent<{
           </div>
         </Col>
       </Row>
-      {noExtensions && <OnboardingPage />}
+      {noExtensions && (
+        <OnboardingPage
+          organizations={organizations}
+          hasDeployments={hasUpdate}
+        />
+      )}
 
       {resolvedExtensions?.length > 0 && (
         <ActiveBricksCard
