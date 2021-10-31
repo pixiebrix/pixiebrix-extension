@@ -176,24 +176,29 @@ describe("proxy service requests", () => {
     expect(data).toEqual({ foo: 42 });
   });
 
-  it("can proxy remote error", async () => {
-    axiosMock.onAny().reply(200, {
-      json: {},
-      reason: "Bad request",
-      status_code: 400,
-    });
+  describe.each([[400], [401], [403], [500]])(
+    "remote status: %s",
+    (statusCode) => {
+      it("can proxy remote error", async () => {
+        axiosMock.onAny().reply(200, {
+          json: {},
+          reason: "Bad request",
+          status_code: statusCode,
+        });
 
-    try {
-      await proxyService(proxiedServiceConfig, requestConfig);
-      fail("Expected proxyService to throw an error");
-    } catch (error: unknown) {
-      expect(error).toBeInstanceOf(ContextError);
-      const { status, statusText } = ((error as ContextError)
-        .cause as AxiosError).response;
-      expect(status).toEqual(400);
-      expect(statusText).toEqual("Bad request");
+        try {
+          await proxyService(proxiedServiceConfig, requestConfig);
+          fail("Expected proxyService to throw an error");
+        } catch (error: unknown) {
+          expect(error).toBeInstanceOf(ContextError);
+          const { status, statusText } = ((error as ContextError)
+            .cause as AxiosError).response;
+          expect(status).toEqual(statusCode);
+          expect(statusText).toEqual("Bad request");
+        }
+      });
     }
-  });
+  );
 
   it("handle proxy error", async () => {
     axiosMock.onAny().reply(500);
