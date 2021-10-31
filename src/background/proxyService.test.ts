@@ -203,7 +203,7 @@ describe("proxy service requests", () => {
       fail("Expected proxyService to throw an error");
     } catch (error: unknown) {
       expect(error).toBeInstanceOf(Error);
-      expect(error.message).toEqual(
+      expect((error as Error).message).toEqual(
         "API proxy error: Request failed with status code 500"
       );
     }
