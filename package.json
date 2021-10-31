@@ -226,6 +226,7 @@
     "jest-webextension-mock": "^3.7.17",
     "min-document": "^2.19.0",
     "mini-css-extract-plugin": "^2.4.1",
+    "mockdate": "^3.0.5",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "node-sass": "^6.0.1",
     "raw-loader": "^4.0.1",
