@@ -16,35 +16,41 @@
  */
 
 import { Logger, MessageContext } from "@/core";
+import { UnknownObject } from "@/types";
+import { getErrorMessage } from "@/errors";
 
 class ConsoleLogger implements Logger {
   readonly context: MessageContext = {};
 
-  childLogger(): Logger {
-    return new ConsoleLogger();
+  constructor(context: MessageContext = {}) {
+    this.context = { ...context };
   }
 
-  trace(msg: string, data?: Record<string, unknown>): void {
+  childLogger(context: MessageContext = {}): Logger {
+    return new ConsoleLogger({ ...this.context, ...context });
+  }
+
+  trace(msg: string, data?: UnknownObject): void {
     console.debug(msg, data);
   }
 
-  debug(msg: string, data: Record<string, unknown>): void {
+  debug(msg: string, data: UnknownObject): void {
     console.debug(msg, data);
   }
 
-  error(error: unknown, data: Record<string, unknown>): void {
-    console.debug(error.toString(), { error, data });
+  error(error: unknown, data: UnknownObject): void {
+    console.debug(getErrorMessage(error), { error, data });
   }
 
-  info(msg: string, data: Record<string, unknown>): void {
+  info(msg: string, data: UnknownObject): void {
     console.debug(msg, data);
   }
 
-  log(msg: string, data: Record<string, unknown>): void {
+  log(msg: string, data: UnknownObject): void {
     console.debug(msg, data);
   }
 
-  warn(msg: string, data: Record<string, unknown>): void {
+  warn(msg: string, data: UnknownObject): void {
     console.debug(msg, data);
   }
 }

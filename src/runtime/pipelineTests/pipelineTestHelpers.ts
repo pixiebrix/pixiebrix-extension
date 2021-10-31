@@ -4,6 +4,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { ApiVersion, BlockArg, BlockOptions } from "@/core";
 import { InitialValues } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { BusinessError } from "@/errors";
 
 const logger = new ConsoleLogger();
 
@@ -49,9 +50,26 @@ class IdentityBlock extends Block {
   }
 }
 
+class ThrowBlock extends Block {
+  constructor() {
+    super("test/throw", "Throw Block");
+  }
+
+  inputSchema = propertiesToSchema({
+    message: {
+      type: "string",
+    },
+  });
+
+  async run({ message }: BlockArg<{ message: string }>) {
+    throw new BusinessError(message);
+  }
+}
+
 export const echoBlock = new EchoBlock();
 export const contextBlock = new ContextBlock();
 export const identityBlock = new IdentityBlock();
+export const throwBlock = new ThrowBlock();
 
 /**
  * Helper method to pass only `input` to reducePipeline.

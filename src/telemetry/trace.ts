@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, RenderedArgs, UUID } from "@/core";
+import { OutputKey, RegistryId, RenderedArgs, UUID } from "@/core";
 import { JsonObject } from "type-fest";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy } from "lodash";
@@ -50,7 +50,7 @@ export type TraceRecordMeta = {
 };
 
 type Output = {
-  outputKey: string | null;
+  outputKey: OutputKey | null;
 
   /**
    * Output of the block
