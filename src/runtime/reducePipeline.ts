@@ -537,7 +537,7 @@ async function throwBlockError(
         },
       });
     } else {
-      console.warn("Can only send alert from deployment context");
+      logger.warn("Can only send alert from deployment context");
     }
   }
 
