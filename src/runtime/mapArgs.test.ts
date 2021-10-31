@@ -17,6 +17,7 @@
 
 import { renderExplicit, renderImplicit } from "@/runtime/mapArgs";
 import Mustache from "mustache";
+import { engineRenderer } from "@/runtime/renderers";
 
 describe("renderExplicit", () => {
   test("render var path", async () => {
@@ -56,6 +57,34 @@ describe("renderImplicit", () => {
       renderImplicit({ foo: "array.0" }, { otherVar: ["bar"] }, Mustache.render)
     ).toEqual({
       foo: "array.0",
+    });
+  });
+});
+
+describe("handlebars", () => {
+  test("render array item", async () => {
+    expect(
+      renderImplicit(
+        { foo: "{{ obj.prop }}" },
+        { obj: { prop: 42 } },
+        await engineRenderer("handlebars")
+      )
+    ).toEqual({
+      foo: "42",
+    });
+  });
+
+  // NOTE: Handlebars doesn't work with @-prefixed variable because it uses @ to denote data variables
+  // see: https://handlebarsjs.com/api-reference/data-variables.html
+  test("cannot render @-prefixed variable", async () => {
+    expect(
+      renderImplicit(
+        { foo: "{{ obj.prop }}" },
+        { "@obj": { prop: 42 } },
+        await engineRenderer("handlebars")
+      )
+    ).toEqual({
+      foo: "",
     });
   });
 });
