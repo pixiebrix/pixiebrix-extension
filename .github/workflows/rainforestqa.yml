@@ -17,10 +17,6 @@ jobs:
           node-version: "16"
           cache: npm
 
-      - name: Install Rainforest QA CLI
-        run: |
-          curl -sL $(curl -s https://api.github.com/repos/rainforestapp/rainforest-cli/releases/latest | jq -r '.assets[].browser_download_url | select(test("linux-amd64.tar.gz"))') | tar zxf - rainforest
-
       - run: npm ci
       - run: npm run build
         env:
@@ -30,6 +26,7 @@ jobs:
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
+          CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
 
       - run: npm run upload:extension
         env:
@@ -37,11 +34,15 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
           AWS_DEFAULT_REGION: "us-east-2"
 
+      - name: Install Rainforest QA CLI
+        run: |
+          curl -sL $(curl -s https://api.github.com/repos/rainforestapp/rainforest-cli/releases/latest | jq -r '.assets[].browser_download_url | select(test("linux-amd64.tar.gz"))') | tar zxf - rainforest
+
       # https://github.com/rainforestapp/rainforest-cli
       - name: Run Rainforest QA Extension Test Suite
         run: |
-          rainforest run --fail-fast --description "CI automatic run" --run-group $RUN_GROUP --release "${{ github.sha }}" --custom-url https://pixiebrix-extension-builds.s3-control.us-east-2.amazonaws.com/$BUILD_PATH
+          ./rainforest run --fail-fast --description "CI automatic run" --run-group $RUN_GROUP --release "${{ github.sha }}" --custom-url https://pixiebrix-extension-builds.s3-control.us-east-2.amazonaws.com/$BUILD_PATH
         env:
           RAINFOREST_API_TOKEN: ${{ secrets.RAINFORESTQA_TOKEN }}
-          # The CI run group
+          # The run group for tests to run during CI
           RUN_GROUP: 9732
