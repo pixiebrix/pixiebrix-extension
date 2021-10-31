@@ -51,11 +51,16 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
 type RunBlockArgs = {
   apiVersion: ApiVersion;
   blockConfig: BlockConfig;
+  /**
+   * Context to render the BlockArg, should include @input, @options, and service context
+   * @see makeServiceContext
+   */
   context: BlockArgContext;
 };
 
 /**
  * Run a single block (e.g., for generating output previews)
+ * @see BlockPreview
  */
 export async function runBlock({
   blockConfig,
@@ -66,20 +71,22 @@ export async function runBlock({
 
   if (!versionOptions.explicitDataFlow) {
     throw new BusinessError(
-      "Output preview only supported for extensions using v2 of the runtime or later"
+      "Preview only supported for extensions using runtime v2 or later"
     );
   }
 
   const state: IntermediateState = {
     context,
+    // Can pick any index. It's only used for adding context to log messages, and we're disabling value logging
+    // below with `logValues: false`
     index: 0,
-    // FIXME: need to use isLastBlock to control how output is returned (either in the output or new context)
+    // Force isLastBlock so blockReducer does not complain about the outputKey being forced to undefined
     isLastBlock: true,
     // TODO: need to support other roots for triggers. Or we at least need to throw an error so we can show a message
     //  in the UX that non-root contexts aren't supported
     root: document,
-    // We're forcing apiVersion: 2 or higher above
-    previousOutput: null,
+    // We're forcing apiVersion: 2 or higher above values must come from the context
+    previousOutput: {},
   };
 
   const options: ReduceOptions = {
@@ -90,7 +97,13 @@ export async function runBlock({
     runId: null,
   };
 
-  const { output } = await blockReducer(blockConfig, state, options);
+  // Exclude the outputKey so that `output` is the output of the brick. Alternatively we could have taken then
+  // value from the context[outputKey] from the return value of blockReducer
+  const { output } = await blockReducer(
+    { ...blockConfig, outputKey: undefined },
+    state,
+    options
+  );
 
   return cloneDeep(output) as SerializableResponse;
 }
