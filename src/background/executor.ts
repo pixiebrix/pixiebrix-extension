@@ -323,7 +323,8 @@ const DEFAULT_MAX_RETRIES = 5;
 const NOT_READY_PARTIAL_MESSAGES = [
   // Chrome/browser message
   "Could not establish connection",
-  // `webext-messenger` error
+  // `webext-messenger` error, must be kept in sync with the message in manageMessage
+  // see https://github.com/pixiebrix/webext-messenger/blob/main/source/sender.ts#L78
   "No handler for",
 ];
 
