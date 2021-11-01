@@ -31,7 +31,7 @@ const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
  * - Does not render a DOM element
  * - Ensures a @pixiebrix/api dependency is included for the extension
  */
-const AppServiceField: React.FunctionComponent<SchemaFieldProps<unknown>> = ({
+const AppServiceField: React.FunctionComponent<SchemaFieldProps> = ({
   schema,
   uiSchema,
   ...props
