@@ -15,15 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { array, define } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { getType } from "@/blocks/util";
-import { IBlock, IExtension } from "@/core";
+import {
+  ApiVersion,
+  IBlock,
+  IExtension,
+  Schema,
+  ServiceDependency,
+  UserOptions,
+} from "@/core";
 import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { Permissions } from "webextension-polyfill";
+import { BaseExtensionState } from "@/devTools/editor/extensionPoints/elementConfig";
+import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
+import {
+  contextBlock,
+  echoBlock,
+  identityBlock,
+} from "@/runtime/pipelineTests/pipelineTestHelpers";
 
 const config = {
-  apiVersion: "v1",
+  apiVersion: "v2" as ApiVersion,
   kind: "component",
   metadata: {
     id: "test/component-1",
@@ -55,7 +71,7 @@ export const extensionFactory: (
   extensionProps?: Partial<IExtension>
 ) => IExtension = (extensionProps) => ({
   id: uuidv4(),
-  apiVersion: "v1",
+  apiVersion: "v2" as ApiVersion,
   extensionPointId: validateRegistryId("test/extension-point"),
   _deployment: null,
   _recipe: null,
@@ -90,41 +106,74 @@ export const traceErrorFactory: (
   return errorTraceEntry;
 };
 
-export const pipelineFactory: (
-  blockConfigProps?: Partial<BlockConfig>
-) => BlockPipeline = (blockConfigProps) => {
-  const pipelineBlock: BlockConfig = {
-    instanceId: uuidv4(),
-    id: TEST_BLOCK_ID,
-    ...blockConfigProps,
-  } as BlockConfig;
-
-  const anotherBlock: BlockConfig = {
-    instanceId: uuidv4(),
-    id: TEST_BLOCK_ID,
-    ...blockConfigProps,
-  } as BlockConfig;
-
-  return [pipelineBlock, anotherBlock];
-};
-
-export const blockFactory: (blockProps?: Partial<IBlock>) => IBlock = (
-  blockProps
-) =>
-  ({
-    id: TEST_BLOCK_ID,
-    ...blockProps,
-  } as IBlock);
+export const blockFactory = define<IBlock>({
+  id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
+  name: (i: number) => `${TEST_BLOCK_ID} ${i}`,
+  inputSchema: null as Schema,
+  defaultOptions: null,
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  permissions: {} as Permissions.Permissions,
+  run: jest.fn(),
+});
 
 export const blocksMapFactory: (
   blockProps?: Partial<IBlock>
 ) => Promise<BlocksMap> = async (blockProps) => {
-  const block = blockFactory(blockProps);
+  const block1 = blockFactory(blockProps);
+  const block2 = blockFactory(blockProps);
 
   return {
-    [block.id]: {
-      block,
-      type: await getType(block),
+    [block1.id]: {
+      block: block1,
+      type: await getType(block1),
+    },
+    [block2.id]: {
+      block: block2,
+      type: await getType(block2),
     },
   };
 };
+
+export const blockConfigFactory = define<BlockConfig>({
+  instanceId: () => uuidv4(),
+  id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
+  config: {},
+});
+
+export const pipelineFactory: (
+  blockConfigProps?: Partial<BlockConfig>
+) => BlockPipeline = (blockConfigProps) => {
+  const blockConfig1 = blockConfigFactory(blockConfigProps);
+  const blockConfig2 = blockConfigFactory(blockConfigProps);
+
+  return [blockConfig1, blockConfig2] as BlockPipeline;
+};
+
+export const baseExtensionStateFactory = define<BaseExtensionState>({
+  blockPipeline: pipelineFactory,
+});
+
+const baseFormStateLike = {
+  apiVersion: "v2" as ApiVersion,
+  uuid: () => uuidv4(),
+  installed: true,
+  optionsArgs: null as UserOptions,
+  services: [] as ServiceDependency[],
+};
+
+export const triggerFormStateFactory = define<TriggerFormState>({
+  ...baseFormStateLike,
+
+  type: "trigger",
+  label: (i: number) => `Element ${i}`,
+  extension: baseExtensionStateFactory,
+  extensionPoint: {
+    metadata: null,
+    definition: {
+      rootSelector: "body",
+      trigger: "click",
+      reader: validateRegistryId("test/reader"),
+      isAvailable: null,
+    },
+  },
+});

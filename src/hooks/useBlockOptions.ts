@@ -44,6 +44,7 @@ export function useBlockOptions(
       setBlock({ block: null, error: null });
       try {
         const block = await blockRegistry.lookup(id);
+        console.log("got block", block);
         if (!isMounted()) return;
         setBlock({ block });
       } catch (error: unknown) {

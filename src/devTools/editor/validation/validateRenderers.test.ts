@@ -57,14 +57,15 @@ test.each(elementTypesToValidate)(
   async (elementType) => {
     const pipelineErrors: FormikErrorTree = {};
 
-    const pipeline = pipelineFactory();
-    pipeline[0].id = validateRegistryId(`${TEST_BLOCK_ID}_2`);
+    const allBlocks = await blocksMapFactory();
+    Object.values(allBlocks)[1].render = jest.fn();
 
-    const allBlocks = await blocksMapFactory({
-      render: jest.fn(),
-    } as unknown);
-
-    validateRenderers(pipelineErrors, pipeline, allBlocks, elementType);
+    validateRenderers(
+      pipelineErrors,
+      pipelineFactory(),
+      allBlocks,
+      elementType
+    );
 
     expect(pipelineErrors).toEqual({});
   }
