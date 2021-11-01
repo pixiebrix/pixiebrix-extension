@@ -324,7 +324,7 @@ const NOT_READY_PARTIAL_MESSAGES = [
   // Chrome/browser message
   "Could not establish connection",
   // `webext-messenger` error
-  "No handlers registered in receiving end",
+  "No handler for",
 ];
 
 async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
