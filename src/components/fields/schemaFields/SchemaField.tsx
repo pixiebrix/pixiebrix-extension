@@ -228,7 +228,7 @@ const SchemaField: SchemaFieldComponent = (props) => {
     isRequired,
     schema,
   ]);
-  const { setValue } = useField(name)[2];
+  const [{ value }, , { setValue }] = useField(name);
   const stableSetValue = useCallback(
     (value: unknown) => {
       setValue(value);
@@ -239,11 +239,11 @@ const SchemaField: SchemaFieldComponent = (props) => {
   );
 
   useEffect(() => {
-    // Initialize required fields to prevent inferring an "omit" input
-    if (isRequired) {
+    // Initialize any undefined/empty required fields to prevent inferring an "omit" input
+    if (!value && isRequired) {
       stableSetValue(inputModeOptions[0].defaultValue);
     }
-  }, [inputModeOptions, isRequired, stableSetValue]);
+  }, [inputModeOptions, isRequired, stableSetValue, value]);
 
   if (isServiceField(schema)) {
     return <ServiceField {...props} />;
