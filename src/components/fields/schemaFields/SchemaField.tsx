@@ -34,13 +34,13 @@ import ServiceField, {
 } from "@/components/fields/schemaFields/ServiceField";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import { isEmpty, uniq } from "lodash";
+import { isEmpty, uniqBy } from "lodash";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { useField } from "formik";
 import UnsupportedWidget from "@/components/fields/schemaFields/widgets/UnsupportedWidget";
 
 const varOption: StringOption = {
-  label: "Connect @ data",
+  label: "@{data}",
   value: "var",
   Widget: TextWidget,
   defaultValue: {
@@ -63,7 +63,7 @@ function getToggleOptions(
   if (fieldSchema.type === "array") {
     opts.push(
       {
-        label: "Item list",
+        label: "Items",
         value: "array",
         Widget: ArrayWidget,
         defaultValue: Array.isArray(fieldSchema.default)
@@ -83,7 +83,7 @@ function getToggleOptions(
   ) {
     opts.push(
       {
-        label: "Object properties",
+        label: "Properties",
         value: "object",
         Widget: ObjectWidget,
         defaultValue: (typeof fieldSchema.default === "object"
@@ -122,7 +122,7 @@ function getToggleOptions(
       },
       varOption,
       {
-        label: "Mustache template",
+        label: "Mustache",
         value: "mustache",
         Widget: TextWidget,
         defaultValue: {
@@ -131,7 +131,7 @@ function getToggleOptions(
         },
       },
       {
-        label: "Nunjucks template",
+        label: "Nunjucks",
         value: "nunjucks",
         Widget: TextWidget,
         defaultValue: {
@@ -140,7 +140,7 @@ function getToggleOptions(
         },
       },
       {
-        label: "Handlebars template",
+        label: "Handlebars",
         value: "handlebars",
         Widget: TextWidget,
         defaultValue: {
@@ -154,7 +154,7 @@ function getToggleOptions(
   if (fieldSchema.type === "integer") {
     opts.push(
       {
-        label: "Enter a whole number",
+        label: "Integer",
         value: "number",
         Widget: IntegerWidget,
         defaultValue:
@@ -167,7 +167,7 @@ function getToggleOptions(
   if (fieldSchema.type === "number") {
     opts.push(
       {
-        label: "Enter a number",
+        label: "Number",
         value: "number",
         Widget: NumberWidget,
         defaultValue:
@@ -207,7 +207,7 @@ function getToggleOptions(
     });
   }
 
-  return uniq(opts);
+  return uniqBy(opts, (x) => x.value);
 }
 
 /**
