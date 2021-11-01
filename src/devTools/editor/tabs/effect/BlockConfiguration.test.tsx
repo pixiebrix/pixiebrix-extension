@@ -18,11 +18,16 @@
 import React from "react";
 import BlockConfiguration from "./BlockConfiguration";
 import { createFormikTemplate } from "@/tests/formHelpers";
-import { formStateFactory, triggerFormStateFactory } from "@/tests/factories";
+import {
+  blockFactory,
+  formStateFactory,
+  triggerFormStateFactory,
+} from "@/tests/factories";
 import blockRegistry from "@/blocks/registry";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { render, screen } from "@testing-library/react";
 import { waitForEffect } from "@/tests/testHelpers";
+import { propertiesToSchema } from "@/validators/generic";
 
 beforeAll(() => {
   // Precaution
@@ -67,3 +72,45 @@ test("shows root mode for trigger", async () => {
 
   expect(rootModeSelect).not.toBeNull();
 });
+
+const blockTypeCases: Array<[string, string, boolean]> = [
+  ["reader", "read", true],
+  ["effect", "effect", true],
+  ["transform", "transform", true],
+  ["renderer", "render", false],
+];
+test.each(blockTypeCases)(
+  "handles Condition and Target for %s",
+  async (_blockType, blockProperty, shouldShowOptions) => {
+    const block = blockFactory({
+      [blockProperty]: true,
+      inputSchema: propertiesToSchema({
+        message: {
+          type: "string",
+        },
+      }),
+    });
+
+    blockRegistry.register(block);
+    const initialState = triggerFormStateFactory({}, { id: block.id });
+    const FormikTemplate = createFormikTemplate(initialState);
+    render(
+      <FormikTemplate>
+        <BlockConfiguration name="testBlockConfiguration" blockId={block.id} />
+      </FormikTemplate>
+    );
+
+    await waitForEffect();
+
+    const conditionInput = screen.queryByLabelText("Condition");
+    const targetInput = screen.queryByLabelText("Target");
+
+    if (shouldShowOptions) {
+      expect(conditionInput).not.toBeNull();
+      expect(targetInput).not.toBeNull();
+    } else {
+      expect(conditionInput).toBeNull();
+      expect(targetInput).toBeNull();
+    }
+  }
+);
