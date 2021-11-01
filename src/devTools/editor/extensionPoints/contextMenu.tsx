@@ -173,13 +173,15 @@ async function fromExtension(
 
   const blockPipeline = withInstanceIds(castArray(extensionConfig.action));
 
+  const extension: Extension = {
+    blockPipeline,
+    title: config.config.title,
+  };
+
   return {
     ...baseFromExtension(config, extensionPoint.definition.type),
 
-    extension: {
-      ...extensionConfig,
-      blockPipeline,
-    },
+    extension,
 
     extensionPoint: {
       metadata: extensionPoint.metadata,

@@ -233,14 +233,17 @@ async function fromExtension(
 
   const blockPipeline = withInstanceIds(castArray(config.config.body));
 
+  const extension: Extension = {
+    blockPipeline,
+    heading: config.config.heading ?? "",
+    collapsible: config.config.collapsible,
+    shadowDOM: config.config.shadowDOM,
+  };
+
   return {
     ...baseFromExtension(config, extensionPoint.definition.type),
 
-    extension: {
-      heading: config.config.heading ?? "",
-      ...config.config,
-      blockPipeline,
-    },
+    extension,
 
     containerInfo: null,
 

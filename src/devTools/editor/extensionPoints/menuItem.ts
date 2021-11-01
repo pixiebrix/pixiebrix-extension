@@ -217,13 +217,17 @@ export async function fromExtension(
 
   const blockPipeline = withInstanceIds(castArray(config.config.action));
 
+  const extension: Extension = {
+    blockPipeline,
+    caption: config.config.caption,
+    dynamicCaption: config.config.dynamicCaption,
+    icon: config.config.icon,
+  };
+
   return {
     ...baseFromExtension(config, extensionPoint.definition.type),
 
-    extension: {
-      ...config.config,
-      blockPipeline,
-    },
+    extension,
 
     containerInfo: null,
 
