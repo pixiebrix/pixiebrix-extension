@@ -58,7 +58,7 @@ export const InstalledPage: React.FunctionComponent<{
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove, push }) => {
   const { flags } = useContext(AuthContext);
-  const { data: organizations = [] } = useGetOrganizationsQuery();
+  const { data: organizations, isLoading } = useGetOrganizationsQuery();
   const { hasUpdate, update, extensionUpdateRequired } = useDeployments();
 
   const [allExtensions, , cloudError] = useAsyncState(
@@ -197,8 +197,9 @@ export const InstalledPage: React.FunctionComponent<{
       </Row>
       {noExtensions && (
         <OnboardingPage
-          organizations={organizations}
           hasDeployments={hasUpdate}
+          hasOrganization={organizations?.length > 0}
+          isLoading={isLoading}
         />
       )}
 

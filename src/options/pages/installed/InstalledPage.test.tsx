@@ -70,7 +70,7 @@ describe("User Onboarding", () => {
     const { container } = render(
       <AuthContext.Provider
         value={{
-          flags: ["restricted-onboarding"],
+          flags: ["restricted-marketplace"],
         }}
       >
         <StaticRouter>

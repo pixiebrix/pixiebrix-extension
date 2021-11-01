@@ -20,10 +20,12 @@ import { Button, Card, Col, Popover, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import AuthContext from "@/auth/AuthContext";
-import { Organization } from "@/types/contract";
+import useFetch from "@/hooks/useFetch";
+import { RecipeDefinition } from "@/types/definitions";
+import { Link } from "react-router-dom";
 
 const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
-  <Col>
+  <Col xs={6}>
     <h4>Activate an Official Blueprint</h4>
     <p>
       <span className="text-primary">
@@ -42,7 +44,7 @@ const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
 );
 
 const CreateBrickColumn: React.FunctionComponent = () => (
-  <Col>
+  <Col xs={6}>
     <h4>Create your Own</h4>
     <p>
       Follow the Quickstart Guide in our documentation area to start creating
@@ -59,21 +61,35 @@ const CreateBrickColumn: React.FunctionComponent = () => (
   </Col>
 );
 
+const ActivateTeamBlueprintsColumn: React.FunctionComponent = () => (
+  <Col xs={6}>
+    <h4>Browse Team Blueprints</h4>
+    <p>Browse and activate team bricks in the Blueprints page.</p>
+    <Link to={"/blueprints"} className="btn btn-info">
+      My Blueprints
+    </Link>
+  </Col>
+);
+
 const ActivateFromDeploymentBanner: React.FunctionComponent = () => (
-  <Col>
+  <Col xs={6}>
     <h4>Activate Team Blueprints</h4>
-    <p>
-      It looks like your team has bricks that are ready to activate! Click the
-      &quot;Activate&quot; button in the banner above.
+    <p className="mb-0">
+      It looks like your team has bricks that are ready to activate! Click the{" "}
+      <strong>Activate</strong> button in the banner above to{" "}
+      <strong>allow permissions</strong> and <strong>start using</strong> your
+      team workflows.
     </p>
-    <a
-      className="btn btn-info"
-      href="https://docs.pixiebrix.com/quick-start-guide"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Open Quickstart Guide
-    </a>
+  </Col>
+);
+
+const ContactTeamAdminColumn: React.FunctionComponent = () => (
+  <Col xs={6}>
+    <h4>Activate Team Blueprints</h4>
+    <p className="mb-0">
+      It looks like your team hasn&apos;t made any bricks available to you yet.
+      <strong>Contact your team admin</strong> to get access to bricks.
+    </p>
   </Col>
 );
 
@@ -97,33 +113,66 @@ const OnboardingVideoCard: React.FunctionComponent = () => (
 );
 
 const OnboardingPage: React.FunctionComponent<{
-  organizations: Organization[];
+  hasOrganization: boolean;
   hasDeployments: boolean;
-}> = ({ organizations, hasDeployments }) => {
-  const { flags } = useContext(AuthContext);
+  isLoading: boolean;
+}> = ({ hasOrganization, hasDeployments, isLoading }) => {
+  const { flags, is_onboarded } = useContext(AuthContext);
+  const { data: rawRecipes, isRecipesLoading } = useFetch<RecipeDefinition[]>(
+    "/api/recipes/"
+  );
+
+  const teamRecipes = (rawRecipes ?? []).filter(
+    (recipe) => recipe.sharing.organizations.length > 0
+  );
+
+  console.log(teamRecipes);
+
+  const hasTeamBlueprints = teamRecipes.length > 0;
+
+  console.log("has team blueprints:", hasTeamBlueprints);
 
   return (
     <>
-      {!flags.includes("restricted-onboarding") && (
+      {!flags.includes("restricted-marketplace") && !isLoading && (
         <Row>
           <Col className="VideoCard">
             <Card>
               <Card.Header>Activate Bricks</Card.Header>
               <Card.Body>
                 <Row>
-                  <ActivateFromMarketplaceColumn />
-                  <CreateBrickColumn />
+                  {hasOrganization && hasDeployments && (
+                    <ActivateFromDeploymentBanner />
+                  )}
+
+                  {hasOrganization && !hasDeployments && (
+                    <ContactTeamAdminColumn />
+                  )}
+
+                  {hasOrganization && !hasDeployments && hasTeamBlueprints && (
+                    <ActivateTeamBlueprintsColumn />
+                  )}
+
+                  {(!hasOrganization ||
+                    (hasOrganization && !hasDeployments)) && (
+                    <>
+                      <ActivateFromMarketplaceColumn />
+                      <CreateBrickColumn />
+                    </>
+                  )}
                 </Row>
               </Card.Body>
             </Card>
           </Col>
         </Row>
       )}
-      <Row>
-        <Col className="VideoCard mt-3">
-          <OnboardingVideoCard />
-        </Col>
-      </Row>
+      {hasDeployments ?? (
+        <Row>
+          <Col className="VideoCard mt-3">
+            <OnboardingVideoCard />
+          </Col>
+        </Row>
+      )}
     </>
   );
 };

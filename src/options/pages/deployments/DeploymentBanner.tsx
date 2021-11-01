@@ -50,7 +50,8 @@ const activatePopover = (
       <p className="mb-0">
         It looks like your team has some <strong>bricks</strong> ready for you!
         You will see this banner every time new team bricks are available. Click
-        this button to <strong>allow permissions</strong> and get up to speed!
+        this button to <strong>allow permissions</strong> and{" "}
+        <strong>activate your team workflows</strong>!
       </p>
     </Popover.Content>
   </Popover>
