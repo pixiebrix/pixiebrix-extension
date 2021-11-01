@@ -60,6 +60,29 @@ describe("apiVersion: v1", () => {
     );
     expect(result).toStrictEqual({ message: "hello, bar" });
   });
+
+  test("pass block output in context to next block", async () => {
+    const pipeline: BlockPipeline = [
+      {
+        id: echoBlock.id,
+        config: { message: "{{inputArg}}" },
+      },
+      {
+        id: contextBlock.id,
+        config: {},
+      },
+    ];
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({ inputArg: "bar" }),
+      testOptions("v1")
+    );
+    expect(result).toStrictEqual({
+      "@input": { inputArg: "bar" },
+      "@options": {},
+      message: "bar",
+    });
+  });
 });
 
 describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
