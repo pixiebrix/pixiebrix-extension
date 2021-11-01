@@ -53,7 +53,7 @@
     "csharp-helpers": "^0.9.3",
     "css-selector-generator": "^3.4.4",
     "dompurify": "^2.3.0",
-    "exifreader": "^3.16.0",
+    "exifreader": "^4.0.0",
     "export-to-csv": "^0.2.1",
     "file-saver": "^2.0.5",
     "formik": "^2.2.9",
