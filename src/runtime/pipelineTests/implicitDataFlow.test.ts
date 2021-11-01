@@ -24,6 +24,7 @@ import {
   contextBlock,
   echoBlock,
   simpleInput,
+  teapotBlock,
   testOptions,
 } from "./pipelineTestHelpers";
 import { UnknownObject } from "@/types";
@@ -38,7 +39,7 @@ jest.mock("@/background/trace");
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(echoBlock, contextBlock);
+  blockRegistry.register(echoBlock, contextBlock, teapotBlock);
 });
 
 describe("apiVersion: v1", () => {
@@ -81,6 +82,38 @@ describe("apiVersion: v1", () => {
       "@input": { inputArg: "bar" },
       "@options": {},
       message: "bar",
+    });
+  });
+
+  test("pass block output only single block", async () => {
+    // The outputs from blocks is not accumulated, it's only passed a single step
+    // See: https://github.com/pixiebrix/pixiebrix-extension/blob/release/1.4.4/src/blocks/combinators.ts#L455
+    // See: https://github.com/pixiebrix/pixiebrix-extension/blob/release/1.4.4/src/blocks/combinators.ts#L175
+
+    const pipeline: BlockPipeline = [
+      {
+        id: echoBlock.id,
+        config: { message: "{{inputArg}}" },
+      },
+      {
+        id: teapotBlock.id,
+        config: {},
+      },
+      {
+        id: contextBlock.id,
+        config: {},
+      },
+    ];
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({ inputArg: "bar" }),
+      testOptions("v1")
+    );
+    expect(result).toStrictEqual({
+      "@input": { inputArg: "bar" },
+      "@options": {},
+      // `message` is not in the context because it's only passed a single step
+      prop: "I'm a teapot",
     });
   });
 });
