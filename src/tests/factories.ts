@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { array, define } from "cooky-cutter";
+import { define, FactoryConfig } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { getType } from "@/blocks/util";
 import {
@@ -32,11 +32,6 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { Permissions } from "webextension-polyfill";
 import { BaseExtensionState } from "@/devTools/editor/extensionPoints/elementConfig";
 import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
-import {
-  contextBlock,
-  echoBlock,
-  identityBlock,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
 
 const config = {
   apiVersion: "v2" as ApiVersion,
@@ -141,7 +136,7 @@ export const blockConfigFactory = define<BlockConfig>({
 });
 
 export const pipelineFactory: (
-  blockConfigProps?: Partial<BlockConfig>
+  blockConfigOverride?: FactoryConfig<BlockConfig>
 ) => BlockPipeline = (blockConfigProps) => {
   const blockConfig1 = blockConfigFactory(blockConfigProps);
   const blockConfig2 = blockConfigFactory(blockConfigProps);
@@ -150,19 +145,15 @@ export const pipelineFactory: (
 };
 
 export const baseExtensionStateFactory = define<BaseExtensionState>({
-  blockPipeline: pipelineFactory,
+  blockPipeline: () => pipelineFactory(),
 });
 
-const baseFormStateLike = {
+const internalTriggerFormStateFactory = define<TriggerFormState>({
   apiVersion: "v2" as ApiVersion,
   uuid: () => uuidv4(),
   installed: true,
   optionsArgs: null as UserOptions,
   services: [] as ServiceDependency[],
-};
-
-export const triggerFormStateFactory = define<TriggerFormState>({
-  ...baseFormStateLike,
 
   type: "trigger",
   label: (i: number) => `Element ${i}`,
@@ -177,3 +168,19 @@ export const triggerFormStateFactory = define<TriggerFormState>({
     },
   },
 });
+
+export const triggerFormStateFactory = (
+  override: FactoryConfig<TriggerFormState>,
+  blockConfigOverride?: FactoryConfig<BlockConfig>
+) => {
+  if (blockConfigOverride) {
+    return internalTriggerFormStateFactory({
+      ...override,
+      extension: baseExtensionStateFactory({
+        blockPipeline: pipelineFactory(blockConfigOverride),
+      }),
+    });
+  }
+
+  return internalTriggerFormStateFactory(override);
+};

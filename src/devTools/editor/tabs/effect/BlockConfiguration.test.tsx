@@ -15,23 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from "react";
-import testItRenders from "@/tests/testItRenders";
+import React from "react";
 import BlockConfiguration from "./BlockConfiguration";
 import { createFormikTemplate } from "@/tests/formHelpers";
-import {
-  blockConfigFactory,
-  blockFactory,
-  TEST_BLOCK_ID,
-  triggerFormStateFactory,
-} from "@/tests/factories";
-import { RegistryId } from "@/core";
+import { blockFactory, triggerFormStateFactory } from "@/tests/factories";
 import blockRegistry from "@/blocks/registry";
-import {
-  contextBlock,
-  echoBlock,
-  identityBlock,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { render } from "@testing-library/react";
 import { waitForEffect } from "@/tests/testHelpers";
 
@@ -40,15 +29,16 @@ beforeAll(() => {
   blockRegistry.clear();
 });
 
-afterAll(() => {
+afterEach(() => {
   // Being nice to other tests
   blockRegistry.clear();
 });
 
 test("renders", async () => {
-  const block = blockFactory();
-  // blockRegistry.register(block);
-  const FormikTemplate = createFormikTemplate(triggerFormStateFactory());
+  const block = blockFactory(echoBlock);
+  blockRegistry.register(block);
+  const initialState = triggerFormStateFactory({}, { id: block.id });
+  const FormikTemplate = createFormikTemplate(initialState);
   const rendered = render(
     <FormikTemplate>
       <BlockConfiguration name="testBlockConfiguration" blockId={block.id} />
@@ -58,5 +48,4 @@ test("renders", async () => {
   await waitForEffect();
 
   expect(rendered.asFragment()).toMatchSnapshot();
-  // blockRegistry.clear();
 });

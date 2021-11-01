@@ -58,7 +58,7 @@ test.each(elementTypesToValidate)(
     const pipelineErrors: FormikErrorTree = {};
 
     const allBlocks = await blocksMapFactory();
-    Object.values(allBlocks)[1].render = jest.fn();
+    (Object.values(allBlocks)[1] as any).render = jest.fn();
 
     validateRenderers(
       pipelineErrors,
