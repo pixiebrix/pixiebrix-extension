@@ -206,7 +206,7 @@
     "axios-mock-adapter": "^1.19.0",
     "babel-jest": "^27.0.6",
     "babel-loader": "^8.2.2",
-    "chromedriver": "^94.0.0",
+    "chromedriver": "^95.0.0",
     "compass-mixins": "^0.12.10",
     "concurrently": "^6.2.1",
     "copy-webpack-plugin": "^9.0.1",
