@@ -30,8 +30,15 @@ import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { Permissions } from "webextension-polyfill";
-import { BaseExtensionState } from "@/devTools/editor/extensionPoints/elementConfig";
+import {
+  BaseExtensionState,
+  ElementType,
+} from "@/devTools/editor/extensionPoints/elementConfig";
 import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
+import menuItem from "@/devTools/editor/extensionPoints/menuItem";
+import trigger from "@/devTools/editor/extensionPoints/trigger";
+import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 
 const config = {
   apiVersion: "v2" as ApiVersion,
@@ -132,7 +139,7 @@ export const blocksMapFactory: (
 export const blockConfigFactory = define<BlockConfig>({
   instanceId: () => uuidv4(),
   id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
-  config: {},
+  config: () => ({}),
 });
 
 export const pipelineFactory: (
@@ -148,39 +155,79 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
 
-const internalTriggerFormStateFactory = define<TriggerFormState>({
+const internalFormStateFactory = define<FormState>({
   apiVersion: "v2" as ApiVersion,
   uuid: () => uuidv4(),
   installed: true,
   optionsArgs: null as UserOptions,
   services: [] as ServiceDependency[],
 
-  type: "trigger",
+  type: "panel" as ElementType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   extensionPoint: {
     metadata: null,
     definition: {
-      rootSelector: "body",
-      trigger: "click",
       reader: validateRegistryId("test/reader"),
       isAvailable: null,
     },
   },
-});
+} as any);
+
+export const formStateFactory = (
+  override: FactoryConfig<FormState>,
+  blockConfigOverride?: FactoryConfig<BlockConfig>
+) => {
+  if (blockConfigOverride) {
+    return internalFormStateFactory({
+      ...override,
+      extension: baseExtensionStateFactory({
+        blockPipeline: pipelineFactory(blockConfigOverride),
+      }),
+    } as any);
+  }
+
+  return internalFormStateFactory(override);
+};
 
 export const triggerFormStateFactory = (
   override: FactoryConfig<TriggerFormState>,
   blockConfigOverride?: FactoryConfig<BlockConfig>
 ) => {
-  if (blockConfigOverride) {
-    return internalTriggerFormStateFactory({
-      ...override,
-      extension: baseExtensionStateFactory({
-        blockPipeline: pipelineFactory(blockConfigOverride),
-      }),
-    });
-  }
+  const defaultTriggerProps = trigger.fromNativeElement(
+    "https://test.com",
+    null,
+    null
+  );
 
-  return internalTriggerFormStateFactory(override);
+  return formStateFactory(
+    {
+      ...defaultTriggerProps,
+      ...override,
+    } as any,
+    blockConfigOverride
+  );
+};
+
+export const menuItemFormStateFactory = (
+  override: FactoryConfig<TriggerFormState>,
+  blockConfigOverride?: FactoryConfig<BlockConfig>
+) => {
+  const defaultTriggerProps = menuItem.fromNativeElement(
+    "https://test.com",
+    null,
+    {
+      item: {
+        caption: "Caption for test",
+      },
+    } as ButtonSelectionResult
+  );
+
+  return formStateFactory(
+    {
+      ...defaultTriggerProps,
+      ...override,
+    } as any,
+    blockConfigOverride
+  );
 };

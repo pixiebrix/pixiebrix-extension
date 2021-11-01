@@ -18,10 +18,10 @@
 import React from "react";
 import BlockConfiguration from "./BlockConfiguration";
 import { createFormikTemplate } from "@/tests/formHelpers";
-import { blockFactory, triggerFormStateFactory } from "@/tests/factories";
+import { formStateFactory, triggerFormStateFactory } from "@/tests/factories";
 import blockRegistry from "@/blocks/registry";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { waitForEffect } from "@/tests/testHelpers";
 
 beforeAll(() => {
@@ -35,9 +35,9 @@ afterEach(() => {
 });
 
 test("renders", async () => {
-  const block = blockFactory(echoBlock);
+  const block = echoBlock;
   blockRegistry.register(block);
-  const initialState = triggerFormStateFactory({}, { id: block.id });
+  const initialState = formStateFactory({}, { id: block.id });
   const FormikTemplate = createFormikTemplate(initialState);
   const rendered = render(
     <FormikTemplate>
@@ -48,4 +48,22 @@ test("renders", async () => {
   await waitForEffect();
 
   expect(rendered.asFragment()).toMatchSnapshot();
+});
+
+test("shows root mode for trigger", async () => {
+  const block = echoBlock;
+  blockRegistry.register(block);
+  const initialState = triggerFormStateFactory({}, { id: block.id });
+  const FormikTemplate = createFormikTemplate(initialState);
+  render(
+    <FormikTemplate>
+      <BlockConfiguration name="testBlockConfiguration" blockId={block.id} />
+    </FormikTemplate>
+  );
+
+  await waitForEffect();
+
+  const rootModeSelect = screen.getByLabelText("Root Mode");
+
+  expect(rootModeSelect).not.toBeNull();
 });
