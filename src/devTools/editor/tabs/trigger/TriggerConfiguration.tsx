@@ -66,7 +66,7 @@ const TriggerConfiguration: React.FC<{
           <ConnectedFieldTemplate
             name="extensionPoint.definition.rootSelector"
             as={LocationWidget}
-            selectionMode="element"
+            selectMode="element"
             description="An element to watch"
             {...makeLockableFieldProps("Element", isLocked)}
           />

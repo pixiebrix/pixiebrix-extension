@@ -131,6 +131,15 @@ const BlockConfiguration: React.FunctionComponent<{
               <ConnectedFieldTemplate
                 name={configName("if")}
                 label="Condition"
+                description={
+                  <p>
+                    Condition determining whether or not to execute the brick.
+                    Truthy string values are&nbsp;
+                    <code>true</code>, <code>t</code>, <code>yes</code>,{" "}
+                    <code>y</code>, <code>on</code>, and <code>1</code>{" "}
+                    (case-insensitive)
+                  </p>
+                }
               />
 
               <ConnectedFieldTemplate
@@ -139,15 +148,15 @@ const BlockConfiguration: React.FunctionComponent<{
                 as={SelectWidget}
                 options={
                   [
-                    { label: "Self", value: "self" },
-                    { label: "Opener", value: "opener" },
-                    { label: "Target", value: "target" },
-                    { label: "Broadcast", value: "broadcast" },
-                    { label: "Remote", value: "remote" },
+                    { label: "Current Tab (self)", value: "self" },
+                    { label: "Opener Tab (opener)", value: "opener" },
+                    { label: "Target Tab (target)", value: "target" },
+                    { label: "All Tabs (broadcast)", value: "broadcast" },
+                    { label: "Server (remote)", value: "remote" },
                   ] as Array<Option<BlockWindow>>
                 }
                 blankValue={DEFAULT_WINDOW_VALUE}
-                description={<p>Select where to execute the brick.</p>}
+                description="Where to execute the brick."
               />
             </>
           )}

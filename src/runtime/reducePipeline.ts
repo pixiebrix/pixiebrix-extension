@@ -186,6 +186,9 @@ type TraceMetadata = {
 };
 
 type RunBlockOptions = CommonOptions & {
+  /**
+   * Additional context to record with the trace entry/exit records.
+   */
   trace?: TraceMetadata;
 };
 
@@ -423,19 +426,21 @@ export async function blockReducer(
 
   const resolvedConfig = await resolveBlockConfig(blockConfig);
 
-  const props: BlockProps = {
-    args: await renderBlockArg(resolvedConfig, state, options),
-    root: selectBlockRootElement(blockConfig, root),
-    context,
-  };
-
-  const output = await runBlock(resolvedConfig, props, {
+  const blockOptions = {
     ...options,
     trace: {
       runId,
       blockInstanceId: blockConfig.instanceId,
     },
-  });
+  };
+
+  const props: BlockProps = {
+    args: await renderBlockArg(resolvedConfig, state, blockOptions),
+    root: selectBlockRootElement(blockConfig, root),
+    context,
+  };
+
+  const output = await runBlock(resolvedConfig, props, blockOptions);
 
   if (logValues) {
     console.info(`Output for block #${index + 1}: ${blockConfig.id}`, {
@@ -532,7 +537,7 @@ async function throwBlockError(
         },
       });
     } else {
-      console.warn("Can only send alert from deployment context");
+      logger.warn("Can only send alert from deployment context");
     }
   }
 

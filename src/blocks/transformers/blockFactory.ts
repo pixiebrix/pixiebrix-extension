@@ -132,7 +132,7 @@ class ExternalBlock extends Block {
     const initialValues: InitialValues = {
       input: arg,
       // OptionsArgs are set at the blueprint level. For composite bricks, the options should be passed in
-      // at part of the brick inputs
+      // as part of the brick inputs
       optionsArgs: undefined,
       // Services are passed as inputs to the brick
       serviceContext: undefined,
@@ -142,6 +142,8 @@ class ExternalBlock extends Block {
     return reducePipeline(this.component.pipeline, initialValues, {
       logger: options.logger,
       headless: options.headless,
+      // The component uses its declared version of the runtime API, regardless of what version of the runtime
+      // is used to call the the component
       ...apiVersionOptions(this.component.apiVersion),
     });
   }
