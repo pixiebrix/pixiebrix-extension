@@ -384,7 +384,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description, icon } = config.metadata;
+    const { id, name, description, icon } = cloned.metadata;
     super(id, name, description, icon);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
