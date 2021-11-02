@@ -238,14 +238,16 @@ const SchemaField: SchemaFieldComponent = (props) => {
     []
   );
 
+  const isService = isServiceField(schema);
+
   useEffect(() => {
     // Initialize any undefined/empty required fields to prevent inferring an "omit" input
-    if (!value && isRequired) {
+    if (!value && isRequired && !isService) {
       stableSetValue(inputModeOptions[0].defaultValue);
     }
-  }, [inputModeOptions, isRequired, stableSetValue, value]);
+  }, [inputModeOptions, isRequired, isService, stableSetValue, value]);
 
-  if (isServiceField(schema)) {
+  if (isService) {
     return <ServiceField {...props} />;
   }
 
