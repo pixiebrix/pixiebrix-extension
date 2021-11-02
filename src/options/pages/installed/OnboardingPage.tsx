@@ -124,15 +124,26 @@ const OnboardingPage: React.FunctionComponent = () => {
     data: organizations,
     isLoading: isOrganizationsLoading,
   } = useGetOrganizationsQuery();
-  const { hasUpdate: hasDeployments } = useDeployments();
+  const {
+    hasUpdate: hasDeployments,
+    isLoading: isDeploymentsLoading,
+  } = useDeployments();
 
   const teamRecipes = (rawRecipes ?? []).filter(
     (recipe) => recipe.sharing.organizations.length > 0
   );
 
+  console.log(
+    "loading deployments:",
+    isDeploymentsLoading,
+    "has deployments:",
+    hasDeployments
+  );
+
   const hasTeamBlueprints = teamRecipes?.length > 0;
   const hasOrganization = organizations?.length > 0;
-  const isLoading = isRecipesLoading || isOrganizationsLoading;
+  const isLoading =
+    isRecipesLoading || isOrganizationsLoading || isDeploymentsLoading;
 
   const showVideoTour = useMemo(
     () =>

@@ -16,7 +16,7 @@
  */
 
 import { Deployment } from "@/types/contract";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { blueprintPermissions, ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
@@ -52,7 +52,8 @@ async function selectDeploymentPermissions(
 }
 
 async function fetchDeployments(
-  installedExtensions: IExtension[]
+  installedExtensions: IExtension[],
+  callback: () => void
 ): Promise<Deployment[]> {
   const { data: deployments } = await (await getLinkedApiClient()).post<
     Deployment[]
@@ -61,6 +62,7 @@ async function fetchDeployments(
     version: await getExtensionVersion(),
     active: selectInstalledDeployments(installedExtensions),
   });
+  callback();
   return deployments;
 }
 
@@ -129,6 +131,7 @@ type DeploymentState = {
    * `true` iff the user needs to update their PixieBrix browser extension version to use the deployment
    */
   extensionUpdateRequired: boolean;
+  isLoading: boolean;
 };
 
 /**
@@ -159,10 +162,15 @@ function useDeployments(): DeploymentState {
   const notify = useNotifications();
   const dispatch = useDispatch();
   const installed = useSelector(selectExtensions);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [deployments] = useAsyncState(async () => fetchDeployments(installed), [
-    installed,
-  ]);
+  const [deployments] = useAsyncState(
+    async () =>
+      fetchDeployments(installed, () => {
+        setIsLoading(false);
+      }),
+    [installed]
+  );
 
   const [updatedDeployments, extensionUpdateRequired] = useMemo(() => {
     const isUpdated = makeUpdatedFilter(installed);
@@ -231,6 +239,7 @@ function useDeployments(): DeploymentState {
     hasUpdate: updatedDeployments?.length > 0,
     update: handleUpdate,
     extensionUpdateRequired,
+    isLoading,
   };
 }
 
