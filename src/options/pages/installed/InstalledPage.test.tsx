@@ -155,7 +155,7 @@ const getRenderedOnboardingInformation = () => {
   const createBrickColumn = screen.queryByText("Create your Own");
 
   const activateFromDeploymentBannerColumn = screen.queryByText(
-    "You have Team Bricks to activate!"
+    "You have Team Bricks ready to activate!"
   );
 
   const activateTeamBlueprintsColumn = screen.queryByText(
@@ -283,40 +283,33 @@ describe("OnboardingPage", () => {
     expect(rendered.videoTour).not.toBeNull();
   });
 
-  test("no flickering while loading organizations", () => {
-    mockOnboardingLoadingState({
-      isOrganizationsLoading: true,
-    });
+  function expectLoading() {
     const { container } = render(
       <StaticRouter>
         <OnboardingPage />
       </StaticRouter>
     );
     expect(container.querySelector("#OnboardingSpinner")).not.toBeNull();
+  }
+
+  test("no flickering while loading organizations", () => {
+    mockOnboardingLoadingState({
+      isOrganizationsLoading: true,
+    });
+    expectLoading();
   });
 
   test("no flickering while loading deployments", () => {
     mockOnboardingLoadingState({
       isDeploymentsLoading: true,
     });
-    const { container } = render(
-      <StaticRouter>
-        <OnboardingPage />
-      </StaticRouter>
-    );
-    expect(container.querySelector("#OnboardingSpinner")).not.toBeNull();
+    expectLoading();
   });
 
   test("no flickering while loading blueprints", () => {
     mockOnboardingLoadingState({
       isTeamBlueprintsLoading: true,
     });
-    const { container } = render(
-      <StaticRouter>
-        <OnboardingPage />
-      </StaticRouter>
-    );
-
-    expect(container.querySelector("#OnboardingSpinner")).not.toBeNull();
+    expectLoading();
   });
 });

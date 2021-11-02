@@ -154,8 +154,8 @@ export const InstalledPage: React.FunctionComponent<{
           <div className="pb-4">
             {noExtensions ? (
               <p>
-                Once you&apos;ve activated templates or created your own bricks,
-                you&apos;ll be able to manage them here
+                Once you&apos;ve activated blueprints or created your own
+                bricks, you&apos;ll be able to manage them here
               </p>
             ) : (
               <p>

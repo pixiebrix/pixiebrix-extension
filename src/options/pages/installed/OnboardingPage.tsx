@@ -44,6 +44,39 @@ const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
   </Col>
 );
 
+const ActivateTeamBlueprintsColumn: React.FunctionComponent = () => (
+  <Col xs={6}>
+    <h4>Activate Team Blueprints</h4>
+    <p>Browse and activate team bricks in the My Blueprints page.</p>
+    <Link to="/blueprints" className="btn btn-info">
+      Open My Blueprints
+    </Link>
+  </Col>
+);
+
+const ActivateFromDeploymentBannerColumn: React.FunctionComponent = () => (
+  <Col>
+    <h4>You have Team Bricks ready to activate!</h4>
+    <p className="mb-0">
+      Click the <strong className="text-primary">Activate</strong> button in the{" "}
+      <strong className="text-info">blue banner above</strong> to start using
+      your team bricks. You will see this banner every time your team deploys
+      new or updated bricks for you to use.
+    </p>
+  </Col>
+);
+
+const ContactTeamAdminColumn: React.FunctionComponent = () => (
+  <Col xs={6}>
+    <h4>Activate Team Blueprints</h4>
+    <p className="mb-0">
+      It looks like your team hasn&apos;t made any bricks available to you yet.
+      <strong>Contact your team admin</strong> to get access to your team&apos;s
+      bricks.
+    </p>
+  </Col>
+);
+
 const CreateBrickColumn: React.FunctionComponent = () => (
   <Col xs={6}>
     <h4>Create your Own</h4>
@@ -59,38 +92,6 @@ const CreateBrickColumn: React.FunctionComponent = () => (
     >
       <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Open Quickstart Guide
     </a>
-  </Col>
-);
-
-const ActivateTeamBlueprintsColumn: React.FunctionComponent = () => (
-  <Col xs={6}>
-    <h4>Activate Team Blueprints</h4>
-    <p>Browse and activate team bricks in the Blueprints page.</p>
-    <Link to={"/blueprints"} className="btn btn-info">
-      My Blueprints
-    </Link>
-  </Col>
-);
-
-const ActivateFromDeploymentBannerColumn: React.FunctionComponent = () => (
-  <Col>
-    <h4>You have Team Bricks to activate!</h4>
-    <p className="mb-0">
-      Click the <strong className="text-primary">Activate</strong> button in the{" "}
-      <strong className="text-info">blue banner above</strong> to allow
-      permissions and start using your team bricks. You will see this banner
-      every time your team deploys new bricks for you to use.
-    </p>
-  </Col>
-);
-
-const ContactTeamAdminColumn: React.FunctionComponent = () => (
-  <Col xs={6}>
-    <h4>Activate Team Blueprints</h4>
-    <p className="mb-0">
-      It looks like your team hasn&apos;t made any bricks available to you yet.
-      <strong>Contact your team admin</strong> to get access to bricks.
-    </p>
   </Col>
 );
 
