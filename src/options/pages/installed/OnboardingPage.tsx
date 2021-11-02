@@ -20,8 +20,6 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import AuthContext from "@/auth/AuthContext";
-import useFetch from "@/hooks/useFetch";
-import { RecipeDefinition } from "@/types/definitions";
 import { Link } from "react-router-dom";
 import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";

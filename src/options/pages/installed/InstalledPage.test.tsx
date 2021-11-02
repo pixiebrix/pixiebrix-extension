@@ -160,7 +160,7 @@ const getRenderedOnboardingInformation = (screen) => {
   };
 };
 
-describe("User Onboarding", () => {
+describe("OnboardingPage", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
