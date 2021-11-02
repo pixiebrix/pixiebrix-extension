@@ -133,13 +133,6 @@ const OnboardingPage: React.FunctionComponent = () => {
     (recipe) => recipe.sharing.organizations.length > 0
   );
 
-  console.log(
-    "loading deployments:",
-    isDeploymentsLoading,
-    "has deployments:",
-    hasDeployments
-  );
-
   const hasTeamBlueprints = teamRecipes?.length > 0;
   const hasOrganization = organizations?.length > 0;
   const isLoading =
