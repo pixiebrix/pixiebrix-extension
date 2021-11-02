@@ -16,13 +16,16 @@
  */
 
 import React, { useContext, useMemo } from "react";
-import { Button, Card, Col, Popover, Row } from "react-bootstrap";
+import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import AuthContext from "@/auth/AuthContext";
 import useFetch from "@/hooks/useFetch";
 import { RecipeDefinition } from "@/types/definitions";
 import { Link } from "react-router-dom";
+import { useGetOrganizationsQuery } from "@/services/api";
+import useDeployments from "@/hooks/useDeployments";
+import GridLoader from "react-spinners/GridLoader";
 
 const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
   <Col xs={6}>
@@ -63,7 +66,7 @@ const CreateBrickColumn: React.FunctionComponent = () => (
 
 const ActivateTeamBlueprintsColumn: React.FunctionComponent = () => (
   <Col xs={6}>
-    <h4>Browse Team Blueprints</h4>
+    <h4>Activate Team Blueprints</h4>
     <p>Browse and activate team bricks in the Blueprints page.</p>
     <Link to={"/blueprints"} className="btn btn-info">
       My Blueprints
@@ -73,7 +76,7 @@ const ActivateTeamBlueprintsColumn: React.FunctionComponent = () => (
 
 const ActivateFromDeploymentBannerColumn: React.FunctionComponent = () => (
   <Col>
-    <h4>Activate Team Blueprints</h4>
+    <h4>You have Team Bricks to activate!</h4>
     <p className="mb-0">
       Click the <strong className="text-primary">Activate</strong> button in the{" "}
       <strong className="text-info">blue banner above</strong> to allow
@@ -112,19 +115,24 @@ const OnboardingVideoCard: React.FunctionComponent = () => (
   </Card>
 );
 
-const OnboardingPage: React.FunctionComponent<{
-  hasOrganization: boolean;
-  hasDeployments: boolean;
-  isLoading: boolean;
-}> = ({ hasOrganization, hasDeployments, isLoading }) => {
+const OnboardingPage: React.FunctionComponent = () => {
   const { flags } = useContext(AuthContext);
-  const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
+  const { data: rawRecipes, isLoading: isRecipesLoading } = useFetch<
+    RecipeDefinition[]
+  >("/api/recipes/");
+  const {
+    data: organizations,
+    isLoading: isOrganizationsLoading,
+  } = useGetOrganizationsQuery();
+  const { hasUpdate: hasDeployments } = useDeployments();
 
   const teamRecipes = (rawRecipes ?? []).filter(
     (recipe) => recipe.sharing.organizations.length > 0
   );
 
-  const hasTeamBlueprints = teamRecipes.length > 0;
+  const hasTeamBlueprints = teamRecipes?.length > 0;
+  const hasOrganization = organizations?.length > 0;
+  const isLoading = isRecipesLoading || isOrganizationsLoading;
 
   const showVideoTour = useMemo(
     () =>
@@ -163,24 +171,28 @@ const OnboardingPage: React.FunctionComponent<{
 
   return (
     <>
-      {!flags.includes("restricted-marketplace") && !isLoading && (
-        <Row>
-          <Col className="VideoCard">
-            <Card>
-              <Card.Header>Activate Bricks</Card.Header>
-              <Card.Body>
-                <Row>{onBoardingInformation}</Row>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      )}
-      {showVideoTour && (
-        <Row>
-          <Col className="VideoCard mt-3">
-            <OnboardingVideoCard />
-          </Col>
-        </Row>
+      {isLoading ? (
+        <GridLoader />
+      ) : (
+        <>
+          <Row>
+            <Col className="VideoCard">
+              <Card>
+                <Card.Header>Activate Bricks</Card.Header>
+                <Card.Body>
+                  <Row>{onBoardingInformation}</Row>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+          {showVideoTour && (
+            <Row>
+              <Col className="VideoCard mt-3">
+                <OnboardingVideoCard />
+              </Col>
+            </Row>
+          )}
+        </>
       )}
     </>
   );

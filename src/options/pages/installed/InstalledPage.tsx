@@ -21,7 +21,7 @@ import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link, Redirect, Route } from "react-router-dom";
-import { Col, Overlay, OverlayTrigger, Popover, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/messenger/api";
@@ -47,8 +47,6 @@ import ExtensionLogsModal from "./ExtensionLogsModal";
 import { RootState } from "@/options/store";
 import { LogsContext } from "./installedPageSlice";
 import { selectShowLogsContext } from "./installedPageSelectors";
-import { useGetOrganizationsQuery } from "@/services/api";
-import useDeployments from "@/hooks/useDeployments";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -58,8 +56,6 @@ export const InstalledPage: React.FunctionComponent<{
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove, push }) => {
   const { flags } = useContext(AuthContext);
-  const { data: organizations, isLoading } = useGetOrganizationsQuery();
-  const { hasUpdate } = useDeployments();
 
   const [allExtensions, , cloudError] = useAsyncState(
     async () => {
@@ -195,13 +191,7 @@ export const InstalledPage: React.FunctionComponent<{
           </div>
         </Col>
       </Row>
-      {noExtensions && (
-        <OnboardingPage
-          hasDeployments={hasUpdate}
-          hasOrganization={organizations?.length > 0}
-          isLoading={isLoading}
-        />
-      )}
+      {noExtensions && <OnboardingPage />}
 
       {resolvedExtensions?.length > 0 && (
         <ActiveBricksCard
