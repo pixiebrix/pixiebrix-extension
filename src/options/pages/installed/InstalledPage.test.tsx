@@ -28,15 +28,29 @@ jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
 }));
 
+// eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
+jest.mock("@/hooks/useNotifications", () => {
+  // We're not asserting any specific calls yet, so just pass generic mocks
+  return () => ({
+    success: jest.fn(),
+    info: jest.fn(),
+    warning: jest.fn(),
+    error: jest.fn(),
+    userError: jest.fn(),
+  });
+});
+
 // TODO: Return different deployment data per test
-jest.mock("@/hooks/useDeployments", () => ({
-  useDeployments: () => ({
+// eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
+jest.mock("@/hooks/useDeployments", () => {
+  return () => ({
     hasUpdate: true,
     update: () => {},
     extensionUpdateRequired: false,
     isLoading: false,
-  }),
-}));
+    error: undefined as unknown,
+  });
+});
 
 describe("InstalledPage", () => {
   afterAll(() => {
@@ -44,7 +58,7 @@ describe("InstalledPage", () => {
   });
 
   jest.mock("@/hooks/common", () => ({
-    useAsyncState: jest.fn().mockReturnValue([[], false, null, jest.fn()]),
+    useAsyncState: jest.fn().mockReturnValue([[], false, undefined, jest.fn()]),
   }));
 
   test("doesn't show ActiveBrick card when no extensions installed", () => {
@@ -67,7 +81,7 @@ describe("User Onboarding", () => {
     useAsyncState: jest.fn().mockReturnValue([[], false, null, jest.fn()]),
   }));
 
-  test("user with restricted-onboarding flag doesn't see marketplace link", () => {
+  test("user with `restricted-onboarding` flag doesn't see marketplace link", () => {
     const { container } = render(
       <AuthContext.Provider
         value={{

@@ -15,64 +15,101 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useReducer } from "react";
 import { useAsyncEffect } from "use-async-effect";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type StateFactory<T> = Promise<T> | (() => Promise<T>);
 
 export type AsyncState<T> = [
+  /**
+   * The value, or `undefined` if the state is loading or there was an error computing the state
+   */
   T | undefined,
+  /**
+   * True if the async state is loading/
+   */
   boolean,
-  unknown,
+  /**
+   * Error or undefined if there was no error computing the state
+   */
+  unknown | undefined,
+  /**
+   * Method to re-calculate the value. Does not set `isLoading` flag
+   */
   () => Promise<void>
 ];
 
+type State = {
+  data: unknown;
+  isLoading: boolean;
+  error: unknown;
+};
+
+const defaultAsyncState: State = {
+  data: undefined,
+  isLoading: true,
+  error: undefined,
+};
+
+const slice = createSlice({
+  name: "asyncSlice",
+  initialState: defaultAsyncState,
+  reducers: {
+    start: (state) => {
+      state.isLoading = true;
+      state.error = undefined;
+      state.data = undefined;
+    },
+    success: (state, action: PayloadAction<{ data: unknown }>) => {
+      state.isLoading = false;
+      state.data = action.payload.data;
+      state.error = undefined;
+    },
+    failure: (state, action: PayloadAction<{ error: unknown }>) => {
+      state.isLoading = false;
+      state.data = false;
+      state.error = action.payload.error ?? "Error producing data";
+    },
+  },
+});
+
 export function useAsyncState<T>(
-  promiseFactory: StateFactory<T>,
+  promiseOrGenerator: StateFactory<T>,
   dependencies: unknown[] = [],
   initialState?: T | undefined
 ): AsyncState<T> {
-  const [data, setData] = useState<T | undefined>(initialState);
-  const [isLoading, setLoading] = useState(true);
-  const [error, setError] = useState<unknown>();
+  const [{ data, isLoading, error }, dispatch] = useReducer(slice.reducer, {
+    ...defaultAsyncState,
+    isLoading: initialState === undefined,
+    data: initialState,
+  });
 
   const recalculate = useCallback(async () => {
     try {
-      const promiseResult = await (typeof promiseFactory === "function"
-        ? promiseFactory()
-        : promiseFactory);
-      setData(promiseResult);
+      const promiseResult = await (typeof promiseOrGenerator === "function"
+        ? promiseOrGenerator()
+        : promiseOrGenerator);
+      dispatch(slice.actions.success({ data: promiseResult }));
     } catch (error: unknown) {
-      // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument
-      setData(undefined);
-      setError(error ?? "Error producing data");
-    } finally {
-      setLoading(false);
+      dispatch(slice.actions.failure({ error }));
     }
-  }, [setData, setLoading, setError, promiseFactory]);
+  }, [dispatch, promiseOrGenerator]);
 
   useAsyncEffect(async (isMounted) => {
-    setLoading(true);
-    // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument
-    setError(undefined);
+    dispatch(slice.actions.start());
     try {
-      const promiseResult = await (typeof promiseFactory === "function"
-        ? promiseFactory()
-        : promiseFactory);
+      const promiseResult = await (typeof promiseOrGenerator === "function"
+        ? promiseOrGenerator()
+        : promiseOrGenerator);
       if (!isMounted()) return;
-      setData(promiseResult);
+      dispatch(slice.actions.success({ data: promiseResult }));
     } catch (error: unknown) {
       if (isMounted()) {
-        // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument
-        setData(undefined);
-        setError(error ?? "Error producing data");
-      }
-    } finally {
-      if (isMounted()) {
-        setLoading(false);
+        dispatch(slice.actions.failure({ error }));
       }
     }
   }, dependencies);
 
-  return [data, isLoading, error, recalculate];
+  return [data as T, isLoading, error, recalculate];
 }

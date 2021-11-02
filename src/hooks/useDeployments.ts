@@ -16,7 +16,7 @@
  */
 
 import { Deployment } from "@/types/contract";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { blueprintPermissions, ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
@@ -52,8 +52,7 @@ async function selectDeploymentPermissions(
 }
 
 async function fetchDeployments(
-  installedExtensions: IExtension[],
-  callback: () => void
+  installedExtensions: IExtension[]
 ): Promise<Deployment[]> {
   const { data: deployments } = await (await getLinkedApiClient()).post<
     Deployment[]
@@ -62,7 +61,6 @@ async function fetchDeployments(
     version: await getExtensionVersion(),
     active: selectInstalledDeployments(installedExtensions),
   });
-  callback();
   return deployments;
 }
 
@@ -131,7 +129,16 @@ type DeploymentState = {
    * `true` iff the user needs to update their PixieBrix browser extension version to use the deployment
    */
   extensionUpdateRequired: boolean;
+
+  /**
+   * `true` when fetching the available deployments
+   */
   isLoading: boolean;
+
+  /**
+   * The error if fetching available deployments failed, or undefined if loading/deployments were successfully fetched
+   */
+  error: unknown | undefined;
 };
 
 /**
@@ -161,25 +168,21 @@ function checkExtensionUpdateRequired(deployments: Deployment[]): boolean {
 function useDeployments(): DeploymentState {
   const notify = useNotifications();
   const dispatch = useDispatch();
-  const installed = useSelector(selectExtensions);
-  const [isLoading, setIsLoading] = useState(true);
+  const installedExtensions = useSelector(selectExtensions);
 
-  const [deployments] = useAsyncState(
-    async () =>
-      fetchDeployments(installed, () => {
-        setIsLoading(false);
-      }),
-    [installed]
+  const [deployments, isLoading, fetchError] = useAsyncState(
+    async () => fetchDeployments(installedExtensions),
+    [installedExtensions]
   );
 
   const [updatedDeployments, extensionUpdateRequired] = useMemo(() => {
-    const isUpdated = makeUpdatedFilter(installed);
+    const isUpdated = makeUpdatedFilter(installedExtensions);
     const updatedDeployments = (deployments ?? []).filter((x) => isUpdated(x));
     return [
       updatedDeployments,
       checkExtensionUpdateRequired(updatedDeployments),
     ];
-  }, [installed, deployments]);
+  }, [installedExtensions, deployments]);
 
   const handleUpdate = useCallback(async () => {
     if (!deployments) {
@@ -230,16 +233,17 @@ function useDeployments(): DeploymentState {
       return;
     }
 
-    activateDeployments(dispatch, deployments, installed);
+    activateDeployments(dispatch, deployments, installedExtensions);
 
     notify.success("Activated team bricks");
-  }, [deployments, dispatch, notify, installed]);
+  }, [deployments, dispatch, notify, installedExtensions]);
 
   return {
     hasUpdate: updatedDeployments?.length > 0,
     update: handleUpdate,
     extensionUpdateRequired,
     isLoading,
+    error: fetchError,
   };
 }
 
