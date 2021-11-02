@@ -18,6 +18,20 @@
 import { renderExplicit, renderImplicit } from "@/runtime/mapArgs";
 import Mustache from "mustache";
 import { engineRenderer } from "@/runtime/renderers";
+import blockRegistry from "@/blocks/registry";
+import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
+
+beforeEach(() => {
+  blockRegistry.clear();
+  blockRegistry.register(echoBlock);
+});
+
+function expr(type: string, value: unknown) {
+  return {
+    __type__: type,
+    __value__: value,
+  };
+}
 
 describe("renderExplicit", () => {
   test("render var path", async () => {
@@ -39,6 +53,63 @@ describe("renderExplicit", () => {
 
     expect(rendered).toEqual({
       foo: "bar!",
+    });
+  });
+
+  describe("repeat expression", () => {
+    test("render repeat with default elementKey", async () => {
+      const rendered = await renderExplicit(
+        {
+          foo: expr("repeat", {
+            data: expr("var", "array"),
+            element: expr("mustache", "{{ element }}!"),
+          }),
+        },
+        { array: ["bar", "baz"] }
+      );
+
+      expect(rendered).toEqual({
+        foo: ["bar!", "baz!"],
+      });
+    });
+
+    test("render repeat with custom elementKey", async () => {
+      const rendered = await renderExplicit(
+        {
+          foo: expr("repeat", {
+            data: expr("var", "array"),
+            elementKey: "myKey",
+            element: expr("mustache", "{{ myKey }}!"),
+          }),
+        },
+        { array: ["bar", "baz"] }
+      );
+
+      expect(rendered).toEqual({
+        foo: ["bar!", "baz!"],
+      });
+    });
+  });
+
+  describe("brick expression", () => {
+    test("render repeat with default elementKey", async () => {
+      const rendered = await renderExplicit(
+        {
+          foo: expr("brick", {
+            id: echoBlock.id,
+            config: {
+              message: expr("mustache", "{{ value }}!"),
+            },
+          }),
+        },
+        { value: "bar" }
+      );
+
+      expect(rendered).toEqual({
+        foo: {
+          message: "bar!",
+        },
+      });
     });
   });
 });

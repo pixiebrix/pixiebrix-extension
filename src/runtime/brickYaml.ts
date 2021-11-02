@@ -43,11 +43,53 @@ function createExpression(tag: string): yaml.Type {
   });
 }
 
+const RepeatType = new yaml.Type("!repeat", {
+  kind: "mapping",
+
+  resolve: (data) =>
+    typeof data === "object" && "data" in data && "element" in data,
+
+  construct: (data) => ({
+    __type__: "repeat",
+    __value__: data,
+  }),
+
+  predicate: (data) =>
+    typeof data === "object" &&
+    "__type__" in data &&
+    (data as UnknownObject).__type__ === "repeat",
+
+  represent: (data) => (data as UnknownObject).__value__,
+});
+
+const BrickType = new yaml.Type("!brick", {
+  kind: "mapping",
+
+  resolve: (data) =>
+    typeof data === "object" && "id" in data && "config" in data,
+
+  construct: (data) => ({
+    __type__: "repeat",
+    __value__: data,
+  }),
+
+  predicate: (data) =>
+    typeof data === "object" &&
+    "__type__" in data &&
+    (data as UnknownObject).__type__ === "brick",
+
+  represent: (data) => (data as UnknownObject).__value__,
+});
+
 const RUNTIME_SCHEMA = yaml.DEFAULT_SCHEMA.extend([
   createExpression("var"),
   createExpression("mustache"),
-  createExpression("handlebars"),
   createExpression("nunjucks"),
+  createExpression("handlebars"),
+
+  // Control flow
+  RepeatType,
+  BrickType,
 ]);
 
 /**

@@ -34,6 +34,28 @@ describe("loadYaml", () => {
       },
     });
   });
+
+  test("deserialize repeat", async () => {
+    expect(
+      loadBrickYaml(
+        "foo: !repeat \n  data: !var a.b.c\n  element: !nunjucks '{{item | upper}}'\n"
+      )
+    ).toEqual({
+      foo: {
+        __type__: "repeat",
+        __value__: {
+          data: {
+            __type__: "var",
+            __value__: "a.b.c",
+          },
+          element: {
+            __type__: "nunjucks",
+            __value__: "{{item | upper}}",
+          },
+        },
+      },
+    });
+  });
 });
 
 describe("dumpYaml", () => {
@@ -46,5 +68,27 @@ describe("dumpYaml", () => {
     });
 
     expect(dumped).toBe("foo: !var a.b.c\n");
+  });
+
+  test("serialize repeat", () => {
+    const dumped = dumpBrickYaml({
+      foo: {
+        __type__: "repeat",
+        __value__: {
+          data: {
+            __type__: "var",
+            __value__: "a.b.c",
+          },
+          element: {
+            __type__: "nunjucks",
+            __value__: "{{item | upper}}",
+          },
+        },
+      },
+    });
+
+    expect(dumped).toBe(
+      "foo: !repeat \n  data: !var a.b.c\n  element: !nunjucks '{{item | upper}}'\n"
+    );
   });
 });

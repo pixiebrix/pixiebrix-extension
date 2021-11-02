@@ -117,9 +117,9 @@ export interface Meta {
  * @see BlockConfig
  * @since 1.5.0
  */
-export type Expression = {
+export type Expression<T = string> = {
   __type__: TemplateEngine;
-  __value__: string;
+  __value__: T;
 };
 
 /**

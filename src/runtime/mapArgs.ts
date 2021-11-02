@@ -19,9 +19,18 @@ import { UnknownObject } from "@/types";
 import { Renderer, engineRenderer } from "./renderers";
 import { isPlainObject, mapValues, pickBy } from "lodash";
 import { getPropByPath, isSimplePath } from "./pathHelpers";
-import { Expression, TemplateEngine } from "@/core";
+import {
+  BlockArg,
+  BlockOptions,
+  Expression,
+  RegistryId,
+  RenderedArgs,
+  TemplateEngine,
+} from "@/core";
 import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
+import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
+import ConsoleLogger from "@/tests/ConsoleLogger";
 
 const rendererTypes: TemplateEngine[] = [
   "mustache",
@@ -31,6 +40,41 @@ const rendererTypes: TemplateEngine[] = [
 ];
 
 type Args = string | UnknownObject | UnknownObject[];
+
+type RepeatExpression = {
+  __type__: "repeat";
+  __value__: {
+    data: Expression;
+    elementKey?: string;
+    element: unknown;
+  };
+};
+
+type BrickExpression = {
+  __type__: "brick";
+  __value__: {
+    id: RegistryId;
+    config: UnknownObject;
+  };
+};
+
+const DEFAULT_ELEMENT_KEY = "element";
+
+export function isBrick(value: unknown): value is BrickExpression {
+  return (
+    isPlainObject(value) &&
+    typeof value === "object" &&
+    (value as UnknownObject).__type__ === "brick"
+  );
+}
+
+export function isRepeat(value: unknown): value is RepeatExpression {
+  return (
+    isPlainObject(value) &&
+    typeof value === "object" &&
+    (value as UnknownObject).__type__ === "repeat"
+  );
+}
 
 /**
  * Returns true if value represents an explicit expression
@@ -49,13 +93,49 @@ export function isExpression(value: unknown): value is Expression {
 }
 
 /**
- * Recursively render values
+ * Recursively render expressions and values.
  * @since 1.5.0
  */
 export async function renderExplicit(
   config: Args,
   ctxt: UnknownObject
 ): Promise<unknown> {
+  if (isBrick(config)) {
+    const { default: blockRegistry } = await import("@/blocks/registry");
+    // `id` cannot be an expression to allow for static analysis
+    const block = await blockRegistry.lookup(config.__value__.id);
+    const renderedArgs = (await renderExplicit(
+      config.__value__.config,
+      ctxt
+    )) as RenderedArgs;
+    await throwIfInvalidInput(block, renderedArgs);
+    // eslint-disable-next-line @typescript-eslint/return-await -- preserve stack trace
+    return await block.run(
+      (renderedArgs as unknown) as BlockArg,
+      {
+        ctxt: {},
+        logger: new ConsoleLogger(),
+        headless: true,
+        root: document,
+      } as BlockOptions
+    );
+  }
+
+  if (isRepeat(config)) {
+    const values = (await renderExplicit(
+      config.__value__.data,
+      ctxt
+    )) as unknown[];
+    return Promise.all(
+      values.map(async (value) =>
+        renderExplicit(config.__value__.element as Args, {
+          ...ctxt,
+          [config.__value__.elementKey ?? DEFAULT_ELEMENT_KEY]: value,
+        })
+      )
+    );
+  }
+
   if (isExpression(config)) {
     const render = await engineRenderer(config.__type__);
     return render(config.__value__, ctxt);
