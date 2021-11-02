@@ -4,6 +4,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { ApiVersion, BlockArg, BlockOptions } from "@/core";
 import { InitialValues } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { BusinessError } from "@/errors";
 
 const logger = new ConsoleLogger();
 
@@ -35,6 +36,22 @@ class EchoBlock extends Block {
   }
 }
 
+/**
+ * A block that returns a `prop` 🫖
+ * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418
+ */
+class TeapotBlock extends Block {
+  constructor() {
+    super("test/teapot", "Teapot Block");
+  }
+
+  inputSchema = propertiesToSchema({});
+
+  async run() {
+    return { prop: "I'm a teapot" };
+  }
+}
+
 class IdentityBlock extends Block {
   constructor() {
     super("test/identity", "Identity Block");
@@ -49,9 +66,27 @@ class IdentityBlock extends Block {
   }
 }
 
+class ThrowBlock extends Block {
+  constructor() {
+    super("test/throw", "Throw Block");
+  }
+
+  inputSchema = propertiesToSchema({
+    message: {
+      type: "string",
+    },
+  });
+
+  async run({ message }: BlockArg<{ message: string }>) {
+    throw new BusinessError(message);
+  }
+}
+
 export const echoBlock = new EchoBlock();
 export const contextBlock = new ContextBlock();
 export const identityBlock = new IdentityBlock();
+export const throwBlock = new ThrowBlock();
+export const teapotBlock = new TeapotBlock();
 
 /**
  * Helper method to pass only `input` to reducePipeline.

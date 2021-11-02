@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.4.5-alpha.1",
+  "version": "1.4.5-alpha.2",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -42,7 +42,7 @@
     "@uipath/robot": "1.2.5",
     "@xobotyi/scrollbar-width": "^1.9.5",
     "ace-builds": "^1.4.12",
-    "axios": "^0.21.1",
+    "axios": "^0.24.0",
     "bootstrap": "^4.6.0",
     "bootstrap-icons": "^1.5.0",
     "bootstrap-switch-button-react": "^1.2.0",
@@ -53,7 +53,7 @@
     "csharp-helpers": "^0.9.3",
     "css-selector-generator": "^3.4.4",
     "dompurify": "^2.3.0",
-    "exifreader": "^3.16.0",
+    "exifreader": "^4.0.0",
     "export-to-csv": "^0.2.1",
     "file-saver": "^2.0.5",
     "formik": "^2.2.9",
@@ -156,7 +156,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.2.1",
-    "@types/chrome": "0.0.161",
+    "@types/chrome": "0.0.162",
     "@types/data-urls": "^2.0.1",
     "@types/dompurify": "^2.2.3",
     "@types/file-saver": "^2.0.3",
@@ -209,6 +209,7 @@
     "chromedriver": "^94.0.0",
     "compass-mixins": "^0.12.10",
     "concurrently": "^6.2.1",
+    "cooky-cutter": "^1.5.4",
     "copy-webpack-plugin": "^9.0.1",
     "csp-parse": "0.0.2",
     "css-loader": "^6.2.0",
@@ -226,6 +227,7 @@
     "jest-webextension-mock": "^3.7.17",
     "min-document": "^2.19.0",
     "mini-css-extract-plugin": "^2.4.1",
+    "mockdate": "^3.0.5",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "node-sass": "^6.0.1",
     "raw-loader": "^4.0.1",
@@ -293,12 +295,12 @@
       "!**/vendor/**"
     ],
     "moduleNameMapper": {
+      "\\.module.(css|scss)$": "identity-obj-proxy",
       "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",
       "^@/(.*)$": "<rootDir>/src/$1",
       "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
       "^@contrib/(.*)$": "<rootDir>/contrib/$1",
       "^@schemas/(.*)$": "<rootDir>/schemas/$1",
-      "\\.module.(css|scss)$": "identity-obj-proxy",
       "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }

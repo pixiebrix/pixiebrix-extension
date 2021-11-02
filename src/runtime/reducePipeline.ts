@@ -186,6 +186,9 @@ type TraceMetadata = {
 };
 
 type RunBlockOptions = CommonOptions & {
+  /**
+   * Additional context to record with the trace entry/exit records.
+   */
   trace?: TraceMetadata;
 };
 
@@ -410,12 +413,14 @@ export async function blockReducer(
   const { runId, explicitDataFlow, logValues, logger } = options;
 
   // Match the override behavior in v1, where the output from previous block would override anything in the context
-  const ctxt =
+  const contextWithPreviousOutput =
     explicitDataFlow || !isPlainObject(previousOutput)
       ? context
       : { ...context, ...(previousOutput as UnknownObject) };
 
-  if (!(await shouldRunBlock(blockConfig, ctxt, options))) {
+  if (
+    !(await shouldRunBlock(blockConfig, contextWithPreviousOutput, options))
+  ) {
     logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
 
     return { output: previousOutput, context };
@@ -423,19 +428,21 @@ export async function blockReducer(
 
   const resolvedConfig = await resolveBlockConfig(blockConfig);
 
-  const props: BlockProps = {
-    args: await renderBlockArg(resolvedConfig, state, options),
-    root: selectBlockRootElement(blockConfig, root),
-    context,
-  };
-
-  const output = await runBlock(resolvedConfig, props, {
+  const blockOptions = {
     ...options,
     trace: {
       runId,
       blockInstanceId: blockConfig.instanceId,
     },
-  });
+  };
+
+  const props: BlockProps = {
+    args: await renderBlockArg(resolvedConfig, state, blockOptions),
+    root: selectBlockRootElement(blockConfig, root),
+    context: contextWithPreviousOutput,
+  };
+
+  const output = await runBlock(resolvedConfig, props, blockOptions);
 
   if (logValues) {
     console.info(`Output for block #${index + 1}: ${blockConfig.id}`, {
@@ -532,7 +539,7 @@ async function throwBlockError(
         },
       });
     } else {
-      console.warn("Can only send alert from deployment context");
+      logger.warn("Can only send alert from deployment context");
     }
   }
 

@@ -145,11 +145,15 @@ export class PropError extends Error {
  * Wrap an error with some additional context about where the error originated.
  */
 export class ContextError extends Error {
-  public readonly cause?: Error;
+  public readonly cause?: Error | ErrorObject;
 
   public readonly context?: MessageContext;
 
-  constructor(cause: Error, context?: MessageContext, message?: string) {
+  constructor(
+    cause: Error | ErrorObject,
+    context?: MessageContext,
+    message?: string
+  ) {
     super(getErrorMessage(cause, message));
     this.name = "ContextError";
     this.cause = cause;
