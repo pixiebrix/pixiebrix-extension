@@ -129,6 +129,12 @@ export function useCreate(): CreateCallback {
       element: FormState,
       { setSubmitting, setStatus }: FormikHelpers<FormState>
     ) => {
+      if (element.recipe) {
+        console.log(
+          "This extension is a part of a bluePrint. You'll get new stuff here soon."
+        );
+      }
+
       const onStepError = (error: unknown, step: string) => {
         reportError(error);
         const message = selectErrorMessage(error);

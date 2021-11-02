@@ -110,6 +110,12 @@ export interface BaseFormState<
   extensionPoint: BaseExtensionPointState;
 
   extension: TExtension;
+
+  /**
+   * Metadata about the recipe (blueprint) used to install the extension,
+   * or `undefined` if the extension is a part of a recipe.
+   */
+  recipe: Metadata | undefined;
 }
 
 /**
