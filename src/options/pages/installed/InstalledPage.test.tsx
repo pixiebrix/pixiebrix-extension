@@ -22,6 +22,7 @@ import { InstalledPage } from "./InstalledPage";
 import { StaticRouter } from "react-router-dom";
 import AuthContext from "@/auth/AuthContext";
 import { Organization } from "@/types/contract";
+import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: jest.fn(),
@@ -32,7 +33,6 @@ jest.mock("@/hooks/useDeployments", () => jest.fn());
 
 import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
-import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 
 // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
 jest.mock("@/hooks/useNotifications", () => {
@@ -70,12 +70,13 @@ const mockOnboarding = (
   hasDeployments: boolean,
   hasTeamBlueprints: boolean
 ) => {
-  useGetOrganizationsQuery.mockImplementation(() => ({
+  (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
     data: hasOrganization ? [{} as Organization] : [],
   }));
 
   // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
-  useDeployments.mockImplementation(() => {
+  (useDeployments as jest.Mock).mockImplementation(() => {
     return {
       hasUpdate: hasDeployments,
       update: () => {},
@@ -85,11 +86,12 @@ const mockOnboarding = (
     };
   });
 
-  useGetRecipesQuery.mockImplementation(() => ({
+  (useGetRecipesQuery as jest.Mock).mockImplementation(() => ({
     data: hasTeamBlueprints
       ? [
           {
             sharing: {
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
               organizations: [{} as Organization],
             },
           },
@@ -103,13 +105,14 @@ const mockOnboardingLoadingState = (
   isDeploymentsLoading: boolean,
   isTeamBlueprintsLoading: boolean
 ) => {
-  useGetOrganizationsQuery.mockImplementation(() => ({
+  (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
     data: [{} as Organization],
     isLoading: isOrganizationsLoading,
   }));
 
   // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
-  useDeployments.mockImplementation(() => {
+  (useDeployments as jest.Mock).mockImplementation(() => {
     return {
       hasUpdate: true,
       update: () => {},
@@ -119,10 +122,11 @@ const mockOnboardingLoadingState = (
     };
   });
 
-  useGetRecipesQuery.mockImplementation(() => ({
+  (useGetRecipesQuery as jest.Mock).mockImplementation(() => ({
     data: [
       {
         sharing: {
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
           organizations: [{} as Organization],
         },
       },
@@ -131,7 +135,7 @@ const mockOnboardingLoadingState = (
   }));
 };
 
-const getRenderedOnboardingInformation = (screen) => {
+const getRenderedOnboardingInformation = () => {
   const activateFromMarketplaceColumn = screen.queryByText(
     "Activate an Official Blueprint"
   );
@@ -174,7 +178,7 @@ describe("OnboardingPage", () => {
       </StaticRouter>
     );
 
-    const rendered = getRenderedOnboardingInformation(screen);
+    const rendered = getRenderedOnboardingInformation();
 
     expect(rendered.activateFromMarketplaceColumn).not.toBeNull();
     expect(rendered.createBrickColumn).not.toBeNull();
@@ -199,7 +203,7 @@ describe("OnboardingPage", () => {
       </AuthContext.Provider>
     );
 
-    const rendered = getRenderedOnboardingInformation(screen);
+    const rendered = getRenderedOnboardingInformation();
 
     expect(rendered.activateFromMarketplaceColumn).toBeNull();
     expect(rendered.contactTeamAdminColumn).not.toBeNull();
@@ -224,7 +228,7 @@ describe("OnboardingPage", () => {
       </AuthContext.Provider>
     );
 
-    const rendered = getRenderedOnboardingInformation(screen);
+    const rendered = getRenderedOnboardingInformation();
 
     expect(rendered.activateFromMarketplaceColumn).toBeNull();
     expect(rendered.activateFromDeploymentBannerColumn).not.toBeNull();
@@ -240,7 +244,7 @@ describe("OnboardingPage", () => {
       </StaticRouter>
     );
 
-    const rendered = getRenderedOnboardingInformation(screen);
+    const rendered = getRenderedOnboardingInformation();
 
     expect(rendered.activateTeamBlueprintsColumn).toBeNull();
     expect(rendered.createBrickColumn).not.toBeNull();
@@ -256,7 +260,7 @@ describe("OnboardingPage", () => {
       </StaticRouter>
     );
 
-    const rendered = getRenderedOnboardingInformation(screen);
+    const rendered = getRenderedOnboardingInformation();
 
     expect(rendered.activateFromMarketplaceColumn).not.toBeNull();
     expect(rendered.createBrickColumn).not.toBeNull();
@@ -290,6 +294,7 @@ describe("OnboardingPage", () => {
         <OnboardingPage />
       </StaticRouter>
     );
+
     expect(container.querySelector("#OnboardingSpinner")).not.toBeNull();
   });
 });
