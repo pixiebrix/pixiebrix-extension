@@ -56,6 +56,22 @@ export type SchemaPropertyType = JSONSchema7TypeName;
  */
 export type ApiVersion = "v1" | "v2" | "v3";
 
+export function isApiVersionAtLeast(
+  is: ApiVersion,
+  atLeast: ApiVersion
+): boolean {
+  if (is === "v1") {
+    return atLeast === "v1";
+  }
+
+  if (is === "v2") {
+    return atLeast === "v1" || atLeast === "v2";
+  }
+
+  // On latest, is === "v3"
+  return true;
+}
+
 export type RenderedHTML = string;
 
 export type ActionType = string;

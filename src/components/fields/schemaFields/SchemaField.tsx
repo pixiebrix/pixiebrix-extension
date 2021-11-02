@@ -16,8 +16,10 @@
  */
 
 import React, { useCallback, useContext, useEffect, useMemo } from "react";
-import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
-import { Schema } from "@/core";
+import SchemaFieldContext, {
+  getDefaultField,
+} from "@/components/fields/schemaFields/SchemaFieldContext";
+import { ApiVersion, isApiVersionAtLeast, Schema } from "@/core";
 import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import TemplateToggleWidget, {
   InputModeOption,
@@ -224,6 +226,10 @@ const SchemaField: SchemaFieldComponent = (props) => {
     () => customWidgets.find((x) => x.match(schema))?.Component,
     [schema, customWidgets]
   );
+  const LegacyField = useMemo(() => overrideWidget ?? getDefaultField(schema), [
+    overrideWidget,
+    schema,
+  ]);
   const inputModeOptions = useMemo(() => getToggleOptions(schema, isRequired), [
     isRequired,
     schema,
@@ -238,14 +244,28 @@ const SchemaField: SchemaFieldComponent = (props) => {
     []
   );
 
+  const { value: apiVerison } = useField<ApiVersion>("apiVersion")[0];
+  const useLegacyFields = !isApiVersionAtLeast(apiVerison, "v3");
+
   const isService = isServiceField(schema);
 
   useEffect(() => {
     // Initialize any undefined/empty required fields to prevent inferring an "omit" input
-    if (!value && isRequired && !isService) {
+    if (!value && isRequired && !isService && !useLegacyFields) {
       stableSetValue(inputModeOptions[0].defaultValue);
     }
-  }, [inputModeOptions, isRequired, isService, stableSetValue, value]);
+  }, [
+    inputModeOptions,
+    isRequired,
+    isService,
+    stableSetValue,
+    useLegacyFields,
+    value,
+  ]);
+
+  if (useLegacyFields) {
+    return <LegacyField {...props} />;
+  }
 
   if (isService) {
     return <ServiceField {...props} />;
