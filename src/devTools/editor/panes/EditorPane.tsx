@@ -15,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useCreate } from "@/devTools/editor/hooks/useCreate";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/options/selectors";
 import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { Formik } from "formik";
+import { Formik, FormikHelpers } from "formik";
 import Effect from "@/devTools/editor/components/Effect";
 import ElementWizard from "@/devTools/editor/ElementWizard";
 import useEditable from "@/devTools/editor/hooks/useEditable";
 import { LogContextWrapper } from "@/components/logViewer/LogContext";
+import SaveRecipeExtensionModal from "./SaveRecipeExtensionModal";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -44,6 +45,21 @@ const EditorPane: React.FunctionComponent<{
   const installed = useSelector(selectExtensions);
   const editable = useEditable();
 
+  const [isRecipeOptionsModalShown, setRecipeOptionsModalShown] = useState(
+    false
+  );
+
+  const onCreate = async (
+    element: FormState,
+    formikHelpers: FormikHelpers<FormState>
+  ) => {
+    if (element.recipe || true) {
+      setRecipeOptionsModalShown(true);
+    } else {
+      await create(element, formikHelpers);
+    }
+  };
+
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
     (values: FormState) => {
@@ -57,26 +73,39 @@ const EditorPane: React.FunctionComponent<{
   const key = `${selectedElement.uuid}-${selectedElement.installed}-${selectionSeq}`;
 
   return (
-    <ErrorBoundary key={key}>
-      <Formik key={key} initialValues={selectedElement} onSubmit={create}>
-        {({ values }) => (
-          <>
-            <Effect
-              values={values}
-              onChange={syncReduxState}
-              delayMillis={CHANGE_DETECT_DELAY_MILLIS}
-            />
-            <LogContextWrapper>
-              <ElementWizard
-                element={values}
-                editable={editable}
-                installed={installed}
+    <>
+      <ErrorBoundary key={key}>
+        <Formik key={key} initialValues={selectedElement} onSubmit={onCreate}>
+          {({ values }) => (
+            <>
+              <Effect
+                values={values}
+                onChange={syncReduxState}
+                delayMillis={CHANGE_DETECT_DELAY_MILLIS}
               />
-            </LogContextWrapper>
-          </>
-        )}
-      </Formik>
-    </ErrorBoundary>
+              <LogContextWrapper>
+                <ElementWizard
+                  element={values}
+                  editable={editable}
+                  installed={installed}
+                />
+              </LogContextWrapper>
+            </>
+          )}
+        </Formik>
+      </ErrorBoundary>
+      {isRecipeOptionsModalShown && (
+        <SaveRecipeExtensionModal
+          recipeName={"asdf"}
+          isRecipeEditable
+          installedRecipeVersion={4}
+          latestRecipeVersion={4}
+          onClose={() => {
+            setRecipeOptionsModalShown(false);
+          }}
+        />
+      )}
+    </>
   );
 };
 

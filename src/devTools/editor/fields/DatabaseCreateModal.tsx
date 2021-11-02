@@ -146,13 +146,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
             onSubmit={onSave}
             renderSubmit={({ isSubmitting, isValid }) => (
               <div className="text-right">
-                <Button
-                  variant="info"
-                  className="mr-2"
-                  onClick={() => {
-                    onClose();
-                  }}
-                >
+                <Button variant="info" className="mr-2" onClick={onClose}>
                   Cancel
                 </Button>
 
