@@ -31,7 +31,6 @@ import { reportEvent } from "@/telemetry/events";
 import { reactivate } from "@/background/navigation";
 import { Dispatch } from "redux";
 import { selectExtensions } from "@/options/selectors";
-import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 import { OptionsState } from "@/store/extensions";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
@@ -47,6 +46,7 @@ import ExtensionLogsModal from "./ExtensionLogsModal";
 import { RootState } from "@/options/store";
 import { LogsContext } from "./installedPageSlice";
 import { selectShowLogsContext } from "./installedPageSelectors";
+import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -163,7 +163,7 @@ export const InstalledPage: React.FunctionComponent<{
                 {flags.includes("marketplace") ? (
                   <>
                     You can find more to activate in{" "}
-                    <Link to={"/blueprints"}>My Blueprints</Link>
+                    <Link to={"/blueprints"}>My Blueprints</Link>.
                   </>
                 ) : (
                   <>
@@ -183,7 +183,7 @@ export const InstalledPage: React.FunctionComponent<{
                     >
                       Page Editor Quickstart Guide
                     </a>{" "}
-                    to create your own
+                    to create your own.
                   </>
                 )}
               </p>

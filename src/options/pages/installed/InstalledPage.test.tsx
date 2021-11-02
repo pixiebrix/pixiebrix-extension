@@ -56,6 +56,7 @@ describe("InstalledPage", () => {
   }));
 
   test("doesn't show ActiveBrick card when no extensions installed", () => {
+    mockOnboarding(false, false, false);
     const { container } = render(
       <StaticRouter>
         <InstalledPage extensions={[]} push={jest.fn()} onRemove={jest.fn()} />
