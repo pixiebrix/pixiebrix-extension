@@ -28,6 +28,16 @@ jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
 }));
 
+// TODO: Return different deployment data per test
+jest.mock("@/hooks/useDeployments", () => ({
+  useDeployments: () => ({
+    hasUpdate: true,
+    update: () => {},
+    extensionUpdateRequired: false,
+    isLoading: false,
+  }),
+}));
+
 describe("InstalledPage", () => {
   afterAll(() => {
     jest.resetAllMocks();
@@ -57,7 +67,7 @@ describe("User Onboarding", () => {
     useAsyncState: jest.fn().mockReturnValue([[], false, null, jest.fn()]),
   }));
 
-  test("user with restricted-onboarding flag doesn't see marketplace", () => {
+  test("user with restricted-onboarding flag doesn't see marketplace link", () => {
     const { container } = render(
       <AuthContext.Provider
         value={{
