@@ -73,17 +73,17 @@ test("shows root mode for trigger", async () => {
   expect(rootModeSelect).not.toBeNull();
 });
 
-const blockTypeCases: Array<[string, string, boolean]> = [
-  ["reader", "read", true],
-  ["effect", "effect", true],
-  ["transform", "transform", true],
-  ["renderer", "render", false],
-];
-test.each(blockTypeCases)(
-  "handles Condition and Target for %s",
-  async (_blockType, blockProperty, shouldShowOptions) => {
+test.each`
+  blockName      | propertyName   | expected | readableExpected
+  ${"reader"}    | ${"read"}      | ${true}  | ${"should"}
+  ${"effect"}    | ${"effect"}    | ${true}  | ${"should"}
+  ${"transform"} | ${"transform"} | ${true}  | ${"should"}
+  ${"renderer"}  | ${"render"}    | ${false} | ${"should not"}
+`(
+  "$readableExpected show Condition and Target settings for $blockName",
+  async ({ propertyName, expected }) => {
     const block = blockFactory({
-      [blockProperty]: true,
+      [propertyName]: jest.fn(),
       inputSchema: propertiesToSchema({
         message: {
           type: "string",
@@ -105,7 +105,7 @@ test.each(blockTypeCases)(
     const conditionInput = screen.queryByLabelText("Condition");
     const targetInput = screen.queryByLabelText("Target");
 
-    if (shouldShowOptions) {
+    if (expected) {
       expect(conditionInput).not.toBeNull();
       expect(targetInput).not.toBeNull();
     } else {

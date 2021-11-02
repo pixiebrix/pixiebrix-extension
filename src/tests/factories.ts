@@ -34,9 +34,10 @@ import {
   BaseExtensionState,
   ElementType,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
+import trigger, {
+  TriggerFormState,
+} from "@/devTools/editor/extensionPoints/trigger";
 import menuItem from "@/devTools/editor/extensionPoints/menuItem";
-import trigger from "@/devTools/editor/extensionPoints/trigger";
 import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 
