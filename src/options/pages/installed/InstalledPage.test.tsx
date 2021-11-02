@@ -17,7 +17,7 @@
 
 import React from "react";
 
-import { getByText, queryByText, render } from "@testing-library/react";
+import { screen, render } from "@testing-library/react";
 import { InstalledPage } from "./InstalledPage";
 import { StaticRouter } from "react-router-dom";
 import AuthContext from "@/auth/AuthContext";
@@ -29,8 +29,12 @@ jest.mock("@/services/api", () => ({
 
 jest.mock("@/hooks/useDeployments", () => jest.fn());
 
+jest.mock("@/hooks/useFetch", () => jest.fn());
+
 import { useGetOrganizationsQuery } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
+import OnboardingPage from "@/options/pages/installed/OnboardingPage";
+import useFetch from "@/hooks/useFetch";
 
 // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
 jest.mock("@/hooks/useNotifications", () => {
@@ -63,88 +67,98 @@ describe("InstalledPage", () => {
   });
 });
 
-const getOnboardingInformation = (container) => {
-  const activateFromMarketplaceColumn = getByText(
-    container,
+const mockOnboarding = (
+  hasOrganization: boolean,
+  hasDeployments: boolean,
+  hasTeamBlueprints: boolean
+) => {
+  useGetOrganizationsQuery.mockImplementation(() => ({
+    data: hasOrganization ? [{} as Organization] : [],
+  }));
+
+  // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
+  useDeployments.mockImplementation(() => {
+    return {
+      hasUpdate: hasDeployments,
+      update: () => {},
+      extensionUpdateRequired: false,
+      isLoading: false,
+      error: undefined as unknown,
+    };
+  });
+
+  useFetch.mockImplementation(() => {
+    return () => ({
+      data: hasTeamBlueprints
+        ? [
+            {
+              sharing: {
+                organizations: [{} as Organization],
+              },
+            },
+          ]
+        : [],
+      isLoading: false,
+      error: undefined as unknown,
+      refresh: () => {},
+    });
+  });
+};
+
+const getRenderedOnboardingInformation = (screen) => {
+  const activateFromMarketplaceColumn = screen.queryByText(
     "Activate an Official Blueprint"
   );
 
-  const contactTeamAdminColumn = queryByText(
-    container,
-    "Contact your team admin"
+  const contactTeamAdminColumn = screen.queryByText("Contact your team admin");
+
+  const videoTour = screen.queryByText("Video Tour");
+
+  const createBrickColumn = screen.queryByText("Create your Own");
+
+  const activateFromDeploymentBannerColumn = screen.queryByText(
+    "You have Team Bricks to activate!"
   );
 
-  const videoTour = queryByText(container, "Video Tour");
-
-  const createBrickColumn = queryByText(container, "Create your Own");
+  const activateTeamBlueprintsColumn = screen.queryByText(
+    "Browse and activate team bricks"
+  );
 
   return {
     activateFromMarketplaceColumn,
     createBrickColumn,
     contactTeamAdminColumn,
     videoTour,
+    activateFromDeploymentBannerColumn,
+    activateTeamBlueprintsColumn,
   };
 };
 
 describe("User Onboarding", () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    jest.resetModules();
-
-    // TODO: Change me
-    jest.mock("@/hooks/common", () => ({
-      useAsyncState: jest.fn().mockReturnValue([[], false, null, jest.fn()]),
-    }));
   });
 
-  test("typical user is onboarded with marketplace and create brick", () => {
-    useGetOrganizationsQuery.mockImplementation(() => ({
-      data: [],
-    }));
+  test("typical user with no organization", () => {
+    mockOnboarding(false, false, false);
 
-    // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
-    useDeployments.mockImplementation(() => {
-      return () => ({
-        hasUpdate: false,
-        update: () => {},
-        extensionUpdateRequired: false,
-        isLoading: false,
-        error: undefined as unknown,
-      });
-    });
-
-    const { container } = render(
+    render(
       <StaticRouter>
-        <InstalledPage extensions={[]} push={jest.fn()} onRemove={jest.fn()} />
+        <OnboardingPage />
       </StaticRouter>
     );
 
-    const rendered = getOnboardingInformation(container);
+    const rendered = getRenderedOnboardingInformation(screen);
 
     expect(rendered.activateFromMarketplaceColumn).not.toBeNull();
     expect(rendered.createBrickColumn).not.toBeNull();
     expect(rendered.videoTour).not.toBeNull();
   });
 
-  test("enterprise user with `restricted-marketplace` flag doesn't see marketplace link", () => {
-    // TODO: Return different organization data per onboarding test
+  test("enterprise user with `restricted-marketplace` flag", () => {
+    mockOnboarding(true, false, false);
 
-    useGetOrganizationsQuery.mockImplementation(() => ({
-      data: [{} as Organization],
-    }));
-
-    // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
-    useDeployments.mockImplementation(() => {
-      return () => ({
-        hasUpdate: false,
-        update: () => {},
-        extensionUpdateRequired: false,
-        isLoading: false,
-        error: undefined as unknown,
-      });
-    });
-
-    const { container } = render(
+    render(
       <AuthContext.Provider
         value={{
           flags: ["restricted-marketplace"],
@@ -154,46 +168,72 @@ describe("User Onboarding", () => {
         }}
       >
         <StaticRouter>
-          <InstalledPage
-            extensions={[]}
-            push={jest.fn()}
-            onRemove={jest.fn()}
-          />
+          <OnboardingPage />
         </StaticRouter>
       </AuthContext.Provider>
     );
 
-    const rendered = getOnboardingInformation(container);
+    const rendered = getRenderedOnboardingInformation(screen);
 
-    expect(rendered.activeBricksCard).toBeNull();
+    expect(rendered.activateFromMarketplaceColumn).toBeNull();
     expect(rendered.contactTeamAdminColumn).not.toBeNull();
     expect(rendered.videoTour).toBeNull();
   });
 
-  test("user without restricted-marketplace flag sees marketplace", () => {
-    const { container } = render(
+  test("enterprise user with automatic team deployments", () => {
+    mockOnboarding(true, true, false);
+
+    render(
       <AuthContext.Provider
         value={{
-          flags: [],
+          flags: ["restricted-marketplace"],
           isLoggedIn: true,
           isOnboarded: true,
           extension: true,
         }}
       >
         <StaticRouter>
-          <InstalledPage
-            extensions={[]}
-            push={jest.fn()}
-            onRemove={jest.fn()}
-          />
+          <OnboardingPage />
         </StaticRouter>
       </AuthContext.Provider>
     );
 
-    const activeBricksCard = queryByText(
-      container,
-      "Activate an Official Blueprint"
+    const rendered = getRenderedOnboardingInformation(screen);
+
+    expect(rendered.activateFromMarketplaceColumn).toBeNull();
+    expect(rendered.activateFromDeploymentBannerColumn).not.toBeNull();
+    expect(rendered.videoTour).toBeNull();
+  });
+
+  test("enterprise user with team blueprints", () => {
+    mockOnboarding(true, false, true);
+
+    render(
+      <StaticRouter>
+        <OnboardingPage />
+      </StaticRouter>
     );
-    expect(activeBricksCard);
+
+    const rendered = getRenderedOnboardingInformation(screen);
+
+    expect(rendered.activateTeamBlueprintsColumn).toBeNull();
+    expect(rendered.createBrickColumn).not.toBeNull();
+    expect(rendered.videoTour).not.toBeNull();
+  });
+
+  test("enterprise user with no team blueprints or restrictions", () => {
+    mockOnboarding(true, false, false);
+
+    render(
+      <StaticRouter>
+        <OnboardingPage />
+      </StaticRouter>
+    );
+
+    const rendered = getRenderedOnboardingInformation(screen);
+
+    expect(rendered.activateFromMarketplaceColumn).not.toBeNull();
+    expect(rendered.createBrickColumn).not.toBeNull();
+    expect(rendered.videoTour).not.toBeNull();
   });
 });

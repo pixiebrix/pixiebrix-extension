@@ -138,6 +138,8 @@ const OnboardingPage: React.FunctionComponent = () => {
   const isLoading =
     isRecipesLoading || isOrganizationsLoading || isDeploymentsLoading;
 
+  // Video tour should be shown to typical users and enterprise users
+  //  that don't have deployments or marketplace restrictions
   const showVideoTour = useMemo(
     () =>
       !hasOrganization ||
