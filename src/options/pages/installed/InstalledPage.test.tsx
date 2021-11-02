@@ -17,16 +17,20 @@
 
 import React from "react";
 
-import { queryByText, render } from "@testing-library/react";
+import { getByText, queryByText, render } from "@testing-library/react";
 import { InstalledPage } from "./InstalledPage";
 import { StaticRouter } from "react-router-dom";
 import AuthContext from "@/auth/AuthContext";
 import { Organization } from "@/types/contract";
 
-// TODO: Return different organization data per onboarding test
 jest.mock("@/services/api", () => ({
-  useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
+  useGetOrganizationsQuery: jest.fn(),
 }));
+
+jest.mock("@/hooks/useDeployments", () => jest.fn());
+
+import { useGetOrganizationsQuery } from "@/services/api";
+import useDeployments from "@/hooks/useDeployments";
 
 // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
 jest.mock("@/hooks/useNotifications", () => {
@@ -37,18 +41,6 @@ jest.mock("@/hooks/useNotifications", () => {
     warning: jest.fn(),
     error: jest.fn(),
     userError: jest.fn(),
-  });
-});
-
-// TODO: Return different deployment data per test
-// eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
-jest.mock("@/hooks/useDeployments", () => {
-  return () => ({
-    hasUpdate: true,
-    update: () => {},
-    extensionUpdateRequired: false,
-    isLoading: false,
-    error: undefined as unknown,
   });
 });
 
@@ -71,17 +63,87 @@ describe("InstalledPage", () => {
   });
 });
 
+const getOnboardingInformation = (container) => {
+  const activateFromMarketplaceColumn = getByText(
+    container,
+    "Activate an Official Blueprint"
+  );
+
+  const contactTeamAdminColumn = queryByText(
+    container,
+    "Contact your team admin"
+  );
+
+  const videoTour = queryByText(container, "Video Tour");
+
+  const createBrickColumn = queryByText(container, "Create your Own");
+
+  return {
+    activateFromMarketplaceColumn,
+    createBrickColumn,
+    contactTeamAdminColumn,
+    videoTour,
+  };
+};
+
 describe("User Onboarding", () => {
-  afterAll(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
+    jest.resetModules();
+
+    // TODO: Change me
+    jest.mock("@/hooks/common", () => ({
+      useAsyncState: jest.fn().mockReturnValue([[], false, null, jest.fn()]),
+    }));
   });
 
-  // TODO: Change me
-  jest.mock("@/hooks/common", () => ({
-    useAsyncState: jest.fn().mockReturnValue([[], false, null, jest.fn()]),
-  }));
+  test("typical user is onboarded with marketplace and create brick", () => {
+    useGetOrganizationsQuery.mockImplementation(() => ({
+      data: [],
+    }));
 
-  test("user with `restricted-onboarding` flag doesn't see marketplace link", () => {
+    // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
+    useDeployments.mockImplementation(() => {
+      return () => ({
+        hasUpdate: false,
+        update: () => {},
+        extensionUpdateRequired: false,
+        isLoading: false,
+        error: undefined as unknown,
+      });
+    });
+
+    const { container } = render(
+      <StaticRouter>
+        <InstalledPage extensions={[]} push={jest.fn()} onRemove={jest.fn()} />
+      </StaticRouter>
+    );
+
+    const rendered = getOnboardingInformation(container);
+
+    expect(rendered.activateFromMarketplaceColumn).not.toBeNull();
+    expect(rendered.createBrickColumn).not.toBeNull();
+    expect(rendered.videoTour).not.toBeNull();
+  });
+
+  test("enterprise user with `restricted-marketplace` flag doesn't see marketplace link", () => {
+    // TODO: Return different organization data per onboarding test
+
+    useGetOrganizationsQuery.mockImplementation(() => ({
+      data: [{} as Organization],
+    }));
+
+    // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
+    useDeployments.mockImplementation(() => {
+      return () => ({
+        hasUpdate: false,
+        update: () => {},
+        extensionUpdateRequired: false,
+        isLoading: false,
+        error: undefined as unknown,
+      });
+    });
+
     const { container } = render(
       <AuthContext.Provider
         value={{
@@ -101,14 +163,14 @@ describe("User Onboarding", () => {
       </AuthContext.Provider>
     );
 
-    const activeBricksCard = queryByText(
-      container,
-      "Activate an Official Blueprint"
-    );
-    expect(activeBricksCard).toBeNull();
+    const rendered = getOnboardingInformation(container);
+
+    expect(rendered.activeBricksCard).toBeNull();
+    expect(rendered.contactTeamAdminColumn).not.toBeNull();
+    expect(rendered.videoTour).toBeNull();
   });
 
-  test("user without restricted-onboarding flag sees marketplace", () => {
+  test("user without restricted-marketplace flag sees marketplace", () => {
     const { container } = render(
       <AuthContext.Provider
         value={{
