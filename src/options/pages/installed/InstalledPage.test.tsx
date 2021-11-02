@@ -98,6 +98,39 @@ const mockOnboarding = (
   }));
 };
 
+const mockOnboardingLoadingState = (
+  isOrganizationsLoading: boolean,
+  isDeploymentsLoading: boolean,
+  isTeamBlueprintsLoading: boolean
+) => {
+  useGetOrganizationsQuery.mockImplementation(() => ({
+    data: [{} as Organization],
+    isLoading: isOrganizationsLoading,
+  }));
+
+  // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
+  useDeployments.mockImplementation(() => {
+    return {
+      hasUpdate: true,
+      update: () => {},
+      extensionUpdateRequired: false,
+      isLoading: isDeploymentsLoading,
+      error: undefined as unknown,
+    };
+  });
+
+  useGetRecipesQuery.mockImplementation(() => ({
+    data: [
+      {
+        sharing: {
+          organizations: [{} as Organization],
+        },
+      },
+    ],
+    isLoading: isTeamBlueprintsLoading,
+  }));
+};
+
 const getRenderedOnboardingInformation = (screen) => {
   const activateFromMarketplaceColumn = screen.queryByText(
     "Activate an Official Blueprint"
@@ -228,5 +261,35 @@ describe("User Onboarding", () => {
     expect(rendered.activateFromMarketplaceColumn).not.toBeNull();
     expect(rendered.createBrickColumn).not.toBeNull();
     expect(rendered.videoTour).not.toBeNull();
+  });
+
+  test("no flickering while loading organizations", () => {
+    mockOnboardingLoadingState(true, false, false);
+    const { container } = render(
+      <StaticRouter>
+        <OnboardingPage />
+      </StaticRouter>
+    );
+    expect(container.querySelector("#OnboardingSpinner")).not.toBeNull();
+  });
+
+  test("no flickering while loading deployments", () => {
+    mockOnboardingLoadingState(false, true, false);
+    const { container } = render(
+      <StaticRouter>
+        <OnboardingPage />
+      </StaticRouter>
+    );
+    expect(container.querySelector("#OnboardingSpinner")).not.toBeNull();
+  });
+
+  test("no flickering while loading blueprints", () => {
+    mockOnboardingLoadingState(false, false, true);
+    const { container } = render(
+      <StaticRouter>
+        <OnboardingPage />
+      </StaticRouter>
+    );
+    expect(container.querySelector("#OnboardingSpinner")).not.toBeNull();
   });
 });

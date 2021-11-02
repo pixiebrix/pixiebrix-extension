@@ -179,7 +179,9 @@ const OnboardingPage: React.FunctionComponent = () => {
   return (
     <>
       {isLoading ? (
-        <GridLoader />
+        <div id="OnboardingSpinner">
+          <GridLoader />
+        </div>
       ) : (
         <>
           <Row>
