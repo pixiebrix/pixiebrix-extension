@@ -21,7 +21,7 @@ import SelectWidget, {
   Option,
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import { Field, getIn, useField, useFormikContext } from "formik";
+import { FastField, getIn, useField, useFormikContext } from "formik";
 import { Expression, TemplateEngine } from "@/core";
 import { Col, Form, Row } from "react-bootstrap";
 import { isExpression } from "@/runtime/mapArgs";
@@ -169,7 +169,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
       );
     }
 
-    return <Field name={name} as={Widget} {...props} />;
+    return <FastField name={name} as={Widget} {...props} />;
   }, [Widget, name, onChangeForTemplate, props, value]);
 
   return (
