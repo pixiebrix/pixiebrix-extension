@@ -25,16 +25,14 @@ import { Organization } from "@/types/contract";
 
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: jest.fn(),
+  useGetRecipesQuery: jest.fn(),
 }));
 
 jest.mock("@/hooks/useDeployments", () => jest.fn());
 
-jest.mock("@/hooks/useFetch", () => jest.fn());
-
-import { useGetOrganizationsQuery } from "@/services/api";
+import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
 import OnboardingPage from "@/options/pages/installed/OnboardingPage";
-import useFetch from "@/hooks/useFetch";
 
 // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
 jest.mock("@/hooks/useNotifications", () => {
@@ -87,22 +85,17 @@ const mockOnboarding = (
     };
   });
 
-  useFetch.mockImplementation(() => {
-    return () => ({
-      data: hasTeamBlueprints
-        ? [
-            {
-              sharing: {
-                organizations: [{} as Organization],
-              },
+  useGetRecipesQuery.mockImplementation(() => ({
+    data: hasTeamBlueprints
+      ? [
+          {
+            sharing: {
+              organizations: [{} as Organization],
             },
-          ]
-        : [],
-      isLoading: false,
-      error: undefined as unknown,
-      refresh: () => {},
-    });
-  });
+          },
+        ]
+      : [],
+  }));
 };
 
 const getRenderedOnboardingInformation = (screen) => {

@@ -23,7 +23,7 @@ import AuthContext from "@/auth/AuthContext";
 import useFetch from "@/hooks/useFetch";
 import { RecipeDefinition } from "@/types/definitions";
 import { Link } from "react-router-dom";
-import { useGetOrganizationsQuery } from "@/services/api";
+import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
 import GridLoader from "react-spinners/GridLoader";
 
@@ -117,9 +117,10 @@ const OnboardingVideoCard: React.FunctionComponent = () => (
 
 const OnboardingPage: React.FunctionComponent = () => {
   const { flags } = useContext(AuthContext);
-  const { data: rawRecipes, isLoading: isRecipesLoading } = useFetch<
-    RecipeDefinition[]
-  >("/api/recipes/");
+  const {
+    data: rawRecipes,
+    isLoading: isRecipesLoading,
+  } = useGetRecipesQuery();
   const {
     data: organizations,
     isLoading: isOrganizationsLoading,
