@@ -56,21 +56,15 @@ describe("User Onboarding", () => {
   jest.mock("@/hooks/common", () => ({
     useAsyncState: jest.fn().mockReturnValue([[], false, null, jest.fn()]),
   }));
-  // Conditions to consider:
-  // User has organization
-  //    a. and has deployments assigned to them
-  //    b. has the restricted marketplace flag
-  //    c. on team with team blueprints
-  //    d. user team has no team blueprints
-  // User does not have organization
-  //    a. and has bricks
-  //    b. and does not have bricks
 
   test("user with restricted-onboarding flag doesn't see marketplace", () => {
     const { container } = render(
       <AuthContext.Provider
         value={{
           flags: ["restricted-marketplace"],
+          isLoggedIn: true,
+          isOnboarded: true,
+          extension: true,
         }}
       >
         <StaticRouter>
@@ -95,6 +89,9 @@ describe("User Onboarding", () => {
       <AuthContext.Provider
         value={{
           flags: [],
+          isLoggedIn: true,
+          isOnboarded: true,
+          extension: true,
         }}
       >
         <StaticRouter>
