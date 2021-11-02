@@ -23,7 +23,6 @@ import AsyncButton from "@/components/AsyncButton";
 import { useRouteMatch } from "react-router";
 import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
-import { OverlayTrigger, Popover } from "react-bootstrap";
 
 const Banner: React.FC<{ className?: string }> = ({ className, children }) => (
   <div
@@ -36,25 +35,6 @@ const Banner: React.FC<{ className?: string }> = ({ className, children }) => (
       <div className="flex-grow-1" />
     </div>
   </div>
-);
-
-const activatePopover = (
-  <Popover id="popover-positioned-bottom">
-    <Popover.Title as="h3">
-      <span role="img" aria-label="wave">
-        👋
-      </span>{" "}
-      Hey there!
-    </Popover.Title>
-    <Popover.Content>
-      <p className="mb-0">
-        It looks like your team has some <strong>bricks</strong> ready for you!
-        You will see this banner every time new team bricks are available. Click
-        this button to <strong>allow permissions</strong> and{" "}
-        <strong>activate your team workflows</strong>!
-      </p>
-    </Popover.Content>
-  </Popover>
 );
 
 const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
@@ -96,16 +76,9 @@ const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
   return (
     <Banner className={className}>
       Team bricks are ready to activate
-      <OverlayTrigger
-        show={true}
-        trigger="click"
-        placement="bottom"
-        overlay={activatePopover}
-      >
-        <AsyncButton className="info ml-3" size="sm" onClick={update}>
-          Activate
-        </AsyncButton>
-      </OverlayTrigger>
+      <AsyncButton className="info ml-3" size="sm" onClick={update}>
+        Activate
+      </AsyncButton>
     </Banner>
   );
 };

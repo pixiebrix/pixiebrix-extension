@@ -21,7 +21,7 @@ import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link, Redirect, Route } from "react-router-dom";
-import { Col, Row } from "react-bootstrap";
+import { Col, Overlay, OverlayTrigger, Popover, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/messenger/api";
@@ -59,7 +59,7 @@ export const InstalledPage: React.FunctionComponent<{
 }> = ({ extensions, onRemove, push }) => {
   const { flags } = useContext(AuthContext);
   const { data: organizations, isLoading } = useGetOrganizationsQuery();
-  const { hasUpdate, update, extensionUpdateRequired } = useDeployments();
+  const { hasUpdate } = useDeployments();
 
   const [allExtensions, , cloudError] = useAsyncState(
     async () => {

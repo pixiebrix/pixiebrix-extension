@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { Button, Card, Col, Popover, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
@@ -71,14 +71,14 @@ const ActivateTeamBlueprintsColumn: React.FunctionComponent = () => (
   </Col>
 );
 
-const ActivateFromDeploymentBanner: React.FunctionComponent = () => (
-  <Col xs={6}>
+const ActivateFromDeploymentBannerColumn: React.FunctionComponent = () => (
+  <Col>
     <h4>Activate Team Blueprints</h4>
     <p className="mb-0">
-      It looks like your team has bricks that are ready to activate! Click the{" "}
-      <strong>Activate</strong> button in the banner above to{" "}
-      <strong>allow permissions</strong> and <strong>start using</strong> your
-      team workflows.
+      Click the <strong className="text-primary">Activate</strong> button in the{" "}
+      <strong className="text-info">blue banner above</strong> to allow
+      permissions and start using your team bricks. You will see this banner
+      every time your team deploys new bricks for you to use.
     </p>
   </Col>
 );
@@ -117,20 +117,49 @@ const OnboardingPage: React.FunctionComponent<{
   hasDeployments: boolean;
   isLoading: boolean;
 }> = ({ hasOrganization, hasDeployments, isLoading }) => {
-  const { flags, is_onboarded } = useContext(AuthContext);
-  const { data: rawRecipes, isRecipesLoading } = useFetch<RecipeDefinition[]>(
-    "/api/recipes/"
-  );
+  const { flags } = useContext(AuthContext);
+  const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
 
   const teamRecipes = (rawRecipes ?? []).filter(
     (recipe) => recipe.sharing.organizations.length > 0
   );
 
-  console.log(teamRecipes);
-
   const hasTeamBlueprints = teamRecipes.length > 0;
 
-  console.log("has team blueprints:", hasTeamBlueprints);
+  const showVideoTour = useMemo(
+    () =>
+      !hasOrganization ||
+      (!hasDeployments && !flags.includes("restricted-marketplace")),
+    [hasOrganization, hasDeployments, flags]
+  );
+
+  const onBoardingInformation = useMemo(() => {
+    if (hasOrganization) {
+      if (hasDeployments) {
+        return <ActivateFromDeploymentBannerColumn />;
+      }
+
+      if (flags.includes("restricted-marketplace")) {
+        return <ContactTeamAdminColumn />;
+      }
+
+      if (hasTeamBlueprints) {
+        return (
+          <>
+            <ActivateTeamBlueprintsColumn />
+            <CreateBrickColumn />
+          </>
+        );
+      }
+    }
+
+    return (
+      <>
+        <ActivateFromMarketplaceColumn />
+        <CreateBrickColumn />
+      </>
+    );
+  }, [hasOrganization, hasDeployments, hasTeamBlueprints, flags]);
 
   return (
     <>
@@ -140,33 +169,13 @@ const OnboardingPage: React.FunctionComponent<{
             <Card>
               <Card.Header>Activate Bricks</Card.Header>
               <Card.Body>
-                <Row>
-                  {hasOrganization && hasDeployments && (
-                    <ActivateFromDeploymentBanner />
-                  )}
-
-                  {hasOrganization && !hasDeployments && (
-                    <ContactTeamAdminColumn />
-                  )}
-
-                  {hasOrganization && !hasDeployments && hasTeamBlueprints && (
-                    <ActivateTeamBlueprintsColumn />
-                  )}
-
-                  {(!hasOrganization ||
-                    (hasOrganization && !hasDeployments)) && (
-                    <>
-                      <ActivateFromMarketplaceColumn />
-                      <CreateBrickColumn />
-                    </>
-                  )}
-                </Row>
+                <Row>{onBoardingInformation}</Row>
               </Card.Body>
             </Card>
           </Col>
         </Row>
       )}
-      {hasDeployments ?? (
+      {showVideoTour && (
         <Row>
           <Col className="VideoCard mt-3">
             <OnboardingVideoCard />
