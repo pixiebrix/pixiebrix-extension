@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-
 import { screen, render } from "@testing-library/react";
 import { InstalledPage } from "./InstalledPage";
 import { StaticRouter } from "react-router-dom";
@@ -56,7 +55,7 @@ describe("InstalledPage", () => {
   }));
 
   test("doesn't show ActiveBrick card when no extensions installed", () => {
-    mockOnboarding(false, false, false);
+    mockOnboarding();
     const { container } = render(
       <StaticRouter>
         <InstalledPage extensions={[]} push={jest.fn()} onRemove={jest.fn()} />
@@ -66,11 +65,15 @@ describe("InstalledPage", () => {
   });
 });
 
-const mockOnboarding = (
-  hasOrganization: boolean,
-  hasDeployments: boolean,
-  hasTeamBlueprints: boolean
-) => {
+const mockOnboarding = ({
+  hasOrganization = false,
+  hasDeployments = false,
+  hasTeamBlueprints = false,
+}: {
+  hasOrganization?: boolean;
+  hasDeployments?: boolean;
+  hasTeamBlueprints?: boolean;
+} = {}) => {
   (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
     data: hasOrganization ? [{} as Organization] : [],
@@ -101,11 +104,15 @@ const mockOnboarding = (
   }));
 };
 
-const mockOnboardingLoadingState = (
-  isOrganizationsLoading: boolean,
-  isDeploymentsLoading: boolean,
-  isTeamBlueprintsLoading: boolean
-) => {
+const mockOnboardingLoadingState = ({
+  isOrganizationsLoading = false,
+  isDeploymentsLoading = false,
+  isTeamBlueprintsLoading = false,
+}: {
+  isOrganizationsLoading?: boolean;
+  isDeploymentsLoading?: boolean;
+  isTeamBlueprintsLoading?: boolean;
+} = {}) => {
   (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
     data: [{} as Organization],
@@ -171,7 +178,7 @@ describe("OnboardingPage", () => {
   });
 
   test("typical user with no organization", () => {
-    mockOnboarding(false, false, false);
+    mockOnboarding();
 
     render(
       <StaticRouter>
@@ -187,7 +194,7 @@ describe("OnboardingPage", () => {
   });
 
   test("enterprise user with `restricted-marketplace` flag", () => {
-    mockOnboarding(true, false, false);
+    mockOnboarding({ hasOrganization: true });
 
     render(
       <AuthContext.Provider
@@ -212,7 +219,10 @@ describe("OnboardingPage", () => {
   });
 
   test("enterprise user with automatic team deployments", () => {
-    mockOnboarding(true, true, false);
+    mockOnboarding({
+      hasOrganization: true,
+      hasDeployments: true,
+    });
 
     render(
       <AuthContext.Provider
@@ -237,7 +247,10 @@ describe("OnboardingPage", () => {
   });
 
   test("enterprise user with team blueprints", () => {
-    mockOnboarding(true, false, true);
+    mockOnboarding({
+      hasOrganization: true,
+      hasTeamBlueprints: true,
+    });
 
     render(
       <StaticRouter>
@@ -253,7 +266,9 @@ describe("OnboardingPage", () => {
   });
 
   test("enterprise user with no team blueprints or restrictions", () => {
-    mockOnboarding(true, false, false);
+    mockOnboarding({
+      hasOrganization: true,
+    });
 
     render(
       <StaticRouter>
@@ -269,7 +284,9 @@ describe("OnboardingPage", () => {
   });
 
   test("no flickering while loading organizations", () => {
-    mockOnboardingLoadingState(true, false, false);
+    mockOnboardingLoadingState({
+      isOrganizationsLoading: true,
+    });
     const { container } = render(
       <StaticRouter>
         <OnboardingPage />
@@ -279,7 +296,9 @@ describe("OnboardingPage", () => {
   });
 
   test("no flickering while loading deployments", () => {
-    mockOnboardingLoadingState(false, true, false);
+    mockOnboardingLoadingState({
+      isDeploymentsLoading: true,
+    });
     const { container } = render(
       <StaticRouter>
         <OnboardingPage />
@@ -289,7 +308,9 @@ describe("OnboardingPage", () => {
   });
 
   test("no flickering while loading blueprints", () => {
-    mockOnboardingLoadingState(false, false, true);
+    mockOnboardingLoadingState({
+      isTeamBlueprintsLoading: true,
+    });
     const { container } = render(
       <StaticRouter>
         <OnboardingPage />
