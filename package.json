@@ -209,6 +209,7 @@
     "chromedriver": "^94.0.0",
     "compass-mixins": "^0.12.10",
     "concurrently": "^6.2.1",
+    "cooky-cutter": "^1.5.4",
     "copy-webpack-plugin": "^9.0.1",
     "csp-parse": "0.0.2",
     "css-loader": "^6.2.0",
@@ -294,12 +295,12 @@
       "!**/vendor/**"
     ],
     "moduleNameMapper": {
+      "\\.module.(css|scss)$": "identity-obj-proxy",
       "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",
       "^@/(.*)$": "<rootDir>/src/$1",
       "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
       "^@contrib/(.*)$": "<rootDir>/contrib/$1",
       "^@schemas/(.*)$": "<rootDir>/schemas/$1",
-      "\\.module.(css|scss)$": "identity-obj-proxy",
       "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }

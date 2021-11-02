@@ -180,7 +180,7 @@ export interface ElementConfig<
     url: string,
     metadata: Metadata,
     element: TResult,
-    frameworks: FrameworkMeta[]
+    frameworks?: FrameworkMeta[]
   ) => TState;
 
   /**
