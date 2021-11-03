@@ -112,7 +112,8 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
 
 type CreateCallback = (
   element: FormState,
-  helpers: FormikHelpers<FormState>
+  onDone: () => void,
+  setStatus: (status: string) => void
 ) => Promise<void>;
 
 export function useCreate(): CreateCallback {
@@ -127,7 +128,8 @@ export function useCreate(): CreateCallback {
   return useCallback(
     async (
       element: FormState,
-      { setSubmitting, setStatus }: FormikHelpers<FormState>
+      onDone: () => void,
+      setStatus: (status: string) => void
     ) => {
       if (element.recipe) {
         console.log(
@@ -144,7 +146,7 @@ export function useCreate(): CreateCallback {
           appearance: "error",
           autoDismiss: true,
         });
-        setSubmitting(false);
+        onDone();
       };
 
       try {
@@ -277,7 +279,7 @@ export function useCreate(): CreateCallback {
           autoDismiss: true,
         });
       } finally {
-        setSubmitting(false);
+        onDone();
       }
     },
     [dispatch, addToast]

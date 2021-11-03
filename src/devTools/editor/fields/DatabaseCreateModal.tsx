@@ -55,7 +55,7 @@ type DatabaseConfig = {
   groupId: string | null;
 };
 
-const DatabaseSchema: yup.ObjectSchema<DatabaseConfig> = yup.object().shape({
+const databaseSchema: yup.ObjectSchema<DatabaseConfig> = yup.object().shape({
   name: yup.string().required(),
   organizationId: yup.string(),
   groupId: yup.string(),
@@ -141,7 +141,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
           <GridLoader />
         ) : (
           <Form
-            validationSchema={DatabaseSchema}
+            validationSchema={databaseSchema}
             initialValues={initialValues}
             onSubmit={onSave}
             renderSubmit={({ isSubmitting, isValid }) => (

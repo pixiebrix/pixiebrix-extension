@@ -45,7 +45,7 @@ const EditorPane: React.FunctionComponent<{
   const installed = useSelector(selectExtensions);
   const editable = useEditable();
 
-  const [isRecipeOptionsModalShown, setRecipeOptionsModalShown] = useState(
+  const [isRecipesExtensionModalShown, setRecipeExtensionModalShown] = useState(
     false
   );
 
@@ -53,10 +53,17 @@ const EditorPane: React.FunctionComponent<{
     element: FormState,
     formikHelpers: FormikHelpers<FormState>
   ) => {
-    if (element.recipe || true) {
-      setRecipeOptionsModalShown(true);
+    if (element.recipe) {
+      setRecipeExtensionModalShown(true);
     } else {
-      await create(element, formikHelpers);
+      const { setSubmitting, setStatus } = formikHelpers;
+      await create(
+        element,
+        () => {
+          setSubmitting(false);
+        },
+        setStatus
+      );
     }
   };
 
@@ -76,35 +83,34 @@ const EditorPane: React.FunctionComponent<{
     <>
       <ErrorBoundary key={key}>
         <Formik key={key} initialValues={selectedElement} onSubmit={onCreate}>
-          {({ values }) => (
+          {({ values: element, setSubmitting, setStatus }) => (
             <>
               <Effect
-                values={values}
+                values={element}
                 onChange={syncReduxState}
                 delayMillis={CHANGE_DETECT_DELAY_MILLIS}
               />
               <LogContextWrapper>
                 <ElementWizard
-                  element={values}
+                  element={element}
                   editable={editable}
                   installed={installed}
                 />
               </LogContextWrapper>
+              {isRecipesExtensionModalShown && (
+                <SaveRecipeExtensionModal
+                  element={element}
+                  onDone={() => setSubmitting(false)}
+                  setStatus={setStatus}
+                  onClose={() => {
+                    setRecipeExtensionModalShown(false);
+                  }}
+                />
+              )}
             </>
           )}
         </Formik>
       </ErrorBoundary>
-      {isRecipeOptionsModalShown && (
-        <SaveRecipeExtensionModal
-          recipeName={"asdf"}
-          isRecipeEditable
-          installedRecipeVersion={4}
-          latestRecipeVersion={4}
-          onClose={() => {
-            setRecipeOptionsModalShown(false);
-          }}
-        />
-      )}
     </>
   );
 };
