@@ -18,22 +18,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useGetRecipesQuery } from "@/services/api";
-import { GridLoader } from "react-spinners";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { useCreate } from "@/devTools/editor/hooks/useCreate";
-import Form from "@/components/form/Form";
+import Form, { OnSubmit } from "@/components/form/Form";
 import * as yup from "yup";
 import { RegistryId, Metadata } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useFormikContext } from "formik";
-import useUserAction from "@/hooks/useUserAction";
-import { useAsyncState } from "@/hooks/common";
-import { useAsyncEffect } from "use-async-effect";
-
-type SaveBlueprintExtensionModalProps = {
-  onClose: () => void;
-};
+import SavingInProgressModal from "./SavingInProgressModal";
+import LoadingDataModal from "./LoadingDataModal";
+import {
+  actions as editorActions,
+  FormState,
+} from "@/devTools/editor/slices/editorSlice";
+import { useDispatch, useSelector } from "react-redux";
+import useReset from "@/devTools/editor/hooks/useReset";
+import { actions as savingExtensionActions } from "@/devTools/editor/panes/save/savingExtensionSlice";
+import { setSavingExtension } from "./savingExtensionSelectors";
+import { makeBlueprint } from "@/options/pages/installed/exportBlueprint";
+import { ADAPTERS } from "../../extensionPoints/adapter";
 
 const updateRecipeSchema: yup.ObjectSchema<Metadata> = yup.object().shape({
   id: yup.string<RegistryId>().required(),
@@ -45,9 +48,8 @@ const updateRecipeSchema: yup.ObjectSchema<Metadata> = yup.object().shape({
 const SAVE_AS_NEW_BLUEPRINT = "Save as New Blueprint";
 const UPDATE_BLUEPRINT = "Update Blueprint";
 
-const SaveExtensionWizard: React.FC<SaveBlueprintExtensionModalProps> = ({
-  onClose,
-}) => {
+const SaveExtensionWizard: React.FC = () => {
+  const dispatch = useDispatch();
   const create = useCreate();
   const { data: recipes, isLoading: areRecipesLoading } = useGetRecipesQuery();
   const [isRecipeOptionsModalShown, setRecipeOptionsModalShown] = useState(
@@ -60,83 +62,59 @@ const SaveExtensionWizard: React.FC<SaveBlueprintExtensionModalProps> = ({
     setSubmitting,
     setStatus,
   } = useFormikContext<FormState>();
+  const reset = useReset(true);
 
-  const onDone = () => {
+  const savingExtensionUuid = useSelector(setSavingExtension);
+
+  const close = () => {
+    dispatch(savingExtensionActions.setWizardOpen(false));
+    dispatch(savingExtensionActions.setSavingExtension(null));
     setSubmitting(false);
   };
 
-  const close = () => {
-    onClose();
-    onDone();
+  const save = (element: FormState) => {
+    void create(element, close, setStatus);
   };
 
-  console.log("SaveExtensionWizard render");
-  // Extension is not part of a Recipe
   useEffect(() => {
-    if (element.recipe) {
+    if (element.recipe || savingExtensionUuid) {
       return;
     }
 
-    // ToDo this saves extension 5 times
-    console.log("saving extension");
-    void create(element, close, setStatus);
-  }, []);
+    // Extension is not part of a Recipe, save it
+    dispatch(savingExtensionActions.setSavingExtension(element.uuid));
+    save(element);
+  }, [element, create, savingExtensionUuid]);
 
-  if (!element.recipe) {
-    return (
-      <Modal show backdrop="static" keyboard={false}>
-        <Modal.Header>
-          <Modal.Title>Saving extension...</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>
-          <GridLoader />
-        </Modal.Body>
-      </Modal>
-    );
+  if (!element.recipe || savingExtensionUuid) {
+    return <SavingInProgressModal />;
   }
 
   if (areRecipesLoading) {
-    return (
-      <Modal show onHide={close} backdrop="static" keyboard={false}>
-        <Modal.Header closeButton>
-          <Modal.Title>Loading data...</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body>
-          <GridLoader />
-        </Modal.Body>
-      </Modal>
-    );
+    return <LoadingDataModal onClose={close} />;
   }
 
   const elementRecipeMeta = element.recipe;
   const recipe = recipes.find((r) => r.metadata.id === elementRecipeMeta.id);
 
+  /**
+   * Creating personal extension from the existing one
+   * It will not be a part of the Recipe
+   */
   const saveAsPersonalExtension = () => {
-    // Making personal extension from the existing one
-    const { extensionPoint, recipe, uuid, ...rest } = element;
-    // ToDo see how new extensions are created
+    const { recipe, uuid, ...rest } = element;
     const personalElement: FormState = {
       uuid: uuidv4(),
       ...rest,
-      extensionPoint: {
-        ...extensionPoint,
-        metadata: {
-          ...extensionPoint.metadata,
-          // ToDo generate proper id
-          id: validateRegistryId("personal/new_ext" + uuidv4()),
-        },
-      },
+      recipe: undefined,
     };
 
-    onClose();
+    dispatch(savingExtensionActions.setSavingExtension(personalElement.uuid));
+    dispatch(editorActions.addElement(personalElement));
+    reset(element);
+    save(personalElement);
 
-    void create(personalElement, onDone, setStatus);
-
-    // ToDo
-    // 1. reset the form
-    // 2. select new extension
+    return personalElement;
   };
 
   const createNewRecipe = () => {
@@ -159,7 +137,17 @@ const SaveExtensionWizard: React.FC<SaveBlueprintExtensionModalProps> = ({
     setRecipeOptionsModalShown(true);
   };
 
-  const saveRecipeAndExtension = () => {};
+  const saveRecipeAndExtension: OnSubmit<Metadata> = (recipeMeta) => {
+    if (isNewRecipe.current) {
+      const personalElement = saveAsPersonalExtension();
+
+      const adapter = ADAPTERS.get(element.type);
+      const extension = adapter.selectExtension(personalElement);
+      const newRecipe = makeBlueprint(extension, recipeMeta);
+    } else {
+      throw new Error("Not implemented yet.");
+    }
+  };
 
   const recipeName = elementRecipeMeta.name;
   // ToDo figure the edit permissions

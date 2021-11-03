@@ -15,38 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension } from "@/core";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { selectExtensions } from "@/options/selectors";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { extensionToFormState } from "@/devTools/editor/extensionPoints/adapter";
 import { reportError } from "@/telemetry/logging";
 
-function useReset(installed: IExtension[], element: FormState): () => void {
+function useReset(skipConfirmation = false): (element: FormState) => void {
   const dispatch = useDispatch();
+  const installed = useSelector(selectExtensions);
   const { showConfirmation } = useModals();
 
-  return useCallback(async () => {
-    const confirm = await showConfirmation({
-      title: "Reset Brick?",
-      message: "Any changes you made since the last save will be lost",
-      submitCaption: "Reset",
-    });
+  return useCallback(
+    async (element: FormState) => {
+      if (!skipConfirmation) {
+        const confirm = await showConfirmation({
+          title: "Reset Brick?",
+          message: "Any changes you made since the last save will be lost",
+          submitCaption: "Reset",
+        });
 
-    if (!confirm) {
-      return;
-    }
+        if (!confirm) {
+          return;
+        }
+      }
 
-    try {
-      const extension = installed.find((x) => x.id === element.uuid);
-      const state = await extensionToFormState(extension);
-      dispatch(actions.resetInstalled(state));
-    } catch (error: unknown) {
-      reportError(error);
-      dispatch(actions.adapterError({ uuid: element.uuid, error }));
-    }
-  }, [showConfirmation, dispatch, element.uuid, installed]);
+      try {
+        const extension = installed.find((x) => x.id === element.uuid);
+        const state = await extensionToFormState(extension);
+        dispatch(actions.resetInstalled(state));
+      } catch (error: unknown) {
+        reportError(error);
+        dispatch(actions.adapterError({ uuid: element.uuid, error }));
+      }
+    },
+    [showConfirmation, dispatch, installed]
+  );
 }
 
 export default useReset;

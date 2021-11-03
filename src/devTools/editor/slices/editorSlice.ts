@@ -196,13 +196,13 @@ export const editorSlice = createSlice({
       state.activeElement = uuid;
       state.selectionSeq++;
     },
-    selectInstalled: (state, actions: PayloadAction<FormState>) => {
-      const { uuid } = actions.payload;
+    selectInstalled: (state, action: PayloadAction<FormState>) => {
+      const { uuid } = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);
       if (index >= 0) {
-        state.elements[index] = actions.payload;
+        state.elements[index] = action.payload;
       } else {
-        state.elements.push(actions.payload);
+        state.elements.push(action.payload);
       }
 
       state.error = null;
@@ -223,7 +223,6 @@ export const editorSlice = createSlice({
       state.dirty[element.uuid] = false;
       state.error = null;
       state.beta = null;
-      state.activeElement = element.uuid;
       state.selectionSeq++;
 
       // Make sure we're not keeping any private data around from Page Editor sessions

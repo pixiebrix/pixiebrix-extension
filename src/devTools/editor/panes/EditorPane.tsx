@@ -15,43 +15,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
-import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
-import { useCreate } from "@/devTools/editor/hooks/useCreate";
+import React from "react";
+import {
+  actions as editorActions,
+  FormState,
+} from "@/devTools/editor/slices/editorSlice";
+import { actions as savingExtensionActions } from "@/devTools/editor/panes/save/savingExtensionSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/options/selectors";
 import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { Formik, FormikHelpers } from "formik";
+import { Formik } from "formik";
 import Effect from "@/devTools/editor/components/Effect";
 import ElementWizard from "@/devTools/editor/ElementWizard";
 import useEditable from "@/devTools/editor/hooks/useEditable";
 import { LogContextWrapper } from "@/components/logViewer/LogContext";
 import SaveExtensionWizard from "./save/SaveExtensionWizard";
+import { isWizardOpen } from "./save/savingExtensionSelectors";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
 const CHANGE_DETECT_DELAY_MILLIS = 100;
 const REDUX_SYNC_WAIT_MILLIS = 500;
 
-const { updateElement } = editorSlice.actions;
-
 const EditorPane: React.FunctionComponent<{
   selectedElement: FormState;
   selectionSeq: number;
 }> = ({ selectedElement, selectionSeq }) => {
   const dispatch = useDispatch();
-  const installed = useSelector(selectExtensions);
   const editable = useEditable();
 
-  const [isSaveExtensionWizardShown, setSaveExtensionWizardShown] = useState(
-    false
-  );
+  const isSaveExtensionWizardOpen = useSelector(isWizardOpen);
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
     (values: FormState) => {
-      dispatch(updateElement(values));
+      dispatch(editorActions.updateElement(values));
     },
     REDUX_SYNC_WAIT_MILLIS,
     { trailing: true, leading: false }
@@ -67,8 +65,7 @@ const EditorPane: React.FunctionComponent<{
           key={key}
           initialValues={selectedElement}
           onSubmit={() => {
-            console.log("setSaveExtensionWizardShown true");
-            setSaveExtensionWizardShown(true);
+            dispatch(savingExtensionActions.setWizardOpen(true));
           }}
         >
           {({ values: element }) => (
@@ -79,20 +76,9 @@ const EditorPane: React.FunctionComponent<{
                 delayMillis={CHANGE_DETECT_DELAY_MILLIS}
               />
               <LogContextWrapper>
-                <ElementWizard
-                  element={element}
-                  editable={editable}
-                  installed={installed}
-                />
+                <ElementWizard element={element} editable={editable} />
               </LogContextWrapper>
-              {isSaveExtensionWizardShown && (
-                <SaveExtensionWizard
-                  onClose={() => {
-                    console.log("setSaveExtensionWizardShown false");
-                    setSaveExtensionWizardShown(false);
-                  }}
-                />
-              )}
+              {isSaveExtensionWizardOpen && <SaveExtensionWizard />}
             </>
           )}
         </Formik>

@@ -19,7 +19,6 @@ import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
 import { optionsSlice } from "@/options/slices";
-import { FormikHelpers } from "formik";
 import { AddToast, useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import blockRegistry from "@/blocks/registry";
@@ -37,6 +36,7 @@ import {
   extensionWithInnerDefinitions,
   isInnerExtensionPoint,
 } from "@/devTools/editor/extensionPoints/base";
+import { sleep } from "@/utils";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -116,6 +116,9 @@ type CreateCallback = (
   setStatus: (status: string) => void
 ) => Promise<void>;
 
+// ToDo remove this
+const TESTING = true;
+
 export function useCreate(): CreateCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
   //  occur in the correct order on slower (CPU or network?) machines. Therefore, await all promises. We also have to
@@ -131,10 +134,14 @@ export function useCreate(): CreateCallback {
       onDone: () => void,
       setStatus: (status: string) => void
     ) => {
-      if (element.recipe) {
-        console.log(
-          "This extension is a part of a bluePrint. You'll get new stuff here soon."
-        );
+      if (TESTING) {
+        await sleep(2000);
+        addToast("Saved extension", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+        onDone();
+        return;
       }
 
       const onStepError = (error: unknown, step: string) => {
