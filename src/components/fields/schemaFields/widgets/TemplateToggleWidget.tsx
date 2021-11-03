@@ -168,20 +168,17 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
           name={name}
           value={value.__value__}
           onChange={onChangeForTemplate(value.__type__)}
-          className={styles.field}
         />
       );
     }
 
-    return (
-      <FastField name={name} as={Widget} className={styles.field} {...props} />
-    );
+    return <FastField name={name} as={Widget} {...props} />;
   }, [Widget, name, onChangeForTemplate, props, value]);
 
   return (
     <div className={styles.root}>
       <DropdownButton
-        title={<SymbolSpan symbol={selectedOption.symbol} />}
+        title={<SymbolSpan symbol={selectedOption?.symbol ?? ""} />}
         variant="primary"
         onSelect={onModeChange}
         className={styles.dropdown}
@@ -192,7 +189,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
           </Dropdown.Item>
         ))}
       </DropdownButton>
-      {field}
+      <div className={styles.field}>{field}</div>
     </div>
   );
 };

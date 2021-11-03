@@ -35,9 +35,9 @@
   width: auto !important;
   flex-grow: 1;
 
-  input {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+  > input {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
   }
 }
 
