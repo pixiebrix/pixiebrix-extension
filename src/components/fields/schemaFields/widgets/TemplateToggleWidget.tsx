@@ -16,14 +16,14 @@
  */
 
 import React, { useCallback, useMemo } from "react";
-import { inferInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import SelectWidget, {
-  Option,
-  SelectWidgetOnChange,
-} from "@/components/form/widgets/SelectWidget";
+import {
+  FieldInputMode,
+  inferInputMode,
+} from "@/components/fields/schemaFields/fieldInputMode";
+import { Option } from "@/components/form/widgets/SelectWidget";
 import { FastField, getIn, useField, useFormikContext } from "formik";
 import { Expression, TemplateEngine } from "@/core";
-import { Col, Form, Row } from "react-bootstrap";
+import { Col, Dropdown, DropdownButton, Form, Row } from "react-bootstrap";
 import { isExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { produce } from "immer";
@@ -38,6 +38,7 @@ import styles from "./TemplateToggleWidget.module.scss";
 interface InputModeOptionBase<
   As extends React.ElementType = React.ElementType
 > {
+  symbol: string;
   Widget: As;
   defaultValue?: unknown;
 }
@@ -78,6 +79,10 @@ type TemplateToggleWidgetProps = SchemaFieldProps & {
   overrideWidget?: SchemaFieldComponent;
 };
 
+const SymbolSpan: React.FC<{ symbol: string }> = ({ symbol }) => (
+  <span className={styles.symbol}>{symbol}</span>
+);
+
 /**
  * Show a field toggle that lets a user choose the type of data input, along with the chosen input
  *
@@ -89,7 +94,6 @@ type TemplateToggleWidgetProps = SchemaFieldProps & {
 const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   name,
   inputModeOptions,
-  overrideWidget,
   ...props
 }) => {
   const [{ value }, , { setValue }] = useField<unknown>(name);
@@ -108,12 +112,11 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
     fieldName,
     parentValues,
   ]);
-
   const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
-  const Widget = overrideWidget ?? selectedOption?.Widget ?? LoadingWidget;
+  const Widget = selectedOption?.Widget ?? LoadingWidget;
 
-  const onModeChange: SelectWidgetOnChange<InputModeOption> = useCallback(
-    ({ target: { value: newInputMode } }) => {
+  const onModeChange = useCallback(
+    (newInputMode: FieldInputMode) => {
       const { defaultValue } = inputModeOptions.find(
         (x) => x.value === newInputMode
       );
@@ -174,15 +177,22 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
 
   return (
     <Row>
-      <Col lg="3" className={styles.selectCol}>
-        <SelectWidget
-          name={`${name}.inputModeSelector`}
-          value={inputMode}
-          options={inputModeOptions}
-          onChange={onModeChange}
-        />
+      <Col lg="auto" className={styles.selectCol}>
+        <DropdownButton
+          title={<SymbolSpan symbol={selectedOption.symbol} />}
+          variant="secondary"
+          onSelect={onModeChange}
+        >
+          {inputModeOptions.map((option) => (
+            <Dropdown.Item key={option.value} eventKey={option.value}>
+              <SymbolSpan symbol={option.symbol} /> - {option.label}
+            </Dropdown.Item>
+          ))}
+        </DropdownButton>
       </Col>
-      <Col lg="9">{field}</Col>
+      <Col lg="9" className={styles.fieldCol}>
+        {field}
+      </Col>
     </Row>
   );
 };

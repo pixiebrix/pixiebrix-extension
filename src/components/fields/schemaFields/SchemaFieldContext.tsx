@@ -36,6 +36,7 @@ import { fieldLabel } from "@/components/fields/fieldUtils";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
+import { InputModeOption } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 
 function defaultFieldFactory(
   Widget: React.FC<SchemaFieldProps>
@@ -127,9 +128,15 @@ type CustomWidget = {
   Component: SchemaFieldComponent;
 };
 
+export type CustomFieldToggleMode = {
+  match: (fieldSchema: Schema) => boolean;
+  option: InputModeOption;
+};
+
 export type CustomFieldDefinitions = {
   customFields: CustomField[];
   customWidgets: CustomWidget[];
+  customToggleModes: CustomFieldToggleMode[];
 };
 
 /**
@@ -138,6 +145,7 @@ export type CustomFieldDefinitions = {
 const SchemaFieldContext = createContext<CustomFieldDefinitions>({
   customFields: [],
   customWidgets: [],
+  customToggleModes: [],
 });
 
 export default SchemaFieldContext;

@@ -17,9 +17,10 @@
 
 import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import SchemaFieldContext, {
+  CustomFieldToggleMode,
   getDefaultField,
 } from "@/components/fields/schemaFields/SchemaFieldContext";
-import { ApiVersion, isApiVersionAtLeast, Schema } from "@/core";
+import { ApiVersion, Schema } from "@/core";
 import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import TemplateToggleWidget, {
   InputModeOption,
@@ -36,14 +37,16 @@ import ServiceField, {
 } from "@/components/fields/schemaFields/ServiceField";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import { isEmpty, uniqBy } from "lodash";
+import { isEmpty } from "lodash";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { useField } from "formik";
 import UnsupportedWidget from "@/components/fields/schemaFields/widgets/UnsupportedWidget";
+import { isApiVersionAtLeast } from "@/utils";
 
 const varOption: StringOption = {
-  label: "@{data}",
+  label: "Variable",
   value: "var",
+  symbol: "⟮𝑥⟯",
   Widget: TextWidget,
   defaultValue: {
     __type__: "var",
@@ -53,9 +56,25 @@ const varOption: StringOption = {
 
 function getToggleOptions(
   fieldSchema: Schema,
-  isRequired = false
+  isRequired = false,
+  customModes: CustomFieldToggleMode[] = []
 ): InputModeOption[] {
-  const opts: InputModeOption[] = [];
+  const options: InputModeOption[] = [];
+
+  function pushOpts(...opts: InputModeOption[]) {
+    for (const opt of opts) {
+      if (!options.some((x) => x.value === opt.value)) {
+        options.push(opt);
+      }
+    }
+  }
+
+  for (const mode of customModes) {
+    // eslint-disable-next-line unicorn/prefer-regexp-test -- ?? not using String.match()
+    if (mode.match(fieldSchema)) {
+      pushOpts(mode.option);
+    }
+  }
 
   if (Array.isArray(fieldSchema.type)) {
     const { type, ...rest } = fieldSchema;
@@ -63,10 +82,11 @@ function getToggleOptions(
   }
 
   if (fieldSchema.type === "array") {
-    opts.push(
+    pushOpts(
       {
-        label: "Items",
+        label: "Array items",
         value: "array",
+        symbol: "[...]",
         Widget: ArrayWidget,
         defaultValue: Array.isArray(fieldSchema.default)
           ? fieldSchema.default
@@ -83,10 +103,11 @@ function getToggleOptions(
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
     isEmpty(fieldSchema)
   ) {
-    opts.push(
+    pushOpts(
       {
-        label: "Properties",
+        label: "Object properties",
         value: "object",
+        symbol: "{...}",
         Widget: ObjectWidget,
         defaultValue: (typeof fieldSchema.default === "object"
           ? fieldSchema.default
@@ -97,10 +118,11 @@ function getToggleOptions(
   }
 
   if (fieldSchema.type === "boolean") {
-    opts.push(
+    pushOpts(
       {
-        label: "True/False",
+        label: "Toggle",
         value: "boolean",
+        symbol: "<->",
         Widget: SwitchButtonWidget,
         defaultValue:
           typeof fieldSchema.default === "boolean"
@@ -112,10 +134,11 @@ function getToggleOptions(
   }
 
   if (fieldSchema.type === "string") {
-    opts.push(
+    pushOpts(
       {
-        label: "Text",
+        label: "Plain text",
         value: "string",
+        symbol: "Abc",
         Widget: TextWidget,
         defaultValue:
           typeof fieldSchema.default === "string"
@@ -124,8 +147,9 @@ function getToggleOptions(
       },
       varOption,
       {
-        label: "Mustache",
+        label: "Mustache template",
         value: "mustache",
+        symbol: "{{  }}",
         Widget: TextWidget,
         defaultValue: {
           __type__: "mustache",
@@ -133,8 +157,9 @@ function getToggleOptions(
         },
       },
       {
-        label: "Nunjucks",
+        label: "Nunjucks template",
         value: "nunjucks",
+        symbol: "{% %}",
         Widget: TextWidget,
         defaultValue: {
           __type__: "nunjucks",
@@ -142,8 +167,9 @@ function getToggleOptions(
         },
       },
       {
-        label: "Handlebars",
+        label: "Handlebars template",
         value: "handlebars",
+        symbol: "{{ # }}",
         Widget: TextWidget,
         defaultValue: {
           __type__: "handlebars",
@@ -154,10 +180,11 @@ function getToggleOptions(
   }
 
   if (fieldSchema.type === "integer") {
-    opts.push(
+    pushOpts(
       {
-        label: "Integer",
+        label: "Whole number",
         value: "number",
+        symbol: "123",
         Widget: IntegerWidget,
         defaultValue:
           typeof fieldSchema.default === "number" ? fieldSchema.default : 0,
@@ -167,10 +194,11 @@ function getToggleOptions(
   }
 
   if (fieldSchema.type === "number") {
-    opts.push(
+    pushOpts(
       {
         label: "Number",
         value: "number",
+        symbol: "1.23",
         Widget: NumberWidget,
         defaultValue:
           typeof fieldSchema.default === "number" ? fieldSchema.default : 0,
@@ -187,7 +215,7 @@ function getToggleOptions(
 
       return getToggleOptions(subSchema);
     });
-    opts.push(...anyOfOptions);
+    pushOpts(...anyOfOptions);
   }
 
   if (fieldSchema.oneOf?.length > 0) {
@@ -198,18 +226,19 @@ function getToggleOptions(
 
       return getToggleOptions(subSchema);
     });
-    opts.push(...oneOfOptions);
+    pushOpts(...oneOfOptions);
   }
 
   if (!isRequired) {
-    opts.push({
+    pushOpts({
       label: "Omit",
       value: "omit",
+      symbol: "∅",
       Widget: OmitFieldWidget,
     });
   }
 
-  return uniqBy(opts, (x) => x.value);
+  return options;
 }
 
 /**
@@ -221,19 +250,18 @@ function getToggleOptions(
 const SchemaField: SchemaFieldComponent = (props) => {
   const { name, schema, isRequired, label, description } = props;
 
-  const { customWidgets } = useContext(SchemaFieldContext);
-  const overrideWidget = useMemo(
-    () => customWidgets.find((x) => x.match(schema))?.Component,
-    [schema, customWidgets]
+  const { customFields, customToggleModes } = useContext(SchemaFieldContext);
+
+  const LegacyField = useMemo(() => {
+    const overrideField = customFields.find((x) => x.match(schema))?.Component;
+    return overrideField ?? getDefaultField(schema);
+  }, [customFields, schema]);
+
+  const inputModeOptions = useMemo(
+    () => getToggleOptions(schema, isRequired, customToggleModes),
+    [customToggleModes, isRequired, schema]
   );
-  const LegacyField = useMemo(() => overrideWidget ?? getDefaultField(schema), [
-    overrideWidget,
-    schema,
-  ]);
-  const inputModeOptions = useMemo(() => getToggleOptions(schema, isRequired), [
-    isRequired,
-    schema,
-  ]);
+
   const [{ value }, , { setValue }] = useField(name);
   const stableSetValue = useCallback(
     (value: unknown) => {
@@ -251,7 +279,13 @@ const SchemaField: SchemaFieldComponent = (props) => {
 
   useEffect(() => {
     // Initialize any undefined/empty required fields to prevent inferring an "omit" input
-    if (!value && isRequired && !isService && !useLegacyFields) {
+    if (
+      !value &&
+      isRequired &&
+      !isService &&
+      !useLegacyFields &&
+      !isEmpty(inputModeOptions)
+    ) {
       stableSetValue(inputModeOptions[0].defaultValue);
     }
   }, [
@@ -292,7 +326,6 @@ const SchemaField: SchemaFieldComponent = (props) => {
       description={fieldDescription}
       as={TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
-      overrideWidget={overrideWidget}
       {...props}
     />
   );

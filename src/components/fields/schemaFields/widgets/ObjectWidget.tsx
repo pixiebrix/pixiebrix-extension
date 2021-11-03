@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { Button, Form, Table } from "react-bootstrap";
 import { SafeString, Schema } from "@/core";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
@@ -26,10 +26,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import { freshIdentifier } from "@/utils";
 import ComplexObjectValue from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
-import ExpressionWidget from "@/components/fields/schemaFields/widgets/ExpressionWidget";
-import SchemaFieldContext, {
-  getDefaultField,
-} from "@/components/fields/schemaFields/SchemaFieldContext";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 type PropertyRowProps = {
   name: string;
@@ -56,16 +53,13 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   name,
   schema,
   showActions,
-}) => {
-  const Renderer = useMemo(() => getDefaultField(schema), [schema]);
-  return (
-    <tr>
-      <td colSpan={showActions ? 3 : 2}>
-        <Renderer name={name} schema={schema} />
-      </td>
-    </tr>
-  );
-};
+}) => (
+  <tr>
+    <td colSpan={showActions ? 3 : 2}>
+      <SchemaField name={name} schema={schema} />
+    </td>
+  </tr>
+);
 
 const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   readOnly,
@@ -77,18 +71,14 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
 }) => {
   const [field] = useField(props);
 
-  const { customWidgets } = useContext(SchemaFieldContext);
-
-  const isComplex = typeof field.value === "object";
-
   const ValueComponent = useMemo(() => {
-    if (isComplex) {
+    // Don't allow nested arrays/objects inside object fields in page editor
+    if (typeof field.value === "object") {
       return ComplexObjectValue;
     }
 
-    const { Component } = customWidgets.find((x) => x.match(schema)) ?? {};
-    return Component ?? ExpressionWidget;
-  }, [isComplex, customWidgets, schema]);
+    return SchemaField;
+  }, [field.value]);
 
   const updateName = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {

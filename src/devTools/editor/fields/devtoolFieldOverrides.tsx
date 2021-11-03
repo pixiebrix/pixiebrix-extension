@@ -42,6 +42,18 @@ const devtoolFieldOverrides: CustomFieldDefinitions = {
       Component: ClearableSelectorWidget,
     },
   ],
+  customToggleModes: [
+    {
+      match: isSelectorField,
+      option: {
+        label: "Selector",
+        value: "string",
+        symbol: "$()",
+        Widget: ClearableSelectorWidget,
+        defaultValue: "",
+      },
+    },
+  ],
 };
 
 export default devtoolFieldOverrides;

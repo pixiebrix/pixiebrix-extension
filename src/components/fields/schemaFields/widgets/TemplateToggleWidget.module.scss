@@ -16,6 +16,24 @@
  */
 
 .selectCol {
-  font-size: small;
   padding-right: 0 !important;
+
+  button {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+.symbol {
+  display: inline-block;
+  width: 48px;
+}
+
+.fieldCol {
+  padding-left: 0 !important;
+
+  input {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 }

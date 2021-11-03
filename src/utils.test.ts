@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { freshIdentifier, removeUndefined } from "@/utils";
+import { freshIdentifier, isApiVersionAtLeast, removeUndefined } from "@/utils";
 import type { SafeString } from "@/core";
 
 test("can generate fresh identifier", () => {
@@ -41,5 +41,20 @@ describe("removeUndefined", () => {
     expect(removeUndefined({ foo: { bar: undefined } })).toStrictEqual({
       foo: {},
     });
+  });
+});
+
+describe("isApiVersionAtLeast()", () => {
+  test("v2 is at least v1", () => {
+    expect(isApiVersionAtLeast("v2", "v1")).toStrictEqual(true);
+  });
+  test("v2 is at least v2", () => {
+    expect(isApiVersionAtLeast("v2", "v2")).toStrictEqual(true);
+  });
+  test("v3 is at least v1", () => {
+    expect(isApiVersionAtLeast("v3", "v1")).toStrictEqual(true);
+  });
+  test("v1 is not at least v2", () => {
+    expect(isApiVersionAtLeast("v1", "v2")).toStrictEqual(false);
   });
 });
