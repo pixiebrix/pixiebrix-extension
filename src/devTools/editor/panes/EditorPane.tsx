@@ -27,7 +27,7 @@ import Effect from "@/devTools/editor/components/Effect";
 import ElementWizard from "@/devTools/editor/ElementWizard";
 import useEditable from "@/devTools/editor/hooks/useEditable";
 import { LogContextWrapper } from "@/components/logViewer/LogContext";
-import SaveRecipeExtensionModal from "./SaveRecipeExtensionModal";
+import SaveExtensionWizard from "./save/SaveExtensionWizard";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -40,32 +40,13 @@ const EditorPane: React.FunctionComponent<{
   selectedElement: FormState;
   selectionSeq: number;
 }> = ({ selectedElement, selectionSeq }) => {
-  const create = useCreate();
   const dispatch = useDispatch();
   const installed = useSelector(selectExtensions);
   const editable = useEditable();
 
-  const [isRecipesExtensionModalShown, setRecipeExtensionModalShown] = useState(
+  const [isSaveExtensionWizardShown, setSaveExtensionWizardShown] = useState(
     false
   );
-
-  const onCreate = async (
-    element: FormState,
-    formikHelpers: FormikHelpers<FormState>
-  ) => {
-    if (element.recipe) {
-      setRecipeExtensionModalShown(true);
-    } else {
-      const { setSubmitting, setStatus } = formikHelpers;
-      await create(
-        element,
-        () => {
-          setSubmitting(false);
-        },
-        setStatus
-      );
-    }
-  };
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
@@ -82,8 +63,15 @@ const EditorPane: React.FunctionComponent<{
   return (
     <>
       <ErrorBoundary key={key}>
-        <Formik key={key} initialValues={selectedElement} onSubmit={onCreate}>
-          {({ values: element, setSubmitting, setStatus }) => (
+        <Formik
+          key={key}
+          initialValues={selectedElement}
+          onSubmit={() => {
+            console.log("setSaveExtensionWizardShown true");
+            setSaveExtensionWizardShown(true);
+          }}
+        >
+          {({ values: element }) => (
             <>
               <Effect
                 values={element}
@@ -97,13 +85,11 @@ const EditorPane: React.FunctionComponent<{
                   installed={installed}
                 />
               </LogContextWrapper>
-              {isRecipesExtensionModalShown && (
-                <SaveRecipeExtensionModal
-                  element={element}
-                  onDone={() => setSubmitting(false)}
-                  setStatus={setStatus}
+              {isSaveExtensionWizardShown && (
+                <SaveExtensionWizard
                   onClose={() => {
-                    setRecipeExtensionModalShown(false);
+                    console.log("setSaveExtensionWizardShown false");
+                    setSaveExtensionWizardShown(false);
                   }}
                 />
               )}

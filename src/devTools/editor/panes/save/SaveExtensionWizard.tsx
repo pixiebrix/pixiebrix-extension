@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useGetRecipesQuery } from "@/services/api";
 import { GridLoader } from "react-spinners";
@@ -26,11 +26,12 @@ import Form from "@/components/form/Form";
 import * as yup from "yup";
 import { RegistryId, Metadata } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { useFormikContext } from "formik";
+import useUserAction from "@/hooks/useUserAction";
+import { useAsyncState } from "@/hooks/common";
+import { useAsyncEffect } from "use-async-effect";
 
 type SaveBlueprintExtensionModalProps = {
-  element: FormState;
-  onDone: () => void;
-  setStatus: (status: string) => void;
   onClose: () => void;
 };
 
@@ -41,10 +42,10 @@ const updateRecipeSchema: yup.ObjectSchema<Metadata> = yup.object().shape({
   description: yup.string(),
 });
 
-const SaveRecipeExtensionModal: React.FC<SaveBlueprintExtensionModalProps> = ({
-  element,
-  onDone,
-  setStatus,
+const SAVE_AS_NEW_BLUEPRINT = "Save as New Blueprint";
+const UPDATE_BLUEPRINT = "Update Blueprint";
+
+const SaveExtensionWizard: React.FC<SaveBlueprintExtensionModalProps> = ({
   onClose,
 }) => {
   const create = useCreate();
@@ -54,11 +55,46 @@ const SaveRecipeExtensionModal: React.FC<SaveBlueprintExtensionModalProps> = ({
   );
   const isNewRecipe = useRef(false);
   const newRecipeInitialValues = useRef<Metadata>(null);
+  const {
+    values: element,
+    setSubmitting,
+    setStatus,
+  } = useFormikContext<FormState>();
+
+  const onDone = () => {
+    setSubmitting(false);
+  };
 
   const close = () => {
-    onDone();
     onClose();
+    onDone();
   };
+
+  console.log("SaveExtensionWizard render");
+  // Extension is not part of a Recipe
+  useEffect(() => {
+    if (element.recipe) {
+      return;
+    }
+
+    // ToDo this saves extension 5 times
+    console.log("saving extension");
+    void create(element, close, setStatus);
+  }, []);
+
+  if (!element.recipe) {
+    return (
+      <Modal show backdrop="static" keyboard={false}>
+        <Modal.Header>
+          <Modal.Title>Saving extension...</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          <GridLoader />
+        </Modal.Body>
+      </Modal>
+    );
+  }
 
   if (areRecipesLoading) {
     return (
@@ -126,6 +162,7 @@ const SaveRecipeExtensionModal: React.FC<SaveBlueprintExtensionModalProps> = ({
   const saveRecipeAndExtension = () => {};
 
   const recipeName = elementRecipeMeta.name;
+  // ToDo figure the edit permissions
   const isRecipeEditable = true;
   const installedRecipeVersion = elementRecipeMeta.version;
   const latestRecipeVersion = recipe.metadata.version;
@@ -150,26 +187,41 @@ const SaveRecipeExtensionModal: React.FC<SaveBlueprintExtensionModalProps> = ({
   return isRecipeOptionsModalShown ? (
     <Modal show onHide={close} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
-        <Modal.Title>Blueprint properties</Modal.Title>
+        <Modal.Title>
+          {isNewRecipe.current ? SAVE_AS_NEW_BLUEPRINT : UPDATE_BLUEPRINT}
+        </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body>
-        <Form
-          validationSchema={updateRecipeSchema}
-          initialValues={newRecipeInitialValues.current}
-          onSubmit={saveRecipeAndExtension}
-          renderSubmit={({ isSubmitting, isValid }) => (
-            <div className="text-right">
-              <Button variant="info" className="mr-2" onClick={close}>
-                Cancel
-              </Button>
+      <Form
+        validationSchema={updateRecipeSchema}
+        initialValues={newRecipeInitialValues.current}
+        onSubmit={saveRecipeAndExtension}
+        renderSubmit={({ isSubmitting, isValid }) => (
+          <Modal.Footer>
+            <Button
+              variant="link"
+              onClick={() => {
+                setRecipeOptionsModalShown(false);
+              }}
+            >
+              Back
+            </Button>
 
-              <Button type="submit" disabled={!isValid || isSubmitting}>
-                {isNewRecipe.current ? "Create new" : "Update"} Blueprint
-              </Button>
-            </div>
-          )}
-        >
+            <Button variant="info" onClick={close}>
+              Cancel
+            </Button>
+
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={!isValid || isSubmitting}
+            >
+              {isNewRecipe.current ? SAVE_AS_NEW_BLUEPRINT : UPDATE_BLUEPRINT}
+            </Button>
+          </Modal.Footer>
+        )}
+      >
+        <Modal.Body>
           <ConnectedFieldTemplate
             name="id"
             label="ID"
@@ -178,8 +230,8 @@ const SaveRecipeExtensionModal: React.FC<SaveBlueprintExtensionModalProps> = ({
           <ConnectedFieldTemplate name="name" label="Name" />
           <ConnectedFieldTemplate name="version" label="Version" />
           <ConnectedFieldTemplate name="description" label="Description" />
-        </Form>
-      </Modal.Body>
+        </Modal.Body>
+      </Form>
     </Modal>
   ) : (
     <Modal show onHide={close} backdrop="static" keyboard={false}>
@@ -193,20 +245,30 @@ const SaveRecipeExtensionModal: React.FC<SaveBlueprintExtensionModalProps> = ({
           Cancel
         </Button>
 
-        <Button onClick={saveAsPersonalExtension}>
+        <Button
+          variant={showNewRecipeButton ? "secondary" : "primary"}
+          onClick={saveAsPersonalExtension}
+        >
           Save as Personal Extension
         </Button>
 
         {showNewRecipeButton && (
-          <Button onClick={createNewRecipe}>Save as New Blueprint</Button>
+          <Button
+            variant={showUpdateRecipeButton ? "secondary" : "primary"}
+            onClick={createNewRecipe}
+          >
+            {SAVE_AS_NEW_BLUEPRINT}
+          </Button>
         )}
 
         {showUpdateRecipeButton && (
-          <Button onClick={updateRecipe}>Update Blueprint</Button>
+          <Button variant="primary" onClick={updateRecipe}>
+            {UPDATE_BLUEPRINT}
+          </Button>
         )}
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default SaveRecipeExtensionModal;
+export default SaveExtensionWizard;
