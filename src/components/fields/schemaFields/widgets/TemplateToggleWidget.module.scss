@@ -35,7 +35,8 @@
   width: auto !important;
   flex-grow: 1;
 
-  > input {
+  input,
+  div {
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
   }

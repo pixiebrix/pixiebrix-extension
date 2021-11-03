@@ -134,8 +134,23 @@ function getToggleOptions(
   }
 
   if (fieldSchema.type === "string") {
-    pushOpts(
-      {
+    if (
+      fieldSchema.enum &&
+      Array.isArray(fieldSchema.enum) &&
+      fieldSchema.enum.length > 0
+    ) {
+      pushOpts({
+        label: "Select...",
+        value: "string",
+        symbol: "a|b|c",
+        Widget: TextWidget,
+        defaultValue:
+          typeof fieldSchema.default === "string"
+            ? String(fieldSchema.default)
+            : "",
+      });
+    } else {
+      pushOpts({
         label: "Plain text",
         value: "string",
         symbol: "Abc",
@@ -144,7 +159,10 @@ function getToggleOptions(
           typeof fieldSchema.default === "string"
             ? String(fieldSchema.default)
             : "",
-      },
+      });
+    }
+
+    pushOpts(
       varOption,
       {
         label: "Mustache template",

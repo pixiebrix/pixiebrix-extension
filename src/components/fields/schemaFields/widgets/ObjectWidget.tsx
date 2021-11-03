@@ -266,7 +266,7 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
   }, [name, setFieldValue, valueRef]);
 
   return (
-    <div className={styles.root}>
+    <div>
       <Table size="sm">
         <thead>
           <tr>
