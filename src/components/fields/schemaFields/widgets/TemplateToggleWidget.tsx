@@ -168,32 +168,32 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
           name={name}
           value={value.__value__}
           onChange={onChangeForTemplate(value.__type__)}
+          className={styles.field}
         />
       );
     }
 
-    return <FastField name={name} as={Widget} {...props} />;
+    return (
+      <FastField name={name} as={Widget} className={styles.field} {...props} />
+    );
   }, [Widget, name, onChangeForTemplate, props, value]);
 
   return (
-    <Row>
-      <Col lg="auto" className={styles.selectCol}>
-        <DropdownButton
-          title={<SymbolSpan symbol={selectedOption.symbol} />}
-          variant="secondary"
-          onSelect={onModeChange}
-        >
-          {inputModeOptions.map((option) => (
-            <Dropdown.Item key={option.value} eventKey={option.value}>
-              <SymbolSpan symbol={option.symbol} /> - {option.label}
-            </Dropdown.Item>
-          ))}
-        </DropdownButton>
-      </Col>
-      <Col lg="9" className={styles.fieldCol}>
-        {field}
-      </Col>
-    </Row>
+    <div className={styles.root}>
+      <DropdownButton
+        title={<SymbolSpan symbol={selectedOption.symbol} />}
+        variant="primary"
+        onSelect={onModeChange}
+        className={styles.dropdown}
+      >
+        {inputModeOptions.map((option) => (
+          <Dropdown.Item key={option.value} eventKey={option.value}>
+            <SymbolSpan symbol={option.symbol} /> - {option.label}
+          </Dropdown.Item>
+        ))}
+      </DropdownButton>
+      {field}
+    </div>
   );
 };
 

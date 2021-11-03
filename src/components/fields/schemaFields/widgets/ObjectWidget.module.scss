@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,18 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-
-export function makeLabelForSchemaField(
-  props: SchemaFieldProps
-): React.ReactNode {
-  const {
-    name,
-    label,
-    schema: { title },
-    noLabel,
-  } = props;
-  return noLabel ? undefined : label ?? title ?? fieldLabel(name);
+.root {
+  flex-grow: 1;
 }

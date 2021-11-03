@@ -27,6 +27,9 @@ import { produce } from "immer";
 import { freshIdentifier } from "@/utils";
 import ComplexObjectValue from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { isExpression } from "@/runtime/mapArgs";
+import { useApiVersionAtLeast } from "@/components/fields/fieldUtils";
+import styles from "./ObjectWidget.module.scss";
 
 type PropertyRowProps = {
   name: string;
@@ -56,7 +59,7 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
 }) => (
   <tr>
     <td colSpan={showActions ? 3 : 2}>
-      <SchemaField name={name} schema={schema} />
+      <SchemaField noLabel name={name} schema={schema} />
     </td>
   </tr>
 );
@@ -73,7 +76,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
 
   const ValueComponent = useMemo(() => {
     // Don't allow nested arrays/objects inside object fields in page editor
-    if (typeof field.value === "object") {
+    if (!isExpression(field.value) && typeof field.value === "object") {
       return ComplexObjectValue;
     }
 
@@ -101,7 +104,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
         />
       </td>
       <td>
-        <ValueComponent {...field} schema={schema} />
+        <ValueComponent noLabel {...field} schema={schema} />
       </td>
       {showActions && (
         <td>
@@ -149,16 +152,19 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
     [property, onRename]
   );
 
+  // Don't show action on v3 or above
+  const showActions =
+    !useApiVersionAtLeast("v3") &&
+    (parentSchema.additionalProperties === true ||
+      typeof parentSchema.additionalProperties === "object");
+
   return (
     <PropertyRowComponent
       key={property}
       name={name}
       readOnly={defined}
       schema={propertySchema}
-      showActions={
-        parentSchema.additionalProperties === true ||
-        typeof parentSchema.additionalProperties === "object"
-      }
+      showActions={showActions}
       onDelete={defined ? undefined : deleteProp}
       onRename={defined ? undefined : renameProp}
     />
@@ -185,6 +191,10 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
 
   // Allow additional properties for empty schema (empty schema allows shape)
   const additionalProperties = isEmpty(schema) || schema.additionalProperties;
+
+  // Don't show action on v3 or above
+  const showAction =
+    !useApiVersionAtLeast("v3") && Boolean(additionalProperties);
 
   // Helpers.setValue changes on every render, so use setFieldValue instead
   // https://github.com/formium/formik/issues/2268
@@ -256,13 +266,13 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
   }, [name, setFieldValue, valueRef]);
 
   return (
-    <div>
+    <div className={styles.root}>
       <Table size="sm">
         <thead>
           <tr>
             <th scope="col">Property</th>
             <th scope="col">Value</th>
-            {additionalProperties && <th scope="col">Action</th>}
+            {showAction && <th scope="col">Action</th>}
           </tr>
         </thead>
         <tbody>

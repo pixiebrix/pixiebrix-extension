@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, SchemaDefinition } from "@/core";
+import { ApiVersion, Schema, SchemaDefinition } from "@/core";
+import { useField } from "formik";
+import { isApiVersionAtLeast } from "@/utils";
 
 export function fieldLabel(name: string): string {
   const parts = name.split(".");
@@ -47,4 +49,14 @@ export function createTypePredicate(predicate: TypePredicate): TypePredicate {
 
     return false;
   };
+}
+
+export function useApiVersion(): ApiVersion {
+  const { value: apiVersion } = useField<ApiVersion>("apiVersion")[0];
+  return apiVersion;
+}
+
+export function useApiVersionAtLeast(atLeast: ApiVersion): boolean {
+  const apiVersion = useApiVersion();
+  return isApiVersionAtLeast(apiVersion, atLeast);
 }

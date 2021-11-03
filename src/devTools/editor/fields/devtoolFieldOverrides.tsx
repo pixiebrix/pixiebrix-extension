@@ -48,7 +48,7 @@ const devtoolFieldOverrides: CustomFieldDefinitions = {
       option: {
         label: "Selector",
         value: "string",
-        symbol: "$()",
+        symbol: "$( )",
         Widget: ClearableSelectorWidget,
         defaultValue: "",
       },

@@ -28,7 +28,7 @@ import TemplateToggleWidget, {
 } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import { makeFieldLabel } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import OmitFieldWidget from "@/components/fields/schemaFields/widgets/OmitFieldWidget";
 import IntegerWidget from "@/components/fields/schemaFields/widgets/IntegerWidget";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
@@ -159,7 +159,7 @@ function getToggleOptions(
       {
         label: "Nunjucks template",
         value: "nunjucks",
-        symbol: "{% %}",
+        symbol: "{%%}",
         Widget: TextWidget,
         defaultValue: {
           __type__: "nunjucks",
@@ -231,9 +231,9 @@ function getToggleOptions(
 
   if (!isRequired) {
     pushOpts({
-      label: "Omit",
+      label: "Remove",
       value: "omit",
-      symbol: "∅",
+      symbol: "🗑",
       Widget: OmitFieldWidget,
     });
   }
@@ -248,7 +248,9 @@ function getToggleOptions(
  * @see getDefaultField
  */
 const SchemaField: SchemaFieldComponent = (props) => {
-  const { name, schema, isRequired, label, description } = props;
+  const { name, schema, isRequired, description } = props;
+  const fieldLabel = makeLabelForSchemaField(props);
+  const fieldDescription = description ?? schema.description;
 
   const { customFields, customToggleModes } = useContext(SchemaFieldContext);
 
@@ -304,9 +306,6 @@ const SchemaField: SchemaFieldComponent = (props) => {
   if (isService) {
     return <ServiceField {...props} />;
   }
-
-  const fieldLabel = makeFieldLabel(name, schema, label);
-  const fieldDescription = description ?? schema.description;
 
   if (isEmpty(inputModeOptions)) {
     return (

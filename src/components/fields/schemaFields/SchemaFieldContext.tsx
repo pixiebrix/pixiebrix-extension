@@ -32,21 +32,21 @@ import {
 import BooleanField from "@/components/fields/schemaFields/BooleanField";
 import { isEmpty } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { fieldLabel } from "@/components/fields/fieldUtils";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import { InputModeOption } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 
 function defaultFieldFactory(
   Widget: React.FC<SchemaFieldProps>
 ): SchemaFieldComponent {
   const Field: React.FunctionComponent<SchemaFieldProps> = (props) => {
-    const { name, label, schema, description } = props;
+    const { schema, description } = props;
     return (
       <ConnectedFieldTemplate
         {...props}
-        label={label ?? fieldLabel(name)}
+        label={makeLabelForSchemaField(props)}
         description={description ?? schema.description}
         as={Widget}
       />

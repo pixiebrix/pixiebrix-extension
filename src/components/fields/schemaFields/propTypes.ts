@@ -61,4 +61,9 @@ export interface SchemaFieldProps {
    * The RJSF UiSchema for the field. WARNING: very little of the UiSchema surface area is supported
    */
   uiSchema?: UiSchema;
+
+  /**
+   * Hide the label
+   */
+  noLabel?: boolean;
 }

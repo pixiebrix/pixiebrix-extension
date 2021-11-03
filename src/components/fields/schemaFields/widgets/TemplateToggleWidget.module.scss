@@ -15,8 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.selectCol {
-  padding-right: 0 !important;
+.root {
+  display: flex;
+  flex-direction: row;
+}
+
+.dropdown {
+  width: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
 
   button {
     border-top-right-radius: 0;
@@ -24,16 +31,17 @@
   }
 }
 
-.symbol {
-  display: inline-block;
-  width: 48px;
-}
-
-.fieldCol {
-  padding-left: 0 !important;
+.field {
+  width: auto !important;
+  flex-grow: 1;
 
   input {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
+}
+
+.symbol {
+  display: inline-block;
+  width: 40px;
 }

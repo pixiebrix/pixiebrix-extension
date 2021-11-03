@@ -24,10 +24,11 @@ import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWid
 const SelectorSelectorField: React.FunctionComponent<SchemaFieldProps> = (
   props
 ) => {
-  const { label, name, schema } = props;
+  const { label, name, schema, noLabel } = props;
+  const displayLabel = noLabel ? undefined : label ?? fieldLabel(name);
   return (
     <ConnectedFieldTemplate
-      label={label ?? fieldLabel(name)}
+      label={displayLabel}
       description={schema.description}
       as={SelectorSelectorWidget}
       {...props}

@@ -26,10 +26,7 @@ import {
   ServiceKeyVar,
   UUID,
 } from "@/core";
-import {
-  createTypePredicate,
-  fieldLabel,
-} from "@/components/fields/fieldUtils";
+import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { useAuthOptions } from "@/hooks/auth";
 import { AuthOption } from "@/auth/authTypes";
 import { produce } from "immer";
@@ -50,6 +47,7 @@ import {
   SERVICE_FIELD_REFS,
 } from "@/services/serviceUtils";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
@@ -204,7 +202,8 @@ const ServiceField: React.FunctionComponent<
     /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */
     detectDefault?: boolean;
   }
-> = ({ label, detectDefault = true, schema, ...props }) => {
+> = ({ detectDefault = true, ...props }) => {
+  const { schema } = props;
   const [authOptions] = useAuthOptions();
   const {
     values: root,
@@ -268,7 +267,7 @@ const ServiceField: React.FunctionComponent<
   return (
     <FieldTemplate
       name={field.name}
-      label={label ?? fieldLabel(field.name)}
+      label={makeLabelForSchemaField(props)}
       description={
         <span>
           A configured integration.{" "}
