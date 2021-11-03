@@ -38,10 +38,14 @@ function setValue({
 }: SetValueData) {
   for (const field of $input) {
     if (field.isContentEditable) {
-      field.textContent = String(value);
-      if (dispatchEvent) {
-        field.dispatchEvent(new InputEvent("input", { bubbles: true }));
-      }
+      // Field needs to be focused first
+      field.focus();
+
+      // `insertText` acts as a "paste", so if no text is selected it's just appended
+      document.execCommand("selectAll");
+
+      // It automatically triggers an `input` event
+      document.execCommand("insertText", false, String(value));
 
       continue;
     }
