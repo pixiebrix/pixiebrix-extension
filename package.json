@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.4.5-alpha.2",
+  "version": "1.4.6-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -135,7 +135,7 @@
     "webext-content-scripts": "^0.9.0",
     "webext-detect-page": "^3.0.2",
     "webext-dynamic-content-scripts": "^8.0.1",
-    "webext-messenger": "^0.13.0",
+    "webext-messenger": "^0.14.0",
     "webext-patterns": "^1.1.1",
     "webext-polyfill-kinda": "^0.1.0",
     "webextension-polyfill": "^0.8.0",
@@ -209,6 +209,7 @@
     "chromedriver": "^94.0.0",
     "compass-mixins": "^0.12.10",
     "concurrently": "^6.2.1",
+    "cooky-cutter": "^1.5.4",
     "copy-webpack-plugin": "^9.0.1",
     "csp-parse": "0.0.2",
     "css-loader": "^6.2.0",
@@ -294,12 +295,12 @@
       "!**/vendor/**"
     ],
     "moduleNameMapper": {
+      "\\.module.(css|scss)$": "identity-obj-proxy",
       "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",
       "^@/(.*)$": "<rootDir>/src/$1",
       "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
       "^@contrib/(.*)$": "<rootDir>/contrib/$1",
       "^@schemas/(.*)$": "<rootDir>/schemas/$1",
-      "\\.module.(css|scss)$": "identity-obj-proxy",
       "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }

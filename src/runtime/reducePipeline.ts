@@ -413,12 +413,14 @@ export async function blockReducer(
   const { runId, explicitDataFlow, logValues, logger } = options;
 
   // Match the override behavior in v1, where the output from previous block would override anything in the context
-  const ctxt =
+  const contextWithPreviousOutput =
     explicitDataFlow || !isPlainObject(previousOutput)
       ? context
       : { ...context, ...(previousOutput as UnknownObject) };
 
-  if (!(await shouldRunBlock(blockConfig, ctxt, options))) {
+  if (
+    !(await shouldRunBlock(blockConfig, contextWithPreviousOutput, options))
+  ) {
     logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
 
     return { output: previousOutput, context };
@@ -437,7 +439,7 @@ export async function blockReducer(
   const props: BlockProps = {
     args: await renderBlockArg(resolvedConfig, state, blockOptions),
     root: selectBlockRootElement(blockConfig, root),
-    context,
+    context: contextWithPreviousOutput,
   };
 
   const output = await runBlock(resolvedConfig, props, blockOptions);
