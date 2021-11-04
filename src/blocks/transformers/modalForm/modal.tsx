@@ -25,6 +25,11 @@ import { registerForm } from "@/contentScript/modalForms";
 import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
+import {
+  hideActionPanel,
+  PANEL_HIDING_EVENT,
+  showActionPanel,
+} from "@/actionPanel/native";
 
 function showModal(url: URL, signal: AbortSignal): void {
   // Using `<style>` will avoid overriding the site’s inline styles
@@ -108,6 +113,12 @@ export class ModalTransformer extends Transformer {
         description: "The submit button caption (default='Submit')",
         default: "Submit",
       },
+      location: {
+        type: "string",
+        enum: ["modal", "sidebar"],
+        description: "The location of the form (default='modal')",
+        default: "modal",
+      },
     },
     required: ["schema"],
   };
@@ -117,6 +128,7 @@ export class ModalTransformer extends Transformer {
     uiSchema = {},
     cancelable = true,
     submitCaption = "Submit",
+    location = "modal",
   }: BlockArg): Promise<unknown> {
     expectContext("contentScript");
 
@@ -134,7 +146,11 @@ export class ModalTransformer extends Transformer {
     );
 
     const controller = new AbortController();
-    showModal(frameSrc, controller.signal);
+    if (location === "sidebar") {
+      // TODO: Show sidebar with frameSrc iframe
+    } else {
+      showModal(frameSrc, controller.signal);
+    }
 
     try {
       return await registerForm(nonce, {

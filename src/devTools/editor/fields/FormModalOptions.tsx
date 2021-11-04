@@ -39,6 +39,13 @@ const submitCaptionSchema: Schema = {
   default: "Submit",
 };
 
+const locationSchema: Schema = {
+  type: "string",
+  enum: ["modal", "sidebar"],
+  description: "The location of the form (default='modal')",
+  default: "modal",
+};
+
 const FormModalOptions: React.FC<{
   name: string;
   configKey: string;
@@ -70,6 +77,12 @@ const FormModalOptions: React.FC<{
         name={`${configName}.submitCaption`}
         label="Submit Button Text"
         schema={submitCaptionSchema}
+      />
+
+      <SchemaField
+        name={`${configName}.location`}
+        label="Location"
+        schema={locationSchema}
       />
     </div>
   );
