@@ -16,26 +16,24 @@ exports[`renders 1`] = `
       <div
         class="card-body"
       >
-        <div>
-          <div
-            class="horizontalFormGroup form-group row"
+        <div
+          class="horizontalFormGroup form-group row"
+        >
+          <label
+            class="horizontalLabel form-label col-form-label col-lg-3"
+            for="testBlockConfiguration.config.message"
           >
-            <label
-              class="horizontalLabel form-label col-form-label col-lg-3"
-              for="testBlockConfiguration.config.message"
-            >
-              message
-            </label>
-            <div
-              class="col-lg-9"
-            >
-              <input
-                class="form-control"
-                name="testBlockConfiguration.config.message"
-                type="text"
-                value=""
-              />
-            </div>
+            message
+          </label>
+          <div
+            class="col-lg-9"
+          >
+            <input
+              class="form-control"
+              name="testBlockConfiguration.config.message"
+              type="text"
+              value=""
+            />
           </div>
         </div>
       </div>

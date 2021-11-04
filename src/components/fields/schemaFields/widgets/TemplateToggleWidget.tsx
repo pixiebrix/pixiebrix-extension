@@ -23,7 +23,7 @@ import {
 import { Option } from "@/components/form/widgets/SelectWidget";
 import { FastField, getIn, useField, useFormikContext } from "formik";
 import { Expression, TemplateEngine } from "@/core";
-import { Col, Dropdown, DropdownButton, Form, Row } from "react-bootstrap";
+import { Dropdown, DropdownButton, Form } from "react-bootstrap";
 import { isExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { produce } from "immer";
