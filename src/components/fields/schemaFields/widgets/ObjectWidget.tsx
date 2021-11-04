@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection,@typescript-eslint/no-dynamic-delete -- working with object props a lot here */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -25,11 +26,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import { freshIdentifier } from "@/utils";
-import ComplexObjectValue from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { isExpression } from "@/runtime/mapArgs";
 import { useApiVersionAtLeast } from "@/components/fields/fieldUtils";
-import styles from "./ObjectWidget.module.scss";
 
 type PropertyRowProps = {
   name: string;
@@ -38,6 +36,7 @@ type PropertyRowProps = {
   schema: Schema;
   onDelete: () => void;
   onRename: (newName: string) => void;
+  isRequired?: boolean;
 };
 
 type RowProps = {
@@ -56,10 +55,17 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   name,
   schema,
   showActions,
+  isRequired,
 }) => (
   <tr>
     <td colSpan={showActions ? 3 : 2}>
-      <SchemaField noLabel name={name} schema={schema} />
+      <SchemaField
+        noLabel
+        isObjectProperty
+        isRequired={isRequired}
+        name={name}
+        schema={schema}
+      />
     </td>
   </tr>
 );
@@ -70,18 +76,10 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   onRename,
   showActions,
   schema,
+  isRequired,
   ...props
 }) => {
   const [field] = useField(props);
-
-  const ValueComponent = useMemo(() => {
-    // Don't allow nested arrays/objects inside object fields in page editor
-    if (!isExpression(field.value) && typeof field.value === "object") {
-      return ComplexObjectValue;
-    }
-
-    return SchemaField;
-  }, [field.value]);
 
   const updateName = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
@@ -104,7 +102,13 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
         />
       </td>
       <td>
-        <ValueComponent noLabel {...field} schema={schema} />
+        <SchemaField
+          noLabel
+          isObjectProperty
+          {...field}
+          schema={schema}
+          isRequired={isRequired}
+        />
       </td>
       {showActions && (
         <td>
@@ -137,6 +141,8 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
       : rawSchema ?? FALLBACK_SCHEMA;
   }, [property, defined, parentSchema]);
 
+  const isRequired = parentSchema.required?.includes(property) ?? false;
+
   const PropertyRowComponent = useMemo(() => getPropertyRow(propertySchema), [
     propertySchema,
   ]);
@@ -167,6 +173,7 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
       showActions={showActions}
       onDelete={defined ? undefined : deleteProp}
       onRename={defined ? undefined : renameProp}
+      isRequired={isRequired}
     />
   );
 };
@@ -259,7 +266,6 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
         const prop = freshIdentifier("property" as SafeString, [
           ...Object.keys(draft),
         ]);
-        // eslint-disable-next-line security/detect-object-injection -- generated via constant
         draft[prop] = "";
       })
     );

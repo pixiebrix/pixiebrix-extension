@@ -17,7 +17,7 @@
 
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { FieldArray, useField } from "formik";
-import { fieldLabel } from "@/components/fields/fieldUtils";
+import { useApiVersionAtLeast } from "@/components/fields/fieldUtils";
 import { Button } from "react-bootstrap";
 import React from "react";
 import { Schema } from "@/core";
@@ -60,7 +60,7 @@ function getDefaultArrayItem(schema: Schema): unknown {
   return null;
 }
 
-const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, label, name }) => {
+const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
   const [field] = useField<UnknownObject[]>(name);
 
   if (Array.isArray(schema.items)) {
@@ -71,7 +71,10 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, label, name }) => {
     throw new TypeError("Schema required for items");
   }
 
-  const schemaItems = schema.items as Schema;
+  const schemaItems = schema.items;
+
+  // Show explicit remove button before v3
+  const showRemove = !useApiVersionAtLeast("v3");
 
   return (
     <FieldArray name={name}>
@@ -84,21 +87,20 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, label, name }) => {
                   key={index}
                   name={joinName(name, String(index))}
                   schema={schemaItems}
-                  label={
-                    <span>
-                      {label ?? fieldLabel(name)} #{index + 1}
-                    </span>
-                  }
+                  noLabel
+                  isArrayItem
                 />
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => {
-                    remove(index);
-                  }}
-                >
-                  Remove Item
-                </Button>
+                {showRemove && (
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => {
+                      remove(index);
+                    }}
+                  >
+                    Remove Item
+                  </Button>
+                )}
               </li>
             ))}
           </ul>

@@ -20,7 +20,7 @@ import SchemaFieldContext, {
   CustomFieldToggleMode,
   getDefaultField,
 } from "@/components/fields/schemaFields/SchemaFieldContext";
-import { ApiVersion, Schema } from "@/core";
+import { Schema } from "@/core";
 import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import TemplateToggleWidget, {
   InputModeOption,
@@ -41,7 +41,8 @@ import { isEmpty } from "lodash";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { useField } from "formik";
 import UnsupportedWidget from "@/components/fields/schemaFields/widgets/UnsupportedWidget";
-import { isApiVersionAtLeast } from "@/utils";
+import { useApiVersionAtLeast } from "@/components/fields/fieldUtils";
+import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 
 const varOption: StringOption = {
   label: "Variable",
@@ -56,8 +57,10 @@ const varOption: StringOption = {
 
 function getToggleOptions(
   fieldSchema: Schema,
-  isRequired = false,
-  customModes: CustomFieldToggleMode[] = []
+  isRequired: boolean,
+  customModes: CustomFieldToggleMode[],
+  isObjectProperty: boolean,
+  isArrayItem: boolean
 ): InputModeOption[] {
   const options: InputModeOption[] = [];
 
@@ -78,16 +81,27 @@ function getToggleOptions(
 
   if (Array.isArray(fieldSchema.type)) {
     const { type, ...rest } = fieldSchema;
-    return type.flatMap((type) => getToggleOptions({ type, ...rest }));
+    return type.flatMap((type) =>
+      getToggleOptions(
+        { type, ...rest },
+        isRequired,
+        customModes,
+        isObjectProperty,
+        isArrayItem
+      )
+    );
   }
 
   if (fieldSchema.type === "array") {
+    // Don't allow editing array fields nested inside objects/arrays
+    const Widget =
+      isObjectProperty || isArrayItem ? ComplexObjectWidget : ArrayWidget;
     pushOpts(
       {
         label: "Array items",
         value: "array",
         symbol: "[...]",
-        Widget: ArrayWidget,
+        Widget,
         defaultValue: Array.isArray(fieldSchema.default)
           ? fieldSchema.default
           : [],
@@ -103,12 +117,14 @@ function getToggleOptions(
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
     isEmpty(fieldSchema)
   ) {
+    // Don't allow editing objects inside other objects
+    const Widget = isObjectProperty ? ComplexObjectWidget : ObjectWidget;
     pushOpts(
       {
         label: "Object properties",
         value: "object",
         symbol: "{...}",
-        Widget: ObjectWidget,
+        Widget,
         defaultValue: (typeof fieldSchema.default === "object"
           ? fieldSchema.default
           : {}) as Record<string, unknown>,
@@ -231,7 +247,13 @@ function getToggleOptions(
         return [];
       }
 
-      return getToggleOptions(subSchema);
+      return getToggleOptions(
+        subSchema,
+        isRequired,
+        customModes,
+        isObjectProperty,
+        isArrayItem
+      );
     });
     pushOpts(...anyOfOptions);
   }
@@ -242,7 +264,13 @@ function getToggleOptions(
         return [];
       }
 
-      return getToggleOptions(subSchema);
+      return getToggleOptions(
+        subSchema,
+        isRequired,
+        customModes,
+        isObjectProperty,
+        isArrayItem
+      );
     });
     pushOpts(...oneOfOptions);
   }
@@ -266,7 +294,14 @@ function getToggleOptions(
  * @see getDefaultField
  */
 const SchemaField: SchemaFieldComponent = (props) => {
-  const { name, schema, isRequired, description } = props;
+  const {
+    name,
+    schema,
+    isRequired,
+    description,
+    isObjectProperty = false,
+    isArrayItem = false,
+  } = props;
   const fieldLabel = makeLabelForSchemaField(props);
   const fieldDescription = description ?? schema.description;
 
@@ -278,8 +313,15 @@ const SchemaField: SchemaFieldComponent = (props) => {
   }, [customFields, schema]);
 
   const inputModeOptions = useMemo(
-    () => getToggleOptions(schema, isRequired, customToggleModes),
-    [customToggleModes, isRequired, schema]
+    () =>
+      getToggleOptions(
+        schema,
+        isRequired,
+        customToggleModes,
+        isObjectProperty,
+        isArrayItem
+      ),
+    [customToggleModes, isArrayItem, isObjectProperty, isRequired, schema]
   );
 
   const [{ value }, , { setValue }] = useField(name);
@@ -292,8 +334,7 @@ const SchemaField: SchemaFieldComponent = (props) => {
     []
   );
 
-  const { value: apiVerison } = useField<ApiVersion>("apiVersion")[0];
-  const useLegacyFields = !isApiVersionAtLeast(apiVerison, "v3");
+  const useLegacyFields = !useApiVersionAtLeast("v3");
 
   const isService = isServiceField(schema);
 
