@@ -104,9 +104,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
     ? name.slice(0, name.lastIndexOf("."))
     : undefined;
   const { values, setValues } = useFormikContext<UnknownObject>();
-  const parentValues = parentFieldName
-    ? getIn(values, parentFieldName)
-    : values;
+  const parentValues = getIn(values, parentFieldName) ?? values;
 
   const inputMode = useMemo(() => inferInputMode(parentValues, fieldName), [
     fieldName,
