@@ -147,7 +147,15 @@ export class ModalTransformer extends Transformer {
 
     const controller = new AbortController();
     if (location === "sidebar") {
+      // Show sidebar without native panels
       // TODO: Show sidebar with frameSrc iframe
+      showActionPanel([]);
+
+      // Two-way binding between sidebar and form (Probably not necessary yet)
+      window.addEventListener(PANEL_HIDING_EVENT, () => controller.abort(), {
+        signal: controller.signal,
+      });
+      controller.signal.addEventListener("abort", hideActionPanel);
     } else {
       showModal(frameSrc, controller.signal);
     }

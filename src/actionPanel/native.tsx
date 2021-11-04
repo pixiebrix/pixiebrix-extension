@@ -34,6 +34,7 @@ import { browserAction } from "@/background/messenger/api";
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-extension";
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
+export const PANEL_HIDING_EVENT = "pixiebrix:hideActionPanel";
 
 let renderSequenceNumber = 0;
 
@@ -109,7 +110,7 @@ function insertActionPanel(): string {
   return nonce;
 }
 
-export function showActionPanel(): string {
+export function showActionPanel(callbacks = extensionCallbacks): string {
   reportEvent("SidePanelShow");
 
   adjustDocumentStyle();
@@ -122,7 +123,7 @@ export function showActionPanel(): string {
 
   // Run the extension points available on the page. If the action panel is already in the page, running
   // all the callbacks ensures the content is up to date
-  for (const callback of extensionCallbacks) {
+  for (const callback of callbacks) {
     try {
       callback();
     } catch (error: unknown) {
@@ -139,6 +140,8 @@ export function hideActionPanel(): void {
   reportEvent("SidePanelHide");
   restoreDocumentStyle();
   $(PANEL_CONTAINER_SELECTOR).remove();
+
+  window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
 }
 
 export function toggleActionPanel(): string | void {
