@@ -17,7 +17,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { useGetRecipesQuery } from "@/services/api";
+import { useCreateRecipeMutation, useGetRecipesQuery } from "@/services/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { useCreate } from "@/devTools/editor/hooks/useCreate";
 import Form, { OnSubmit } from "@/components/form/Form";
@@ -37,6 +37,7 @@ import { actions as savingExtensionActions } from "@/devTools/editor/panes/save/
 import { setSavingExtension } from "./savingExtensionSelectors";
 import { makeBlueprint } from "@/options/pages/installed/exportBlueprint";
 import { ADAPTERS } from "../../extensionPoints/adapter";
+import { RecipeDefinition } from "@/types/definitions";
 
 const updateRecipeSchema: yup.ObjectSchema<Metadata> = yup.object().shape({
   id: yup.string<RegistryId>().required(),
@@ -52,6 +53,7 @@ const SaveExtensionWizard: React.FC = () => {
   const dispatch = useDispatch();
   const create = useCreate();
   const { data: recipes, isLoading: areRecipesLoading } = useGetRecipesQuery();
+  const [createRecipe] = useCreateRecipeMutation();
   const [isRecipeOptionsModalShown, setRecipeOptionsModalShown] = useState(
     false
   );
@@ -102,19 +104,19 @@ const SaveExtensionWizard: React.FC = () => {
    * It will not be a part of the Recipe
    */
   const saveAsPersonalExtension = () => {
-    const { recipe, uuid, ...rest } = element;
+    const newExtensionUuid = uuidv4();
+    dispatch(savingExtensionActions.setSavingExtension(newExtensionUuid));
+
+    const { recipe, ...rest } = element;
     const personalElement: FormState = {
-      uuid: uuidv4(),
       ...rest,
+      uuid: newExtensionUuid,
       recipe: undefined,
     };
 
-    dispatch(savingExtensionActions.setSavingExtension(personalElement.uuid));
     dispatch(editorActions.addElement(personalElement));
     reset(element);
     save(personalElement);
-
-    return personalElement;
   };
 
   const createNewRecipe = () => {
@@ -137,13 +139,44 @@ const SaveExtensionWizard: React.FC = () => {
     setRecipeOptionsModalShown(true);
   };
 
-  const saveRecipeAndExtension: OnSubmit<Metadata> = (recipeMeta) => {
+  const saveRecipeAndExtension: OnSubmit<Metadata> = async (recipeMeta) => {
+    dispatch(savingExtensionActions.setSavingExtension(element.uuid));
+
     if (isNewRecipe.current) {
-      const personalElement = saveAsPersonalExtension();
+      const newRecipe: RecipeDefinition = {
+        ...recipe,
+        metadata: {
+          ...recipeMeta,
+          // ToDo properly generate id
+          id: validateRegistryId(`@balehok/${recipeMeta.id}`),
+        },
+      };
+
+      await createRecipe({
+        recipe: newRecipe,
+        organizations: [],
+        isPublic: false,
+      });
+
+      // for all extensions of the old Recipe change _recipe for the new one
+
+      // save new extension definition for the new extension
+
+      // ToDo review this and saveAsPersonalExtension to fetch common part
+
+      const { recipe, uuid, ...rest } = element;
+      const personalElement: FormState = {
+        uuid: uuidv4(),
+        ...rest,
+        recipe: undefined,
+      };
+
+      dispatch(editorActions.addElement(personalElement));
+      reset(element);
+      save(personalElement);
 
       const adapter = ADAPTERS.get(element.type);
       const extension = adapter.selectExtension(personalElement);
-      const newRecipe = makeBlueprint(extension, recipeMeta);
     } else {
       throw new Error("Not implemented yet.");
     }

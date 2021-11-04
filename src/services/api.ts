@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId } from "@/core";
+import { RegistryId, UUID } from "@/core";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import { RecipeDefinition, ServiceDefinition } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
@@ -30,6 +30,7 @@ import {
   UserRole,
 } from "@/types/contract";
 import { components } from "@/types/swagger";
+import { dumpBrickYaml } from "@/runtime/brickYaml";
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
 const appBaseQuery = (): BaseQueryFn<{
@@ -171,7 +172,35 @@ export const appApi = createApi({
     }),
     getRecipes: builder.query<RecipeDefinition[], void>({
       query: () => ({ url: "/api/recipes/", method: "get" }),
-      providesTags: ["Recipes"],
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(
+                ({ metadata: { id } }) => ({ type: "Recipes", id } as const)
+              ),
+              { type: "Recipes", id: "LIST" },
+            ]
+          : [{ type: "Recipes", id: "LIST" }],
+    }),
+    createRecipe: builder.mutation<
+      RecipeDefinition,
+      { recipe: RecipeDefinition; organizations: UUID[]; isPublic: boolean }
+    >({
+      query: ({ recipe, organizations, isPublic }) => {
+        const recipeConfig = dumpBrickYaml(recipe);
+
+        return {
+          url: "api/bricks/",
+          method: "post",
+          data: {
+            config: recipeConfig,
+            kind: "recipe" as RecipeDefinition["kind"],
+            organizations,
+            public: isPublic,
+          },
+        };
+      },
+      invalidatesTags: [{ type: "Recipes", id: "LIST" }],
     }),
   }),
 });
@@ -186,4 +215,5 @@ export const {
   useGetOrganizationsQuery,
   useGetGroupsQuery,
   useGetRecipesQuery,
+  useCreateRecipeMutation,
 } = appApi;
