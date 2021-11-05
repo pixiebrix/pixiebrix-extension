@@ -55,21 +55,21 @@ const varOption: StringOption = {
   },
 };
 
-type ToggleOptionsProps = {
+type ToggleOptionInputs = {
   fieldSchema: Schema;
-  customModes: CustomFieldToggleMode[];
   isRequired: boolean;
+  customToggleModes: CustomFieldToggleMode[];
   isObjectProperty: boolean;
   isArrayItem: boolean;
 };
 
 function getToggleOptions({
   fieldSchema,
-  customModes,
   isRequired,
-  isArrayItem,
+  customToggleModes,
   isObjectProperty,
-}: ToggleOptionsProps): InputModeOption[] {
+  isArrayItem,
+}: ToggleOptionInputs): InputModeOption[] {
   const options: InputModeOption[] = [];
 
   function pushOptions(...opts: InputModeOption[]) {
@@ -80,7 +80,7 @@ function getToggleOptions({
     }
   }
 
-  for (const mode of customModes) {
+  for (const mode of customToggleModes) {
     // eslint-disable-next-line unicorn/prefer-regexp-test -- ?? not using String.match()
     if (mode.match(fieldSchema)) {
       pushOptions(mode.option);
@@ -88,12 +88,12 @@ function getToggleOptions({
   }
 
   if (Array.isArray(fieldSchema.type)) {
-    const { type, ...rest } = fieldSchema;
-    return type.flatMap((type) =>
+    const { type: typeArray, ...rest } = fieldSchema;
+    return typeArray.flatMap((type) =>
       getToggleOptions({
         fieldSchema: { type, ...rest },
         isRequired,
-        customModes,
+        customToggleModes,
         isObjectProperty,
         isArrayItem,
       })
@@ -251,7 +251,7 @@ function getToggleOptions({
     return getToggleOptions({
       fieldSchema: subSchema,
       isRequired,
-      customModes,
+      customToggleModes,
       isObjectProperty,
       isArrayItem,
     });
@@ -309,7 +309,7 @@ const SchemaField: SchemaFieldComponent = (props) => {
       getToggleOptions({
         fieldSchema: schema,
         isRequired,
-        customModes: customToggleModes,
+        customToggleModes,
         isObjectProperty,
         isArrayItem,
       }),
