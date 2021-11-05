@@ -276,12 +276,21 @@ function getToggleOptions(
   }
 
   if (!isRequired) {
-    pushOpts({
-      label: "Remove",
-      value: "omit",
-      symbol: "🗑",
-      Widget: OmitFieldWidget,
-    });
+    if (isArrayItem) {
+      pushOpts({
+        label: "Remove",
+        value: "omit",
+        symbol: "❌",
+        Widget: OmitFieldWidget,
+      });
+    } else {
+      pushOpts({
+        label: "Exclude",
+        value: "omit",
+        symbol: "∅",
+        Widget: OmitFieldWidget,
+      });
+    }
   }
 
   return options;
