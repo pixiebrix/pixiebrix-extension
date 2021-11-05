@@ -30,7 +30,7 @@ import ElementWizard from "@/devTools/editor/ElementWizard";
 import useEditable from "@/devTools/editor/hooks/useEditable";
 import { LogContextWrapper } from "@/components/logViewer/LogContext";
 import SaveExtensionWizard from "./save/SaveExtensionWizard";
-import { isWizardOpen } from "./save/savingExtensionSelectors";
+import { selectIsWizardOpen } from "./save/savingExtensionSelectors";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -44,7 +44,7 @@ const EditorPane: React.FunctionComponent<{
   const dispatch = useDispatch();
   const editable = useEditable();
 
-  const isSaveExtensionWizardOpen = useSelector(isWizardOpen);
+  const isSaveExtensionWizardOpen = useSelector(selectIsWizardOpen);
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(

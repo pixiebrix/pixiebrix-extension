@@ -22,22 +22,25 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { useCreate } from "@/devTools/editor/hooks/useCreate";
 import Form, { OnSubmit } from "@/components/form/Form";
 import * as yup from "yup";
-import { RegistryId, Metadata } from "@/core";
+import { RegistryId, Metadata, PersistedExtension, UUID } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useFormikContext } from "formik";
 import SavingInProgressModal from "./SavingInProgressModal";
 import LoadingDataModal from "./LoadingDataModal";
 import {
   actions as editorActions,
+  editorSlice,
   FormState,
 } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import useReset from "@/devTools/editor/hooks/useReset";
 import { actions as savingExtensionActions } from "@/devTools/editor/panes/save/savingExtensionSlice";
-import { setSavingExtension } from "./savingExtensionSelectors";
+import { actions as optionsActions } from "@/options/slices";
+import { selectSavingExtensionId } from "./savingExtensionSelectors";
 import { makeBlueprint } from "@/options/pages/installed/exportBlueprint";
 import { ADAPTERS } from "../../extensionPoints/adapter";
 import { RecipeDefinition } from "@/types/definitions";
+import { selectExtensions } from "@/options/selectors";
 
 const updateRecipeSchema: yup.ObjectSchema<Metadata> = yup.object().shape({
   id: yup.string<RegistryId>().required(),
@@ -66,7 +69,8 @@ const SaveExtensionWizard: React.FC = () => {
   } = useFormikContext<FormState>();
   const reset = useReset();
 
-  const savingExtensionUuid = useSelector(setSavingExtension);
+  const extensions = useSelector(selectExtensions);
+  const savingExtensionId = useSelector(selectSavingExtensionId);
 
   const close = () => {
     dispatch(savingExtensionActions.setWizardOpen(false));
@@ -79,16 +83,16 @@ const SaveExtensionWizard: React.FC = () => {
   };
 
   useEffect(() => {
-    if (element.recipe || savingExtensionUuid) {
+    if (element.recipe || savingExtensionId) {
       return;
     }
 
     // Extension is not part of a Recipe, save it
     dispatch(savingExtensionActions.setSavingExtension(element.uuid));
     save(element);
-  }, [element, create, savingExtensionUuid]);
+  }, [element, create, savingExtensionId]);
 
-  if (!element.recipe || savingExtensionUuid) {
+  if (!element.recipe || savingExtensionId) {
     return <SavingInProgressModal />;
   }
 
@@ -97,7 +101,7 @@ const SaveExtensionWizard: React.FC = () => {
   }
 
   const elementRecipeMeta = element.recipe;
-  const recipe = recipes.find((r) => r.metadata.id === elementRecipeMeta.id);
+  const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
 
   /**
    * Creating personal extension from the existing one
@@ -152,21 +156,37 @@ const SaveExtensionWizard: React.FC = () => {
         },
       };
 
-      const { id } = await createRecipe({
+      await createRecipe({
         recipe: newRecipe,
         organizations: [],
         isPublic: false,
       });
 
-      // get recipe extensions
-      // update recipe in those extensions
-
-      // For all extensions of the old Recipe change _recipe for the new one
-
-      // Save new extension definition for the new extension
+      const recipeExtensions = extensions.filter(
+        (x) => x._recipe?.id === recipe.metadata.id
+      );
 
       const adapter = ADAPTERS.get(element.type);
-      const extension = adapter.selectExtension(personalElement);
+      const extension = adapter.selectExtension(element);
+
+      for (const recipeExtension of recipeExtensions) {
+        let update: { id: UUID } & Partial<PersistedExtension>;
+        if (recipeExtension.id === extension.id) {
+          update = {
+            ...extension,
+            _recipe: newRecipe.metadata,
+          };
+        } else {
+          update = {
+            id: recipeExtension.id,
+            _recipe: newRecipe.metadata,
+          };
+        }
+
+        dispatch(optionsActions.updateExtension(update));
+      }
+
+      dispatch(editorSlice.markSaved(element.uuid));
     } else {
       throw new Error("Not implemented yet.");
     }

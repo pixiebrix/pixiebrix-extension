@@ -363,6 +363,25 @@ export const optionsSlice = createSlice({
         state.extensions.push(extension);
       }
     },
+    updateExtension(
+      state,
+      action: PayloadAction<{ id: UUID } & Partial<PersistedExtension>>
+    ) {
+      const { id, ...extensionUpdate } = action.payload;
+      const index = state.extensions.findIndex((x) => x.id === id);
+
+      if (index === -1) {
+        reportError(
+          `Can't find extension in store to update. Target extension id: ${id}.`
+        );
+        return;
+      }
+
+      state.extensions[index] = {
+        ...state.extensions[index],
+        ...extensionUpdate,
+      };
+    },
     removeExtension(
       state,
       { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>
@@ -377,3 +396,5 @@ export const optionsSlice = createSlice({
     },
   },
 });
+
+export const { actions } = optionsSlice;
