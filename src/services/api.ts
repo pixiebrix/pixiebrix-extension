@@ -58,6 +58,30 @@ const appBaseQuery = (): BaseQueryFn<{
   }
 };
 
+type RecipesMutationConfig = {
+  recipe: RecipeDefinition;
+  organizations: UUID[];
+  public: boolean;
+};
+const createRecipesMutation = (method: "post" | "put") => ({
+  recipe,
+  organizations,
+  public: isPublic,
+}: RecipesMutationConfig) => {
+  const recipeConfig = dumpBrickYaml(recipe);
+
+  return {
+    url: "api/bricks/",
+    method: method,
+    data: {
+      config: recipeConfig,
+      kind: "recipe" as RecipeDefinition["kind"],
+      organizations,
+      public: isPublic,
+    },
+  };
+};
+
 export const appApi = createApi({
   reducerPath: "appApi",
   baseQuery: appBaseQuery(),
@@ -182,24 +206,12 @@ export const appApi = createApi({
             ]
           : [{ type: "Recipes", id: "LIST" }],
     }),
-    createRecipe: builder.mutation<
-      { id: UUID },
-      { recipe: RecipeDefinition; organizations: UUID[]; isPublic: boolean }
-    >({
-      query: ({ recipe, organizations, isPublic }) => {
-        const recipeConfig = dumpBrickYaml(recipe);
-
-        return {
-          url: "api/bricks/",
-          method: "post",
-          data: {
-            config: recipeConfig,
-            kind: "recipe" as RecipeDefinition["kind"],
-            organizations,
-            public: isPublic,
-          },
-        };
-      },
+    createRecipe: builder.mutation<{ id: UUID }, RecipesMutationConfig>({
+      query: createRecipesMutation("post"),
+      invalidatesTags: [{ type: "Recipes", id: "LIST" }],
+    }),
+    updateRecipe: builder.mutation<{ id: UUID }, RecipesMutationConfig>({
+      query: createRecipesMutation("put"),
       invalidatesTags: [{ type: "Recipes", id: "LIST" }],
     }),
   }),
@@ -216,4 +228,5 @@ export const {
   useGetGroupsQuery,
   useGetRecipesQuery,
   useCreateRecipeMutation,
+  useUpdateRecipeMutation,
 } = appApi;

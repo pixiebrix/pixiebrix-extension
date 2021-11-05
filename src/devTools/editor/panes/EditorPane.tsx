@@ -49,7 +49,7 @@ const EditorPane: React.FunctionComponent<{
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
     (values: FormState) => {
-      dispatch(editorActions.updateElement(values));
+      dispatch(editorActions.editElement(values));
     },
     REDUX_SYNC_WAIT_MILLIS,
     { trailing: true, leading: false }

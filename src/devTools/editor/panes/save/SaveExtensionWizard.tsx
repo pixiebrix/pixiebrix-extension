@@ -15,21 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { useCreateRecipeMutation, useGetRecipesQuery } from "@/services/api";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
+import {
+  useCreateRecipeMutation,
+  useUpdateRecipeMutation,
+  useGetRecipesQuery,
+} from "@/services/api";
+import { PACKAGE_REGEX, uuidv4, validateRegistryId } from "@/types/helpers";
 import { useCreate } from "@/devTools/editor/hooks/useCreate";
 import Form, { OnSubmit } from "@/components/form/Form";
 import * as yup from "yup";
-import { RegistryId, Metadata, PersistedExtension, UUID } from "@/core";
+import { RegistryId, Metadata } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useFormikContext } from "formik";
 import SavingInProgressModal from "./SavingInProgressModal";
 import LoadingDataModal from "./LoadingDataModal";
 import {
   actions as editorActions,
-  editorSlice,
   FormState,
 } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,13 +40,20 @@ import useReset from "@/devTools/editor/hooks/useReset";
 import { actions as savingExtensionActions } from "@/devTools/editor/panes/save/savingExtensionSlice";
 import { actions as optionsActions } from "@/options/slices";
 import { selectSavingExtensionId } from "./savingExtensionSelectors";
-import { makeBlueprint } from "@/options/pages/installed/exportBlueprint";
-import { ADAPTERS } from "../../extensionPoints/adapter";
-import { RecipeDefinition } from "@/types/definitions";
 import { selectExtensions } from "@/options/selectors";
+import AuthContext from "@/auth/AuthContext";
+import {
+  generatePersonalRecipeId,
+  isRecipeEditable,
+  produceNewRecipe,
+} from "./helpers";
+import { selectElements } from "@/devTools/editor/slices/editorSelectors";
 
 const updateRecipeSchema: yup.ObjectSchema<Metadata> = yup.object().shape({
-  id: yup.string<RegistryId>().required(),
+  id: yup
+    .string<RegistryId>()
+    .matches(PACKAGE_REGEX, "Invalid registry id")
+    .required(),
   name: yup.string().required(),
   version: yup.string().required(),
   description: yup.string(),
@@ -55,8 +65,10 @@ const UPDATE_BLUEPRINT = "Update Blueprint";
 const SaveExtensionWizard: React.FC = () => {
   const dispatch = useDispatch();
   const create = useCreate();
+  const { scope } = useContext(AuthContext);
   const { data: recipes, isLoading: areRecipesLoading } = useGetRecipesQuery();
   const [createRecipe] = useCreateRecipeMutation();
+  const [updateRecipe] = useUpdateRecipeMutation();
   const [isRecipeOptionsModalShown, setRecipeOptionsModalShown] = useState(
     false
   );
@@ -70,6 +82,7 @@ const SaveExtensionWizard: React.FC = () => {
   const reset = useReset();
 
   const extensions = useSelector(selectExtensions);
+  const elements = useSelector(selectElements);
   const savingExtensionId = useSelector(selectSavingExtensionId);
 
   const close = () => {
@@ -123,11 +136,11 @@ const SaveExtensionWizard: React.FC = () => {
     save(personalElement);
   };
 
-  const createNewRecipe = () => {
+  const showCreateRecipeModal = () => {
     isNewRecipe.current = true;
+    const newRecipeId = generatePersonalRecipeId(scope, recipe.metadata.id);
     newRecipeInitialValues.current = {
-      // ToDo generate recipe id
-      id: "" as RegistryId,
+      id: validateRegistryId(newRecipeId),
       name: `Copy of ${elementRecipeMeta.name}`,
       version: elementRecipeMeta.version,
       description: elementRecipeMeta.description,
@@ -136,7 +149,7 @@ const SaveExtensionWizard: React.FC = () => {
     setRecipeOptionsModalShown(true);
   };
 
-  const updateRecipe = () => {
+  const showUpdateRecipeModal = () => {
     isNewRecipe.current = false;
     newRecipeInitialValues.current = elementRecipeMeta;
 
@@ -147,54 +160,107 @@ const SaveExtensionWizard: React.FC = () => {
     dispatch(savingExtensionActions.setSavingExtension(element.uuid));
 
     if (isNewRecipe.current) {
-      const newRecipe: RecipeDefinition = {
-        ...recipe,
-        metadata: {
-          ...recipeMeta,
-          // ToDo properly generate id
-          id: validateRegistryId(`@balehok/${recipeMeta.id}`),
-        },
-      };
+      const newRecipeId =
+        recipeMeta.id === recipe.metadata.id
+          ? recipeMeta.id + "_copy"
+          : recipeMeta.id;
 
-      await createRecipe({
-        recipe: newRecipe,
-        organizations: [],
-        isPublic: false,
-      });
+      const newMeta: Metadata = {
+        ...recipeMeta,
+        id: validateRegistryId(newRecipeId),
+      };
 
       const recipeExtensions = extensions.filter(
         (x) => x._recipe?.id === recipe.metadata.id
       );
+      const recipeElements = elements.filter(
+        (x) => x.recipe?.id === recipe.metadata.id
+      );
 
-      const adapter = ADAPTERS.get(element.type);
-      const extension = adapter.selectExtension(element);
+      const newRecipe = produceNewRecipe(
+        recipe,
+        newMeta,
+        recipeElements,
+        recipeExtensions
+      );
+
+      // ToDo properly await for the query and handle exceptions
+      await createRecipe({
+        recipe: newRecipe,
+        organizations: [],
+        public: false,
+      });
 
       for (const recipeExtension of recipeExtensions) {
-        let update: { id: UUID } & Partial<PersistedExtension>;
-        if (recipeExtension.id === extension.id) {
-          update = {
-            ...extension,
-            _recipe: newRecipe.metadata,
-          };
-        } else {
-          update = {
-            id: recipeExtension.id,
-            _recipe: newRecipe.metadata,
-          };
-        }
+        const update = {
+          id: recipeExtension.id,
+          _recipe: newRecipe.metadata,
+        };
 
         dispatch(optionsActions.updateExtension(update));
       }
 
-      dispatch(editorSlice.markSaved(element.uuid));
+      for (const recipeElement of recipeElements) {
+        const elementUpdate = {
+          uuid: recipeElement.uuid,
+          recipe: newRecipe.metadata,
+        };
+
+        dispatch(editorActions.updateElement(elementUpdate));
+      }
+
+      dispatch(editorActions.markSaved(element.uuid));
     } else {
-      throw new Error("Not implemented yet.");
+      if (!isRecipeEditable(scope, recipe)) {
+        throw new Error("Tried to update a recipe without edit permissions.");
+      }
+
+      const recipeExtensions = extensions.filter(
+        (x) => x._recipe?.id === recipe.metadata.id
+      );
+      const recipeElements = elements.filter(
+        (x) => x.recipe?.id === recipe.metadata.id
+      );
+
+      const newRecipe = produceNewRecipe(
+        recipe,
+        recipeMeta,
+        recipeElements,
+        recipeExtensions
+      );
+
+      // ToDo properly await for the query and handle exceptions
+      await updateRecipe({
+        recipe: newRecipe,
+        organizations: recipe.sharing?.organizations ?? [],
+        public: Boolean(recipe.sharing?.public),
+      });
+
+      for (const recipeExtension of recipeExtensions) {
+        const update = {
+          id: recipeExtension.id,
+          _recipe: newRecipe.metadata,
+        };
+
+        dispatch(optionsActions.updateExtension(update));
+      }
+
+      for (const recipeElement of recipeElements) {
+        const elementUpdate = {
+          uuid: recipeElement.uuid,
+          recipe: newRecipe.metadata,
+        };
+
+        dispatch(editorActions.updateElement(elementUpdate));
+      }
+
+      dispatch(editorActions.markSaved(element.uuid));
     }
+
+    close();
   };
 
   const recipeName = elementRecipeMeta.name;
-  // ToDo figure the edit permissions
-  const isRecipeEditable = true;
   const installedRecipeVersion = elementRecipeMeta.version;
   const latestRecipeVersion = recipe.metadata.version;
 
@@ -202,7 +268,7 @@ const SaveExtensionWizard: React.FC = () => {
   let showNewRecipeButton = false;
   let showUpdateRecipeButton = false;
 
-  if (isRecipeEditable) {
+  if (isRecipeEditable(scope, recipe)) {
     if (installedRecipeVersion === latestRecipeVersion) {
       message = `This extension is part of blueprint ${recipeName}, do you want to edit the blueprint, or create a personal extension?`;
       showNewRecipeButton = true;
@@ -286,14 +352,14 @@ const SaveExtensionWizard: React.FC = () => {
         {showNewRecipeButton && (
           <Button
             variant={showUpdateRecipeButton ? "secondary" : "primary"}
-            onClick={createNewRecipe}
+            onClick={showCreateRecipeModal}
           >
             {SAVE_AS_NEW_BLUEPRINT}
           </Button>
         )}
 
         {showUpdateRecipeButton && (
-          <Button variant="primary" onClick={updateRecipe}>
+          <Button variant="primary" onClick={showUpdateRecipeModal}>
             {UPDATE_BLUEPRINT}
           </Button>
         )}

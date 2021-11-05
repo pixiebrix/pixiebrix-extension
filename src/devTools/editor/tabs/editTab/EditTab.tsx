@@ -352,7 +352,8 @@ const EditTab: React.FC<{
                     />
                   </Col>
                   {/* ToDo remove this */}
-                  {values.recipe && `Blueprint: ${values.recipe.name}`}
+                  {values.recipe &&
+                    `Blueprint: ${values.recipe.name} - ${values.recipe.id}`}
                   <FoundationNode isLocked={isLocked} />
                 </>
               ) : (

@@ -257,8 +257,11 @@ export const editorSlice = createSlice({
       // Force a reload so the _new flags are correct on the readers
       state.selectionSeq++;
     },
-    // Sync the redux state with the form state
-    updateElement: (state, action: PayloadAction<FormState>) => {
+    /**
+     * Sync the redux state with the form state.
+     * Used on by the page editor to set changed version of the element in the store.
+     */
+    editElement: (state, action: PayloadAction<FormState>) => {
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index < 0) {
@@ -269,6 +272,24 @@ export const editorSlice = createSlice({
       state.dirty[element.uuid] = true;
 
       syncElementNodeUIStates(state, element);
+    },
+    /**
+     * Applies the update to the element
+     */
+    updateElement: (
+      state,
+      action: PayloadAction<{ uuid: UUID } & Partial<FormState>>
+    ) => {
+      const { uuid, ...elementUpdate } = action.payload;
+      const index = state.elements.findIndex((x) => x.uuid === uuid);
+      if (index < 0) {
+        throw new Error(`Unknown dynamic element: ${uuid}`);
+      }
+
+      state.elements[index] = {
+        ...state.elements[index],
+        ...elementUpdate,
+      };
     },
     removeElement: (state, action: PayloadAction<UUID>) => {
       const uuid = action.payload;

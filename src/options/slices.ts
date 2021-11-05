@@ -32,7 +32,6 @@ import { reportEvent } from "@/telemetry/events";
 import { preloadContextMenus } from "@/background/initContextMenus";
 import { selectEventData } from "@/telemetry/deployments";
 import { uuidv4 } from "@/types/helpers";
-import { Except } from "type-fest";
 import { ExtensionOptionsState, requireLatestState } from "@/store/extensions";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { CloudExtension, Deployment } from "@/types/contract";
@@ -297,7 +296,7 @@ export const optionsSlice = createSlice({
       {
         payload,
       }: PayloadAction<
-        Except<IExtension | PersistedExtension, "_recipe"> & {
+        (IExtension | PersistedExtension) & {
           extensionId?: UUID;
           createTimestamp?: string;
         }
@@ -319,6 +318,7 @@ export const optionsSlice = createSlice({
         services,
         _deployment,
         createTimestamp = timestamp,
+        _recipe,
       } = payload;
 
       const persistedId = extensionId ?? id;
@@ -336,8 +336,7 @@ export const optionsSlice = createSlice({
         id: persistedId,
         apiVersion,
         extensionPointId,
-        // If the user updates an extension, detach it from the recipe -- it's now a personal extension
-        _recipe: null,
+        _recipe,
         _deployment: undefined,
         label,
         definitions,

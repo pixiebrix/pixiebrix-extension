@@ -21,3 +21,5 @@ type RootState = { editor: EditorState };
 
 export const selectActiveExtension = ({ editor }: RootState) =>
   editor.activeElement;
+
+export const selectElements = ({ editor }: RootState) => editor.elements;

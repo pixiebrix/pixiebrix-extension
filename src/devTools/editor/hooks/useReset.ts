@@ -25,7 +25,7 @@ import { reportError } from "@/telemetry/logging";
 
 type Config = {
   element: FormState;
-  shouldShowConfirmation: boolean;
+  shouldShowConfirmation?: boolean;
 };
 function useReset(): (useResetConfig: Config) => void {
   const dispatch = useDispatch();
