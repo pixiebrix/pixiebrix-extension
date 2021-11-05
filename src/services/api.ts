@@ -183,7 +183,7 @@ export const appApi = createApi({
           : [{ type: "Recipes", id: "LIST" }],
     }),
     createRecipe: builder.mutation<
-      RecipeDefinition,
+      { id: UUID },
       { recipe: RecipeDefinition; organizations: UUID[]; isPublic: boolean }
     >({
       query: ({ recipe, organizations, isPublic }) => {

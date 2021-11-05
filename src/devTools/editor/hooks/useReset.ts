@@ -23,14 +23,18 @@ import { useCallback } from "react";
 import { extensionToFormState } from "@/devTools/editor/extensionPoints/adapter";
 import { reportError } from "@/telemetry/logging";
 
-function useReset(skipConfirmation = false): (element: FormState) => void {
+type Config = {
+  element: FormState;
+  shouldShowConfirmation: boolean;
+};
+function useReset(): (useResetConfig: Config) => void {
   const dispatch = useDispatch();
   const installed = useSelector(selectExtensions);
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async (element: FormState) => {
-      if (!skipConfirmation) {
+    async ({ element, shouldShowConfirmation = true }: Config) => {
+      if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
           title: "Reset Brick?",
           message: "Any changes you made since the last save will be lost",
@@ -51,7 +55,7 @@ function useReset(skipConfirmation = false): (element: FormState) => void {
         dispatch(actions.adapterError({ uuid: element.uuid, error }));
       }
     },
-    [showConfirmation, dispatch, installed]
+    [dispatch, installed, showConfirmation]
   );
 }
 

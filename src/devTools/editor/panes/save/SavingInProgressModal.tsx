@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Modal } from "react-bootstrap";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 
 const SavingInProgressModal: React.FC = () => (
   <Modal show backdrop="static" keyboard={false}>

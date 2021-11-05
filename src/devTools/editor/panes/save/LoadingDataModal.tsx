@@ -17,14 +17,14 @@
 
 import React from "react";
 import { Modal } from "react-bootstrap";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 
 type LoadingDataModalProps = {
   onClose: () => void;
 };
 
 const LoadingDataModal: React.FC<LoadingDataModalProps> = ({ onClose }) => (
-  <Modal show onHide={close} backdrop="static" keyboard={false}>
+  <Modal show onHide={onClose} backdrop="static" keyboard={false}>
     <Modal.Header closeButton>
       <Modal.Title>Loading data...</Modal.Title>
     </Modal.Header>

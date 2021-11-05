@@ -44,7 +44,7 @@ const ActionToolbar: React.FunctionComponent<{
           size="sm"
           variant="warning"
           onClick={() => {
-            reset(element);
+            reset({ element });
           }}
         >
           <FontAwesomeIcon icon={faHistory} /> Reset

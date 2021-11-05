@@ -64,7 +64,7 @@ const SaveExtensionWizard: React.FC = () => {
     setSubmitting,
     setStatus,
   } = useFormikContext<FormState>();
-  const reset = useReset(true);
+  const reset = useReset();
 
   const savingExtensionUuid = useSelector(setSavingExtension);
 
@@ -115,7 +115,7 @@ const SaveExtensionWizard: React.FC = () => {
     };
 
     dispatch(editorActions.addElement(personalElement));
-    reset(element);
+    reset({ element, shouldShowConfirmation: false });
     save(personalElement);
   };
 
@@ -152,28 +152,18 @@ const SaveExtensionWizard: React.FC = () => {
         },
       };
 
-      await createRecipe({
+      const { id } = await createRecipe({
         recipe: newRecipe,
         organizations: [],
         isPublic: false,
       });
 
-      // for all extensions of the old Recipe change _recipe for the new one
+      // get recipe extensions
+      // update recipe in those extensions
 
-      // save new extension definition for the new extension
+      // For all extensions of the old Recipe change _recipe for the new one
 
-      // ToDo review this and saveAsPersonalExtension to fetch common part
-
-      const { recipe, uuid, ...rest } = element;
-      const personalElement: FormState = {
-        uuid: uuidv4(),
-        ...rest,
-        recipe: undefined,
-      };
-
-      dispatch(editorActions.addElement(personalElement));
-      reset(element);
-      save(personalElement);
+      // Save new extension definition for the new extension
 
       const adapter = ADAPTERS.get(element.type);
       const extension = adapter.selectExtension(personalElement);
