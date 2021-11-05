@@ -286,6 +286,7 @@ export const editorSlice = createSlice({
         throw new Error(`Unknown dynamic element: ${uuid}`);
       }
 
+      // @ts-expect-error -- Concrete variants of FromState are not mutually assignable.
       state.elements[index] = {
         ...state.elements[index],
         ...elementUpdate,
