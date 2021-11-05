@@ -27,7 +27,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import { freshIdentifier } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { useApiVersionAtLeast } from "@/components/fields/fieldUtils";
+import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 
 type PropertyRowProps = {
   name: string;
