@@ -25,6 +25,10 @@
   flex-grow: 0;
   flex-shrink: 0;
 
+  :after {
+    display: none !important;
+  }
+
   button {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -44,5 +48,5 @@
 
 .symbol {
   display: inline-block;
-  width: 40px;
+  width: 38px;
 }
