@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, RegistryId, Metadata } from "@/core";
+import { RegistryId, Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { compact } from "lodash";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
 
 export const generatePersonalRecipeId = (
   scope: string,
@@ -31,16 +30,17 @@ export const generatePersonalRecipeId = (
   );
 };
 
+// ToDo Review and implement this.
 export const isRecipeEditable = (scope: string, recipe: RecipeDefinition) => {
   const match = PACKAGE_REGEX.exec(recipe.metadata.id);
   return scope === match.groups?.scope;
 };
 
+// ToDo this helper may need dirty state of Editor
+// to generate updated extension config for the new Recipe
 export const produceNewRecipe = (
   sourceRecipe: RecipeDefinition,
-  metadata: Metadata,
-  recipeElements: FormState[],
-  recipeExtensions: IExtension[]
+  metadata: Metadata
 ) => {
   const newRecipe: RecipeDefinition = {
     ...sourceRecipe,

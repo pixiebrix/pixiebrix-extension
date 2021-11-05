@@ -48,6 +48,7 @@ import {
   produceNewRecipe,
 } from "./helpers";
 import { selectElements } from "@/devTools/editor/slices/editorSelectors";
+import { RecipeDefinition } from "@/types/definitions";
 
 const updateRecipeSchema: yup.ObjectSchema<Metadata> = yup.object().shape({
   id: yup
@@ -159,6 +160,15 @@ const SaveExtensionWizard: React.FC = () => {
   const saveRecipeAndExtension: OnSubmit<Metadata> = async (recipeMeta) => {
     dispatch(savingExtensionActions.setSavingExtension(element.uuid));
 
+    const recipeExtensions = extensions.filter(
+      (x) => x._recipe?.id === recipe.metadata.id
+    );
+    const recipeElements = elements.filter(
+      (x) => x.recipe?.id === recipe.metadata.id
+    );
+
+    let newRecipe: RecipeDefinition;
+
     if (isNewRecipe.current) {
       const newRecipeId =
         recipeMeta.id === recipe.metadata.id
@@ -170,19 +180,7 @@ const SaveExtensionWizard: React.FC = () => {
         id: validateRegistryId(newRecipeId),
       };
 
-      const recipeExtensions = extensions.filter(
-        (x) => x._recipe?.id === recipe.metadata.id
-      );
-      const recipeElements = elements.filter(
-        (x) => x.recipe?.id === recipe.metadata.id
-      );
-
-      const newRecipe = produceNewRecipe(
-        recipe,
-        newMeta,
-        recipeElements,
-        recipeExtensions
-      );
+      newRecipe = produceNewRecipe(recipe, newMeta);
 
       // ToDo properly await for the query and handle exceptions
       await createRecipe({
@@ -190,44 +188,12 @@ const SaveExtensionWizard: React.FC = () => {
         organizations: [],
         public: false,
       });
-
-      for (const recipeExtension of recipeExtensions) {
-        const update = {
-          id: recipeExtension.id,
-          _recipe: newRecipe.metadata,
-        };
-
-        dispatch(optionsActions.updateExtension(update));
-      }
-
-      for (const recipeElement of recipeElements) {
-        const elementUpdate = {
-          uuid: recipeElement.uuid,
-          recipe: newRecipe.metadata,
-        };
-
-        dispatch(editorActions.updateElement(elementUpdate));
-      }
-
-      dispatch(editorActions.markSaved(element.uuid));
     } else {
       if (!isRecipeEditable(scope, recipe)) {
         throw new Error("Tried to update a recipe without edit permissions.");
       }
 
-      const recipeExtensions = extensions.filter(
-        (x) => x._recipe?.id === recipe.metadata.id
-      );
-      const recipeElements = elements.filter(
-        (x) => x.recipe?.id === recipe.metadata.id
-      );
-
-      const newRecipe = produceNewRecipe(
-        recipe,
-        recipeMeta,
-        recipeElements,
-        recipeExtensions
-      );
+      newRecipe = produceNewRecipe(recipe, recipeMeta);
 
       // ToDo properly await for the query and handle exceptions
       await updateRecipe({
@@ -235,28 +201,27 @@ const SaveExtensionWizard: React.FC = () => {
         organizations: recipe.sharing?.organizations ?? [],
         public: Boolean(recipe.sharing?.public),
       });
-
-      for (const recipeExtension of recipeExtensions) {
-        const update = {
-          id: recipeExtension.id,
-          _recipe: newRecipe.metadata,
-        };
-
-        dispatch(optionsActions.updateExtension(update));
-      }
-
-      for (const recipeElement of recipeElements) {
-        const elementUpdate = {
-          uuid: recipeElement.uuid,
-          recipe: newRecipe.metadata,
-        };
-
-        dispatch(editorActions.updateElement(elementUpdate));
-      }
-
-      dispatch(editorActions.markSaved(element.uuid));
     }
 
+    for (const recipeExtension of recipeExtensions) {
+      const update = {
+        id: recipeExtension.id,
+        _recipe: newRecipe.metadata,
+      };
+
+      dispatch(optionsActions.updateExtension(update));
+    }
+
+    for (const recipeElement of recipeElements) {
+      const elementUpdate = {
+        uuid: recipeElement.uuid,
+        recipe: newRecipe.metadata,
+      };
+
+      dispatch(editorActions.updateElement(elementUpdate));
+    }
+
+    save(element);
     close();
   };
 
