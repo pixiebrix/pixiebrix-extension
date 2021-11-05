@@ -21,7 +21,7 @@ exports[`renders 1`] = `
         >
           <label
             class="horizontalLabel form-label col-form-label col-lg-3"
-            for="testBlockConfiguration.config.message"
+            for="extension.blockPipeline[0].config.message"
           >
             message
           </label>
@@ -30,7 +30,7 @@ exports[`renders 1`] = `
           >
             <input
               class="form-control"
-              name="testBlockConfiguration.config.message"
+              name="extension.blockPipeline[0].config.message"
               type="text"
               value=""
             />
@@ -54,7 +54,7 @@ exports[`renders 1`] = `
         >
           <label
             class="horizontalLabel form-label col-form-label col-lg-3"
-            for="testBlockConfiguration.templateEngine"
+            for="extension.blockPipeline[0].templateEngine"
           >
             Template engine
           </label>
@@ -93,7 +93,7 @@ exports[`renders 1`] = `
                         autocapitalize="none"
                         autocomplete="off"
                         autocorrect="off"
-                        id="testBlockConfiguration.templateEngine"
+                        id="extension.blockPipeline[0].templateEngine"
                         spellcheck="false"
                         style="box-sizing: content-box; width: 2px; border: 0px; opacity: 1; outline: 0; padding: 0px;"
                         tabindex="0"
@@ -132,7 +132,7 @@ exports[`renders 1`] = `
                 </div>
               </div>
               <input
-                name="testBlockConfiguration.templateEngine"
+                name="extension.blockPipeline[0].templateEngine"
                 type="hidden"
                 value="mustache"
               />
