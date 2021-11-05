@@ -37,7 +37,7 @@ import ServiceField, {
 } from "@/components/fields/schemaFields/ServiceField";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import { isEmpty } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { useField } from "formik";
 import UnsupportedWidget from "@/components/fields/schemaFields/widgets/UnsupportedWidget";
@@ -293,7 +293,7 @@ function getToggleOptions(
     }
   }
 
-  return options;
+  return sortBy(options, (opt: InputModeOption) => opt.value === "omit");
 }
 
 /**
