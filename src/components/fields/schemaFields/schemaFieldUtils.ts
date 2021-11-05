@@ -19,14 +19,15 @@ import React from "react";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
-export function makeLabelForSchemaField(
-  props: SchemaFieldProps
-): React.ReactNode {
-  const {
-    name,
-    label,
-    schema: { title },
-    hideLabel,
-  } = props;
-  return hideLabel ? undefined : label ?? title ?? fieldLabel(name);
+export function makeLabelForSchemaField({
+  name,
+  label,
+  schema: { title },
+  hideLabel,
+}: SchemaFieldProps): React.ReactNode {
+  if (hideLabel) {
+    return undefined;
+  }
+
+  return label ?? title ?? fieldLabel(name);
 }

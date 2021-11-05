@@ -17,6 +17,6 @@
 
 import React from "react";
 
-const LoadingWidget: React.FC = () => <div>Loading...</div>;
+const WidgetLoadingIndicator: React.FC = () => <div>Loading...</div>;
 
-export default LoadingWidget;
+export default WidgetLoadingIndicator;

@@ -32,7 +32,7 @@ import {
   SchemaFieldProps,
 } from "@/components/fields/schemaFields/propTypes";
 import { JSONSchema7Array } from "json-schema";
-import LoadingWidget from "@/components/fields/schemaFields/widgets/LoadingWidget";
+import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
 import styles from "./TemplateToggleWidget.module.scss";
 
 interface InputModeOptionBase<
@@ -83,6 +83,16 @@ const SymbolSpan: React.FC<{ symbol: string }> = ({ symbol }) => (
   <span className={styles.symbol}>{symbol}</span>
 );
 
+function getFieldNamesFromPathString(name: string) {
+  const fieldName = name.includes(".")
+    ? name.slice(name.lastIndexOf(".") + 1)
+    : name;
+  const parentFieldName = name.includes(".")
+    ? name.slice(0, name.lastIndexOf("."))
+    : undefined;
+  return [parentFieldName, fieldName];
+}
+
 /**
  * Show a field toggle that lets a user choose the type of data input, along with the chosen input
  *
@@ -97,21 +107,19 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   ...props
 }) => {
   const [{ value }, , { setValue }] = useField<unknown>(name);
-  const fieldName = name.includes(".")
-    ? name.slice(name.lastIndexOf(".") + 1)
-    : name;
-  const parentFieldName = name.includes(".")
-    ? name.slice(0, name.lastIndexOf("."))
-    : undefined;
-  const { values, setValues } = useFormikContext<UnknownObject>();
-  const parentValues = getIn(values, parentFieldName) ?? values;
+  const [parentFieldName, fieldName] = getFieldNamesFromPathString(name);
+  const {
+    values: formState,
+    setValues: setFormState,
+  } = useFormikContext<UnknownObject>();
+  const parentValues = getIn(formState, parentFieldName) ?? formState;
 
   const inputMode = useMemo(() => inferInputMode(parentValues, fieldName), [
     fieldName,
     parentValues,
   ]);
   const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
-  const Widget = selectedOption?.Widget ?? LoadingWidget;
+  const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
 
   const onModeChange = useCallback(
     (newInputMode: FieldInputMode) => {
@@ -120,19 +128,21 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
       );
 
       if (newInputMode === "omit") {
-        const newFormState = produce(values, (draft) => {
+        const newFormState = produce(formState, (draft) => {
           if (parentFieldName) {
             const parentField = getIn(draft, parentFieldName);
             if (parentField) {
               // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
               delete parentField[fieldName];
             }
-          } else if (fieldName in values) {
+          } else if (fieldName in formState) {
             // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-            delete values[fieldName];
+            delete draft[fieldName];
+          } else {
+            // Cannot find property to delete
           }
         });
-        setValues(newFormState);
+        setFormState(newFormState);
         return;
       }
 
@@ -142,7 +152,14 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
       // for both literals and template inputs.
       setValue(defaultValue);
     },
-    [fieldName, inputModeOptions, parentFieldName, setValue, setValues, values]
+    [
+      fieldName,
+      inputModeOptions,
+      parentFieldName,
+      setValue,
+      setFormState,
+      formState,
+    ]
   );
 
   const onChangeForTemplate = useCallback(

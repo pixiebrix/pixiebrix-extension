@@ -18,6 +18,11 @@
 import React from "react";
 import { Form } from "react-bootstrap";
 
+/**
+ * A basic input widget for integers
+ *
+ * @see: NumberWidget
+ */
 const IntegerWidget: React.FC = () => <Form.Control type="number" step="1" />;
 
 export default IntegerWidget;
