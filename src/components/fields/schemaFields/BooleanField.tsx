@@ -26,7 +26,7 @@ const BooleanField: React.FunctionComponent<SchemaFieldProps> = (props) => {
   return (
     <ConnectedFieldTemplate
       name={name}
-      as={SwitchButtonWidget} // Do not use layout="switch" by default
+      as={SwitchButtonWidget}
       label={makeLabelForSchemaField(props)}
       description={schema.description}
     />

@@ -38,7 +38,7 @@ export function inferInputMode(
   fieldConfig: UnknownObject,
   fieldName: string
 ): FieldInputMode {
-  const hasField = fieldName in fieldConfig;
+  const hasField = Object.prototype.hasOwnProperty.call(fieldConfig, fieldName);
   if (!hasField) {
     return "omit";
   }
@@ -50,6 +50,7 @@ export function inferInputMode(
     return value.__type__;
   }
 
+  // Array check must come before object check, arrays will report typeof === "object"
   if (Array.isArray(value)) {
     return "array";
   }

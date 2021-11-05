@@ -65,15 +65,15 @@ export interface SchemaFieldProps {
   /**
    * Hide the label
    */
-  noLabel?: boolean;
+  hideLabel?: boolean;
 
   /**
-   * Is this field a nested object property?
+   * Is this field a nested object property? Used to prevent objects/arrays nested in objects.
    */
   isObjectProperty?: boolean;
 
   /**
-   * Is this field an item in an array?
+   * Is this field an item in an array? Used to prevent arrays nested in arrays.
    */
   isArrayItem?: boolean;
 }

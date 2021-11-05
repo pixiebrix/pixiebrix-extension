@@ -15,18 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { ApiVersion } from "@/core";
+import { useField } from "formik";
+import { isApiVersionAtLeast } from "@/utils";
 
-export function makeLabelForSchemaField(
-  props: SchemaFieldProps
-): React.ReactNode {
-  const {
-    name,
-    label,
-    schema: { title },
-    hideLabel,
-  } = props;
-  return hideLabel ? undefined : label ?? title ?? fieldLabel(name);
+function useApiVersionAtLeast(atLeast: ApiVersion): boolean {
+  const { value: apiVersion } = useField<ApiVersion>("apiVersion")[0];
+  return isApiVersionAtLeast(apiVersion, atLeast);
 }
+
+export default useApiVersionAtLeast;

@@ -87,7 +87,7 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
                   key={index}
                   name={joinName(name, String(index))}
                   schema={schemaItems}
-                  noLabel
+                  hideLabel
                   isArrayItem
                 />
                 {showRemove && (

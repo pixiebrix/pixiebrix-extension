@@ -60,7 +60,7 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   <tr>
     <td colSpan={showActions ? 3 : 2}>
       <SchemaField
-        noLabel
+        hideLabel
         isObjectProperty
         isRequired={isRequired}
         name={name}
@@ -103,7 +103,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
       </td>
       <td>
         <SchemaField
-          noLabel
+          hideLabel
           isObjectProperty
           {...field}
           schema={schema}

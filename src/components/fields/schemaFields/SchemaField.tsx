@@ -41,8 +41,8 @@ import { isEmpty, sortBy } from "lodash";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { useField } from "formik";
 import UnsupportedWidget from "@/components/fields/schemaFields/widgets/UnsupportedWidget";
-import { useApiVersionAtLeast } from "@/components/fields/fieldUtils";
 import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
+import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 
 const varOption: StringOption = {
   label: "Variable",
@@ -64,7 +64,7 @@ function getToggleOptions(
 ): InputModeOption[] {
   const options: InputModeOption[] = [];
 
-  function pushOpts(...opts: InputModeOption[]) {
+  function pushOptions(...opts: InputModeOption[]) {
     for (const opt of opts) {
       if (!options.some((x) => x.value === opt.value)) {
         options.push(opt);
@@ -75,7 +75,7 @@ function getToggleOptions(
   for (const mode of customModes) {
     // eslint-disable-next-line unicorn/prefer-regexp-test -- ?? not using String.match()
     if (mode.match(fieldSchema)) {
-      pushOpts(mode.option);
+      pushOptions(mode.option);
     }
   }
 
@@ -96,7 +96,7 @@ function getToggleOptions(
     // Don't allow editing array fields nested inside objects/arrays
     const Widget =
       isObjectProperty || isArrayItem ? ComplexObjectWidget : ArrayWidget;
-    pushOpts(
+    pushOptions(
       {
         label: "Array items",
         value: "array",
@@ -119,7 +119,7 @@ function getToggleOptions(
   ) {
     // Don't allow editing objects inside other objects
     const Widget = isObjectProperty ? ComplexObjectWidget : ObjectWidget;
-    pushOpts(
+    pushOptions(
       {
         label: "Object properties",
         value: "object",
@@ -134,7 +134,7 @@ function getToggleOptions(
   }
 
   if (fieldSchema.type === "boolean") {
-    pushOpts(
+    pushOptions(
       {
         label: "Toggle",
         value: "boolean",
@@ -155,7 +155,7 @@ function getToggleOptions(
       Array.isArray(fieldSchema.enum) &&
       fieldSchema.enum.length > 0
     ) {
-      pushOpts({
+      pushOptions({
         label: "Select...",
         value: "string",
         symbol: "a|b|c",
@@ -166,7 +166,7 @@ function getToggleOptions(
             : "",
       });
     } else {
-      pushOpts({
+      pushOptions({
         label: "Plain text",
         value: "string",
         symbol: "Abc",
@@ -178,7 +178,7 @@ function getToggleOptions(
       });
     }
 
-    pushOpts(
+    pushOptions(
       varOption,
       {
         label: "Mustache template",
@@ -204,7 +204,7 @@ function getToggleOptions(
   }
 
   if (fieldSchema.type === "integer") {
-    pushOpts(
+    pushOptions(
       {
         label: "Whole number",
         value: "number",
@@ -218,7 +218,7 @@ function getToggleOptions(
   }
 
   if (fieldSchema.type === "number") {
-    pushOpts(
+    pushOptions(
       {
         label: "Number",
         value: "number",
@@ -231,50 +231,35 @@ function getToggleOptions(
     );
   }
 
-  if (fieldSchema.anyOf?.length > 0) {
-    const anyOfOptions = fieldSchema.anyOf.flatMap((subSchema) => {
-      if (typeof subSchema === "boolean") {
-        return [];
-      }
+  const multiSchemas = [
+    ...(fieldSchema.anyOf ?? []),
+    ...(fieldSchema.oneOf ?? []),
+  ];
+  const multiOptions = multiSchemas.flatMap((subSchema) => {
+    if (typeof subSchema === "boolean") {
+      return [];
+    }
 
-      return getToggleOptions(
-        subSchema,
-        isRequired,
-        customModes,
-        isObjectProperty,
-        isArrayItem
-      );
-    });
-    pushOpts(...anyOfOptions);
-  }
-
-  if (fieldSchema.oneOf?.length > 0) {
-    const oneOfOptions = fieldSchema.oneOf.flatMap((subSchema) => {
-      if (typeof subSchema === "boolean") {
-        return [];
-      }
-
-      return getToggleOptions(
-        subSchema,
-        isRequired,
-        customModes,
-        isObjectProperty,
-        isArrayItem
-      );
-    });
-    pushOpts(...oneOfOptions);
-  }
+    return getToggleOptions(
+      subSchema,
+      isRequired,
+      customModes,
+      isObjectProperty,
+      isArrayItem
+    );
+  });
+  pushOptions(...multiOptions);
 
   if (!isRequired) {
     if (isArrayItem) {
-      pushOpts({
+      pushOptions({
         label: "Remove",
         value: "omit",
         symbol: "❌",
         Widget: OmitFieldWidget,
       });
     } else {
-      pushOpts({
+      pushOptions({
         label: "Exclude",
         value: "omit",
         symbol: "∅",
@@ -324,14 +309,6 @@ const SchemaField: SchemaFieldComponent = (props) => {
   );
 
   const [{ value }, , { setValue }] = useField(name);
-  const stableSetValue = useCallback(
-    (value: unknown) => {
-      setValue(value);
-    },
-    // See formik issue: https://github.com/formium/formik/issues/2268
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
 
   const useLegacyFields = !useApiVersionAtLeast("v3");
 
@@ -346,16 +323,10 @@ const SchemaField: SchemaFieldComponent = (props) => {
       !useLegacyFields &&
       !isEmpty(inputModeOptions)
     ) {
-      stableSetValue(inputModeOptions[0].defaultValue);
+      setValue(inputModeOptions[0].defaultValue);
     }
-  }, [
-    inputModeOptions,
-    isRequired,
-    isService,
-    stableSetValue,
-    useLegacyFields,
-    value,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
+  }, []);
 
   if (useLegacyFields) {
     return <LegacyField {...props} />;
