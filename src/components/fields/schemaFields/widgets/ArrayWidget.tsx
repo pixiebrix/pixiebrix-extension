@@ -17,7 +17,6 @@
 
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { FieldArray, useField } from "formik";
-import { useApiVersionAtLeast } from "@/components/fields/fieldUtils";
 import { Button } from "react-bootstrap";
 import React from "react";
 import { Schema } from "@/core";
@@ -30,6 +29,7 @@ import { UnknownObject } from "@/types";
 import { defaultBlockConfig } from "@/blocks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
+import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 
 // Empty value for text fields for the Formik state
 const EMPTY_TEXT_VALUE = "";
