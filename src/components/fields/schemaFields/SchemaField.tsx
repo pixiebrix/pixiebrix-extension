@@ -199,16 +199,6 @@ function getToggleOptions(
           __type__: "nunjucks",
           __value__: "",
         },
-      },
-      {
-        label: "Handlebars template",
-        value: "handlebars",
-        symbol: "{{ # }}",
-        Widget: TextWidget,
-        defaultValue: {
-          __type__: "handlebars",
-          __value__: "",
-        },
       }
     );
   }
