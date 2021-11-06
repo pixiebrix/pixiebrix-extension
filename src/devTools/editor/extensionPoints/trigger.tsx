@@ -21,17 +21,16 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
-  omitEditorMetadata,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
+  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
-  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -43,7 +42,6 @@ import {
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
-import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -53,13 +51,7 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
-import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
-
-const wizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
-  { step: "Logs", Component: LogsTab },
-];
 
 export interface TriggerFormState extends BaseFormState {
   type: "trigger";
@@ -230,7 +222,6 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   selectExtension,
   fromExtension,
   fromExtensionPoint,
-  wizard,
   insertModeHelp: (
     <div>
       <p>
