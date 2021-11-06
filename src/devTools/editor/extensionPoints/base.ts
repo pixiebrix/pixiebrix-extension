@@ -371,7 +371,6 @@ export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
  * @param pipelineProp the name of the pipeline prop, currently either "action" or "body"
  * @param defaults
  */
-// eslint-disable-next-line @typescript-eslint/ban-types -- not error-prone because parameters check keyof
 export function normalizePipeline<
   T extends UnknownObject,
   Prop extends keyof T
@@ -379,6 +378,7 @@ export function normalizePipeline<
   config: T,
   pipelineProp: Prop,
   defaults: Partial<T> = {}
+  // eslint-disable-next-line @typescript-eslint/ban-types -- not error-prone because parameters check keyof
 ): BaseExtensionState & Omit<T, Prop> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
