@@ -47,10 +47,15 @@ export type ExtensionPointConfig = {
    */
   permissions?: Permissions.Permissions;
 
+  /**
+   * Services to make available to the extension. During activation, the user will be prompted to select a credential
+   * for each service entry.
+   */
   services?: Record<OutputKey, RegistryId>;
 
   /**
    * The default template engine for the extension.
+   * @deprecated in apiVersion v3 the expression engine is controlled explicitly
    */
   templateEngine?: TemplateEngine;
 

@@ -22,6 +22,8 @@ import {
   ApiVersion,
   IBlock,
   IExtension,
+  RegistryId,
+  RenderedArgs,
   Schema,
   ServiceDependency,
   UserOptions,
@@ -40,6 +42,8 @@ import trigger, {
 import menuItem from "@/devTools/editor/extensionPoints/menuItem";
 import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { RecipeDefinition } from "@/types/definitions";
+import { ExtensionPointConfig } from "@/extensionPoints/types";
 
 const config = {
   apiVersion: "v2" as ApiVersion,
@@ -93,21 +97,24 @@ export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
 export const traceErrorFactory: (
   traceErrorProps?: Partial<TraceError>
-) => TraceError = (traceErrorProps) => {
-  const errorTraceEntry: TraceError = {
-    timestamp: "2021-10-07T12:52:16.189Z",
-    extensionId: uuidv4(),
-    runId: uuidv4(),
-    blockInstanceId: uuidv4(),
-    blockId: TEST_BLOCK_ID,
-    error: {
-      message: "Trace error for tests",
-    },
-    ...traceErrorProps,
-  } as TraceError;
-
-  return errorTraceEntry;
-};
+) => TraceError = (traceErrorProps) => ({
+  timestamp: "2021-10-07T12:52:16.189Z",
+  extensionId: uuidv4(),
+  runId: uuidv4(),
+  blockInstanceId: uuidv4(),
+  blockId: TEST_BLOCK_ID,
+  error: {
+    message: "Trace error for tests",
+  },
+  templateContext: {},
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal typing
+  renderedArgs: {} as RenderedArgs,
+  blockConfig: {
+    id: TEST_BLOCK_ID,
+    config: {},
+  },
+  ...traceErrorProps,
+});
 
 export const blockFactory = define<IBlock>({
   id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
@@ -155,6 +162,54 @@ export const pipelineFactory: (
 export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
+
+export const extensionPointFactory = define<ExtensionPointConfig>({
+  kind: "extensionPoint",
+  apiVersion: "v2",
+  metadata: (n: number) => ({
+    id: validateRegistryId(`test/extension-point-${n}`),
+    name: `Extension Point ${n}`,
+    description: "Extension Point generated from factory",
+    version: "1.0.0",
+  }),
+  definition: {
+    type: "menuItem",
+    isAvailable: {
+      matchPatterns: ["https://*/*"],
+    },
+    reader: validateRegistryId("@pixiebrix/document-context"),
+  },
+});
+
+type RecipeFactoryParams = {
+  extensionPointId?: RegistryId;
+};
+
+export const recipeFactory = ({ extensionPointId }: RecipeFactoryParams) =>
+  define<RecipeDefinition>({
+    kind: "recipe",
+    apiVersion: "v2",
+    metadata: (n: number) => ({
+      id: validateRegistryId(`test/recipe-${n}`),
+      name: `Recipe ${n}`,
+      description: "Recipe generated from factory",
+      version: "1.0.0",
+    }),
+    // `sharing` is returned from the API, but is undefined when editing recipes
+    sharing: undefined,
+    definitions: undefined,
+    options: undefined,
+    extensionPoints: (n: number) => [
+      {
+        id: extensionPointId ?? validateRegistryId("test/extension-point"),
+        label: `Test Extension for Recipe ${n}`,
+        config: {
+          caption: "Button",
+          action: [] as BlockPipeline,
+        },
+      },
+    ],
+  });
 
 const internalFormStateFactory = define<FormState>({
   apiVersion: "v2" as ApiVersion,

@@ -43,10 +43,10 @@ import { selectSavingExtensionId } from "./savingExtensionSelectors";
 import { selectExtensions } from "@/options/selectors";
 import AuthContext from "@/auth/AuthContext";
 import {
-  generatePersonalRecipeId,
+  generateScopeBrickId,
   isRecipeEditable,
-  produceNewRecipe,
-} from "./helpers";
+  replaceRecipeExtension,
+} from "./saveHelpers";
 import { selectElements } from "@/devTools/editor/slices/editorSelectors";
 import { RecipeDefinition } from "@/types/definitions";
 
@@ -129,6 +129,7 @@ const SaveExtensionWizard: React.FC = () => {
     const personalElement: FormState = {
       ...rest,
       uuid: newExtensionUuid,
+      // Detach from the recipe
       recipe: undefined,
     };
 
@@ -139,7 +140,7 @@ const SaveExtensionWizard: React.FC = () => {
 
   const showCreateRecipeModal = () => {
     isNewRecipe.current = true;
-    const newRecipeId = generatePersonalRecipeId(scope, recipe.metadata.id);
+    const newRecipeId = generateScopeBrickId(scope, recipe.metadata.id);
     newRecipeInitialValues.current = {
       id: validateRegistryId(newRecipeId),
       name: `Copy of ${elementRecipeMeta.name}`,
@@ -180,7 +181,7 @@ const SaveExtensionWizard: React.FC = () => {
         id: validateRegistryId(newRecipeId),
       };
 
-      newRecipe = produceNewRecipe(recipe, newMeta);
+      newRecipe = replaceRecipeExtension(recipe, newMeta, extensions, element);
 
       // ToDo properly await for the query and handle exceptions
       await createRecipe({
@@ -193,7 +194,12 @@ const SaveExtensionWizard: React.FC = () => {
         throw new Error("Tried to update a recipe without edit permissions.");
       }
 
-      newRecipe = produceNewRecipe(recipe, recipeMeta);
+      newRecipe = replaceRecipeExtension(
+        recipe,
+        recipeMeta,
+        extensions,
+        element
+      );
 
       // ToDo properly await for the query and handle exceptions
       await updateRecipe({
