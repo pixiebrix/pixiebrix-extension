@@ -29,6 +29,7 @@ import {
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
+import { BusinessError } from "@/errors";
 jest.mock("@/background/trace");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
@@ -82,13 +83,15 @@ const rootReader = new RootAwareReader();
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register(rootBlock, rootReader, echoBlock);
+  // https://stackoverflow.com/questions/42805128/does-jest-reset-the-jsdom-document-after-every-suite-or-test
+  document.querySelectorAll("html")[0].innerHTML = "";
 });
 
 describe.each([["v1"], ["v2"], ["v3"]])(
   "apiVersion: %s",
   (apiVersion: ApiVersion) => {
     test.each([[undefined], ["inherit"]])(
-      "reader in pipeline (root: %s)",
+      "reader in pipeline (rootMode: %s)",
       async () => {
         const element = document.createElement("IMG");
 
@@ -103,7 +106,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
     );
 
     test.each([[undefined], ["inherit"]])(
-      "root-aware block in pipeline (root: %s)",
+      "root-aware block in pipeline (rootMode: %s)",
       async () => {
         const element = document.createElement("IMG");
 
@@ -128,5 +131,77 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
       expect(result).toStrictEqual({ isDocument: true, tagName: undefined });
     });
+
+    test.each([rootBlock.id, rootReader.id])(
+      "custom root for: %s",
+      async (blockId) => {
+        const element = document.createElement("IMG");
+        document.body.append(element);
+
+        const result = await reducePipeline(
+          { id: blockId, config: {}, rootMode: "document", root: "img" },
+          { ...simpleInput({}), optionsArgs: {}, root: document },
+          testOptions(apiVersion)
+        );
+
+        expect(result).toStrictEqual({ isDocument: false, tagName: "IMG" });
+      }
+    );
+
+    test.each([rootBlock.id, rootReader.id])(
+      "custom inherited root for: %s",
+      async (blockId) => {
+        const div = document.createElement("DIV");
+        const element = document.createElement("IMG");
+        div.append(element);
+
+        document.body.append(div);
+        // Create another IMG that would conflict if the document were the root
+        document.body.append(document.createElement("IMG"));
+
+        const result = await reducePipeline(
+          { id: blockId, config: {}, rootMode: "inherit", root: "img" },
+          { ...simpleInput({}), optionsArgs: {}, root: div },
+          testOptions(apiVersion)
+        );
+
+        expect(result).toStrictEqual({ isDocument: false, tagName: "IMG" });
+      }
+    );
+
+    test.each([rootBlock.id, rootReader.id])(
+      "throw on multiple custom root matches: %s",
+      async () => {
+        const div = document.createElement("DIV");
+        const element = document.createElement("IMG");
+        div.append(element);
+
+        document.body.append(div);
+        document.body.append(document.createElement("IMG"));
+
+        await expect(
+          reducePipeline(
+            // Force document as starting point for the selector
+            { id: rootBlock.id, config: {}, rootMode: "document", root: "img" },
+            { ...simpleInput({}), optionsArgs: {}, root: div },
+            testOptions(apiVersion)
+          )
+        ).rejects.toThrow(/Multiple roots found/);
+      }
+    );
+
+    test.each([rootBlock.id, rootReader.id])(
+      "throw on no custom root matches: %s",
+      async () => {
+        await expect(
+          reducePipeline(
+            // Force document as starting point for the selector
+            { id: rootBlock.id, config: {}, rootMode: "document", root: "a" },
+            { ...simpleInput({}), optionsArgs: {} },
+            testOptions(apiVersion)
+          )
+        ).rejects.toThrow(/No roots found/);
+      }
+    );
   }
 );

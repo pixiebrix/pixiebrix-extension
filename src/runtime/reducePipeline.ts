@@ -261,7 +261,7 @@ async function renderBlockArg(
   const stageTemplate = config.config ?? {};
 
   if (type === "reader") {
-    // `reducePipeline` is responsible for passing the correct root into runStage based based on the BlockConfig
+    // `reducePipeline` is responsible for passing the correct root into runStage based on the BlockConfig
     if ((config.window ?? "self") === "self") {
       logger.debug(
         `Passed root to reader ${config.id} (window=${config.window ?? "self"})`
@@ -436,9 +436,16 @@ export async function blockReducer(
     },
   };
 
+  // Adjust the root according to the `root` and `rootMode` props on the blockConfig
+  const blockRoot = selectBlockRootElement(blockConfig, root);
+
   const props: BlockProps = {
-    args: await renderBlockArg(resolvedConfig, state, blockOptions),
-    root: selectBlockRootElement(blockConfig, root),
+    args: await renderBlockArg(
+      resolvedConfig,
+      { ...state, root: blockRoot },
+      blockOptions
+    ),
+    root: blockRoot,
     context: contextWithPreviousOutput,
   };
 
