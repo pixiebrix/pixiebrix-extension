@@ -31,7 +31,6 @@ import { reportEvent } from "@/telemetry/events";
 import { reactivate } from "@/background/navigation";
 import { Dispatch } from "redux";
 import { selectExtensions } from "@/options/selectors";
-import NoExtensionsPage from "@/options/pages/installed/NoExtensionsPage";
 import { OptionsState } from "@/store/extensions";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
@@ -47,6 +46,7 @@ import ExtensionLogsModal from "./ExtensionLogsModal";
 import { RootState } from "@/options/store";
 import { LogsContext } from "./installedPageSlice";
 import { selectShowLogsContext } from "./installedPageSelectors";
+import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -154,8 +154,8 @@ export const InstalledPage: React.FunctionComponent<{
           <div className="pb-4">
             {noExtensions ? (
               <p>
-                Once you&apos;ve activated templates or created your own bricks,
-                you&apos;ll be able to manage them here
+                Once you&apos;ve activated blueprints or created your own
+                bricks, you&apos;ll be able to manage them here
               </p>
             ) : (
               <p>
@@ -163,13 +163,19 @@ export const InstalledPage: React.FunctionComponent<{
                 {flags.includes("marketplace") ? (
                   <>
                     You can find more to activate in{" "}
-                    <Link to={"/blueprints"}>My Blueprints</Link>
+                    <Link to={"/blueprints"}>My Blueprints</Link>.
                   </>
                 ) : (
                   <>
-                    You can find more to activate on the{" "}
-                    <Link to={"/templates"}>Templates</Link> page. Or, follow
-                    the{" "}
+                    You can find more to activate in the{" "}
+                    <a
+                      href="https://pixiebrix.com/marketplace/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Marketplace
+                    </a>
+                    . Or, follow the{" "}
                     <a
                       href="https://docs.pixiebrix.com/quick-start-guide"
                       target="_blank"
@@ -177,7 +183,7 @@ export const InstalledPage: React.FunctionComponent<{
                     >
                       Page Editor Quickstart Guide
                     </a>{" "}
-                    to create your own
+                    to create your own.
                   </>
                 )}
               </p>
@@ -185,7 +191,7 @@ export const InstalledPage: React.FunctionComponent<{
           </div>
         </Col>
       </Row>
-      {noExtensions && <NoExtensionsPage />}
+      {noExtensions && <OnboardingPage />}
 
       {resolvedExtensions?.length > 0 && (
         <ActiveBricksCard

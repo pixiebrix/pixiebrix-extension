@@ -16,7 +16,11 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { getMethod } from "webext-messenger";
+import {
+  backgroundTarget as bg,
+  getMethod,
+  getNotifier,
+} from "webext-messenger";
 import browser from "webextension-polyfill";
 import { isBackgroundPage } from "webext-detect-page";
 
@@ -30,44 +34,42 @@ if (isBackgroundPage()) {
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
 export const containsPermissions = browser.permissions
   ? browser.permissions.contains
-  : getMethod("CONTAINS_PERMISSIONS");
+  : getMethod("CONTAINS_PERMISSIONS", bg);
 
-export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT");
-export const whoAmI = getMethod("ECHO_SENDER");
-export const activateTab = getMethod("ACTIVATE_TAB");
-export const closeTab = getMethod("CLOSE_TAB");
-export const markTabAsReady = getMethod("MARK_TAB_AS_READY");
+export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
+export const whoAmI = getMethod("ECHO_SENDER", bg);
+export const activateTab = getMethod("ACTIVATE_TAB", bg);
+export const closeTab = getMethod("CLOSE_TAB", bg);
+export const markTabAsReady = getMethod("MARK_TAB_AS_READY", bg);
 
 export const sheets = {
-  getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES"),
-  getSheetProperties: getMethod("GOOGLE_SHEETS_GET_SHEET_PROPERTIES"),
-  getHeaders: getMethod("GOOGLE_SHEETS_GET_HEADERS"),
-  createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB"),
-  appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS"),
-  batchUpdate: getMethod("GOOGLE_SHEETS_BATCH_UPDATE"),
-  batchGet: getMethod("GOOGLE_SHEETS_BATCH_GET"),
+  getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),
+  getSheetProperties: getMethod("GOOGLE_SHEETS_GET_SHEET_PROPERTIES", bg),
+  getHeaders: getMethod("GOOGLE_SHEETS_GET_HEADERS", bg),
+  createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
+  appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
+  batchUpdate: getMethod("GOOGLE_SHEETS_BATCH_UPDATE", bg),
+  batchGet: getMethod("GOOGLE_SHEETS_BATCH_GET", bg),
 };
 
 /**
  * Uninstall context menu and return whether or not the context menu was uninstalled.
  */
-export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU");
-export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU");
-export const openTab = getMethod("OPEN_TAB");
+export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
+export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
+export const openTab = getMethod("OPEN_TAB", bg);
 
 export const browserAction = {
-  registerActionFrame: getMethod("REGISTER_ACTION_FRAME"),
-  forwardFrameNotification: getMethod("FORWARD_FRAME_NOTIFICATION", {
-    isNotification: true,
-  }),
-  showActionFrame: getMethod("SHOW_ACTION_FRAME"),
-  hideActionFrame: getMethod("HIDE_ACTION_FRAME"),
+  registerActionFrame: getMethod("REGISTER_ACTION_FRAME", bg),
+  forwardFrameNotification: getNotifier("FORWARD_FRAME_NOTIFICATION", bg),
+  showActionFrame: getMethod("SHOW_ACTION_FRAME", bg),
+  hideActionFrame: getMethod("HIDE_ACTION_FRAME", bg),
 };
 
 export const registry = {
-  getKind: getMethod("REGISTRY_GET_KIND"),
-  syncRemote: getMethod("REGISTRY_SYNC"),
-  find: getMethod("REGISTRY_FIND"),
+  getKind: getMethod("REGISTRY_GET_KIND", bg),
+  syncRemote: getMethod("REGISTRY_SYNC", bg),
+  find: getMethod("REGISTRY_FIND", bg),
 };
 
 // Temporary, webext-messenger depends on this global

@@ -16,7 +16,7 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { getContentScriptMethod } from "webext-messenger";
+import { getMethod, getNotifier } from "webext-messenger";
 import browser from "webextension-polyfill";
 import { isContentScript } from "webext-detect-page";
 
@@ -27,59 +27,42 @@ if (isContentScript()) {
   );
 }
 
-export const getFormDefinition = getContentScriptMethod("FORM_GET_DEFINITION");
-export const resolveForm = getContentScriptMethod("FORM_RESOLVE");
-export const cancelForm = getContentScriptMethod("FORM_CANCEL");
-export const queueReactivateTab = getContentScriptMethod(
-  "QUEUE_REACTIVATE_TAB",
-  { isNotification: true }
-);
-export const reactivateTab = getContentScriptMethod("REACTIVATE_TAB", {
-  isNotification: true,
-});
-export const handleMenuAction = getContentScriptMethod("HANDLE_MENU_ACTION");
-export const toggleActionPanel = getContentScriptMethod("TOGGLE_ACTION_PANEL");
-export const showActionPanel = getContentScriptMethod("SHOW_ACTION_PANEL");
-export const hideActionPanel = getContentScriptMethod("HIDE_ACTION_PANEL");
-export const removeActionPanel = getContentScriptMethod("REMOVE_ACTION_PANEL");
-export const insertPanel = getContentScriptMethod("INSERT_PANEL");
-export const insertButton = getContentScriptMethod("INSERT_BUTTON");
+export const getFormDefinition = getMethod("FORM_GET_DEFINITION");
+export const resolveForm = getMethod("FORM_RESOLVE");
+export const cancelForm = getMethod("FORM_CANCEL");
+export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
+export const reactivateTab = getNotifier("REACTIVATE_TAB");
+export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
+export const toggleActionPanel = getMethod("TOGGLE_ACTION_PANEL");
+export const showActionPanel = getMethod("SHOW_ACTION_PANEL");
+export const hideActionPanel = getMethod("HIDE_ACTION_PANEL");
+export const removeActionPanel = getMethod("REMOVE_ACTION_PANEL");
+export const insertPanel = getMethod("INSERT_PANEL");
+export const insertButton = getMethod("INSERT_BUTTON");
 
-export const initRobot = getContentScriptMethod("UIPATH_INIT");
-export const getProcesses = getContentScriptMethod("UIPATH_GET_PROCESSES");
-export const searchWindow = getContentScriptMethod("SEARCH_WINDOW");
-export const detectFrameworks = getContentScriptMethod("DETECT_FRAMEWORKS");
+export const initRobot = getMethod("UIPATH_INIT");
+export const getProcesses = getMethod("UIPATH_GET_PROCESSES");
+export const searchWindow = getMethod("SEARCH_WINDOW");
+export const detectFrameworks = getMethod("DETECT_FRAMEWORKS");
 
-export const runBlock = getContentScriptMethod("RUN_SINGLE_BLOCK");
-export const runReaderBlock = getContentScriptMethod("RUN_READER_BLOCK");
-export const runReader = getContentScriptMethod("RUN_READER");
-export const readSelected = getContentScriptMethod("READ_SELECTED");
+export const runBlock = getMethod("RUN_SINGLE_BLOCK");
+export const runReaderBlock = getMethod("RUN_READER_BLOCK");
+export const runReader = getMethod("RUN_READER");
+export const readSelected = getMethod("READ_SELECTED");
 
-export const clearDynamicElements = getContentScriptMethod(
-  "CLEAR_DYNAMIC_ELEMENTS"
-);
-export const updateDynamicElement = getContentScriptMethod(
-  "UPDATE_DYNAMIC_ELEMENT"
-);
-export const runExtensionPointReader = getContentScriptMethod(
-  "RUN_EXTENSION_POINT_READER"
-);
-export const enableOverlay = getContentScriptMethod("ENABLE_OVERLAY");
-export const disableOverlay = getContentScriptMethod("DISABLE_OVERLAY");
-export const getInstalledExtensionPointIds = getContentScriptMethod(
-  "INSTALLED_EXTENSIONS"
-);
-export const checkAvailable = getContentScriptMethod("CHECK_AVAILABLE");
-export const handleNavigate = getContentScriptMethod("HANDLE_NAVIGATE", {
-  isNotification: true,
-});
-export const showNotification = getContentScriptMethod("SHOW_NOTIFICATION");
-export const linkChildTab = getContentScriptMethod("LINK_CHILD_TAB", {
-  isNotification: true,
-});
-export const runBlockInContentScript = getContentScriptMethod("RUN_BLOCK");
-export const cancelSelect = getContentScriptMethod("CANCEL_SELECT_ELEMENT");
-export const selectElement = getContentScriptMethod("SELECT_ELEMENT");
+export const clearDynamicElements = getMethod("CLEAR_DYNAMIC_ELEMENTS");
+export const updateDynamicElement = getMethod("UPDATE_DYNAMIC_ELEMENT");
+export const runExtensionPointReader = getMethod("RUN_EXTENSION_POINT_READER");
+export const enableOverlay = getMethod("ENABLE_OVERLAY");
+export const disableOverlay = getMethod("DISABLE_OVERLAY");
+export const getInstalledExtensionPointIds = getMethod("INSTALLED_EXTENSIONS");
+export const checkAvailable = getMethod("CHECK_AVAILABLE");
+export const handleNavigate = getNotifier("HANDLE_NAVIGATE");
+export const showNotification = getMethod("SHOW_NOTIFICATION");
+export const linkChildTab = getNotifier("LINK_CHILD_TAB");
+export const runBlockInContentScript = getMethod("RUN_BLOCK");
+export const cancelSelect = getMethod("CANCEL_SELECT_ELEMENT");
+export const selectElement = getMethod("SELECT_ELEMENT");
 
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;
