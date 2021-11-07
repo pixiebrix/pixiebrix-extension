@@ -83,7 +83,7 @@ const SymbolSpan: React.FC<{ symbol: string }> = ({ symbol }) => (
   <span className={styles.symbol}>{symbol}</span>
 );
 
-function getFieldNamesFromPathString(name: string) {
+export function getFieldNamesFromPathString(name: string): [string, string] {
   const fieldName = name.includes(".")
     ? name.slice(name.lastIndexOf(".") + 1)
     : name;
@@ -199,7 +199,11 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
         className={styles.dropdown}
       >
         {inputModeOptions.map((option) => (
-          <Dropdown.Item key={option.value} eventKey={option.value}>
+          <Dropdown.Item
+            key={option.value}
+            eventKey={option.value}
+            data-testid={option.value}
+          >
             <SymbolSpan symbol={option.symbol} /> {option.label}
           </Dropdown.Item>
         ))}

@@ -63,7 +63,11 @@ export interface SchemaFieldProps {
   uiSchema?: UiSchema;
 
   /**
-   * Hide the label
+   * Hide the label. Used to hide the label where there's not enough space (e.g., properties in ObjectWidget and
+   * ArrayWidget)
+   * @see makeLabelForSchemaField
+   * @see ObjectWidget
+   * @see ArrayWidget
    */
   hideLabel?: boolean;
 

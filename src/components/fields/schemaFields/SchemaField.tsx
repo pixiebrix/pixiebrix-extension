@@ -55,13 +55,21 @@ const varOption: StringOption = {
   },
 };
 
-function getToggleOptions(
-  fieldSchema: Schema,
-  isRequired: boolean,
-  customModes: CustomFieldToggleMode[],
-  isObjectProperty: boolean,
-  isArrayItem: boolean
-): InputModeOption[] {
+type ToggleOptionsProps = {
+  fieldSchema: Schema;
+  customModes: CustomFieldToggleMode[];
+  isRequired: boolean;
+  isObjectProperty: boolean;
+  isArrayItem: boolean;
+};
+
+function getToggleOptions({
+  fieldSchema,
+  customModes,
+  isRequired,
+  isArrayItem,
+  isObjectProperty,
+}: ToggleOptionsProps): InputModeOption[] {
   const options: InputModeOption[] = [];
 
   function pushOptions(...opts: InputModeOption[]) {
@@ -82,13 +90,13 @@ function getToggleOptions(
   if (Array.isArray(fieldSchema.type)) {
     const { type, ...rest } = fieldSchema;
     return type.flatMap((type) =>
-      getToggleOptions(
-        { type, ...rest },
+      getToggleOptions({
+        fieldSchema: { type, ...rest },
         isRequired,
         customModes,
         isObjectProperty,
-        isArrayItem
-      )
+        isArrayItem,
+      })
     );
   }
 
@@ -240,13 +248,13 @@ function getToggleOptions(
       return [];
     }
 
-    return getToggleOptions(
-      subSchema,
+    return getToggleOptions({
+      fieldSchema: subSchema,
       isRequired,
       customModes,
       isObjectProperty,
-      isArrayItem
-    );
+      isArrayItem,
+    });
   });
   pushOptions(...multiOptions);
 
@@ -298,13 +306,13 @@ const SchemaField: SchemaFieldComponent = (props) => {
 
   const inputModeOptions = useMemo(
     () =>
-      getToggleOptions(
-        schema,
+      getToggleOptions({
+        fieldSchema: schema,
         isRequired,
-        customToggleModes,
+        customModes: customToggleModes,
         isObjectProperty,
-        isArrayItem
-      ),
+        isArrayItem,
+      }),
     [customToggleModes, isArrayItem, isObjectProperty, isRequired, schema]
   );
 
