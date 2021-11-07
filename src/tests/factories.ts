@@ -20,8 +20,11 @@ import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { getType } from "@/blocks/util";
 import {
   ApiVersion,
+  Config,
   IBlock,
   IExtension,
+  InnerDefinitionRef,
+  InnerDefinitions,
   RegistryId,
   RenderedArgs,
   Schema,
@@ -42,7 +45,7 @@ import trigger, {
 import menuItem from "@/devTools/editor/extensionPoints/menuItem";
 import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { RecipeDefinition } from "@/types/definitions";
+import { Definition, RecipeDefinition } from "@/types/definitions";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 
 const config = {
@@ -181,11 +184,17 @@ export const extensionPointFactory = define<ExtensionPointConfig>({
   },
 });
 
-type RecipeFactoryParams = {
+type ExternalExtensionPointParams = {
   extensionPointId?: RegistryId;
 };
 
-export const recipeFactory = ({ extensionPointId }: RecipeFactoryParams) =>
+/**
+ * Factory to create a RecipeDefinition that refers to a versioned extensionPoint
+ * @param extensionPointId
+ */
+export const versionedExtensionPointRecipeFactory = ({
+  extensionPointId,
+}: ExternalExtensionPointParams) =>
   define<RecipeDefinition>({
     kind: "recipe",
     apiVersion: "v2",
@@ -202,6 +211,54 @@ export const recipeFactory = ({ extensionPointId }: RecipeFactoryParams) =>
     extensionPoints: (n: number) => [
       {
         id: extensionPointId ?? validateRegistryId("test/extension-point"),
+        label: `Test Extension for Recipe ${n}`,
+        config: {
+          caption: "Button",
+          action: [] as BlockPipeline,
+        },
+      },
+    ],
+  });
+
+type InnerExtensionPointParams = {
+  extensionPointRef?: InnerDefinitionRef;
+};
+
+/**
+ * Factory to create a RecipeDefinition that refers to a versioned extensionPoint
+ * @param extensionPointId
+ */
+export const innerExtensionPointRecipeFactory = ({
+  extensionPointRef = "extensionPoint" as InnerDefinitionRef,
+}: InnerExtensionPointParams = {}) =>
+  define<RecipeDefinition>({
+    kind: "recipe",
+    apiVersion: "v2",
+    metadata: (n: number) => ({
+      id: validateRegistryId(`test/recipe-${n}`),
+      name: `Recipe ${n}`,
+      description: "Recipe generated from factory",
+      version: "1.0.0",
+    }),
+    // `sharing` is returned from the API, but is undefined when editing recipes
+    sharing: undefined,
+    definitions: {
+      [extensionPointRef]: {
+        kind: "extensionPoint",
+        definition: {
+          type: "menuItem",
+          isAvailable: {
+            matchPatterns: ["https://*/*"],
+            selectors: [],
+          },
+          reader: validateRegistryId("@pixiebrix/document-context"),
+        },
+      },
+    },
+    options: undefined,
+    extensionPoints: (n: number) => [
+      {
+        id: extensionPointRef,
         label: `Test Extension for Recipe ${n}`,
         config: {
           caption: "Button",

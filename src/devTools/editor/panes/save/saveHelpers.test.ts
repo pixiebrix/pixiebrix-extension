@@ -20,12 +20,20 @@ import {
   replaceRecipeExtension,
 } from "@/devTools/editor/panes/save/saveHelpers";
 import { validateRegistryId } from "@/types/helpers";
-import { extensionPointFactory, recipeFactory } from "@/tests/factories";
+import {
+  extensionPointFactory,
+  innerExtensionPointRecipeFactory,
+  versionedExtensionPointRecipeFactory,
+} from "@/tests/factories";
 import { optionsSlice } from "@/options/slices";
 import menuItemExtensionAdapter from "@/devTools/editor/extensionPoints/menuItem";
 import { UnknownObject } from "@/types";
 import { lookupExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 import { produce } from "immer";
+import { makeInternalId } from "@/registry/internal";
+import { cloneDeep } from "lodash";
+import { InnerDefinitionRef } from "@/core";
+import { MenuDefinition } from "@/extensionPoints/menuItemExtension";
 
 jest.mock("@/background/initContextMenus");
 
@@ -54,9 +62,9 @@ describe("generatePersonalBrickId", () => {
 });
 
 describe("replaceRecipeExtension round trip", () => {
-  test("versioned extensionPoint package", async () => {
+  test("single extension with versioned extensionPoint", async () => {
     const extensionPoint = extensionPointFactory();
-    const recipe = recipeFactory({
+    const recipe = versionedExtensionPointRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
     })();
 
@@ -87,6 +95,217 @@ describe("replaceRecipeExtension round trip", () => {
     expect(newRecipe).toStrictEqual(
       produce(recipe, (draft) => {
         draft.metadata.id = newId;
+        // `services` gets normalized from undefined to {}
+        draft.extensionPoints[0].services = {};
+        draft.extensionPoints[0].label = "New Label";
+        delete draft.sharing;
+      })
+    );
+  });
+
+  test("does not modify other extension point", async () => {
+    const extensionPoint = extensionPointFactory();
+
+    const recipe = versionedExtensionPointRecipeFactory({
+      extensionPointId: extensionPoint.metadata.id,
+    })();
+
+    recipe.extensionPoints.push({
+      ...recipe.extensionPoints[0],
+      label: "Other Extension",
+    });
+
+    const state = optionsSlice.reducer(
+      { extensions: [] },
+      optionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    (lookupExtensionPoint as any).mockResolvedValue(extensionPoint);
+
+    const element = await menuItemExtensionAdapter.fromExtension(
+      state.extensions[0]
+    );
+    element.label = "New Label";
+
+    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+    const newRecipe = replaceRecipeExtension(
+      recipe,
+      { ...recipe.metadata, id: newId },
+      state.extensions,
+      element
+    );
+
+    expect(newRecipe).toStrictEqual(
+      produce(recipe, (draft) => {
+        draft.metadata.id = newId;
+        // `services` gets normalized from undefined to {}
+        draft.extensionPoints[0].services = {};
+        draft.extensionPoints[0].label = "New Label";
+        delete draft.sharing;
+      })
+    );
+  });
+
+  test("single extension point with innerDefinition", async () => {
+    const recipe = innerExtensionPointRecipeFactory()();
+
+    const state = optionsSlice.reducer(
+      { extensions: [] },
+      optionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    // Mimic what would come back via internal.ts:resolveRecipe
+    (lookupExtensionPoint as any).mockResolvedValue({
+      ...recipe.definitions.extensionPoint,
+      metadata: {
+        id: makeInternalId(recipe.definitions.extensionPoint),
+        name: "Internal Extension Point",
+        version: "1.0.0",
+      },
+    });
+
+    const element = await menuItemExtensionAdapter.fromExtension(
+      state.extensions[0]
+    );
+
+    element.label = "New Label";
+
+    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+
+    const newRecipe = replaceRecipeExtension(
+      recipe,
+      { ...recipe.metadata, id: newId },
+      state.extensions,
+      element
+    );
+
+    expect(newRecipe).toStrictEqual(
+      produce(recipe, (draft) => {
+        draft.metadata.id = newId;
+        // `services` gets normalized from undefined to {}
+        draft.extensionPoints[0].services = {};
+        draft.extensionPoints[0].label = "New Label";
+        delete draft.sharing;
+      })
+    );
+  });
+
+  test("generate fresh identifier definition changed", async () => {
+    const recipe = innerExtensionPointRecipeFactory()();
+
+    recipe.extensionPoints.push({
+      ...recipe.extensionPoints[0],
+      label: "Other Extension",
+    });
+
+    const state = optionsSlice.reducer(
+      { extensions: [] },
+      optionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    // Mimic what would come back via internal.ts:resolveRecipe
+    (lookupExtensionPoint as any).mockResolvedValue({
+      ...recipe.definitions.extensionPoint,
+      metadata: {
+        id: makeInternalId(recipe.definitions.extensionPoint),
+        name: "Internal Extension Point",
+        version: "1.0.0",
+      },
+    });
+
+    const element = await menuItemExtensionAdapter.fromExtension(
+      state.extensions[0]
+    );
+
+    element.label = "New Label";
+    const newTemplate = '<input value="Click Me!"/>';
+    element.extensionPoint.definition.template = newTemplate;
+
+    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+
+    const newRecipe = replaceRecipeExtension(
+      recipe,
+      { ...recipe.metadata, id: newId },
+      state.extensions,
+      element
+    );
+
+    expect(newRecipe).toStrictEqual(
+      produce(recipe, (draft) => {
+        draft.metadata.id = newId;
+
+        draft.definitions.extensionPoint2 = cloneDeep(
+          recipe.definitions.extensionPoint
+        );
+        (draft.definitions.extensionPoint2
+          .definition as MenuDefinition).template = newTemplate;
+        draft.extensionPoints[0].id = "extensionPoint2" as InnerDefinitionRef;
+        // `services` gets normalized from undefined to {}
+        draft.extensionPoints[0].services = {};
+        draft.extensionPoints[0].label = "New Label";
+        delete draft.sharing;
+      })
+    );
+  });
+
+  test("reuse identifier definition for multiple if extensionPoint not modified", async () => {
+    const recipe = innerExtensionPointRecipeFactory()();
+
+    recipe.extensionPoints.push({
+      ...recipe.extensionPoints[0],
+      label: "Other Extension",
+    });
+
+    const state = optionsSlice.reducer(
+      { extensions: [] },
+      optionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    // Mimic what would come back via internal.ts:resolveRecipe
+    (lookupExtensionPoint as any).mockResolvedValue({
+      ...recipe.definitions.extensionPoint,
+      metadata: {
+        id: makeInternalId(recipe.definitions.extensionPoint),
+        name: "Internal Extension Point",
+        version: "1.0.0",
+      },
+    });
+
+    const element = await menuItemExtensionAdapter.fromExtension(
+      state.extensions[0]
+    );
+
+    element.label = "New Label";
+
+    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+
+    const newRecipe = replaceRecipeExtension(
+      recipe,
+      { ...recipe.metadata, id: newId },
+      state.extensions,
+      element
+    );
+
+    expect(newRecipe).toStrictEqual(
+      produce(recipe, (draft) => {
+        draft.metadata.id = newId;
+        // `services` gets normalized from undefined to {}
         draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
         delete draft.sharing;

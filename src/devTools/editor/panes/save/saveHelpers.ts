@@ -24,7 +24,7 @@ import {
 } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
-import { compact, pick } from "lodash";
+import { compact, isEqual, pick } from "lodash";
 import { Except } from "type-fest";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { produce } from "immer";
@@ -48,7 +48,8 @@ export function generateScopeBrickId(
 }
 
 // FIXME: fix this function. You can't determine permissions using scope because a user might have edit access
-//  to multiple organization scopes
+//  to multiple organization scopes. See check at http://github.com/pixiebrix/pixiebrix-extension/blob/1f4e6acd7dfd2f8dbdf9d614158f5de645c86db7/src/devTools/editor/hooks/useCreate.ts#L189-L189
+//  for how to use the API to determine which packages are editable
 export function isRecipeEditable(scope: string, recipe: RecipeDefinition) {
   const match = PACKAGE_REGEX.exec(recipe.metadata.id);
   return scope === match.groups?.scope;
@@ -163,17 +164,32 @@ export function replaceRecipeExtension(
         sourceRecipe.extensionPoints.filter((x) => x.id === originalInnerId)
           .length > 1
       ) {
-        // Multiple extensions share the same inner extension point definition.
-        const freshId = freshIdentifier(
-          "extensionPoint" as SafeString,
-          Object.keys(sourceRecipe.definitions)
-        ) as InnerDefinitionRef;
-        newInnerId = freshId;
-        // eslint-disable-next-line security/detect-object-injection -- generated with freshIdentifier
-        draft.definitions[freshId] = {
-          kind: "extensionPoint",
-          definition: extensionPointConfig.definition,
-        };
+        // Multiple extensions share the same inner extension point definition. If the inner extension point definition
+        // was modified, the behavior we want (at least for now) is to create new extensionPoint entry instead of
+        // modifying the shared entry. If we wasn't modified, we don't have to make any changes.
+
+        // NOTE: there are some non-functional changes (e.g., services being normalized from undefined to {}) that will
+        // cause the definitions to not be equal. This is OK for now -- in practice it won't happen for blueprints
+        // originally built using the Page Editor since it produces configs that include the explicit {} and [] objects
+        // instead of undefined.
+        // eslint-disable-next-line security/detect-object-injection -- existing id
+        if (
+          !isEqual(
+            draft.definitions[originalInnerId].definition,
+            extensionPointConfig.definition
+          )
+        ) {
+          const freshId = freshIdentifier(
+            "extensionPoint" as SafeString,
+            Object.keys(sourceRecipe.definitions)
+          ) as InnerDefinitionRef;
+          newInnerId = freshId;
+          // eslint-disable-next-line security/detect-object-injection -- generated with freshIdentifier
+          draft.definitions[freshId] = {
+            kind: "extensionPoint",
+            definition: extensionPointConfig.definition,
+          };
+        }
       } else {
         // There's only one, can re-use without breaking the other definition
         // eslint-disable-next-line security/detect-object-injection -- existing id
