@@ -17,7 +17,6 @@
 
 import React, { useCallback, useMemo } from "react";
 import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import { Option } from "@/components/form/widgets/SelectWidget";
 import { FastField, useField } from "formik";
 import { Expression, TemplateEngine } from "@/core";
 import { Dropdown, DropdownButton, Form } from "react-bootstrap";
@@ -33,34 +32,32 @@ import styles from "./TemplateToggleWidget.module.scss";
 import useOmitFormField from "@/devTools/editor/hooks/useOmitFormField";
 
 interface InputModeOptionBase<
+  TValue = string,
   As extends React.ElementType = React.ElementType
 > {
-  symbol: string;
+  label: string;
+  symbol: React.ReactNode;
   Widget: As;
   defaultValue?: unknown;
+  value: TValue;
 }
 
-export type StringOption = InputModeOptionBase &
-  Option<"string" | TemplateEngine> & {
-    defaultValue: string | Expression;
-  };
-export type NumberOption = InputModeOptionBase &
-  Option<"number"> & {
-    defaultValue: number | Expression;
-  };
-export type BooleanOption = InputModeOptionBase &
-  Option<"boolean"> & {
-    defaultValue: boolean | Expression;
-  };
-export type ArrayOption = InputModeOptionBase &
-  Option<"array"> & {
-    defaultValue: JSONSchema7Array | Expression;
-  };
-export type ObjectOption = InputModeOptionBase &
-  Option<"object"> & {
-    defaultValue: UnknownObject | Expression;
-  };
-export type OmitOption = InputModeOptionBase & Option<"omit">;
+export type StringOption = InputModeOptionBase<"string" | TemplateEngine> & {
+  defaultValue: string | Expression;
+};
+export type NumberOption = InputModeOptionBase<"number"> & {
+  defaultValue: number | Expression;
+};
+export type BooleanOption = InputModeOptionBase & {
+  defaultValue: boolean | Expression;
+};
+export type ArrayOption = InputModeOptionBase & {
+  defaultValue: JSONSchema7Array | Expression;
+};
+export type ObjectOption = InputModeOptionBase & {
+  defaultValue: UnknownObject | Expression;
+};
+export type OmitOption = InputModeOptionBase<"omit">;
 
 export type InputModeOption =
   | StringOption
@@ -75,10 +72,6 @@ type TemplateToggleWidgetProps = SchemaFieldProps & {
   inputModeOptions: InputModeOption[];
   overrideWidget?: SchemaFieldComponent;
 };
-
-const SymbolSpan: React.FC<{ symbol: string }> = ({ symbol }) => (
-  <span className={styles.symbol}>{symbol}</span>
-);
 
 /**
  * Show a field toggle that lets a user choose the type of data input, along with the chosen input
@@ -151,18 +144,18 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
     <div className={styles.root}>
       <div className={styles.field}>{field}</div>
       <DropdownButton
-        title={<SymbolSpan symbol={selectedOption?.symbol ?? ""} />}
+        title={
+          <span className={styles.symbol}>{selectedOption?.symbol ?? ""}</span>
+        }
         variant="link"
         onSelect={onModeChange}
         className={styles.dropdown}
       >
         {inputModeOptions.map((option) => (
-          <Dropdown.Item
-            key={option.value}
-            eventKey={option.value}
-            data-testid={option.value}
-          >
-            <SymbolSpan symbol={option.symbol} /> {option.label}
+          <Dropdown.Item key={option.value} eventKey={option.value} data-testid={option.value}>
+            <span className={styles.symbol}>{option.symbol}</span>
+            {" - "}
+            {option.label}
           </Dropdown.Item>
         ))}
       </DropdownButton>

@@ -43,6 +43,8 @@ import { useField } from "formik";
 import UnsupportedWidget from "@/components/fields/schemaFields/widgets/UnsupportedWidget";
 import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faToggleOff } from "@fortawesome/free-solid-svg-icons";
 
 const varOption: StringOption = {
   label: "Variable",
@@ -146,7 +148,7 @@ function getToggleOptions({
       {
         label: "Toggle",
         value: "boolean",
-        symbol: "<->",
+        symbol: <FontAwesomeIcon icon={faToggleOff} />,
         Widget: SwitchButtonWidget,
         defaultValue:
           typeof fieldSchema.default === "boolean"
