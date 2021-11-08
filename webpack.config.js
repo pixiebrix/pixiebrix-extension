@@ -22,8 +22,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebExtensionTarget = require("webpack-target-webextension");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
-const TerserJSPlugin = require("terser-webpack-plugin");
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const { ESBuildMinifyPlugin } = require("esbuild-loader");
 const RollbarSourceMapPlugin = require("rollbar-sourcemap-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
@@ -307,12 +306,10 @@ module.exports = (env, options) =>
       },
 
       minimizer: [
-        new TerserJSPlugin({
-          terserOptions: {
-            output: { ascii_only: true },
-          },
+        new ESBuildMinifyPlugin({
+          css: true,
+          sourcemap: true,
         }),
-        new CssMinimizerPlugin(),
       ],
     },
 
