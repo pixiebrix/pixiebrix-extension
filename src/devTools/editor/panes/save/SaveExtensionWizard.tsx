@@ -21,6 +21,7 @@ import {
   useCreateRecipeMutation,
   useUpdateRecipeMutation,
   useGetRecipesQuery,
+  useGetEditablePackagesQuery,
 } from "@/services/api";
 import { PACKAGE_REGEX, uuidv4, validateRegistryId } from "@/types/helpers";
 import { useCreate } from "@/devTools/editor/hooks/useCreate";
@@ -48,7 +49,8 @@ import {
   replaceRecipeExtension,
 } from "./saveHelpers";
 import { selectElements } from "@/devTools/editor/slices/editorSelectors";
-import { RecipeDefinition } from "@/types/definitions";
+import { EditablePackage, RecipeDefinition } from "@/types/definitions";
+import { getLinkedApiClient } from "@/services/apiClient";
 
 const updateRecipeSchema: yup.ObjectSchema<Metadata> = yup.object().shape({
   id: yup
@@ -68,6 +70,10 @@ const SaveExtensionWizard: React.FC = () => {
   const create = useCreate();
   const { scope } = useContext(AuthContext);
   const { data: recipes, isLoading: areRecipesLoading } = useGetRecipesQuery();
+  const {
+    data: editablePackages,
+    isLoading: areEditablePackageLoading,
+  } = useGetEditablePackagesQuery();
   const [createRecipe] = useCreateRecipeMutation();
   const [updateRecipe] = useUpdateRecipeMutation();
   const [isRecipeOptionsModalShown, setRecipeOptionsModalShown] = useState(
@@ -110,7 +116,7 @@ const SaveExtensionWizard: React.FC = () => {
     return <SavingInProgressModal />;
   }
 
-  if (areRecipesLoading) {
+  if (areRecipesLoading || areEditablePackageLoading) {
     return <LoadingDataModal onClose={close} />;
   }
 
@@ -201,11 +207,15 @@ const SaveExtensionWizard: React.FC = () => {
         element
       );
 
+      const packageId = editablePackages.find(
+        // Bricks endpoint uses "name" instead of id
+        (x) => x.name === newRecipe.metadata.id
+      )?.id;
+
       // ToDo properly await for the query and handle exceptions
       await updateRecipe({
+        packageId,
         recipe: newRecipe,
-        organizations: recipe.sharing?.organizations ?? [],
-        public: Boolean(recipe.sharing?.public),
       });
     }
 

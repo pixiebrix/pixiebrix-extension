@@ -30,6 +30,11 @@ import {
 import { Permissions } from "webextension-polyfill";
 import { UiSchema } from "@rjsf/core";
 
+export type EditablePackage = {
+  id: string;
+  name: string;
+};
+
 export type ExtensionPointConfig = {
   /**
    * The id of the ExtensionPoint.

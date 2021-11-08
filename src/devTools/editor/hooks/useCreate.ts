@@ -37,14 +37,10 @@ import {
   isInnerExtensionPoint,
 } from "@/devTools/editor/extensionPoints/base";
 import { sleep } from "@/utils";
+import { EditablePackage } from "@/types/definitions";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
-
-export interface EditablePackage {
-  id: string;
-  name: string;
-}
 
 async function upsertConfig(
   packageUUID: string | null,
