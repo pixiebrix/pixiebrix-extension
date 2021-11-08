@@ -158,9 +158,11 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
     [property, onRename]
   );
 
-  // Don't show action on v3 or above
+  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
+
   const showActions =
-    !useApiVersionAtLeast("v3") &&
+    // Don't show action on v3 or above
+    !isApiAtLeastV3 &&
     (parentSchema.additionalProperties === true ||
       typeof parentSchema.additionalProperties === "object");
 
