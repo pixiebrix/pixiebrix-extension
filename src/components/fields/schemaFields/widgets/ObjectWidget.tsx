@@ -275,7 +275,7 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
 
   return (
     <div>
-      <Table size="sm">
+      <Table size="sm" className="mb-0">
         <thead>
           <tr>
             <th scope="col">Property</th>
