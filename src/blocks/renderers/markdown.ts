@@ -16,7 +16,7 @@
  */
 
 import { Renderer } from "@/types";
-import marked from "marked";
+import { marked } from "marked";
 import createDOMPurify, { DOMPurifyI } from "dompurify";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
