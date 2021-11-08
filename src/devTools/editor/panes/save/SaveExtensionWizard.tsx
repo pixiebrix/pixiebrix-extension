@@ -49,8 +49,7 @@ import {
   replaceRecipeExtension,
 } from "./saveHelpers";
 import { selectElements } from "@/devTools/editor/slices/editorSelectors";
-import { EditablePackage, RecipeDefinition } from "@/types/definitions";
-import { getLinkedApiClient } from "@/services/apiClient";
+import { RecipeDefinition } from "@/types/definitions";
 
 const updateRecipeSchema: yup.ObjectSchema<Metadata> = yup.object().shape({
   id: yup
@@ -176,6 +175,8 @@ const SaveExtensionWizard: React.FC = () => {
 
     let newRecipe: RecipeDefinition;
 
+    console.log("saving recipe");
+
     if (isNewRecipe.current) {
       const newRecipeId =
         recipeMeta.id === recipe.metadata.id
@@ -238,7 +239,6 @@ const SaveExtensionWizard: React.FC = () => {
     }
 
     save(element);
-    close();
   };
 
   const recipeName = elementRecipeMeta.name;

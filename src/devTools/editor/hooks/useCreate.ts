@@ -112,9 +112,6 @@ type CreateCallback = (
   setStatus: (status: string) => void
 ) => Promise<void>;
 
-// ToDo remove this
-const TESTING = true;
-
 export function useCreate(): CreateCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
   //  occur in the correct order on slower (CPU or network?) machines. Therefore, await all promises. We also have to
@@ -130,16 +127,6 @@ export function useCreate(): CreateCallback {
       onDone: () => void,
       setStatus: (status: string) => void
     ) => {
-      if (TESTING) {
-        await sleep(2000);
-        addToast("Saved extension", {
-          appearance: "success",
-          autoDismiss: true,
-        });
-        onDone();
-        return;
-      }
-
       const onStepError = (error: unknown, step: string) => {
         reportError(error);
         const message = selectErrorMessage(error);
