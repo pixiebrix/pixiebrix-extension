@@ -33,13 +33,18 @@ import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 import LogContext from "@/components/logViewer/LogContext";
-import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
-import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
+import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import styles from "./ElementWizard.module.scss";
 import { thisTab } from "@/devTools/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
+import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 
 const LOG_STEP_NAME = "Logs";
+
+const wizard: WizardStep[] = [
+  { step: "Edit", Component: EditTab },
+  { step: LOG_STEP_NAME, Component: LogsTab },
+];
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
@@ -85,15 +90,11 @@ const ElementWizard: React.FunctionComponent<{
   element: FormState;
   editable: Set<string>;
 }> = ({ element, editable, installed }) => {
-  const wizard = useMemo(() => ADAPTERS.get(element.type).wizard, [
-    element.type,
-  ]);
-
   const [step, setStep] = useState(wizard[0].step);
 
   useEffect(() => {
     setStep(wizard[0].step);
-  }, [wizard, setStep]);
+  }, [setStep]);
 
   const { refresh: refreshLogs } = useContext(LogContext);
 
@@ -163,13 +164,12 @@ const ElementWizard: React.FunctionComponent<{
 
         {status && <div className="text-danger">{status}</div>}
         <Tab.Content className={styles.tabContent}>
-          {wizard.map(({ Component, step, extraProps = {} }) => (
+          {wizard.map(({ Component, step }) => (
             <Component
               key={step}
               eventKey={step}
               editable={editable}
               available={available}
-              {...extraProps}
             />
           ))}
         </Tab.Content>
