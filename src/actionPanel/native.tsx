@@ -19,17 +19,21 @@ import browser from "webextension-polyfill";
 import { reportError } from "@/telemetry/logging";
 import { uuidv4 } from "@/types/helpers";
 import {
-  ActionPanelStore,
-  PanelEntry,
   RENDER_PANELS_MESSAGE,
-  RendererError,
-  RendererPayload,
+  SHOW_FORM_MESSAGE,
 } from "@/actionPanel/protocol";
 import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef } from "@/core";
 import { browserAction } from "@/background/messenger/api";
+import {
+  ActionPanelStore,
+  FormEntry,
+  PanelEntry,
+  RendererError,
+  RendererPayload,
+} from "@/actionPanel/actionPanelTypes";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-extension";
@@ -157,7 +161,8 @@ export function isActionPanelVisible(): boolean {
 }
 
 export function getStore(): ActionPanelStore {
-  return { panels };
+  // `forms` state is managed by the action panel react component
+  return { panels, forms: [] };
 }
 
 function renderPanels() {
@@ -176,6 +181,24 @@ function renderPanels() {
       "Skipping renderPanels because the action panel is not visible"
     );
   }
+}
+
+export function showActionPanelForm(entry: FormEntry) {
+  expectContext("contentScript");
+
+  if (!isActionPanelVisible()) {
+    throw new Error(
+      "Cannot add action panel form if the action panel is not visible"
+    );
+  }
+
+  const seqNum = renderSequenceNumber;
+  renderSequenceNumber++;
+
+  browserAction.forwardFrameNotification(seqNum, {
+    type: SHOW_FORM_MESSAGE,
+    payload: entry,
+  } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
 }
 
 export function removeExtension(extensionId: string): void {

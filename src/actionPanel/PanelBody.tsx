@@ -17,7 +17,6 @@
 
 import { ComponentRef, PanelComponent } from "@/extensionPoints/dom";
 import React, { useMemo } from "react";
-import { PanelEntry } from "@/actionPanel/protocol";
 import GridLoader from "react-spinners/GridLoader";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
@@ -27,6 +26,7 @@ import { getErrorMessage } from "@/errors";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { BlockArg } from "@/core";
+import { PanelEntry } from "@/actionPanel/actionPanelTypes";
 
 registerContribBlocks();
 registerBuiltinBlocks();

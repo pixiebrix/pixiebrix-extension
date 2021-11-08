@@ -18,7 +18,7 @@
 import React from "react";
 import { render, unmountComponentAtNode } from "react-dom";
 import { Transformer } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { BlockArg, BlockOptions, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import browser from "webextension-polyfill";
 import { registerForm } from "@/contentScript/modalForms";
@@ -29,6 +29,7 @@ import {
   hideActionPanel,
   PANEL_HIDING_EVENT,
   showActionPanel,
+  showActionPanelForm,
 } from "@/actionPanel/native";
 
 function showModal(url: URL, signal: AbortSignal): void {
@@ -123,13 +124,16 @@ export class ModalTransformer extends Transformer {
     required: ["schema"],
   };
 
-  async transform({
-    schema,
-    uiSchema = {},
-    cancelable = true,
-    submitCaption = "Submit",
-    location = "modal",
-  }: BlockArg): Promise<unknown> {
+  async transform(
+    {
+      schema,
+      uiSchema = {},
+      cancelable = true,
+      submitCaption = "Submit",
+      location = "modal",
+    }: BlockArg,
+    { logger }: BlockOptions
+  ): Promise<unknown> {
     expectContext("contentScript");
 
     // Future improvements:
@@ -147,9 +151,19 @@ export class ModalTransformer extends Transformer {
 
     const controller = new AbortController();
     if (location === "sidebar") {
-      // Show sidebar without native panels
-      // TODO: Show sidebar with frameSrc iframe
-      showActionPanel([]);
+      // Show sidebar with native panels.
+      showActionPanel();
+
+      showActionPanelForm({
+        extensionId: logger.context.extensionId,
+        nonce,
+        form: {
+          schema,
+          uiSchema,
+          cancelable,
+          submitCaption,
+        },
+      });
 
       // Two-way binding between sidebar and form (Probably not necessary yet)
       window.addEventListener(PANEL_HIDING_EVENT, () => controller.abort(), {

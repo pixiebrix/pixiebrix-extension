@@ -19,35 +19,16 @@ import browser from "webextension-polyfill";
 import { isBrowserActionPanel } from "@/chrome";
 import { HandlerMap } from "@/messaging/protocol";
 import { reportError } from "@/telemetry/logging";
-import { RegistryId, UUID } from "@/core";
+import { ActionPanelStore, PanelEntry } from "@/actionPanel/actionPanelTypes";
+import { FormDefinition } from "@/blocks/transformers/modalForm/formTypes";
+import { UUID } from "@/core";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/browserAction/";
 
 export const RENDER_PANELS_MESSAGE = `${MESSAGE_PREFIX}RENDER_PANELS`;
+export const SHOW_FORM_MESSAGE = `${MESSAGE_PREFIX}SHOW_FORM`;
 
 let seqNumber = -1;
-
-/**
- * Information required to run a renderer
- */
-export type RendererPayload = {
-  blockId: RegistryId;
-  key: string;
-  args: unknown;
-  ctxt: unknown;
-};
-
-export type RendererError = {
-  key: string;
-  error: string;
-};
-
-export type PanelEntry = {
-  extensionId: UUID;
-  extensionPointId: RegistryId;
-  heading: string;
-  payload: RendererPayload | RendererError | null;
-};
 
 type RenderPanelsMessage = {
   type: typeof RENDER_PANELS_MESSAGE;
@@ -55,11 +36,16 @@ type RenderPanelsMessage = {
   payload: { panels: PanelEntry[] };
 };
 
-export type ActionPanelStore = {
-  panels: PanelEntry[];
+type ShowFormMessage = {
+  type: typeof SHOW_FORM_MESSAGE;
+  meta: { $seq: number };
+  payload: { form: FormDefinition; nonce: UUID };
 };
 
-type StoreListener = (store: ActionPanelStore) => void;
+export type StoreListener = {
+  onRenderPanels: (store: Pick<ActionPanelStore, "panels">) => void;
+  onShowForm: (form: { form: FormDefinition; nonce: UUID }) => void;
+};
 
 const listeners: StoreListener[] = [];
 
@@ -100,7 +86,37 @@ handlers.set(RENDER_PANELS_MESSAGE, async (message: RenderPanelsMessage) => {
 
   for (const listener of listeners) {
     try {
-      listener(message.payload);
+      listener.onRenderPanels(message.payload);
+    } catch (error: unknown) {
+      reportError(error);
+    }
+  }
+});
+
+handlers.set(SHOW_FORM_MESSAGE, async (message: ShowFormMessage) => {
+  const messageSeq = message.meta.$seq;
+
+  if (messageSeq < seqNumber) {
+    console.debug(
+      "Skipping stale message (seq: %d, current: %d)",
+      seqNumber,
+      messageSeq,
+      message
+    );
+    return;
+  }
+
+  seqNumber = messageSeq;
+
+  console.debug(
+    `Running ${listeners.length} listener(s) for %s`,
+    SHOW_FORM_MESSAGE,
+    { message }
+  );
+
+  for (const listener of listeners) {
+    try {
+      listener.onShowForm(message.payload);
     } catch (error: unknown) {
       reportError(error);
     }
