@@ -22,7 +22,7 @@ import {
   SafeString,
   InnerDefinitionRef,
 } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
+import { EditablePackage, RecipeDefinition } from "@/types/definitions";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
 import { compact, isEqual, pick } from "lodash";
 import { Except } from "type-fest";
@@ -47,12 +47,11 @@ export function generateScopeBrickId(
   );
 }
 
-// FIXME: fix this function. You can't determine permissions using scope because a user might have edit access
-//  to multiple organization scopes. See check at http://github.com/pixiebrix/pixiebrix-extension/blob/1f4e6acd7dfd2f8dbdf9d614158f5de645c86db7/src/devTools/editor/hooks/useCreate.ts#L189-L189
-//  for how to use the API to determine which packages are editable
-export function isRecipeEditable(scope: string, recipe: RecipeDefinition) {
-  const match = PACKAGE_REGEX.exec(recipe.metadata.id);
-  return scope === match.groups?.scope;
+export function isRecipeEditable(
+  editablePackages: EditablePackage[],
+  recipe: RecipeDefinition
+) {
+  return editablePackages.some((x) => x.name === recipe.metadata.id);
 }
 
 /**

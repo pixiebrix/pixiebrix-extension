@@ -108,8 +108,7 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
 
 type CreateCallback = (
   element: FormState,
-  onDone: () => void,
-  setStatus: (status: string) => void
+  onDone: (errorMessage?: string) => void
 ) => Promise<void>;
 
 export function useCreate(): CreateCallback {
@@ -122,21 +121,16 @@ export function useCreate(): CreateCallback {
   const { addToast } = useToasts();
 
   return useCallback(
-    async (
-      element: FormState,
-      onDone: () => void,
-      setStatus: (status: string) => void
-    ) => {
+    async (element: FormState, onDone: () => void) => {
       const onStepError = (error: unknown, step: string) => {
         reportError(error);
         const message = selectErrorMessage(error);
         console.warn("Error %s: %s", step, message, { error });
-        setStatus(`Error ${step}: ${message}`);
         addToast(`Error ${step}: ${message}`, {
           appearance: "error",
           autoDismiss: true,
         });
-        onDone();
+        onDone(`Error ${step}: ${message}`);
       };
 
       try {

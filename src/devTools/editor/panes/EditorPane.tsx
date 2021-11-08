@@ -20,8 +20,7 @@ import {
   actions as editorActions,
   FormState,
 } from "@/devTools/editor/slices/editorSlice";
-import { actions as savingExtensionActions } from "@/devTools/editor/panes/save/savingExtensionSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Formik } from "formik";
@@ -30,7 +29,7 @@ import ElementWizard from "@/devTools/editor/ElementWizard";
 import useEditable from "@/devTools/editor/hooks/useEditable";
 import { LogContextWrapper } from "@/components/logViewer/LogContext";
 import SaveExtensionWizard from "./save/SaveExtensionWizard";
-import { selectIsWizardOpen } from "./save/savingExtensionSelectors";
+import useSavingWizard from "./save/useSavingWizard";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -43,8 +42,7 @@ const EditorPane: React.FunctionComponent<{
 }> = ({ selectedElement, selectionSeq }) => {
   const dispatch = useDispatch();
   const editable = useEditable();
-
-  const isSaveExtensionWizardOpen = useSelector(selectIsWizardOpen);
+  const { isWizardOpen, saveElement } = useSavingWizard();
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
@@ -64,8 +62,14 @@ const EditorPane: React.FunctionComponent<{
         <Formik
           key={key}
           initialValues={selectedElement}
-          onSubmit={() => {
-            dispatch(savingExtensionActions.setWizardOpen(true));
+          onSubmit={async (values, { setSubmitting, setStatus }) => {
+            try {
+              await saveElement(values);
+            } catch (error: unknown) {
+              setStatus(error);
+            } finally {
+              setSubmitting(false);
+            }
           }}
         >
           {({ values: element }) => (
@@ -78,7 +82,7 @@ const EditorPane: React.FunctionComponent<{
               <LogContextWrapper>
                 <ElementWizard element={element} editable={editable} />
               </LogContextWrapper>
-              {isSaveExtensionWizardOpen && <SaveExtensionWizard />}
+              {isWizardOpen && <SaveExtensionWizard />}
             </>
           )}
         </Formik>

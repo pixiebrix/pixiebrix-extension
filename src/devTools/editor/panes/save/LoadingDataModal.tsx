@@ -19,11 +19,11 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import GridLoader from "react-spinners/GridLoader";
 
-type LoadingDataModalProps = {
+type OwnProps = {
   onClose: () => void;
 };
 
-const LoadingDataModal: React.FC<LoadingDataModalProps> = ({ onClose }) => (
+const LoadingDataModal: React.FC<OwnProps> = ({ onClose }) => (
   <Modal show onHide={onClose} backdrop="static" keyboard={false}>
     <Modal.Header closeButton>
       <Modal.Title>Loading data...</Modal.Title>
