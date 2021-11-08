@@ -36,26 +36,17 @@ const useSavingWizard = () => {
   const element = useSelector(selectActiveElement);
 
   const saveElement = async () => {
+    dispatch(savingExtensionActions.setWizardOpen(true));
+
     if (!element.recipe) {
       dispatch(savingExtensionActions.setSavingExtension(element.uuid));
-      return new Promise<void>((resolve, reject) => {
-        void create(element, (errorMessage) => {
-          closeWizard();
-          if (errorMessage) {
-            reject(errorMessage);
-          } else {
-            resolve();
-          }
-        });
-      });
+      void create(element, closeWizard);
     }
 
     savingPromise = new Promise((resolve, reject) => {
       resolveSavingPromise = resolve;
       rejectSavingPromise = reject;
     });
-
-    dispatch(savingExtensionActions.setWizardOpen(true));
 
     return savingPromise;
   };

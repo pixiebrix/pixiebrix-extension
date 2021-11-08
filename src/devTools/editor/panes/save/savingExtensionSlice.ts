@@ -20,12 +20,12 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type SavingExtensionState = {
   isWizardOpen: boolean;
-  savingExtensionUuid: UUID;
+  savingExtensionId: UUID | null;
 };
 
 const initialState: SavingExtensionState = {
   isWizardOpen: false,
-  savingExtensionUuid: null,
+  savingExtensionId: null,
 };
 
 export const savingExtensionSlice = createSlice({
@@ -36,7 +36,7 @@ export const savingExtensionSlice = createSlice({
       state.isWizardOpen = action.payload;
     },
     setSavingExtension: (state, action: PayloadAction<UUID>) => {
-      state.savingExtensionUuid = action.payload;
+      state.savingExtensionId = action.payload;
     },
   },
 });

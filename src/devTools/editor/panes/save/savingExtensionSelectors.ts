@@ -21,4 +21,4 @@ export const selectIsWizardOpen = ({ savingExtension }: RootState) =>
   savingExtension.isWizardOpen;
 
 export const selectSavingExtensionId = ({ savingExtension }: RootState) =>
-  savingExtension.savingExtensionUuid;
+  savingExtension.savingExtensionId;
