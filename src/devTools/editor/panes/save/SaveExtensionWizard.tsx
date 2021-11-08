@@ -51,9 +51,11 @@ import SavingExtensionModal from "./SavingExtensionModal";
 import RecipeConfigurationModal, {
   RecipeConfiguration,
 } from "./RecipeConfigurationModal";
+import useNotifications from "@/hooks/useNotifications";
 
 const SaveExtensionWizard: React.FC = () => {
   const dispatch = useDispatch();
+  const notify = useNotifications();
   const { savingExtensionId, closeWizard } = useSavingWizard();
   const create = useCreate();
   const { scope } = useContext(AuthContext);
@@ -163,11 +165,20 @@ const SaveExtensionWizard: React.FC = () => {
 
       newRecipe = replaceRecipeExtension(recipe, newMeta, extensions, element);
 
-      await createRecipe({
+      const createResult = await createRecipe({
         recipe: newRecipe,
         organizations: [],
         public: false,
       });
+
+      if ("error" in createResult) {
+        const errorMessage = "Failed to create new Blueprint";
+        notify.error(errorMessage, {
+          error: createResult.error,
+        });
+        closeWizard(errorMessage);
+        return;
+      }
     } else {
       newRecipe = replaceRecipeExtension(
         recipe,
@@ -181,10 +192,19 @@ const SaveExtensionWizard: React.FC = () => {
         (x) => x.name === newRecipe.metadata.id
       )?.id;
 
-      await updateRecipe({
+      const updateResult = await updateRecipe({
         packageId,
         recipe: newRecipe,
       });
+
+      if ("error" in updateResult) {
+        const errorMessage = "Failed to update the Blueprint";
+        notify.error(errorMessage, {
+          error: updateResult.error,
+        });
+        closeWizard(errorMessage);
+        return;
+      }
     }
 
     for (const recipeExtension of recipeExtensions) {

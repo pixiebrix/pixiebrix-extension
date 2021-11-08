@@ -23,7 +23,6 @@ import {
 } from "./savingExtensionSelectors";
 import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
 import { useCreate } from "@/devTools/editor/hooks/useCreate";
-import { FormState } from "../../slices/editorSlice";
 
 let savingPromise: Promise<void>;
 let resolveSavingPromise: () => void;
@@ -36,12 +35,7 @@ const useSavingWizard = () => {
   const savingExtensionId = useSelector(selectSavingExtensionId);
   const element = useSelector(selectActiveElement);
 
-  const saveElement = async (formikElement: FormState) => {
-    console.log("elelements", {
-      element,
-      formikElement,
-    });
-
+  const saveElement = async () => {
     if (!element.recipe) {
       dispatch(savingExtensionActions.setSavingExtension(element.uuid));
       return new Promise<void>((resolve, reject) => {

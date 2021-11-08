@@ -64,7 +64,7 @@ const EditorPane: React.FunctionComponent<{
           initialValues={selectedElement}
           onSubmit={async (values, { setSubmitting, setStatus }) => {
             try {
-              await saveElement(values);
+              await saveElement();
             } catch (error: unknown) {
               setStatus(error);
             } finally {
