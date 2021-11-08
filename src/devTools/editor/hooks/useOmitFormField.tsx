@@ -23,6 +23,7 @@ import {
   FieldInputMode,
   inferInputMode,
 } from "@/components/fields/schemaFields/fieldInputMode";
+import { isObject } from "@/utils";
 
 type UseOmitFormField = (
   name: string
@@ -30,6 +31,17 @@ type UseOmitFormField = (
   inputMode: FieldInputMode;
   onOmitField: () => void;
 };
+
+function removeField(parent: unknown, fieldName: string) {
+  if (Array.isArray(parent)) {
+    const index = Number(fieldName);
+    parent.splice(index, 1);
+  } else if (isObject(parent)) {
+    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-dynamic-delete
+    delete parent[fieldName];
+  }
+  // Can't remove a field from something that isn't an array or object
+}
 
 const useOmitFormField: UseOmitFormField = (name: string) => {
   const fieldName = name.includes(".")
@@ -54,14 +66,12 @@ const useOmitFormField: UseOmitFormField = (name: string) => {
       if (parentFieldName) {
         const parentField = getIn(draft, parentFieldName);
         if (parentField) {
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-          delete parentField[fieldName];
+          removeField(parentField, fieldName);
         }
       } else if (fieldName in formState) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-        delete draft[fieldName];
+        removeField(draft, fieldName);
       } else {
-        // Cannot find property to delete
+        // Cannot find property to remove
       }
     });
 

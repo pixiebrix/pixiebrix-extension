@@ -93,6 +93,11 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
 
   const onModeChange = useCallback(
     (newInputMode: FieldInputMode) => {
+      if (newInputMode === inputMode) {
+        // Don't execute anything on "re-select"
+        return;
+      }
+
       const { defaultValue } = inputModeOptions.find(
         (x) => x.value === newInputMode
       );
@@ -153,8 +158,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
       >
         {inputModeOptions.map((option) => (
           <Dropdown.Item key={option.value} eventKey={option.value} data-testid={option.value}>
-            <span className={styles.symbol}>{option.symbol}</span>
-            {" - "}
+            <span className={styles.symbol}>{option.symbol}</span>{" "}
             {option.label}
           </Dropdown.Item>
         ))}

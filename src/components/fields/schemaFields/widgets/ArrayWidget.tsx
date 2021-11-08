@@ -73,12 +73,13 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
 
   const schemaItems = schema.items;
 
+  const apiVersionAtLeastV3 = useApiVersionAtLeast("v3");
   // Show explicit remove button before v3
-  const showRemove = !useApiVersionAtLeast("v3");
+  const showRemove = !apiVersionAtLeastV3;
 
   return (
     <FieldArray name={name}>
-      {({ remove, push }) => (
+      {({ handleRemove, push }) => (
         <>
           <ul className="list-group">
             {(field.value ?? []).map((item: unknown, index: number) => (
@@ -94,9 +95,7 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
                   <Button
                     variant="danger"
                     size="sm"
-                    onClick={() => {
-                      remove(index);
-                    }}
+                    onClick={handleRemove(index)}
                   >
                     Remove Item
                   </Button>
