@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
 import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
-import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
-import SchemaFieldV1 from "@/components/fields/schemaFields/v1/SchemaField";
-import SchemaFieldV3 from "@/components/fields/schemaFields/v3/SchemaField";
+import React, { useContext, useMemo } from "react";
+import SchemaFieldContext, {
+  getDefaultField,
+} from "@/components/fields/schemaFields/SchemaFieldContext";
 
 /**
  * A schema-based field that automatically determines it's layout/widget based on the schema and uiSchema.
@@ -28,13 +28,15 @@ import SchemaFieldV3 from "@/components/fields/schemaFields/v3/SchemaField";
  * @see getDefaultField
  */
 const SchemaField: SchemaFieldComponent = (props) => {
-  const apiAtLeastV3 = useApiVersionAtLeast("v3");
+  const { schema } = props;
+  const { customFields } = useContext(SchemaFieldContext);
 
-  return apiAtLeastV3 ? (
-    <SchemaFieldV3 {...props} />
-  ) : (
-    <SchemaFieldV1 {...props} />
-  );
+  const Field = useMemo(() => {
+    const overrideField = customFields.find((x) => x.match(schema))?.Component;
+    return overrideField ?? getDefaultField(schema);
+  }, [customFields, schema]);
+
+  return <Field {...props} />;
 };
 
 export default SchemaField;
