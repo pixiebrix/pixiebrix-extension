@@ -24,26 +24,11 @@
   width: auto;
   flex-grow: 0;
   flex-shrink: 0;
-
-  :after {
-    display: none !important;
-  }
-
-  button {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
 }
 
 .field {
   width: auto !important;
   flex-grow: 1;
-
-  input,
-  div {
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
-  }
 }
 
 .symbol {

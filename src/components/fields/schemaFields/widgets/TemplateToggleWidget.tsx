@@ -16,17 +16,13 @@
  */
 
 import React, { useCallback, useMemo } from "react";
-import {
-  FieldInputMode,
-  inferInputMode,
-} from "@/components/fields/schemaFields/fieldInputMode";
+import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { Option } from "@/components/form/widgets/SelectWidget";
-import { FastField, getIn, useField, useFormikContext } from "formik";
+import { FastField, useField } from "formik";
 import { Expression, TemplateEngine } from "@/core";
 import { Dropdown, DropdownButton, Form } from "react-bootstrap";
 import { isExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
-import { produce } from "immer";
 import {
   SchemaFieldComponent,
   SchemaFieldProps,
@@ -34,6 +30,7 @@ import {
 import { JSONSchema7Array } from "json-schema";
 import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
 import styles from "./TemplateToggleWidget.module.scss";
+import useOmitFormField from "@/devTools/editor/hooks/useOmitFormField";
 
 interface InputModeOptionBase<
   As extends React.ElementType = React.ElementType
@@ -83,16 +80,6 @@ const SymbolSpan: React.FC<{ symbol: string }> = ({ symbol }) => (
   <span className={styles.symbol}>{symbol}</span>
 );
 
-export function getFieldNamesFromPathString(name: string): [string, string] {
-  const fieldName = name.includes(".")
-    ? name.slice(name.lastIndexOf(".") + 1)
-    : name;
-  const parentFieldName = name.includes(".")
-    ? name.slice(0, name.lastIndexOf("."))
-    : undefined;
-  return [parentFieldName, fieldName];
-}
-
 /**
  * Show a field toggle that lets a user choose the type of data input, along with the chosen input
  *
@@ -107,17 +94,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   ...props
 }) => {
   const [{ value }, , { setValue }] = useField<unknown>(name);
-  const [parentFieldName, fieldName] = getFieldNamesFromPathString(name);
-  const {
-    values: formState,
-    setValues: setFormState,
-  } = useFormikContext<UnknownObject>();
-  const parentValues = getIn(formState, parentFieldName) ?? formState;
-
-  const inputMode = useMemo(() => inferInputMode(parentValues, fieldName), [
-    fieldName,
-    parentValues,
-  ]);
+  const { inputMode, onOmitField } = useOmitFormField(name);
   const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
 
@@ -128,38 +105,18 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
       );
 
       if (newInputMode === "omit") {
-        const newFormState = produce(formState, (draft) => {
-          if (parentFieldName) {
-            const parentField = getIn(draft, parentFieldName);
-            if (parentField) {
-              // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-              delete parentField[fieldName];
-            }
-          } else if (fieldName in formState) {
-            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-            delete draft[fieldName];
-          } else {
-            // Cannot find property to delete
-          }
-        });
-        setFormState(newFormState);
+        onOmitField();
         return;
       }
 
       // Already handled "omit" and returned above.
-      // Also, template option defaultValues handle the object
-      // structure already, so we can set the value directly here
-      // for both literals and template inputs.
+      // Also, defaultValues for template-expression options have
+      // the object structure for expression values, so we can
+      // set the value directly here for both literals and
+      // template-expression input modes.
       setValue(defaultValue);
     },
-    [
-      fieldName,
-      inputModeOptions,
-      parentFieldName,
-      setValue,
-      setFormState,
-      formState,
-    ]
+    [inputModeOptions, setValue, onOmitField]
   );
 
   const onChangeForTemplate = useCallback(
@@ -192,9 +149,10 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
 
   return (
     <div className={styles.root}>
+      <div className={styles.field}>{field}</div>
       <DropdownButton
         title={<SymbolSpan symbol={selectedOption?.symbol ?? ""} />}
-        variant="secondary"
+        variant="link"
         onSelect={onModeChange}
         className={styles.dropdown}
       >
@@ -208,7 +166,6 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
           </Dropdown.Item>
         ))}
       </DropdownButton>
-      <div className={styles.field}>{field}</div>
     </div>
   );
 };
