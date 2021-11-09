@@ -120,6 +120,8 @@ const ActiveBricksCard: React.FunctionComponent<{
 
   const deploymentExtensionGroups = groupByRecipe(sortedExtensions.deployment);
 
+  // Sharing was added to _recipe recently (see the RecipeMetadata type and optionsSlice)
+  // We still want to display extensions that do not have this information yet
   const otherExtensionGroups = groupByRecipe(sortedExtensions.other);
 
   return (
