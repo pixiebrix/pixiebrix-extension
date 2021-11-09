@@ -31,6 +31,17 @@ const groupByRecipe = (
 ): ResolvedExtension[][] =>
   Object.values(groupBy(extensions, (extension) => extension._recipe.id));
 
+// TODO: Figure out return type
+const groupByOrganizationId = (
+  extensions: ResolvedExtension[]
+): ResolvedExtension[][] =>
+  Object.entries(
+    groupBy(
+      extensions,
+      (extension) => extension._recipe.sharing.organizations[0]
+    )
+  );
+
 const ActiveBricksCard: React.FunctionComponent<{
   extensions: ResolvedExtension[];
   onRemove: RemoveAction;
@@ -56,27 +67,19 @@ const ActiveBricksCard: React.FunctionComponent<{
       ?.name;
 
   const teamExtensionGroups = useMemo(() => {
-    const teamExtensionGroups = extensions.filter(
-      (extension) =>
-        extension._recipe &&
-        extension._recipe.sharing?.organizations.length > 0 &&
-        !extension._deployment
-    );
-
-    console.log("Team extension groups:", teamExtensionGroups);
-
-    return groupBy(
-      teamExtensionGroups,
-      (extension) => extension._recipe.sharing.organizations[0]
+    return groupByOrganizationId(
+      extensions.filter(
+        (extension) =>
+          extension._recipe &&
+          extension._recipe.sharing?.organizations.length > 0 &&
+          !extension._deployment
+      )
     );
   }, [extensions, organizations]);
 
   const deploymentGroups = groupByRecipe(
     extensions.filter((extension) => extension._deployment)
   );
-
-  console.log("Organizations", organizations);
-  console.log("Team extension groups:", teamExtensionGroups);
 
   return (
     <Row>
@@ -119,32 +122,30 @@ const ActiveBricksCard: React.FunctionComponent<{
                 </>
               )}
 
-              {Object.entries(teamExtensionGroups).map(
-                ([organization_uuid, extensions], _) => {
-                  const recipe = extensions[0]._recipe;
-                  const messageContext: MessageContext = {
-                    blueprintId: recipe.id,
-                  };
+              {teamExtensionGroups.map(([organization_uuid, extensions], _) => {
+                const recipe = extensions[0]._recipe;
+                const messageContext: MessageContext = {
+                  blueprintId: recipe.id,
+                };
 
-                  return (
-                    <>
-                      <ExtensionGroupHeader
-                        label={`${getOrganizationName(
-                          organization_uuid as UUID
-                        )} Bricks`}
-                      />
-                      <ExtensionGroup
-                        key={recipe.id}
-                        label={recipe.name}
-                        extensions={extensions}
-                        groupMessageContext={messageContext}
-                        onRemove={onRemove}
-                        onExportBlueprint={onExportBlueprint}
-                      />
-                    </>
-                  );
-                }
-              )}
+                return (
+                  <>
+                    <ExtensionGroupHeader
+                      label={`${getOrganizationName(
+                        organization_uuid as UUID
+                      )} Bricks`}
+                    />
+                    <ExtensionGroup
+                      key={recipe.id}
+                      label={recipe.name}
+                      extensions={extensions}
+                      groupMessageContext={messageContext}
+                      onRemove={onRemove}
+                      onExportBlueprint={onExportBlueprint}
+                    />
+                  </>
+                );
+              })}
 
               {deploymentGroups.length > 0 && (
                 <>
