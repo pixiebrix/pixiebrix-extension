@@ -99,6 +99,8 @@ const ActiveBricksCard: React.FunctionComponent<{
     }
 
     return { personal, marketplace, team, deployment, other };
+    // We specifically would like to re-render on scope change, not isPersonal
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extensions, scope]);
 
   const personalExtensions = sortedExtensions.personal;
