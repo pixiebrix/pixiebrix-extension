@@ -23,10 +23,9 @@ import {
 } from "./savingExtensionSelectors";
 import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
 import { useCreate } from "@/devTools/editor/hooks/useCreate";
+import Deferred from "@/utils/deferred";
 
-let savingPromise: Promise<void>;
-let resolveSavingPromise: () => void;
-let rejectSavingPromise: (error: string) => void;
+let savingDeferred: Deferred;
 
 const useSavingWizard = () => {
   const dispatch = useDispatch();
@@ -43,29 +42,24 @@ const useSavingWizard = () => {
       void create(element, closeWizard);
     }
 
-    savingPromise = new Promise((resolve, reject) => {
-      resolveSavingPromise = resolve;
-      rejectSavingPromise = reject;
-    });
+    savingDeferred = new Deferred();
 
-    return savingPromise;
+    return savingDeferred.promise;
   };
 
   const closeWizard = (errorMessage?: string | null) => {
     dispatch(savingExtensionActions.setWizardOpen(false));
     dispatch(savingExtensionActions.setSavingExtension(null));
 
-    if (errorMessage) {
-      if (rejectSavingPromise) {
-        rejectSavingPromise(errorMessage);
+    if (savingDeferred) {
+      if (errorMessage) {
+        savingDeferred.reject(errorMessage);
+      } else {
+        savingDeferred.resolve();
       }
-    } else if (resolveSavingPromise) {
-      resolveSavingPromise();
-    }
 
-    savingPromise = null;
-    resolveSavingPromise = null;
-    rejectSavingPromise = null;
+      savingDeferred = null;
+    }
   };
 
   return {
