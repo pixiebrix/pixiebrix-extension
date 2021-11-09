@@ -30,7 +30,7 @@ import type { Target } from "@/types";
 /** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
   // Injected by the browser
-  const manifestScriptsOrigins = chrome.runtime
+  const manifestScriptsOrigins = browser.runtime
     .getManifest()
     .content_scripts.flatMap((script) => script.matches);
 
@@ -145,7 +145,7 @@ export async function ensureContentScript(target: Target): Promise<void> {
       );
     } else {
       console.debug("ensureContentScript: injecting", target);
-      const loadingScripts = chrome.runtime
+      const loadingScripts = browser.runtime
         .getManifest()
         .content_scripts.map(async (script) => {
           script.all_frames = false;
