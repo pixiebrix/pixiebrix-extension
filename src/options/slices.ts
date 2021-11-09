@@ -256,8 +256,6 @@ export const optionsSlice = createSlice({
           throw new Error("extensionPointId is required");
         }
 
-        console.log("RECIPE IN USEINSTALL:", recipe);
-
         const extension: PersistedExtension = {
           id: extensionId,
           // Default to `v1` for backward compatability

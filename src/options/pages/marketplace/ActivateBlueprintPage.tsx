@@ -91,8 +91,6 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
     [blueprint]
   );
 
-  console.log("BLUEPRINT:", blueprint);
-
   const body = useMemo(() => {
     if (blueprint?.config?.extensionPoints != null) {
       return <ActivateWizard blueprint={recipe} />;
