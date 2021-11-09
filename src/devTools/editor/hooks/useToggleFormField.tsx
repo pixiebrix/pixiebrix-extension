@@ -25,14 +25,16 @@ import {
 } from "@/components/fields/schemaFields/fieldInputMode";
 import { isObject } from "@/utils";
 
-type UseOmitFormField = (
+type UseToggleFormField = (
   name: string
 ) => {
   inputMode: FieldInputMode;
   onOmitField: () => void;
 };
 
-export function getFieldNamesFromPathString(name: string) {
+export function getFieldNamesFromPathString(
+  name: string
+): [parentFieldName: string | undefined, fieldName: string] {
   const fieldName = name.includes(".")
     ? name.slice(name.lastIndexOf(".") + 1)
     : name;
@@ -42,7 +44,7 @@ export function getFieldNamesFromPathString(name: string) {
   return [parentFieldName, fieldName];
 }
 
-export function removeField(parent: unknown, fieldName: string) {
+export function removeField(parent: unknown, fieldName: string): void {
   if (Array.isArray(parent)) {
     const index = Number(fieldName);
     parent.splice(index, 1);
@@ -50,10 +52,14 @@ export function removeField(parent: unknown, fieldName: string) {
     // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-dynamic-delete
     delete parent[fieldName];
   }
+
   // Can't remove a field from something that isn't an array or object
+  console.warn(`Can't remove '${fieldName}, parent is not an object or array`, {
+    parent,
+  });
 }
 
-const useOmitFormField: UseOmitFormField = (name: string) => {
+const useToggleFormField: UseToggleFormField = (name: string) => {
   const [parentFieldName, fieldName] = getFieldNamesFromPathString(name);
   const {
     values: formState,
@@ -77,6 +83,10 @@ const useOmitFormField: UseOmitFormField = (name: string) => {
         removeField(draft, fieldName);
       } else {
         // Cannot find property to remove
+        console.warn(`Unable to find field '${name}' to remove`, {
+          parentFieldName,
+          formState,
+        });
       }
     });
 
@@ -89,4 +99,4 @@ const useOmitFormField: UseOmitFormField = (name: string) => {
   };
 };
 
-export default useOmitFormField;
+export default useToggleFormField;

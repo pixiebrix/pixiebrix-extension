@@ -29,7 +29,7 @@ import {
 import { JSONSchema7Array } from "json-schema";
 import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
 import styles from "./TemplateToggleWidget.module.scss";
-import useOmitFormField from "@/devTools/editor/hooks/useOmitFormField";
+import useToggleFormField from "@/devTools/editor/hooks/useToggleFormField";
 
 interface InputModeOptionBase<
   TValue = string,
@@ -87,7 +87,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   ...props
 }) => {
   const [{ value }, , { setValue }] = useField<unknown>(name);
-  const { inputMode, onOmitField } = useOmitFormField(name);
+  const { inputMode, onOmitField } = useToggleFormField(name);
   const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
 
@@ -114,7 +114,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
       // template-expression input modes.
       setValue(defaultValue);
     },
-    [inputModeOptions, setValue, onOmitField]
+    [inputMode, inputModeOptions, setValue, onOmitField]
   );
 
   const onChangeForTemplate = useCallback(

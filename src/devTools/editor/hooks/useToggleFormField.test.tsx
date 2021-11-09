@@ -18,7 +18,7 @@
 import {
   getFieldNamesFromPathString,
   removeField,
-} from "@/devTools/editor/hooks/useOmitFormField";
+} from "@/devTools/editor/hooks/useToggleFormField";
 
 describe("getFieldNamesFromPathString", () => {
   test("root field name", () => {
@@ -54,5 +54,11 @@ describe("removeField", () => {
     const arr = ["foo", "bar", "baz"];
     removeField(arr, "1");
     expect(arr).toStrictEqual(["foo", "baz"]);
+  });
+
+  test("try to remove field from non-object", () => {
+    const foo = 42;
+    removeField(foo, "bar");
+    expect(foo).toStrictEqual(42);
   });
 });
