@@ -48,6 +48,10 @@ const ActiveBricksCard: React.FunctionComponent<{
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
+  const getOrganizationName = (organization_uuid: UUID) =>
+    organizations.find((organization) => organization.id === organization_uuid)
+      ?.name;
+
   const personalExtensions = extensions.filter(
     (extension) => !extension._recipe && !extension._deployment
   );
@@ -58,10 +62,6 @@ const ActiveBricksCard: React.FunctionComponent<{
         extension._recipe?.sharing?.public && !extension._deployment
     )
   );
-
-  const getOrganizationName = (organization_uuid: UUID) =>
-    organizations.find((organization) => organization.id === organization_uuid)
-      ?.name;
 
   const teamExtensionGroups = useMemo(
     () =>
@@ -78,8 +78,6 @@ const ActiveBricksCard: React.FunctionComponent<{
       })),
     [extensions]
   );
-
-  console.log("Extensions:", extensions);
 
   const deploymentGroups = groupByRecipe(
     extensions.filter((extension) => extension._deployment)
