@@ -171,9 +171,9 @@ export function replaceRecipeExtension(
         // cause the definitions to not be equal. This is OK for now -- in practice it won't happen for blueprints
         // originally built using the Page Editor since it produces configs that include the explicit {} and [] objects
         // instead of undefined.
-        // eslint-disable-next-line security/detect-object-injection -- existing id
         if (
           !isEqual(
+            // eslint-disable-next-line security/detect-object-injection -- existing id
             draft.definitions[originalInnerId].definition,
             extensionPointConfig.definition
           )
