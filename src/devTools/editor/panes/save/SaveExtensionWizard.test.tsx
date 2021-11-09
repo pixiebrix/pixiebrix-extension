@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 import SaveExtensionWizard from "./SaveExtensionWizard";
 import {
@@ -25,6 +25,11 @@ import {
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
 } from "@/services/api";
 import useSavingWizardMock from "./useSavingWizard";
+import {
+  formStateFactory,
+  innerExtensionPointRecipeFactory,
+  metadataFactory,
+} from "@/tests/factories";
 
 jest.mock("@/hooks/useNotifications");
 jest.mock("@/devTools/editor/hooks/useCreate");
@@ -41,6 +46,14 @@ jest.mock("@/services/api", () => ({
 beforeEach(() => {
   (useCreateRecipeMutationMock as jest.Mock).mockReturnValue([]);
   (useUpdateRecipeMutationMock as jest.Mock).mockReturnValue([]);
+  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+    data: [],
+    isLoading: false,
+  });
+  (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
+    data: [],
+    isLoading: false,
+  });
 });
 afterEach(() => {
   jest.resetAllMocks();
@@ -50,14 +63,6 @@ test("shows loading when saving is in progress", async () => {
   (useSavingWizardMock as jest.Mock).mockReturnValue({
     savingExtensionId: "test/extension",
     closeWizard: jest.fn(),
-  });
-  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
-    data: null,
-    isLoading: false,
-  });
-  (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
-    data: null,
-    isLoading: false,
   });
 
   render(<SaveExtensionWizard />);
@@ -93,4 +98,32 @@ test.each([
 
   const closeButtonLabel = screen.getByText("Close");
   expect(closeButtonLabel).not.toBeNull();
+});
+
+test("calls Save as Personal extension", async () => {
+  const saveAsPersonalExtensionMock = jest.fn();
+  const metadata = metadataFactory();
+  (useSavingWizardMock as jest.Mock).mockReturnValue({
+    savingExtensionId: null,
+    element: formStateFactory({
+      recipe: metadata,
+    }),
+    saveElementAsPersonalExtension: saveAsPersonalExtensionMock,
+    closeWizard: jest.fn(),
+  });
+
+  const recipeFactory = innerExtensionPointRecipeFactory();
+  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+    data: [recipeFactory({ metadata }), recipeFactory],
+    isLoading: false,
+  });
+
+  render(<SaveExtensionWizard />);
+
+  const saveAsPersonalExtensionButton = screen.getByRole("button", {
+    name: "Save as Personal Extension",
+  });
+  fireEvent.click(saveAsPersonalExtensionButton);
+
+  expect(saveAsPersonalExtensionMock).toHaveBeenCalled();
 });
