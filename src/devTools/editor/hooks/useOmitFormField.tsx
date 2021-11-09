@@ -32,6 +32,16 @@ type UseOmitFormField = (
   onOmitField: () => void;
 };
 
+export function getFieldNamesFromPathString(name: string) {
+  const fieldName = name.includes(".")
+    ? name.slice(name.lastIndexOf(".") + 1)
+    : name;
+  const parentFieldName = name.includes(".")
+    ? name.slice(0, name.lastIndexOf("."))
+    : undefined;
+  return [parentFieldName, fieldName];
+}
+
 function removeField(parent: unknown, fieldName: string) {
   if (Array.isArray(parent)) {
     const index = Number(fieldName);
@@ -44,12 +54,7 @@ function removeField(parent: unknown, fieldName: string) {
 }
 
 const useOmitFormField: UseOmitFormField = (name: string) => {
-  const fieldName = name.includes(".")
-    ? name.slice(name.lastIndexOf(".") + 1)
-    : name;
-  const parentFieldName = name.includes(".")
-    ? name.slice(0, name.lastIndexOf("."))
-    : undefined;
+  const [parentFieldName, fieldName] = getFieldNamesFromPathString(name);
   const {
     values: formState,
     setValues: setFormState,
