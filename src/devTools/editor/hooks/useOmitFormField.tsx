@@ -42,7 +42,7 @@ export function getFieldNamesFromPathString(name: string) {
   return [parentFieldName, fieldName];
 }
 
-function removeField(parent: unknown, fieldName: string) {
+export function removeField(parent: unknown, fieldName: string) {
   if (Array.isArray(parent)) {
     const index = Number(fieldName);
     parent.splice(index, 1);

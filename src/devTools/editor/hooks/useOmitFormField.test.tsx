@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getFieldNamesFromPathString } from "@/devTools/editor/hooks/useOmitFormField";
+import {
+  getFieldNamesFromPathString,
+  removeField,
+} from "@/devTools/editor/hooks/useOmitFormField";
 
 describe("getFieldNamesFromPathString", () => {
   test("root field name", () => {
@@ -37,5 +40,19 @@ describe("getFieldNamesFromPathString", () => {
       "foo.bar",
       "baz",
     ]);
+  });
+});
+
+describe("removeField", () => {
+  test("remove field from object", () => {
+    const obj = { foo: "foo", bar: "bar" };
+    removeField(obj, "bar");
+    expect(obj).toStrictEqual({ foo: "foo" });
+  });
+
+  test("remove item from array", () => {
+    const arr = ["foo", "bar", "baz"];
+    removeField(arr, "1");
+    expect(arr).toStrictEqual(["foo", "baz"]);
   });
 });
