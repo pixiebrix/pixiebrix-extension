@@ -157,7 +157,11 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
         className={styles.dropdown}
       >
         {inputModeOptions.map((option) => (
-          <Dropdown.Item key={option.value} eventKey={option.value} data-testid={option.value}>
+          <Dropdown.Item
+            key={option.value}
+            eventKey={option.value}
+            data-testid={option.value}
+          >
             <span className={styles.symbol}>{option.symbol}</span>{" "}
             {option.label}
           </Dropdown.Item>
