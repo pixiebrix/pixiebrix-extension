@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { MessageContext, ResolvedExtension } from "@/core";
+import React, { useMemo } from "react";
+import { MessageContext, ResolvedExtension, UUID } from "@/core";
 import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { Card, Col, Row, Table } from "react-bootstrap";
 import ExtensionGroup from "./ExtensionGroup";
@@ -24,6 +24,7 @@ import ExtensionGroupHeader from "./ExtensionGroupHeader";
 import { groupBy } from "lodash";
 import ExtensionRows from "./ExtensionRows";
 import { isDeploymentActive } from "@/options/deploymentUtils";
+import { useGetOrganizationsQuery } from "@/services/api";
 
 const groupByRecipe = (
   extensions: ResolvedExtension[]
@@ -35,19 +36,47 @@ const ActiveBricksCard: React.FunctionComponent<{
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
+  const { data: organizations = [], isLoading } = useGetOrganizationsQuery();
+
   const personalExtensions = extensions.filter(
     (extension) => !extension._recipe && !extension._deployment
   );
 
   const marketplaceExtensionGroups = groupByRecipe(
     extensions.filter(
-      (extension) => extension._recipe && !extension._deployment
+      (extension) =>
+        extension._recipe &&
+        extension._recipe.sharing?.organizations.length === 0 &&
+        !extension._deployment
     )
   );
+
+  const getOrganizationName = (organization_uuid: UUID) =>
+    organizations.find((organization) => organization.id === organization_uuid)
+      ?.name;
+
+  const teamExtensionGroups = useMemo(() => {
+    const teamExtensionGroups = extensions.filter(
+      (extension) =>
+        extension._recipe &&
+        extension._recipe.sharing?.organizations.length > 0 &&
+        !extension._deployment
+    );
+
+    console.log("Team extension groups:", teamExtensionGroups);
+
+    return groupBy(
+      teamExtensionGroups,
+      (extension) => extension._recipe.sharing.organizations[0]
+    );
+  }, [extensions, organizations]);
 
   const deploymentGroups = groupByRecipe(
     extensions.filter((extension) => extension._deployment)
   );
+
+  console.log("Organizations", organizations);
+  console.log("Team extension groups:", teamExtensionGroups);
 
   return (
     <Row>
@@ -69,7 +98,7 @@ const ActiveBricksCard: React.FunctionComponent<{
 
               {marketplaceExtensionGroups.length > 0 && (
                 <>
-                  <ExtensionGroupHeader label="Marketplace Bricks" />
+                  <ExtensionGroupHeader label="Public Marketplace Bricks" />
                   {marketplaceExtensionGroups.map((extensions) => {
                     const recipe = extensions[0]._recipe;
                     const messageContext: MessageContext = {
@@ -88,6 +117,33 @@ const ActiveBricksCard: React.FunctionComponent<{
                     );
                   })}
                 </>
+              )}
+
+              {Object.entries(teamExtensionGroups).map(
+                ([organization_uuid, extensions], _) => {
+                  const recipe = extensions[0]._recipe;
+                  const messageContext: MessageContext = {
+                    blueprintId: recipe.id,
+                  };
+
+                  return (
+                    <>
+                      <ExtensionGroupHeader
+                        label={`${getOrganizationName(
+                          organization_uuid as UUID
+                        )} Bricks`}
+                      />
+                      <ExtensionGroup
+                        key={recipe.id}
+                        label={recipe.name}
+                        extensions={extensions}
+                        groupMessageContext={messageContext}
+                        onRemove={onRemove}
+                        onExportBlueprint={onExportBlueprint}
+                      />
+                    </>
+                  );
+                }
               )}
 
               {deploymentGroups.length > 0 && (

@@ -256,12 +256,20 @@ export const optionsSlice = createSlice({
           throw new Error("extensionPointId is required");
         }
 
+        console.log("RECIPE IN USEINSTALL:", recipe);
+
         const extension: PersistedExtension = {
           id: extensionId,
           // Default to `v1` for backward compatability
           apiVersion: recipe.apiVersion ?? "v1",
           _deployment: selectDeploymentContext(deployment),
-          _recipe: recipe.metadata,
+          _recipe: {
+            id: recipe.metadata.id,
+            version: recipe.metadata.version,
+            name: recipe.metadata.name,
+            description: recipe.metadata.description,
+            sharing: recipe.sharing,
+          },
           // Definitions are pushed down into the extensions. That's OK because `resolveDefinitions` determines
           // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
           definitions: recipe.definitions ?? {},

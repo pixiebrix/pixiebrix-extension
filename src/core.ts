@@ -246,6 +246,7 @@ export interface Metadata {
   readonly name: string;
   readonly version?: string;
   readonly description?: string;
+  readonly sharing?: Sharing;
 
   /**
    * @deprecated experimental prop that will likely be removed in the future
@@ -270,7 +271,7 @@ export interface Sharing {
 }
 
 export function selectMetadata(metadata: Metadata): Metadata {
-  return pick(metadata, ["id", "name", "version", "description"]);
+  return pick(metadata, ["id", "name", "version", "description", "sharing"]);
 }
 
 export type Config = Record<string, unknown>;

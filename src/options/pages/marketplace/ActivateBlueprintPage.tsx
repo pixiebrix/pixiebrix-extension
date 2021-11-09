@@ -22,7 +22,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
 import { useParams } from "react-router";
-import { RecipeDefinition } from "@/types/definitions";
+import { RecipeDefinition, SharingDefinition } from "@/types/definitions";
 import { Card, Col, Row } from "react-bootstrap";
 import GridLoader from "react-spinners/GridLoader";
 import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
@@ -33,6 +33,7 @@ import useFetch from "@/hooks/useFetch";
 
 type BlueprintResponse = {
   config: RecipeDefinition;
+  sharing: SharingDefinition;
 };
 
 const TEMPLATES_PAGE_PART = "templates";
@@ -82,9 +83,19 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
     `/api/recipes/${blueprintId}`
   );
 
+  const recipe: RecipeDefinition = useMemo(
+    () => ({
+      ...blueprint?.config,
+      sharing: blueprint?.sharing,
+    }),
+    [blueprint]
+  );
+
+  console.log("BLUEPRINT:", blueprint);
+
   const body = useMemo(() => {
     if (blueprint?.config?.extensionPoints != null) {
-      return <ActivateWizard blueprint={blueprint.config} />;
+      return <ActivateWizard blueprint={recipe} />;
     }
 
     if (blueprint != null) {

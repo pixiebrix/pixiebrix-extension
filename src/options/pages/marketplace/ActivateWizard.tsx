@@ -117,6 +117,8 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const [stepKey, setStep] = useState(blueprintSteps[0].key);
   const install = useInstall(blueprint);
 
+  console.log("BLUEPRINT IN ACTIVATE WIZARD:", blueprint);
+
   useTitle(`Activate ${truncate(blueprint.metadata.name, { length: 15 })}`);
 
   return (
