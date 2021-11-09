@@ -49,7 +49,7 @@ type RowProps = {
 };
 
 const BOOLEAN_SCHEMA: Schema = { type: "string" };
-const FALLBACK_SCHEMA: Schema = { type: "string" };
+const FALLBACK_SCHEMA: Schema = {};
 
 const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   name,
