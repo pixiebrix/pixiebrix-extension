@@ -28,6 +28,7 @@ import {
   Schema,
   ServiceDependency,
   UserOptions,
+  Metadata,
 } from "@/core";
 import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { TraceError } from "@/telemetry/trace";
@@ -46,34 +47,12 @@ import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { RecipeDefinition } from "@/types/definitions";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 
-const config = {
-  apiVersion: "v2" as ApiVersion,
-  kind: "component",
-  metadata: {
-    id: "test/component-1",
-    version: "1.0.0",
-    name: "Text config",
-    description: "Component's config made for testing",
-  },
-  inputSchema: {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    properties: {},
-    required: [] as string[],
-  },
-  pipeline: [
-    {
-      id: "@pixiebrix/browser/open-tab",
-      config: {
-        url: "http://www.amazon.com/s",
-        params: {
-          url:
-            "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
-        },
-      },
-    },
-  ],
-};
+export const metadataFactory = define<Metadata>({
+  id: (n: number) => validateRegistryId(`test/recipe-${n}`),
+  name: (n: number) => `Recipe ${n}`,
+  description: "Recipe generated from factory",
+  version: "1.0.0",
+});
 
 export const extensionFactory: (
   extensionProps?: Partial<IExtension>
@@ -89,7 +68,32 @@ export const extensionFactory: (
   definitions: null,
   services: [],
   optionsArgs: null,
-  config,
+  config: {
+    apiVersion: "v2" as ApiVersion,
+    kind: "component",
+    metadata: metadataFactory({
+      id: validateRegistryId("test/component-1"),
+      name: "Text config",
+    }),
+    inputSchema: {
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      type: "object",
+      properties: {},
+      required: [] as string[],
+    },
+    pipeline: [
+      {
+        id: "@pixiebrix/browser/open-tab",
+        config: {
+          url: "http://www.amazon.com/s",
+          params: {
+            url:
+              "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
+          },
+        },
+      },
+    ],
+  },
   active: true,
   ...extensionProps,
 });
@@ -167,12 +171,11 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
 export const extensionPointFactory = define<ExtensionPointConfig>({
   kind: "extensionPoint",
   apiVersion: "v2",
-  metadata: (n: number) => ({
-    id: validateRegistryId(`test/extension-point-${n}`),
-    name: `Extension Point ${n}`,
-    description: "Extension Point generated from factory",
-    version: "1.0.0",
-  }),
+  metadata: (n: number) =>
+    metadataFactory({
+      id: validateRegistryId(`test/extension-point-${n}`),
+      name: `Extension Point ${n}`,
+    }),
   definition: {
     type: "menuItem",
     isAvailable: {
@@ -232,12 +235,7 @@ export const innerExtensionPointRecipeFactory = ({
   define<RecipeDefinition>({
     kind: "recipe",
     apiVersion: "v2",
-    metadata: (n: number) => ({
-      id: validateRegistryId(`test/recipe-${n}`),
-      name: `Recipe ${n}`,
-      description: "Recipe generated from factory",
-      version: "1.0.0",
-    }),
+    metadata: metadataFactory,
     // `sharing` is returned from the API, but is undefined when editing recipes
     sharing: undefined,
     definitions: {

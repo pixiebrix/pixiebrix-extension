@@ -49,6 +49,7 @@ const UPDATE_BLUEPRINT = "Update Blueprint";
 type OwnProps = {
   initialValues: RecipeConfiguration;
   isNewRecipe: boolean;
+  close: () => void;
   navigateBack: () => void;
   save: OnSubmit<RecipeConfiguration>;
 };
@@ -56,61 +57,54 @@ type OwnProps = {
 const RecipeConfigurationModal: React.FC<OwnProps> = ({
   initialValues,
   isNewRecipe,
+  close,
   navigateBack,
   save,
-}) => {
-  const { closeWizard } = useSavingWizard();
+}) => (
+  <Modal show onHide={close} backdrop="static" keyboard={false}>
+    <Modal.Header closeButton>
+      <Modal.Title>
+        {isNewRecipe ? SAVE_AS_NEW_BLUEPRINT : UPDATE_BLUEPRINT}
+      </Modal.Title>
+    </Modal.Header>
 
-  return (
-    <Modal show onHide={closeWizard} backdrop="static" keyboard={false}>
-      <Modal.Header closeButton>
-        <Modal.Title>
-          {isNewRecipe ? SAVE_AS_NEW_BLUEPRINT : UPDATE_BLUEPRINT}
-        </Modal.Title>
-      </Modal.Header>
+    <Form
+      validationSchema={recipeConfigurationSchema}
+      initialValues={initialValues}
+      onSubmit={save}
+      renderSubmit={({ isSubmitting, isValid }) => (
+        <Modal.Footer>
+          <Button variant="link" onClick={navigateBack}>
+            Back
+          </Button>
 
-      <Form
-        validationSchema={recipeConfigurationSchema}
-        initialValues={initialValues}
-        onSubmit={save}
-        renderSubmit={({ isSubmitting, isValid }) => (
-          <Modal.Footer>
-            <Button variant="link" onClick={navigateBack}>
-              Back
-            </Button>
+          <Button
+            variant="info"
+            onClick={() => {
+              close();
+            }}
+          >
+            Cancel
+          </Button>
 
-            <Button
-              variant="info"
-              onClick={() => {
-                closeWizard();
-              }}
-            >
-              Cancel
-            </Button>
-
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={!isValid || isSubmitting}
-            >
-              {isNewRecipe ? SAVE_AS_NEW_BLUEPRINT : UPDATE_BLUEPRINT}
-            </Button>
-          </Modal.Footer>
-        )}
-      >
-        <Modal.Body>
-          <ConnectedFieldTemplate
-            name="id"
-            label="ID"
-            disabled={!isNewRecipe}
-          />
-          <ConnectedFieldTemplate name="name" label="Name" />
-          <ConnectedFieldTemplate name="version" label="Version" />
-          <ConnectedFieldTemplate name="description" label="Description" />
-        </Modal.Body>
-      </Form>
-    </Modal>
-  );
-};
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={!isValid || isSubmitting}
+          >
+            {isNewRecipe ? SAVE_AS_NEW_BLUEPRINT : UPDATE_BLUEPRINT}
+          </Button>
+        </Modal.Footer>
+      )}
+    >
+      <Modal.Body>
+        <ConnectedFieldTemplate name="id" label="ID" disabled={!isNewRecipe} />
+        <ConnectedFieldTemplate name="name" label="Name" />
+        <ConnectedFieldTemplate name="version" label="Version" />
+        <ConnectedFieldTemplate name="description" label="Description" />
+      </Modal.Body>
+    </Form>
+  </Modal>
+);
 
 export default RecipeConfigurationModal;

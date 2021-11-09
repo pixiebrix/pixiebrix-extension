@@ -232,6 +232,7 @@ const SaveExtensionWizard: React.FC = () => {
     <RecipeConfigurationModal
       initialValues={newRecipeInitialValues.current}
       isNewRecipe={isNewRecipe.current}
+      close={closeWizard}
       navigateBack={() => {
         setRecipeOptionsModalShown(false);
       }}
