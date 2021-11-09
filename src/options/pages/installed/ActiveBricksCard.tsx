@@ -55,9 +55,7 @@ const ActiveBricksCard: React.FunctionComponent<{
   const marketplaceExtensionGroups = groupByRecipe(
     extensions.filter(
       (extension) =>
-        extension._recipe &&
-        extension._recipe.sharing?.organizations.length === 0 &&
-        !extension._deployment
+        extension._recipe?.sharing?.public && !extension._deployment
     )
   );
 
@@ -70,13 +68,18 @@ const ActiveBricksCard: React.FunctionComponent<{
       groupByOrganizationId(
         extensions.filter(
           (extension) =>
-            extension._recipe &&
-            extension._recipe.sharing?.organizations.length > 0 &&
+            extension._recipe?.sharing?.organizations.length > 0 &&
+            !extension._recipe?.sharing?.public &&
             !extension._deployment
         )
-      ),
+      ).map(([organization_uuid, extensions]) => ({
+        organization_uuid,
+        extensions: groupByRecipe(extensions),
+      })),
     [extensions]
   );
+
+  console.log("Extensions:", extensions);
 
   const deploymentGroups = groupByRecipe(
     extensions.filter((extension) => extension._deployment)
@@ -123,30 +126,33 @@ const ActiveBricksCard: React.FunctionComponent<{
                 </>
               )}
 
-              {teamExtensionGroups.map(([organization_uuid, extensions], _) => {
-                const recipe = extensions[0]._recipe;
-                const messageContext: MessageContext = {
-                  blueprintId: recipe.id,
-                };
+              {teamExtensionGroups.map((team, index) => (
+                <>
+                  <ExtensionGroupHeader
+                    key={index}
+                    label={`${getOrganizationName(
+                      team.organization_uuid as UUID
+                    )} Bricks`}
+                  />
+                  {team.extensions.map((extensions) => {
+                    const recipe = extensions[0]._recipe;
+                    const messageContext: MessageContext = {
+                      blueprintId: recipe.id,
+                    };
 
-                return (
-                  <>
-                    <ExtensionGroupHeader
-                      label={`${getOrganizationName(
-                        organization_uuid as UUID
-                      )} Bricks`}
-                    />
-                    <ExtensionGroup
-                      key={recipe.id}
-                      label={recipe.name}
-                      extensions={extensions}
-                      groupMessageContext={messageContext}
-                      onRemove={onRemove}
-                      onExportBlueprint={onExportBlueprint}
-                    />
-                  </>
-                );
-              })}
+                    return (
+                      <ExtensionGroup
+                        key={recipe.id}
+                        label={recipe.name}
+                        extensions={extensions}
+                        groupMessageContext={messageContext}
+                        onRemove={onRemove}
+                        onExportBlueprint={onExportBlueprint}
+                      />
+                    );
+                  })}
+                </>
+              ))}
 
               {deploymentGroups.length > 0 && (
                 <>
