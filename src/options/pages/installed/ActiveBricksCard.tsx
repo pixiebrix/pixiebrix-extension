@@ -41,6 +41,11 @@ const groupByOrganizationId = (
     )
   );
 
+const isPublic = (extension: ResolvedExtension) =>
+  extension._recipe?.sharing?.public;
+const hasOrganization = (extension: ResolvedExtension) =>
+  extension._recipe?.sharing?.organizations.length > 0;
+
 const ActiveBricksCard: React.FunctionComponent<{
   extensions: ResolvedExtension[];
   onRemove: RemoveAction;
@@ -53,13 +58,14 @@ const ActiveBricksCard: React.FunctionComponent<{
       ?.name;
 
   const personalExtensions = extensions.filter(
-    (extension) => !extension._recipe && !extension._deployment
+    (extension) =>
+      (!extension._recipe && !extension._deployment) ||
+      (!isPublic(extension) && !hasOrganization(extension))
   );
 
   const marketplaceExtensionGroups = groupByRecipe(
     extensions.filter(
-      (extension) =>
-        extension._recipe?.sharing?.public && !extension._deployment
+      (extension) => isPublic(extension) && !extension._deployment
     )
   );
 
@@ -68,8 +74,8 @@ const ActiveBricksCard: React.FunctionComponent<{
       groupByOrganizationId(
         extensions.filter(
           (extension) =>
-            extension._recipe?.sharing?.organizations.length > 0 &&
-            !extension._recipe?.sharing?.public &&
+            hasOrganization(extension) &&
+            !isPublic(extension) &&
             !extension._deployment
         )
       ).map(([organization_uuid, extensions]) => ({
@@ -82,6 +88,8 @@ const ActiveBricksCard: React.FunctionComponent<{
   const deploymentGroups = groupByRecipe(
     extensions.filter((extension) => extension._deployment)
   );
+
+  console.log("Extensions:", extensions);
 
   return (
     <Row>
