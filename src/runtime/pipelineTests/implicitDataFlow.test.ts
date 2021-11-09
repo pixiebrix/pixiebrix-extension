@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiVersion } from "@/core";
+import { ApiVersion, OutputKey } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { BlockPipeline } from "@/blocks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
+  arrayBlock,
   contextBlock,
   echoBlock,
+  identityBlock,
   simpleInput,
   teapotBlock,
   testOptions,
@@ -39,7 +41,13 @@ jest.mock("@/background/trace");
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(echoBlock, contextBlock, teapotBlock);
+  blockRegistry.register(
+    echoBlock,
+    contextBlock,
+    teapotBlock,
+    arrayBlock,
+    identityBlock
+  );
 });
 
 describe("apiVersion: v1", () => {
@@ -147,4 +155,84 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
 
     expect((result as UnknownObject).inputArg).toBeUndefined();
   });
+});
+
+describe("pass non-objects direct to next component", () => {
+  // `apiVersion: v1` had a quirky behavior of passing non-objects directly to the next brick in order to support
+  // data passing before we added support for variables. In v2 and v3, it's a bit of a moot point because there's no
+  // implicit data flow between bricks
+
+  test("v1 only: pass array as context to next brick", async () => {
+    const pipeline: BlockPipeline = [
+      {
+        id: arrayBlock.id,
+        config: {},
+      },
+      {
+        id: contextBlock.id,
+        config: {},
+      },
+    ];
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      testOptions("v1")
+    );
+    expect(result).toStrictEqual([
+      // The output from arrayBlock
+      { value: "foo" },
+      { value: "bar" },
+    ]);
+  });
+
+  test("v1 only: do not render args if previous brick produced array", async () => {
+    const pipeline: BlockPipeline = [
+      {
+        id: arrayBlock.id,
+        config: {},
+      },
+      {
+        id: identityBlock.id,
+        config: {
+          // Will not be rendered because the previous block returned an array
+          data: "{{ foo }}",
+        },
+      },
+    ];
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      testOptions("v1")
+    );
+    expect(result).toStrictEqual({ data: "{{ foo }}" });
+  });
+
+  describe.each([["v2"], ["v3"]])(
+    "apiVersion: %s",
+    (apiVersion: ApiVersion) => {
+      test("do not pass list directly to next brick", async () => {
+        const pipeline: BlockPipeline = [
+          {
+            id: arrayBlock.id,
+            outputKey: "array" as OutputKey,
+            config: {},
+          },
+          {
+            id: contextBlock.id,
+            config: {},
+          },
+        ];
+        const result = await reducePipeline(
+          pipeline,
+          simpleInput({}),
+          testOptions(apiVersion)
+        );
+        expect(result).toStrictEqual({
+          "@input": {},
+          "@options": {},
+          "@array": [{ value: "foo" }, { value: "bar" }],
+        });
+      });
+    }
+  );
 });

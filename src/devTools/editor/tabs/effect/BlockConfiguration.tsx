@@ -65,7 +65,7 @@ const BlockConfiguration: React.FunctionComponent<{
       <Card className={styles.card}>
         <Card.Header className={styles.cardHeader}>Input</Card.Header>
         <Card.Body>
-          <div>
+          <>
             <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
               {blockErrors?.id && (
                 <div className="invalid-feedback d-block mb-4">
@@ -80,7 +80,7 @@ const BlockConfiguration: React.FunctionComponent<{
                 <GridLoader />
               )}
             </SchemaFieldContext.Provider>
-          </div>
+          </>
         </Card.Body>
       </Card>
       <Card className={styles.card}>

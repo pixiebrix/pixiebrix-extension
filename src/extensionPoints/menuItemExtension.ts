@@ -58,7 +58,6 @@ import {
 } from "@/contentScript/notify";
 import { getNavigationId } from "@/contentScript/context";
 import { rejectOnCancelled, PromiseCancelled } from "@/utils";
-import { PanelDefinition } from "@/extensionPoints/panelExtension";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
@@ -768,7 +767,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
+  public readonly rawConfig: ExtensionPointConfig<MenuDefinition>;
 
   public get defaultOptions(): {
     caption: string;
@@ -784,7 +783,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description, icon } = config.metadata;
+    const { id, name, description, icon } = cloned.metadata;
     super(id, name, description, icon);
     this._definition = cloned.definition;
     this.rawConfig = cloned;

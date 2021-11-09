@@ -58,7 +58,7 @@ function useHooks(): {
 }
 
 export const ZapField: React.FunctionComponent<
-  SchemaFieldProps<string> & { hooks: Webhook[]; error: unknown }
+  SchemaFieldProps & { hooks: Webhook[]; error: unknown }
 > = ({ label, schema, hooks, error, ...props }) => {
   const [{ value, ...field }] = useField(props);
 

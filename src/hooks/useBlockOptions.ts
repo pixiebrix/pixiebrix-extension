@@ -19,7 +19,6 @@ import React, { useMemo, useState } from "react";
 import genericOptionsFactory, {
   BlockOptionProps,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { inputProperties } from "@/helpers";
 import { IBlock, RegistryId } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncEffect } from "use-async-effect";
@@ -58,9 +57,7 @@ export function useBlockOptions(
   const BlockOptions = useMemo(() => {
     if (block?.id) {
       const registered = optionsRegistry.get(block.id);
-      return (
-        registered ?? genericOptionsFactory(inputProperties(block.inputSchema))
-      );
+      return registered ?? genericOptionsFactory(block.inputSchema);
     }
 
     return null;

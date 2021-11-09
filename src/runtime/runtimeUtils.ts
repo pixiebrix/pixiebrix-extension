@@ -138,7 +138,16 @@ export function selectBlockRootElement(
 ): ReaderRoot {
   const rootMode = blockConfig.rootMode ?? "inherit";
 
-  const root = rootMode === "inherit" ? defaultRoot : document;
+  let root;
+  if (rootMode === "inherit") {
+    root = defaultRoot;
+  } else if (rootMode === "document") {
+    root = document;
+  } else {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+    throw new BusinessError(`Invalid rootMode: ${rootMode}`);
+  }
+
   const $root = $(root ?? document);
 
   // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jQuery
@@ -149,7 +158,7 @@ export function selectBlockRootElement(
   }
 
   if ($stageRoot.length === 0) {
-    const rootDescriptor = (defaultRoot as HTMLElement).tagName ?? "document";
+    const rootDescriptor = (defaultRoot as HTMLElement)?.tagName ?? "document";
     throw new BusinessError(
       `No roots found for ${blockConfig.root} (root=${rootDescriptor})`
     );

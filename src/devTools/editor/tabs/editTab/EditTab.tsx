@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout, {
   FOUNDATION_NODE_ID,
@@ -53,6 +53,8 @@ import { BlocksMap } from "./editTabTypes";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
+import AuthContext from "@/auth/AuthContext";
+import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -320,6 +322,9 @@ const EditTab: React.FC<{
         (blockPipelineErrors[activeBlockIndex] as string)
       : null;
 
+  const { flags } = useContext(AuthContext);
+  const showVersionField = flags.includes("page-editor-beta");
+
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
@@ -350,6 +355,7 @@ const EditTab: React.FC<{
                       name="label"
                       label="Extension Name"
                     />
+                    {showVersionField && <ApiVersionField />}
                   </Col>
                   <FoundationNode isLocked={isLocked} />
                 </>

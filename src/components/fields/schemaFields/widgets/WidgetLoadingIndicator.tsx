@@ -16,25 +16,7 @@
  */
 
 import React from "react";
-import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
-import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
-import SchemaFieldV1 from "@/components/fields/schemaFields/v1/SchemaField";
-import SchemaFieldV3 from "@/components/fields/schemaFields/v3/SchemaField";
 
-/**
- * A schema-based field that automatically determines it's layout/widget based on the schema and uiSchema.
- *
- * @see SchemaFieldContext
- * @see getDefaultField
- */
-const SchemaField: SchemaFieldComponent = (props) => {
-  const apiAtLeastV3 = useApiVersionAtLeast("v3");
+const WidgetLoadingIndicator: React.FC = () => <div>Loading...</div>;
 
-  return apiAtLeastV3 ? (
-    <SchemaFieldV3 {...props} />
-  ) : (
-    <SchemaFieldV1 {...props} />
-  );
-};
-
-export default SchemaField;
+export default WidgetLoadingIndicator;
