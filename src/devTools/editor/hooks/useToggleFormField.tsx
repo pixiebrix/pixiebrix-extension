@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getIn, useFormikContext } from "formik";
+import { getIn, useField, useFormikContext } from "formik";
 import { UnknownObject } from "@/types";
 import { produce } from "immer";
 import { useCallback, useMemo } from "react";
@@ -24,13 +24,6 @@ import {
   inferInputMode,
 } from "@/components/fields/schemaFields/fieldInputMode";
 import { isObject } from "@/utils";
-
-type UseToggleFormField = (
-  name: string
-) => {
-  inputMode: FieldInputMode;
-  onOmitField: () => void;
-};
 
 export function getFieldNamesFromPathString(
   name: string
@@ -59,7 +52,14 @@ export function removeField(parent: unknown, fieldName: string): void {
   });
 }
 
-const useToggleFormField: UseToggleFormField = (name: string) => {
+function useToggleFormField<T>(
+  name: string
+): {
+  value: T;
+  setValue: (value: T) => void;
+  inputMode: FieldInputMode;
+  onOmitField: () => void;
+} {
   const [parentFieldName, fieldName] = getFieldNamesFromPathString(name);
   const {
     values: formState,
@@ -91,12 +91,16 @@ const useToggleFormField: UseToggleFormField = (name: string) => {
     });
 
     setFormState(newFormState);
-  }, [fieldName, formState, parentFieldName, setFormState]);
+  }, [fieldName, formState, name, parentFieldName, setFormState]);
+
+  const [{ value }, , { setValue }] = useField<T>(name);
 
   return {
+    value,
+    setValue,
     inputMode,
     onOmitField,
   };
-};
+}
 
 export default useToggleFormField;

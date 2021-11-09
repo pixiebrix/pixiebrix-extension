@@ -198,12 +198,12 @@ type ObjectValue = Record<string, unknown>;
 const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
   const { name, schema } = props;
 
+  const noAdditionalProps = schema.additionalProperties === false;
   // Allow additional properties for empty schema (empty schema allows shape)
-  const additionalProperties = isEmpty(schema) || schema.additionalProperties;
+  const allowAdditionalProps = isEmpty(schema) || !noAdditionalProps;
 
   // Don't show action on v3 or above
-  const showAction =
-    !useApiVersionAtLeast("v3") && Boolean(additionalProperties);
+  const showAction = !useApiVersionAtLeast("v3") && allowAdditionalProps;
 
   // Helpers.setValue changes on every render, so use setFieldValue instead
   // https://github.com/formium/formik/issues/2268
@@ -300,7 +300,7 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
           ))}
         </tbody>
       </Table>
-      {additionalProperties && (
+      {allowAdditionalProps && (
         <Button onClick={addProperty}>Add Property</Button>
       )}
     </div>

@@ -17,7 +17,7 @@
 
 import React, { useCallback, useMemo } from "react";
 import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import { FastField, useField } from "formik";
+import { FastField } from "formik";
 import { Expression, TemplateEngine } from "@/core";
 import { Dropdown, DropdownButton, Form } from "react-bootstrap";
 import { isExpression } from "@/runtime/mapArgs";
@@ -86,8 +86,12 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   inputModeOptions,
   ...props
 }) => {
-  const [{ value }, , { setValue }] = useField<unknown>(name);
-  const { inputMode, onOmitField } = useToggleFormField(name);
+  const {
+    value,
+    setValue,
+    inputMode,
+    onOmitField,
+  } = useToggleFormField<unknown>(name);
   const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
 

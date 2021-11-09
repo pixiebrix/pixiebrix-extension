@@ -84,6 +84,8 @@ function getToggleOptions({
     }
   }
 
+  const anyType = !Object.prototype.hasOwnProperty.call(fieldSchema, "type");
+
   if (Array.isArray(fieldSchema.type)) {
     const { type: typeArray, ...rest } = fieldSchema;
     return typeArray.flatMap((type) =>
@@ -97,7 +99,7 @@ function getToggleOptions({
     );
   }
 
-  if (fieldSchema.type === "array") {
+  if (fieldSchema.type === "array" || anyType) {
     // Don't allow editing array fields nested inside objects/arrays
     const Widget =
       isObjectProperty || isArrayItem ? ComplexObjectWidget : ArrayWidget;
@@ -117,6 +119,7 @@ function getToggleOptions({
 
   if (
     fieldSchema.type === "object" ||
+    anyType ||
     // An empty field schema supports any value. For now, provide an object field since this just shows up
     // in the @pixiebrix/http brick.
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
@@ -138,7 +141,7 @@ function getToggleOptions({
     );
   }
 
-  if (fieldSchema.type === "boolean") {
+  if (fieldSchema.type === "boolean" || anyType) {
     pushOptions(
       {
         label: "Toggle",
@@ -154,7 +157,7 @@ function getToggleOptions({
     );
   }
 
-  if (fieldSchema.type === "string") {
+  if (fieldSchema.type === "string" || anyType) {
     if (
       fieldSchema.enum &&
       Array.isArray(fieldSchema.enum) &&
@@ -208,6 +211,7 @@ function getToggleOptions({
     );
   }
 
+  // Don't include integer for "anyType", only include number, which can also accept integers
   if (fieldSchema.type === "integer") {
     pushOptions(
       {
@@ -222,7 +226,7 @@ function getToggleOptions({
     );
   }
 
-  if (fieldSchema.type === "number") {
+  if (fieldSchema.type === "number" || anyType) {
     pushOptions(
       {
         label: "Number",

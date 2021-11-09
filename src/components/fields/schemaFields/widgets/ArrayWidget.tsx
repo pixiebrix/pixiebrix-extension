@@ -71,7 +71,7 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
     throw new TypeError("Schema required for items");
   }
 
-  const schemaItems = schema.items;
+  const schemaItems = schema.items ?? {};
 
   const apiVersionAtLeastV3 = useApiVersionAtLeast("v3");
   // Show explicit remove button before v3
