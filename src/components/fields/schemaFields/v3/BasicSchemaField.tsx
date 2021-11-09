@@ -294,6 +294,17 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
 
   const { customToggleModes } = useContext(SchemaFieldContext);
 
+  const isObjectType =
+    schema.type === "object" ||
+    !Object.prototype.hasOwnProperty.call(schema, "type");
+  if (
+    isObjectType &&
+    schema.properties === undefined &&
+    schema.additionalProperties === undefined
+  ) {
+    schema.additionalProperties = true;
+  }
+
   const inputModeOptions = useMemo(
     () =>
       getToggleOptions({

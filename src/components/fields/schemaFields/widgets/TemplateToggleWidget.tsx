@@ -17,7 +17,7 @@
 
 import React, { useCallback, useMemo } from "react";
 import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import { FastField } from "formik";
+import { Field } from "formik";
 import { Expression, TemplateEngine } from "@/core";
 import { Dropdown, DropdownButton, Form } from "react-bootstrap";
 import { isExpression } from "@/runtime/mapArgs";
@@ -146,7 +146,10 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
       );
     }
 
-    return <FastField name={name} as={Widget} {...props} />;
+    // Need to add the value prop explicitly here last to override
+    //  the "blankValue" default of an empty string that comes
+    //  in through props from FieldTemplate.
+    return <Field name={name} as={Widget} {...props} value={value} />;
   }, [Widget, name, onChangeForTemplate, props, value]);
 
   return (

@@ -48,9 +48,6 @@ type RowProps = {
   onRename: (oldProp: string, newProp: string) => void;
 };
 
-const BOOLEAN_SCHEMA: Schema = { type: "string" };
-const FALLBACK_SCHEMA: Schema = {};
-
 const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   name,
   schema,
@@ -131,15 +128,23 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
   onDelete,
   onRename,
 }) => {
+  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
+
   const propertySchema: Schema = useMemo(() => {
+    // As of v3, we allow object props of any type, not just string
+    const defaultSchema: Schema = isApiAtLeastV3 ? {} : { type: "string" };
     const rawSchema = defined
       ? parentSchema.properties[property]
-      : parentSchema.additionalProperties;
+      : parentSchema.additionalProperties ?? defaultSchema;
 
-    return typeof rawSchema === "boolean"
-      ? BOOLEAN_SCHEMA
-      : rawSchema ?? FALLBACK_SCHEMA;
-  }, [property, defined, parentSchema]);
+    return typeof rawSchema === "boolean" ? defaultSchema : rawSchema;
+  }, [
+    isApiAtLeastV3,
+    defined,
+    parentSchema.properties,
+    parentSchema.additionalProperties,
+    property,
+  ]);
 
   const isRequired = parentSchema.required?.includes(property) ?? false;
 
@@ -157,8 +162,6 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
     },
     [property, onRename]
   );
-
-  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
 
   const showActions =
     // Don't show action on v3 or above
@@ -198,12 +201,12 @@ type ObjectValue = Record<string, unknown>;
 const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
   const { name, schema } = props;
 
-  const noAdditionalProps = schema.additionalProperties === false;
   // Allow additional properties for empty schema (empty schema allows shape)
-  const allowAdditionalProps = isEmpty(schema) || !noAdditionalProps;
+  const additionalProperties = isEmpty(schema) || schema.additionalProperties;
 
+  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
   // Don't show action on v3 or above
-  const showAction = !useApiVersionAtLeast("v3") && allowAdditionalProps;
+  const showAction = !isApiAtLeastV3 && additionalProperties;
 
   // Helpers.setValue changes on every render, so use setFieldValue instead
   // https://github.com/formium/formik/issues/2268
@@ -300,7 +303,7 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
           ))}
         </tbody>
       </Table>
-      {allowAdditionalProps && (
+      {additionalProperties && (
         <Button onClick={addProperty}>Add Property</Button>
       )}
     </div>
