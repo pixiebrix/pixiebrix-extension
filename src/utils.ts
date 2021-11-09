@@ -34,7 +34,7 @@ import {
   compact,
 } from "lodash";
 import { Primitive } from "type-fest";
-import { SafeString } from "@/core";
+import { ApiVersion, SafeString } from "@/core";
 
 /**
  * Create a Formik field name, validating the individual path parts.
@@ -458,4 +458,14 @@ export function safeParseUrl(url: string): URL {
   } catch {
     return new URL("invalid-url://");
   }
+}
+
+export function isApiVersionAtLeast(
+  is: ApiVersion,
+  atLeast: ApiVersion
+): boolean {
+  const isNum = Number(is.slice(1));
+  const atLeastNum = Number(atLeast.slice(1));
+
+  return isNum >= atLeastNum;
 }

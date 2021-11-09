@@ -21,9 +21,7 @@ import React from "react";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html
 
-export type FieldComponent<T = unknown> = React.FunctionComponent<
-  SchemaFieldProps<T>
->;
+export type SchemaFieldComponent = React.FunctionComponent<SchemaFieldProps>;
 
 export const schemaPropTypes = {
   type: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
@@ -32,14 +30,21 @@ export const schemaPropTypes = {
   enum: PropTypes.array,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO: Use the generic or drop it from FieldProps usage
-export interface SchemaFieldProps<TValue> {
+export interface SchemaFieldProps {
+  /**
+   * The field name; generally used to identify this field in the form state
+   */
   name: string;
 
   /**
    * The JSON Schema for the field property
    */
   schema: Schema;
+
+  /**
+   * Is this field required?
+   */
+  isRequired?: boolean;
 
   /**
    * A label for the field. If not provided, the label is automatically generated from the field name/schema.
@@ -56,4 +61,23 @@ export interface SchemaFieldProps<TValue> {
    * The RJSF UiSchema for the field. WARNING: very little of the UiSchema surface area is supported
    */
   uiSchema?: UiSchema;
+
+  /**
+   * Hide the label. Used to hide the label where there's not enough space (e.g., properties in ObjectWidget and
+   * ArrayWidget)
+   * @see makeLabelForSchemaField
+   * @see ObjectWidget
+   * @see ArrayWidget
+   */
+  hideLabel?: boolean;
+
+  /**
+   * Is this field a nested object property? Used to prevent objects/arrays nested in objects.
+   */
+  isObjectProperty?: boolean;
+
+  /**
+   * Is this field an item in an array? Used to prevent arrays nested in arrays.
+   */
+  isArrayItem?: boolean;
 }

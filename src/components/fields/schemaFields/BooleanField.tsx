@@ -17,21 +17,20 @@
 
 import React from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { fieldLabel } from "@/components/fields/fieldUtils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 
-const BooleanField: React.FunctionComponent<SchemaFieldProps<boolean>> = ({
-  name,
-  label,
-  schema,
-}) => (
-  <ConnectedFieldTemplate
-    name={name}
-    as={SwitchButtonWidget} // Do not use layout="switch" by default
-    label={label ?? fieldLabel(name)}
-    description={schema.description}
-  />
-);
+const BooleanField: React.FunctionComponent<SchemaFieldProps> = (props) => {
+  const { name, schema } = props;
+  return (
+    <ConnectedFieldTemplate
+      name={name}
+      as={SwitchButtonWidget}
+      label={makeLabelForSchemaField(props)}
+      description={schema.description}
+    />
+  );
+};
 
 export default BooleanField;

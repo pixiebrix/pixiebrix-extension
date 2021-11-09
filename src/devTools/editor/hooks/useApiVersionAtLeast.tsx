@@ -15,24 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
-import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { ApiVersion } from "@/core";
+import { useField } from "formik";
+import { isApiVersionAtLeast } from "@/utils";
 
-const SelectorSelectorField: React.FunctionComponent<SchemaFieldProps> = (
-  props
-) => {
-  const { schema } = props;
-  return (
-    <ConnectedFieldTemplate
-      label={makeLabelForSchemaField(props)}
-      description={schema.description}
-      as={SelectorSelectorWidget}
-      {...props}
-    />
-  );
-};
+function useApiVersionAtLeast(atLeast: ApiVersion): boolean {
+  const { value: apiVersion } = useField<ApiVersion>("apiVersion")[0];
+  return isApiVersionAtLeast(apiVersion, atLeast);
+}
 
-export default SelectorSelectorField;
+export default useApiVersionAtLeast;
