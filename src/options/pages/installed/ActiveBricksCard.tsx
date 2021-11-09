@@ -31,10 +31,9 @@ const groupByRecipe = (
 ): ResolvedExtension[][] =>
   Object.values(groupBy(extensions, (extension) => extension._recipe.id));
 
-// TODO: Figure out return type
 const groupByOrganizationId = (
   extensions: ResolvedExtension[]
-): ResolvedExtension[][] =>
+): Array<[string, ResolvedExtension[]]> =>
   Object.entries(
     groupBy(
       extensions,
@@ -47,7 +46,7 @@ const ActiveBricksCard: React.FunctionComponent<{
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
-  const { data: organizations = [], isLoading } = useGetOrganizationsQuery();
+  const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const personalExtensions = extensions.filter(
     (extension) => !extension._recipe && !extension._deployment
@@ -66,16 +65,18 @@ const ActiveBricksCard: React.FunctionComponent<{
     organizations.find((organization) => organization.id === organization_uuid)
       ?.name;
 
-  const teamExtensionGroups = useMemo(() => {
-    return groupByOrganizationId(
-      extensions.filter(
-        (extension) =>
-          extension._recipe &&
-          extension._recipe.sharing?.organizations.length > 0 &&
-          !extension._deployment
-      )
-    );
-  }, [extensions, organizations]);
+  const teamExtensionGroups = useMemo(
+    () =>
+      groupByOrganizationId(
+        extensions.filter(
+          (extension) =>
+            extension._recipe &&
+            extension._recipe.sharing?.organizations.length > 0 &&
+            !extension._deployment
+        )
+      ),
+    [extensions]
+  );
 
   const deploymentGroups = groupByRecipe(
     extensions.filter((extension) => extension._deployment)
