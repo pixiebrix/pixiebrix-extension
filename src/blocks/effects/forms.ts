@@ -20,15 +20,19 @@ import { BlockArg, BlockOptions, Logger, Schema } from "@/core";
 import { BusinessError } from "@/errors";
 import { boolean } from "@/utils";
 import { requireSingleElement } from "@/nativeEditor/utils";
+import { RequireExactlyOne } from "type-fest";
 
-type SetValueData = {
-  form?: HTMLElement | Document;
-  selector?: string;
-  name?: string;
-  value: unknown;
-  dispatchEvent?: boolean;
-  logger: Logger;
-};
+type SetValueData = RequireExactlyOne<
+  {
+    form?: HTMLElement | Document;
+    value: unknown;
+    selector?: string;
+    name?: string;
+    dispatchEvent?: boolean;
+    logger: Logger;
+  },
+  "selector" | "name"
+>;
 
 const optionFields = ["checkbox", "radio"];
 
