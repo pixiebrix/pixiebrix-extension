@@ -42,7 +42,7 @@ const EditorPane: React.FunctionComponent<{
 }> = ({ selectedElement, selectionSeq }) => {
   const dispatch = useDispatch();
   const editable = useEditable();
-  const { isWizardOpen, saveElement } = useSavingWizard();
+  const { isWizardOpen, save: saveElement } = useSavingWizard();
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(

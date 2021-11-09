@@ -22,29 +22,63 @@ import {
   selectSavingExtensionId,
 } from "./savingExtensionSelectors";
 import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
-import { useCreate } from "@/devTools/editor/hooks/useCreate";
+import useCreate from "@/devTools/editor/hooks/useCreate";
 import Deferred from "@/utils/deferred";
+import {
+  actions as editorActions,
+  FormState,
+} from "@/devTools/editor/slices/editorSlice";
+import { uuidv4 } from "@/types/helpers";
+import useReset from "@/devTools/editor/hooks/useReset";
 
 let savingDeferred: Deferred;
 
 const useSavingWizard = () => {
   const dispatch = useDispatch();
   const create = useCreate();
+  const reset = useReset();
   const isWizardOpen = useSelector(selectIsWizardOpen);
   const savingExtensionId = useSelector(selectSavingExtensionId);
   const element = useSelector(selectActiveElement);
 
-  const saveElement = async () => {
-    dispatch(savingExtensionActions.setWizardOpen(true));
-
+  const save = async () => {
     if (!element.recipe) {
-      dispatch(savingExtensionActions.setSavingExtension(element.uuid));
-      void create(element, closeWizard);
+      saveNonRecipeElement();
     }
 
     savingDeferred = new Deferred();
 
+    dispatch(savingExtensionActions.setWizardOpen(true));
     return savingDeferred.promise;
+  };
+
+  /**
+   * Saves an extension that is not a part of a Recipe
+   */
+  const saveNonRecipeElement = () => {
+    dispatch(savingExtensionActions.setSavingExtension(element.uuid));
+    void create(element, closeWizard);
+  };
+
+  /**
+   * Creating personal extension from the existing one
+   * It will not be a part of the Recipe
+   */
+  const saveElementAsPersonalExtension = () => {
+    const newExtensionUuid = uuidv4();
+    dispatch(savingExtensionActions.setSavingExtension(newExtensionUuid));
+
+    const { recipe, ...rest } = element;
+    const personalElement: FormState = {
+      ...rest,
+      uuid: newExtensionUuid,
+      // Detach from the recipe
+      recipe: undefined,
+    };
+
+    dispatch(editorActions.addElement(personalElement));
+    reset({ element, shouldShowConfirmation: false });
+    void create(element, closeWizard);
   };
 
   const closeWizard = (errorMessage?: string | null) => {
@@ -65,7 +99,9 @@ const useSavingWizard = () => {
   return {
     isWizardOpen,
     savingExtensionId,
-    saveElement,
+    element,
+    save,
+    saveElementAsPersonalExtension,
     closeWizard,
   };
 };

@@ -110,7 +110,7 @@ type CreateCallback = (
   onDone: (errorMessage?: string) => void
 ) => Promise<void>;
 
-export function useCreate(): CreateCallback {
+function useCreate(): CreateCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
   //  occur in the correct order on slower (CPU or network?) machines. Therefore, await all promises. We also have to
   //  make `reactivate` behave deterministically if we're still having problems (right now it's implemented as a
@@ -268,3 +268,5 @@ export function useCreate(): CreateCallback {
     [dispatch, addToast]
   );
 }
+
+export default useCreate;

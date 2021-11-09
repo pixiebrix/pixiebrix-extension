@@ -23,10 +23,9 @@ import {
   useGetEditablePackagesQuery,
 } from "@/services/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { useCreate } from "@/devTools/editor/hooks/useCreate";
+import useCreate from "@/devTools/editor/hooks/useCreate";
 import { OnSubmit } from "@/components/form/Form";
 import { Metadata } from "@/core";
-import { useFormikContext } from "formik";
 import SavingInProgressModal from "./SavingInProgressModal";
 import LoadingDataModal from "./LoadingDataModal";
 import {
@@ -34,7 +33,6 @@ import {
   FormState,
 } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
-import useReset from "@/devTools/editor/hooks/useReset";
 import { actions as savingExtensionActions } from "@/devTools/editor/panes/save/savingExtensionSlice";
 import { actions as optionsActions } from "@/options/slices";
 import { selectExtensions } from "@/options/selectors";
@@ -56,7 +54,12 @@ import useNotifications from "@/hooks/useNotifications";
 const SaveExtensionWizard: React.FC = () => {
   const dispatch = useDispatch();
   const notify = useNotifications();
-  const { savingExtensionId, closeWizard } = useSavingWizard();
+  const {
+    savingExtensionId,
+    element,
+    saveElementAsPersonalExtension,
+    closeWizard,
+  } = useSavingWizard();
   const create = useCreate();
   const { scope } = useContext(AuthContext);
   const { data: recipes, isLoading: areRecipesLoading } = useGetRecipesQuery();
@@ -72,8 +75,6 @@ const SaveExtensionWizard: React.FC = () => {
   ] = useState(false);
   const isNewRecipe = useRef(false);
   const newRecipeInitialValues = useRef<RecipeConfiguration>(null);
-  const { values: element } = useFormikContext<FormState>();
-  const reset = useReset();
 
   const extensions = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
@@ -86,37 +87,16 @@ const SaveExtensionWizard: React.FC = () => {
     void create(element, close);
   };
 
-  if (!element.recipe || savingExtensionId) {
+  if (savingExtensionId) {
     return <SavingInProgressModal />;
   }
 
   if (areRecipesLoading || areEditablePackageLoading) {
-    return <LoadingDataModal onClose={close} />;
+    return <LoadingDataModal onClose={closeWizard} />;
   }
 
   const elementRecipeMeta = element.recipe;
   const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
-
-  /**
-   * Creating personal extension from the existing one
-   * It will not be a part of the Recipe
-   */
-  const saveAsPersonalExtension = () => {
-    const newExtensionUuid = uuidv4();
-    dispatch(savingExtensionActions.setSavingExtension(newExtensionUuid));
-
-    const { recipe, ...rest } = element;
-    const personalElement: FormState = {
-      ...rest,
-      uuid: newExtensionUuid,
-      // Detach from the recipe
-      recipe: undefined,
-    };
-
-    dispatch(editorActions.addElement(personalElement));
-    reset({ element, shouldShowConfirmation: false });
-    save(personalElement);
-  };
 
   const showCreateRecipeModal = () => {
     isNewRecipe.current = true;
@@ -245,7 +225,7 @@ const SaveExtensionWizard: React.FC = () => {
       latestRecipeVersion={recipe.metadata.version}
       isRecipeEditable={isRecipeEditable(editablePackages, recipe)}
       close={closeWizard}
-      saveAsPersonalExtension={saveAsPersonalExtension}
+      saveAsPersonalExtension={saveElementAsPersonalExtension}
       showCreateRecipeModal={showCreateRecipeModal}
       showUpdateRecipeModal={showUpdateRecipeModal}
     />
