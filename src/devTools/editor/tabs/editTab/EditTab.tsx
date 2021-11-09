@@ -351,9 +351,6 @@ const EditTab: React.FC<{
                       label="Extension Name"
                     />
                   </Col>
-                  {/* ToDo remove this */}
-                  {values.recipe &&
-                    `Blueprint: ${values.recipe.name} - ${values.recipe.id}`}
                   <FoundationNode isLocked={isLocked} />
                 </>
               ) : (
