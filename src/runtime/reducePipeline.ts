@@ -145,13 +145,22 @@ export type IntermediateState = {
  */
 type BlockProps<TArgs extends RenderedArgs | BlockArg = RenderedArgs> = {
   /**
-   * The rendered args for the block, which may or may not be validated against the inputSchema.
+   * The rendered args for the block, which may or may not have been already validated against the inputSchema depending
+   * on the static type.
    */
   args: TArgs;
+
   /**
-   * The available context. (The context used to render the args.)
+   * The available context (The context used to render the args.)
    */
   context: BlockArgContext;
+
+  /**
+   * The previous output
+   * @deprecated ignored since v2
+   */
+  previousOutput: unknown;
+
   /**
    * The root for root-aware blocks
    * @see IBlock.isRootAware
@@ -194,11 +203,17 @@ type RunBlockOptions = CommonOptions & {
 
 async function execute(
   { config, block }: ResolvedBlockConfig,
-  { args, context, root }: BlockProps<BlockArg>,
+  { args, context, root, previousOutput }: BlockProps<BlockArg>,
   options: RunBlockOptions
 ): Promise<unknown> {
   const commonOptions = {
-    ctxt: context,
+    // This condition of what to pass to the brick is wacky, but seemingly necessary to replicate behavior in v1 where
+    // if the previous brick output an array, the array would be passed as the context to the next brick.
+    // See the corresponding hack/condition in renderBlockArg
+    ctxt:
+      options.explicitArg || isPlainObject(previousOutput)
+        ? context
+        : previousOutput,
     messageContext: options.logger.context,
   };
 
@@ -261,7 +276,7 @@ async function renderBlockArg(
   const stageTemplate = config.config ?? {};
 
   if (type === "reader") {
-    // `reducePipeline` is responsible for passing the correct root into runStage based based on the BlockConfig
+    // `reducePipeline` is responsible for passing the correct root into runStage based on the BlockConfig
     if ((config.window ?? "self") === "self") {
       logger.debug(
         `Passed root to reader ${config.id} (window=${config.window ?? "self"})`
@@ -283,7 +298,7 @@ async function renderBlockArg(
   }
 
   if (!explicitArg && !isPlainObject(state.previousOutput)) {
-    // LEGACY HACK: hack from legacy versions to avoid applying calling Mustache.render or another renderer with a
+    // V1 LEGACY HACK: hack from legacy versions to avoid applying calling Mustache.render or another renderer with a
     // context that's not an object. Pass through the config directly without rendering.
     return config.config as RenderedArgs;
   }
@@ -409,7 +424,6 @@ export async function blockReducer(
   options: ReduceOptions
 ): Promise<BlockOutput> {
   const { index, isLastBlock, previousOutput, context, root } = state;
-
   const { runId, explicitDataFlow, logValues, logger } = options;
 
   // Match the override behavior in v1, where the output from previous block would override anything in the context
@@ -436,9 +450,17 @@ export async function blockReducer(
     },
   };
 
+  // Adjust the root according to the `root` and `rootMode` props on the blockConfig
+  const blockRoot = selectBlockRootElement(blockConfig, root);
+
   const props: BlockProps = {
-    args: await renderBlockArg(resolvedConfig, state, blockOptions),
-    root: selectBlockRootElement(blockConfig, root),
+    args: await renderBlockArg(
+      resolvedConfig,
+      { ...state, root: blockRoot },
+      blockOptions
+    ),
+    root: blockRoot,
+    previousOutput,
     context: contextWithPreviousOutput,
   };
 

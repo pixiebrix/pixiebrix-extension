@@ -21,26 +21,23 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
-  omitEditorMetadata,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
+  normalizePipeline,
+  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-  withInstanceIds,
-  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray } from "lodash";
 import {
   ActionPanelConfig,
   ActionPanelExtensionPoint,
   PanelDefinition,
 } from "@/extensionPoints/actionPanelExtension";
-import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
@@ -52,23 +49,13 @@ import {
   ElementConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
-import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import { Except } from "type-fest";
 
-const wizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
-  { step: "Logs", Component: LogsTab },
-];
-
-type Extension = BaseExtensionState & {
-  heading: string;
-};
+type Extension = BaseExtensionState & Except<ActionPanelConfig, "body">;
 
 export interface ActionPanelFormState extends BaseFormState<Extension> {
   type: "actionPanel";
-
-  extension: BaseExtensionState & {
-    heading: string;
-  };
+  extension: Extension;
 }
 
 function fromNativeElement(
@@ -185,15 +172,10 @@ async function fromExtension(
     "actionPanel"
   >(config, "actionPanel");
 
-  const blockPipeline = withInstanceIds(castArray(config.config.body));
-
   return {
     ...baseFromExtension(config, extensionPoint.definition.type),
 
-    extension: {
-      heading: config.config.heading,
-      blockPipeline,
-    },
+    extension: normalizePipeline(config.config, "body"),
 
     extensionPoint: {
       metadata: extensionPoint.metadata,
@@ -219,7 +201,6 @@ const config: ElementConfig<never, ActionPanelFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  wizard,
   EditorNode: ActionPanelConfiguration,
   insertModeHelp: (
     <div>
