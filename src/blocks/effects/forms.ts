@@ -112,8 +112,24 @@ function setValue({
     }
 
     if (dispatchEvent) {
-      field.dispatchEvent(new Event("change", { bubbles: true }));
-      field.dispatchEvent(new InputEvent("input", { bubbles: true }));
+      if (
+        !(
+          optionFields.includes(field.type) ||
+          field instanceof HTMLSelectElement
+        )
+      ) {
+        // Browsers normally fire these text events while typing
+        field.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true }));
+        field.dispatchEvent(new KeyboardEvent("keypress", { bubbles: true }));
+        field.dispatchEvent(
+          new CompositionEvent("textInput", { bubbles: true })
+        );
+        field.dispatchEvent(new InputEvent("input", { bubbles: true }));
+        field.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true }));
+      }
+
+      // Browsers normally fire this on `blur` if it's a text field, otherwise immediately
+      field.dispatchEvent(new KeyboardEvent("change", { bubbles: true }));
     }
   }
 }
