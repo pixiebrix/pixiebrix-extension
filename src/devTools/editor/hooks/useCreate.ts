@@ -36,7 +36,6 @@ import {
   extensionWithInnerDefinitions,
   isInnerExtensionPoint,
 } from "@/devTools/editor/extensionPoints/base";
-import { sleep } from "@/utils";
 import { EditablePackage } from "@/types/definitions";
 
 const { saveExtension } = optionsSlice.actions;
@@ -121,7 +120,7 @@ export function useCreate(): CreateCallback {
   const { addToast } = useToasts();
 
   return useCallback(
-    async (element: FormState, onDone: () => void) => {
+    async (element, onDone) => {
       const onStepError = (error: unknown, step: string) => {
         reportError(error);
         const message = selectErrorMessage(error);
@@ -255,6 +254,7 @@ export function useCreate(): CreateCallback {
           appearance: "success",
           autoDismiss: true,
         });
+        onDone();
       } catch (error: unknown) {
         console.error("Error saving extension", { error });
         reportError(error);
@@ -262,8 +262,7 @@ export function useCreate(): CreateCallback {
           appearance: "error",
           autoDismiss: true,
         });
-      } finally {
-        onDone();
+        onDone("Error saving extension");
       }
     },
     [dispatch, addToast]

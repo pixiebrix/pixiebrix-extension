@@ -371,7 +371,7 @@ export const optionsSlice = createSlice({
 
       if (index === -1) {
         reportError(
-          `Can't find extension in store to update. Target extension id: ${id}.`
+          `Can't find extension in optionsSlice to update. Target extension id: ${id}.`
         );
         return;
       }

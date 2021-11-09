@@ -20,11 +20,9 @@ import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { getType } from "@/blocks/util";
 import {
   ApiVersion,
-  Config,
   IBlock,
   IExtension,
   InnerDefinitionRef,
-  InnerDefinitions,
   RegistryId,
   RenderedArgs,
   Schema,
@@ -45,7 +43,7 @@ import trigger, {
 import menuItem from "@/devTools/editor/extensionPoints/menuItem";
 import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { Definition, RecipeDefinition } from "@/types/definitions";
+import { RecipeDefinition } from "@/types/definitions";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 
 const config = {
