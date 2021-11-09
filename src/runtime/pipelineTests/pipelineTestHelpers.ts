@@ -82,11 +82,24 @@ class ThrowBlock extends Block {
   }
 }
 
+class ArrayBlock extends Block {
+  constructor() {
+    super("test/array", "Array Block");
+  }
+
+  inputSchema = propertiesToSchema({});
+
+  async run() {
+    return [{ value: "foo" }, { value: "bar" }];
+  }
+}
+
 export const echoBlock = new EchoBlock();
 export const contextBlock = new ContextBlock();
 export const identityBlock = new IdentityBlock();
 export const throwBlock = new ThrowBlock();
 export const teapotBlock = new TeapotBlock();
+export const arrayBlock = new ArrayBlock();
 
 /**
  * Helper method to pass only `input` to reducePipeline.
