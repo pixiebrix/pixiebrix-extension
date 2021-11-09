@@ -17,13 +17,13 @@
 
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
-import useSavingWizard from "./useSavingWizard";
 
 type OwnProps = {
   recipeName: string;
   installedRecipeVersion: string;
   latestRecipeVersion: string;
   isRecipeEditable: boolean;
+  close: () => void;
   saveAsPersonalExtension: () => void;
   showCreateRecipeModal: () => void;
   showUpdateRecipeModal: () => void;
@@ -34,12 +34,11 @@ const SavingExtensionModal: React.FC<OwnProps> = ({
   installedRecipeVersion,
   latestRecipeVersion,
   isRecipeEditable,
+  close,
   saveAsPersonalExtension,
   showCreateRecipeModal,
   showUpdateRecipeModal,
 }) => {
-  const { closeWizard } = useSavingWizard();
-
   let message: string;
   let showNewRecipeButton = false;
   let showUpdateRecipeButton = false;
@@ -58,7 +57,7 @@ const SavingExtensionModal: React.FC<OwnProps> = ({
   }
 
   return (
-    <Modal show onHide={closeWizard} backdrop="static" keyboard={false}>
+    <Modal show onHide={close} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>Saving extension</Modal.Title>
       </Modal.Header>
@@ -69,7 +68,7 @@ const SavingExtensionModal: React.FC<OwnProps> = ({
           variant="info"
           className="mr-2"
           onClick={() => {
-            closeWizard();
+            close();
           }}
         >
           Cancel

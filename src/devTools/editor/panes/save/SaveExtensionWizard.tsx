@@ -243,6 +243,7 @@ const SaveExtensionWizard: React.FC = () => {
       installedRecipeVersion={elementRecipeMeta.version}
       latestRecipeVersion={recipe.metadata.version}
       isRecipeEditable={isRecipeEditable(editablePackages, recipe)}
+      close={closeWizard}
       saveAsPersonalExtension={saveAsPersonalExtension}
       showCreateRecipeModal={showCreateRecipeModal}
       showUpdateRecipeModal={showUpdateRecipeModal}
