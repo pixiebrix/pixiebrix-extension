@@ -18,6 +18,7 @@
 import React, { FocusEventHandler, useCallback, useState } from "react";
 import { Form } from "react-bootstrap";
 import { useField } from "formik";
+import { round } from "lodash";
 
 /**
  * A basic input widget for numbers
@@ -41,8 +42,11 @@ const NumberWidget: React.FC<{
   );
 
   const onBlur: FocusEventHandler<HTMLInputElement> = useCallback(() => {
-    setFormValue(Number(value));
-  }, [setFormValue, value]);
+    const numberVal = Number(value);
+    const newVal = step ? round(numberVal / step) * step : numberVal;
+    setFormValue(newVal);
+    setValue(String(newVal));
+  }, [setFormValue, step, value]);
 
   return (
     <Form.Control
