@@ -89,8 +89,6 @@ const ActiveBricksCard: React.FunctionComponent<{
     extensions.filter((extension) => extension._deployment)
   );
 
-  console.log("Extensions:", extensions);
-
   return (
     <Row>
       <Col xl={9} lg={10} md={12}>
