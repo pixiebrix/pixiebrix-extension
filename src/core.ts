@@ -246,7 +246,6 @@ export interface Metadata {
   readonly name: string;
   readonly version?: string;
   readonly description?: string;
-  readonly sharing?: Sharing;
 
   /**
    * @deprecated experimental prop that will likely be removed in the future
@@ -267,11 +266,11 @@ export interface Metadata {
 
 export interface Sharing {
   readonly public: boolean;
-  readonly organizations: string[];
+  readonly organizations: UUID[];
 }
 
 export function selectMetadata(metadata: Metadata): Metadata {
-  return pick(metadata, ["id", "name", "version", "description", "sharing"]);
+  return pick(metadata, ["id", "name", "version", "description"]);
 }
 
 export type Config = Record<string, unknown>;
@@ -351,6 +350,17 @@ export type ExtensionRef = {
   extensionPointId: RegistryId;
 };
 
+/**
+ * Recipe with Sharing information.
+ * @see optionsSlice
+ * We created this type as an alternative to Metadata
+ * in order to include information about the origin of an
+ * extension, e.g. on the ActiveBricks page.
+ */
+export type RecipeMetadata = Metadata & {
+  sharing?: Sharing;
+};
+
 export type IExtension<T extends Config = EmptyConfig> = {
   /**
    * UUID of the extension.
@@ -378,7 +388,7 @@ export type IExtension<T extends Config = EmptyConfig> = {
    * Metadata about the recipe used to install the extension, or `undefined` if the user created this extension
    * directly.
    */
-  _recipe: Metadata | undefined;
+  _recipe: RecipeMetadata | undefined;
 
   /**
    * A human-readable label for the extension.
