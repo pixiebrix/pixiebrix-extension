@@ -19,6 +19,7 @@ import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Formik } from "formik";
+import { ApiVersion } from "@/core";
 
 function expectToggleOptions(container: HTMLElement, expected: string[]): void {
   // React Bootstrap dropdown does not render children items unless toggled
@@ -32,27 +33,30 @@ function expectToggleOptions(container: HTMLElement, expected: string[]): void {
 }
 
 describe("SchemaField", () => {
-  test.each([["v1"], ["v2"]])("don't show toggle widget for %s", () => {
-    const { container } = render(
-      <Formik
-        onSubmit={() => {}}
-        initialValues={{ apiVersion: "v2", testField: "" }}
-      >
-        <SchemaField
-          name="testField"
-          schema={{
-            type: "string",
-            title: "Test Field",
-            description: "A test field",
-          }}
-        />
-      </Formik>
-    );
+  test.each([["v1"], ["v2"]])(
+    "don't show toggle widget for %s",
+    (version: ApiVersion) => {
+      const { container } = render(
+        <Formik
+          onSubmit={() => {}}
+          initialValues={{ apiVersion: version, testField: "" }}
+        >
+          <SchemaField
+            name="testField"
+            schema={{
+              type: "string",
+              title: "Test Field",
+              description: "A test field",
+            }}
+          />
+        </Formik>
+      );
 
-    // Renders text entry HTML element
-    expect(container.querySelector("input[type='text']")).not.toBeNull();
-    expect(container.querySelector("button")).toBeNull();
-  });
+      // Renders text entry HTML element
+      expect(container.querySelector("input[type='text']")).not.toBeNull();
+      expect(container.querySelector("button")).toBeNull();
+    }
+  );
 });
 
 describe("SchemaField", () => {
