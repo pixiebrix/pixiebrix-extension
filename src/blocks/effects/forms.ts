@@ -44,25 +44,24 @@ function setValue({
   dispatchEvent = true,
 }: SetValueData) {
   const isNameBased = Boolean(name);
-  const fields = [
-    ...form.querySelectorAll<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >(selector),
-  ].filter((element) => {
-    const isField =
-      element.isContentEditable ||
-      element instanceof HTMLInputElement ||
-      element instanceof HTMLTextAreaElement ||
-      element instanceof HTMLSelectElement;
-    if (!isField) {
-      logger.warn(
-        "The selected element is not an input field nor an editable element",
-        { element }
-      );
-    }
+  const fields = $(form)
+    .find<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(selector)
+    .toArray()
+    .filter((element) => {
+      const isField =
+        element.isContentEditable ||
+        element instanceof HTMLInputElement ||
+        element instanceof HTMLTextAreaElement ||
+        element instanceof HTMLSelectElement;
+      if (!isField) {
+        logger.warn(
+          "The selected element is not an input field nor an editable element",
+          { element }
+        );
+      }
 
-    return isField;
-  });
+      return isField;
+    });
 
   if (fields.length === 0) {
     if (isNameBased) {
