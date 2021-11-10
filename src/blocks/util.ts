@@ -100,3 +100,18 @@ export async function blockList(
     })
   );
 }
+
+/**
+ * Attach a stylesheet to the host page.
+ *
+ * Use with the `?loadAsUrl` import modifier, e.g.:
+ *
+ *  import stylesheetUrl from "intro.js/introjs.css?loadAsUrl";
+ */
+export function attachStylesheet(url: string): HTMLElement {
+  const link = document.createElement("link");
+  link.setAttribute("rel", "stylesheet");
+  link.setAttribute("href", url);
+  document.head.append(link);
+  return link;
+}

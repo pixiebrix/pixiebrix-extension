@@ -22,6 +22,7 @@ import { BusinessError, CancelError } from "@/errors";
 
 import stylesheetUrl from "intro.js/introjs.css?loadAsUrl";
 import darkThemeUrl from "intro.js/themes/introjs-dark.css?loadAsUrl";
+import { attachStylesheet } from "@/blocks/util";
 
 type Step = {
   title: string;
@@ -41,14 +42,6 @@ type Step = {
 function prefersDarkMode(): boolean {
   // https://flaviocopes.com/javascript-detect-dark-mode/
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
-
-function attachStylesheet(url: string): HTMLElement {
-  const link = document.createElement("link");
-  link.setAttribute("rel", "stylesheet");
-  link.setAttribute("href", url);
-  document.head.append(link);
-  return link;
 }
 
 // `true` if there is currently a tour in progress on the page
@@ -131,11 +124,10 @@ export class TourEffect extends Effect {
     const darkThemeLink = prefersDarkMode()
       ? attachStylesheet(darkThemeUrl)
       : null;
+
     const removeStylesheets = () => {
       stylesheetLink.remove();
-      if (darkThemeLink) {
-        darkThemeLink.remove();
-      }
+      darkThemeLink?.remove();
     };
 
     const introJs = (await import("intro.js")).default;
@@ -146,12 +138,12 @@ export class TourEffect extends Effect {
       requestAnimationFrame(resolve);
     });
 
-    const tourPromise = new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (tourInProgress) {
         throw new BusinessError("A tour is already in progress");
       }
 
-      const firstStep = (steps as Step[])[0];
+      const [firstStep] = steps as Step[];
       if ($(document).find(firstStep.element).length === 0) {
         throw new BusinessError(
           "No matching element found for first step in tour"
@@ -181,12 +173,8 @@ export class TourEffect extends Effect {
           reject(new CancelError("User cancelled the tour"));
         })
         .start();
-    });
-
-    tourPromise.finally(() => {
+    }).finally(() => {
       tourInProgress = false;
     });
-
-    return tourPromise;
   }
 }
