@@ -19,8 +19,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 import SaveExtensionWizard from "./SaveExtensionWizard";
 import {
-  useCreateRecipeMutation as useCreateRecipeMutationMock,
-  useUpdateRecipeMutation as useUpdateRecipeMutationMock,
   useGetRecipesQuery as useGetRecipesQueryMock,
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
 } from "@/services/api";
@@ -30,22 +28,19 @@ import {
   innerExtensionPointRecipeFactory,
   metadataFactory,
 } from "@/tests/factories";
+import { uuidv4 } from "@/types/helpers";
+import { waitForEffect } from "@/tests/testHelpers";
 
-jest.mock("@/hooks/useNotifications");
 jest.mock("@/devTools/editor/hooks/useCreate");
 
 jest.mock("./useSavingWizard");
 
 jest.mock("@/services/api", () => ({
-  useCreateRecipeMutation: jest.fn().mockReturnValue([]),
-  useUpdateRecipeMutation: jest.fn().mockReturnValue([]),
   useGetRecipesQuery: jest.fn(),
   useGetEditablePackagesQuery: jest.fn(),
 }));
 
 beforeEach(() => {
-  (useCreateRecipeMutationMock as jest.Mock).mockReturnValue([]);
-  (useUpdateRecipeMutationMock as jest.Mock).mockReturnValue([]);
   (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
     data: [],
     isLoading: false,
@@ -62,7 +57,6 @@ afterEach(() => {
 test("shows loading when saving is in progress", async () => {
   (useSavingWizardMock as jest.Mock).mockReturnValue({
     savingExtensionId: "test/extension",
-    closeWizard: jest.fn(),
   });
 
   render(<SaveExtensionWizard />);
@@ -80,14 +74,13 @@ test.each([
 ])("shows loader when %s", (testName, loadingRecipes, loadingPackages) => {
   (useSavingWizardMock as jest.Mock).mockReturnValue({
     savingExtensionId: null,
-    closeWizard: jest.fn(),
   });
   (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
-    data: null,
+    data: [],
     isLoading: loadingRecipes,
   });
   (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
-    data: null,
+    data: [],
     isLoading: loadingPackages,
   });
 
@@ -101,15 +94,14 @@ test.each([
 });
 
 test("calls Save as Personal extension", async () => {
-  const saveAsPersonalExtensionMock = jest.fn();
+  const saveElementAsPersonalExtensionMock = jest.fn();
   const metadata = metadataFactory();
   (useSavingWizardMock as jest.Mock).mockReturnValue({
     savingExtensionId: null,
     element: formStateFactory({
       recipe: metadata,
     }),
-    saveElementAsPersonalExtension: saveAsPersonalExtensionMock,
-    closeWizard: jest.fn(),
+    saveElementAsPersonalExtension: saveElementAsPersonalExtensionMock,
   });
 
   const recipeFactory = innerExtensionPointRecipeFactory();
@@ -120,10 +112,98 @@ test("calls Save as Personal extension", async () => {
 
   render(<SaveExtensionWizard />);
 
-  const saveAsPersonalExtensionButton = screen.getByRole("button", {
-    name: "Save as Personal Extension",
-  });
-  fireEvent.click(saveAsPersonalExtensionButton);
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Save as Personal Extension",
+    })
+  );
 
-  expect(saveAsPersonalExtensionMock).toHaveBeenCalled();
+  expect(saveElementAsPersonalExtensionMock).toHaveBeenCalled();
+});
+
+test("calls Save as New Blueprint", async () => {
+  const saveElementAndCreateNewRecipeMock = jest.fn();
+  const metadata = metadataFactory();
+  (useSavingWizardMock as jest.Mock).mockReturnValue({
+    savingExtensionId: null,
+    element: formStateFactory({
+      recipe: metadata,
+    }),
+    saveElementAndCreateNewRecipe: saveElementAndCreateNewRecipeMock,
+  });
+
+  const recipeFactory = innerExtensionPointRecipeFactory();
+  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+    data: [recipeFactory({ metadata }), recipeFactory],
+    isLoading: false,
+  });
+
+  (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
+    data: [{ name: metadata.id, id: uuidv4() }],
+    isLoading: false,
+  });
+
+  render(<SaveExtensionWizard />);
+
+  // Clicking Save as New Blueprint on the first modal
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Save as New Blueprint",
+    })
+  );
+  // Confirming Save as New Blueprint on the second modal
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Save as New Blueprint",
+    })
+  );
+
+  // Formik runs its submit callback in a next tick, awaiting
+  await waitForEffect();
+
+  expect(saveElementAndCreateNewRecipeMock).toHaveBeenCalled();
+});
+
+test("calls Update Blueprint", async () => {
+  const saveElementAndUpdateRecipeMock = jest.fn();
+  const metadata = metadataFactory();
+  (useSavingWizardMock as jest.Mock).mockReturnValue({
+    savingExtensionId: null,
+    element: formStateFactory({
+      recipe: metadata,
+    }),
+    saveElementAndUpdateRecipe: saveElementAndUpdateRecipeMock,
+  });
+
+  const recipeFactory = innerExtensionPointRecipeFactory();
+  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+    data: [recipeFactory({ metadata }), recipeFactory],
+    isLoading: false,
+  });
+
+  (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
+    data: [{ name: metadata.id, id: uuidv4() }],
+    isLoading: false,
+  });
+
+  render(<SaveExtensionWizard />);
+
+  // Clicking Update Blueprint on the first modal
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Update Blueprint",
+    })
+  );
+
+  // Confirming Update Blueprint on the second modal
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Update Blueprint",
+    })
+  );
+
+  // Formik runs its submit callback in a next tick, awaiting
+  await waitForEffect();
+
+  expect(saveElementAndUpdateRecipeMock).toHaveBeenCalled();
 });
