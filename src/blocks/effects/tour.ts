@@ -18,7 +18,10 @@
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { CancelError } from "@/errors";
+import { BusinessError, CancelError } from "@/errors";
+
+import stylesheetUrl from "intro.js/introjs.css?loadAsUrl";
+import darkThemeUrl from "intro.js/themes/introjs-dark.css?loadAsUrl";
 
 type Step = {
   title: string;
@@ -34,6 +37,22 @@ type Step = {
     | "bottom-right-aligned"
     | "auto";
 };
+
+function prefersDarkMode(): boolean {
+  // https://flaviocopes.com/javascript-detect-dark-mode/
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+function attachStylesheet(url: string): HTMLElement {
+  const link = document.createElement("link");
+  link.setAttribute("rel", "stylesheet");
+  link.setAttribute("href", url);
+  document.head.append(link);
+  return link;
+}
+
+// `true` if there is currently a tour in progress on the page
+let tourInProgress = false;
 
 export class TourEffect extends Effect {
   constructor() {
@@ -105,9 +124,42 @@ export class TourEffect extends Effect {
     disableInteraction = false,
     steps = [] as Step[],
   }: BlockArg): Promise<void> {
+    const stylesheetLink = attachStylesheet(stylesheetUrl);
+    // NOTE: this detects if the user prefers dark mode, which is a likely indicator of whether or not a dark theme is
+    // currently being used on the site. In the future, we'll want to detect whether or not a dark them is active and
+    // use that as the basis for the determination. (e.g., by checking the default font color on the body)
+    const darkThemeLink = prefersDarkMode()
+      ? attachStylesheet(darkThemeUrl)
+      : null;
+    const removeStylesheets = () => {
+      stylesheetLink.remove();
+      if (darkThemeLink) {
+        darkThemeLink.remove();
+      }
+    };
+
     const introJs = (await import("intro.js")).default;
 
-    return new Promise((resolve, reject) => {
+    // We weren't seeing a FOUC: https://webkit.org/blog/66/the-fouc-problem/. But make sure the CSS sheet is available
+    // before starting a tour.
+    await new Promise((resolve) => {
+      requestAnimationFrame(resolve);
+    });
+
+    const tourPromise = new Promise<void>((resolve, reject) => {
+      if (tourInProgress) {
+        throw new BusinessError("A tour is already in progress");
+      }
+
+      const firstStep = (steps as Step[])[0];
+      if ($(document).find(firstStep.element).length === 0) {
+        throw new BusinessError(
+          "No matching element found for first step in tour"
+        );
+      }
+
+      tourInProgress = true;
+
       introJs()
         .setOptions({
           showProgress,
@@ -119,12 +171,22 @@ export class TourEffect extends Effect {
           })),
         })
         .oncomplete(() => {
+          // Put here instead of `finally` below because the tourInProgress error shouldn't cause the link to be removed
+          removeStylesheets();
           resolve();
         })
         .onexit(() => {
+          // Put here instead of `finally` below because the tourInProgress error shouldn't cause the link to be removed
+          removeStylesheets();
           reject(new CancelError("User cancelled the tour"));
         })
         .start();
     });
+
+    tourPromise.finally(() => {
+      tourInProgress = false;
+    });
+
+    return tourPromise;
   }
 }
