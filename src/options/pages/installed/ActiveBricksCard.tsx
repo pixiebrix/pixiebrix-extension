@@ -51,22 +51,35 @@ const isPublic = (extension: ResolvedExtension) =>
 const hasOrganization = (extension: ResolvedExtension) =>
   extension._recipe?.sharing?.organizations.length > 0;
 
-const isPersonal = (extension: ResolvedExtension, scope: string) =>
+const isPersonalBrick = (extension: ResolvedExtension) =>
   // FIXME: recipes that I own that I have not shared with anyone should go under their own heading and be grouped by
   //  recipe. The "personal bricks" section should only include extensions that don't correspond to a versioned recipe
-  (scope && extension._recipe?.id.startsWith(scope + "/")) ||
-  (!extension._recipe && !extension._deployment);
+  !extension._recipe && !extension._deployment;
+
+const isPersonalBlueprint = (extension: ResolvedExtension, scope: string) =>
+  scope && extension._recipe?.id.startsWith(scope + "/");
 
 const groupExtensions = (extensions: ResolvedExtension[], scope: string) => {
-  const personal = [];
-  const marketplace = [];
-  const team = [];
-  const deployment = [];
-  const other = [];
+  const personal: {
+    bricks: ResolvedExtension[];
+    blueprints: ResolvedExtension[];
+  } = {
+    bricks: [],
+    blueprints: [],
+  };
+  const marketplace: ResolvedExtension[] = [];
+  const team: ResolvedExtension[] = [];
+  const deployment: ResolvedExtension[] = [];
+  const other: ResolvedExtension[] = [];
 
   for (const extension of extensions) {
-    if (isPersonal(extension, scope)) {
-      personal.push(extension);
+    if (isPersonalBrick(extension)) {
+      personal.bricks.push(extension);
+      continue;
+    }
+
+    if (isPersonalBlueprint(extension, scope)) {
+      personal.blueprints.push(extension);
       continue;
     }
 
@@ -103,33 +116,37 @@ const ActiveBricksCard: React.FunctionComponent<{
     organizations.find((organization) => organization.id === organizationId)
       ?.name;
 
-  const sortedExtensions = useMemo(() => groupExtensions(extensions, scope), [
+  const groupedExtensions = useMemo(() => groupExtensions(extensions, scope), [
     extensions,
     scope,
   ]);
 
-  const personalExtensions = sortedExtensions.personal;
+  const personalExtensions = groupedExtensions.personal.bricks;
+
+  const personalExtensionGroups = groupByRecipe(
+    groupedExtensions.personal.blueprints
+  );
 
   const marketplaceExtensionGroups = groupByRecipe(
-    sortedExtensions.marketplace
+    groupedExtensions.marketplace
   );
 
   const teamExtensionGroups = useMemo(
     () =>
-      groupByOrganizationId(sortedExtensions.team).map(
+      groupByOrganizationId(groupedExtensions.team).map(
         ([organizationId, extensions]) => ({
           organizationId,
           extensions: groupByRecipe(extensions),
         })
       ),
-    [sortedExtensions]
+    [groupedExtensions]
   );
 
-  const deploymentExtensionGroups = groupByRecipe(sortedExtensions.deployment);
+  const deploymentExtensionGroups = groupByRecipe(groupedExtensions.deployment);
 
   // Sharing was added to _recipe recently (see the RecipeMetadata type and optionsSlice)
   // We still want to display extensions that do not have this information yet
-  const otherExtensionGroups = groupByRecipe(sortedExtensions.other);
+  const otherExtensionGroups = groupByRecipe(groupedExtensions.other);
 
   return (
     <Row>
@@ -146,6 +163,29 @@ const ActiveBricksCard: React.FunctionComponent<{
                     onRemove={onRemove}
                     onExportBlueprint={onExportBlueprint}
                   />
+                </>
+              )}
+
+              {personalExtensionGroups.length > 0 && (
+                <>
+                  <ExtensionGroupHeader label="Personal Blueprints" />
+                  {personalExtensionGroups.map((extensions) => {
+                    const recipe = extensions[0]._recipe;
+                    const messageContext: MessageContext = {
+                      blueprintId: recipe.id,
+                    };
+
+                    return (
+                      <ExtensionGroup
+                        key={recipe.id}
+                        label={recipe.name}
+                        extensions={extensions}
+                        groupMessageContext={messageContext}
+                        onRemove={onRemove}
+                        onExportBlueprint={onExportBlueprint}
+                      />
+                    );
+                  })}
                 </>
               )}
 
