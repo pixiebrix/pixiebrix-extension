@@ -17,7 +17,6 @@
 
 import { optionsSlice } from "@/options/slices";
 import { configureStore, EnhancedStore } from "@reduxjs/toolkit";
-import { render, screen } from "@testing-library/react";
 import { renderHook, act } from "@testing-library/react-hooks";
 import React from "react";
 import { Provider } from "react-redux";
@@ -25,9 +24,11 @@ import { editorSlice } from "@/devTools/editor/slices/editorSlice";
 import { savingExtensionSlice } from "./savingExtensionSlice";
 import useSavingWizard from "./useSavingWizard";
 import { formStateFactory, metadataFactory } from "@/tests/factories";
-import { waitForEffect } from "@/tests/testHelpers";
+import useCreateMock from "@/devTools/editor/hooks/useCreate";
 
 jest.unmock("react-redux");
+
+jest.mock("@/devTools/editor/hooks/useCreate");
 
 jest.mock("@/services/api", () => ({
   useCreateRecipeMutation: jest.fn().mockReturnValue([]),
@@ -52,9 +53,11 @@ beforeEach(() => {
     },
   });
 });
-afterAll(() => {
-  jest.resetAllMocks();
-});
+
+const renderUseSavingWizard = () =>
+  renderHook(() => useSavingWizard(), {
+    wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+  });
 
 test("maintains wizard open state", () => {
   const metadata = metadataFactory();
@@ -63,20 +66,46 @@ test("maintains wizard open state", () => {
   });
   store.dispatch(editorSlice.actions.addElement(element));
 
-  const { result } = renderHook(() => useSavingWizard(), {
-    wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
-  });
-
+  const { result } = renderUseSavingWizard();
+  // Modal is closed.
   expect(result.current.isWizardOpen).toBe(false);
 
   // Save will open the modal window.
   // Should not await for the promise to resolve to check that window is open.
-  void result.current.save();
+  act(() => {
+    void result.current.save();
+  });
 
+  // Modal is open/
   expect(result.current.isWizardOpen).toBe(true);
 
-  const { result: anotherResult } = renderHook(() => useSavingWizard(), {
-    wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
-  });
+  const { result: anotherResult } = renderUseSavingWizard();
+  // Using hook in another component still report open Modal
   expect(anotherResult.current.isWizardOpen).toBe(true);
+
+  act(() => {
+    result.current.closeWizard();
+  });
+
+  // Closing Modal in one of the components triggers state update in all components
+  expect(result.current.isWizardOpen).toBe(false);
+  expect(anotherResult.current.isWizardOpen).toBe(false);
+});
+
+test("saves non recipe element", async () => {
+  const element = formStateFactory();
+  store.dispatch(editorSlice.actions.addElement(element));
+
+  const createMock = jest.fn();
+  (useCreateMock as jest.Mock).mockReturnValueOnce(createMock);
+
+  const { result } = renderUseSavingWizard();
+
+  act(() => {
+    void result.current.save();
+  });
+
+  expect(result.current.savingExtensionId).toBe(element.uuid);
+  expect(createMock).toHaveBeenCalledTimes(1);
+  expect(createMock).toHaveBeenCalledWith(element, expect.any(Function));
 });

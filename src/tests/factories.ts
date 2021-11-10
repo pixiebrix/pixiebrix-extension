@@ -270,6 +270,7 @@ const internalFormStateFactory = define<FormState>({
   installed: true,
   optionsArgs: null as UserOptions,
   services: [] as ServiceDependency[],
+  recipe: null,
 
   type: "panel" as ElementType,
   label: (i: number) => `Element ${i}`,
@@ -284,7 +285,7 @@ const internalFormStateFactory = define<FormState>({
 } as any);
 
 export const formStateFactory = (
-  override: FactoryConfig<FormState>,
+  override?: FactoryConfig<FormState>,
   blockConfigOverride?: FactoryConfig<BlockConfig>
 ) => {
   if (blockConfigOverride) {

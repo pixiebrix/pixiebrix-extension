@@ -32,11 +32,15 @@ export const savingExtensionSlice = createSlice({
   name: "savingExtension",
   initialState,
   reducers: {
-    setWizardOpen: (state, action: PayloadAction<boolean>) => {
-      state.isWizardOpen = action.payload;
+    openWizard: (state) => {
+      state.isWizardOpen = true;
     },
     setSavingExtension: (state, action: PayloadAction<UUID>) => {
       state.savingExtensionId = action.payload;
+    },
+    closeWizard: (state) => {
+      state.isWizardOpen = false;
+      state.savingExtensionId = null;
     },
   },
 });

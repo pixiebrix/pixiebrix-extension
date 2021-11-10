@@ -78,7 +78,7 @@ const useSavingWizard = () => {
 
     savingDeferred = new Deferred();
 
-    dispatch(savingExtensionActions.setWizardOpen(true));
+    dispatch(savingExtensionActions.openWizard());
     return savingDeferred.promise;
   };
 
@@ -234,8 +234,7 @@ const useSavingWizard = () => {
   };
 
   const closeWizard = (errorMessage?: string | null) => {
-    dispatch(savingExtensionActions.setWizardOpen(false));
-    dispatch(savingExtensionActions.setSavingExtension(null));
+    dispatch(savingExtensionActions.closeWizard());
 
     if (savingDeferred) {
       if (errorMessage) {

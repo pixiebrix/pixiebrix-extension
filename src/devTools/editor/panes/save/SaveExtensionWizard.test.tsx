@@ -31,8 +31,6 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/tests/testHelpers";
 
-jest.mock("@/devTools/editor/hooks/useCreate");
-
 jest.mock("./useSavingWizard");
 
 jest.mock("@/services/api", () => ({
