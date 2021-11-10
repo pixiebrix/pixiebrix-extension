@@ -85,23 +85,6 @@ const _openMarketplace = liftBackground(
   }
 );
 
-const _openTemplates = liftBackground(
-  "BACKGROUND_OPEN_TEMPLATES",
-  async ({ newTab = true }: OpenOptionsOptions) => {
-    const baseUrl = browser.runtime.getURL("options.html");
-
-    const url = `${baseUrl}#/templates`;
-
-    if (newTab) {
-      await browser.tabs.create({ url, active: true });
-    } else {
-      await browser.tabs.update({ url });
-    }
-
-    return true;
-  }
-);
-
 type ActivateBlueprintOptions = {
   /**
    * The blueprint to activate
@@ -117,24 +100,22 @@ type ActivateBlueprintOptions = {
    * The "source" page to associate with the activate. This affects the wording in the ActivateWizard
    * component
    */
-  pageSource?: "templates" | "marketplace";
+  pageSource?: "marketplace";
 };
 
 const _openActivate = liftBackground(
   "BACKGROUND_OPEN_ACTIVATE_BLUEPRINT",
-  async ({
-    blueprintId,
-    newTab = true,
-    pageSource = "templates",
-  }: ActivateBlueprintOptions) => {
+  async ({ blueprintId, newTab = true }: ActivateBlueprintOptions) => {
     const baseUrl = browser.runtime.getURL("options.html");
-    const url = `${baseUrl}#/${pageSource}/activate/${encodeURIComponent(
+    const url = `${baseUrl}#/marketplace/activate/${encodeURIComponent(
       blueprintId
     )}`;
 
     reportEvent("ExternalActivate", {
       blueprintId,
-      pageSource,
+      // We used to have multiple sources: template vs. marketplace. However we got rid of "templates" as a separate
+      // pageSource. Keep for now for analytics consistency
+      pageSource: "marketplace",
     });
 
     if (newTab) {
@@ -159,9 +140,4 @@ export const openExtensionOptions = lift("OPEN_OPTIONS", async () =>
 export const openMarketplace = lift(
   "OPEN_MARKETPLACE",
   async (options: OpenOptionsOptions = {}) => _openMarketplace(options)
-);
-
-export const openTemplates = lift(
-  "OPEN_TEMPLATES",
-  async (options: OpenOptionsOptions = {}) => _openTemplates(options)
 );
