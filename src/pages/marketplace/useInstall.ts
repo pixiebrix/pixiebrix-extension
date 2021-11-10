@@ -18,7 +18,6 @@
 import { RecipeDefinition } from "@/types/definitions";
 import useNotifications from "@/hooks/useNotifications";
 import { useDispatch } from "react-redux";
-import { useParams } from "react-router";
 import { useCallback } from "react";
 import { FormikHelpers } from "formik";
 import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
@@ -42,7 +41,6 @@ type InstallRecipe = (
 function useInstall(recipe: RecipeDefinition): InstallRecipe {
   const notify = useNotifications();
   const dispatch = useDispatch();
-  const { sourcePage } = useParams<{ sourcePage: string }>();
 
   return useCallback(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
@@ -112,9 +110,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
 
         void reactivate();
 
-        dispatch(
-          push(sourcePage === "templates" ? "/templates" : "/installed")
-        );
+        dispatch(push("/installed"));
       } catch (error: unknown) {
         notify.error(`Error installing ${recipe.metadata.name}`, {
           error,
@@ -122,7 +118,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         setSubmitting(false);
       }
     },
-    [notify, dispatch, sourcePage, recipe]
+    [notify, dispatch, recipe]
   );
 }
 

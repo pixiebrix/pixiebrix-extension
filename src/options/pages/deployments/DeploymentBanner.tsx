@@ -47,7 +47,6 @@ const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
   const matchRoot = useRouteMatch({ path: "/", exact: true });
   const matchInstalled = useRouteMatch({ path: "/installed", exact: true });
   const matchMarketplace = useRouteMatch({ path: "/blueprints", exact: true });
-  const matchTemplates = useRouteMatch({ path: "/templates", exact: true });
 
   const updateExtension = useCallback(async () => {
     await chromeP.runtime.requestUpdateCheck();
@@ -58,7 +57,7 @@ const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
     return null;
   }
 
-  if (!(matchRoot || matchInstalled || matchMarketplace || matchTemplates)) {
+  if (!(matchRoot || matchInstalled || matchMarketplace)) {
     return null;
   }
 
