@@ -62,7 +62,6 @@ const groupExtensions = (extensions: ResolvedExtension[], scope: string) => {
   const marketplace = [];
   const team = [];
   const deployment = [];
-  // `other` is the users ad-hoc extensions that aren't part of a recipe/blueprint
   const other = [];
 
   for (const extension of extensions) {
