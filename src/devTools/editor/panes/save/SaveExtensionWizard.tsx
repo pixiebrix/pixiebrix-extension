@@ -86,9 +86,9 @@ const SaveExtensionWizard: React.FC = () => {
 
   const saveRecipeAndExtension = (recipeMeta: RecipeConfiguration) => {
     if (isNewRecipe.current) {
-      saveElementAndCreateNewRecipe(recipeMeta);
+      void saveElementAndCreateNewRecipe(recipeMeta);
     } else {
-      saveElementAndUpdateRecipe(recipeMeta);
+      void saveElementAndUpdateRecipe(recipeMeta);
     }
   };
 
