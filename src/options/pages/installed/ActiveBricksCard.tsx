@@ -51,6 +51,10 @@ const isPublic = (extension: ResolvedExtension) =>
 const hasOrganization = (extension: ResolvedExtension) =>
   extension._recipe?.sharing?.organizations.length > 0;
 
+const isPersonal = (extension: ResolvedExtension, scope: string) =>
+  extension._recipe?.id.includes(scope) ||
+  (!extension._recipe && !extension._deployment);
+
 const ActiveBricksCard: React.FunctionComponent<{
   extensions: ResolvedExtension[];
   onRemove: RemoveAction;
@@ -63,10 +67,6 @@ const ActiveBricksCard: React.FunctionComponent<{
     organizations.find((organization) => organization.id === organization_uuid)
       ?.name;
 
-  const isPersonal = (extension: ResolvedExtension) =>
-    extension._recipe?.id.includes(scope) ||
-    (!extension._recipe && !extension._deployment);
-
   const sortedExtensions = useMemo(() => {
     const personal = [];
     const marketplace = [];
@@ -75,7 +75,7 @@ const ActiveBricksCard: React.FunctionComponent<{
     const other = [];
 
     for (const extension of extensions) {
-      if (isPersonal(extension)) {
+      if (isPersonal(extension, scope)) {
         personal.push(extension);
         continue;
       }
@@ -99,8 +99,6 @@ const ActiveBricksCard: React.FunctionComponent<{
     }
 
     return { personal, marketplace, team, deployment, other };
-    // We specifically would like to re-render on scope change, not isPersonal
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extensions, scope]);
 
   const personalExtensions = sortedExtensions.personal;
