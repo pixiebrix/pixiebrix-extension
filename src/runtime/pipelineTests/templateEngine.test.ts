@@ -101,12 +101,39 @@ describe("apiVersion: v3", () => {
     expect(result).toStrictEqual({ message: "{{@input.inputArg}}" });
   });
 
-  test("apply explicit mustache template", async () => {
+  describe.each([
+    // NOTE: Handlebars doesn't work with @-prefixed variable because it uses @ to denote data variables
+    // see: https://handlebarsjs.com/api-reference/data-variables.html
+    ["mustache"],
+    ["nunjucks"],
+  ])("apply explicit %s template", (templateEngine) => {
+    test("apply explicit template with property path", async () => {
+      const pipeline = {
+        id: echoBlock.id,
+        config: {
+          message: {
+            __type__: templateEngine,
+            __value__: "{{@input.inputArg}}",
+          },
+        },
+      };
+      const result = await reducePipeline(
+        pipeline,
+        simpleInput({ inputArg: "hello" }),
+        testOptions("v3")
+      );
+      expect(result).toStrictEqual({ message: "hello" });
+    });
+  });
+
+  // NOTE: Handlebars doesn't work with @-prefixed variable because it uses @ to denote data variables
+  // see: https://handlebarsjs.com/api-reference/data-variables.html
+  test("handlebars can't reference @-prefixed variables", async () => {
     const pipeline = {
       id: echoBlock.id,
       config: {
         message: {
-          __type__: "mustache",
+          __type__: "handlebars",
           __value__: "{{@input.inputArg}}",
         },
       },
@@ -116,10 +143,10 @@ describe("apiVersion: v3", () => {
       simpleInput({ inputArg: "hello" }),
       testOptions("v3")
     );
-    expect(result).toStrictEqual({ message: "hello" });
+    expect(result).toStrictEqual({ message: "" });
   });
 
-  test("ignore templateEngine", async () => {
+  test("ignore templateEngine property", async () => {
     const pipeline = {
       id: echoBlock.id,
       config: {

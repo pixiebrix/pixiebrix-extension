@@ -40,15 +40,31 @@ interface ErrorNotificationOptions extends NotificationOptions {
   autoDismiss?: boolean;
 
   /**
-   * If provided, this error will be provided to Rollbar instead of
+   * If provided, this error object will be provided to Rollbar instead of the text of the notification shown the user.
    */
   error?: unknown;
 }
 
 type Notifications = {
+  /**
+   * Show a success toast.
+   */
   success: (content: string, options?: NotificationOptions) => void;
+
+  /**
+   * Show an info toast.
+   */
   info: (content: string) => void;
+
+  /**
+   * Show a warning toast
+   */
   warning: (content: string, options?: ErrorNotificationOptions) => void;
+
+  /**
+   * Show an error toast and report the error telemetry
+   * @see getErrorMessage
+   */
   error: (content: unknown, options?: ErrorNotificationOptions) => void;
 
   /**

@@ -26,7 +26,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 
 const TabField: React.FunctionComponent<
-  SchemaFieldProps<string> & { doc: SheetMeta | null }
+  SchemaFieldProps & { doc: SheetMeta | null }
 > = ({ name, doc }) => {
   const [field] = useField<string>(name);
 

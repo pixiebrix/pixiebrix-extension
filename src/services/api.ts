@@ -17,7 +17,7 @@
 
 import { RegistryId } from "@/core";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
-import { ServiceDefinition } from "@/types/definitions";
+import { RecipeDefinition, ServiceDefinition } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
@@ -67,6 +67,7 @@ export const appApi = createApi({
     "Organizations",
     "Groups",
     "MarketplaceListings",
+    "Recipes",
   ],
   endpoints: (builder) => ({
     getDatabases: builder.query<Database[], void>({
@@ -168,6 +169,10 @@ export const appApi = createApi({
         );
       },
     }),
+    getRecipes: builder.query<RecipeDefinition[], void>({
+      query: () => ({ url: "/api/recipes/", method: "get" }),
+      providesTags: ["Recipes"],
+    }),
   }),
 });
 
@@ -180,4 +185,5 @@ export const {
   useGetMarketplaceListingsQuery,
   useGetOrganizationsQuery,
   useGetGroupsQuery,
+  useGetRecipesQuery,
 } = appApi;

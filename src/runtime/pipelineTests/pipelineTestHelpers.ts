@@ -36,6 +36,22 @@ class EchoBlock extends Block {
   }
 }
 
+/**
+ * A block that returns a `prop` 🫖
+ * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418
+ */
+class TeapotBlock extends Block {
+  constructor() {
+    super("test/teapot", "Teapot Block");
+  }
+
+  inputSchema = propertiesToSchema({});
+
+  async run() {
+    return { prop: "I'm a teapot" };
+  }
+}
+
 class IdentityBlock extends Block {
   constructor() {
     super("test/identity", "Identity Block");
@@ -66,10 +82,24 @@ class ThrowBlock extends Block {
   }
 }
 
+class ArrayBlock extends Block {
+  constructor() {
+    super("test/array", "Array Block");
+  }
+
+  inputSchema = propertiesToSchema({});
+
+  async run() {
+    return [{ value: "foo" }, { value: "bar" }];
+  }
+}
+
 export const echoBlock = new EchoBlock();
 export const contextBlock = new ContextBlock();
 export const identityBlock = new IdentityBlock();
 export const throwBlock = new ThrowBlock();
+export const teapotBlock = new TeapotBlock();
+export const arrayBlock = new ArrayBlock();
 
 /**
  * Helper method to pass only `input` to reducePipeline.

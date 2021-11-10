@@ -27,7 +27,6 @@ import {
 } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import { Target } from "@/types";
@@ -180,7 +179,7 @@ export interface ElementConfig<
     url: string,
     metadata: Metadata,
     element: TResult,
-    frameworks: FrameworkMeta[]
+    frameworks?: FrameworkMeta[]
   ) => TState;
 
   /**
@@ -216,6 +215,4 @@ export interface ElementConfig<
    * Help text to show in the generic insertion-mode pane
    */
   readonly insertModeHelp?: React.ReactNode;
-
-  readonly wizard: WizardStep[];
 }
