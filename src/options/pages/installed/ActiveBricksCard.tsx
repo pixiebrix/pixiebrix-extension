@@ -52,8 +52,6 @@ const hasOrganization = (extension: ResolvedExtension) =>
   extension._recipe?.sharing?.organizations.length > 0;
 
 const isPersonalBrick = (extension: ResolvedExtension) =>
-  // FIXME: recipes that I own that I have not shared with anyone should go under their own heading and be grouped by
-  //  recipe. The "personal bricks" section should only include extensions that don't correspond to a versioned recipe
   !extension._recipe && !extension._deployment;
 
 const isPersonalBlueprint = (extension: ResolvedExtension, scope: string) =>
