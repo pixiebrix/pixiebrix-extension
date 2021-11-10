@@ -52,8 +52,43 @@ const hasOrganization = (extension: ResolvedExtension) =>
   extension._recipe?.sharing?.organizations.length > 0;
 
 const isPersonal = (extension: ResolvedExtension, scope: string) =>
-  extension._recipe?.id.includes(scope) ||
+  (scope && extension._recipe?.id.startsWith(scope)) ||
   (!extension._recipe && !extension._deployment);
+
+const groupExtensions = (extensions: ResolvedExtension[], scope: string) => {
+  const personal = [];
+  const marketplace = [];
+  const team = [];
+  const deployment = [];
+  // `other` is the users ad-hoc extensions that aren't part of a recipe/blueprint
+  const other = [];
+
+  for (const extension of extensions) {
+    if (isPersonal(extension, scope)) {
+      personal.push(extension);
+      continue;
+    }
+
+    if (extension._deployment) {
+      deployment.push(extension);
+      continue;
+    }
+
+    if (isPublic(extension)) {
+      marketplace.push(extension);
+      continue;
+    }
+
+    if (hasOrganization(extension)) {
+      team.push(extension);
+      continue;
+    }
+
+    other.push(extension);
+  }
+
+  return { personal, marketplace, team, deployment, other };
+};
 
 const ActiveBricksCard: React.FunctionComponent<{
   extensions: ResolvedExtension[];
@@ -63,43 +98,14 @@ const ActiveBricksCard: React.FunctionComponent<{
   const { data: organizations = [] } = useGetOrganizationsQuery();
   const { scope } = useContext(AuthContext);
 
-  const getOrganizationName = (organization_uuid: UUID) =>
-    organizations.find((organization) => organization.id === organization_uuid)
+  const getOrganizationName = (organizationId: UUID) =>
+    organizations.find((organization) => organization.id === organizationId)
       ?.name;
 
-  const sortedExtensions = useMemo(() => {
-    const personal = [];
-    const marketplace = [];
-    const team = [];
-    const deployment = [];
-    const other = [];
-
-    for (const extension of extensions) {
-      if (isPersonal(extension, scope)) {
-        personal.push(extension);
-        continue;
-      }
-
-      if (extension._deployment) {
-        deployment.push(extension);
-        continue;
-      }
-
-      if (isPublic(extension)) {
-        marketplace.push(extension);
-        continue;
-      }
-
-      if (hasOrganization(extension)) {
-        team.push(extension);
-        continue;
-      }
-
-      other.push(extension);
-    }
-
-    return { personal, marketplace, team, deployment, other };
-  }, [extensions, scope]);
+  const sortedExtensions = useMemo(() => groupExtensions(extensions, scope), [
+    extensions,
+    scope,
+  ]);
 
   const personalExtensions = sortedExtensions.personal;
 
@@ -110,8 +116,8 @@ const ActiveBricksCard: React.FunctionComponent<{
   const teamExtensionGroups = useMemo(
     () =>
       groupByOrganizationId(sortedExtensions.team).map(
-        ([organization_uuid, extensions]) => ({
-          organization_uuid,
+        ([organizationId, extensions]) => ({
+          organizationId,
           extensions: groupByRecipe(extensions),
         })
       ),
@@ -192,9 +198,7 @@ const ActiveBricksCard: React.FunctionComponent<{
                 <>
                   <ExtensionGroupHeader
                     key={index}
-                    label={`${getOrganizationName(
-                      team.organization_uuid
-                    )} Bricks`}
+                    label={`${getOrganizationName(team.organizationId)} Bricks`}
                   />
                   {team.extensions.map((extensions) => {
                     const recipe = extensions[0]._recipe;
