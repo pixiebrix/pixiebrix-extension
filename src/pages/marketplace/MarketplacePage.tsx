@@ -24,7 +24,7 @@ import {
   faScroll,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { Metadata, Sharing } from "@/core";
+import { Metadata, Sharing, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
 import "./MarketplacePage.scss";
@@ -69,7 +69,9 @@ const Entry: React.FunctionComponent<
     }
 
     // If more than one sharing organization, use the first
-    return organizations.find((org) => sharing.organizations.includes(org.id));
+    return organizations.find((org) =>
+      sharing.organizations.includes(org.id as UUID)
+    );
   }, [organizations, sharing.organizations]);
 
   const installButton = useMemo(() => {
