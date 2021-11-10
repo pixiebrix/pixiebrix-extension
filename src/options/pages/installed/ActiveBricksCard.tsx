@@ -189,7 +189,7 @@ const ActiveBricksCard: React.FunctionComponent<{
 
               {otherExtensionGroups.length > 0 && (
                 <>
-                  <ExtensionGroupHeader label="Marketplace Bricks" />
+                  <ExtensionGroupHeader label="Marketplace Blueprints" />
                   {otherExtensionGroups.map((extensions) => {
                     const recipe = extensions[0]._recipe;
                     const messageContext: MessageContext = {
@@ -212,7 +212,7 @@ const ActiveBricksCard: React.FunctionComponent<{
 
               {marketplaceExtensionGroups.length > 0 && (
                 <>
-                  <ExtensionGroupHeader label="Public Marketplace Bricks" />
+                  <ExtensionGroupHeader label="Public Marketplace Blueprints" />
                   {marketplaceExtensionGroups.map((extensions) => {
                     const recipe = extensions[0]._recipe;
                     const messageContext: MessageContext = {
@@ -237,7 +237,9 @@ const ActiveBricksCard: React.FunctionComponent<{
                 <>
                   <ExtensionGroupHeader
                     key={index}
-                    label={`${getOrganizationName(team.organizationId)} Bricks`}
+                    label={`${getOrganizationName(
+                      team.organizationId
+                    )} Blueprints`}
                   />
                   {team.extensions.map((extensions) => {
                     const recipe = extensions[0]._recipe;
