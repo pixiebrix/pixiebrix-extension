@@ -130,7 +130,7 @@ export class TourEffect extends Effect {
       darkThemeLink?.remove();
     };
 
-    const introJs = (await import("intro.js")).default;
+    const { default: introJs } = await import("intro.js");
 
     // We weren't seeing a FOUC: https://webkit.org/blog/66/the-fouc-problem/. But make sure the CSS sheet is available
     // before starting a tour.
