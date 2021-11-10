@@ -17,7 +17,6 @@
 
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { FieldArray, useField } from "formik";
-import { fieldLabel } from "@/components/fields/fieldUtils";
 import { Button } from "react-bootstrap";
 import React from "react";
 import { Schema } from "@/core";
@@ -30,6 +29,7 @@ import { UnknownObject } from "@/types";
 import { defaultBlockConfig } from "@/blocks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
+import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 
 // Empty value for text fields for the Formik state
 const EMPTY_TEXT_VALUE = "";
@@ -60,11 +60,7 @@ function getDefaultArrayItem(schema: Schema): unknown {
   return null;
 }
 
-const ArrayWidget: React.FC<SchemaFieldProps<unknown>> = ({
-  schema,
-  label,
-  name,
-}) => {
+const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
   const [field] = useField<UnknownObject[]>(name);
 
   if (Array.isArray(schema.items)) {
@@ -75,34 +71,35 @@ const ArrayWidget: React.FC<SchemaFieldProps<unknown>> = ({
     throw new TypeError("Schema required for items");
   }
 
-  const schemaItems = schema.items as Schema;
+  const schemaItems = schema.items ?? { additionalProperties: true };
+
+  const apiVersionAtLeastV3 = useApiVersionAtLeast("v3");
+  // Show explicit remove button before v3
+  const showRemove = !apiVersionAtLeastV3;
 
   return (
     <FieldArray name={name}>
-      {({ remove, push }) => (
+      {({ handleRemove, push }) => (
         <>
           <ul className="list-group">
             {(field.value ?? []).map((item: unknown, index: number) => (
-              <li className="list-group-item" key={index}>
+              <li className="list-group-item pb-0" key={index}>
                 <SchemaField
                   key={index}
                   name={joinName(name, String(index))}
                   schema={schemaItems}
-                  label={
-                    <span>
-                      {label ?? fieldLabel(name)} #{index + 1}
-                    </span>
-                  }
+                  hideLabel
+                  isArrayItem
                 />
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => {
-                    remove(index);
-                  }}
-                >
-                  Remove Item
-                </Button>
+                {showRemove && (
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={handleRemove(index)}
+                  >
+                    Remove Item
+                  </Button>
+                )}
               </li>
             ))}
           </ul>

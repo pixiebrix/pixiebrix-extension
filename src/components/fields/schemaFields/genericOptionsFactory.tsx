@@ -18,8 +18,9 @@
 import React from "react";
 import { inputProperties } from "@/helpers";
 import { Schema, UiSchema } from "@/core";
-import { compact, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { joinName } from "@/utils";
 
 export type BlockOptionProps = {
   /**
@@ -41,28 +42,35 @@ function genericOptionsFactory(
   schema: Schema,
   uiSchema?: UiSchema
 ): React.FunctionComponent<BlockOptionProps> {
-  const OptionsFields = ({ name, configKey }: BlockOptionProps) => (
-    <>
-      {Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
-        if (typeof fieldSchema === "boolean") {
-          throw new TypeError("Expected schema for input property type");
-        }
+  const OptionsFields = ({ name, configKey }: BlockOptionProps) => {
+    const optionSchema = inputProperties(schema);
+    if (isEmpty(optionSchema)) {
+      return <div>No options available</div>;
+    }
 
-        // Fine because coming from Object.entries for the schema
-        // eslint-disable-next-line security/detect-object-injection
-        const propUiSchema = uiSchema?.[prop];
-        return (
-          <SchemaField
-            key={prop}
-            name={compact([name, configKey, prop]).join(".")}
-            schema={fieldSchema}
-            uiSchema={propUiSchema}
-          />
-        );
-      })}
-      {isEmpty(schema) && <div>No options available</div>}
-    </>
-  );
+    return (
+      <>
+        {Object.entries(optionSchema).map(([prop, fieldSchema]) => {
+          if (typeof fieldSchema === "boolean") {
+            throw new TypeError("Expected schema for input property type");
+          }
+
+          // Fine because coming from Object.entries for the schema
+          // eslint-disable-next-line security/detect-object-injection
+          const propUiSchema = uiSchema?.[prop];
+          return (
+            <SchemaField
+              key={prop}
+              name={joinName(name, configKey, prop)}
+              schema={fieldSchema}
+              isRequired={schema.required?.includes(prop)}
+              uiSchema={propUiSchema}
+            />
+          );
+        })}
+      </>
+    );
+  };
 
   OptionsFields.displayName = "OptionsFields";
   return OptionsFields;

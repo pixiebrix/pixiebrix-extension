@@ -16,25 +16,18 @@
  */
 
 import React from "react";
-import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
-import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
-import SchemaFieldV1 from "@/components/fields/schemaFields/v1/SchemaField";
-import SchemaFieldV3 from "@/components/fields/schemaFields/v3/SchemaField";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
-/**
- * A schema-based field that automatically determines it's layout/widget based on the schema and uiSchema.
- *
- * @see SchemaFieldContext
- * @see getDefaultField
- */
-const SchemaField: SchemaFieldComponent = (props) => {
-  const apiAtLeastV3 = useApiVersionAtLeast("v3");
+const ApiVersionField: React.FC = () => (
+  <ConnectedFieldTemplate
+    name="apiVersion"
+    label="Extension API Version"
+    as="select"
+  >
+    <option value="v1">v1</option>
+    <option value="v2">v2</option>
+    <option value="v3">v3</option>
+  </ConnectedFieldTemplate>
+);
 
-  return apiAtLeastV3 ? (
-    <SchemaFieldV3 {...props} />
-  ) : (
-    <SchemaFieldV1 {...props} />
-  );
-};
-
-export default SchemaField;
+export default ApiVersionField;

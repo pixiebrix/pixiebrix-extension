@@ -17,10 +17,10 @@
 
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { Formik } from "formik";
-import { noop } from "lodash";
+import { Form, Formik } from "formik";
 import SchemaField from "./SchemaField";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { Button } from "react-bootstrap";
 
 export default {
   title: "Fields/SchemaField",
@@ -28,12 +28,39 @@ export default {
 } as ComponentMeta<typeof SchemaField>;
 
 const Template: ComponentStory<
-  React.FunctionComponent<SchemaFieldProps<string> & { defaultValue: string }>
+  React.FunctionComponent<SchemaFieldProps & { defaultValue: unknown }>
 > = (args) => (
-  <Formik initialValues={{ [args.name]: args.defaultValue }} onSubmit={noop}>
-    <SchemaField {...args} />
+  <Formik
+    initialValues={{
+      myStr: "abc",
+
+      topObj: {
+        myNum: 2,
+        parentObj: {
+          [args.name]: args.defaultValue,
+        },
+      },
+    }}
+    onSubmit={(values) => {
+      console.log("submit with form state:", values);
+    }}
+  >
+    <Form>
+      <SchemaField {...args} />
+      <Button type="submit">Submit</Button>
+    </Form>
   </Formik>
 );
+
+export const Boolean = Template.bind({});
+Boolean.args = {
+  name: "topObj.parentObj.testBoolean",
+  defaultValue: false,
+  label: "Switch this on or off",
+  schema: {
+    type: "boolean",
+  },
+};
 
 export const NormalText = Template.bind({});
 NormalText.args = {
