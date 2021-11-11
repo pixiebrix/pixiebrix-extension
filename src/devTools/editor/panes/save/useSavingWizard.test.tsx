@@ -23,12 +23,23 @@ import { Provider } from "react-redux";
 import { editorSlice } from "@/devTools/editor/slices/editorSlice";
 import { savingExtensionSlice } from "./savingExtensionSlice";
 import useSavingWizard from "./useSavingWizard";
-import { formStateFactory, metadataFactory } from "@/tests/factories";
+import {
+  formStateFactory,
+  metadataFactory,
+  recipeFactory,
+} from "@/tests/factories";
 import useCreateMock from "@/devTools/editor/hooks/useCreate";
+import useResetMock from "@/devTools/editor/hooks/useReset";
+import {
+  useGetRecipesQuery as useGetRecipesQueryMock,
+  useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
+} from "@/services/api";
+import { selectElements } from "@/devTools/editor/slices/editorSelectors";
 
 jest.unmock("react-redux");
 
 jest.mock("@/devTools/editor/hooks/useCreate");
+jest.mock("@/devTools/editor/hooks/useReset");
 
 jest.mock("@/services/api", () => ({
   useCreateRecipeMutation: jest.fn().mockReturnValue([]),
@@ -52,6 +63,9 @@ beforeEach(() => {
       savingExtension: savingExtensionSlice.reducer,
     },
   });
+});
+afterEach(() => {
+  jest.clearAllMocks();
 });
 
 const renderUseSavingWizard = () =>
@@ -108,4 +122,62 @@ test("saves non recipe element", async () => {
   expect(result.current.savingExtensionId).toBe(element.uuid);
   expect(createMock).toHaveBeenCalledTimes(1);
   expect(createMock).toHaveBeenCalledWith(element, expect.any(Function));
+});
+
+test("saves as personal extension", () => {
+  // Set up environment
+  const recipe = recipeFactory();
+  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+    data: [recipe],
+    isLoading: false,
+  });
+
+  const element = formStateFactory({
+    recipe: recipe.metadata,
+  });
+  store.dispatch(editorSlice.actions.addElement(element));
+
+  const createMock = jest.fn();
+  (useCreateMock as jest.Mock).mockReturnValue(createMock);
+
+  const resetMock = jest.fn();
+  (useResetMock as jest.Mock).mockReturnValue(resetMock);
+
+  // Render hook
+  const { result } = renderUseSavingWizard();
+
+  // Get into the saving process
+  act(() => {
+    void result.current.save();
+  });
+
+  expect(result.current.isWizardOpen).toBe(true);
+  expect(result.current.savingExtensionId).toBeNull();
+
+  // Saving as personal extension
+  act(() => {
+    result.current.saveElementAsPersonalExtension();
+  });
+
+  // Check wizard state
+  expect(result.current.isWizardOpen).toBe(true);
+  expect(result.current.savingExtensionId).not.toBeNull();
+  expect(result.current.savingExtensionId).not.toBe(element.uuid);
+
+  // Check new element added
+  const elements = selectElements(store.getState());
+  expect(elements).toHaveLength(2);
+  expect(elements[0].recipe).toBe(recipe.metadata);
+  expect(elements[1].recipe).toBeUndefined();
+
+  // Check the source element is reset
+  expect(resetMock).toHaveBeenCalledTimes(1);
+  expect(resetMock).toHaveBeenCalledWith({
+    element: elements[0],
+    shouldShowConfirmation: false,
+  });
+
+  // Check new element is saved
+  expect(createMock).toHaveBeenCalledTimes(1);
+  expect(createMock).toHaveBeenCalledWith(elements[1], expect.any(Function));
 });

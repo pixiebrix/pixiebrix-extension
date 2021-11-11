@@ -27,6 +27,7 @@ import {
   formStateFactory,
   innerExtensionPointRecipeFactory,
   metadataFactory,
+  recipeFactory,
 } from "@/tests/factories";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/tests/testHelpers";
@@ -102,9 +103,8 @@ test("calls Save as Personal extension", async () => {
     saveElementAsPersonalExtension: saveElementAsPersonalExtensionMock,
   });
 
-  const recipeFactory = innerExtensionPointRecipeFactory();
   (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
-    data: [recipeFactory({ metadata }), recipeFactory],
+    data: [recipeFactory({ metadata }), recipeFactory()],
     isLoading: false,
   });
 
@@ -130,9 +130,8 @@ test("calls Save as New Blueprint", async () => {
     saveElementAndCreateNewRecipe: saveElementAndCreateNewRecipeMock,
   });
 
-  const recipeFactory = innerExtensionPointRecipeFactory();
   (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
-    data: [recipeFactory({ metadata }), recipeFactory],
+    data: [recipeFactory({ metadata }), recipeFactory()],
     isLoading: false,
   });
 
@@ -173,9 +172,8 @@ test("calls Update Blueprint", async () => {
     saveElementAndUpdateRecipe: saveElementAndUpdateRecipeMock,
   });
 
-  const recipeFactory = innerExtensionPointRecipeFactory();
   (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
-    data: [recipeFactory({ metadata }), recipeFactory],
+    data: [recipeFactory({ metadata }), recipeFactory()],
     isLoading: false,
   });
 

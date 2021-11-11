@@ -226,7 +226,7 @@ type InnerExtensionPointParams = {
 };
 
 /**
- * Factory to create a RecipeDefinition that refers to a versioned extensionPoint
+ * Factory to create a factory that creates a RecipeDefinition that refers to a versioned extensionPoint
  * @param extensionPointId
  */
 export const innerExtensionPointRecipeFactory = ({
@@ -263,6 +263,11 @@ export const innerExtensionPointRecipeFactory = ({
       },
     ],
   });
+
+/**
+ * A default Recipe factory
+ */
+export const recipeFactory = innerExtensionPointRecipeFactory();
 
 const internalFormStateFactory = define<FormState>({
   apiVersion: "v2" as ApiVersion,
