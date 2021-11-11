@@ -300,15 +300,15 @@ describe("saving a Recipe Extension", () => {
 
     // Saving with a new Recipe
     const newRecipeMeta = metadataFactory();
-    let creatinRecipePromise: Promise<void>;
+    let creatingRecipePromise: Promise<void>;
     act(() => {
-      creatinRecipePromise = result.current.saveElementAndCreateNewRecipe(
+      creatingRecipePromise = result.current.saveElementAndCreateNewRecipe(
         newRecipeMeta
       );
     });
 
     try {
-      await creatinRecipePromise;
+      await creatingRecipePromise;
       await savingPromise;
     } catch (error: unknown) {
       expect(error).toBe("Failed to create new Blueprint");
@@ -372,5 +372,47 @@ describe("saving a Recipe Extension", () => {
       expectedUpdatedElement,
       expect.any(Function)
     );
+  });
+
+  test("doesn't update extensions if recipe update fails", async () => {
+    const { store, createMock, updateRecipeMock } = setupMocks();
+    updateRecipeMock.mockReturnValueOnce({
+      error: "Error for test",
+    });
+
+    // Render hook
+    const { result } = renderUseSavingWizard(store);
+
+    // Get into the saving process
+    let savingPromise: Promise<void>;
+    act(() => {
+      savingPromise = result.current.save();
+    });
+
+    // Saving with a new Recipe
+    const newRecipeMeta = metadataFactory();
+    let updatingRecipePromise: Promise<void>;
+    act(() => {
+      updatingRecipePromise = result.current.saveElementAndUpdateRecipe(
+        newRecipeMeta
+      );
+    });
+
+    try {
+      await updatingRecipePromise;
+      await savingPromise;
+    } catch (error: unknown) {
+      expect(error).toBe("Failed to update the Blueprint");
+    }
+
+    // Wizard closes on error
+    expect(result.current.isWizardOpen).toBe(false);
+    expect(result.current.savingExtensionId).toBeNull();
+
+    // Check it tried to create a recipe
+    expect(updateRecipeMock).toHaveBeenCalledTimes(1);
+
+    // Check the element is not saved
+    expect(createMock).not.toHaveBeenCalled();
   });
 });

@@ -33,7 +33,7 @@ import {
 } from "@/devTools/editor/slices/editorSlice";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import useReset from "@/devTools/editor/hooks/useReset";
-import { RegistryId, Metadata } from "@/core";
+import { RegistryId, Metadata, DeploymentContext } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import useNotifications from "@/hooks/useNotifications";
 import { selectExtensions } from "@/options/selectors";
@@ -156,7 +156,21 @@ const useSavingWizard = () => {
       return;
     }
 
-    void updateRecipeExtensions(recipe.metadata.id, newRecipe);
+    const recipeExtensions = extensions.filter(
+      (x) => x._recipe?.id === recipe.metadata.id
+    );
+
+    for (const recipeExtension of recipeExtensions) {
+      const update = {
+        id: recipeExtension.id,
+        _recipe: newRecipe.metadata,
+        _deployment: undefined as DeploymentContext,
+      };
+
+      dispatch(optionsActions.updateExtension(update));
+    }
+
+    void updateRecipeElements(recipe.metadata.id, newRecipe);
   };
 
   /**
@@ -198,18 +212,8 @@ const useSavingWizard = () => {
       return;
     }
 
-    void updateRecipeExtensions(recipe.metadata.id, newRecipe);
-  };
-
-  const updateRecipeExtensions = async (
-    sourceRecipeId: RegistryId,
-    newRecipe: RecipeDefinition
-  ) => {
     const recipeExtensions = extensions.filter(
-      (x) => x._recipe?.id === sourceRecipeId
-    );
-    const recipeElements = elements.filter(
-      (x) => x.recipe?.id === sourceRecipeId
+      (x) => x._recipe?.id === recipe.metadata.id
     );
 
     for (const recipeExtension of recipeExtensions) {
@@ -221,12 +225,18 @@ const useSavingWizard = () => {
       dispatch(optionsActions.updateExtension(update));
     }
 
-    for (const recipeElement of recipeElements) {
-      // Skip current element, it will be updated later.
-      if (recipeElement.uuid === element.uuid) {
-        continue;
-      }
+    void updateRecipeElements(recipe.metadata.id, newRecipe);
+  };
 
+  const updateRecipeElements = async (
+    sourceRecipeId: RegistryId,
+    newRecipe: RecipeDefinition
+  ) => {
+    const recipeElements = elements.filter(
+      (x) => x.recipe?.id === sourceRecipeId
+    );
+
+    for (const recipeElement of recipeElements) {
       const elementUpdate = {
         uuid: recipeElement.uuid,
         recipe: newRecipe.metadata,
