@@ -64,7 +64,7 @@ const useSavingWizard = () => {
   const savingExtensionId = useSelector(selectSavingExtensionId);
   const extensions = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
-  let element = useSelector(selectActiveElement);
+  const element = useSelector(selectActiveElement);
 
   const { data: recipes } = useGetRecipesQuery();
   const { data: editablePackages } = useGetEditablePackagesQuery();
