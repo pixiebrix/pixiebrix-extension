@@ -308,7 +308,7 @@ module.exports = (env, options) =>
       minimizer: [
         new ESBuildMinifyPlugin({
           css: true,
-          sourcemap: true,
+          sourcemap: produceSourcemap,
         }),
       ],
     },
