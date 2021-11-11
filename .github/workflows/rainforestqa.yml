@@ -1,7 +1,10 @@
-name: RainforestQA Run
+name: Rainforest QA Run
 
-on: push
-# on: workflow_dispatch
+# For now, we'll manually trigger the run. We might consider the pull_request review_requested or push to main
+# event triggers in the future. These will require potentially cleanly dealing with concurrent runs
+# https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
+# https://frontside.com/blog/2020-05-26-github-actions-pull_request/
+on: workflow_dispatch
 
 jobs:
   rainforestqa:
