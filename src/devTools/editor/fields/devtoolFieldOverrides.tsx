@@ -20,25 +20,27 @@ import SelectorSelectorField from "@/components/fields/schemaFields/SelectorSele
 import { CustomFieldDefinitions } from "@/components/fields/schemaFields/SchemaFieldContext";
 import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
 import { createTypePredicate } from "@/components/fields/fieldUtils";
+import { Schema } from "@/core";
 
 export const ClearableSelectorWidget: React.FunctionComponent<{
   name: string;
 }> = ({ name }) => <SelectorSelectorWidget isClearable sort name={name} />;
 
-const isSelectorField = createTypePredicate(
-  (x) => x.type === "string" && x.format === "selector"
-);
+const isSelectorField = (schema: Schema) =>
+  schema.type === "string" && schema.format === "selector";
+
+const hasAnySelectorField = createTypePredicate(isSelectorField);
 
 const devtoolFieldOverrides: CustomFieldDefinitions = {
   customFields: [
     {
-      match: isSelectorField,
+      match: hasAnySelectorField,
       Component: SelectorSelectorField,
     },
   ],
   customWidgets: [
     {
-      match: isSelectorField,
+      match: hasAnySelectorField,
       Component: ClearableSelectorWidget,
     },
   ],
