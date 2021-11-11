@@ -42,6 +42,7 @@ import menuItem from "@/devTools/editor/extensionPoints/menuItem";
 
 jest.unmock("react-redux");
 
+jest.mock("@/telemetry/logging");
 jest.mock("@/devTools/editor/hooks/useCreate");
 jest.mock("@/devTools/editor/hooks/useReset");
 
@@ -138,135 +139,181 @@ test("saves non recipe element", async () => {
   expect(createMock).toHaveBeenCalledWith(element, expect.any(Function));
 });
 
-test("saves as personal extension", async () => {
-  // Set up environment
-  const recipe = recipeFactory();
-  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
-    data: [recipe],
-    isLoading: false,
-  });
-
-  const element = formStateFactory({
-    recipe: recipe.metadata,
-  });
-  const store = createStore();
-  store.dispatch(editorSlice.actions.addElement(element));
-
-  const createMock = jest.fn();
-  (useCreateMock as jest.Mock).mockReturnValue(createMock);
-
-  const resetMock = jest.fn();
-  (useResetMock as jest.Mock).mockReturnValue(resetMock);
-
-  // Render hook
-  const { result } = renderUseSavingWizard(store);
-
-  // Get into the saving process
-  act(() => {
-    void result.current.save().catch((error: unknown) => {
-      // Got an error, failing the test
-      console.error(error);
-      expect(error).toBeUndefined();
+describe("saving a Recipe Extension", () => {
+  const setupMocks = () => {
+    const recipe = recipeFactory();
+    (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+      data: [recipe],
+      isLoading: false,
     });
-  });
 
-  expect(result.current.isWizardOpen).toBe(true);
-  expect(result.current.savingExtensionId).toBeNull();
+    (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
+      data: [{ name: recipe.metadata.id, id: uuidv4() }],
+      isLoading: false,
+    });
 
-  // Saving as personal extension
-  await act(async () => result.current.saveElementAsPersonalExtension());
+    const extensionLabel = recipe.extensionPoints[0].label;
+    const element = menuItemFormStateFactory({
+      label: extensionLabel,
+      recipe: recipe.metadata,
+    });
+    const extension = menuItem.selectExtension(element);
+    const store = createStore({
+      options: {
+        extensions: [extension],
+      },
+    });
+    store.dispatch(editorSlice.actions.addElement(element));
 
-  // Check wizard state
-  expect(result.current.isWizardOpen).toBe(true);
-  expect(result.current.savingExtensionId).not.toBeNull();
-  expect(result.current.savingExtensionId).not.toBe(element.uuid);
+    const createMock = jest.fn();
+    (useCreateMock as jest.Mock).mockReturnValue(createMock);
 
-  // Check new element added
-  const elements = selectElements(store.getState());
-  expect(elements).toHaveLength(2);
-  expect(elements[0].recipe).toBe(recipe.metadata);
-  expect(elements[1].recipe).toBeUndefined();
+    const resetMock = jest.fn();
+    (useResetMock as jest.Mock).mockReturnValue(resetMock);
 
-  // Check the source element is reset
-  expect(resetMock).toHaveBeenCalledTimes(1);
-  expect(resetMock).toHaveBeenCalledWith({
-    element: elements[0],
-    shouldShowConfirmation: false,
-  });
+    const createRecipeMock = jest.fn();
+    (useCreateRecipeMutationMock as jest.Mock).mockReturnValue([
+      createRecipeMock,
+    ]);
 
-  // Check new element is saved
-  expect(createMock).toHaveBeenCalledTimes(1);
-  expect(createMock).toHaveBeenCalledWith(elements[1], expect.any(Function));
-});
-
-test("saves as new recipe", async () => {
-  // Set up environment
-  const recipe = recipeFactory();
-  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
-    data: [recipe],
-    isLoading: false,
-  });
-
-  (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
-    data: [{ name: recipe.metadata.id, id: uuidv4() }],
-    isLoading: false,
-  });
-
-  const extensionLabel = recipe.extensionPoints[0].label;
-  const element = menuItemFormStateFactory({
-    label: extensionLabel,
-    recipe: recipe.metadata,
-  });
-  const extension = menuItem.selectExtension(element);
-  const store = createStore({
-    options: {
-      extensions: [extension],
-    },
-  });
-  store.dispatch(editorSlice.actions.addElement(element));
-
-  const createMock = jest.fn();
-  (useCreateMock as jest.Mock).mockReturnValue(createMock);
-
-  const resetMock = jest.fn();
-  (useResetMock as jest.Mock).mockReturnValue(resetMock);
-
-  (useCreateRecipeMutationMock as jest.Mock).mockReturnValue([
-    jest.fn().mockReturnValue({}),
-  ]);
-
-  // Render hook
-  const { result } = renderUseSavingWizard(store);
-
-  // Get into the saving process
-  act(() => {
-    void result.current.save();
-  });
-
-  expect(result.current.isWizardOpen).toBe(true);
-  expect(result.current.savingExtensionId).toBeNull();
-
-  // Saving with a new Recipe
-  const newRecipeMeta = metadataFactory();
-  await act(async () =>
-    result.current.saveElementAndCreateNewRecipe(newRecipeMeta)
-  );
-
-  // Check wizard state
-  expect(result.current.isWizardOpen).toBe(true);
-  expect(result.current.savingExtensionId).toBe(element.uuid);
-
-  // Check the element is saved
-  const elements = selectElements(store.getState());
-  expect(elements).toHaveLength(1);
-  expect(createMock).toHaveBeenCalledTimes(1);
-
-  const expectedUpdatedElement = {
-    ...element,
-    recipe: newRecipeMeta,
+    return {
+      store,
+      element,
+      recipe,
+      createMock,
+      resetMock,
+      createRecipeMock,
+    };
   };
-  expect(createMock).toHaveBeenCalledWith(
-    expectedUpdatedElement,
-    expect.any(Function)
-  );
+
+  test("saves as personal extension", async () => {
+    const { store, element, recipe, createMock, resetMock } = setupMocks();
+
+    // Render hook
+    const { result } = renderUseSavingWizard(store);
+
+    // Get into the saving process
+    act(() => {
+      void result.current.save().catch((error: unknown) => {
+        // Got an error, failing the test
+        console.error(error);
+        expect(error).toBeUndefined();
+      });
+    });
+
+    expect(result.current.isWizardOpen).toBe(true);
+    expect(result.current.savingExtensionId).toBeNull();
+
+    // Saving as personal extension
+    act(() => {
+      result.current.saveElementAsPersonalExtension();
+    });
+
+    // Check wizard state
+    expect(result.current.isWizardOpen).toBe(true);
+    expect(result.current.savingExtensionId).not.toBeNull();
+    expect(result.current.savingExtensionId).not.toBe(element.uuid);
+
+    // Check new element added
+    const elements = selectElements(store.getState());
+    expect(elements).toHaveLength(2);
+    expect(elements[0].recipe).toBe(recipe.metadata);
+    expect(elements[1].recipe).toBeUndefined();
+
+    // Check the source element is reset
+    expect(resetMock).toHaveBeenCalledTimes(1);
+    expect(resetMock).toHaveBeenCalledWith({
+      element: elements[0],
+      shouldShowConfirmation: false,
+    });
+
+    // Check new element is saved
+    expect(createMock).toHaveBeenCalledTimes(1);
+    expect(createMock).toHaveBeenCalledWith(elements[1], expect.any(Function));
+  });
+
+  test("saves as new recipe", async () => {
+    const { store, element, createMock, createRecipeMock } = setupMocks();
+    createRecipeMock.mockReturnValueOnce({});
+
+    // Render hook
+    const { result } = renderUseSavingWizard(store);
+
+    // Get into the saving process
+    act(() => {
+      void result.current.save();
+    });
+
+    expect(result.current.isWizardOpen).toBe(true);
+    expect(result.current.savingExtensionId).toBeNull();
+
+    // Saving with a new Recipe
+    const newRecipeMeta = metadataFactory();
+    await act(async () =>
+      result.current.saveElementAndCreateNewRecipe(newRecipeMeta)
+    );
+
+    // Check wizard state
+    expect(result.current.isWizardOpen).toBe(true);
+    expect(result.current.savingExtensionId).toBe(element.uuid);
+
+    // Check new recipe created
+    expect(createRecipeMock).toHaveBeenCalledTimes(1);
+
+    // Check the element is saved
+    const elements = selectElements(store.getState());
+    expect(elements).toHaveLength(1);
+    expect(createMock).toHaveBeenCalledTimes(1);
+
+    const expectedUpdatedElement = {
+      ...element,
+      recipe: newRecipeMeta,
+    };
+    expect(createMock).toHaveBeenCalledWith(
+      expectedUpdatedElement,
+      expect.any(Function)
+    );
+  });
+
+  test("doesn't update extensions if recipe creation failed", async () => {
+    const { store, createMock, createRecipeMock } = setupMocks();
+    createRecipeMock.mockReturnValueOnce({
+      error: "Error for test",
+    });
+
+    // Render hook
+    const { result } = renderUseSavingWizard(store);
+
+    // Get into the saving process
+    let savingPromise: Promise<void>;
+    act(() => {
+      savingPromise = result.current.save();
+    });
+
+    // Saving with a new Recipe
+    const newRecipeMeta = metadataFactory();
+    let creatinRecipePromise: Promise<void>;
+    act(() => {
+      creatinRecipePromise = result.current.saveElementAndCreateNewRecipe(
+        newRecipeMeta
+      );
+    });
+
+    try {
+      await creatinRecipePromise;
+      await savingPromise;
+    } catch (error: unknown) {
+      expect(error).toBe("Failed to create new Blueprint");
+    }
+
+    // Wizard closes on error
+    expect(result.current.isWizardOpen).toBe(false);
+    expect(result.current.savingExtensionId).toBeNull();
+
+    // Check it tried to create a recipe
+    expect(createRecipeMock).toHaveBeenCalledTimes(1);
+
+    // Check the element is not saved
+    expect(createMock).not.toHaveBeenCalled();
+  });
 });
