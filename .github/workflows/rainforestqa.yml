@@ -1,0 +1,52 @@
+name: Rainforest QA Run
+
+# For now, we'll manually trigger the run. We might consider the pull_request review_requested or push to main
+# event triggers in the future. These will require potentially cleanly dealing with concurrent runs
+# https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
+# https://frontside.com/blog/2020-05-26-github-actions-pull_request/
+on: workflow_dispatch
+
+jobs:
+  rainforestqa:
+    runs-on: ubuntu-latest
+    env:
+      BUILD_FILENAME: ${{ github.job }}-${{ github.sha }}.zip
+      BUILD_PATH: builds/${{ github.job }}-${{ github.sha }}.zip
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+        env:
+          GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
+          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
+          CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
+
+      - run: npm run upload:extension
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
+          AWS_DEFAULT_REGION: "us-east-2"
+
+      - name: Install Rainforest QA CLI
+        run: |
+          curl -sL $(curl -s https://api.github.com/repos/rainforestapp/rainforest-cli/releases/latest | jq -r '.assets[].browser_download_url | select(test("linux-amd64.tar.gz"))') | tar zxf - rainforest
+
+      # https://github.com/rainforestapp/rainforest-cli
+      - name: Run Rainforest QA Extension Test Suite
+        # Include hash on at end of the URL because Rainforest QA automatically appends a "/" to the end of custom URLs
+        run: |
+          ./rainforest run --fail-fast --description "CI automatic run" --run-group $RUN_GROUP --release "${{ github.sha }}" --custom-url "https://pixiebrix-extension-builds.s3.us-east-2.amazonaws.com/$BUILD_PATH"
+        env:
+          RAINFOREST_API_TOKEN: ${{ secrets.RAINFORESTQA_TOKEN }}
+          # The run group for tests to run during CI
+          RUN_GROUP: 9732
