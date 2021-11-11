@@ -159,6 +159,7 @@ describe("saving a Recipe Extension", () => {
       recipe: recipe.metadata,
     });
     const extension = menuItem.selectExtension(element);
+    extension._recipe = element.recipe;
     const store = createStore({
       options: {
         extensions: [extension],
