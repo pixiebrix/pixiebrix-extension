@@ -26,7 +26,6 @@ import {
   selectElements,
 } from "@/devTools/editor/slices/editorSelectors";
 import useCreate from "@/devTools/editor/hooks/useCreate";
-import Deferred from "@/utils/deferred";
 import {
   actions as editorActions,
   FormState,
@@ -45,7 +44,7 @@ import {
 } from "@/services/api";
 import { replaceRecipeExtension } from "./saveHelpers";
 import { actions as optionsActions } from "@/options/slices";
-import pDefer from "p-defer";
+import pDefer, { DeferredPromise } from "p-defer";
 
 export type RecipeConfiguration = {
   id: RegistryId;
@@ -54,7 +53,7 @@ export type RecipeConfiguration = {
   description?: string;
 };
 
-let savingDeferred: Deferred;
+let savingDeferred: DeferredPromise<void>;
 
 const useSavingWizard = () => {
   const dispatch = useDispatch();
@@ -115,9 +114,9 @@ const useSavingWizard = () => {
   };
 
   /**
-   * Creates new recipe,
-   * updates all extensions of the old recipe to pont to the new one,
-   * and saves the changes of the element.
+   * 1. Creates new recipe,
+   * 2. updates all extensions of the old recipe to point to the new one,
+   * 3. and saves the changes of the element.
    */
   const saveElementAndCreateNewRecipe = async (
     recipeMeta: RecipeConfiguration
@@ -127,14 +126,14 @@ const useSavingWizard = () => {
     const elementRecipeMeta = element.recipe;
     const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
 
-    const newRecipeId =
-      recipeMeta.id === recipe.metadata.id
-        ? recipeMeta.id + "_copy"
-        : recipeMeta.id;
+    if (recipeMeta.id === recipe.metadata.id) {
+      closeWizard("You must provide a new id for the Blueprint");
+      return;
+    }
 
     const newMeta: Metadata = {
       ...recipeMeta,
-      id: validateRegistryId(newRecipeId),
+      id: validateRegistryId(recipeMeta.id),
     };
 
     const newRecipe = replaceRecipeExtension(
