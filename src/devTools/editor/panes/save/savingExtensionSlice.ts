@@ -19,7 +19,17 @@ import { UUID } from "@/core";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type SavingExtensionState = {
+  /**
+   * Defines the state of the Modal window.
+   * This includes loading and saving states, and user dialogs.
+   */
   isWizardOpen: boolean;
+
+  /**
+   * Id of the extension being saved.
+   * Is set only when the saving process is actually in progress.
+   * When a modal with saving options is open this property is null.
+   */
   savingExtensionId: UUID | null;
 };
 

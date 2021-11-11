@@ -206,7 +206,7 @@ export const appApi = createApi({
           },
         };
       },
-      invalidatesTags: ["Recipes"],
+      invalidatesTags: ["Recipes", "EditablePackages"],
     }),
     updateRecipe: builder.mutation<
       { id: UUID },
@@ -224,7 +224,7 @@ export const appApi = createApi({
           },
         };
       },
-      invalidatesTags: ["Recipes"],
+      invalidatesTags: ["Recipes", "EditablePackages"],
     }),
   }),
 });
