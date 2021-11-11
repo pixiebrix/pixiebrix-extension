@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define, Factory, FactoryConfig } from "cooky-cutter";
+import { define, FactoryConfig } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { getType } from "@/blocks/util";
 import {
