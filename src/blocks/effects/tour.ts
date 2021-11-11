@@ -19,10 +19,9 @@ import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError, CancelError } from "@/errors";
-
-import stylesheetUrl from "intro.js/introjs.css?loadAsUrl";
-import darkThemeUrl from "intro.js/themes/introjs-dark.css?loadAsUrl";
 import { attachStylesheet } from "@/blocks/util";
+// Can't get introjs.scss directly with loadAsUrl because the browser doesn't understand sass/scss
+import stylesheetUrl from "@/vendors/intro.js/introjs.css?loadAsUrl";
 
 type Step = {
   title: string;
@@ -38,11 +37,6 @@ type Step = {
     | "bottom-right-aligned"
     | "auto";
 };
-
-function prefersDarkMode(): boolean {
-  // https://flaviocopes.com/javascript-detect-dark-mode/
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
 
 // `true` if there is currently a tour in progress on the page
 let tourInProgress = false;
@@ -118,16 +112,9 @@ export class TourEffect extends Effect {
     steps = [] as Step[],
   }: BlockArg): Promise<void> {
     const stylesheetLink = attachStylesheet(stylesheetUrl);
-    // NOTE: this detects if the user prefers dark mode, which is a likely indicator of whether or not a dark theme is
-    // currently being used on the site. In the future, we'll want to detect whether or not a dark them is active and
-    // use that as the basis for the determination. (e.g., by checking the default font color on the body)
-    const darkThemeLink = prefersDarkMode()
-      ? attachStylesheet(darkThemeUrl)
-      : null;
 
-    const removeStylesheets = () => {
+    const removeStylesheet = () => {
       stylesheetLink.remove();
-      darkThemeLink?.remove();
     };
 
     const { default: introJs } = await import("intro.js");
@@ -164,12 +151,12 @@ export class TourEffect extends Effect {
         })
         .oncomplete(() => {
           // Put here instead of `finally` below because the tourInProgress error shouldn't cause the link to be removed
-          removeStylesheets();
+          removeStylesheet();
           resolve();
         })
         .onexit(() => {
           // Put here instead of `finally` below because the tourInProgress error shouldn't cause the link to be removed
-          removeStylesheets();
+          removeStylesheet();
           reject(new CancelError("User cancelled the tour"));
         })
         .start();
