@@ -16,12 +16,7 @@
  */
 
 import { optionsSlice } from "@/options/slices";
-import {
-  AnyAction,
-  configureStore,
-  EnhancedStore,
-  Store,
-} from "@reduxjs/toolkit";
+import { configureStore, Store } from "@reduxjs/toolkit";
 import { renderHook, act } from "@testing-library/react-hooks";
 import React from "react";
 import { Provider } from "react-redux";
