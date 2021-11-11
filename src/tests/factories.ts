@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define, FactoryConfig } from "cooky-cutter";
+import { define, Factory, FactoryConfig } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { getType } from "@/blocks/util";
 import {
@@ -41,7 +41,9 @@ import {
 import trigger, {
   TriggerFormState,
 } from "@/devTools/editor/extensionPoints/trigger";
-import menuItem from "@/devTools/editor/extensionPoints/menuItem";
+import menuItem, {
+  ActionFormState,
+} from "@/devTools/editor/extensionPoints/menuItem";
 import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { RecipeDefinition } from "@/types/definitions";
@@ -280,13 +282,7 @@ const internalFormStateFactory = define<FormState>({
   type: "panel" as ElementType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
-  extensionPoint: {
-    metadata: null,
-    definition: {
-      reader: validateRegistryId("test/reader"),
-      isAvailable: null,
-    },
-  },
+  extensionPoint: extensionPointFactory,
 } as any);
 
 export const formStateFactory = (
@@ -311,7 +307,10 @@ export const triggerFormStateFactory = (
 ) => {
   const defaultTriggerProps = trigger.fromNativeElement(
     "https://test.com",
-    null,
+    metadataFactory({
+      id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
+      name: (n: number) => `Extension Point ${n}`,
+    }),
     null
   );
 
@@ -321,16 +320,19 @@ export const triggerFormStateFactory = (
       ...override,
     } as any,
     blockConfigOverride
-  );
+  ) as TriggerFormState;
 };
 
 export const menuItemFormStateFactory = (
-  override: FactoryConfig<TriggerFormState>,
+  override: FactoryConfig<ActionFormState>,
   blockConfigOverride?: FactoryConfig<BlockConfig>
 ) => {
   const defaultTriggerProps = menuItem.fromNativeElement(
     "https://test.com",
-    null,
+    metadataFactory({
+      id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
+      name: (n: number) => `Extension Point ${n}`,
+    }),
     {
       item: {
         caption: "Caption for test",
@@ -344,5 +346,5 @@ export const menuItemFormStateFactory = (
       ...override,
     } as any,
     blockConfigOverride
-  );
+  ) as ActionFormState;
 };

@@ -25,7 +25,6 @@ import {
 import useSavingWizardMock from "./useSavingWizard";
 import {
   formStateFactory,
-  innerExtensionPointRecipeFactory,
   metadataFactory,
   recipeFactory,
 } from "@/tests/factories";

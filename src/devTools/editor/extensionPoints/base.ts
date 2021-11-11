@@ -138,6 +138,7 @@ export function baseSelectExtension({
   label,
   services,
   optionsArgs,
+  recipe,
 }: Except<BaseFormState, "extension">): Pick<
   IExtension,
   | "id"
@@ -146,12 +147,13 @@ export function baseSelectExtension({
   | "label"
   | "services"
   | "optionsArgs"
-> & { _recipe: null } {
+  | "_recipe"
+> {
   return {
     id: uuid,
     apiVersion,
     extensionPointId: extensionPoint.metadata.id,
-    _recipe: null,
+    _recipe: recipe,
     label,
     services,
     optionsArgs,

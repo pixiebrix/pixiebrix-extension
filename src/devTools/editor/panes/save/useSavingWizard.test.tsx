@@ -16,7 +16,12 @@
  */
 
 import { optionsSlice } from "@/options/slices";
-import { configureStore, EnhancedStore } from "@reduxjs/toolkit";
+import {
+  AnyAction,
+  configureStore,
+  EnhancedStore,
+  Store,
+} from "@reduxjs/toolkit";
 import { renderHook, act } from "@testing-library/react-hooks";
 import React from "react";
 import { Provider } from "react-redux";
@@ -25,16 +30,20 @@ import { savingExtensionSlice } from "./savingExtensionSlice";
 import useSavingWizard from "./useSavingWizard";
 import {
   formStateFactory,
+  menuItemFormStateFactory,
   metadataFactory,
   recipeFactory,
 } from "@/tests/factories";
 import useCreateMock from "@/devTools/editor/hooks/useCreate";
 import useResetMock from "@/devTools/editor/hooks/useReset";
 import {
+  useCreateRecipeMutation as useCreateRecipeMutationMock,
   useGetRecipesQuery as useGetRecipesQueryMock,
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
 } from "@/services/api";
 import { selectElements } from "@/devTools/editor/slices/editorSelectors";
+import { uuidv4 } from "@/types/helpers";
+import menuItem from "@/devTools/editor/extensionPoints/menuItem";
 
 jest.unmock("react-redux");
 
@@ -54,21 +63,21 @@ jest.mock("@/services/api", () => ({
   }),
 }));
 
-let store: EnhancedStore;
-beforeEach(() => {
-  store = configureStore({
+const createStore = (initialState?: any) =>
+  configureStore({
     reducer: {
       options: optionsSlice.reducer,
       editor: editorSlice.reducer,
       savingExtension: savingExtensionSlice.reducer,
     },
+    preloadedState: initialState,
   });
-});
+
 afterEach(() => {
   jest.clearAllMocks();
 });
 
-const renderUseSavingWizard = () =>
+const renderUseSavingWizard = (store: Store) =>
   renderHook(() => useSavingWizard(), {
     wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
   });
@@ -78,22 +87,27 @@ test("maintains wizard open state", () => {
   const element = formStateFactory({
     recipe: metadata,
   });
+  const store = createStore();
   store.dispatch(editorSlice.actions.addElement(element));
 
-  const { result } = renderUseSavingWizard();
+  const { result } = renderUseSavingWizard(store);
   // Modal is closed.
   expect(result.current.isWizardOpen).toBe(false);
 
   // Save will open the modal window.
   // Should not await for the promise to resolve to check that window is open.
   act(() => {
-    void result.current.save();
+    void result.current.save().catch((error: unknown) => {
+      // Got an error, failing the test
+      console.error(error);
+      expect(error).toBeUndefined();
+    });
   });
 
   // Modal is open/
   expect(result.current.isWizardOpen).toBe(true);
 
-  const { result: anotherResult } = renderUseSavingWizard();
+  const { result: anotherResult } = renderUseSavingWizard(store);
   // Using hook in another component still report open Modal
   expect(anotherResult.current.isWizardOpen).toBe(true);
 
@@ -108,15 +122,20 @@ test("maintains wizard open state", () => {
 
 test("saves non recipe element", async () => {
   const element = formStateFactory();
+  const store = createStore();
   store.dispatch(editorSlice.actions.addElement(element));
 
   const createMock = jest.fn();
   (useCreateMock as jest.Mock).mockReturnValueOnce(createMock);
 
-  const { result } = renderUseSavingWizard();
+  const { result } = renderUseSavingWizard(store);
 
   act(() => {
-    void result.current.save();
+    result.current.save().catch((error: unknown) => {
+      // Got an error, failing the test
+      console.error(error);
+      expect(error).toBeUndefined();
+    });
   });
 
   expect(result.current.savingExtensionId).toBe(element.uuid);
@@ -124,7 +143,7 @@ test("saves non recipe element", async () => {
   expect(createMock).toHaveBeenCalledWith(element, expect.any(Function));
 });
 
-test("saves as personal extension", () => {
+test("saves as personal extension", async () => {
   // Set up environment
   const recipe = recipeFactory();
   (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
@@ -135,6 +154,7 @@ test("saves as personal extension", () => {
   const element = formStateFactory({
     recipe: recipe.metadata,
   });
+  const store = createStore();
   store.dispatch(editorSlice.actions.addElement(element));
 
   const createMock = jest.fn();
@@ -144,20 +164,22 @@ test("saves as personal extension", () => {
   (useResetMock as jest.Mock).mockReturnValue(resetMock);
 
   // Render hook
-  const { result } = renderUseSavingWizard();
+  const { result } = renderUseSavingWizard(store);
 
   // Get into the saving process
   act(() => {
-    void result.current.save();
+    void result.current.save().catch((error: unknown) => {
+      // Got an error, failing the test
+      console.error(error);
+      expect(error).toBeUndefined();
+    });
   });
 
   expect(result.current.isWizardOpen).toBe(true);
   expect(result.current.savingExtensionId).toBeNull();
 
   // Saving as personal extension
-  act(() => {
-    result.current.saveElementAsPersonalExtension();
-  });
+  await act(async () => result.current.saveElementAsPersonalExtension());
 
   // Check wizard state
   expect(result.current.isWizardOpen).toBe(true);
@@ -180,4 +202,76 @@ test("saves as personal extension", () => {
   // Check new element is saved
   expect(createMock).toHaveBeenCalledTimes(1);
   expect(createMock).toHaveBeenCalledWith(elements[1], expect.any(Function));
+});
+
+test("saves as new recipe", async () => {
+  // Set up environment
+  const recipe = recipeFactory();
+  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+    data: [recipe],
+    isLoading: false,
+  });
+
+  (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
+    data: [{ name: recipe.metadata.id, id: uuidv4() }],
+    isLoading: false,
+  });
+
+  const extensionLabel = recipe.extensionPoints[0].label;
+  const element = menuItemFormStateFactory({
+    label: extensionLabel,
+    recipe: recipe.metadata,
+  });
+  const extension = menuItem.selectExtension(element);
+  const store = createStore({
+    options: {
+      extensions: [extension],
+    },
+  });
+  store.dispatch(editorSlice.actions.addElement(element));
+
+  const createMock = jest.fn();
+  (useCreateMock as jest.Mock).mockReturnValue(createMock);
+
+  const resetMock = jest.fn();
+  (useResetMock as jest.Mock).mockReturnValue(resetMock);
+
+  (useCreateRecipeMutationMock as jest.Mock).mockReturnValue([
+    jest.fn().mockReturnValue({}),
+  ]);
+
+  // Render hook
+  const { result } = renderUseSavingWizard(store);
+
+  // Get into the saving process
+  act(() => {
+    void result.current.save();
+  });
+
+  expect(result.current.isWizardOpen).toBe(true);
+  expect(result.current.savingExtensionId).toBeNull();
+
+  // Saving with a new Recipe
+  const newRecipeMeta = metadataFactory();
+  await act(async () =>
+    result.current.saveElementAndCreateNewRecipe(newRecipeMeta)
+  );
+
+  // Check wizard state
+  expect(result.current.isWizardOpen).toBe(true);
+  expect(result.current.savingExtensionId).toBe(element.uuid);
+
+  // Check the element is saved
+  const elements = selectElements(store.getState());
+  expect(elements).toHaveLength(1);
+  expect(createMock).toHaveBeenCalledTimes(1);
+
+  const expectedUpdatedElement = {
+    ...element,
+    recipe: newRecipeMeta,
+  };
+  expect(createMock).toHaveBeenCalledWith(
+    expectedUpdatedElement,
+    expect.any(Function)
+  );
 });

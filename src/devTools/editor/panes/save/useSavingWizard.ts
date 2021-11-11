@@ -64,7 +64,7 @@ const useSavingWizard = () => {
   const savingExtensionId = useSelector(selectSavingExtensionId);
   const extensions = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
-  const element = useSelector(selectActiveElement);
+  let element = useSelector(selectActiveElement);
 
   const { data: recipes } = useGetRecipesQuery();
   const { data: editablePackages } = useGetEditablePackagesQuery();
@@ -222,6 +222,11 @@ const useSavingWizard = () => {
     }
 
     for (const recipeElement of recipeElements) {
+      // Skip current element, it will be updated later.
+      if (recipeElement.uuid === element.uuid) {
+        continue;
+      }
+
       const elementUpdate = {
         uuid: recipeElement.uuid,
         recipe: newRecipe.metadata,
@@ -229,6 +234,12 @@ const useSavingWizard = () => {
 
       dispatch(editorActions.updateElement(elementUpdate));
     }
+
+    // Updating current element before saving
+    element = {
+      ...element,
+      recipe: newRecipe.metadata,
+    };
 
     void create(element, closeWizard);
   };
