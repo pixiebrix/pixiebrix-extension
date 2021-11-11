@@ -73,7 +73,7 @@ const useSavingWizard = () => {
 
   const save = async () => {
     if (!element.recipe) {
-      saveNonRecipeElement();
+      void saveNonRecipeElement();
     }
 
     savingDeferred = new Deferred();
@@ -85,16 +85,17 @@ const useSavingWizard = () => {
   /**
    * Saves an extension that is not a part of a Recipe
    */
-  const saveNonRecipeElement = () => {
+  const saveNonRecipeElement = async () => {
     dispatch(savingExtensionActions.setSavingExtension(element.uuid));
-    void create(element, closeWizard);
+    const error = await create(element);
+    closeWizard(error);
   };
 
   /**
    * Creates personal extension from the existing one
    * It will not be a part of the Recipe
    */
-  const saveElementAsPersonalExtension = () => {
+  const saveElementAsPersonalExtension = async () => {
     const newExtensionUuid = uuidv4();
     dispatch(savingExtensionActions.setSavingExtension(newExtensionUuid));
 
@@ -108,7 +109,8 @@ const useSavingWizard = () => {
 
     dispatch(editorActions.addElement(personalElement));
     reset({ element, shouldShowConfirmation: false });
-    void create(personalElement, closeWizard);
+    const error = await create(personalElement);
+    closeWizard(error);
   };
 
   /**
@@ -156,6 +158,13 @@ const useSavingWizard = () => {
       return;
     }
 
+    const error = await create(element);
+    if (error) {
+      notify.error(error);
+      closeWizard(error);
+      return;
+    }
+
     const recipeExtensions = extensions.filter(
       (x) => x._recipe?.id === recipe.metadata.id
     );
@@ -171,6 +180,8 @@ const useSavingWizard = () => {
     }
 
     void updateRecipeElements(recipe.metadata.id, newRecipe);
+
+    closeWizard(error);
   };
 
   /**
@@ -212,6 +223,13 @@ const useSavingWizard = () => {
       return;
     }
 
+    const error = await create(element);
+    if (error) {
+      notify.error(error);
+      closeWizard(error);
+      return;
+    }
+
     const recipeExtensions = extensions.filter(
       (x) => x._recipe?.id === recipe.metadata.id
     );
@@ -226,6 +244,8 @@ const useSavingWizard = () => {
     }
 
     void updateRecipeElements(recipe.metadata.id, newRecipe);
+
+    closeWizard(error);
   };
 
   const updateRecipeElements = async (
@@ -244,14 +264,6 @@ const useSavingWizard = () => {
 
       dispatch(editorActions.updateElement(elementUpdate));
     }
-
-    // Updating current element before saving
-    element = {
-      ...element,
-      recipe: newRecipe.metadata,
-    };
-
-    void create(element, closeWizard);
   };
 
   const closeWizard = (errorMessage?: string | null) => {

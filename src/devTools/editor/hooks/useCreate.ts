@@ -105,10 +105,7 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
   }
 }
 
-type CreateCallback = (
-  element: FormState,
-  onDone: (errorMessage?: string) => void
-) => Promise<void>;
+type CreateCallback = (element: FormState) => Promise<string | null>;
 
 function useCreate(): CreateCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
@@ -120,16 +117,18 @@ function useCreate(): CreateCallback {
   const { addToast } = useToasts();
 
   return useCallback(
-    async (element, onDone) => {
-      const onStepError = (error: unknown, step: string) => {
+    async (element): Promise<string | null> => {
+      const onStepError = (error: unknown, step: string): string => {
         reportError(error);
         const message = selectErrorMessage(error);
         console.warn("Error %s: %s", step, message, { error });
-        addToast(`Error ${step}: ${message}`, {
+        const errorMessage = `Error ${step}: ${message}`;
+        addToast(errorMessage, {
           appearance: "error",
           autoDismiss: true,
         });
-        onDone(`Error ${step}: ${message}`);
+
+        return errorMessage;
       };
 
       try {
@@ -186,8 +185,7 @@ function useCreate(): CreateCallback {
                 extensionPointConfig
               );
             } catch (error: unknown) {
-              onStepError(error, "saving foundation");
-              return;
+              return onStepError(error, "saving foundation");
             }
           }
         }
@@ -231,8 +229,7 @@ function useCreate(): CreateCallback {
 
           dispatch(markSaved(element.uuid));
         } catch (error: unknown) {
-          onStepError(error, "saving extension");
-          return;
+          return onStepError(error, "saving extension");
         }
 
         try {
@@ -254,7 +251,7 @@ function useCreate(): CreateCallback {
           appearance: "success",
           autoDismiss: true,
         });
-        onDone();
+        return null;
       } catch (error: unknown) {
         console.error("Error saving extension", { error });
         reportError(error);
@@ -262,7 +259,7 @@ function useCreate(): CreateCallback {
           appearance: "error",
           autoDismiss: true,
         });
-        onDone("Error saving extension");
+        return "Error saving extension";
       }
     },
     [dispatch, addToast]

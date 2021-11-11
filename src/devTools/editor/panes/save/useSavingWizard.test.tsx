@@ -137,7 +137,7 @@ test("saves non recipe element", async () => {
 
   expect(result.current.savingExtensionId).toBe(element.uuid);
   expect(createMock).toHaveBeenCalledTimes(1);
-  expect(createMock).toHaveBeenCalledWith(element, expect.any(Function));
+  expect(createMock).toHaveBeenCalledWith(element);
 });
 
 describe("saving a Recipe Extension", () => {
@@ -213,9 +213,9 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.savingExtensionId).toBeNull();
 
     // Saving as personal extension
-    act(() => {
-      result.current.saveElementAsPersonalExtension();
-    });
+    const savingElementPromise = act(async () =>
+      result.current.saveElementAsPersonalExtension()
+    );
 
     // Check wizard state
     expect(result.current.isWizardOpen).toBe(true);
@@ -237,7 +237,11 @@ describe("saving a Recipe Extension", () => {
 
     // Check new element is saved
     expect(createMock).toHaveBeenCalledTimes(1);
-    expect(createMock).toHaveBeenCalledWith(elements[1], expect.any(Function));
+    expect(createMock).toHaveBeenCalledWith(elements[1]);
+
+    await savingElementPromise;
+    expect(result.current.isWizardOpen).toBe(false);
+    expect(result.current.savingExtensionId).toBeNull();
   });
 
   test("saves as new recipe", async () => {
@@ -257,7 +261,7 @@ describe("saving a Recipe Extension", () => {
 
     // Saving with a new Recipe
     const newRecipeMeta = metadataFactory();
-    await act(async () =>
+    const savingElementPromise = act(async () =>
       result.current.saveElementAndCreateNewRecipe(newRecipeMeta)
     );
 
@@ -265,22 +269,21 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isWizardOpen).toBe(true);
     expect(result.current.savingExtensionId).toBe(element.uuid);
 
+    await savingElementPromise;
+
     // Check new recipe created
     expect(createRecipeMock).toHaveBeenCalledTimes(1);
 
     // Check the element is saved
+    expect(createMock).toHaveBeenCalledWith(element);
+
     const elements = selectElements(store.getState());
     expect(elements).toHaveLength(1);
     expect(createMock).toHaveBeenCalledTimes(1);
 
-    const expectedUpdatedElement = {
-      ...element,
-      recipe: newRecipeMeta,
-    };
-    expect(createMock).toHaveBeenCalledWith(
-      expectedUpdatedElement,
-      expect.any(Function)
-    );
+    // Check the wizard is closed
+    expect(result.current.isWizardOpen).toBe(false);
+    expect(result.current.savingExtensionId).toBeNull();
   });
 
   test("doesn't update extensions if recipe creation fails", async () => {
@@ -348,7 +351,7 @@ describe("saving a Recipe Extension", () => {
 
     // Saving with a new Recipe
     const newRecipeMeta = metadataFactory({ id: recipe.metadata.id });
-    await act(async () =>
+    const savingElementPromise = act(async () =>
       result.current.saveElementAndUpdateRecipe(newRecipeMeta)
     );
 
@@ -356,22 +359,20 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isWizardOpen).toBe(true);
     expect(result.current.savingExtensionId).toBe(element.uuid);
 
+    await savingElementPromise;
+
     // Check new recipe created
     expect(updateRecipeMock).toHaveBeenCalledTimes(1);
 
     // Check the element is saved
+    expect(createMock).toHaveBeenCalledWith(element);
+
     const elements = selectElements(store.getState());
     expect(elements).toHaveLength(1);
     expect(createMock).toHaveBeenCalledTimes(1);
 
-    const expectedUpdatedElement = {
-      ...element,
-      recipe: newRecipeMeta,
-    };
-    expect(createMock).toHaveBeenCalledWith(
-      expectedUpdatedElement,
-      expect.any(Function)
-    );
+    expect(result.current.isWizardOpen).toBe(false);
+    expect(result.current.savingExtensionId).toBeNull();
   });
 
   test("doesn't update extensions if recipe update fails", async () => {
