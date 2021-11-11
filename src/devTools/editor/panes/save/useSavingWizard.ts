@@ -45,6 +45,7 @@ import {
 } from "@/services/api";
 import { replaceRecipeExtension } from "./saveHelpers";
 import { actions as optionsActions } from "@/options/slices";
+import pDefer from "p-defer";
 
 export type RecipeConfiguration = {
   id: RegistryId;
@@ -76,7 +77,7 @@ const useSavingWizard = () => {
       void saveNonRecipeElement();
     }
 
-    savingDeferred = new Deferred();
+    savingDeferred = pDefer<void>();
 
     dispatch(savingExtensionActions.openWizard());
     return savingDeferred.promise;
