@@ -111,7 +111,13 @@ export function baseFromExtension<T extends ElementType>(
   type: T
 ): Pick<
   BaseFormState,
-  "uuid" | "apiVersion" | "installed" | "label" | "services" | "optionsArgs"
+  | "uuid"
+  | "apiVersion"
+  | "installed"
+  | "label"
+  | "services"
+  | "optionsArgs"
+  | "recipe"
 > & { type: T } {
   return {
     uuid: config.id,
@@ -121,6 +127,7 @@ export function baseFromExtension<T extends ElementType>(
     services: config.services,
     optionsArgs: config.optionsArgs,
     type,
+    recipe: config._recipe,
   };
 }
 
@@ -162,6 +169,7 @@ export function makeInitialBaseState(
     extension: {
       blockPipeline: [],
     },
+    recipe: undefined,
   };
 }
 

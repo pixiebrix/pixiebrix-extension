@@ -24,10 +24,9 @@ import React, {
 } from "react";
 import { useFormikContext } from "formik";
 import { groupBy } from "lodash";
-import { Badge, Form, Nav, Tab } from "react-bootstrap";
+import { Badge, Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
-import { IExtension } from "@/core";
 import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
@@ -86,10 +85,9 @@ const WizardNavItem: React.FunctionComponent<{
 };
 
 const ElementWizard: React.FunctionComponent<{
-  installed: IExtension[];
   element: FormState;
   editable: Set<string>;
-}> = ({ element, editable, installed }) => {
+}> = ({ element, editable }) => {
   const [step, setStep] = useState(wizard[0].step);
 
   useEffect(() => {
@@ -125,7 +123,7 @@ const ElementWizard: React.FunctionComponent<{
 
   return (
     <Tab.Container activeKey={step} key={element.uuid}>
-      <Form
+      <BootstrapForm
         autoComplete="off"
         noValidate
         onSubmit={(e) => {
@@ -155,7 +153,6 @@ const ElementWizard: React.FunctionComponent<{
           <ReloadToolbar element={element} disabled={isSubmitting} />
 
           <ActionToolbar
-            installed={installed}
             element={element}
             disabled={isSubmitting}
             onSave={handleSubmit}
@@ -173,7 +170,7 @@ const ElementWizard: React.FunctionComponent<{
             />
           ))}
         </Tab.Content>
-      </Form>
+      </BootstrapForm>
     </Tab.Container>
   );
 };

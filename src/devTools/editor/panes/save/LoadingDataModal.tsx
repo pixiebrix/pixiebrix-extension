@@ -15,17 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EditorState } from "@/devTools/editor/slices/editorSlice";
+import React from "react";
+import { Modal } from "react-bootstrap";
+import GridLoader from "react-spinners/GridLoader";
 
-type RootState = { editor: EditorState };
-
-export const selectActiveExtensionId = ({ editor }: RootState) =>
-  editor.activeElement;
-
-export const selectElements = ({ editor }: RootState) => editor.elements;
-
-export const selectActiveElement = (state: RootState) => {
-  const activeElementId = selectActiveExtensionId(state);
-  const elements = selectElements(state);
-  return elements.find((x) => x.uuid === activeElementId);
+type OwnProps = {
+  onClose: () => void;
 };
+
+const LoadingDataModal: React.FC<OwnProps> = ({ onClose }) => (
+  <Modal show onHide={onClose} backdrop="static" keyboard={false}>
+    <Modal.Header closeButton>
+      <Modal.Title>Loading data...</Modal.Title>
+    </Modal.Header>
+
+    <Modal.Body>
+      <GridLoader />
+    </Modal.Body>
+  </Modal>
+);
+
+export default LoadingDataModal;

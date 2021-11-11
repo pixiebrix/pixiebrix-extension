@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { IExtension } from "@/core";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useFormikContext } from "formik";
 import { Button, ButtonGroup } from "react-bootstrap";
@@ -26,13 +25,12 @@ import useRemove from "@/devTools/editor/hooks/useRemove";
 import useReset from "@/devTools/editor/hooks/useReset";
 
 const ActionToolbar: React.FunctionComponent<{
-  installed: IExtension[];
   element: FormState;
   disabled: boolean;
   onSave: () => void;
-}> = ({ installed, element, disabled, onSave }) => {
+}> = ({ element, disabled, onSave }) => {
   const remove = useRemove(element);
-  const reset = useReset(installed, element);
+  const reset = useReset();
   const { values } = useFormikContext<FormState>();
 
   return (
@@ -41,7 +39,14 @@ const ActionToolbar: React.FunctionComponent<{
         <FontAwesomeIcon icon={faSave} /> Save
       </Button>
       {values.installed && (
-        <Button disabled={disabled} size="sm" variant="warning" onClick={reset}>
+        <Button
+          disabled={disabled}
+          size="sm"
+          variant="warning"
+          onClick={() => {
+            reset({ element });
+          }}
+        >
           <FontAwesomeIcon icon={faHistory} /> Reset
         </Button>
       )}

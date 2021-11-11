@@ -221,6 +221,7 @@ async function fromExtensionPoint(
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
+    recipe: undefined,
   };
 }
 

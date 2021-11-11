@@ -15,17 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EditorState } from "@/devTools/editor/slices/editorSlice";
+import React from "react";
+import { Modal } from "react-bootstrap";
+import GridLoader from "react-spinners/GridLoader";
 
-type RootState = { editor: EditorState };
+const SavingInProgressModal: React.FC = () => (
+  <Modal show backdrop="static" keyboard={false}>
+    <Modal.Header>
+      <Modal.Title>Saving extension...</Modal.Title>
+    </Modal.Header>
 
-export const selectActiveExtensionId = ({ editor }: RootState) =>
-  editor.activeElement;
+    <Modal.Body>
+      <GridLoader />
+    </Modal.Body>
+  </Modal>
+);
 
-export const selectElements = ({ editor }: RootState) => editor.elements;
-
-export const selectActiveElement = (state: RootState) => {
-  const activeElementId = selectActiveExtensionId(state);
-  const elements = selectElements(state);
-  return elements.find((x) => x.uuid === activeElementId);
-};
+export default SavingInProgressModal;
