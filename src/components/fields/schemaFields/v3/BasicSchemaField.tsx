@@ -356,7 +356,7 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     [customToggleModes, isArrayItem, isObjectProperty, isRequired, schema]
   );
 
-  const [{ value }, , { setValue }] = useField(name);
+  const [{ value }, { error, touched }, { setValue }] = useField(name);
 
   useEffect(() => {
     // Initialize any undefined/empty required fields to prevent inferring an "omit" input
@@ -372,6 +372,8 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
         name={name}
         label={fieldLabel}
         description={fieldDescription}
+        error={error}
+        touched={touched}
         as={UnsupportedWidget}
       />
     );
