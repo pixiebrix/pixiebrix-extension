@@ -17,10 +17,7 @@
 
 import { actions as savingExtensionActions } from "./savingExtensionSlice";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectIsWizardOpen,
-  selectSavingExtensionId,
-} from "./savingExtensionSelectors";
+import { selectIsWizardOpen, selectIsSaving } from "./savingExtensionSelectors";
 import {
   selectActiveElement,
   selectElements,
@@ -61,7 +58,7 @@ const useSavingWizard = () => {
   const reset = useReset();
   const notify = useNotifications();
   const isWizardOpen = useSelector(selectIsWizardOpen);
-  const savingExtensionId = useSelector(selectSavingExtensionId);
+  const isSaving = useSelector(selectIsSaving);
   const extensions = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
   const element = useSelector(selectActiveElement);
@@ -86,7 +83,7 @@ const useSavingWizard = () => {
    * Saves an extension that is not a part of a Recipe
    */
   const saveNonRecipeElement = async () => {
-    dispatch(savingExtensionActions.setSavingExtension(element.uuid));
+    dispatch(savingExtensionActions.setSavingInProgress());
     const error = await create(element);
     closeWizard(error);
   };
@@ -96,13 +93,12 @@ const useSavingWizard = () => {
    * It will not be a part of the Recipe
    */
   const saveElementAsPersonalExtension = async () => {
-    const newExtensionUuid = uuidv4();
-    dispatch(savingExtensionActions.setSavingExtension(newExtensionUuid));
+    dispatch(savingExtensionActions.setSavingInProgress());
 
     const { recipe, ...rest } = element;
     const personalElement: FormState = {
       ...rest,
-      uuid: newExtensionUuid,
+      uuid: uuidv4(),
       // Detach from the recipe
       recipe: undefined,
     };
@@ -121,7 +117,7 @@ const useSavingWizard = () => {
   const saveElementAndCreateNewRecipe = async (
     recipeMeta: RecipeConfiguration
   ) => {
-    dispatch(savingExtensionActions.setSavingExtension(element.uuid));
+    dispatch(savingExtensionActions.setSavingInProgress());
 
     const elementRecipeMeta = element.recipe;
     const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
@@ -192,7 +188,7 @@ const useSavingWizard = () => {
   const saveElementAndUpdateRecipe = async (
     recipeMeta: RecipeConfiguration
   ) => {
-    dispatch(savingExtensionActions.setSavingExtension(element.uuid));
+    dispatch(savingExtensionActions.setSavingInProgress());
 
     const elementRecipeMeta = element.recipe;
     const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
@@ -282,7 +278,7 @@ const useSavingWizard = () => {
 
   return {
     isWizardOpen,
-    savingExtensionId,
+    isSaving,
     element,
     save,
     saveElementAsPersonalExtension,

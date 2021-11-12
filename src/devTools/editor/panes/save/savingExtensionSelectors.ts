@@ -20,5 +20,5 @@ import { RootState } from "@/devTools/store";
 export const selectIsWizardOpen = ({ savingExtension }: RootState) =>
   savingExtension.isWizardOpen;
 
-export const selectSavingExtensionId = ({ savingExtension }: RootState) =>
-  savingExtension.savingExtensionId;
+export const selectIsSaving = ({ savingExtension }: RootState) =>
+  savingExtension.isSaving;

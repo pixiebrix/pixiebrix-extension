@@ -33,7 +33,7 @@ import RecipeConfigurationModal, {
 
 const SaveExtensionWizard: React.FC = () => {
   const {
-    savingExtensionId,
+    isSaving,
     element,
     saveElementAsPersonalExtension,
     saveElementAndCreateNewRecipe,
@@ -53,7 +53,7 @@ const SaveExtensionWizard: React.FC = () => {
   const isNewRecipe = useRef(false);
   const newRecipeInitialValues = useRef<RecipeConfiguration>(null);
 
-  if (savingExtensionId) {
+  if (isSaving) {
     return <SavingInProgressModal />;
   }
 

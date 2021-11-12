@@ -17,7 +17,6 @@
 
 import React from "react";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { useFormikContext } from "formik";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHistory, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -31,14 +30,13 @@ const ActionToolbar: React.FunctionComponent<{
 }> = ({ element, disabled, onSave }) => {
   const remove = useRemove(element);
   const reset = useReset();
-  const { values } = useFormikContext<FormState>();
 
   return (
     <ButtonGroup className="ml-2">
       <Button disabled={disabled} size="sm" variant="primary" onClick={onSave}>
         <FontAwesomeIcon icon={faSave} /> Save
       </Button>
-      {values.installed && (
+      {element.installed && (
         <Button
           disabled={disabled}
           size="sm"
