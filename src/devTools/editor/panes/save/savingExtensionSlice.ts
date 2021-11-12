@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 export type SavingExtensionState = {
   /**
@@ -43,7 +43,7 @@ export const savingExtensionSlice = createSlice({
     openWizard: (state) => {
       state.isWizardOpen = true;
     },
-    setSavingInProgress: (state, action: PayloadAction<boolean>) => {
+    setSavingInProgress: (state) => {
       state.isSaving = true;
     },
     /**
