@@ -15,17 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EditorState } from "@/devTools/editor/slices/editorSlice";
+import { RootState } from "@/devTools/store";
 
-type RootState = { editor: EditorState };
+export const selectIsWizardOpen = ({ savingExtension }: RootState) =>
+  savingExtension.isWizardOpen;
 
-export const selectActiveExtensionId = ({ editor }: RootState) =>
-  editor.activeElement;
-
-export const selectElements = ({ editor }: RootState) => editor.elements;
-
-export const selectActiveElement = (state: RootState) => {
-  const activeElementId = selectActiveExtensionId(state);
-  const elements = selectElements(state);
-  return elements.find((x) => x.uuid === activeElementId);
-};
+export const selectIsSaving = ({ savingExtension }: RootState) =>
+  savingExtension.isSaving;

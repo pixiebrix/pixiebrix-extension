@@ -24,10 +24,9 @@ import React, {
 } from "react";
 import { useFormikContext } from "formik";
 import { groupBy } from "lodash";
-import { Badge, Form, Nav, Tab } from "react-bootstrap";
+import { Badge, Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
-import { IExtension } from "@/core";
 import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
@@ -38,6 +37,7 @@ import styles from "./ElementWizard.module.scss";
 import { thisTab } from "@/devTools/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import useSavingWizard from "./panes/save/useSavingWizard";
 
 const LOG_STEP_NAME = "Logs";
 
@@ -86,10 +86,9 @@ const WizardNavItem: React.FunctionComponent<{
 };
 
 const ElementWizard: React.FunctionComponent<{
-  installed: IExtension[];
   element: FormState;
   editable: Set<string>;
-}> = ({ element, editable, installed }) => {
+}> = ({ element, editable }) => {
   const [step, setStep] = useState(wizard[0].step);
 
   useEffect(() => {
@@ -105,12 +104,21 @@ const ElementWizard: React.FunctionComponent<{
   );
 
   const {
-    isSubmitting,
     isValid,
     status,
-    handleSubmit,
     handleReset,
+    setStatus,
   } = useFormikContext<FormState>();
+
+  const { isSaving, save } = useSavingWizard();
+
+  const onSave = async () => {
+    try {
+      await save();
+    } catch (error: unknown) {
+      setStatus(error);
+    }
+  };
 
   const selectTabHandler = useCallback(
     (step: string) => {
@@ -125,7 +133,7 @@ const ElementWizard: React.FunctionComponent<{
 
   return (
     <Tab.Container activeKey={step} key={element.uuid}>
-      <Form
+      <BootstrapForm
         autoComplete="off"
         noValidate
         onSubmit={(e) => {
@@ -149,16 +157,15 @@ const ElementWizard: React.FunctionComponent<{
 
           <PermissionsToolbar
             element={element}
-            disabled={isSubmitting || !isValid}
+            disabled={isSaving || !isValid}
           />
 
-          <ReloadToolbar element={element} disabled={isSubmitting} />
+          <ReloadToolbar element={element} disabled={isSaving} />
 
           <ActionToolbar
-            installed={installed}
             element={element}
-            disabled={isSubmitting}
-            onSave={handleSubmit}
+            disabled={isSaving}
+            onSave={onSave}
           />
         </Nav>
 
@@ -173,7 +180,7 @@ const ElementWizard: React.FunctionComponent<{
             />
           ))}
         </Tab.Content>
-      </Form>
+      </BootstrapForm>
     </Tab.Container>
   );
 };

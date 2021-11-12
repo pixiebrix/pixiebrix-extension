@@ -55,7 +55,7 @@ type DatabaseConfig = {
   groupId: string | null;
 };
 
-const DatabaseSchema: yup.ObjectSchema<DatabaseConfig> = yup.object().shape({
+const databaseSchema: yup.ObjectSchema<DatabaseConfig> = yup.object().shape({
   name: yup.string().required(),
   organizationId: yup.string(),
   groupId: yup.string(),
@@ -136,32 +136,28 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
         <Modal.Title>Create Database</Modal.Title>
       </Modal.Header>
 
-      <Modal.Body>
-        {isLoadingOrganizations ? (
+      {isLoadingOrganizations ? (
+        <Modal.Body>
           <GridLoader />
-        ) : (
-          <Form
-            validationSchema={DatabaseSchema}
-            initialValues={initialValues}
-            onSubmit={onSave}
-            renderSubmit={({ isSubmitting, isValid }) => (
-              <div className="text-right">
-                <Button
-                  variant="info"
-                  className="mr-2"
-                  onClick={() => {
-                    onClose();
-                  }}
-                >
-                  Cancel
-                </Button>
+        </Modal.Body>
+      ) : (
+        <Form
+          validationSchema={databaseSchema}
+          initialValues={initialValues}
+          onSubmit={onSave}
+          renderSubmit={({ isSubmitting, isValid }) => (
+            <Modal.Footer>
+              <Button variant="info" onClick={onClose}>
+                Cancel
+              </Button>
 
-                <Button type="submit" disabled={!isValid || isSubmitting}>
-                  Create Database
-                </Button>
-              </div>
-            )}
-          >
+              <Button type="submit" disabled={!isValid || isSubmitting}>
+                Create Database
+              </Button>
+            </Modal.Footer>
+          )}
+        >
+          <Modal.Body>
             <ConnectedFieldTemplate name="name" label="Name" />
             <ConnectedFieldTemplate
               name="organizationId"
@@ -171,9 +167,9 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
             />
 
             <DatabaseGroupSelect />
-          </Form>
-        )}
-      </Modal.Body>
+          </Modal.Body>
+        </Form>
+      )}
     </Modal>
   );
 };

@@ -17,10 +17,9 @@
 
 import React from "react";
 import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
-import ServiceField, {
-  isServiceField,
-} from "@/components/fields/schemaFields/ServiceField";
+import { isServiceField } from "@/components/fields/schemaFields/v1/ServiceField";
 import BasicSchemaField from "@/components/fields/schemaFields/v3/BasicSchemaField";
+import ServiceField from "@/components/fields/schemaFields/v3/ServiceField";
 
 const SchemaField: SchemaFieldComponent = (props) => {
   const { schema } = props;

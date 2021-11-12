@@ -40,6 +40,7 @@ import {
 } from "@/types/definitions";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { ReaderConfig } from "@/blocks/types";
+import { UnknownObject } from "@/types";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 
@@ -47,7 +48,7 @@ interface RawConfig<T extends string = string> extends Config {
   kind: T;
 }
 
-function makeInternalId(obj: Record<string, unknown>): RegistryId {
+export function makeInternalId(obj: UnknownObject): RegistryId {
   const hash = objectHash(obj);
   return `@internal/${hash}` as RegistryId;
 }

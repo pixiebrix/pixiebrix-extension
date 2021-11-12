@@ -19,7 +19,6 @@ import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
 import { optionsSlice } from "@/options/slices";
-import { FormikHelpers } from "formik";
 import { AddToast, useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import blockRegistry from "@/blocks/registry";
@@ -37,14 +36,10 @@ import {
   extensionWithInnerDefinitions,
   isInnerExtensionPoint,
 } from "@/devTools/editor/extensionPoints/base";
+import { EditablePackage } from "@/types/definitions";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
-
-export interface EditablePackage {
-  id: string;
-  name: string;
-}
 
 async function upsertConfig(
   packageUUID: string | null,
@@ -110,12 +105,9 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
   }
 }
 
-type CreateCallback = (
-  element: FormState,
-  helpers: FormikHelpers<FormState>
-) => Promise<void>;
+type CreateCallback = (element: FormState) => Promise<string | null>;
 
-export function useCreate(): CreateCallback {
+function useCreate(): CreateCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
   //  occur in the correct order on slower (CPU or network?) machines. Therefore, await all promises. We also have to
   //  make `reactivate` behave deterministically if we're still having problems (right now it's implemented as a
@@ -125,20 +117,18 @@ export function useCreate(): CreateCallback {
   const { addToast } = useToasts();
 
   return useCallback(
-    async (
-      element: FormState,
-      { setSubmitting, setStatus }: FormikHelpers<FormState>
-    ) => {
-      const onStepError = (error: unknown, step: string) => {
+    async (element): Promise<string | null> => {
+      const onStepError = (error: unknown, step: string): string => {
         reportError(error);
         const message = selectErrorMessage(error);
         console.warn("Error %s: %s", step, message, { error });
-        setStatus(`Error ${step}: ${message}`);
-        addToast(`Error ${step}: ${message}`, {
+        const errorMessage = `Error ${step}: ${message}`;
+        addToast(errorMessage, {
           appearance: "error",
           autoDismiss: true,
         });
-        setSubmitting(false);
+
+        return errorMessage;
       };
 
       try {
@@ -195,8 +185,7 @@ export function useCreate(): CreateCallback {
                 extensionPointConfig
               );
             } catch (error: unknown) {
-              onStepError(error, "saving foundation");
-              return;
+              return onStepError(error, "saving foundation");
             }
           }
         }
@@ -240,8 +229,7 @@ export function useCreate(): CreateCallback {
 
           dispatch(markSaved(element.uuid));
         } catch (error: unknown) {
-          onStepError(error, "saving extension");
-          return;
+          return onStepError(error, "saving extension");
         }
 
         try {
@@ -263,6 +251,7 @@ export function useCreate(): CreateCallback {
           appearance: "success",
           autoDismiss: true,
         });
+        return null;
       } catch (error: unknown) {
         console.error("Error saving extension", { error });
         reportError(error);
@@ -270,10 +259,11 @@ export function useCreate(): CreateCallback {
           appearance: "error",
           autoDismiss: true,
         });
-      } finally {
-        setSubmitting(false);
+        return "Error saving extension";
       }
     },
     [dispatch, addToast]
   );
 }
+
+export default useCreate;

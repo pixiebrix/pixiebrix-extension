@@ -22,9 +22,13 @@ import {
   ApiVersion,
   IBlock,
   IExtension,
+  InnerDefinitionRef,
+  RegistryId,
+  RenderedArgs,
   Schema,
   ServiceDependency,
   UserOptions,
+  Metadata,
 } from "@/core";
 import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { TraceError } from "@/telemetry/trace";
@@ -37,38 +41,20 @@ import {
 import trigger, {
   TriggerFormState,
 } from "@/devTools/editor/extensionPoints/trigger";
-import menuItem from "@/devTools/editor/extensionPoints/menuItem";
+import menuItem, {
+  ActionFormState,
+} from "@/devTools/editor/extensionPoints/menuItem";
 import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { RecipeDefinition } from "@/types/definitions";
+import { ExtensionPointConfig } from "@/extensionPoints/types";
 
-const config = {
-  apiVersion: "v2" as ApiVersion,
-  kind: "component",
-  metadata: {
-    id: "test/component-1",
-    version: "1.0.0",
-    name: "Text config",
-    description: "Component's config made for testing",
-  },
-  inputSchema: {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    properties: {},
-    required: [] as string[],
-  },
-  pipeline: [
-    {
-      id: "@pixiebrix/browser/open-tab",
-      config: {
-        url: "http://www.amazon.com/s",
-        params: {
-          url:
-            "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
-        },
-      },
-    },
-  ],
-};
+export const metadataFactory = define<Metadata>({
+  id: (n: number) => validateRegistryId(`test/recipe-${n}`),
+  name: (n: number) => `Recipe ${n}`,
+  description: "Recipe generated from factory",
+  version: "1.0.0",
+});
 
 export const extensionFactory: (
   extensionProps?: Partial<IExtension>
@@ -84,7 +70,32 @@ export const extensionFactory: (
   definitions: null,
   services: [],
   optionsArgs: null,
-  config,
+  config: {
+    apiVersion: "v2" as ApiVersion,
+    kind: "component",
+    metadata: metadataFactory({
+      id: validateRegistryId("test/component-1"),
+      name: "Text config",
+    }),
+    inputSchema: {
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      type: "object",
+      properties: {},
+      required: [] as string[],
+    },
+    pipeline: [
+      {
+        id: "@pixiebrix/browser/open-tab",
+        config: {
+          url: "http://www.amazon.com/s",
+          params: {
+            url:
+              "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
+          },
+        },
+      },
+    ],
+  },
   active: true,
   ...extensionProps,
 });
@@ -93,21 +104,24 @@ export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
 export const traceErrorFactory: (
   traceErrorProps?: Partial<TraceError>
-) => TraceError = (traceErrorProps) => {
-  const errorTraceEntry: TraceError = {
-    timestamp: "2021-10-07T12:52:16.189Z",
-    extensionId: uuidv4(),
-    runId: uuidv4(),
-    blockInstanceId: uuidv4(),
-    blockId: TEST_BLOCK_ID,
-    error: {
-      message: "Trace error for tests",
-    },
-    ...traceErrorProps,
-  } as TraceError;
-
-  return errorTraceEntry;
-};
+) => TraceError = (traceErrorProps) => ({
+  timestamp: "2021-10-07T12:52:16.189Z",
+  extensionId: uuidv4(),
+  runId: uuidv4(),
+  blockInstanceId: uuidv4(),
+  blockId: TEST_BLOCK_ID,
+  error: {
+    message: "Trace error for tests",
+  },
+  templateContext: {},
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal typing
+  renderedArgs: {} as RenderedArgs,
+  blockConfig: {
+    id: TEST_BLOCK_ID,
+    config: {},
+  },
+  ...traceErrorProps,
+});
 
 export const blockFactory = define<IBlock>({
   id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
@@ -156,27 +170,123 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
 
+export const extensionPointFactory = define<ExtensionPointConfig>({
+  kind: "extensionPoint",
+  apiVersion: "v2",
+  metadata: (n: number) =>
+    metadataFactory({
+      id: validateRegistryId(`test/extension-point-${n}`),
+      name: `Extension Point ${n}`,
+    }),
+  definition: {
+    type: "menuItem",
+    isAvailable: {
+      matchPatterns: ["https://*/*"],
+    },
+    reader: validateRegistryId("@pixiebrix/document-context"),
+  },
+});
+
+type ExternalExtensionPointParams = {
+  extensionPointId?: RegistryId;
+};
+
+/**
+ * Factory to create a RecipeDefinition that refers to a versioned extensionPoint
+ * @param extensionPointId
+ */
+export const versionedExtensionPointRecipeFactory = ({
+  extensionPointId,
+}: ExternalExtensionPointParams) =>
+  define<RecipeDefinition>({
+    kind: "recipe",
+    apiVersion: "v2",
+    metadata: (n: number) => ({
+      id: validateRegistryId(`test/recipe-${n}`),
+      name: `Recipe ${n}`,
+      description: "Recipe generated from factory",
+      version: "1.0.0",
+    }),
+    // `sharing` is returned from the API, but is undefined when editing recipes
+    sharing: undefined,
+    definitions: undefined,
+    options: undefined,
+    extensionPoints: (n: number) => [
+      {
+        id: extensionPointId ?? validateRegistryId("test/extension-point"),
+        label: `Test Extension for Recipe ${n}`,
+        config: {
+          caption: "Button",
+          action: [] as BlockPipeline,
+        },
+      },
+    ],
+  });
+
+type InnerExtensionPointParams = {
+  extensionPointRef?: InnerDefinitionRef;
+};
+
+/**
+ * Factory to create a factory that creates a RecipeDefinition that refers to a versioned extensionPoint
+ * @param extensionPointId
+ */
+export const innerExtensionPointRecipeFactory = ({
+  extensionPointRef = "extensionPoint" as InnerDefinitionRef,
+}: InnerExtensionPointParams = {}) =>
+  define<RecipeDefinition>({
+    kind: "recipe",
+    apiVersion: "v2",
+    metadata: metadataFactory,
+    // `sharing` is returned from the API, but is undefined when editing recipes
+    sharing: undefined,
+    definitions: {
+      [extensionPointRef]: {
+        kind: "extensionPoint",
+        definition: {
+          type: "menuItem",
+          isAvailable: {
+            matchPatterns: ["https://*/*"],
+            selectors: [],
+          },
+          reader: validateRegistryId("@pixiebrix/document-context"),
+        },
+      },
+    },
+    options: undefined,
+    extensionPoints: (n: number) => [
+      {
+        id: extensionPointRef,
+        label: `Test Extension for Recipe ${n}`,
+        config: {
+          caption: "Button",
+          action: [] as BlockPipeline,
+        },
+      },
+    ],
+  });
+
+/**
+ * A default Recipe factory
+ */
+export const recipeFactory = innerExtensionPointRecipeFactory();
+
 const internalFormStateFactory = define<FormState>({
   apiVersion: "v2" as ApiVersion,
   uuid: () => uuidv4(),
   installed: true,
   optionsArgs: null as UserOptions,
   services: [] as ServiceDependency[],
+  recipe: null,
 
   type: "panel" as ElementType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
-  extensionPoint: {
-    metadata: null,
-    definition: {
-      reader: validateRegistryId("test/reader"),
-      isAvailable: null,
-    },
-  },
+  extensionPoint: extensionPointFactory,
 } as any);
 
 export const formStateFactory = (
-  override: FactoryConfig<FormState>,
+  override?: FactoryConfig<FormState>,
   blockConfigOverride?: FactoryConfig<BlockConfig>
 ) => {
   if (blockConfigOverride) {
@@ -197,7 +307,10 @@ export const triggerFormStateFactory = (
 ) => {
   const defaultTriggerProps = trigger.fromNativeElement(
     "https://test.com",
-    null,
+    metadataFactory({
+      id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
+      name: (n: number) => `Extension Point ${n}`,
+    }),
     null
   );
 
@@ -207,16 +320,19 @@ export const triggerFormStateFactory = (
       ...override,
     } as any,
     blockConfigOverride
-  );
+  ) as TriggerFormState;
 };
 
 export const menuItemFormStateFactory = (
-  override: FactoryConfig<TriggerFormState>,
+  override: FactoryConfig<ActionFormState>,
   blockConfigOverride?: FactoryConfig<BlockConfig>
 ) => {
   const defaultTriggerProps = menuItem.fromNativeElement(
     "https://test.com",
-    null,
+    metadataFactory({
+      id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
+      name: (n: number) => `Extension Point ${n}`,
+    }),
     {
       item: {
         caption: "Caption for test",
@@ -230,5 +346,5 @@ export const menuItemFormStateFactory = (
       ...override,
     } as any,
     blockConfigOverride
-  );
+  ) as ActionFormState;
 };

@@ -18,10 +18,15 @@
 import React, { useEffect } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField, useFormikContext } from "formik";
-import { OutputKey, ServiceKeyVar } from "@/core";
+import { Expression, OutputKey, ServiceKeyVar } from "@/core";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { keyToFieldValue, ServiceSlice } from "./ServiceField";
+import {
+  keyToFieldValue as keyToFieldValueV1,
+  ServiceSlice,
+} from "@/components/fields/schemaFields/v1/ServiceField";
+import { keyToFieldValue as keyToFieldValueV3 } from "@/components/fields/schemaFields/v3/ServiceField";
 import { produce } from "immer";
+import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
 
@@ -40,7 +45,17 @@ const AppServiceField: React.FunctionComponent<SchemaFieldProps> = ({
     values: root,
     setValues: setRootValues,
   } = useFormikContext<ServiceSlice>();
-  const [{ value }, , helpers] = useField<ServiceKeyVar>(props);
+  // We need this union type to account for v1/v3 runtime config formats
+  //  v1 - ServiceKeyVar
+  //  v3 - Expression<ServiceKeyVar>
+  const [{ value }, , helpers] = useField<
+    ServiceKeyVar | Expression<ServiceKeyVar>
+  >(props);
+
+  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
+  const keyToFieldValue = isApiAtLeastV3
+    ? keyToFieldValueV3
+    : keyToFieldValueV1;
 
   useEffect(
     () => {

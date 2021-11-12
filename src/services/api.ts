@@ -15,9 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId } from "@/core";
+import { RegistryId, UUID } from "@/core";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
-import { RecipeDefinition, ServiceDefinition } from "@/types/definitions";
+import {
+  EditablePackage,
+  RecipeDefinition,
+  ServiceDefinition,
+} from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
@@ -30,15 +34,16 @@ import {
   UserRole,
 } from "@/types/contract";
 import { components } from "@/types/swagger";
+import { dumpBrickYaml } from "@/runtime/brickYaml";
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery = (): BaseQueryFn<{
+const appBaseQuery: BaseQueryFn<{
   url: string;
   method: AxiosRequestConfig["method"];
   data?: AxiosRequestConfig["data"];
   requireLinked?: boolean;
   meta?: unknown;
-}> => async ({ url, method, data, requireLinked = false, meta }) => {
+}> = async ({ url, method, data, requireLinked = false, meta }) => {
   try {
     const client = await (requireLinked
       ? getLinkedApiClient()
@@ -59,7 +64,7 @@ const appBaseQuery = (): BaseQueryFn<{
 
 export const appApi = createApi({
   reducerPath: "appApi",
-  baseQuery: appBaseQuery(),
+  baseQuery: appBaseQuery,
   tagTypes: [
     "Databases",
     "Services",
@@ -68,6 +73,7 @@ export const appApi = createApi({
     "Groups",
     "MarketplaceListings",
     "Recipes",
+    "EditablePackages",
   ],
   endpoints: (builder) => ({
     getDatabases: builder.query<Database[], void>({
@@ -169,9 +175,56 @@ export const appApi = createApi({
         );
       },
     }),
+    // ToDo use this query in places where "/api/bricks/" is called
+    getEditablePackages: builder.query<EditablePackage[], void>({
+      query: () => ({ url: "/api/bricks/", method: "get" }),
+      providesTags: ["EditablePackages"],
+    }),
     getRecipes: builder.query<RecipeDefinition[], void>({
       query: () => ({ url: "/api/recipes/", method: "get" }),
       providesTags: ["Recipes"],
+    }),
+    createRecipe: builder.mutation<
+      { id: UUID },
+      {
+        recipe: RecipeDefinition;
+        organizations: UUID[];
+        public: boolean;
+      }
+    >({
+      query: ({ recipe, organizations, public: isPublic }) => {
+        const recipeConfig = dumpBrickYaml(recipe);
+
+        return {
+          url: "api/bricks/",
+          method: "post",
+          data: {
+            config: recipeConfig,
+            kind: "recipe" as RecipeDefinition["kind"],
+            organizations,
+            public: isPublic,
+          },
+        };
+      },
+      invalidatesTags: ["Recipes", "EditablePackages"],
+    }),
+    updateRecipe: builder.mutation<
+      { id: UUID },
+      { packageId: string; recipe: RecipeDefinition }
+    >({
+      query: ({ packageId, recipe }) => {
+        const recipeConfig = dumpBrickYaml(recipe);
+
+        return {
+          url: `api/bricks/${packageId}/`,
+          method: "put",
+          data: {
+            config: recipeConfig,
+            kind: "recipe" as RecipeDefinition["kind"],
+          },
+        };
+      },
+      invalidatesTags: ["Recipes", "EditablePackages"],
     }),
   }),
 });
@@ -186,4 +239,7 @@ export const {
   useGetOrganizationsQuery,
   useGetGroupsQuery,
   useGetRecipesQuery,
+  useGetEditablePackagesQuery,
+  useCreateRecipeMutation,
+  useUpdateRecipeMutation,
 } = appApi;
