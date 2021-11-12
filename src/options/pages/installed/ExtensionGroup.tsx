@@ -41,6 +41,7 @@ import ExtensionRows from "./ExtensionRows";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
 import AuthContext from "@/auth/AuthContext";
+import { Button } from "react-bootstrap";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
@@ -56,6 +57,7 @@ const ExtensionGroup: React.FunctionComponent<{
    * uninstalling them).
    */
   paused?: boolean;
+  hasUpdate?: boolean;
   startExpanded?: boolean;
   groupMessageContext: MessageContext;
   onRemove: RemoveAction;
@@ -69,6 +71,7 @@ const ExtensionGroup: React.FunctionComponent<{
   groupMessageContext,
   onRemove,
   onExportBlueprint,
+  hasUpdate,
 }) => {
   const { flags } = useContext(AuthContext);
   const notify = useNotifications();
@@ -106,6 +109,14 @@ const ExtensionGroup: React.FunctionComponent<{
         >
           Grant Permissions
         </AsyncButton>
+      );
+    }
+
+    if (hasUpdate) {
+      return (
+        <Button variant="info" size="sm">
+          Update
+        </Button>
       );
     }
 

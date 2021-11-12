@@ -359,6 +359,8 @@ export type ExtensionRef = {
  */
 export type RecipeMetadata = Metadata & {
   sharing?: Sharing;
+  // TODO: is there a timestamp type?
+  updated_at: string;
 };
 
 export type IExtension<T extends Config = EmptyConfig> = {

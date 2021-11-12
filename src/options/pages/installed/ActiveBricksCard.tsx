@@ -16,7 +16,12 @@
  */
 
 import React, { useContext, useMemo } from "react";
-import { MessageContext, ResolvedExtension, UUID } from "@/core";
+import {
+  MessageContext,
+  RecipeMetadata,
+  ResolvedExtension,
+  UUID,
+} from "@/core";
 import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { Card, Col, Row, Table } from "react-bootstrap";
 import ExtensionGroup from "./ExtensionGroup";
@@ -24,7 +29,7 @@ import ExtensionGroupHeader from "./ExtensionGroupHeader";
 import { groupBy } from "lodash";
 import ExtensionRows from "./ExtensionRows";
 import { isDeploymentActive } from "@/options/deploymentUtils";
-import { useGetOrganizationsQuery } from "@/services/api";
+import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import AuthContext from "@/auth/AuthContext";
 
 const groupByRecipe = (
@@ -109,10 +114,33 @@ const ActiveBricksCard: React.FunctionComponent<{
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
   const { data: organizations = [] } = useGetOrganizationsQuery();
   const { scope } = useContext(AuthContext);
+  const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
 
   const getOrganizationName = (organizationId: UUID) =>
     organizations.find((organization) => organization.id === organizationId)
       ?.name;
+
+  // TODO: compare updated_at string
+  const extensionGroupHasUpdate = (installedRecipe: RecipeMetadata) => {
+    if (isRecipesLoading) {
+      return null;
+    }
+
+    const latestRecipe = recipes.find(
+      (recipe) => recipe.metadata.id === installedRecipe.id
+    );
+    // return (latestRecipe.metadata.version > installedRecipe.version)
+    //     || !installedRecipe.updated_at
+    //     || (latestRecipe.updated_at > installedRecipe?.updated_at);
+    // TODO: proper version number comparison
+    console.log(
+      "Latest version:",
+      latestRecipe.metadata.version,
+      "Current version:",
+      installedRecipe.version
+    );
+    return !(latestRecipe.metadata.version > installedRecipe.version);
+  };
 
   const groupedExtensions = useMemo(() => groupExtensions(extensions, scope), [
     extensions,
@@ -172,12 +200,14 @@ const ActiveBricksCard: React.FunctionComponent<{
                     const messageContext: MessageContext = {
                       blueprintId: recipe.id,
                     };
+                    console.log("hasUpdate:", extensionGroupHasUpdate(recipe));
 
                     return (
                       <ExtensionGroup
                         key={recipe.id}
                         label={recipe.name}
                         extensions={extensions}
+                        hasUpdate={extensionGroupHasUpdate(recipe)}
                         groupMessageContext={messageContext}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}

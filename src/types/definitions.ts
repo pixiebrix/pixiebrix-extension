@@ -103,6 +103,8 @@ export interface RecipeDefinition extends Definition {
   definitions?: InnerDefinitions;
   options?: OptionsDefinition;
   sharing?: SharingDefinition;
+  // TODO: is there a timestamp type?
+  updated_at: string;
 }
 
 export interface KeyAuthenticationDefinition {
