@@ -37,6 +37,7 @@ import styles from "./ElementWizard.module.scss";
 import { thisTab } from "@/devTools/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import useSavingWizard from "./panes/save/useSavingWizard";
 
 const LOG_STEP_NAME = "Logs";
 
@@ -103,12 +104,23 @@ const ElementWizard: React.FunctionComponent<{
   );
 
   const {
-    isSubmitting,
     isValid,
     status,
-    handleSubmit,
     handleReset,
+    setStatus,
   } = useFormikContext<FormState>();
+
+  const { savingExtensionId, save } = useSavingWizard();
+
+  const isSubmitting = Boolean(savingExtensionId);
+
+  const onSave = async () => {
+    try {
+      await save();
+    } catch (error: unknown) {
+      setStatus(error);
+    }
+  };
 
   const selectTabHandler = useCallback(
     (step: string) => {
@@ -155,7 +167,7 @@ const ElementWizard: React.FunctionComponent<{
           <ActionToolbar
             element={element}
             disabled={isSubmitting}
-            onSave={handleSubmit}
+            onSave={onSave}
           />
         </Nav>
 
