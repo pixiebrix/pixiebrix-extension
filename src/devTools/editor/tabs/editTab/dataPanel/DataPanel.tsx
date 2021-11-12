@@ -68,7 +68,8 @@ const DataPanel: React.FC<{
 
   const showDeveloperTabs = flags.includes("page-editor-developer");
 
-  const { values: formState } = useFormikContext<FormState>();
+  const { values: formState, errors } = useFormikContext<FormState>();
+  const formikData = { errors, ...formState };
 
   const { blockPipeline } = formState.extension;
   const blockIndex = blockPipeline.findIndex(
@@ -196,7 +197,7 @@ const DataPanel: React.FC<{
                 to developers
               </div>
               <JsonTree
-                data={formState ?? {}}
+                data={formikData ?? {}}
                 searchable
                 initialSearchQuery={formikQuery}
                 onSearchQueryChanged={setFormikQuery}

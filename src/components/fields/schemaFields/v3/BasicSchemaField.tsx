@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useEffect, useMemo } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import SchemaFieldContext, {
@@ -26,6 +32,7 @@ import { isEmpty, sortBy } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import UnsupportedWidget from "@/components/fields/schemaFields/widgets/UnsupportedWidget";
 import TemplateToggleWidget, {
+  getOptionForInputMode,
   InputModeOption,
   StringOption,
 } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
@@ -67,12 +74,24 @@ function getToggleOptions({
   isObjectProperty,
   isArrayItem,
 }: ToggleOptionInputs): InputModeOption[] {
-  const options: InputModeOption[] = [];
+  let options: InputModeOption[] = [];
 
-  function pushOptions(...opts: InputModeOption[]) {
-    for (const opt of opts) {
-      if (!options.some((x) => x.value === opt.value)) {
-        options.push(opt);
+  function pushOptions(...newOptions: InputModeOption[]) {
+    for (const newOption of newOptions) {
+      const existingOption = getOptionForInputMode(options, newOption.value);
+
+      if (!existingOption) {
+        options.push(newOption);
+      } else if (
+        existingOption.value !== "omit" &&
+        existingOption.label === newOption.label
+      ) {
+        // Handle the case where the field supports anyOf/oneOf where the sub-schemas have different documentation.
+        options = options.filter((x) => x.value !== newOption.value);
+        options.push({
+          ...existingOption,
+          description: "Multiple input data types supported",
+        });
       }
     }
   }
@@ -84,7 +103,13 @@ function getToggleOptions({
     }
   }
 
-  const anyType = !Object.prototype.hasOwnProperty.call(fieldSchema, "type");
+  const multiSchemas = [
+    ...(fieldSchema.anyOf ?? []),
+    ...(fieldSchema.oneOf ?? []),
+    ...(fieldSchema.allOf ?? []),
+  ];
+
+  const anyType = isEmpty(multiSchemas) && !fieldSchema.type;
 
   if (Array.isArray(fieldSchema.type)) {
     const { type: typeArray, ...rest } = fieldSchema;
@@ -240,10 +265,6 @@ function getToggleOptions({
     );
   }
 
-  const multiSchemas = [
-    ...(fieldSchema.anyOf ?? []),
-    ...(fieldSchema.oneOf ?? []),
-  ];
   const multiOptions = multiSchemas.flatMap((subSchema) => {
     if (typeof subSchema === "boolean") {
       return [];
@@ -255,9 +276,14 @@ function getToggleOptions({
       customToggleModes,
       isObjectProperty,
       isArrayItem,
+    }).map((option) => {
+      option.description = subSchema.description;
+      return option;
     });
   });
-  pushOptions(...multiOptions);
+  if (!isEmpty(multiOptions)) {
+    pushOptions(...multiOptions);
+  }
 
   if (!isRequired) {
     if (isArrayItem) {
@@ -290,7 +316,20 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     isArrayItem = false,
   } = props;
   const fieldLabel = makeLabelForSchemaField(props);
-  const fieldDescription = description ?? schema.description;
+  const defaultDescription = useMemo(() => description ?? schema.description, [
+    description,
+    schema.description,
+  ]);
+  const [fieldDescription, setFieldDescription] = useState<React.ReactNode>(
+    defaultDescription
+  );
+
+  const updateFieldDescription = useCallback(
+    (newDescription: string | undefined) => {
+      setFieldDescription(newDescription ?? defaultDescription);
+    },
+    [defaultDescription]
+  );
 
   const { customToggleModes } = useContext(SchemaFieldContext);
 
@@ -300,7 +339,10 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
   if (
     isObjectType &&
     schema.properties === undefined &&
-    schema.additionalProperties === undefined
+    schema.additionalProperties === undefined &&
+    schema.oneOf === undefined &&
+    schema.anyOf === undefined &&
+    schema.allOf === undefined
   ) {
     schema.additionalProperties = true;
   }
@@ -317,7 +359,7 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     [customToggleModes, isArrayItem, isObjectProperty, isRequired, schema]
   );
 
-  const [{ value }, , { setValue }] = useField(name);
+  const [{ value }, { error, touched }, { setValue }] = useField(name);
 
   useEffect(() => {
     // Initialize any undefined/empty required fields to prevent inferring an "omit" input
@@ -333,6 +375,8 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
         name={name}
         label={fieldLabel}
         description={fieldDescription}
+        error={error}
+        touched={touched}
         as={UnsupportedWidget}
       />
     );
@@ -345,6 +389,7 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
       description={fieldDescription}
       as={TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
+      setFieldDescription={updateFieldDescription}
       {...props}
     />
   );
