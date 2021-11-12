@@ -78,17 +78,18 @@ function getToggleOptions({
 
   function pushOptions(...newOptions: InputModeOption[]) {
     for (const newOption of newOptions) {
-      const existing = getOptionForInputMode(options, newOption.value);
+      const existingOption = getOptionForInputMode(options, newOption.value);
 
-      if (!existing) {
+      if (!existingOption) {
         options.push(newOption);
-        continue;
-      }
-
-      if (existing.value !== "omit" && existing.label === newOption.label) {
+      } else if (
+        existingOption.value !== "omit" &&
+        existingOption.label === newOption.label
+      ) {
+        // Handle the case where the field supports anyOf/oneOf where the sub-schemas have different documentation.
         options = options.filter((x) => x.value !== newOption.value);
         options.push({
-          ...existing,
+          ...existingOption,
           description: "Multiple input data types supported",
         });
       }
@@ -105,6 +106,7 @@ function getToggleOptions({
   const multiSchemas = [
     ...(fieldSchema.anyOf ?? []),
     ...(fieldSchema.oneOf ?? []),
+    ...(fieldSchema.allOf ?? []),
   ];
 
   const anyType = isEmpty(multiSchemas) && !fieldSchema.type;
@@ -339,7 +341,8 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     schema.properties === undefined &&
     schema.additionalProperties === undefined &&
     schema.oneOf === undefined &&
-    schema.anyOf === undefined
+    schema.anyOf === undefined &&
+    schema.allOf === undefined
   ) {
     schema.additionalProperties = true;
   }
