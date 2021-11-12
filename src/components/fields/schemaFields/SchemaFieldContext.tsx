@@ -23,7 +23,7 @@ import {
 } from "@/components/fields/schemaFields/propTypes";
 import ServiceField, {
   isServiceField,
-} from "@/components/fields/schemaFields/ServiceField";
+} from "@/components/fields/schemaFields/v1/ServiceField";
 import {
   booleanPredicate,
   findOneOf,

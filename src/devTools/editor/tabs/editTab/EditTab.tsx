@@ -45,7 +45,8 @@ import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlockConfigs";
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
-import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
+import { produceExcludeUnusedDependencies as produceExcludeUnusedDependenciesV1 } from "@/components/fields/schemaFields/v1/ServiceField";
+import { produceExcludeUnusedDependencies as produceExcludeUnusedDependenciesV3 } from "@/components/fields/schemaFields/v3/ServiceField";
 import usePipelineField, {
   PIPELINE_BLOCKS_FIELD_NAME,
 } from "@/devTools/editor/hooks/usePipelineField";
@@ -55,6 +56,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
 import AuthContext from "@/auth/AuthContext";
 import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
+import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -75,6 +77,11 @@ const EditTab: React.FC<{
   );
 
   const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
+
+  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
+  const produceExcludeUnusedDependencies = isApiAtLeastV3
+    ? produceExcludeUnusedDependenciesV3
+    : produceExcludeUnusedDependenciesV1;
 
   // Load once
   const [allBlocks] = useAsyncState<BlocksMap>(

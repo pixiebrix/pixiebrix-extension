@@ -19,6 +19,7 @@ import React, { ChangeEvent, useCallback, useEffect, useMemo } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { setIn, useField, useFormikContext } from "formik";
 import {
+  Expression,
   OutputKey,
   RegistryId,
   SafeString,
@@ -48,6 +49,7 @@ import {
 } from "@/services/serviceUtils";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { isExpression } from "@/runtime/mapArgs";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
@@ -81,8 +83,12 @@ function defaultOutputKey(
   ) as OutputKey;
 }
 
-export function keyToFieldValue(key: OutputKey): ServiceKeyVar {
-  return key == null ? null : (`@${key}` as ServiceKeyVar);
+export function keyToFieldValue(key: OutputKey): Expression<ServiceKeyVar> {
+  const val = key == null ? null : (`@${key}` as ServiceKeyVar);
+  return {
+    __type__: "var",
+    __value__: val,
+  };
 }
 
 export type ServiceSlice = Pick<FormState, "services" | "extension">;
@@ -100,7 +106,9 @@ function lookupAuthId(
   const dependency =
     value == null
       ? null
-      : dependencies.find((x) => keyToFieldValue(x.outputKey) === value);
+      : dependencies.find(
+          (x) => keyToFieldValue(x.outputKey).__value__ === value
+        );
 
   return dependency == null
     ? null
@@ -110,9 +118,10 @@ function lookupAuthId(
 function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
   const pipeline = castArray(state.extension.blockPipeline ?? []);
   const identifiers = pipeline.flatMap((blockConfig) => {
-    const values = Object.values(blockConfig.config).filter(
-      (x) => typeof x === "string"
-    ) as string[];
+    const expressions = Object.values(blockConfig.config).filter(
+      (x) => isExpression(x) && x.__type__ === "var"
+    ) as Expression[];
+    const values = expressions.map((x) => x.__value__);
     return values.filter((value) => SERVICE_VAR_REGEX.test(value));
   });
 
@@ -129,7 +138,7 @@ export function produceExcludeUnusedDependencies<
   const used = selectTopLevelVars(state);
   return produce(state, (draft) => {
     draft.services = draft.services.filter((x) =>
-      used.has(keyToFieldValue(x.outputKey))
+      used.has(keyToFieldValue(x.outputKey).__value__)
     );
   });
 }
@@ -209,7 +218,9 @@ const ServiceField: React.FunctionComponent<
     values: root,
     setValues: setRootValues,
   } = useFormikContext<ServiceSlice>();
-  const [{ value, ...field }, meta, helpers] = useField<ServiceKeyVar>(props);
+  const [{ value, ...field }, meta, helpers] = useField<
+    Expression<ServiceKeyVar>
+  >(props);
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);
@@ -285,7 +296,7 @@ const ServiceField: React.FunctionComponent<
       blankValue={null}
       options={options}
       // The SelectWidget re-looks up the option based on the value
-      value={lookupAuthId(root.services, authOptions, value)}
+      value={lookupAuthId(root.services, authOptions, value?.__value__)}
       onChange={onChange}
       error={meta.error}
       touched={meta.touched}
