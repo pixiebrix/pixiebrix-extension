@@ -110,9 +110,7 @@ const ElementWizard: React.FunctionComponent<{
     setStatus,
   } = useFormikContext<FormState>();
 
-  const { savingExtensionId, save } = useSavingWizard();
-
-  const isSubmitting = Boolean(savingExtensionId);
+  const { isSaving, save } = useSavingWizard();
 
   const onSave = async () => {
     try {
@@ -159,14 +157,14 @@ const ElementWizard: React.FunctionComponent<{
 
           <PermissionsToolbar
             element={element}
-            disabled={isSubmitting || !isValid}
+            disabled={isSaving || !isValid}
           />
 
-          <ReloadToolbar element={element} disabled={isSubmitting} />
+          <ReloadToolbar element={element} disabled={isSaving} />
 
           <ActionToolbar
             element={element}
-            disabled={isSubmitting}
+            disabled={isSaving}
             onSave={onSave}
           />
         </Nav>

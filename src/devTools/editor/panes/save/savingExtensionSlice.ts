@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type SavingExtensionState = {
@@ -26,16 +25,15 @@ export type SavingExtensionState = {
   isWizardOpen: boolean;
 
   /**
-   * Id of the extension being saved.
-   * Is set only when the saving process is actually in progress.
-   * When a modal with saving options is open this property is null.
+   * Is TRUE only when the saving is actually in progress.
+   * When a modal with saving options is open this property is FALSE.
    */
-  savingExtensionId: UUID | null;
+  isSaving: boolean;
 };
 
 const initialState: SavingExtensionState = {
   isWizardOpen: false,
-  savingExtensionId: null,
+  isSaving: false,
 };
 
 export const savingExtensionSlice = createSlice({
@@ -45,12 +43,15 @@ export const savingExtensionSlice = createSlice({
     openWizard: (state) => {
       state.isWizardOpen = true;
     },
-    setSavingExtension: (state, action: PayloadAction<UUID>) => {
-      state.savingExtensionId = action.payload;
+    setSavingInProgress: (state, action: PayloadAction<boolean>) => {
+      state.isSaving = true;
     },
+    /**
+     * Closes the Wizard and also disables isSaving flag
+     */
     closeWizard: (state) => {
       state.isWizardOpen = false;
-      state.savingExtensionId = null;
+      state.isSaving = false;
     },
   },
 });
