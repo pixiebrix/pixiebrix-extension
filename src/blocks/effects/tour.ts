@@ -111,19 +111,13 @@ export class TourEffect extends Effect {
     disableInteraction = false,
     steps = [] as Step[],
   }: BlockArg): Promise<void> {
-    const stylesheetLink = attachStylesheet(stylesheetUrl);
+    const stylesheetLink = await attachStylesheet(stylesheetUrl);
 
     const removeStylesheet = () => {
       stylesheetLink.remove();
     };
 
     const { default: introJs } = await import("intro.js");
-
-    // We weren't seeing a FOUC: https://webkit.org/blog/66/the-fouc-problem/. But make sure the CSS sheet is available
-    // before starting a tour.
-    await new Promise((resolve) => {
-      requestAnimationFrame(resolve);
-    });
 
     return new Promise<void>((resolve, reject) => {
       if (tourInProgress) {
