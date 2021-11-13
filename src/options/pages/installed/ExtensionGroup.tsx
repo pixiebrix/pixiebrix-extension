@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,6 +24,7 @@ import {
   faCheck,
   faList,
   faPause,
+  faSyncAlt,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
@@ -42,6 +43,8 @@ import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
 import AuthContext from "@/auth/AuthContext";
 import { Button } from "react-bootstrap";
+import { push } from "connected-react-router";
+import { useHistory } from "react-router";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
@@ -76,6 +79,7 @@ const ExtensionGroup: React.FunctionComponent<{
   const { flags } = useContext(AuthContext);
   const notify = useNotifications();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const expandable = !managed;
   const [expanded, setExpanded] = useState(expandable && startExpanded);
@@ -83,6 +87,14 @@ const ExtensionGroup: React.FunctionComponent<{
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extensions
   );
+
+  const recipe = extensions[0]._recipe;
+
+  const install = () => {
+    history.push(
+      `marketplace/activate/${encodeURIComponent(recipe.id)}?reinstall=1`
+    );
+  };
 
   const removeMany = useUserAction(
     async (extensions: IExtension[]) => {
@@ -114,7 +126,7 @@ const ExtensionGroup: React.FunctionComponent<{
 
     if (hasUpdate) {
       return (
-        <Button variant="info" size="sm">
+        <Button size="sm" variant="info" onClick={async () => install()}>
           Update
         </Button>
       );
@@ -143,7 +155,7 @@ const ExtensionGroup: React.FunctionComponent<{
         <FontAwesomeIcon icon={faCheck} /> Active
       </>
     );
-  }, [paused, managed, hasPermissions, requestPermissions]);
+  }, [paused, managed, hasPermissions, requestPermissions, hasUpdate]);
 
   const onViewLogs = () => {
     dispatch(
@@ -197,6 +209,16 @@ const ExtensionGroup: React.FunctionComponent<{
                   await removeMany(extensions);
                 },
                 className: "text-danger",
+              },
+              {
+                title: (
+                  <>
+                    <FontAwesomeIcon icon={faSyncAlt} />{" "}
+                    {hasUpdate ? "Update" : "Reactivate"}
+                  </>
+                ),
+                className: "text-info",
+                action: install,
               },
             ]}
           />
