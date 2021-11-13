@@ -43,7 +43,6 @@ import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
 import AuthContext from "@/auth/AuthContext";
 import { Button } from "react-bootstrap";
-import { push } from "connected-react-router";
 import { useHistory } from "react-router";
 
 const ExtensionGroup: React.FunctionComponent<{
@@ -90,11 +89,11 @@ const ExtensionGroup: React.FunctionComponent<{
 
   const recipe = extensions[0]._recipe;
 
-  const install = () => {
+  const install = useCallback(() => {
     history.push(
       `marketplace/activate/${encodeURIComponent(recipe.id)}?reinstall=1`
     );
-  };
+  }, [recipe.id, history]);
 
   const removeMany = useUserAction(
     async (extensions: IExtension[]) => {
@@ -126,7 +125,13 @@ const ExtensionGroup: React.FunctionComponent<{
 
     if (hasUpdate) {
       return (
-        <Button size="sm" variant="info" onClick={async () => install()}>
+        <Button
+          size="sm"
+          variant="info"
+          onClick={() => {
+            install();
+          }}
+        >
           Update
         </Button>
       );
@@ -155,7 +160,7 @@ const ExtensionGroup: React.FunctionComponent<{
         <FontAwesomeIcon icon={faCheck} /> Active
       </>
     );
-  }, [paused, managed, hasPermissions, requestPermissions, hasUpdate]);
+  }, [paused, managed, hasPermissions, requestPermissions, hasUpdate, install]);
 
   const onViewLogs = () => {
     dispatch(
