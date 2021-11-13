@@ -18,7 +18,7 @@
 import Page from "@/layout/Page";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
-import { useParams } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { RecipeDefinition, SharingDefinition } from "@/types/definitions";
 import { Card, Col, Row } from "react-bootstrap";
 import GridLoader from "react-spinners/GridLoader";
@@ -42,6 +42,10 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
     isLoading,
     error: fetchError,
   } = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}`);
+
+  const reinstall = new URLSearchParams(useLocation().search).get("reinstall");
+
+  console.log("Reinstall:", reinstall);
 
   // Reshape to recipe definition
   const recipe: RecipeDefinition = useMemo(
