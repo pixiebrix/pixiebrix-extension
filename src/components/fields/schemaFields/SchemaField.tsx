@@ -22,7 +22,7 @@ import SchemaFieldV1 from "@/components/fields/schemaFields/v1/SchemaField";
 import SchemaFieldV3 from "@/components/fields/schemaFields/v3/SchemaField";
 
 /**
- * A schema-based field that automatically determines it's layout/widget based on the schema and uiSchema.
+ * A schema-based field that automatically determines its layout/widget based on the schema and uiSchema.
  *
  * @see SchemaFieldContext
  * @see getDefaultField
