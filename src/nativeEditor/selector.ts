@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import Overlay from "@/nativeEditor/Overlay";
-import { findContainer, safeCssSelector } from "@/nativeEditor/infer";
+import {
+  findContainer,
+  safeCssSelector,
+  twiddleElement,
+} from "@/nativeEditor/infer";
 import { Framework } from "@/messaging/constants";
 import { uniq } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
@@ -232,7 +236,11 @@ export async function selectElement({
     }
 
     case "element": {
-      const selector = safeCssSelector(elements[0], [], rootElement);
+      const selector = safeCssSelector(
+        twiddleElement(elements[0]),
+        [],
+        rootElement
+      );
 
       console.debug(`Generated selector: ${selector}`);
 

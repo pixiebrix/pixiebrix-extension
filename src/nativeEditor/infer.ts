@@ -458,13 +458,36 @@ function commonPanelHTML(tag: string, $items: JQuery): string {
 }
 
 const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
-  "tag",
   "id",
+  "tag",
   "class",
   "attribute",
   "nthoftype",
   "nthchild",
 ];
+
+function isButtonLike(element: HTMLElement): boolean {
+  return (
+    element &&
+    (element.tagName === "BUTTON" || element.getAttribute("role") === "button")
+  );
+}
+
+/**
+ * Heuristic to switch the user-selected element for a more relevant element.
+ *
+ * Because of how our selection works, sometimes it's not possible to select the element you actually want (e.g.,
+ * because the element has a child that takes its full size.)
+ *
+ * @param element the element the user selected in "element" selection mode.
+ */
+export function twiddleElement(element: HTMLElement): HTMLElement {
+  if (element.tagName === "SPAN" && isButtonLike(element.parentElement)) {
+    return element.parentElement;
+  }
+
+  return element;
+}
 
 /**
  * Calls getCssSelector with smarter handling of undefined root element and blacklisting common
@@ -473,12 +496,26 @@ const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
 export function safeCssSelector(
   element: HTMLElement,
   selectors: CssSelectorType[] | undefined,
-  root: Element = undefined
+  // eslint-disable-next-line unicorn/no-useless-undefined -- force the caller to pass in the argument
+  root: Element | null = undefined
 ): string {
   // https://github.com/fczbkk/css-selector-generator
 
   const selector = getCssSelector(element, {
-    blacklist: ["#ember*", "[data-aura-rendered-by]"],
+    blacklist: [
+      // Emberjs component tracking
+      "#ember*",
+      // Salesforce Aura component tracking
+      "[data-aura-rendered-by]",
+      // Vuejs component tracking
+      "[data-v-*]",
+    ],
+    whitelist: [
+      // Data attributes people use in automated tests are unlikely to change frequently
+      ["data-cy"],
+      ["data-testid"],
+      ["data-test"],
+    ],
     selectors: selectors ?? DEFAULT_SELECTOR_PRIORITIES,
     combineWithinSelector: true,
     combineBetweenSelectors: true,
@@ -500,7 +537,8 @@ export function safeCssSelector(
  */
 export function inferSelectors(
   element: HTMLElement,
-  root: Element = undefined
+  // eslint-disable-next-line unicorn/no-useless-undefined -- force caller to provide the argument
+  root: Element | null = undefined
 ): string[] {
   const makeSelector = (allowed: CssSelectorType[]) => {
     try {
