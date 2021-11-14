@@ -46,17 +46,19 @@ export function joinName(
   baseFieldName: string | null,
   ...rest: string[]
 ): string {
-  if (rest.length === 0) {
+  const fieldNames = compact(rest);
+
+  if (fieldNames.length === 0) {
     throw new Error(
       "Expected one or more field names to join with the main path"
     );
   }
 
-  if (rest.some((x) => x.includes("."))) {
+  if (fieldNames.some((x) => x.includes("."))) {
     throw new Error("Formik path parts cannot contain periods");
   }
 
-  return compact([baseFieldName, ...rest]).join(".");
+  return compact([baseFieldName, ...fieldNames]).join(".");
 }
 
 export function mostCommonElement<T>(items: T[]): T {

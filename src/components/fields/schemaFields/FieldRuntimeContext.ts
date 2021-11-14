@@ -15,28 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
-declare module "*.svg" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import React from "react";
+import { ApiVersion } from "@/core";
 
-declare module "*?loadAsUrl" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+export type RuntimeContext = {
+  apiVersion: ApiVersion;
+};
 
-declare module "*?loadAsText" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+const defaultValue: RuntimeContext = {
+  apiVersion: "v2",
+};
 
-declare module "*.txt" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+/**
+ * A context to control whether v1 or v3 schema widgets. Introduced to that apiVersion doesn't have to be
+ * tracked explicitly on the Formik form as a top-level field.
+ * @see useApiVersionAtLeast
+ */
+const FieldRuntimeContext = React.createContext<RuntimeContext>(defaultValue);
 
-declare module "*.yaml" {
-  const CONTENT: Record<string, unknown>;
-  export default CONTENT;
-}
+export default FieldRuntimeContext;

@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { freshIdentifier, isApiVersionAtLeast, removeUndefined } from "@/utils";
+import {
+  freshIdentifier,
+  isApiVersionAtLeast,
+  joinName,
+  removeUndefined,
+} from "@/utils";
 import type { SafeString } from "@/core";
 
 test("can generate fresh identifier", () => {
@@ -56,5 +61,28 @@ describe("isApiVersionAtLeast()", () => {
   });
   test("v1 is not at least v2", () => {
     expect(isApiVersionAtLeast("v1", "v2")).toStrictEqual(false);
+  });
+});
+
+describe("joinName", () => {
+  test("rejects no paths", () => {
+    expect(() => joinName("foo")).toThrow("Expected one or more field names");
+  });
+
+  test("compacts paths", () => {
+    expect(joinName("foo", null, "bar")).toBe("foo.bar");
+  });
+
+  test("rejects path part with period", () => {
+    expect(() => joinName("foo", "bar.baz")).toThrow("cannot contain periods");
+  });
+
+  test("accepts base path part with period", () => {
+    expect(joinName("foo.bar", "baz")).toBe("foo.bar.baz");
+  });
+
+  test("accepts null/undefined base path part", () => {
+    expect(joinName(null, "foo")).toBe("foo");
+    expect(joinName(undefined, "foo")).toBe("foo");
   });
 });

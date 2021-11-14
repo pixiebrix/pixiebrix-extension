@@ -49,8 +49,14 @@ module.exports = {
       ...[
         {
           test: /\.ya?ml$/,
+          resourceQuery: { not: [/loadAsText/] },
           type: "json",
           use: "yaml-loader",
+        },
+        {
+          test: /\.ya?ml$/,
+          resourceQuery: /loadAsText/,
+          use: "raw-loader",
         },
         {
           test: /\.scss$/,

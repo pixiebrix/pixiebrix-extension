@@ -277,6 +277,7 @@
     "transform": {
       "^.+\\.[jt]sx?$": "babel-jest",
       "^.+\\.ya?ml$": "yaml-jest-transform",
+      "^.+\\.ya?ml\\?loadAsText$": "jest-raw-loader",
       "^.+\\.txt$": "jest-raw-loader"
     },
     "transformIgnorePatterns": [
@@ -302,7 +303,7 @@
       "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",
       "^@/(.*)$": "<rootDir>/src/$1",
       "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
-      "^@contrib/(.*)$": "<rootDir>/contrib/$1",
+      "^@contrib/(.*?)(\\?loadAsText)?$": "<rootDir>/contrib/$1",
       "^@schemas/(.*)$": "<rootDir>/schemas/$1",
       "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
