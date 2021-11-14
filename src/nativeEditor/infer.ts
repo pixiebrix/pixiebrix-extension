@@ -458,8 +458,8 @@ function commonPanelHTML(tag: string, $items: JQuery): string {
 }
 
 const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
-  "tag",
   "id",
+  "tag",
   "class",
   "attribute",
   "nthoftype",
@@ -473,12 +473,25 @@ const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
 export function safeCssSelector(
   element: HTMLElement,
   selectors: CssSelectorType[] | undefined,
-  root: Element = undefined
+  root: Element | null = null
 ): string {
   // https://github.com/fczbkk/css-selector-generator
 
   const selector = getCssSelector(element, {
-    blacklist: ["#ember*", "[data-aura-rendered-by]"],
+    blacklist: [
+      // Emberjs component tracking
+      "#ember*",
+      // Salesforce Aura component tracking
+      "[data-aura-rendered-by]",
+      // Vuejs component tracking
+      "[data-v-*]",
+    ],
+    whitelist: [
+      // Data attributes people use in automated tests are unlikely to change frequently
+      ["data-cy"],
+      ["data-testid"],
+      ["data-test"],
+    ],
     selectors: selectors ?? DEFAULT_SELECTOR_PRIORITIES,
     combineWithinSelector: true,
     combineBetweenSelectors: true,
@@ -500,7 +513,7 @@ export function safeCssSelector(
  */
 export function inferSelectors(
   element: HTMLElement,
-  root: Element = undefined
+  root: Element | null = null
 ): string[] {
   const makeSelector = (allowed: CssSelectorType[]) => {
     try {
