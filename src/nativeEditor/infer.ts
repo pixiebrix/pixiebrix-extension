@@ -466,13 +466,6 @@ const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
   "nthchild",
 ];
 
-function isButtonLike(element: HTMLElement): boolean {
-  return (
-    element &&
-    (element.tagName === "BUTTON" || element.getAttribute("role") === "button")
-  );
-}
-
 /**
  * Calls getCssSelector with smarter handling of undefined root element and blacklisting common
  * front-end framework elements that aren't good for selectors
@@ -480,8 +473,7 @@ function isButtonLike(element: HTMLElement): boolean {
 export function safeCssSelector(
   element: HTMLElement,
   selectors: CssSelectorType[] | undefined,
-  // eslint-disable-next-line unicorn/no-useless-undefined -- force the caller to pass in the argument
-  root: Element | null = undefined
+  root: Element | null = null
 ): string {
   // https://github.com/fczbkk/css-selector-generator
 
@@ -521,8 +513,7 @@ export function safeCssSelector(
  */
 export function inferSelectors(
   element: HTMLElement,
-  // eslint-disable-next-line unicorn/no-useless-undefined -- force caller to provide the argument
-  root: Element | null = undefined
+  root: Element | null = null
 ): string[] {
   const makeSelector = (allowed: CssSelectorType[]) => {
     try {
