@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.4.7-alpha.3",
+  "version": "1.4.7-beta.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
