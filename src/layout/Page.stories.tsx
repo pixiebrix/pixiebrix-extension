@@ -34,3 +34,19 @@ Default.args = {
   title: "Example page",
   description: "Welcome to an example page! Have a look around.",
 };
+
+export const Loading = Template.bind({});
+Loading.args = {
+  icon: "music",
+  title: "Example page",
+  isPending: true,
+  description: "Welcome to an example page! Have a look around.",
+};
+
+export const LoadError = Template.bind({});
+LoadError.args = {
+  icon: "music",
+  title: "Example page",
+  error: new Error("Error loading page"),
+  description: "Welcome to an example page! Have a look around.",
+};

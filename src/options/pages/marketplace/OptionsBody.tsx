@@ -19,15 +19,23 @@ import React, { useMemo } from "react";
 import { Card } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import FieldRuntimeContext, {
+  RuntimeContext,
+} from "@/components/fields/schemaFields/FieldRuntimeContext";
 
-interface OwnProps {
-  blueprint: RecipeDefinition;
+// Use "v2" because the service configuration form expects literal values for everything. (I.e., expressions are not
+// supports). But we still want to get our SchemaField support for enums, etc.
+const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
+  apiVersion: "v2",
+};
+
+export interface OptionsBodyProps {
+  blueprint: Pick<RecipeDefinition, "options">;
 }
 
-const OptionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
+const OptionsBody: React.FunctionComponent<OptionsBodyProps> = ({
+  blueprint,
+}) => {
   const OptionsGroup = useMemo(
     () =>
       genericOptionsFactory(
@@ -40,19 +48,11 @@ const OptionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     <>
       <Card.Body className="px-3 py-3">
         <Card.Title>Personalize Blueprint</Card.Title>
-        <p className="text-info">
-          <FontAwesomeIcon icon={faInfoCircle} /> After activating this
-          blueprint, you can configure it at any time on the{" "}
-          <Link to="/installed">
-            <u>
-              <FontAwesomeIcon icon={faCubes} />
-              {"  "}Active Bricks page
-            </u>
-          </Link>
-        </p>
       </Card.Body>
       <Card.Body className="OptionsBody p-3">
-        <OptionsGroup name="optionsArgs" />
+        <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
+          <OptionsGroup name="optionsArgs" />
+        </FieldRuntimeContext.Provider>
       </Card.Body>
     </>
   );

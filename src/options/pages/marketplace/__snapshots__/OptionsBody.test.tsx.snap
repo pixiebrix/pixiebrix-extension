@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Marketplace Activate Wizard OptionsBody renders text field 1`] = `
+<DocumentFragment>
+  <div
+    class="px-3 py-3 card-body"
+  >
+    <div
+      class="card-title h5"
+    >
+      Personalize Blueprint
+    </div>
+  </div>
+  <div
+    class="OptionsBody p-3 card-body"
+  >
+    <div
+      class="horizontalFormGroup form-group row"
+    >
+      <label
+        class="horizontalLabel form-label col-form-label col-lg-3"
+        for="optionsArgs.textField"
+      >
+        Text Field
+      </label>
+      <div
+        class="col-lg-9"
+      >
+        <input
+          class="form-control"
+          name="optionsArgs.textField"
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

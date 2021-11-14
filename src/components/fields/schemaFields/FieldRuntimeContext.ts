@@ -27,9 +27,10 @@ const defaultValue: RuntimeContext = {
 };
 
 /**
- * A context to control whether v1 or v3 schema widgets. Introduced to that apiVersion doesn't have to be
+ * A context to control whether v1 or v3 SchemaField. Introduced to that apiVersion doesn't have to be
  * tracked explicitly on the Formik form as a top-level field.
  * @see useApiVersionAtLeast
+ * @see SchemaField
  */
 const FieldRuntimeContext = React.createContext<RuntimeContext>(defaultValue);
 
