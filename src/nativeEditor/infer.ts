@@ -474,22 +474,6 @@ function isButtonLike(element: HTMLElement): boolean {
 }
 
 /**
- * Heuristic to switch the user-selected element for a more relevant element.
- *
- * Because of how our selection works, sometimes it's not possible to select the element you actually want (e.g.,
- * because the element has a child that takes its full size.)
- *
- * @param element the element the user selected in "element" selection mode.
- */
-export function twiddleElement(element: HTMLElement): HTMLElement {
-  if (element.tagName === "SPAN" && isButtonLike(element.parentElement)) {
-    return element.parentElement;
-  }
-
-  return element;
-}
-
-/**
  * Calls getCssSelector with smarter handling of undefined root element and blacklisting common
  * front-end framework elements that aren't good for selectors
  */
