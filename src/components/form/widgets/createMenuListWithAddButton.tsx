@@ -17,20 +17,38 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { MenuListComponentProps, OptionTypeBase } from "react-select";
+import {
+  GroupTypeBase,
+  MenuListComponentProps,
+  OptionTypeBase,
+} from "react-select";
 
 // The TS typings (v 4.0.18, the latest available version) do not exactly correspond
 // to the actual implementation of react-select that we use (v4.3.1). Need to adjust.
-type MenuListProps = MenuListComponentProps<OptionTypeBase, false> & {
+type MenuListProps<
+  OptionType extends OptionTypeBase,
+  IsMulti extends boolean,
+  GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
+> = MenuListComponentProps<OptionType, IsMulti, GroupType> & {
   /** Props to be passed to the menu-list wrapper. */
   innerProps: unknown;
 };
 
-type MenuListWithAddButtonProps = MenuListProps & {
+type MenuListWithAddButtonProps<
+  OptionType extends OptionTypeBase,
+  IsMulti extends boolean,
+  GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
+> = MenuListProps<OptionType, IsMulti, GroupType> & {
   onAddClick: () => void;
 };
 
-const MenuListWithAddButton: React.FC<MenuListWithAddButtonProps> = (props) => {
+const MenuListWithAddButton = <
+  OptionType extends OptionTypeBase,
+  IsMulti extends boolean,
+  GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
+>(
+  props: MenuListWithAddButtonProps<OptionType, IsMulti, GroupType>
+) => {
   const {
     children,
     className,
@@ -70,9 +88,13 @@ const MenuListWithAddButton: React.FC<MenuListWithAddButtonProps> = (props) => {
  * See [From.stories.tsx](https://github.com/pixiebrix/pixiebrix-extension/blob/main/src/components/form/Form.stories.tsx#L184:L195) for usage example.
  */
 const createMenuListWithAddButton = (onAddClick: () => void) => {
-  const MenuList: React.FC<MenuListProps> = (props) => (
-    <MenuListWithAddButton onAddClick={onAddClick} {...props} />
-  );
+  const MenuList = <
+    OptionType extends OptionTypeBase,
+    IsMulti extends boolean,
+    GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
+  >(
+    menuListProps: MenuListWithAddButtonProps<OptionType, IsMulti, GroupType>
+  ) => <MenuListWithAddButton onAddClick={onAddClick} {...menuListProps} />;
   return MenuList;
 };
 
