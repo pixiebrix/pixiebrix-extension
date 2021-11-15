@@ -98,7 +98,6 @@ describe("replaceRecipeExtension round trip", () => {
         // `services` gets normalized from undefined to {}
         draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
-        delete draft.sharing;
       })
     );
   });
@@ -145,7 +144,6 @@ describe("replaceRecipeExtension round trip", () => {
         // `services` gets normalized from undefined to {}
         draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
-        delete draft.sharing;
       })
     );
   });
@@ -193,7 +191,6 @@ describe("replaceRecipeExtension round trip", () => {
         // `services` gets normalized from undefined to {}
         draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
-        delete draft.sharing;
       })
     );
   });
@@ -255,7 +252,6 @@ describe("replaceRecipeExtension round trip", () => {
         // `services` gets normalized from undefined to {}
         draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
-        delete draft.sharing;
       })
     );
   });
@@ -308,7 +304,6 @@ describe("replaceRecipeExtension round trip", () => {
         // `services` gets normalized from undefined to {}
         draft.extensionPoints[0].services = {};
         draft.extensionPoints[0].label = "New Label";
-        delete draft.sharing;
       })
     );
   });

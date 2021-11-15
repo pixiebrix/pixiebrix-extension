@@ -131,7 +131,6 @@ export function replaceRecipeExtension(
 
   return produce(sourceRecipe, (draft) => {
     draft.metadata = metadata;
-    delete draft.sharing;
 
     const index = findRecipeIndex(sourceRecipe, installedExtension);
 
