@@ -17,36 +17,76 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
+import {
+  MenuList,
+  MenuListComponentProps,
+} from "react-select/src/components/Menu";
+
+type MenuListProps = any;
 
 type MenuListWithAddButtonProps = {
   onAddClick: () => void;
-};
+} & MenuListProps;
 
-const MenuListWithAddButton: React.FC<MenuListWithAddButtonProps> = ({
+const MenuListWithAddButton_: React.FC<MenuListWithAddButtonProps> = ({
   children,
   onAddClick,
+  ...rest
 }) => (
-  <div>
+  <MenuList {...rest}>
     {children}
     <div className="text-center">
       <Button size="sm" variant="link" onClick={onAddClick}>
         + Add new
       </Button>
     </div>
-  </div>
+  </MenuList>
 );
 
+export const MenuListWithAddButton: React.FC<MenuListWithAddButtonProps> = (
+  props
+) => {
+  const {
+    children,
+    className,
+    cx,
+    getStyles,
+    innerProps,
+    innerRef,
+    isMulti,
+    onAddClick,
+  } = props;
+
+  return (
+    <div
+      css={getStyles("menuList", props)}
+      className={cx(
+        {
+          "menu-list": true,
+          "menu-list--is-multi": isMulti,
+        },
+        className
+      )}
+      ref={innerRef}
+      {...innerProps}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const MenuListWithAddButton2 = React.forwardRef((props, ref) => (
+  <MenuList {...props} innerRef={ref} />
+));
 /**
  * This is meant to be used together with {@link SelectWidget} to show "Add new" button.
  * See [From.stories.tsx](https://github.com/pixiebrix/pixiebrix-extension/blob/main/src/components/form/Form.stories.tsx#L184:L195) for usage example.
  */
 const createMenuListWithAddButton = (onAddClick: () => void) => {
-  const MenuList: React.FC = ({ children }) => (
-    <MenuListWithAddButton onAddClick={onAddClick}>
-      {children}
-    </MenuListWithAddButton>
+  const MenuListInstance: React.FC<MenuListProps> = (menuListProps) => (
+    <MenuListWithAddButton onAddClick={onAddClick} {...menuListProps} />
   );
-  return MenuList;
+  return MenuListInstance;
 };
 
 export default createMenuListWithAddButton;

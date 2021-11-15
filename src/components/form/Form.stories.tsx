@@ -26,7 +26,9 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 import { Form as BootstrapForm } from "react-bootstrap";
 import { CustomFieldWidget } from "./FieldTemplate";
-import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
+import createMenuListWithAddButton, {
+  MenuListWithAddButton,
+} from "@/components/form/widgets/createMenuListWithAddButton";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",
@@ -144,6 +146,42 @@ const selectOptions: Array<Option<number>> = [
     label: "Option 3",
     value: 3,
   },
+  {
+    label: "Option 4",
+    value: 4,
+  },
+  {
+    label: "Option 5",
+    value: 5,
+  },
+  {
+    label: "Option 6",
+    value: 6,
+  },
+  {
+    label: "Option 7",
+    value: 7,
+  },
+  {
+    label: "Option 8",
+    value: 8,
+  },
+  {
+    label: "Option 9",
+    value: 9,
+  },
+  {
+    label: "Option 10",
+    value: 10,
+  },
+  {
+    label: "Option 11",
+    value: 11,
+  },
+  {
+    label: "Option 12",
+    value: 12,
+  },
 ];
 
 const BootstrapFormControlWidget: CustomFieldWidget = (props) => (
@@ -182,7 +220,7 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       options={selectOptions}
     />
     <ConnectedFieldTemplate
-      name="select"
+      name="select-add-new"
       layout="horizontal"
       label="Select with Add New"
       description="Creatable"
@@ -190,7 +228,8 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       blankValue={null}
       options={selectOptions}
       components={{
-        MenuList: createMenuListWithAddButton(action("onAddNew clicked")),
+        // MenuList: createMenuListWithAddButton(action("onAddNew clicked")),
+        MenuList: MenuListWithAddButton2,
       }}
     />
     <ConnectedFieldTemplate
