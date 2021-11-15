@@ -63,6 +63,7 @@ export const InstalledPage: React.FunctionComponent<{
       const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
         "/api/extensions/"
       );
+
       const cloudExtensions = data
         .filter((x) => !lookup.has(x.id))
         .map((x) => ({ ...x, active: false }));
