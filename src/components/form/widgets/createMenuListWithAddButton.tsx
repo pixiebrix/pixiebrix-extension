@@ -17,35 +17,20 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import {
-  MenuList,
-  MenuListComponentProps,
-} from "react-select/src/components/Menu";
+import { MenuListComponentProps, OptionTypeBase } from "react-select";
 
-type MenuListProps = any;
+// The TS typings (v 4.0.18, the latest available version) do not exactly correspond
+// to the actual implementation of react-select that we use (v4.3.1). Need to adjust.
+type MenuListProps = MenuListComponentProps<OptionTypeBase, false> & {
+  /** Props to be passed to the menu-list wrapper. */
+  innerProps: unknown;
+};
 
-type MenuListWithAddButtonProps = {
+type MenuListWithAddButtonProps = MenuListProps & {
   onAddClick: () => void;
-} & MenuListProps;
+};
 
-const MenuListWithAddButton_: React.FC<MenuListWithAddButtonProps> = ({
-  children,
-  onAddClick,
-  ...rest
-}) => (
-  <MenuList {...rest}>
-    {children}
-    <div className="text-center">
-      <Button size="sm" variant="link" onClick={onAddClick}>
-        + Add new
-      </Button>
-    </div>
-  </MenuList>
-);
-
-export const MenuListWithAddButton: React.FC<MenuListWithAddButtonProps> = (
-  props
-) => {
+const MenuListWithAddButton: React.FC<MenuListWithAddButtonProps> = (props) => {
   const {
     children,
     className,
@@ -59,7 +44,7 @@ export const MenuListWithAddButton: React.FC<MenuListWithAddButtonProps> = (
 
   return (
     <div
-      css={getStyles("menuList", props)}
+      style={getStyles("menuList", props)}
       className={cx(
         {
           "menu-list": true,
@@ -71,22 +56,24 @@ export const MenuListWithAddButton: React.FC<MenuListWithAddButtonProps> = (
       {...innerProps}
     >
       {children}
+      <div className="text-center">
+        <Button size="sm" variant="link" onClick={onAddClick}>
+          + Add new
+        </Button>
+      </div>
     </div>
   );
 };
 
-export const MenuListWithAddButton2 = React.forwardRef((props, ref) => (
-  <MenuList {...props} innerRef={ref} />
-));
 /**
  * This is meant to be used together with {@link SelectWidget} to show "Add new" button.
  * See [From.stories.tsx](https://github.com/pixiebrix/pixiebrix-extension/blob/main/src/components/form/Form.stories.tsx#L184:L195) for usage example.
  */
 const createMenuListWithAddButton = (onAddClick: () => void) => {
-  const MenuListInstance: React.FC<MenuListProps> = (menuListProps) => (
-    <MenuListWithAddButton onAddClick={onAddClick} {...menuListProps} />
+  const MenuList: React.FC<MenuListProps> = (props) => (
+    <MenuListWithAddButton onAddClick={onAddClick} {...props} />
   );
-  return MenuListInstance;
+  return MenuList;
 };
 
 export default createMenuListWithAddButton;
