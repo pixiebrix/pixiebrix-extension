@@ -329,10 +329,8 @@ export const optionsSlice = createSlice({
         pushToCloud,
       } = payload;
 
-      const persistedId = id;
-
       // Support both extensionId and id to keep the API consistent with the shape of the stored extension
-      if (persistedId == null) {
+      if (id == null) {
         throw new Error("id or extensionId is required");
       }
 
@@ -341,7 +339,7 @@ export const optionsSlice = createSlice({
       }
 
       const extension: PersistedExtension = {
-        id: persistedId,
+        id,
         apiVersion,
         extensionPointId,
         _recipe,
@@ -361,7 +359,7 @@ export const optionsSlice = createSlice({
         void saveUserExtension(extension).catch(reportError);
       }
 
-      const index = state.extensions.findIndex((x) => x.id === persistedId);
+      const index = state.extensions.findIndex((x) => x.id === id);
 
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- array index from findIndex

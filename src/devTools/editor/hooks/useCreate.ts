@@ -105,10 +105,10 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
   }
 }
 
-type CreateCallback = (
-  element: FormState,
-  pushToCloud: boolean
-) => Promise<string | null>;
+type CreateCallback = (config: {
+  element: FormState;
+  pushToCloud: boolean;
+}) => Promise<string | null>;
 
 function useCreate(): CreateCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
@@ -121,7 +121,7 @@ function useCreate(): CreateCallback {
   const { data: editablePackages } = useGetEditablePackagesQuery();
 
   return useCallback(
-    async (element, pushToCloud): Promise<string | null> => {
+    async ({ element, pushToCloud }): Promise<string | null> => {
       const onStepError = (error: unknown, step: string): string => {
         reportError(error);
         const message = selectErrorMessage(error);
@@ -263,7 +263,7 @@ function useCreate(): CreateCallback {
         return "Error saving extension";
       }
     },
-    [dispatch, addToast]
+    [dispatch, addToast, editablePackages]
   );
 }
 
