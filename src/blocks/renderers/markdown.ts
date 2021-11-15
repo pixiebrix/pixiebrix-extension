@@ -16,7 +16,6 @@
  */
 
 import { Renderer } from "@/types";
-import marked from "marked";
 import createDOMPurify, { DOMPurifyI } from "dompurify";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
@@ -44,6 +43,8 @@ export class MarkdownRenderer extends Renderer {
   );
 
   async render({ markdown }: BlockArg): Promise<string> {
+    const { marked } = await import("marked");
+
     if (!this.DOMPurify) {
       this.DOMPurify = createDOMPurify(window);
     }
