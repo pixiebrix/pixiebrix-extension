@@ -47,4 +47,20 @@ describe("dumpYaml", () => {
 
     expect(dumped).toBe("foo: !var a.b.c\n");
   });
+
+  test("strips sharing information", () => {
+    const dumped = dumpBrickYaml({
+      metadata: {
+        id: "test/brick",
+        sharing: {
+          foo: 42,
+        },
+      },
+      sharing: {
+        foo: 42,
+      },
+    });
+
+    expect(dumped).toBe("metadata:\n  id: test/brick\n");
+  });
 });

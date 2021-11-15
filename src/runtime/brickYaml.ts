@@ -52,19 +52,17 @@ const RUNTIME_SCHEMA = yaml.DEFAULT_SCHEMA.extend([
 ]);
 
 function stripNonSchemaProps(brick: any) {
-  const readyForSerialization = produce(brick, (draft: any) => {
+  return produce(brick, (draft: any) => {
     if ("sharing" in draft) {
       delete draft.sharing;
     }
 
-    if (typeof draft.metadata !== "undefined" && "sharing" in draft.metadata) {
+    if (typeof draft.metadata === "object" && "sharing" in draft.metadata) {
       delete draft.metadata.sharing;
     }
 
     return draft;
   });
-
-  return readyForSerialization;
 }
 
 /**
