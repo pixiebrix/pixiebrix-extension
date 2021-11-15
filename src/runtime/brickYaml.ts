@@ -17,6 +17,7 @@
 
 import yaml from "js-yaml";
 import { UnknownObject } from "@/types";
+import { produce } from "immer";
 
 /**
  * @param tag the tag name, without the leading `!`
@@ -50,6 +51,22 @@ const RUNTIME_SCHEMA = yaml.DEFAULT_SCHEMA.extend([
   createExpression("nunjucks"),
 ]);
 
+function stripNonSchemaProps(brick: any) {
+  const readyForSerialization = produce(brick, (draft: any) => {
+    if ("sharing" in draft) {
+      delete draft.sharing;
+    }
+
+    if (typeof draft.metadata !== "undefined" && "sharing" in draft.metadata) {
+      delete draft.metadata.sharing;
+    }
+
+    return draft;
+  });
+
+  return readyForSerialization;
+}
+
 /**
  * Load brick YAML, with support for the custom tags for expressions.
  * @param config
@@ -59,8 +76,11 @@ export function loadBrickYaml(config: string): unknown {
 }
 
 export function dumpBrickYaml(
-  obj: unknown,
+  brick: unknown,
   options: yaml.DumpOptions = {}
 ): string {
-  return yaml.dump(obj, { ...options, schema: RUNTIME_SCHEMA });
+  return yaml.dump(stripNonSchemaProps(brick), {
+    ...options,
+    schema: RUNTIME_SCHEMA,
+  });
 }
