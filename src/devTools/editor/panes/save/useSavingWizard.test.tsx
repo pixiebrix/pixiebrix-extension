@@ -137,7 +137,7 @@ test("saves non recipe element", async () => {
 
   expect(result.current.isSaving).toBe(true);
   expect(createMock).toHaveBeenCalledTimes(1);
-  expect(createMock).toHaveBeenCalledWith(element);
+  expect(createMock).toHaveBeenCalledWith({ element, pushToCloud: true });
 });
 
 describe("saving a Recipe Extension", () => {
@@ -236,7 +236,10 @@ describe("saving a Recipe Extension", () => {
 
     // Check new element is saved
     expect(createMock).toHaveBeenCalledTimes(1);
-    expect(createMock).toHaveBeenCalledWith(elements[1]);
+    expect(createMock).toHaveBeenCalledWith({
+      element: elements[1],
+      pushToCloud: true,
+    });
 
     await savingElementPromise;
     expect(result.current.isWizardOpen).toBe(false);
@@ -274,7 +277,7 @@ describe("saving a Recipe Extension", () => {
     expect(createRecipeMock).toHaveBeenCalledTimes(1);
 
     // Check the element is saved
-    expect(createMock).toHaveBeenCalledWith(element);
+    expect(createMock).toHaveBeenCalledWith({ element, pushToCloud: false });
 
     const elements = selectElements(store.getState());
     expect(elements).toHaveLength(1);
@@ -364,7 +367,7 @@ describe("saving a Recipe Extension", () => {
     expect(updateRecipeMock).toHaveBeenCalledTimes(1);
 
     // Check the element is saved
-    expect(createMock).toHaveBeenCalledWith(element);
+    expect(createMock).toHaveBeenCalledWith({ element, pushToCloud: true });
 
     const elements = selectElements(store.getState());
     expect(elements).toHaveLength(1);

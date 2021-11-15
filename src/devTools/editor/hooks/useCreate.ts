@@ -36,7 +36,7 @@ import {
   extensionWithInnerDefinitions,
   isInnerExtensionPoint,
 } from "@/devTools/editor/extensionPoints/base";
-import { EditablePackage } from "@/types/definitions";
+import { useGetEditablePackagesQuery } from "@/services/api";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -105,7 +105,10 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
   }
 }
 
-type CreateCallback = (element: FormState) => Promise<string | null>;
+type CreateCallback = (config: {
+  element: FormState;
+  pushToCloud: boolean;
+}) => Promise<string | null>;
 
 function useCreate(): CreateCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
@@ -115,9 +118,10 @@ function useCreate(): CreateCallback {
 
   const dispatch = useDispatch();
   const { addToast } = useToasts();
+  const { data: editablePackages } = useGetEditablePackagesQuery();
 
   return useCallback(
-    async (element): Promise<string | null> => {
+    async ({ element, pushToCloud }): Promise<string | null> => {
       const onStepError = (error: unknown, step: string): string => {
         reportError(error);
         const message = selectErrorMessage(error);
@@ -157,10 +161,6 @@ function useCreate(): CreateCallback {
         if (!hasInnerExtensionPoint) {
           // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
           // number of bricks implemented and frequency of saves
-          const { data: editablePackages } = await (
-            await getLinkedApiClient()
-          ).get<EditablePackage[]>("api/bricks/");
-
           isEditable = editablePackages.some(
             (x) => x.name === extensionPointId
           );
@@ -216,15 +216,16 @@ function useCreate(): CreateCallback {
           if (hasInnerExtensionPoint) {
             const extensionPointConfig = adapter.selectExtensionPoint(element);
             dispatch(
-              saveExtension(
-                extensionWithInnerDefinitions(
+              saveExtension({
+                extension: extensionWithInnerDefinitions(
                   rawExtension,
                   extensionPointConfig.definition
-                )
-              )
+                ),
+                pushToCloud,
+              })
             );
           } else {
-            dispatch(saveExtension(rawExtension));
+            dispatch(saveExtension({ extension: rawExtension, pushToCloud }));
           }
 
           dispatch(markSaved(element.uuid));
@@ -262,7 +263,7 @@ function useCreate(): CreateCallback {
         return "Error saving extension";
       }
     },
-    [dispatch, addToast]
+    [dispatch, addToast, editablePackages]
   );
 }
 

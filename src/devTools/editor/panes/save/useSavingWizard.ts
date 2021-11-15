@@ -84,7 +84,7 @@ const useSavingWizard = () => {
    */
   const saveNonRecipeElement = async () => {
     dispatch(savingExtensionActions.setSavingInProgress());
-    const error = await create(element);
+    const error = await create({ element, pushToCloud: true });
     closeWizard(error);
   };
 
@@ -105,7 +105,7 @@ const useSavingWizard = () => {
 
     dispatch(editorActions.addElement(personalElement));
     reset({ element, shouldShowConfirmation: false });
-    const error = await create(personalElement);
+    const error = await create({ element: personalElement, pushToCloud: true });
     closeWizard(error);
   };
 
@@ -154,7 +154,7 @@ const useSavingWizard = () => {
       return;
     }
 
-    const error = await create(element);
+    const error = await create({ element, pushToCloud: false });
     if (error) {
       notify.error(error);
       closeWizard(error);
@@ -219,7 +219,7 @@ const useSavingWizard = () => {
       return;
     }
 
-    const error = await create(element);
+    const error = await create({ element, pushToCloud: true });
     if (error) {
       notify.error(error);
       closeWizard(error);
