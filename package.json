@@ -178,7 +178,7 @@
     "@types/js-yaml": "^4.0.2",
     "@types/json-schema": "^7.0.8",
     "@types/lodash": "^4.14.171",
-    "@types/marked": "^3.0.0",
+    "@types/marked": "^4.0.0",
     "@types/mustache": "^4.1.2",
     "@types/notifyjs-browser": "0.0.0",
     "@types/nunjucks": "^3.1.5",
