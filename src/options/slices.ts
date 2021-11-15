@@ -301,33 +301,35 @@ export const optionsSlice = createSlice({
       state,
       {
         payload,
-      }: PayloadAction<
-        (IExtension | PersistedExtension) & {
-          extensionId?: UUID;
+      }: PayloadAction<{
+        extension: (IExtension | PersistedExtension) & {
           createTimestamp?: string;
-        }
-      >
+        };
+        pushToCloud: boolean;
+      }>
     ) {
       requireLatestState(state);
 
       const timestamp = new Date().toISOString();
 
       const {
-        id,
-        apiVersion,
-        extensionId,
-        extensionPointId,
-        config,
-        definitions,
-        label,
-        optionsArgs,
-        services,
-        _deployment,
-        createTimestamp = timestamp,
-        _recipe,
+        extension: {
+          id,
+          apiVersion,
+          extensionPointId,
+          config,
+          definitions,
+          label,
+          optionsArgs,
+          services,
+          _deployment,
+          createTimestamp = timestamp,
+          _recipe,
+        },
+        pushToCloud,
       } = payload;
 
-      const persistedId = extensionId ?? id;
+      const persistedId = id;
 
       // Support both extensionId and id to keep the API consistent with the shape of the stored extension
       if (persistedId == null) {
@@ -354,7 +356,7 @@ export const optionsSlice = createSlice({
         active: true,
       };
 
-      if (!_deployment) {
+      if (pushToCloud && !_deployment) {
         // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
         void saveUserExtension(extension).catch(reportError);
       }
