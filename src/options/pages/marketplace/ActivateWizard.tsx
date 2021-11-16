@@ -36,6 +36,13 @@ import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
+import { useLocation } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { selectExtensions } from "@/options/selectors";
+import { uninstallContextMenu } from "@/background/messenger/api";
+import { optionsSlice } from "@/options/slices";
+
+const { removeExtension } = optionsSlice.actions;
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -66,15 +73,56 @@ const ActivateButton: React.FunctionComponent<{
   blueprint: RecipeDefinition;
 }> = ({ blueprint }) => {
   const extensions = useSelectedExtensions(blueprint.extensionPoints);
+  const reinstall =
+    new URLSearchParams(useLocation().search).get("reinstall") === "1";
   const serviceAuths = useSelectedAuths();
   const { activate, isPending } = useEnsurePermissions(
     blueprint,
     extensions,
     serviceAuths
   );
+  const dispatch = useDispatch();
+  const localExtensions = useSelector(selectExtensions);
+  const installedExtensions = useMemo(
+    () =>
+      localExtensions?.filter(
+        (extension) => extension._recipe?.id === blueprint?.metadata.id
+      ),
+    [blueprint, localExtensions]
+  );
+
+  // TODO: if reinstall, uninstall all extensions,
+  //  and then continue with activate
+  const uninstallExtensions = async () => {
+    for (const extension of installedExtensions) {
+      const extensionRef = { extensionId: extension.id };
+      // eslint-disable-next-line no-await-in-loop -- see comment above
+      await uninstallContextMenu(extensionRef);
+      dispatch(removeExtension(extensionRef));
+    }
+  };
 
   return (
-    <AsyncButton size="sm" disabled={isPending} onClick={activate}>
+    <AsyncButton
+      size="sm"
+      disabled={isPending}
+      onClick={() => {
+        if (reinstall) {
+          uninstallExtensions().then(
+            () => {
+              activate();
+            },
+            (error) => {
+              console.log(
+                `something went wrong when uninstalling extensions: ${error}`
+              );
+            }
+          );
+        } else {
+          activate();
+        }
+      }}
+    >
       <FontAwesomeIcon icon={faMagic} /> Activate
     </AsyncButton>
   );

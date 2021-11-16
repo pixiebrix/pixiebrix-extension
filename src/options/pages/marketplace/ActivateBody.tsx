@@ -27,6 +27,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card } from "react-bootstrap";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
+import { useLocation } from "react-router";
 
 const ActivateBody: React.FunctionComponent<{
   blueprint: RecipeDefinition;
