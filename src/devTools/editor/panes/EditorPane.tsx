@@ -67,6 +67,8 @@ const EditorPane: React.FunctionComponent<{
               "Formik's submit should not be called to save an extension. Use 'saveElement' from 'useSavingWizard' instead."
             );
           }}
+          validateOnChange={false}
+          validateOnBlur={true}
         >
           {({ values: element }) => (
             <>
