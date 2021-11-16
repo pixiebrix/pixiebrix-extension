@@ -100,4 +100,5 @@ function useReinstall(): Reinstall {
   );
 }
 
+export { selectAuths, selectOptions };
 export default useReinstall;

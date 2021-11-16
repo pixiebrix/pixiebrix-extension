@@ -23,10 +23,10 @@ import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { useLocation } from "react-router";
-import { IExtension, UserOptions } from "@/core";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/options/selectors";
-import { useField, useFormikContext } from "formik";
+import { useFormikContext } from "formik";
+import { selectOptions } from "@/pages/marketplace/useReinstall";
 
 // Use "v2" because the service configuration form expects literal values for everything. (I.e., expressions are not
 // supports). But we still want to get our SchemaField support for enums, etc.
@@ -44,9 +44,9 @@ const OptionsBody: React.FunctionComponent<OptionsBodyProps> = ({
   const reinstall =
     new URLSearchParams(useLocation().search).get("reinstall") === "1";
   const extensions = useSelector(selectExtensions);
-  const [field] = useField("optionsArgs.channels");
   const { setFieldValue } = useFormikContext();
 
+  // TODO: Fix type issue
   const installedExtensions = useMemo(
     () =>
       extensions?.filter(
@@ -55,21 +55,19 @@ const OptionsBody: React.FunctionComponent<OptionsBodyProps> = ({
     [blueprint, extensions]
   );
 
-  // TODO: Typescript research - This logic was taken from selectOptions in useReinstall.ts
-  //  is there a way to export these functions alongside the default export?
-  const installedOptions = useMemo(
-    () => installedExtensions[0]?.optionsArgs ?? {},
-    [installedExtensions]
-  );
-
-  console.log("installed options:", installedOptions);
+  const installedOptions = selectOptions(installedExtensions);
 
   useEffect(() => {
-    Object.entries(installedOptions).map(([fieldName, installedValue], _) => {
-      console.log("settings field value...", `optionsArgs.${fieldName}`);
+    if (!reinstall) {
+      return;
+    }
+
+    for (const [, [fieldName, installedValue]] of Object.entries(
+      installedOptions
+    ).entries()) {
       setFieldValue(`optionsArgs.${fieldName}`, installedValue);
-    });
-  }, [installedOptions]);
+    }
+  }, [installedOptions, setFieldValue, reinstall]);
 
   const OptionsGroup = useMemo(
     () =>

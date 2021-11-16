@@ -54,10 +54,17 @@ const ServiceAuthSelector: React.FunctionComponent<{
   name: string;
   serviceId: string;
   authOptions: AuthOption[];
+  installedOption?: AuthOption;
   CustomMenuList?: ComponentType<
     MenuListComponentProps<AuthOption, boolean, GroupTypeBase<AuthOption>>
   >;
-}> = ({ authOptions, serviceId, CustomMenuList, ...props }) => {
+}> = ({
+  authOptions,
+  serviceId,
+  installedOption,
+  CustomMenuList,
+  ...props
+}) => {
   const [field, meta, helpers] = useField(props);
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === serviceId),
@@ -69,6 +76,12 @@ const ServiceAuthSelector: React.FunctionComponent<{
     () => (CustomMenuList ? { MenuList: CustomMenuList } : {}),
     [CustomMenuList]
   );
+
+  useEffect(() => {
+    if (installedOption) {
+      helpers.setValue(installedOption.value);
+    }
+  }, [installedOption]);
 
   useEffect(() => {
     if (authOptions.length === 1 && field.value == null) {

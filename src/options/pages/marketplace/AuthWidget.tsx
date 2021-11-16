@@ -46,12 +46,13 @@ const AuthWidget: React.FunctionComponent<{
   serviceId: RegistryId;
 
   authOptions: AuthOption[];
+  installedOption?: AuthOption;
 
   /**
    * Optional callback to refresh the authOptions.
    */
   onRefresh?: () => void;
-}> = ({ name, serviceId, authOptions, onRefresh }) => {
+}> = ({ name, serviceId, authOptions, installedOption, onRefresh }) => {
   const helpers = useField<UUID>(name)[2];
   const dispatch = useDispatch();
   const notify = useNotifications();
@@ -140,6 +141,7 @@ const AuthWidget: React.FunctionComponent<{
             <ServiceAuthSelector
               name={name}
               serviceId={serviceId}
+              installedOption={installedOption}
               authOptions={options}
               CustomMenuList={CustomMenuList}
             />
