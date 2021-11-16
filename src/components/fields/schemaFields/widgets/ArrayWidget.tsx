@@ -30,7 +30,6 @@ import { defaultBlockConfig } from "@/blocks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
-import { JSONSchema7 } from "json-schema";
 
 // Empty value for text fields for the Formik state
 const EMPTY_TEXT_VALUE = "";
@@ -72,9 +71,9 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
     throw new TypeError("Schema required for items");
   }
 
-  const schemaItems = useMemo<JSONSchema7>(
+  const schemaItems = useMemo<Schema>(
     // Cast is okay here since we've already checked for array/boolean types
-    () => (schema.items as JSONSchema7) ?? { additionalProperties: true },
+    () => (schema.items as Schema) ?? { additionalProperties: true },
     [schema.items]
   );
 
