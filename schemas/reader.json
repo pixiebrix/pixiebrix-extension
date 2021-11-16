@@ -154,7 +154,7 @@
   "properties": {
     "apiVersion": {
       "type": "string",
-      "enum": ["v1", "v2"]
+      "enum": ["v1", "v2", "v3"]
     },
     "kind": {
       "type": "string",

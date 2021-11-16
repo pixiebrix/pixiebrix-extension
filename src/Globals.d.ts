@@ -39,7 +39,7 @@ declare module "@/vendors/initialize" {
   const initialize: (
     selector: string,
     callback: (this: Element, index: number, element: Element) => void | false,
-    options?: { target?: Element | Document; observer?: MutationObserverInit }
+    options: { target: Element | Document; observer?: MutationObserverInit }
   ) => MutationObserver;
 
   export default initialize;
