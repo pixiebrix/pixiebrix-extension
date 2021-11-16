@@ -41,6 +41,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/options/selectors";
 import { uninstallContextMenu } from "@/background/messenger/api";
 import { optionsSlice } from "@/options/slices";
+import { getErrorMessage } from "@/errors";
+import useNotifications from "@/hooks/useNotifications";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -90,39 +92,38 @@ const ActivateButton: React.FunctionComponent<{
       ),
     [blueprint, localExtensions]
   );
+  const notify = useNotifications();
 
-  // TODO: if reinstall, uninstall all extensions,
-  //  and then continue with activate
   const uninstallExtensions = async () => {
     for (const extension of installedExtensions) {
       const extensionRef = { extensionId: extension.id };
-      // eslint-disable-next-line no-await-in-loop -- see comment above
+      // eslint-disable-next-line no-await-in-loop -- see useReinstall.ts
       await uninstallContextMenu(extensionRef);
       dispatch(removeExtension(extensionRef));
     }
   };
 
-  return (
-    <AsyncButton
-      size="sm"
-      disabled={isPending}
-      onClick={() => {
-        if (reinstall) {
-          uninstallExtensions().then(
-            () => {
-              activate();
-            },
-            (error) => {
-              console.log(
-                `something went wrong when uninstalling extensions: ${error}`
-              );
+  const activateOrReinstall = () => {
+    if (reinstall) {
+      uninstallExtensions()
+        .then(() => {
+          activate();
+        })
+        .catch((error: unknown) => {
+          notify.warning(
+            `Error re-installing bricks: ${getErrorMessage(error)}`,
+            {
+              error,
             }
           );
-        } else {
-          activate();
-        }
-      }}
-    >
+        });
+    } else {
+      activate();
+    }
+  };
+
+  return (
+    <AsyncButton size="sm" disabled={isPending} onClick={activateOrReinstall}>
       <FontAwesomeIcon icon={faMagic} /> Activate
     </AsyncButton>
   );
