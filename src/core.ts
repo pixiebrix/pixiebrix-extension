@@ -28,6 +28,7 @@ import { Permissions } from "webextension-polyfill";
 import { pick } from "lodash";
 
 export type TemplateEngine = "mustache" | "nunjucks" | "handlebars" | "var";
+export type ExpressionType = TemplateEngine | "pipeline";
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
@@ -117,9 +118,12 @@ export interface Meta {
  * @see BlockConfig
  * @since 1.5.0
  */
-export type Expression<T extends string = string> = {
-  __type__: TemplateEngine;
-  __value__: T;
+export type Expression<
+  V = string,
+  T extends ExpressionType = ExpressionType
+> = {
+  __type__: T;
+  __value__: V;
 };
 
 /**

@@ -44,11 +44,30 @@ function createExpression(tag: string): yaml.Type {
   });
 }
 
+const pipelineExpression = new yaml.Type("!pipeline", {
+  kind: "sequence",
+
+  resolve: (data) => Array.isArray(data),
+
+  construct: (data) => ({
+    __type__: "pipeline",
+    __value__: data,
+  }),
+
+  predicate: (data) =>
+    typeof data === "object" &&
+    "__type__" in data &&
+    (data as UnknownObject).__type__ === "pipeline",
+
+  represent: (data) => (data as UnknownObject).__value__,
+});
+
 const RUNTIME_SCHEMA = yaml.DEFAULT_SCHEMA.extend([
   createExpression("var"),
   createExpression("mustache"),
   createExpression("handlebars"),
   createExpression("nunjucks"),
+  pipelineExpression,
 ]);
 
 function stripNonSchemaProps(brick: any) {
