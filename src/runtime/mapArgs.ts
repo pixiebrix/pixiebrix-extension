@@ -36,7 +36,7 @@ type Args = string | UnknownObject | UnknownObject[];
 
 /**
  * Returns true if value represents an explicit expression
- * @param value
+ * @see isTemplateExpression
  */
 export function isExpression(value: unknown): value is Expression<unknown> {
   if (
@@ -51,8 +51,8 @@ export function isExpression(value: unknown): value is Expression<unknown> {
 }
 
 /**
- * Returns true if value represents an explicit expression
- * @param value
+ * Returns true if value represents an explicit template engine expression
+ * @see isExpression
  */
 export function isTemplateExpression(
   value: unknown
