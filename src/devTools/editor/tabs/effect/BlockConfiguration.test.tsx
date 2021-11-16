@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import BlockConfiguration from "./BlockConfiguration";
+import BlockConfiguration from "./v1/BlockConfiguration";
 import { createFormikTemplate } from "@/tests/formHelpers";
 import {
   blockFactory,
