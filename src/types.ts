@@ -65,9 +65,9 @@ export abstract class Service<
 
   abstract hasAuth: boolean;
 
-  abstract isOAuth2: boolean;
+  abstract get isOAuth2(): boolean;
 
-  abstract isToken: boolean;
+  abstract get isToken(): boolean;
 
   protected constructor(
     id: RegistryId,

@@ -264,7 +264,7 @@ const ActiveBricksCard: React.FunctionComponent<{
               )}
 
               {teamExtensionGroups.map((team, index) => (
-                <>
+                <React.Fragment key={team.organizationId}>
                   <ExtensionGroupHeader
                     key={index}
                     label={`${getOrganizationName(
@@ -288,7 +288,7 @@ const ActiveBricksCard: React.FunctionComponent<{
                       />
                     );
                   })}
-                </>
+                </React.Fragment>
               ))}
 
               {deploymentExtensionGroups.length > 0 && (

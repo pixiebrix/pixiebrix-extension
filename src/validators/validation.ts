@@ -176,49 +176,51 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
           .required()
           .matches(IDENTIFIER_REGEX, "Not a valid identifier"),
         // https://github.com/jquense/yup/issues/954
-        config: Yup.string().test(
-          "is-config",
-          "Invalid service configuration",
-          async function (value) {
-            if (this.parent.id === PIXIEBRIX_SERVICE_ID) {
-              if (value != null) {
+        config: Yup.string()
+          .nullable()
+          .test(
+            "is-config",
+            "Invalid service configuration",
+            async function (value) {
+              if (this.parent.id === PIXIEBRIX_SERVICE_ID) {
+                if (value != null) {
+                  return this.createError({
+                    message: "PixieBrix service configuration should be blank",
+                  });
+                }
+
+                return true;
+              }
+
+              if (value == null) {
                 return this.createError({
-                  message: "PixieBrix service configuration should be blank",
+                  message: "Select a service configuration",
                 });
+              }
+
+              if (!isUUID(value)) {
+                return this.createError({
+                  message: "Expected service configuration UUID",
+                });
+              }
+
+              try {
+                await locate(this.parent.id, value);
+              } catch (error: unknown) {
+                if (error instanceof MissingConfigurationError) {
+                  return this.createError({
+                    message: "Configuration no longer available",
+                  });
+                }
+
+                console.error(
+                  `An error occurred validating service: ${this.parent.id}`
+                );
               }
 
               return true;
             }
-
-            if (value == null) {
-              return this.createError({
-                message: "Select a service configuration",
-              });
-            }
-
-            if (!isUUID(value)) {
-              return this.createError({
-                message: "Expected service configuration UUID",
-              });
-            }
-
-            try {
-              await locate(this.parent.id, value);
-            } catch (error: unknown) {
-              if (error instanceof MissingConfigurationError) {
-                return this.createError({
-                  message: "Configuration no longer available",
-                });
-              }
-
-              console.error(
-                `An error occurred validating service: ${this.parent.id}`
-              );
-            }
-
-            return true;
-          }
-        ),
+          ),
       })
     )
     .test(

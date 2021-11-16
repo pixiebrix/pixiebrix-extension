@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { Field } from "formik";
 import { Expression, TemplateEngine } from "@/core";
@@ -32,12 +32,13 @@ import styles from "./TemplateToggleWidget.module.scss";
 import useToggleFormField from "@/devTools/editor/hooks/useToggleFormField";
 
 interface InputModeOptionBase<
-  TValue = string,
+  TValue extends FieldInputMode = "string",
   As extends React.ElementType = React.ElementType
 > {
   label: string;
   symbol: React.ReactNode;
   Widget: As;
+  description?: React.ReactNode;
   defaultValue?: unknown;
   value: TValue;
 }
@@ -48,13 +49,13 @@ export type StringOption = InputModeOptionBase<"string" | TemplateEngine> & {
 export type NumberOption = InputModeOptionBase<"number"> & {
   defaultValue: number | Expression;
 };
-export type BooleanOption = InputModeOptionBase & {
+export type BooleanOption = InputModeOptionBase<"boolean"> & {
   defaultValue: boolean | Expression;
 };
-export type ArrayOption = InputModeOptionBase & {
+export type ArrayOption = InputModeOptionBase<"array"> & {
   defaultValue: JSONSchema7Array | Expression;
 };
-export type ObjectOption = InputModeOptionBase & {
+export type ObjectOption = InputModeOptionBase<"object"> & {
   defaultValue: UnknownObject | Expression;
 };
 export type OmitOption = InputModeOptionBase<"omit">;
@@ -71,7 +72,15 @@ type TemplateToggleWidgetProps = SchemaFieldProps & {
   name: string;
   inputModeOptions: InputModeOption[];
   overrideWidget?: SchemaFieldComponent;
+  setFieldDescription: (description: React.ReactNode) => void;
 };
+
+export function getOptionForInputMode(
+  options: InputModeOption[],
+  inputMode: FieldInputMode
+): InputModeOption {
+  return options.find((option) => option.value === inputMode);
+}
 
 /**
  * Show a field toggle that lets a user choose the type of data input, along with the chosen input
@@ -79,11 +88,13 @@ type TemplateToggleWidgetProps = SchemaFieldProps & {
  * @param name The field name in form state
  * @param inputModeOptions Options for types of inputs allowed for this field
  * @param overrideWidget Widget that overrides the input for the "literal" data type input option (e.g. string, number, etc)
+ * @param setFieldDescription Setter to handle changing the field description based on which option is toggled
  * @param props SchemaFieldProps
  */
 const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   name,
   inputModeOptions,
+  setFieldDescription,
   ...props
 }) => {
   const {
@@ -95,15 +106,22 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
 
+  useEffect(() => {
+    const option = getOptionForInputMode(inputModeOptions, inputMode);
+    setFieldDescription(option?.description);
+  }, [inputMode, inputModeOptions, setFieldDescription]);
+
   const onModeChange = useCallback(
     (newInputMode: FieldInputMode) => {
       if (newInputMode === inputMode) {
-        // Don't execute anything on "re-select"
+        // Don't execute anything on "re-select", we don't want to
+        // overwrite the field with the default value again.
         return;
       }
 
-      const { defaultValue } = inputModeOptions.find(
-        (x) => x.value === newInputMode
+      const { defaultValue } = getOptionForInputMode(
+        inputModeOptions,
+        newInputMode
       );
 
       if (newInputMode === "omit") {

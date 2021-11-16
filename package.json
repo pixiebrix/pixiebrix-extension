@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.4.7-alpha.2",
+  "version": "1.4.7-alpha.3",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -43,6 +43,7 @@
     "@uipath/robot": "1.2.5",
     "@xobotyi/scrollbar-width": "^1.9.5",
     "ace-builds": "^1.4.12",
+    "autocompleter": "^6.1.2",
     "axios": "^0.24.0",
     "bootstrap": "^4.6.0",
     "bootstrap-icons": "^1.5.0",
@@ -79,7 +80,7 @@
     "jsonpath-plus": "^6.0.1",
     "jsonschema": "^1.4.0",
     "lodash-es": "^4.17.21",
-    "marked": "^3.0.0",
+    "marked": "^4.0.3",
     "mustache": "^4.2.0",
     "notifyjs-browser": "^0.4.2",
     "nunjucks": "^3.2.3",
@@ -154,7 +155,7 @@
     "@storybook/addon-links": "^6.3.4",
     "@storybook/builder-webpack5": "^6.3.6",
     "@storybook/manager-webpack5": "^6.3.6",
-    "@storybook/react": "^6.3.4",
+    "@storybook/react": "^6.3.12",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/react-hooks": "^7.0.2",
@@ -177,7 +178,7 @@
     "@types/js-yaml": "^4.0.2",
     "@types/json-schema": "^7.0.8",
     "@types/lodash": "^4.14.171",
-    "@types/marked": "^3.0.0",
+    "@types/marked": "^4.0.0",
     "@types/mustache": "^4.1.2",
     "@types/notifyjs-browser": "0.0.0",
     "@types/nunjucks": "^3.1.5",
@@ -277,6 +278,7 @@
     "transform": {
       "^.+\\.[jt]sx?$": "babel-jest",
       "^.+\\.ya?ml$": "yaml-jest-transform",
+      "^.+\\.ya?ml\\?loadAsText$": "jest-raw-loader",
       "^.+\\.txt$": "jest-raw-loader"
     },
     "transformIgnorePatterns": [
@@ -302,7 +304,7 @@
       "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",
       "^@/(.*)$": "<rootDir>/src/$1",
       "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
-      "^@contrib/(.*)$": "<rootDir>/contrib/$1",
+      "^@contrib/(.*?)(\\?loadAsText)?$": "<rootDir>/contrib/$1",
       "^@schemas/(.*)$": "<rootDir>/schemas/$1",
       "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"

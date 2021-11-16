@@ -42,7 +42,7 @@ const EditorPane: React.FunctionComponent<{
 }> = ({ selectedElement, selectionSeq }) => {
   const dispatch = useDispatch();
   const editable = useEditable();
-  const { isWizardOpen, save: saveElement } = useSavingWizard();
+  const { isWizardOpen } = useSavingWizard();
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
@@ -62,14 +62,10 @@ const EditorPane: React.FunctionComponent<{
         <Formik
           key={key}
           initialValues={selectedElement}
-          onSubmit={async (values, { setSubmitting, setStatus }) => {
-            try {
-              await saveElement();
-            } catch (error: unknown) {
-              setStatus(error);
-            } finally {
-              setSubmitting(false);
-            }
+          onSubmit={() => {
+            console.error(
+              "Formik's submit should not be called to save an extension. Use 'saveElement' from 'useSavingWizard' instead."
+            );
           }}
         >
           {({ values: element }) => (

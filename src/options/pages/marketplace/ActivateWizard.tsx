@@ -49,7 +49,15 @@ type Step = {
 
 const STEPS: Step[] = [
   { key: "review", label: "Select Bricks", Component: ConfigureBody },
-  { key: "options", label: "Personalize", Component: OptionsBody },
+  // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for Typescript
+  // to realize it's OK to pass in a whole RecipeDefinition for something that just needs the options prop
+  {
+    key: "options",
+    label: "Personalize",
+    Component: OptionsBody as React.FunctionComponent<{
+      blueprint: RecipeDefinition;
+    }>,
+  },
   { key: "services", label: "Select Integrations", Component: ServicesBody },
   { key: "activate", label: "Review & Activate", Component: ActivateBody },
 ];

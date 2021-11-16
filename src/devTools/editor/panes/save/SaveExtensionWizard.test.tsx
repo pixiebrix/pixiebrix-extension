@@ -54,7 +54,7 @@ afterEach(() => {
 
 test("shows loading when saving is in progress", async () => {
   (useSavingWizardMock as jest.Mock).mockReturnValue({
-    savingExtensionId: "test/extension",
+    isSaving: true,
   });
 
   render(<SaveExtensionWizard />);
@@ -71,7 +71,7 @@ test.each([
   ["loading packages", false, true],
 ])("shows loader when %s", (testName, loadingRecipes, loadingPackages) => {
   (useSavingWizardMock as jest.Mock).mockReturnValue({
-    savingExtensionId: null,
+    isSaving: false,
   });
   (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
     data: [],
@@ -95,7 +95,7 @@ test("calls Save as Personal extension", async () => {
   const saveElementAsPersonalExtensionMock = jest.fn();
   const metadata = metadataFactory();
   (useSavingWizardMock as jest.Mock).mockReturnValue({
-    savingExtensionId: null,
+    isSaving: false,
     element: formStateFactory({
       recipe: metadata,
     }),
@@ -122,7 +122,7 @@ test("calls Save as New Blueprint", async () => {
   const saveElementAndCreateNewRecipeMock = jest.fn();
   const metadata = metadataFactory();
   (useSavingWizardMock as jest.Mock).mockReturnValue({
-    savingExtensionId: null,
+    isSaving: false,
     element: formStateFactory({
       recipe: metadata,
     }),
@@ -164,7 +164,7 @@ test("calls Update Blueprint", async () => {
   const saveElementAndUpdateRecipeMock = jest.fn();
   const metadata = metadataFactory();
   (useSavingWizardMock as jest.Mock).mockReturnValue({
-    savingExtensionId: null,
+    isSaving: false,
     element: formStateFactory({
       recipe: metadata,
     }),

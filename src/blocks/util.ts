@@ -22,6 +22,7 @@ import { removeUndefined } from "@/utils";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { PipelineConfigurationError } from "@/blocks/errors";
 import blockRegistry from "@/blocks/registry";
+import pDefer from "p-defer";
 
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 
@@ -108,10 +109,25 @@ export async function blockList(
  *
  *  import stylesheetUrl from "intro.js/introjs.css?loadAsUrl";
  */
-export function attachStylesheet(url: string): HTMLElement {
+export async function attachStylesheet(url: string): Promise<HTMLElement> {
   const link = document.createElement("link");
   link.setAttribute("rel", "stylesheet");
   link.setAttribute("href", url);
+
+  const deferredPromise = pDefer<HTMLElement>();
+
+  // Try to avoid a FOUC: https://webkit.org/blog/66/the-fouc-problem/ by waiting for the stylesheet to have had a
+  // chance to load.
+  // The load event fires once the stylesheet and all of its imported content has been loaded and parsed, and
+  // immediately before the styles start being applied to the content.
+  // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#stylesheet_load_events
+  link.addEventListener("load", () => {
+    requestAnimationFrame(() => {
+      deferredPromise.resolve(link);
+    });
+  });
+
   document.head.append(link);
-  return link;
+
+  return deferredPromise.promise;
 }

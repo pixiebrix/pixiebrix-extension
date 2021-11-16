@@ -18,10 +18,15 @@
 import { ApiVersion } from "@/core";
 import { useField } from "formik";
 import { isApiVersionAtLeast } from "@/utils";
+import { useContext } from "react";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 
 function useApiVersionAtLeast(atLeast: ApiVersion): boolean {
-  const { value: apiVersion } = useField<ApiVersion>("apiVersion")[0];
-  return isApiVersionAtLeast(apiVersion, atLeast);
+  const [{ value: formValuesApiVersion }] = useField<ApiVersion>("apiVersion");
+  const { apiVersion: contextApiVersion } = useContext(FieldRuntimeContext);
+  // Prefer the version on the form
+  const effectiveVersion = formValuesApiVersion ?? contextApiVersion;
+  return isApiVersionAtLeast(effectiveVersion, atLeast);
 }
 
 export default useApiVersionAtLeast;
