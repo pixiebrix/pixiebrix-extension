@@ -38,6 +38,7 @@ const TriggerConfiguration: React.FC<{
     (e: React.FormEvent<HTMLSelectElement>) => {
       if (e.currentTarget.value) {
         setFieldValue("extensionPoint.definition.rootSelector", null);
+        setFieldValue("extensionPoint.definition.attachMode", null);
       }
 
       setFieldValue("extensionPoint.definition.trigger", e.currentTarget.value);
@@ -56,6 +57,7 @@ const TriggerConfiguration: React.FC<{
           {...makeLockableFieldProps("Trigger", isLocked)}
         >
           <option value="load">Page Load</option>
+          <option value="appear">Appear</option>
           <option value="click">Click</option>
           <option value="dblclick">Double Click</option>
           <option value="blur">Blur</option>
@@ -70,6 +72,26 @@ const TriggerConfiguration: React.FC<{
             description="An element to watch"
             {...makeLockableFieldProps("Element", isLocked)}
           />
+        )}
+
+        {trigger !== "load" && (
+          <ConnectedFieldTemplate
+            name="extensionPoint.definition.attachMode"
+            as="select"
+            title="Attach Mode"
+            description={
+              <p>
+                Use <code>once</code> to attach the trigger once one or more
+                elements are available. Use
+                <code>watch</code> to also add the trigger as new matching
+                elements are added to the page.
+              </p>
+            }
+            {...makeLockableFieldProps("Trigger", isLocked)}
+          >
+            <option value="once">once</option>
+            <option value="watch">watch</option>
+          </ConnectedFieldTemplate>
         )}
 
         <UrlMatchPatternField

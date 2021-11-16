@@ -34,6 +34,7 @@ import {
   KeyedConfig,
   RegistryId,
   ResolvedExtension,
+  UUID,
 } from "@/core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
@@ -141,8 +142,13 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     this.logger = new BackgroundLogger({ extensionPointId: this.id });
   }
 
-  /** Internal method to perform a partial uninstall of the extension point */
-  protected abstract removeExtensions(extensionIds: string[]): void;
+  /**
+   * Internal method to unregister extension's triggers/observers/etc. from the page.
+   *
+   * When this method is called, the extensions will still be in this.extensions. The caller is responsible for
+   * updating this.extensions after the call to removeExtensions
+   */
+  protected abstract removeExtensions(extensionIds: UUID[]): void;
 
   syncExtensions(extensions: Array<ResolvedExtension<TConfig>>): void {
     const before = this.extensions.map((x) => x.id);
