@@ -114,8 +114,6 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     [blueprint, extensions]
   );
 
-  console.log("Reinstall:", reinstall);
-
   return (
     <>
       <Card.Body className="p-3">

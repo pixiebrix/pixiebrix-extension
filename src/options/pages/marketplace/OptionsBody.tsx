@@ -15,13 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Card } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
+import { useLocation } from "react-router";
+import { IExtension, UserOptions } from "@/core";
+import { useSelector } from "react-redux";
+import { selectExtensions } from "@/options/selectors";
+import { useField, useFormikContext } from "formik";
 
 // Use "v2" because the service configuration form expects literal values for everything. (I.e., expressions are not
 // supports). But we still want to get our SchemaField support for enums, etc.
@@ -36,6 +41,36 @@ export interface OptionsBodyProps {
 const OptionsBody: React.FunctionComponent<OptionsBodyProps> = ({
   blueprint,
 }) => {
+  const reinstall =
+    new URLSearchParams(useLocation().search).get("reinstall") === "1";
+  const extensions = useSelector(selectExtensions);
+  const [field] = useField("optionsArgs.channels");
+  const { setFieldValue } = useFormikContext();
+
+  const installedExtensions = useMemo(
+    () =>
+      extensions?.filter(
+        (extension) => extension._recipe?.id === blueprint?.metadata.id
+      ),
+    [blueprint, extensions]
+  );
+
+  // TODO: Typescript research - This logic was taken from selectOptions in useReinstall.ts
+  //  is there a way to export these functions alongside the default export?
+  const installedOptions = useMemo(
+    () => installedExtensions[0]?.optionsArgs ?? {},
+    [installedExtensions]
+  );
+
+  console.log("installed options:", installedOptions);
+
+  useEffect(() => {
+    Object.entries(installedOptions).map(([fieldName, installedValue], _) => {
+      console.log("settings field value...", `optionsArgs.${fieldName}`);
+      setFieldValue(`optionsArgs.${fieldName}`, installedValue);
+    });
+  }, [installedOptions]);
+
   const OptionsGroup = useMemo(
     () =>
       genericOptionsFactory(
@@ -44,6 +79,7 @@ const OptionsBody: React.FunctionComponent<OptionsBodyProps> = ({
       ),
     [blueprint.options.schema, blueprint.options.uiSchema]
   );
+
   return (
     <>
       <Card.Body className="px-3 py-3">
