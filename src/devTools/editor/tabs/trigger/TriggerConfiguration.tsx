@@ -81,8 +81,8 @@ const TriggerConfiguration: React.FC<{
             title="Attach Mode"
             description={
               <p>
-                Use <code>once</code> to attach the trigger once one or more
-                elements are available. Use
+                Use&nbsp;<code>once</code> to attach the trigger once one or
+                more elements are available. Use&nbsp;
                 <code>watch</code> to also add the trigger as new matching
                 elements are added to the page.
               </p>

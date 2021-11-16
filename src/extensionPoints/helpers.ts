@@ -97,7 +97,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
 /**
  * Returns true if the browser natively supports the CSS selector
  */
-function isNativeCssSelector(selector: string): boolean {
+export function isNativeCssSelector(selector: string): boolean {
   try {
     document.querySelector(selector);
     return true;

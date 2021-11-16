@@ -36,6 +36,7 @@ import { checkAvailable } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
 import { reportEvent } from "@/telemetry/events";
 import {
+  isNativeCssSelector,
   awaitElementOnce,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
@@ -237,6 +238,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       }
 
       throw error;
+    } finally {
+      this.cancelRun = null;
     }
 
     // AwaitElementOnce doesn't work with multiple elements. Get everything that's on the current page
@@ -281,6 +284,12 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     if (this.attachMode === "watch") {
       const selector = this.triggerSelector;
 
+      if (!isNativeCssSelector(selector)) {
+        throw new Error(
+          `Watch attachMode only supports native browser selectors: ${selector}`
+        );
+      }
+
       console.debug("Watching selector: %s", selector);
       const mutationObserver = initialize(
         selector,
@@ -295,7 +304,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     }
   }
 
-  private attachDOMTrigger($element: JQuery): void {
+  private attachDOMTrigger(
+    $element: JQuery,
+    { watch = false }: { watch?: boolean }
+  ): void {
     if (this.eventHandler) {
       console.debug(
         `Removing existing ${this.trigger} handler for extension point (if it exists)`
@@ -310,6 +322,27 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     console.debug(
       `Installed ${this.trigger} event handler on ${$element.length} elements`
     );
+
+    if (watch) {
+      if (!isNativeCssSelector(this.triggerSelector)) {
+        throw new Error(
+          `Watch attachMode only supports native browser selectors: ${this.triggerSelector}`
+        );
+      }
+
+      this.cancelWatch?.();
+      this.cancelWatch = null;
+
+      const mutationObserver = initialize(
+        this.triggerSelector,
+        (index, element) => {
+          // Already watching, so don't re-watch on the recursive call
+          this.attachDOMTrigger($(element as HTMLElement), { watch: false });
+        },
+        { target: document }
+      );
+      this.cancelWatch = mutationObserver.disconnect.bind(mutationObserver);
+    }
   }
 
   private assertElement(
@@ -342,19 +375,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       this.attachAppearTrigger($root);
     } else if (this.trigger) {
       this.assertElement($root);
-      this.attachDOMTrigger($root);
-
-      // Put here instead of attachDOMTrigger to avoid watching multiple times
-      if (this.attachMode === "watch") {
-        const mutationObserver = initialize(
-          this.triggerSelector,
-          (index, element) => {
-            this.attachDOMTrigger($(element as HTMLElement));
-          },
-          { target: document }
-        );
-        this.cancelWatch = mutationObserver.disconnect.bind(mutationObserver);
-      }
+      this.attachDOMTrigger($root, { watch: this.attachMode === "watch" });
     } else {
       throw new Error("No trigger event configured for extension point");
     }
