@@ -34,19 +34,14 @@ const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: "v2",
 };
 
-export interface OptionsBodyProps {
-  blueprint: Pick<RecipeDefinition, "options">;
-}
-
-const OptionsBody: React.FunctionComponent<OptionsBodyProps> = ({
-  blueprint,
-}) => {
+const OptionsBody: React.FunctionComponent<{
+  blueprint: RecipeDefinition;
+}> = ({ blueprint }) => {
   const reinstall =
     new URLSearchParams(useLocation().search).get("reinstall") === "1";
   const extensions = useSelector(selectExtensions);
   const { setFieldValue } = useFormikContext();
 
-  // TODO: Fix type issue
   const installedExtensions = useMemo(
     () =>
       extensions?.filter(
