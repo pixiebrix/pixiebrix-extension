@@ -198,6 +198,8 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
     return sortBy(filtered, (x) => x.metadata.name);
   }, [rawRecipes, query, scope]);
 
+  console.log("Recipes:", recipes);
+
   const numPages = useMemo(() => Math.ceil(recipes.length / recipesPerPage), [
     recipes,
     recipesPerPage,

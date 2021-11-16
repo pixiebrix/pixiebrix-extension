@@ -102,16 +102,19 @@ interface OwnProps {
 }
 
 const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  const reinstall = new URLSearchParams(useLocation().search).get("reinstall");
+  const reinstall =
+    new URLSearchParams(useLocation().search).get("reinstall") === "1";
   const extensions = useSelector(selectExtensions);
 
   const installedExtensions = useMemo(
     () =>
-      extensions.filter(
+      extensions?.filter(
         (extension) => extension._recipe?.id === blueprint?.metadata.id
       ),
     [blueprint, extensions]
   );
+
+  console.log("Reinstall:", reinstall);
 
   return (
     <>
@@ -152,10 +155,11 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
         </thead>
         <tbody>
           {blueprint.extensionPoints.map((x, i) => {
-            // Unless user is reinstalling, bricks should be toggled on by default
+            // Unless user is reinstalling, bricks should be toggled ON by default
             const shouldBeOn =
               !reinstall ||
-              installedExtensions.some(
+              installedExtensions?.some(
+                // TODO: maybe need to implement a better way to do this
                 (installedExtension) => x.label === installedExtension.label
               );
             return (
