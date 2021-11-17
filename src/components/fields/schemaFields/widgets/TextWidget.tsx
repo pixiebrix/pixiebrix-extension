@@ -21,16 +21,17 @@ import { useField } from "formik";
 import Select, { OptionsType } from "react-select";
 import { sortBy, uniq } from "lodash";
 import Creatable from "react-select/creatable";
-import { Form } from "react-bootstrap";
+import { Form, FormControlProps } from "react-bootstrap";
 
-const TextWidget: React.FC<SchemaFieldProps> = ({
+const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
+  name,
   schema,
   uiSchema,
   label,
   ...props
 }) => {
   const [created, setCreated] = useState([]);
-  const [{ value, ...field }, meta, helpers] = useField<string>(props);
+  const [{ value, ...field }, meta, helpers] = useField<string>(name);
 
   const [creatable, options]: [
     boolean,
@@ -90,6 +91,7 @@ const TextWidget: React.FC<SchemaFieldProps> = ({
         as="textarea"
         value={value ?? ""}
         {...field}
+        {...props}
         isInvalid={Boolean(meta.error)}
       />
     );
@@ -100,6 +102,7 @@ const TextWidget: React.FC<SchemaFieldProps> = ({
       type="text"
       value={value ?? ""}
       {...field}
+      {...props}
       isInvalid={Boolean(meta.error)}
     />
   );
