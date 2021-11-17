@@ -26,9 +26,12 @@ import { Form, FormControlProps } from "react-bootstrap";
 const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   name,
   schema,
+  isRequired,
   uiSchema,
-  label,
-  ...props
+  hideLabel,
+  isObjectProperty,
+  isArrayItem,
+  ...restProps
 }) => {
   const [created, setCreated] = useState([]);
   const [{ value, ...field }, meta, helpers] = useField<string>(name);
@@ -91,7 +94,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
         as="textarea"
         value={value ?? ""}
         {...field}
-        {...props}
+        {...restProps}
         isInvalid={Boolean(meta.error)}
       />
     );
@@ -102,7 +105,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
       type="text"
       value={value ?? ""}
       {...field}
-      {...props}
+      {...restProps}
       isInvalid={Boolean(meta.error)}
     />
   );

@@ -119,15 +119,15 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
         return;
       }
 
-      const { defaultValue } = getOptionForInputMode(
-        inputModeOptions,
-        newInputMode
-      );
-
       if (newInputMode === "omit") {
         onOmitField();
         return;
       }
+
+      const { defaultValue } = getOptionForInputMode(
+        inputModeOptions,
+        newInputMode
+      );
 
       // Already handled "omit" and returned above.
       // Also, defaultValues for template-expression options have

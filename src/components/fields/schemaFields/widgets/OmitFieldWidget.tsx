@@ -17,9 +17,17 @@
 
 import React from "react";
 import { Form, FormControlProps } from "react-bootstrap";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
-const OmitFieldWidget: React.FC<FormControlProps> = (props) => (
-  <Form.Control {...props} disabled />
-);
+const OmitFieldWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
+  name,
+  schema,
+  isRequired,
+  uiSchema,
+  hideLabel,
+  isObjectProperty,
+  isArrayItem,
+  ...restProps
+}) => <Form.Control name={name} {...restProps} disabled />;
 
 export default OmitFieldWidget;

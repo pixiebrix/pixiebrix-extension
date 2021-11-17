@@ -23,6 +23,7 @@ import { partial } from "lodash";
 import React, { MutableRefObject } from "react";
 import { Button } from "react-bootstrap";
 import styles from "./AdvancedLinks.module.scss";
+import { isExpression } from "@/runtime/mapArgs";
 
 export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";
 export const DEFAULT_WINDOW_VALUE: BlockWindow = "self";
@@ -38,19 +39,21 @@ const AdvancedLinks: React.FC<AdvancedLinksProps> = ({ name, scrollToRef }) => {
   const [{ value: templateEngineValue }] = useField<TemplateEngine>(
     configName("templateEngine")
   );
-  const [{ value: ifValue }] = useField<BlockIf>(configName("if"));
+  const [{ value: ifFieldValue }] = useField<BlockIf>(configName("if"));
   const [{ value: windowValue }] = useField<BlockWindow>(configName("window"));
 
   const customTemplateEngineSet =
     templateEngineValue &&
     templateEngineValue !== DEFAULT_TEMPLATE_ENGINE_VALUE;
 
-  const ifSet = ifValue != null && ifValue !== "";
+  const ifValue = isExpression(ifFieldValue)
+    ? ifFieldValue.__value__
+    : ifFieldValue;
 
   const customWindowSet = windowValue && windowValue !== DEFAULT_WINDOW_VALUE;
 
   const advancedOptionsSet =
-    customTemplateEngineSet || ifSet || customWindowSet;
+    customTemplateEngineSet || ifValue || customWindowSet;
 
   if (!advancedOptionsSet) {
     return null;
@@ -67,7 +70,7 @@ const AdvancedLinks: React.FC<AdvancedLinksProps> = ({ name, scrollToRef }) => {
           Template Engine: {templateEngineValue}
         </Button>
       )}
-      {ifSet && (
+      {ifValue && (
         <Button variant="link" size="sm" onClick={scrollToAdvancedOptions}>
           Condition: {ifValue}
         </Button>
