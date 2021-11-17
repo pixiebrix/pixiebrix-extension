@@ -54,16 +54,12 @@ const FieldEditor: React.FC<{
     { setValue: setRjsfSchema },
   ] = useField<RJSFSchema>(name);
   const { schema, uiSchema } = rjsfSchema;
-  const [{ value: propertySchema }] = useField<Schema>(
-    `${name}.schema.properties.${propertyName}`
-  );
-
+  const fullPropertyName = `${name}.schema.properties.${propertyName}`;
+  const [{ value: propertySchema }] = useField<Schema>(fullPropertyName);
   const getFullFieldName = (fieldName: string) =>
-    `${name}.schema.properties.${propertyName}.${fieldName}`;
+    `${fullPropertyName}.${fieldName}`;
 
-  const [internalPropertyName, setInternalPropertyName] = useState<string>(
-    null
-  );
+  const [internalPropertyName, setInternalPropertyName] = useState<string>("");
   const [propertyNameError, setPropertyNameError] = useState<string>(null);
   useEffect(() => {
     setInternalPropertyName(propertyName);
@@ -173,7 +169,7 @@ const FieldEditor: React.FC<{
     <div className={styles.root}>
       <FieldTemplate
         required
-        name={`${name}.${propertyName}`}
+        name={fullPropertyName}
         label="Name"
         value={internalPropertyName}
         onChange={onPropertyNameChange}

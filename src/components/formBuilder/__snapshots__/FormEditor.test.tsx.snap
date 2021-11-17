@@ -232,7 +232,7 @@ exports[`FormEditor renders simple schema 1`] = `
       >
         <label
           class="horizontalLabel form-label col-form-label col-lg-3"
-          for="rjsfSchema.firstName"
+          for="rjsfSchema.schema.properties.firstName"
         >
           Name
         </label>
@@ -241,8 +241,8 @@ exports[`FormEditor renders simple schema 1`] = `
         >
           <input
             class="form-control"
-            id="rjsfSchema.firstName"
-            name="rjsfSchema.firstName"
+            id="rjsfSchema.schema.properties.firstName"
+            name="rjsfSchema.schema.properties.firstName"
             required=""
             value="firstName"
           />
