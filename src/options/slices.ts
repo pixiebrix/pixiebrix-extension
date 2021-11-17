@@ -396,7 +396,7 @@ export const optionsSlice = createSlice({
       // Make sure we're not keeping any private data around from Page Editor sessions
       void clearExtensionTraces(extensionId);
 
-      // NOTE: we aren't deleting the extension on the server. The must do that separately from the dashboard
+      // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);
     },
   },
