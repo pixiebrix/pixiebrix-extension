@@ -27,7 +27,7 @@ import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { compact, isEmpty } from "lodash";
+import { compact } from "lodash";
 import { IBlock, OutputKey, UUID } from "@/core";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
@@ -76,7 +76,10 @@ const EditTab: React.FC<{
     [extensionPoint.metadata.id]
   );
 
-  const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
+  const { label, icon, EditorNode: FoundationNode } = useMemo(
+    () => ADAPTERS.get(elementType),
+    [elementType]
+  );
 
   const isApiAtLeastV3 = useApiVersionAtLeast("v3");
   const produceExcludeUnusedDependencies = isApiAtLeastV3
@@ -129,22 +132,25 @@ const EditTab: React.FC<{
 
   const blockFieldName = `${PIPELINE_BLOCKS_FIELD_NAME}[${activeBlockIndex}]`;
 
+  const lastBlockPipelineId = blockPipeline[blockPipeline.length - 1]?.id;
+  const lastBlock = useMemo(
+    // eslint-disable-next-line security/detect-object-injection -- record obj
+    () => (lastBlockPipelineId ? allBlocks[lastBlockPipelineId] : undefined),
+    [allBlocks, lastBlockPipelineId]
+  );
   const [showAppendNode] = useAsyncState(
     async () => {
-      if (isEmpty(allBlocks) || isEmpty(blockPipeline)) {
+      if (!lastBlock) {
         return true;
       }
 
-      const lastId = blockPipeline[blockPipeline.length - 1].id;
-      // eslint-disable-next-line security/detect-object-injection
-      const lastBlock = allBlocks[lastId];
       if (!lastBlock?.block) {
         return true;
       }
 
       return lastBlock.type !== "renderer";
     },
-    [allBlocks, blockPipeline],
+    [lastBlock],
     false
   );
 
@@ -176,7 +182,7 @@ const EditTab: React.FC<{
       setFormValues(nextState);
       setActiveNodeId(newBlock.instanceId);
     },
-    [blockPipeline, values, setFormValues]
+    [blockPipeline, values, setFormValues, setActiveNodeId]
   );
 
   const removeBlock = (nodeIdToRemove: NodeId) => {
@@ -207,120 +213,141 @@ const EditTab: React.FC<{
     setFormValues(nextState);
   };
 
-  function moveBlockUp(instanceId: UUID) {
-    const index = blockPipeline.findIndex(
-      (block) => block.instanceId === instanceId
-    );
-    if (index < 1 || index + 1 > blockPipeline.length) {
-      return;
-    }
-
-    const nextState = produce(values, (draft) => {
-      const pipeline = draft.extension.blockPipeline;
-      // Swap the prev and current index values in the pipeline array, "up" in
-      //  the UI means a lower index in the array
-      // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-      [pipeline[index - 1], pipeline[index]] = [
-        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-        pipeline[index],
-        pipeline[index - 1],
-      ];
-    });
-    setFormValues(nextState);
-  }
-
-  function moveBlockDown(instanceId: UUID) {
-    const index = blockPipeline.findIndex(
-      (block) => block.instanceId === instanceId
-    );
-    if (index + 1 === blockPipeline.length) {
-      return;
-    }
-
-    const nextState = produce(values, (draft) => {
-      const pipeline = draft.extension.blockPipeline;
-      // Swap the current and next index values in the pipeline array, "down"
-      //  in the UI means a higher index in the array
-      // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-      [pipeline[index], pipeline[index + 1]] = [
-        pipeline[index + 1],
-        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-        pipeline[index],
-      ];
-    });
-    setFormValues(nextState);
-  }
-
-  const blockNodes: EditorNodeProps[] = blockPipeline.map(
-    (blockConfig, index) => {
-      const block = allBlocks[blockConfig.id]?.block;
-      const nodeId = blockConfig.instanceId;
-
-      if (!block) {
-        return {
-          nodeId,
-          title: "Loading...",
-        };
+  const moveBlockUp = useCallback(
+    (instanceId: UUID) => {
+      const index = blockPipeline.findIndex(
+        (block) => block.instanceId === instanceId
+      );
+      if (index < 1 || index + 1 > blockPipeline.length) {
+        return;
       }
 
-      const newBlock: EditorNodeProps = {
-        nodeId,
-        title: isNullOrBlank(blockConfig.label)
-          ? block?.name
-          : blockConfig.label,
-        icon: (
-          <BrickIcon
-            brick={block}
-            size="2x"
-            // This makes brick icons that use basic font awesome icons
-            //   inherit the editor node layout color scheme.
-            // Customized SVG icons are unaffected and keep their branded
-            //   color schemes.
-            faIconClass={styles.brickFaIcon}
-          />
-        ),
-        hasError:
-          // If blockPipelineErrors is a string, it means the error is on the pipeline level
-          typeof blockPipelineErrors !== "string" &&
-          // eslint-disable-next-line security/detect-object-injection
-          Boolean(blockPipelineErrors?.[index]),
-        hasWarning: errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
-        onClick: () => {
-          setActiveNodeId(blockConfig.instanceId);
-        },
-      };
-
-      if (blockConfig.outputKey) {
-        newBlock.outputKey = blockConfig.outputKey;
-      }
-
-      return newBlock;
-    }
+      const nextState = produce(values, (draft) => {
+        const pipeline = draft.extension.blockPipeline;
+        // Swap the prev and current index values in the pipeline array, "up" in
+        //  the UI means a lower index in the array
+        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+        [pipeline[index - 1], pipeline[index]] = [
+          // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+          pipeline[index],
+          pipeline[index - 1],
+        ];
+      });
+      setFormValues(nextState);
+    },
+    [blockPipeline, setFormValues, values]
   );
 
-  const foundationNode: EditorNodeProps = {
-    nodeId: FOUNDATION_NODE_ID,
-    outputKey: "input",
-    title: label,
-    icon,
-    onClick: () => {
-      setActiveNodeId(FOUNDATION_NODE_ID);
+  const moveBlockDown = useCallback(
+    (instanceId: UUID) => {
+      const index = blockPipeline.findIndex(
+        (block) => block.instanceId === instanceId
+      );
+      if (index + 1 === blockPipeline.length) {
+        return;
+      }
+
+      const nextState = produce(values, (draft) => {
+        const pipeline = draft.extension.blockPipeline;
+        // Swap the current and next index values in the pipeline array, "down"
+        //  in the UI means a higher index in the array
+        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+        [pipeline[index], pipeline[index + 1]] = [
+          pipeline[index + 1],
+          // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+          pipeline[index],
+        ];
+      });
+      setFormValues(nextState);
     },
-  };
+    [blockPipeline, setFormValues, values]
+  );
 
-  const nodes: EditorNodeProps[] = [foundationNode, ...blockNodes];
+  const nodes = useMemo<EditorNodeProps[]>(() => {
+    const blockNodes: EditorNodeProps[] = blockPipeline.map(
+      (blockConfig, index) => {
+        const block = allBlocks[blockConfig.id]?.block;
+        const nodeId = blockConfig.instanceId;
 
-  const [relevantBlocksToAdd] = useAsyncState(async () => {
-    const excludeType: BlockType = ["actionPanel", "panel"].includes(
-      elementType
-    )
-      ? "effect"
-      : "renderer";
+        if (!block) {
+          return {
+            nodeId,
+            title: "Loading...",
+          };
+        }
 
-    return Object.values(allBlocks)
-      .filter(({ type }) => type != null && type !== excludeType)
-      .map(({ block }) => block);
-  }, [allBlocks, elementType]);
+        const newBlock: EditorNodeProps = {
+          nodeId,
+          title: isNullOrBlank(blockConfig.label)
+            ? block?.name
+            : blockConfig.label,
+          icon: (
+            <BrickIcon
+              brick={block}
+              size="2x"
+              // This makes brick icons that use basic font awesome icons
+              //   inherit the editor node layout color scheme.
+              // Customized SVG icons are unaffected and keep their branded
+              //   color schemes.
+              faIconClass={styles.brickFaIcon}
+            />
+          ),
+          hasError:
+            // If blockPipelineErrors is a string, it means the error is on the pipeline level
+            typeof blockPipelineErrors !== "string" &&
+            // eslint-disable-next-line security/detect-object-injection
+            Boolean(blockPipelineErrors?.[index]),
+          hasWarning:
+            errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
+          onClick: () => {
+            setActiveNodeId(blockConfig.instanceId);
+          },
+        };
+
+        if (blockConfig.outputKey) {
+          newBlock.outputKey = blockConfig.outputKey;
+        }
+
+        return newBlock;
+      }
+    );
+
+    const foundationNode: EditorNodeProps = {
+      nodeId: FOUNDATION_NODE_ID,
+      outputKey: "input",
+      title: label,
+      icon,
+      onClick: () => {
+        setActiveNodeId(FOUNDATION_NODE_ID);
+      },
+    };
+
+    return [foundationNode, ...blockNodes];
+  }, [
+    allBlocks,
+    blockPipeline,
+    blockPipelineErrors,
+    errorTraceEntry?.blockInstanceId,
+    icon,
+    label,
+    setActiveNodeId,
+  ]);
+
+  const [relevantBlocksToAdd] = useAsyncState(
+    async () => {
+      const excludeType: BlockType = ["actionPanel", "panel"].includes(
+        elementType
+      )
+        ? "effect"
+        : "renderer";
+
+      return Object.values(allBlocks)
+        .filter(({ type }) => type != null && type !== excludeType)
+        .map(({ block }) => block);
+    },
+    [allBlocks, elementType],
+    []
+  );
 
   const blockError: string =
     // eslint-disable-next-line security/detect-object-injection

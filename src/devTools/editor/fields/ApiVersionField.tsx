@@ -30,4 +30,4 @@ const ApiVersionField: React.FC = () => (
   </ConnectedFieldTemplate>
 );
 
-export default ApiVersionField;
+export default React.memo(ApiVersionField);
