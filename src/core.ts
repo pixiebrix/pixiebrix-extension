@@ -27,8 +27,6 @@ import { ErrorObject } from "serialize-error";
 import { Permissions } from "webextension-polyfill";
 import { pick } from "lodash";
 
-export type TemplateEngine = "mustache" | "nunjucks" | "handlebars" | "var";
-export type ExpressionType = TemplateEngine | "pipeline";
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
@@ -108,23 +106,62 @@ export type RegistryId = string & {
 };
 type ServiceId = RegistryId;
 
-export interface Meta {
-  nonce?: string;
-  [index: string]: unknown;
-}
+/**
+ * The tag of an available template engine for rendering an expression given a context.
+ * @see mapArgs
+ */
+export type TemplateEngine =
+  // https://mustache.github.io/
+  | "mustache"
+  // https://mozilla.github.io/nunjucks/
+  | "nunjucks"
+  // https://handlebarsjs.com/
+  | "handlebars"
+  // Variable, with support for ? operator
+  | "var";
+
+/**
+ * The tag of an expression type without the !-prefix that appears in YAML. These appear in YAML files as simple tags,
+ * e.g., !pipeline, and are converted into Expressions during deserialization
+ * @see Expression
+ * @see loadBrickYaml
+ * @see TemplateEngine
+ * @see BlockPipeline
+ */
+export type ExpressionType =
+  | TemplateEngine
+  // BlockPipeline with deferred execution
+  | "pipeline";
 
 /**
  * The JSON/JS representation of an explicit template/variable expression (e.g., mustache, var, etc.)
  * @see BlockConfig
+ * @see loadBrickYaml
  * @since 1.5.0
  */
 export type Expression<
-  V = string,
-  T extends ExpressionType = ExpressionType
+  // The value. TemplateEngine ExpressionTypes, this will be a string containing the template. For `pipeline`
+  // ExpressionType this will be a BlockPipeline. (The loadBrickYaml method will currently accept any array for
+  // pipeline at this time, though.
+  TTemplateOrPipeline = string,
+  // The type tag (without the !-prefix of the YAML simple tag)
+  TTypeTag extends ExpressionType = ExpressionType
 > = {
-  __type__: T;
-  __value__: V;
+  __type__: TTypeTag;
+  __value__: TTemplateOrPipeline;
 };
+
+/**
+ * The Meta section of a message (for message passing between extension components)
+ *
+ * Not to be mistaken with Metadata in brick definitions
+ *
+ * @see Message
+ */
+export interface Meta {
+  nonce?: string;
+  [index: string]: unknown;
+}
 
 /**
  * Standard message format for cross-context messaging.
