@@ -41,7 +41,6 @@ import { selectElements } from "@/devTools/editor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import menuItem from "@/devTools/editor/extensionPoints/menuItem";
 import pDefer from "p-defer";
-import { selectExtensions } from "@/options/selectors";
 
 jest.unmock("react-redux");
 
