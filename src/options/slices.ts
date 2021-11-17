@@ -19,10 +19,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   DeploymentContext,
   IExtension,
-  Metadata,
   OutputKey,
   PersistedExtension,
   RawServiceConfiguration,
+  RecipeMetadata,
   RegistryId,
   UserOptions,
   UUID,
@@ -212,7 +212,7 @@ export const optionsSlice = createSlice({
       state,
       {
         payload,
-      }: PayloadAction<{ extensionId: UUID; recipeMetadata: Metadata }>
+      }: PayloadAction<{ extensionId: UUID; recipeMetadata: RecipeMetadata }>
     ) {
       const { extensionId, recipeMetadata } = payload;
       const extension = state.extensions.find((x) => x.id === extensionId);
@@ -266,6 +266,7 @@ export const optionsSlice = createSlice({
             name: recipe.metadata.name,
             description: recipe.metadata.description,
             sharing: recipe.sharing,
+            updated_at: recipe.updated_at,
           },
           // Definitions are pushed down into the extensions. That's OK because `resolveDefinitions` determines
           // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary

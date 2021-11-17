@@ -89,7 +89,7 @@ const ExtensionGroup: React.FunctionComponent<{
 
   const recipe = extensions[0]._recipe;
 
-  const install = useCallback(() => {
+  const reinstall = useCallback(() => {
     history.push(
       `marketplace/activate/${encodeURIComponent(recipe.id)}?reinstall=1`
     );
@@ -125,13 +125,7 @@ const ExtensionGroup: React.FunctionComponent<{
 
     if (hasUpdate) {
       return (
-        <Button
-          size="sm"
-          variant="info"
-          onClick={() => {
-            install();
-          }}
-        >
+        <Button size="sm" variant="info" onClick={reinstall}>
           Update
         </Button>
       );
@@ -160,7 +154,14 @@ const ExtensionGroup: React.FunctionComponent<{
         <FontAwesomeIcon icon={faCheck} /> Active
       </>
     );
-  }, [paused, managed, hasPermissions, requestPermissions, hasUpdate, install]);
+  }, [
+    paused,
+    managed,
+    hasPermissions,
+    requestPermissions,
+    hasUpdate,
+    reinstall,
+  ]);
 
   const onViewLogs = () => {
     dispatch(
@@ -204,6 +205,16 @@ const ExtensionGroup: React.FunctionComponent<{
               {
                 title: (
                   <>
+                    <FontAwesomeIcon icon={faSyncAlt} />{" "}
+                    {hasUpdate ? "Update" : "Reactivate"}
+                  </>
+                ),
+                className: "text-info",
+                action: reinstall,
+              },
+              {
+                title: (
+                  <>
                     <FontAwesomeIcon icon={faTimes} /> Uninstall
                   </>
                 ),
@@ -214,16 +225,6 @@ const ExtensionGroup: React.FunctionComponent<{
                   await removeMany(extensions);
                 },
                 className: "text-danger",
-              },
-              {
-                title: (
-                  <>
-                    <FontAwesomeIcon icon={faSyncAlt} />{" "}
-                    {hasUpdate ? "Update" : "Reactivate"}
-                  </>
-                ),
-                className: "text-info",
-                action: install,
               },
             ]}
           />

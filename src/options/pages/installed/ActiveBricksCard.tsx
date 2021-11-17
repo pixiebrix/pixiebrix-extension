@@ -116,30 +116,37 @@ const ActiveBricksCard: React.FunctionComponent<{
   const { scope } = useContext(AuthContext);
   const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
 
+  console.log("Extensions:", extensions);
+
   const getOrganizationName = (organizationId: UUID) =>
     organizations.find((organization) => organization.id === organizationId)
       ?.name;
 
-  // TODO: compare updated_at string
+  console.log("Raw Recipes:", recipes);
+
   const extensionGroupHasUpdate = (installedRecipe: RecipeMetadata) => {
-    if (isRecipesLoading) {
+    if (isRecipesLoading || !installedRecipe) {
       return null;
     }
 
     const latestRecipe = recipes.find(
       (recipe) => recipe.metadata.id === installedRecipe.id
     );
-    // return (latestRecipe.metadata.version > installedRecipe.version)
-    //     || !installedRecipe.updated_at
-    //     || (latestRecipe.updated_at > installedRecipe?.updated_at);
-    // TODO: proper version number comparison
+
+    const latestDate = new Date(latestRecipe?.updated_at);
+    const installedDate = new Date(installedRecipe?.updated_at);
+
+    const hasUpdate = latestDate > installedDate;
+
     console.log(
-      "Latest version:",
-      latestRecipe.metadata.version,
-      "Current version:",
-      installedRecipe.version
+      "Installed Recipe:",
+      installedRecipe,
+      "Latest Recipe:",
+      latestRecipe
     );
-    return !(latestRecipe.metadata.version > installedRecipe.version);
+    console.log(latestDate, installedDate);
+
+    return hasUpdate;
   };
 
   const groupedExtensions = useMemo(() => groupExtensions(extensions, scope), [
@@ -232,6 +239,7 @@ const ActiveBricksCard: React.FunctionComponent<{
                         label={recipe.name}
                         extensions={extensions}
                         groupMessageContext={messageContext}
+                        hasUpdate={extensionGroupHasUpdate(recipe)}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
@@ -255,6 +263,7 @@ const ActiveBricksCard: React.FunctionComponent<{
                         label={recipe.name}
                         extensions={extensions}
                         groupMessageContext={messageContext}
+                        hasUpdate={extensionGroupHasUpdate(recipe)}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
@@ -283,6 +292,7 @@ const ActiveBricksCard: React.FunctionComponent<{
                         label={recipe.name}
                         extensions={extensions}
                         groupMessageContext={messageContext}
+                        hasUpdate={extensionGroupHasUpdate(recipe)}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />

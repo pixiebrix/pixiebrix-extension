@@ -31,6 +31,7 @@ import useFetch from "@/hooks/useFetch";
 type BlueprintResponse = {
   config: RecipeDefinition;
   sharing: SharingDefinition;
+  updated_at: string;
 };
 
 const ActivateBlueprintPage: React.FunctionComponent = () => {
@@ -43,11 +44,14 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
     error: fetchError,
   } = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}`);
 
+  console.log("Blueprint:", blueprint);
+
   // Reshape to recipe definition
   const recipe: RecipeDefinition = useMemo(
     () => ({
       ...blueprint?.config,
       sharing: blueprint?.sharing,
+      updated_at: blueprint?.updated_at,
     }),
     [blueprint]
   );

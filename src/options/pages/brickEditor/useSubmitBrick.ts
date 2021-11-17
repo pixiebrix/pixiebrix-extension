@@ -99,6 +99,8 @@ function useSubmitBrick({
         // We attach the handler below, and don't want it to block the save
         let refreshPromise: Promise<void>;
         if (kind === "recipe" && reinstallBlueprint) {
+          // TODO: fix me
+          (json as RecipeDefinition).updated_at = data.updated_at;
           refreshPromise = reinstall(json as RecipeDefinition);
         } else if (kind === "service") {
           // Fetch the remote definitions, then clear the background page's service cache so it's forced to read the

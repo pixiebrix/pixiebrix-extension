@@ -57,6 +57,14 @@ function stripNonSchemaProps(brick: any) {
       delete draft.sharing;
     }
 
+    if ("updated_at" in draft) {
+      delete draft.updated_at;
+    }
+
+    if ("updated_at" in draft.metadata) {
+      delete draft.metadata.updated_at;
+    }
+
     if (typeof draft.metadata === "object" && "sharing" in draft.metadata) {
       delete draft.metadata.sharing;
     }
