@@ -40,12 +40,17 @@ import {
 import { selectElements } from "@/devTools/editor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import menuItem from "@/devTools/editor/extensionPoints/menuItem";
+import pDefer from "p-defer";
+import { selectExtensions } from "@/options/selectors";
 
 jest.unmock("react-redux");
 
 jest.mock("@/telemetry/logging");
 jest.mock("@/devTools/editor/hooks/useCreate");
 jest.mock("@/devTools/editor/hooks/useReset");
+jest.mock("@/background/trace", () => ({
+  clearExtensionTraces: jest.fn(),
+}));
 
 jest.mock("@/services/api", () => ({
   useCreateRecipeMutation: jest.fn().mockReturnValue([]),
@@ -212,6 +217,9 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isWizardOpen).toBe(true);
     expect(result.current.isSaving).toBe(false);
 
+    const creatingElementDeferred = pDefer<void>();
+    createMock.mockReturnValueOnce(creatingElementDeferred.promise);
+
     // Saving as personal extension
     const savingElementPromise = act(async () =>
       result.current.saveElementAsPersonalExtension()
@@ -241,6 +249,12 @@ describe("saving a Recipe Extension", () => {
       pushToCloud: true,
     });
 
+    // Check the original recipe element is uninstalled
+    creatingElementDeferred.resolve();
+    await creatingElementDeferred.promise;
+    expect(selectElements(store.getState())).toHaveLength(1);
+
+    // Check wizard state after saving
     await savingElementPromise;
     expect(result.current.isWizardOpen).toBe(false);
     expect(result.current.isSaving).toBe(false);
