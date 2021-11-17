@@ -16,7 +16,7 @@
  */
 
 import React, { FocusEventHandler, useCallback, useState } from "react";
-import { Form } from "react-bootstrap";
+import { Form, FormControlProps } from "react-bootstrap";
 import { useField } from "formik";
 import { round } from "lodash";
 
@@ -25,10 +25,12 @@ import { round } from "lodash";
  *
  * @see: IntegerWidget
  */
-const NumberWidget: React.FC<{
-  name: string;
-  step?: number;
-}> = ({ name, step }) => {
+const NumberWidget: React.FC<
+  FormControlProps & {
+    name: string;
+    step?: number;
+  }
+> = ({ name, step, ...restProps }) => {
   const [{ value: formValue }, , { setValue: setFormValue }] = useField<number>(
     name
   );
@@ -55,6 +57,7 @@ const NumberWidget: React.FC<{
       onChange={onChange}
       onBlur={onBlur}
       step={step ? String(step) : ""}
+      {...restProps}
     />
   );
 };

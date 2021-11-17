@@ -42,7 +42,7 @@ afterEach(() => {
 test("renders", async () => {
   const block = echoBlock;
   blockRegistry.register(block);
-  const initialState = formStateFactory({}, { id: block.id });
+  const initialState = formStateFactory({ apiVersion: "v3" }, { id: block.id });
   const FormikTemplate = createFormikTemplate(initialState);
   const rendered = render(
     <FormikTemplate>
@@ -61,7 +61,10 @@ test("renders", async () => {
 test("shows root mode for trigger", async () => {
   const block = echoBlock;
   blockRegistry.register(block);
-  const initialState = triggerFormStateFactory({}, { id: block.id });
+  const initialState = triggerFormStateFactory(
+    { apiVersion: "v3" },
+    { id: block.id }
+  );
   const FormikTemplate = createFormikTemplate(initialState);
   render(
     <FormikTemplate>
@@ -98,7 +101,10 @@ test.each`
     });
 
     blockRegistry.register(block);
-    const initialState = triggerFormStateFactory({}, { id: block.id });
+    const initialState = triggerFormStateFactory(
+      { apiVersion: "v3" },
+      { id: block.id }
+    );
     const FormikTemplate = createFormikTemplate(initialState);
     render(
       <FormikTemplate>

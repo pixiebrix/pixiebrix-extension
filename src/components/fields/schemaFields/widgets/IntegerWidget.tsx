@@ -17,14 +17,15 @@
 
 import React from "react";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
+import { FormControlProps } from "react-bootstrap";
 
 /**
  * A basic input widget for integers
  *
  * @see: NumberWidget
  */
-const IntegerWidget: React.FC<{ name: string }> = ({ name }) => (
-  <NumberWidget name={name} step={1} />
-);
+const IntegerWidget: React.FC<FormControlProps & { name: string }> = (
+  props
+) => <NumberWidget step={1} {...props} />;
 
 export default IntegerWidget;

@@ -16,8 +16,10 @@
  */
 
 import React from "react";
-import { Form } from "react-bootstrap";
+import { Form, FormControlProps } from "react-bootstrap";
 
-const OmitFieldWidget: React.FC = () => <Form.Control disabled />;
+const OmitFieldWidget: React.FC<FormControlProps> = (props) => (
+  <Form.Control {...props} disabled />
+);
 
 export default OmitFieldWidget;
