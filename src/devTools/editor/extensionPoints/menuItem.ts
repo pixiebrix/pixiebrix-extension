@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IconConfig, IExtension, Metadata } from "@/core";
+import { IExtension, Metadata } from "@/core";
 import {
   ButtonDefinition,
   ButtonSelectionResult,
@@ -25,17 +25,16 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
-  omitEditorMetadata,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
+  normalizePipeline,
+  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-  withInstanceIds,
-  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import {
   MenuDefinition,
@@ -44,8 +43,7 @@ import {
   MenuPosition,
 } from "@/extensionPoints/menuItemExtension";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray, identity, pickBy } from "lodash";
-import LogsTab from "@/devTools/editor/tabs/LogsTab";
+import { identity, pickBy } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
@@ -58,19 +56,10 @@ import {
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { NormalizedAvailability } from "@/blocks/types";
 import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfiguration";
-import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import { insertButton } from "@/contentScript/messenger/api";
+import { Except } from "type-fest";
 
-const wizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
-  { step: "Logs", Component: LogsTab },
-];
-
-type Extension = BaseExtensionState & {
-  caption: string;
-  dynamicCaption?: boolean;
-  icon?: IconConfig;
-};
+type Extension = BaseExtensionState & Except<MenuItemExtensionConfig, "action">;
 
 export interface ActionFormState extends BaseFormState<Extension> {
   type: "menuItem";
@@ -203,6 +192,7 @@ async function fromExtensionPoint(
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
+    recipe: undefined,
   };
 }
 
@@ -215,16 +205,12 @@ export async function fromExtension(
     "menuItem"
   >(config, "menuItem");
 
-  const blockPipeline = withInstanceIds(castArray(config.config.action));
-
   return {
     ...baseFromExtension(config, extensionPoint.definition.type),
 
-    extension: {
-      ...config.config,
-      blockPipeline,
-    },
+    extension: normalizePipeline(config.config, "action"),
 
+    // `containerInfo` only populated on initial creation session
     containerInfo: null,
 
     extensionPoint: {
@@ -254,7 +240,6 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   baseClass: MenuItemExtensionPoint,
   EditorNode: MenuItemConfiguration,
   selectNativeElement: insertButton,
-  wizard,
   fromExtensionPoint,
   fromNativeElement,
   asDynamicElement,

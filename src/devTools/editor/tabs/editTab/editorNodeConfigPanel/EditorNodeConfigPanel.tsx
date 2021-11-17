@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -74,6 +74,11 @@ const EditorNodeConfigPanel: React.FC<{
     ? "Effect and renderer bricks do not produce outputs"
     : "Provide an output key to refer to the outputs of this block later.";
 
+  const outputKeyLabel = useMemo(
+    () => <PopoverOutputLabel description={outputDescription} />,
+    [outputDescription]
+  );
+
   return (
     <>
       {blockError && (
@@ -92,7 +97,7 @@ const EditorNodeConfigPanel: React.FC<{
         <Col xl>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.outputKey`}
-            label={<PopoverOutputLabel description={outputDescription} />}
+            label={outputKeyLabel}
             disabled={isOutputDisabled}
             as={OutputKeyWidget}
           />

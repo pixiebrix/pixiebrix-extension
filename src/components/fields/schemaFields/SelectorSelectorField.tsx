@@ -17,17 +17,17 @@
 
 import React from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { fieldLabel } from "@/components/fields/fieldUtils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 
-const SelectorSelectorField: React.FunctionComponent<
-  SchemaFieldProps<string>
-> = (props) => {
-  const { label, name, schema } = props;
+const SelectorSelectorField: React.FunctionComponent<SchemaFieldProps> = (
+  props
+) => {
+  const { schema } = props;
   return (
     <ConnectedFieldTemplate
-      label={label ?? fieldLabel(name)}
+      label={makeLabelForSchemaField(props)}
       description={schema.description}
       as={SelectorSelectorWidget}
       {...props}

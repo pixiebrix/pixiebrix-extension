@@ -191,4 +191,4 @@ const FieldTemplate: React.FC<FieldProps> = ({ layout, ...restProps }) => {
   }
 };
 
-export default FieldTemplate;
+export default React.memo(FieldTemplate);

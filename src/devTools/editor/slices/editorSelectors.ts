@@ -19,5 +19,13 @@ import { EditorState } from "@/devTools/editor/slices/editorSlice";
 
 type RootState = { editor: EditorState };
 
-export const selectActiveExtension = ({ editor }: RootState) =>
+export const selectActiveExtensionId = ({ editor }: RootState) =>
   editor.activeElement;
+
+export const selectElements = ({ editor }: RootState) => editor.elements;
+
+export const selectActiveElement = (state: RootState) => {
+  const activeElementId = selectActiveExtensionId(state);
+  const elements = selectElements(state);
+  return elements.find((x) => x.uuid === activeElementId);
+};

@@ -196,13 +196,13 @@ export const editorSlice = createSlice({
       state.activeElement = uuid;
       state.selectionSeq++;
     },
-    selectInstalled: (state, actions: PayloadAction<FormState>) => {
-      const { uuid } = actions.payload;
+    selectInstalled: (state, action: PayloadAction<FormState>) => {
+      const { uuid } = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);
       if (index >= 0) {
-        state.elements[index] = actions.payload;
+        state.elements[index] = action.payload;
       } else {
-        state.elements.push(actions.payload);
+        state.elements.push(action.payload);
       }
 
       state.error = null;
@@ -223,7 +223,6 @@ export const editorSlice = createSlice({
       state.dirty[element.uuid] = false;
       state.error = null;
       state.beta = null;
-      state.activeElement = element.uuid;
       state.selectionSeq++;
 
       // Make sure we're not keeping any private data around from Page Editor sessions
@@ -258,8 +257,11 @@ export const editorSlice = createSlice({
       // Force a reload so the _new flags are correct on the readers
       state.selectionSeq++;
     },
-    // Sync the redux state with the form state
-    updateElement: (state, action: PayloadAction<FormState>) => {
+    /**
+     * Sync the redux state with the form state.
+     * Used on by the page editor to set changed version of the element in the store.
+     */
+    editElement: (state, action: PayloadAction<FormState>) => {
       const element = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index < 0) {
@@ -270,6 +272,25 @@ export const editorSlice = createSlice({
       state.dirty[element.uuid] = true;
 
       syncElementNodeUIStates(state, element);
+    },
+    /**
+     * Applies the update to the element
+     */
+    updateElement: (
+      state,
+      action: PayloadAction<{ uuid: UUID } & Partial<FormState>>
+    ) => {
+      const { uuid, ...elementUpdate } = action.payload;
+      const index = state.elements.findIndex((x) => x.uuid === uuid);
+      if (index < 0) {
+        throw new Error(`Unknown dynamic element: ${uuid}`);
+      }
+
+      // @ts-expect-error -- Concrete variants of FromState are not mutually assignable.
+      state.elements[index] = {
+        ...state.elements[index],
+        ...elementUpdate,
+      };
     },
     removeElement: (state, action: PayloadAction<UUID>) => {
       const uuid = action.payload;

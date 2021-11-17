@@ -38,6 +38,10 @@ import {
 import runtimeSlice, {
   RuntimeState,
 } from "@/devTools/editor/slices/runtimeSlice";
+import {
+  savingExtensionSlice,
+  SavingExtensionState,
+} from "@/devTools/editor/panes/save/savingExtensionSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -49,6 +53,7 @@ const persistSettingsConfig = {
 export type RootState = {
   options: OptionsState;
   editor: EditorState;
+  savingExtension: SavingExtensionState;
   formBuilder: FormBuilderState;
   settings: SettingsState;
   runtime: RuntimeState;
@@ -67,6 +72,7 @@ const store = configureStore({
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     editor: editorSlice.reducer,
+    savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
     formBuilder: formBuilderSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,

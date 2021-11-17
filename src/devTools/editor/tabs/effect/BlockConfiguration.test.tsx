@@ -46,7 +46,10 @@ test("renders", async () => {
   const FormikTemplate = createFormikTemplate(initialState);
   const rendered = render(
     <FormikTemplate>
-      <BlockConfiguration name="testBlockConfiguration" blockId={block.id} />
+      <BlockConfiguration
+        name="extension.blockPipeline[0]"
+        blockId={block.id}
+      />
     </FormikTemplate>
   );
 
@@ -62,7 +65,10 @@ test("shows root mode for trigger", async () => {
   const FormikTemplate = createFormikTemplate(initialState);
   render(
     <FormikTemplate>
-      <BlockConfiguration name="testBlockConfiguration" blockId={block.id} />
+      <BlockConfiguration
+        name="extension.blockPipeline[0]"
+        blockId={block.id}
+      />
     </FormikTemplate>
   );
 
@@ -96,7 +102,10 @@ test.each`
     const FormikTemplate = createFormikTemplate(initialState);
     render(
       <FormikTemplate>
-        <BlockConfiguration name="testBlockConfiguration" blockId={block.id} />
+        <BlockConfiguration
+          name="extension.blockPipeline[0]"
+          blockId={block.id}
+        />
       </FormikTemplate>
     );
 

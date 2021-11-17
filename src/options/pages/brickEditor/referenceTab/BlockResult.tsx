@@ -31,7 +31,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "@/registry/localRegistry";
 import { useAsyncState } from "@/hooks/common";
 import { Organization } from "@/types/contract";
-import { Sharing } from "@/core";
+import { Sharing, UUID } from "@/core";
 
 export const SharingTag: React.FunctionComponent<{
   block: ReferenceEntry;
@@ -56,7 +56,9 @@ export const SharingTag: React.FunctionComponent<{
     }
 
     // If more than one sharing organization, use the first
-    return organizations.find((org) => sharing.organizations.includes(org.id));
+    return organizations.find((org) =>
+      sharing.organizations.includes(org.id as UUID)
+    );
   }, [organizations, sharing]);
 
   const label = useMemo(() => {

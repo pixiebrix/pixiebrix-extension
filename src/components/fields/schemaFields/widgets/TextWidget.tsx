@@ -23,7 +23,7 @@ import { sortBy, uniq } from "lodash";
 import Creatable from "react-select/creatable";
 import { Form } from "react-bootstrap";
 
-const TextWidget: React.FC<SchemaFieldProps<string>> = ({
+const TextWidget: React.FC<SchemaFieldProps> = ({
   schema,
   uiSchema,
   label,

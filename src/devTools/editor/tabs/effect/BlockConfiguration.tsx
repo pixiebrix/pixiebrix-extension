@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { RegistryId, TemplateEngine } from "@/core";
 import { getIn, useFormikContext } from "formik";
 import { useBlockOptions } from "@/hooks/useBlockOptions";
@@ -58,6 +58,56 @@ const BlockConfiguration: React.FunctionComponent<{
 
   const advancedOptionsRef = useRef<HTMLDivElement>();
 
+  const templateEngineOptions = useMemo<Array<Option<TemplateEngine>>>(
+    () => [
+      { label: "Mustache", value: "mustache" },
+      { label: "Handlebars", value: "handlebars" },
+      { label: "Nunjucks", value: "nunjucks" },
+    ],
+    []
+  );
+
+  const templateEngineDescription = useMemo(
+    () => (
+      <p>
+        The template engine controls how PixieBrix fills in{" "}
+        <code>{"{{variables}}"}</code> in the inputs.
+      </p>
+    ),
+    []
+  );
+
+  const rootModeOptions = useMemo(
+    () => [
+      { label: "Inherit", value: "inherit" },
+      { label: "Document", value: "document" },
+    ],
+    []
+  );
+
+  const ifConditionDescription = useMemo(
+    () => (
+      <p>
+        Condition determining whether or not to execute the brick. Truthy string
+        values are&nbsp;
+        <code>true</code>, <code>t</code>, <code>yes</code>, <code>y</code>,{" "}
+        <code>on</code>, and <code>1</code> (case-insensitive)
+      </p>
+    ),
+    []
+  );
+
+  const targetOptions = useMemo<Array<Option<BlockWindow>>>(
+    () => [
+      { label: "Current Tab (self)", value: "self" },
+      { label: "Opener Tab (opener)", value: "opener" },
+      { label: "Target Tab (target)", value: "target" },
+      { label: "All Tabs (broadcast)", value: "broadcast" },
+      { label: "Server (remote)", value: "remote" },
+    ],
+    []
+  );
+
   return (
     <>
       <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
@@ -65,7 +115,7 @@ const BlockConfiguration: React.FunctionComponent<{
       <Card className={styles.card}>
         <Card.Header className={styles.cardHeader}>Input</Card.Header>
         <Card.Body>
-          <div>
+          <>
             <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
               {blockErrors?.id && (
                 <div className="invalid-feedback d-block mb-4">
@@ -80,7 +130,7 @@ const BlockConfiguration: React.FunctionComponent<{
                 <GridLoader />
               )}
             </SchemaFieldContext.Provider>
-          </div>
+          </>
         </Card.Body>
       </Card>
       <Card className={styles.card}>
@@ -92,20 +142,9 @@ const BlockConfiguration: React.FunctionComponent<{
             name={configName("templateEngine")}
             label="Template engine"
             as={SelectWidget}
-            options={
-              [
-                { label: "Mustache", value: "mustache" },
-                { label: "Handlebars", value: "handlebars" },
-                { label: "Nunjucks", value: "nunjucks" },
-              ] as Array<Option<TemplateEngine>>
-            }
+            options={templateEngineOptions}
             blankValue={DEFAULT_TEMPLATE_ENGINE_VALUE}
-            description={
-              <p>
-                The template engine controls how PixieBrix fills in{" "}
-                <code>{"{{variables}}"}</code> in the inputs.
-              </p>
-            }
+            description={templateEngineDescription}
           />
 
           {
@@ -116,10 +155,7 @@ const BlockConfiguration: React.FunctionComponent<{
                 name={configName("rootMode")}
                 label="Root Mode"
                 as={SelectWidget}
-                options={[
-                  { label: "Inherit", value: "inherit" },
-                  { label: "Document", value: "document" },
-                ]}
+                options={rootModeOptions}
                 blankValue="inherit"
                 description="The root mode controls which page element PixieBrix provides as the implicit element"
               />
@@ -131,30 +167,14 @@ const BlockConfiguration: React.FunctionComponent<{
               <ConnectedFieldTemplate
                 name={configName("if")}
                 label="Condition"
-                description={
-                  <p>
-                    Condition determining whether or not to execute the brick.
-                    Truthy string values are&nbsp;
-                    <code>true</code>, <code>t</code>, <code>yes</code>,{" "}
-                    <code>y</code>, <code>on</code>, and <code>1</code>{" "}
-                    (case-insensitive)
-                  </p>
-                }
+                description={ifConditionDescription}
               />
 
               <ConnectedFieldTemplate
                 name={configName("window")}
                 label="Target"
                 as={SelectWidget}
-                options={
-                  [
-                    { label: "Current Tab (self)", value: "self" },
-                    { label: "Opener Tab (opener)", value: "opener" },
-                    { label: "Target Tab (target)", value: "target" },
-                    { label: "All Tabs (broadcast)", value: "broadcast" },
-                    { label: "Server (remote)", value: "remote" },
-                  ] as Array<Option<BlockWindow>>
-                }
+                options={targetOptions}
                 blankValue={DEFAULT_WINDOW_VALUE}
                 description="Where to execute the brick."
               />

@@ -35,6 +35,7 @@ import { registry } from "@/background/messenger/api";
 import React from "react";
 import { createSitePattern } from "@/permissions/patterns";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementType,
   SingleLayerReaderConfig,
@@ -47,6 +48,7 @@ import {
   ReaderConfig,
 } from "@/blocks/types";
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
+import { UnknownObject } from "@/types";
 
 export interface WizardStep {
   step: string;
@@ -55,7 +57,6 @@ export interface WizardStep {
     editable?: Set<string>;
     available?: boolean;
   }>;
-  extraProps?: Record<string, unknown>;
 }
 
 /**
@@ -110,7 +111,13 @@ export function baseFromExtension<T extends ElementType>(
   type: T
 ): Pick<
   BaseFormState,
-  "uuid" | "apiVersion" | "installed" | "label" | "services" | "optionsArgs"
+  | "uuid"
+  | "apiVersion"
+  | "installed"
+  | "label"
+  | "services"
+  | "optionsArgs"
+  | "recipe"
 > & { type: T } {
   return {
     uuid: config.id,
@@ -120,6 +127,7 @@ export function baseFromExtension<T extends ElementType>(
     services: config.services,
     optionsArgs: config.optionsArgs,
     type,
+    recipe: config._recipe,
   };
 }
 
@@ -161,6 +169,7 @@ export function makeInitialBaseState(
     extension: {
       blockPipeline: [],
     },
+    recipe: undefined,
   };
 }
 
@@ -362,4 +371,27 @@ export function getImplicitReader(type: ElementType): SingleLayerReaderConfig {
  */
 export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
   return reader as SingleLayerReaderConfig;
+}
+
+/**
+ * Normalize the pipeline prop name and assign instance ids for tracing.
+ * @param config the extension configuration
+ * @param pipelineProp the name of the pipeline prop, currently either "action" or "body"
+ * @param defaults
+ */
+export function normalizePipeline<
+  T extends UnknownObject,
+  Prop extends keyof T
+>(
+  config: T,
+  pipelineProp: Prop,
+  defaults: Partial<T> = {}
+  // eslint-disable-next-line @typescript-eslint/ban-types -- not error-prone because parameters check keyof
+): BaseExtensionState & Omit<T, Prop> {
+  const { [pipelineProp]: pipeline, ...rest } = { ...config };
+  return {
+    blockPipeline: withInstanceIds(castArray(pipeline) as BlockPipeline),
+    ...defaults,
+    ...rest,
+  };
 }

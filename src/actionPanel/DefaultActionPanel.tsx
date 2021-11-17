@@ -19,29 +19,31 @@ import React from "react";
 import { useSelector } from "react-redux";
 import marketplaceImage from "@img/marketplace.svg";
 import workshopImage from "@img/workshop.svg";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faClipboardCheck,
-  faExternalLinkAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { selectExtensions } from "@/options/selectors";
 
 const OnboardingContent: React.FunctionComponent = () => (
   <Container>
     <Row className="mt-4">
       <Col>
-        <h4 className="display-6">Activate an Official Template</h4>
+        <h4 className="display-6">Activate an Official Blueprint</h4>
         <p>
           <span className="text-primary">
             The easiest way to start using PixieBrix!
           </span>{" "}
-          Activate a pre-made template from the Templates page.
+          Activate a pre-made blueprint from the Public Marketplace.
         </p>
-        <Button href="/options.html#/templates" target="_blank" variant="info">
-          View Templates&nbsp;
-          <FontAwesomeIcon icon={faClipboardCheck} />
-        </Button>
+        <a
+          className="btn btn-info"
+          href="https://www.pixiebrix.com/marketplace/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open Marketplace&nbsp;
+          <FontAwesomeIcon icon={faExternalLinkAlt} />
+        </a>
       </Col>
     </Row>
 
@@ -49,8 +51,8 @@ const OnboardingContent: React.FunctionComponent = () => (
       <Col>
         <h4 className="display-6">Create your Own</h4>
         <p>
-          Follow the Quickstart Guide in our documentation area to start
-          creating your own bricks in minutes.
+          Follow the Quickstart Guide to start creating your own bricks in
+          minutes.
         </p>
         <a
           className="btn btn-info"
@@ -93,7 +95,7 @@ const DefaultActionPanel: React.FunctionComponent = () => {
 
   return (
     <div>
-      {extensions?.length ? (
+      {extensions?.length > 0 ? (
         <NoAvailablePanelsContent />
       ) : (
         <OnboardingContent />

@@ -21,23 +21,20 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
-  omitEditorMetadata,
+  cleanIsAvailable,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
+  normalizePipeline,
+  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
   selectIsAvailable,
-  withInstanceIds,
-  WizardStep,
-  cleanIsAvailable,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray } from "lodash";
-import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import {
   ContextMenuConfig,
   ContextMenuExtensionPoint,
@@ -55,17 +52,10 @@ import {
 import { Menus } from "webextension-polyfill";
 import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
-import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
+import { Except } from "type-fest";
 
-const wizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
-  { step: "Logs", Component: LogsTab },
-];
-
-type Extension = BaseExtensionState & {
-  title: string;
-};
+type Extension = BaseExtensionState & Except<ContextMenuConfig, "action">;
 
 export interface ContextMenuFormState extends BaseFormState<Extension> {
   type: "contextMenu";
@@ -171,15 +161,10 @@ async function fromExtension(
     reader,
   } = extensionPoint.definition;
 
-  const blockPipeline = withInstanceIds(castArray(extensionConfig.action));
-
   return {
     ...baseFromExtension(config, extensionPoint.definition.type),
 
-    extension: {
-      ...extensionConfig,
-      blockPipeline,
-    },
+    extension: normalizePipeline(extensionConfig, "action"),
 
     extensionPoint: {
       metadata: extensionPoint.metadata,
@@ -236,6 +221,7 @@ async function fromExtensionPoint(
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
+    recipe: undefined,
   };
 }
 
@@ -261,7 +247,6 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  wizard,
   insertModeHelp: (
     <div>
       <p>

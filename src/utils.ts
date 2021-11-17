@@ -34,7 +34,7 @@ import {
   compact,
 } from "lodash";
 import { Primitive } from "type-fest";
-import { SafeString } from "@/core";
+import { ApiVersion, SafeString } from "@/core";
 
 /**
  * Create a Formik field name, validating the individual path parts.
@@ -46,17 +46,19 @@ export function joinName(
   baseFieldName: string | null,
   ...rest: string[]
 ): string {
-  if (rest.length === 0) {
+  const fieldNames = compact(rest);
+
+  if (fieldNames.length === 0) {
     throw new Error(
       "Expected one or more field names to join with the main path"
     );
   }
 
-  if (rest.some((x) => x.includes("."))) {
+  if (fieldNames.some((x) => x.includes("."))) {
     throw new Error("Formik path parts cannot contain periods");
   }
 
-  return compact([baseFieldName, ...rest]).join(".");
+  return compact([baseFieldName, ...fieldNames]).join(".");
 }
 
 export function mostCommonElement<T>(items: T[]): T {
@@ -458,4 +460,14 @@ export function safeParseUrl(url: string): URL {
   } catch {
     return new URL("invalid-url://");
   }
+}
+
+export function isApiVersionAtLeast(
+  is: ApiVersion,
+  atLeast: ApiVersion
+): boolean {
+  const isNum = Number(is.slice(1));
+  const atLeastNum = Number(atLeast.slice(1));
+
+  return isNum >= atLeastNum;
 }

@@ -16,10 +16,11 @@
  */
 
 import React from "react";
-import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
-import { useCreate } from "@/devTools/editor/hooks/useCreate";
-import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/options/selectors";
+import {
+  actions as editorActions,
+  FormState,
+} from "@/devTools/editor/slices/editorSlice";
+import { useDispatch } from "react-redux";
 import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Formik } from "formik";
@@ -27,27 +28,26 @@ import Effect from "@/devTools/editor/components/Effect";
 import ElementWizard from "@/devTools/editor/ElementWizard";
 import useEditable from "@/devTools/editor/hooks/useEditable";
 import { LogContextWrapper } from "@/components/logViewer/LogContext";
+import SaveExtensionWizard from "./save/SaveExtensionWizard";
+import useSavingWizard from "./save/useSavingWizard";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
 const CHANGE_DETECT_DELAY_MILLIS = 100;
 const REDUX_SYNC_WAIT_MILLIS = 500;
 
-const { updateElement } = editorSlice.actions;
-
 const EditorPane: React.FunctionComponent<{
   selectedElement: FormState;
   selectionSeq: number;
 }> = ({ selectedElement, selectionSeq }) => {
-  const create = useCreate();
   const dispatch = useDispatch();
-  const installed = useSelector(selectExtensions);
   const editable = useEditable();
+  const { isWizardOpen } = useSavingWizard();
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
     (values: FormState) => {
-      dispatch(updateElement(values));
+      dispatch(editorActions.editElement(values));
     },
     REDUX_SYNC_WAIT_MILLIS,
     { trailing: true, leading: false }
@@ -57,26 +57,41 @@ const EditorPane: React.FunctionComponent<{
   const key = `${selectedElement.uuid}-${selectedElement.installed}-${selectionSeq}`;
 
   return (
-    <ErrorBoundary key={key}>
-      <Formik key={key} initialValues={selectedElement} onSubmit={create}>
-        {({ values }) => (
-          <>
-            <Effect
-              values={values}
-              onChange={syncReduxState}
-              delayMillis={CHANGE_DETECT_DELAY_MILLIS}
-            />
-            <LogContextWrapper>
-              <ElementWizard
-                element={values}
-                editable={editable}
-                installed={installed}
+    <>
+      <ErrorBoundary key={key}>
+        <Formik
+          key={key}
+          initialValues={selectedElement}
+          onSubmit={() => {
+            console.error(
+              "Formik's submit should not be called to save an extension. Use 'saveElement' from 'useSavingWizard' instead."
+            );
+          }}
+          // We're validating on blur instead of on change as a stop-gap measure to improve typing
+          // performance in schema fields of block configs in dev builds of the extension.
+          // The long-term better solution is to split up our pipeline validation code to work
+          // on one block at a time, and then modify the usePipelineField hook to only validate
+          // one block at a time. Then we can re-enable change validation here once this doesn't
+          // cause re-rendering the entire form on every change.
+          validateOnChange={false}
+          validateOnBlur={true}
+        >
+          {({ values: element }) => (
+            <>
+              <Effect
+                values={element}
+                onChange={syncReduxState}
+                delayMillis={CHANGE_DETECT_DELAY_MILLIS}
               />
-            </LogContextWrapper>
-          </>
-        )}
-      </Formik>
-    </ErrorBoundary>
+              <LogContextWrapper>
+                <ElementWizard element={element} editable={editable} />
+              </LogContextWrapper>
+              {isWizardOpen && <SaveExtensionWizard />}
+            </>
+          )}
+        </Formik>
+      </ErrorBoundary>
+    </>
   );
 };
 

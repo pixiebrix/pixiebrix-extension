@@ -32,7 +32,6 @@ import { reportEvent } from "@/telemetry/events";
 import { preloadContextMenus } from "@/background/initContextMenus";
 import { selectEventData } from "@/telemetry/deployments";
 import { uuidv4 } from "@/types/helpers";
-import { Except } from "type-fest";
 import { ExtensionOptionsState, requireLatestState } from "@/store/extensions";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { CloudExtension, Deployment } from "@/types/contract";
@@ -261,7 +260,13 @@ export const optionsSlice = createSlice({
           // Default to `v1` for backward compatability
           apiVersion: recipe.apiVersion ?? "v1",
           _deployment: selectDeploymentContext(deployment),
-          _recipe: recipe.metadata,
+          _recipe: {
+            id: recipe.metadata.id,
+            version: recipe.metadata.version,
+            name: recipe.metadata.name,
+            description: recipe.metadata.description,
+            sharing: recipe.sharing,
+          },
           // Definitions are pushed down into the extensions. That's OK because `resolveDefinitions` determines
           // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
           definitions: recipe.definitions ?? {},
@@ -296,35 +301,36 @@ export const optionsSlice = createSlice({
       state,
       {
         payload,
-      }: PayloadAction<
-        Except<IExtension | PersistedExtension, "_recipe"> & {
-          extensionId?: UUID;
+      }: PayloadAction<{
+        extension: (IExtension | PersistedExtension) & {
           createTimestamp?: string;
-        }
-      >
+        };
+        pushToCloud: boolean;
+      }>
     ) {
       requireLatestState(state);
 
       const timestamp = new Date().toISOString();
 
       const {
-        id,
-        apiVersion,
-        extensionId,
-        extensionPointId,
-        config,
-        definitions,
-        label,
-        optionsArgs,
-        services,
-        _deployment,
-        createTimestamp = timestamp,
+        extension: {
+          id,
+          apiVersion,
+          extensionPointId,
+          config,
+          definitions,
+          label,
+          optionsArgs,
+          services,
+          _deployment,
+          createTimestamp = timestamp,
+          _recipe,
+        },
+        pushToCloud,
       } = payload;
 
-      const persistedId = extensionId ?? id;
-
       // Support both extensionId and id to keep the API consistent with the shape of the stored extension
-      if (persistedId == null) {
+      if (id == null) {
         throw new Error("id or extensionId is required");
       }
 
@@ -333,11 +339,10 @@ export const optionsSlice = createSlice({
       }
 
       const extension: PersistedExtension = {
-        id: persistedId,
+        id,
         apiVersion,
         extensionPointId,
-        // If the user updates an extension, detach it from the recipe -- it's now a personal extension
-        _recipe: null,
+        _recipe,
         _deployment: undefined,
         label,
         definitions,
@@ -349,12 +354,12 @@ export const optionsSlice = createSlice({
         active: true,
       };
 
-      if (!_deployment) {
+      if (pushToCloud && !_deployment) {
         // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
         void saveUserExtension(extension).catch(reportError);
       }
 
-      const index = state.extensions.findIndex((x) => x.id === persistedId);
+      const index = state.extensions.findIndex((x) => x.id === id);
 
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
@@ -362,6 +367,25 @@ export const optionsSlice = createSlice({
       } else {
         state.extensions.push(extension);
       }
+    },
+    updateExtension(
+      state,
+      action: PayloadAction<{ id: UUID } & Partial<PersistedExtension>>
+    ) {
+      const { id, ...extensionUpdate } = action.payload;
+      const index = state.extensions.findIndex((x) => x.id === id);
+
+      if (index === -1) {
+        reportError(
+          `Can't find extension in optionsSlice to update. Target extension id: ${id}.`
+        );
+        return;
+      }
+
+      state.extensions[index] = {
+        ...state.extensions[index],
+        ...extensionUpdate,
+      };
     },
     removeExtension(
       state,
@@ -372,8 +396,10 @@ export const optionsSlice = createSlice({
       // Make sure we're not keeping any private data around from Page Editor sessions
       void clearExtensionTraces(extensionId);
 
-      // NOTE: we aren't deleting the extension on the server. The must do that separately from the dashboard
+      // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);
     },
   },
 });
+
+export const { actions } = optionsSlice;
