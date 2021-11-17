@@ -471,3 +471,11 @@ export function isApiVersionAtLeast(
 
   return isNum >= atLeastNum;
 }
+
+export function getProperty(obj: Record<string, unknown>, property: string) {
+  if (Object.prototype.hasOwnProperty.call(obj, property)) {
+    // Checking for hasOwnProperty
+    // eslint-disable-next-line security/detect-object-injection
+    return obj[property];
+  }
+}
