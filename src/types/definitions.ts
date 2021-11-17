@@ -97,6 +97,9 @@ export interface Definition {
   metadata: Metadata;
 }
 
+/**
+ * Config of a Package
+ */
 export interface RecipeDefinition extends Definition {
   kind: "recipe";
   extensionPoints: ExtensionPointConfig[];
