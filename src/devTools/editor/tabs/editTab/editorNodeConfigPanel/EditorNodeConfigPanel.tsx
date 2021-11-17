@@ -82,7 +82,7 @@ const EditorNodeConfigPanel: React.FC<{
   );
 
   const isApiAtLeastV3 = useApiVersionAtLeast("v3");
-  const BlockConfig = isApiAtLeastV3
+  const VersionedBlockConfiguration = isApiAtLeastV3
     ? BlockConfigurationV3
     : BlockConfigurationV1;
 
@@ -121,7 +121,7 @@ const EditorNodeConfigPanel: React.FC<{
         </Col>
       </Row>
 
-      <BlockConfig name={blockFieldName} blockId={blockId} />
+      <VersionedBlockConfiguration name={blockFieldName} blockId={blockId} />
     </>
   );
 };
