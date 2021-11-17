@@ -88,3 +88,51 @@ describe("handlebars", () => {
     });
   });
 });
+
+describe("pipeline", () => {
+  test("render !pipeline", async () => {
+    const rendered = await renderExplicit(
+      {
+        foo: {
+          __type__: "pipeline",
+          __value__: [{ id: "@pixiebrix/confetti" }],
+        },
+      },
+      { array: ["bar"] }
+    );
+
+    expect(rendered).toEqual({
+      foo: [{ id: "@pixiebrix/confetti" }],
+    });
+  });
+
+  test("render !pipeline stops at pipeline", async () => {
+    const config = {
+      foo: {
+        __type__: "var",
+        __value__: "foo",
+      },
+    };
+
+    const rendered = await renderExplicit(
+      {
+        foo: {
+          __type__: "pipeline",
+          __value__: [
+            {
+              id: "@pixiebrix/confetti",
+              config,
+            },
+          ],
+        },
+        bar: config,
+      },
+      { foo: 42 }
+    );
+
+    expect(rendered).toEqual({
+      foo: [{ id: "@pixiebrix/confetti", config }],
+      bar: { foo: 42 },
+    });
+  });
+});

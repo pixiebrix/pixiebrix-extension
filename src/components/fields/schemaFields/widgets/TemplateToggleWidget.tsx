@@ -20,7 +20,7 @@ import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode"
 import { Field } from "formik";
 import { Expression, TemplateEngine } from "@/core";
 import { Dropdown, DropdownButton, Form } from "react-bootstrap";
-import { isExpression } from "@/runtime/mapArgs";
+import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import {
   SchemaFieldComponent,
@@ -154,7 +154,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   );
 
   const field = useMemo(() => {
-    if (isExpression(value)) {
+    if (isTemplateExpression(value)) {
       return (
         <Form.Control
           name={name}
