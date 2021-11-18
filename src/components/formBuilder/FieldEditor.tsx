@@ -171,40 +171,40 @@ const FieldEditor: React.FC<{
 
   const selectedUiTypeOption = getSelectedUiTypeOption();
 
-  const labelFieldProps = useMemo<SchemaFieldProps>(
-    () => ({
+  const {
+    labelFieldProps,
+    descriptionFieldProps,
+    defaultFieldProps,
+  } = useMemo(() => {
+    const labelFieldProps: SchemaFieldProps = {
       name: getFullFieldName("title"),
       schema: {
         type: "string",
         description: "The user-visible label for this field",
       },
       label: "Label",
-    }),
-    [getFullFieldName]
-  );
-
-  const descriptionFieldProps = useMemo<SchemaFieldProps>(
-    () => ({
+    };
+    const descriptionFieldProps: SchemaFieldProps = {
       name: getFullFieldName("description"),
       schema: {
         type: "string",
         description: "Explain to the user what this field is used for",
       },
       label: "Field Description",
-    }),
-    [getFullFieldName]
-  );
-
-  const defaultFieldProps = useMemo<SchemaFieldProps>(
-    () => ({
+    };
+    const defaultFieldProps: SchemaFieldProps = {
       name: getFullFieldName("default"),
       schema: {
         type: parseUiType(selectedUiTypeOption.value).propertyType,
       },
       label: "Default value",
-    }),
-    [getFullFieldName, selectedUiTypeOption.value]
-  );
+    };
+    return {
+      labelFieldProps,
+      descriptionFieldProps,
+      defaultFieldProps,
+    };
+  }, [getFullFieldName, selectedUiTypeOption.value]);
 
   return (
     <div className={styles.root}>
