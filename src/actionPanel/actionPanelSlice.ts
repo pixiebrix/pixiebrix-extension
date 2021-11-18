@@ -26,9 +26,10 @@ import {
   mapTabEventKey,
 } from "@/actionPanel/actionPanelUtils";
 import { UUID } from "@/core";
-import { cancelForm, resolveForm } from "@/contentScript/messenger/api";
+import { cancelForm } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
-import { UnknownObject } from "@/types";
+import { reportError } from "@/telemetry/logging";
+import { unary } from "lodash";
 
 type AppState = ActionPanelStore & {
   activeKey: string;
@@ -54,7 +55,7 @@ const actionPanelSlice = createSlice({
       for (const current of state.forms.filter(
         (x) => x.extensionId === form.extensionId
       )) {
-        void cancelForm(thisTab, current.nonce);
+        void cancelForm(thisTab, current.nonce).then(unary(reportError));
       }
 
       state.forms = state.forms.filter(
@@ -63,20 +64,10 @@ const actionPanelSlice = createSlice({
       state.forms.push(form);
       state.activeKey = mapTabEventKey("form", form);
     },
-    cancelForm: (state, action: PayloadAction<UUID>) => {
+    removeForm: (state, action: PayloadAction<UUID>) => {
       const nonce = action.payload;
       state.forms = state.forms.filter((x) => x.nonce !== nonce);
       state.activeKey = defaultEventKey(state);
-      void cancelForm(thisTab, nonce);
-    },
-    submitForm: (
-      state,
-      action: PayloadAction<{ nonce: UUID; values: UnknownObject }>
-    ) => {
-      const { nonce, values } = action.payload;
-      state.forms = state.forms.filter((x) => x.nonce !== nonce);
-      state.activeKey = defaultEventKey(state);
-      void resolveForm(thisTab, nonce, values);
     },
     setPanels: (state, action: PayloadAction<{ panels: PanelEntry[] }>) => {
       state.panels = action.payload.panels;

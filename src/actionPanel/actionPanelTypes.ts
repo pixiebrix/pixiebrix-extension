@@ -16,30 +16,72 @@
  */
 
 import { RegistryId, UUID } from "@/core";
-import { FormDefinition } from "@/blocks/transformers/modalForm/formTypes";
+import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 
 /**
- * Information required to run a renderer
+ * Information required to display a renderer
  */
 export type RendererPayload = {
+  /**
+   * The registry id of the renderer block, e.g., @pixiebrix/table
+   */
   blockId: RegistryId;
+  /**
+   * A unique id for the content, used control re-rendering (similar to `key` in React)
+   */
   key: string;
+  /**
+   * The BlockArg to pass to the renderer
+   * @see BlockProps.args
+   * @see BlockArg
+   */
   args: unknown;
+  /**
+   * The context to pass to the renderer
+   * @see BlockProps.context
+   * @see BlockOptions
+   */
   ctxt: unknown;
 };
 
 export type RendererError = {
+  /**
+   * A unique id for the content, used control re-rendering (similar to `key` in React)
+   */
   key: string;
+  /**
+   * The error message to show in the panel
+   */
   error: string;
 };
+
+/**
+ * Entry types supported by the action panel.
+ *
+ * Current supports panels and ephemeral forms. In the future we may also support button entries, etc.
+ *
+ * @see PanelEntry
+ * @see FormEntry
+ */
+export type EntryType = "panel" | "form";
 
 /**
  * A panel added by an extension attached to an ActionPanelExtensionPoint
  * @see ActionPanelExtensionPoint
  */
 export type PanelEntry = {
+  /**
+   * The extension that added the panel
+   */
   extensionId: UUID;
+  /**
+   * The actionPanel extension point
+   * @see ActionPanelExtensionPoint
+   */
   extensionPointId: RegistryId;
+  /**
+   * Heading for tab name in the action panel
+   */
   heading: string;
   payload: RendererPayload | RendererError | null;
 };
@@ -62,16 +104,6 @@ export type FormEntry = {
    */
   form: FormDefinition;
 };
-
-/**
- * Entry types supported by the action panel.
- *
- * Current supports panels and ephemeral forms. In the future will also support buttons, etc.
- *
- * @see PanelEntry
- * @see FormEntry
- */
-export type EntryType = "panel" | "form";
 
 /**
  * The store/state of entries currently added to the action panel

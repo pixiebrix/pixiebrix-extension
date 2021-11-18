@@ -15,77 +15,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { render, unmountComponentAtNode } from "react-dom";
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import browser from "webextension-polyfill";
-import { registerForm } from "@/contentScript/modalForms";
+import {
+  cancelForm,
+  registerForm,
+} from "@/contentScript/ephemeralFormProtocol";
 import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";
-import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 import {
   hideActionPanel,
   PANEL_HIDING_EVENT,
+  registerShowCallback,
+  removeShowCallback,
   showActionPanel,
   showActionPanelForm,
 } from "@/actionPanel/native";
+import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
+import { unary } from "lodash";
+import { reportError } from "@/telemetry/logging";
+import pDefer from "p-defer";
 
-function showModal(url: URL, signal: AbortSignal): void {
-  // Using `<style>` will avoid overriding the site’s inline styles
-  const style = document.createElement("style");
+export async function createFrameSrc(
+  nonce: string,
+  mode: "modal" | "panel"
+): Promise<URL> {
+  const { tab, frameId } = await whoAmI();
 
-  const scrollableRoot =
-    window.getComputedStyle(document.body).overflowY === "scroll"
-      ? "body"
-      : "html";
-  style.textContent += `${scrollableRoot} {overflow: hidden !important}`; // Disable scrollbar
-
-  // Preserve space initially taken by scrollbar
-  style.textContent += `html {padding-inline-end: ${scrollbarWidth()}px  !important}`;
-
-  const container = document.createElement("div");
-  const shadowRoot = container.attachShadow({ mode: "closed" });
-  document.body.append(container, style);
-  render(
-    <dialog
-      ref={(dialog) => dialog.showModal()}
-      style={{
-        border: 0,
-        width: "500px",
-        height: "100vh", // TODO: Replace with frame auto-sizer via messaging
-        display: "flex", // Fit iframe inside
-        background: "none",
-      }}
-    >
-      <iframe
-        src={url.href}
-        style={{
-          border: "0",
-          flexGrow: 1, // Fit dialog
-          colorScheme: "normal", // Match parent color scheme #1650
-        }}
-      />
-    </dialog>,
-    shadowRoot
+  const frameSrc = new URL(browser.runtime.getURL("ephemeralForm.html"));
+  frameSrc.searchParams.set("nonce", nonce);
+  frameSrc.searchParams.set(
+    "opener",
+    JSON.stringify({ tabId: tab.id, frameId })
   );
-
-  signal.addEventListener("abort", () => {
-    unmountComponentAtNode(container);
-    style.remove();
-    container.remove();
-  });
+  frameSrc.searchParams.set("mode", mode);
+  return frameSrc;
 }
 
-export class ModalTransformer extends Transformer {
+export class FormTransformer extends Transformer {
   defaultOutputKey = "form";
 
   constructor() {
     super(
       "@pixiebrix/form-modal",
-      "Show a modal form",
-      "Show a modal form and return the input",
+      "Show a modal or sidebar form",
+      "Show a form as a modal or in the sidebar, and return the input",
       "faCode"
     );
   }
@@ -140,47 +116,58 @@ export class ModalTransformer extends Transformer {
     // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?
 
     const nonce = uuidv4();
-    const { tab, frameId } = await whoAmI();
+    const frameSrc = await createFrameSrc(nonce, location);
 
-    const frameSrc = new URL(browser.runtime.getURL("modalForm.html"));
-    frameSrc.searchParams.set("nonce", nonce);
-    frameSrc.searchParams.set(
-      "opener",
-      JSON.stringify({ tabId: tab.id, frameId })
-    );
+    const definition = {
+      schema,
+      uiSchema,
+      cancelable,
+      submitCaption,
+    };
 
     const controller = new AbortController();
+
     if (location === "sidebar") {
-      // Show sidebar with native panels.
+      const show = pDefer();
+
+      registerShowCallback(show.resolve);
+
+      // Show sidebar (which may also be showing native panels)
       showActionPanel();
 
+      await show.promise;
+
+      removeShowCallback(show.resolve);
+
+      // FIXME: even with awaiting `show.promise` there seems to be a race with whether or not the sidebar is ready.
+      //  Shouldn't the forwarding logic take care of that?
       showActionPanelForm({
         extensionId: logger.context.extensionId,
         nonce,
-        form: {
-          schema,
-          uiSchema,
-          cancelable,
-          submitCaption,
-        },
+        form: definition,
       });
 
-      // Two-way binding between sidebar and form (Probably not necessary yet)
-      window.addEventListener(PANEL_HIDING_EVENT, () => controller.abort(), {
-        signal: controller.signal,
+      // Two-way binding between sidebar and form
+      window.addEventListener(
+        PANEL_HIDING_EVENT,
+        () => {
+          controller.abort();
+        },
+        {
+          signal: controller.signal,
+        }
+      );
+
+      controller.signal.addEventListener("abort", () => {
+        void cancelForm(nonce).catch(unary(reportError));
+        hideActionPanel();
       });
-      controller.signal.addEventListener("abort", hideActionPanel);
     } else {
       showModal(frameSrc, controller.signal);
     }
 
     try {
-      return await registerForm(nonce, {
-        schema,
-        uiSchema,
-        cancelable,
-        submitCaption,
-      });
+      return await registerForm(nonce, definition);
     } finally {
       controller.abort();
     }

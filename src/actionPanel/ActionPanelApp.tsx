@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useReducer } from "react";
+import React, { useEffect, useMemo, useReducer, useRef } from "react";
 import { Button } from "react-bootstrap";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -32,15 +32,13 @@ import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
 import GridLoader from "react-spinners/GridLoader";
 import { PersistGate } from "redux-persist/integration/react";
-import { browserAction } from "@/background/messenger/api";
-import { UUID } from "@/core";
+import { browserAction, whoAmI } from "@/background/messenger/api";
 import { ary } from "lodash";
 import { ActionPanelStore, FormEntry } from "@/actionPanel/actionPanelTypes";
 import { cancelForm } from "@/contentScript/messenger/api";
-import { thisTab } from "@/devTools/utils";
-import { UnknownObject } from "@/types";
 import ActionPanelTabs from "@/actionPanel/ActionPanelTabs";
 import slice, { blankActionPanelState } from "./actionPanelSlice";
+import { UUID } from "@/core";
 
 const ActionPanelApp: React.FunctionComponent = () => {
   const [state, dispatch] = useReducer(slice.reducer, {
@@ -58,6 +56,9 @@ const ActionPanelApp: React.FunctionComponent = () => {
       onShowForm: (form: FormEntry) => {
         dispatch(slice.actions.addForm({ form }));
       },
+      onHideForm: ({ nonce }: { nonce: UUID }) => {
+        dispatch(slice.actions.removeForm(nonce));
+      },
     }),
     [dispatch]
   );
@@ -70,7 +71,11 @@ const ActionPanelApp: React.FunctionComponent = () => {
       // Cancel all remaining forms on unmount
       // eslint-disable-next-line react-hooks/exhaustive-deps -- want forms as of component unmount
       for (const form of formsRef.current) {
-        void cancelForm(thisTab, form.nonce);
+        // XXX: if the component is unmounting because the sidebar is closing, will we end up getting a messaging
+        // error here?
+        void whoAmI().then(async (sender) =>
+          cancelForm({ tabId: sender.tab.id, frameId: 0 }, form.nonce)
+        );
       }
     };
   }, [listener, formsRef]);
@@ -119,12 +124,6 @@ const ActionPanelApp: React.FunctionComponent = () => {
                   {...state}
                   onSelectTab={(eventKey: string) => {
                     dispatch(slice.actions.selectTab(eventKey));
-                  }}
-                  onCancelForm={async (nonce: UUID) => {
-                    dispatch(slice.actions.cancelForm(nonce));
-                  }}
-                  onSubmitForm={async (nonce: UUID, values: UnknownObject) => {
-                    dispatch(slice.actions.submitForm({ nonce, values }));
                   }}
                 />
               ) : (

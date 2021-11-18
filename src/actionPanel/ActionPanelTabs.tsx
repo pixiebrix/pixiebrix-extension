@@ -28,12 +28,9 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/actionPanel/PanelBody";
 import FormBody from "@/actionPanel/FormBody";
-import { UnknownObject } from "@/types";
 
 type ActionPanelTabsProps = ActionPanelStore & {
   activeKey: string;
-  onSubmitForm: (nonce: UUID, values: UnknownObject) => Promise<void>;
-  onCancelForm: (nonce: UUID) => Promise<void>;
   onSelectTab: (eventKey: string) => void;
 };
 
@@ -41,8 +38,6 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
   activeKey,
   panels,
   forms,
-  onCancelForm,
-  onSubmitForm,
   onSelectTab,
 }) => {
   const { lookup } = useExtensionMeta();
@@ -119,13 +114,7 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
                 style={{ minHeight: "1px" }}
               >
                 <ErrorBoundary>
-                  <FormBody
-                    form={form}
-                    onCancel={async () => onCancelForm(form.nonce)}
-                    onSubmit={async (values: UnknownObject) =>
-                      onSubmitForm(form.nonce, values)
-                    }
-                  />
+                  <FormBody form={form} />
                 </ErrorBoundary>
               </Tab.Pane>
             ))}

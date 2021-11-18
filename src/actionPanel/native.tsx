@@ -19,13 +19,14 @@ import browser from "webextension-polyfill";
 import { reportError } from "@/telemetry/logging";
 import { uuidv4 } from "@/types/helpers";
 import {
+  HIDE_FORM_MESSAGE,
   RENDER_PANELS_MESSAGE,
   SHOW_FORM_MESSAGE,
 } from "@/actionPanel/protocol";
 import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
-import { ExtensionRef } from "@/core";
+import { ExtensionRef, UUID } from "@/core";
 import { browserAction } from "@/background/messenger/api";
 import {
   ActionPanelStore,
@@ -198,6 +199,23 @@ export function showActionPanelForm(entry: FormEntry) {
   browserAction.forwardFrameNotification(seqNum, {
     type: SHOW_FORM_MESSAGE,
     payload: entry,
+  } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
+}
+
+export function hideActionPanelForm(nonce: UUID) {
+  expectContext("contentScript");
+
+  if (!isActionPanelVisible()) {
+    // Already hidden
+    return;
+  }
+
+  const seqNum = renderSequenceNumber;
+  renderSequenceNumber++;
+
+  browserAction.forwardFrameNotification(seqNum, {
+    type: HIDE_FORM_MESSAGE,
+    payload: { nonce },
   } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
 }
 

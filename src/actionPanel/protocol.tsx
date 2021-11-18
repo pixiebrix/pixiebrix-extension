@@ -17,34 +17,28 @@
 
 import browser from "webextension-polyfill";
 import { isBrowserActionPanel } from "@/chrome";
-import { HandlerMap } from "@/messaging/protocol";
+import { HandlerMap, MessageHandler } from "@/messaging/protocol";
 import { reportError } from "@/telemetry/logging";
-import { ActionPanelStore, PanelEntry } from "@/actionPanel/actionPanelTypes";
-import { FormDefinition } from "@/blocks/transformers/modalForm/formTypes";
-import { UUID } from "@/core";
+import { ActionPanelStore } from "@/actionPanel/actionPanelTypes";
+import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
+import { ActionType, Message, Meta, UUID } from "@/core";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/browserAction/";
 
 export const RENDER_PANELS_MESSAGE = `${MESSAGE_PREFIX}RENDER_PANELS`;
 export const SHOW_FORM_MESSAGE = `${MESSAGE_PREFIX}SHOW_FORM`;
+export const HIDE_FORM_MESSAGE = `${MESSAGE_PREFIX}HIDE_FORM`;
 
 let seqNumber = -1;
 
-type RenderPanelsMessage = {
-  type: typeof RENDER_PANELS_MESSAGE;
-  meta: { $seq: number };
-  payload: { panels: PanelEntry[] };
-};
-
-type ShowFormMessage = {
-  type: typeof SHOW_FORM_MESSAGE;
-  meta: { $seq: number };
-  payload: { form: FormDefinition; nonce: UUID };
-};
+interface SeqMeta extends Meta {
+  $seq: number;
+}
 
 export type StoreListener = {
   onRenderPanels: (store: Pick<ActionPanelStore, "panels">) => void;
   onShowForm: (form: { form: FormDefinition; nonce: UUID }) => void;
+  onHideForm: (form: { nonce: UUID }) => void;
 };
 
 const listeners: StoreListener[] = [];
@@ -63,65 +57,57 @@ export function removeListener(fn: StoreListener): void {
 
 const handlers = new HandlerMap();
 
-handlers.set(RENDER_PANELS_MESSAGE, async (message: RenderPanelsMessage) => {
-  const messageSeq = message.meta.$seq;
+function handlerFactory<
+  TAction extends ActionType,
+  M extends Message<string, SeqMeta>
+>(
+  messageType: M["type"],
+  method: keyof StoreListener
+): MessageHandler<TAction, SeqMeta> {
+  return async (message) => {
+    const messageSeq = message.meta.$seq;
 
-  if (messageSeq < seqNumber) {
-    console.debug(
-      "Skipping stale message (seq: %d, current: %d)",
-      seqNumber,
-      messageSeq,
-      message
-    );
-    return;
-  }
-
-  seqNumber = messageSeq;
-
-  console.debug(
-    `Running ${listeners.length} listener(s) for %s`,
-    RENDER_PANELS_MESSAGE,
-    { message }
-  );
-
-  for (const listener of listeners) {
-    try {
-      listener.onRenderPanels(message.payload);
-    } catch (error: unknown) {
-      reportError(error);
+    if (messageSeq < seqNumber) {
+      console.debug(
+        "Skipping stale message (seq: %d, current: %d)",
+        seqNumber,
+        messageSeq,
+        message
+      );
+      return;
     }
-  }
-});
 
-handlers.set(SHOW_FORM_MESSAGE, async (message: ShowFormMessage) => {
-  const messageSeq = message.meta.$seq;
+    seqNumber = messageSeq;
 
-  if (messageSeq < seqNumber) {
     console.debug(
-      "Skipping stale message (seq: %d, current: %d)",
-      seqNumber,
-      messageSeq,
-      message
+      `Running ${listeners.length} listener(s) for %s`,
+      messageType,
+      { message }
     );
-    return;
-  }
 
-  seqNumber = messageSeq;
-
-  console.debug(
-    `Running ${listeners.length} listener(s) for %s`,
-    SHOW_FORM_MESSAGE,
-    { message }
-  );
-
-  for (const listener of listeners) {
-    try {
-      listener.onShowForm(message.payload);
-    } catch (error: unknown) {
-      reportError(error);
+    for (const listener of listeners) {
+      try {
+        // eslint-disable-next-line security/detect-object-injection -- method is keyof StoreListener
+        listener[method](message.payload as any);
+      } catch (error: unknown) {
+        reportError(error);
+      }
     }
-  }
-});
+  };
+}
+
+handlers.set(
+  RENDER_PANELS_MESSAGE,
+  handlerFactory(RENDER_PANELS_MESSAGE, "onRenderPanels")
+);
+handlers.set(
+  SHOW_FORM_MESSAGE,
+  handlerFactory(HIDE_FORM_MESSAGE, "onShowForm")
+);
+handlers.set(
+  HIDE_FORM_MESSAGE,
+  handlerFactory(HIDE_FORM_MESSAGE, "onHideForm")
+);
 
 if (isBrowserActionPanel()) {
   browser.runtime.onMessage.addListener(handlers.asListener());

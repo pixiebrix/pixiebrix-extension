@@ -22,9 +22,9 @@ import "@/telemetry/rollbar";
 
 import React from "react";
 import { render } from "react-dom";
-import ModalForm from "@/blocks/transformers/modalForm/ModalForm";
+import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "@/modalForm.scss";
+import "@/ephemeralForm.scss";
 
-render(<ModalForm />, document.querySelector("#container"));
+render(<EphemeralForm />, document.querySelector("#container"));

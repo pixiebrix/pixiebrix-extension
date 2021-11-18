@@ -17,48 +17,51 @@
 
 import React from "react";
 import { FormEntry } from "@/actionPanel/actionPanelTypes";
-import JsonSchemaForm from "@rjsf/bootstrap-4";
-import { UnknownObject } from "@/types";
-import AsyncButton from "@/components/AsyncButton";
-import { Button } from "react-bootstrap";
+import { useAsyncState } from "@/hooks/common";
+import GridLoader from "react-spinners/GridLoader";
+import { getErrorMessage } from "@/errors";
+import { createFrameSrc } from "@/blocks/transformers/ephemeralForm/formTransformer";
 
 type FormBodyProps = {
   form: FormEntry;
-  onSubmit: (values: UnknownObject) => Promise<void>;
-  onCancel: () => Promise<void>;
 };
 
-const FormBody: React.FunctionComponent<FormBodyProps> = ({
-  form,
-  onSubmit,
-  onCancel,
-}) => {
-  const { form: definition } = form;
+/**
+ * JSON Schema form for embedding in an action panel tab
+ * @param form the form definition and extension metadata
+ * @constructor
+ */
+const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
+  const [srcURL, isLoading, error] = useAsyncState(
+    async () => createFrameSrc(form.nonce, "panel"),
+    [form.nonce]
+  );
+
+  if (isLoading) {
+    return (
+      <div>
+        <GridLoader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-danger">
+        Error getting information for form: {getErrorMessage(error)}
+      </div>
+    );
+  }
 
   return (
-    <JsonSchemaForm
-      schema={definition.schema}
-      uiSchema={definition.uiSchema}
-      onSubmit={async ({ formData }) => {
-        await onSubmit(formData);
-      }}
-    >
-      <div>
-        <Button variant="primary" type="submit">
-          {definition.submitCaption}
-        </Button>
-        {definition.cancelable && (
-          <AsyncButton
-            variant="link"
-            onClick={async () => {
-              await onCancel();
-            }}
-          >
-            Cancel
-          </AsyncButton>
-        )}
-      </div>
-    </JsonSchemaForm>
+    <iframe
+      title={form.nonce}
+      height="100%"
+      width="100%"
+      src={srcURL.toString()}
+      style={{ border: "none" }}
+      allowFullScreen={false}
+    />
   );
 };
 

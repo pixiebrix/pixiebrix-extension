@@ -17,7 +17,6 @@
 
 import React from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import { UUID } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 import {
   getFormDefinition,
@@ -27,6 +26,7 @@ import {
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 import { Target } from "@/types";
+import { validateUUID } from "@/types/helpers";
 
 const ModalLayout: React.FC = ({ children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
@@ -35,39 +35,51 @@ const ModalLayout: React.FC = ({ children }) => (
   </div>
 );
 
-const ModalForm: React.FC = () => {
+const PanelLayout: React.FC = ({ children }) => <div>{children}</div>;
+
+/**
+ * @see FormTransformer
+ */
+const EphemeralForm: React.FC = () => {
   const params = new URLSearchParams(location.search);
-  const nonce = params.get("nonce") as UUID;
+  const nonce = validateUUID(params.get("nonce"));
   const opener = JSON.parse(params.get("opener")) as Target;
+  const mode = params.get("mode") ?? "modal";
+
+  // The opener for a sidebar panel will be the sidebar frame, not the host panel frame. The sidebar only opens in the
+  // top-level frame, so hard-code the top-level frameId
+  const target =
+    mode === "modal" ? opener : { tabId: opener.tabId, frameId: 0 };
+  const FormContainer = mode === "modal" ? ModalLayout : PanelLayout;
 
   const [definition, isLoading, error] = useAsyncState(
-    async () => getFormDefinition(opener, nonce),
+    async () => getFormDefinition(target, nonce),
     [nonce]
   );
 
   if (isLoading) {
     return (
-      <ModalLayout>
+      <FormContainer>
         <GridLoader />
-      </ModalLayout>
+      </FormContainer>
     );
   }
 
   if (error) {
     return (
-      <ModalLayout>
+      <FormContainer>
         <div className="text-danger">{getErrorMessage(error)}</div>
-      </ModalLayout>
+      </FormContainer>
     );
   }
 
   return (
-    <ModalLayout>
+    <FormContainer>
       <JsonSchemaForm
         schema={definition.schema}
         uiSchema={definition.uiSchema}
         onSubmit={({ formData: values }) => {
-          void resolveForm(opener, nonce, values);
+          void resolveForm(target, nonce, values);
         }}
       >
         <div>
@@ -79,7 +91,7 @@ const ModalForm: React.FC = () => {
               className="btn btn-link"
               type="button"
               onClick={() => {
-                void cancelForm(opener, nonce);
+                void cancelForm(target, nonce);
               }}
             >
               Cancel
@@ -87,8 +99,8 @@ const ModalForm: React.FC = () => {
           )}
         </div>
       </JsonSchemaForm>
-    </ModalLayout>
+    </FormContainer>
   );
 };
 
-export default ModalForm;
+export default EphemeralForm;
