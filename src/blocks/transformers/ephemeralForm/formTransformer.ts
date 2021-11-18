@@ -128,19 +128,13 @@ export class FormTransformer extends Transformer {
     const controller = new AbortController();
 
     if (location === "sidebar") {
-      const show = pDefer();
-
-      registerShowCallback(show.resolve);
-
       // Show sidebar (which may also be showing native panels)
+      const show = pDefer();
+      registerShowCallback(show.resolve);
       showActionPanel();
-
       await show.promise;
-
       removeShowCallback(show.resolve);
 
-      // FIXME: even with awaiting `show.promise` there seems to be a race with whether or not the sidebar is ready.
-      //  Shouldn't the forwarding logic take care of that?
       showActionPanelForm({
         extensionId: logger.context.extensionId,
         nonce,
@@ -154,11 +148,14 @@ export class FormTransformer extends Transformer {
           controller.abort();
         },
         {
+          // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+          // The listener will be removed when the given AbortSignal object's abort() method is called.
           signal: controller.signal,
         }
       );
 
       controller.signal.addEventListener("abort", () => {
+        console.debug("Cancelling form %s on %s", nonce, PANEL_HIDING_EVENT);
         void cancelForm(nonce).catch(unary(reportError));
         hideActionPanel();
       });

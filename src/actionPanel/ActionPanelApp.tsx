@@ -32,10 +32,9 @@ import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
 import GridLoader from "react-spinners/GridLoader";
 import { PersistGate } from "redux-persist/integration/react";
-import { browserAction, whoAmI } from "@/background/messenger/api";
+import { browserAction } from "@/background/messenger/api";
 import { ary } from "lodash";
 import { ActionPanelStore, FormEntry } from "@/actionPanel/actionPanelTypes";
-import { cancelForm } from "@/contentScript/messenger/api";
 import ActionPanelTabs from "@/actionPanel/ActionPanelTabs";
 import slice, { blankActionPanelState } from "./actionPanelSlice";
 import { UUID } from "@/core";
@@ -67,16 +66,9 @@ const ActionPanelApp: React.FunctionComponent = () => {
   useEffect(() => {
     addListener(listener);
     return () => {
+      // NOTE: we don't need to cancel any outstanding forms on unmount because the FormTransformer is set up to watch
+      // for PANEL_HIDING_EVENT. (and the only time this ActionPanelApp would unmount is if the sidebar was closing)
       removeListener(listener);
-      // Cancel all remaining forms on unmount
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- want forms as of component unmount
-      for (const form of formsRef.current) {
-        // XXX: if the component is unmounting because the sidebar is closing, will we end up getting a messaging
-        // error here?
-        void whoAmI().then(async (sender) =>
-          cancelForm({ tabId: sender.tab.id, frameId: 0 }, form.nonce)
-        );
-      }
     };
   }, [listener, formsRef]);
 
