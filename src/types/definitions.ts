@@ -98,7 +98,9 @@ export interface Definition {
 }
 
 /**
- * Config of a Package
+ * Config of a Package. Used to install extensions. There is no
+ * auto-generated swagger Type for this because config is saved in a single
+ * JSON field on the server.
  */
 export interface RecipeDefinition extends Definition {
   kind: "recipe";

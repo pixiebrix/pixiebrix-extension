@@ -116,17 +116,17 @@ const ActiveBricksCard: React.FunctionComponent<{
   const { scope } = useContext(AuthContext);
   const { data: recipes, isLoading: isRecipesLoading } = useGetRecipesQuery();
 
-  console.log("Extensions:", extensions);
-
   const getOrganizationName = (organizationId: UUID) =>
     organizations.find((organization) => organization.id === organizationId)
       ?.name;
 
-  console.log("Raw Recipes:", recipes);
-
   const extensionGroupHasUpdate = (installedRecipe: RecipeMetadata) => {
     if (isRecipesLoading || !installedRecipe) {
-      return null;
+      return false;
+    }
+
+    if (!installedRecipe.updated_at) {
+      return true;
     }
 
     const latestRecipe = recipes.find(
@@ -134,19 +134,9 @@ const ActiveBricksCard: React.FunctionComponent<{
     );
 
     const latestDate = new Date(latestRecipe?.updated_at);
-    const installedDate = new Date(installedRecipe?.updated_at);
+    const installedDate = new Date(installedRecipe.updated_at);
 
-    const hasUpdate = latestDate > installedDate;
-
-    console.log(
-      "Installed Recipe:",
-      installedRecipe,
-      "Latest Recipe:",
-      latestRecipe
-    );
-    console.log(latestDate, installedDate);
-
-    return hasUpdate;
+    return latestDate > installedDate;
   };
 
   const groupedExtensions = useMemo(() => groupExtensions(extensions, scope), [
