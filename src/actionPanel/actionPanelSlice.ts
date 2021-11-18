@@ -28,7 +28,6 @@ import {
 import { UUID } from "@/core";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { reportError } from "@/telemetry/logging";
-import { unary } from "lodash";
 import { whoAmI } from "@/background/messenger/api";
 
 type AppState = ActionPanelStore & {
@@ -59,7 +58,7 @@ const actionPanelSlice = createSlice({
           .then(async (sender) =>
             cancelForm({ tabId: sender.tab.id, frameId: 0 }, current.nonce)
           )
-          .catch(unary(reportError));
+          .catch(reportError);
       }
 
       state.forms = state.forms.filter(

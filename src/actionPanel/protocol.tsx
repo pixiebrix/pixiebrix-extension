@@ -105,7 +105,7 @@ handlers.set(
 );
 handlers.set(
   SHOW_FORM_MESSAGE,
-  handlerFactory(HIDE_FORM_MESSAGE, "onShowForm")
+  handlerFactory(SHOW_FORM_MESSAGE, "onShowForm")
 );
 handlers.set(
   HIDE_FORM_MESSAGE,
