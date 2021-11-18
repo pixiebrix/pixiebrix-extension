@@ -21,6 +21,7 @@ exports[`FormEditor renders empty schema 1`] = `
           class="form-control"
           id="rjsfSchema.schema.title"
           name="rjsfSchema.schema.title"
+          type="text"
           value=""
         />
       </div>
@@ -41,6 +42,7 @@ exports[`FormEditor renders empty schema 1`] = `
           class="form-control"
           id="rjsfSchema.schema.description"
           name="rjsfSchema.schema.description"
+          type="text"
           value=""
         />
       </div>
@@ -125,6 +127,7 @@ exports[`FormEditor renders simple schema 1`] = `
           class="form-control"
           id="rjsfSchema.schema.title"
           name="rjsfSchema.schema.title"
+          type="text"
           value="A form"
         />
       </div>
@@ -145,6 +148,7 @@ exports[`FormEditor renders simple schema 1`] = `
           class="form-control"
           id="rjsfSchema.schema.description"
           name="rjsfSchema.schema.description"
+          type="text"
           value="A form example."
         />
       </div>
@@ -269,6 +273,7 @@ exports[`FormEditor renders simple schema 1`] = `
             class="form-control"
             id="rjsfSchema.schema.properties.firstName.title"
             name="rjsfSchema.schema.properties.firstName.title"
+            type="text"
             value="First name"
           />
           <small
@@ -294,6 +299,7 @@ exports[`FormEditor renders simple schema 1`] = `
             class="form-control"
             id="rjsfSchema.schema.properties.firstName.description"
             name="rjsfSchema.schema.properties.firstName.description"
+            type="text"
             value=""
           />
           <small
@@ -409,7 +415,7 @@ exports[`FormEditor renders simple schema 1`] = `
             class="form-control"
             id="rjsfSchema.schema.properties.firstName.default"
             name="rjsfSchema.schema.properties.firstName.default"
-            type="string"
+            type="text"
             value="Chuck"
           />
         </div>

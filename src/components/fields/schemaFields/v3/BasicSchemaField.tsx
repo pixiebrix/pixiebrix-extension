@@ -113,15 +113,16 @@ function getToggleOptions({
 
   if (Array.isArray(fieldSchema.type)) {
     const { type: typeArray, ...rest } = fieldSchema;
-    return typeArray.flatMap((type) =>
-      getToggleOptions({
+    for (const type of typeArray) {
+      const optionSet = getToggleOptions({
         fieldSchema: { type, ...rest },
         isRequired,
         customToggleModes,
         isObjectProperty,
         isArrayItem,
-      })
-    );
+      });
+      pushOptions(...optionSet);
+    }
   }
 
   if (fieldSchema.type === "array" || anyType) {

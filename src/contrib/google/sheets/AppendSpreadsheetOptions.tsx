@@ -63,6 +63,7 @@ const PropertiesField: React.FunctionComponent<{
     <SchemaField
       name={name}
       label="Row Values"
+      isRequired
       description={
         schemaError ? (
           <span className="text-warning">
