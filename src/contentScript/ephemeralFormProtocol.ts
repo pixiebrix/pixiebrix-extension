@@ -29,7 +29,7 @@ type RegisteredForm = {
 const forms = new Map<UUID, RegisteredForm>();
 
 /**
- * Register a form with the content script.
+ * Register a form with the content script that resolves the the form is either submitted or cancelled
  * @param nonce the form nonce
  * @param definition the form definition
  */
@@ -85,6 +85,7 @@ export async function resolveForm(
 }
 
 /**
+ * Cancel the form. Is a NOP if the form is no longer registered.
  * @param formNonce the form nonce
  */
 export async function cancelForm(formNonce: UUID): Promise<void> {

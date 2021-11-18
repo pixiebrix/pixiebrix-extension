@@ -26,22 +26,23 @@ import {
 import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";
 import {
-  hideActionPanel,
   PANEL_HIDING_EVENT,
   registerShowCallback,
   removeShowCallback,
   showActionPanel,
   showActionPanelForm,
+  hideActionPanelForm,
 } from "@/actionPanel/native";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { unary } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import pDefer from "p-defer";
 
-export async function createFrameSrc(
-  nonce: string,
-  mode: "modal" | "panel"
-): Promise<URL> {
+// The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
+// just determines the layout container of the form
+type Mode = "modal" | "panel";
+
+export async function createFrameSrc(nonce: string, mode: Mode): Promise<URL> {
   const { tab, frameId } = await whoAmI();
 
   const frameSrc = new URL(browser.runtime.getURL("ephemeralForm.html"));
@@ -141,7 +142,7 @@ export class FormTransformer extends Transformer {
         form: definition,
       });
 
-      // Two-way binding between sidebar and form
+      // Two-way binding between sidebar and form. Listen for the user (or an action) closing the sidebar
       window.addEventListener(
         PANEL_HIDING_EVENT,
         () => {
@@ -155,9 +156,11 @@ export class FormTransformer extends Transformer {
       );
 
       controller.signal.addEventListener("abort", () => {
-        console.debug("Cancelling form %s on %s", nonce, PANEL_HIDING_EVENT);
+        // NOTE: we're not hiding the side panel here to avoid closing the sidebar if the user already had it open.
+        // In the future we might creating/sending a closeIfEmpty message to the sidebar, so that it would close
+        // if this form was the only entry in the panel
+        hideActionPanelForm(nonce);
         void cancelForm(nonce).catch(unary(reportError));
-        hideActionPanel();
       });
     } else {
       showModal(frameSrc, controller.signal);

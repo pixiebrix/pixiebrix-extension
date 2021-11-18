@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useReducer, useRef } from "react";
+import React, { Dispatch, useEffect, useMemo, useReducer } from "react";
 import { Button } from "react-bootstrap";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -38,6 +38,21 @@ import { ActionPanelStore, FormEntry } from "@/actionPanel/actionPanelTypes";
 import ActionPanelTabs from "@/actionPanel/ActionPanelTabs";
 import slice, { blankActionPanelState } from "./actionPanelSlice";
 import { UUID } from "@/core";
+import { AnyAction } from "redux";
+
+function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
+  return {
+    onRenderPanels: ({ panels }: ActionPanelStore) => {
+      dispatch(slice.actions.setPanels({ panels }));
+    },
+    onShowForm: (form: FormEntry) => {
+      dispatch(slice.actions.addForm({ form }));
+    },
+    onHideForm: ({ nonce }: { nonce: UUID }) => {
+      dispatch(slice.actions.removeForm(nonce));
+    },
+  };
+}
 
 const ActionPanelApp: React.FunctionComponent = () => {
   const [state, dispatch] = useReducer(slice.reducer, {
@@ -45,20 +60,8 @@ const ActionPanelApp: React.FunctionComponent = () => {
     ...getStore(),
   });
 
-  const formsRef = useRef<FormEntry[]>(state.forms);
-
   const listener: StoreListener = useMemo(
-    () => ({
-      onRenderPanels: ({ panels }: ActionPanelStore) => {
-        dispatch(slice.actions.setPanels({ panels }));
-      },
-      onShowForm: (form: FormEntry) => {
-        dispatch(slice.actions.addForm({ form }));
-      },
-      onHideForm: ({ nonce }: { nonce: UUID }) => {
-        dispatch(slice.actions.removeForm(nonce));
-      },
-    }),
+    () => getConnectedListener(dispatch),
     [dispatch]
   );
 
@@ -70,7 +73,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
       // for PANEL_HIDING_EVENT. (and the only time this ActionPanelApp would unmount is if the sidebar was closing)
       removeListener(listener);
     };
-  }, [listener, formsRef]);
+  }, [listener]);
 
   return (
     <Provider store={store}>

@@ -31,6 +31,9 @@ export const HIDE_FORM_MESSAGE = `${MESSAGE_PREFIX}HIDE_FORM`;
 
 let seqNumber = -1;
 
+/**
+ * Redux message Meta with fields for ensuring message handling order
+ */
 interface SeqMeta extends Meta {
   $seq: number;
 }
