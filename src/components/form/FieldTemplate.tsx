@@ -27,6 +27,7 @@ import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchBut
 import styles from "./FieldTemplate.module.scss";
 import FormTheme from "@/components/form/FormTheme";
 import { getErrorMessage } from "@/errors";
+import cx from "classnames";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType
@@ -38,6 +39,7 @@ export type FieldProps<
     description?: ReactNode;
     error?: string;
     touched?: boolean;
+    removeBottomMargin?: boolean;
 
     /**
      * This value is regarded as absence of value, unset property.
@@ -75,6 +77,7 @@ const RenderedField: React.FC<FieldProps> = ({
   description,
   error,
   touched,
+  removeBottomMargin,
   value,
   children,
   blankValue = "",
@@ -138,7 +141,12 @@ const RenderedField: React.FC<FieldProps> = ({
       )}
     </BootstrapForm.Group>
   ) : (
-    <BootstrapForm.Group as={Row} className={styles.horizontalFormGroup}>
+    <BootstrapForm.Group
+      as={Row}
+      className={cx(styles.horizontalFormGroup, {
+        [styles.noBottomMargin]: removeBottomMargin,
+      })}
+    >
       {label && (
         <BootstrapForm.Label
           column

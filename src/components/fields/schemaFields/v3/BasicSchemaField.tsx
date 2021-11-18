@@ -314,6 +314,7 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     description,
     isObjectProperty = false,
     isArrayItem = false,
+    hideLabel,
   } = props;
   const fieldLabel = makeLabelForSchemaField(props);
   const defaultDescription = useMemo(() => description ?? schema.description, [
@@ -387,6 +388,7 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
       name={name}
       label={fieldLabel}
       description={fieldDescription}
+      removeBottomMargin={hideLabel}
       as={TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
