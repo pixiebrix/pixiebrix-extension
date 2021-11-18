@@ -77,8 +77,8 @@ export type MessageListener = (
 ) => Promise<unknown> | void;
 
 // Unlike MessageListener, the return type of this method means the message has been handled
-type MessageHandler<T extends ActionType> = (
-  request: Message<T>,
+export type MessageHandler<T extends ActionType, M extends Meta = Meta> = (
+  request: Message<T, M>,
   sender: Runtime.MessageSender
 ) => Promise<unknown>;
 

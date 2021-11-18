@@ -28,7 +28,7 @@ import { UrlParser } from "./parseUrl";
 import { FormData } from "./FormData";
 import { Prompt } from "./prompt";
 import { DetectElement } from "./detect";
-import { ModalTransformer } from "./modalForm/modal";
+import { FormTransformer } from "./ephemeralForm/formTransformer";
 import { Base64Decode, Base64Encode } from "./encode";
 import { TemplateTransformer } from "./template";
 import { UrlParams } from "./url";
@@ -49,7 +49,7 @@ function registerTransformers() {
   registerBlock(new FormData());
   registerBlock(new Prompt());
   registerBlock(new DetectElement());
-  registerBlock(new ModalTransformer());
+  registerBlock(new FormTransformer());
   registerBlock(new Base64Encode());
   registerBlock(new Base64Decode());
   registerBlock(new TemplateTransformer());

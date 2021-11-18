@@ -19,21 +19,27 @@ import browser from "webextension-polyfill";
 import { reportError } from "@/telemetry/logging";
 import { uuidv4 } from "@/types/helpers";
 import {
-  ActionPanelStore,
-  PanelEntry,
+  HIDE_FORM_MESSAGE,
   RENDER_PANELS_MESSAGE,
-  RendererError,
-  RendererPayload,
+  SHOW_FORM_MESSAGE,
 } from "@/actionPanel/protocol";
 import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
-import { ExtensionRef } from "@/core";
+import { ExtensionRef, UUID } from "@/core";
 import { browserAction } from "@/background/messenger/api";
+import {
+  ActionPanelStore,
+  FormEntry,
+  PanelEntry,
+  RendererError,
+  RendererPayload,
+} from "@/actionPanel/actionPanelTypes";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-extension";
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
+export const PANEL_HIDING_EVENT = "pixiebrix:hideActionPanel";
 
 let renderSequenceNumber = 0;
 
@@ -109,7 +115,7 @@ function insertActionPanel(): string {
   return nonce;
 }
 
-export function showActionPanel(): string {
+export function showActionPanel(callbacks = extensionCallbacks): string {
   reportEvent("SidePanelShow");
 
   adjustDocumentStyle();
@@ -122,7 +128,7 @@ export function showActionPanel(): string {
 
   // Run the extension points available on the page. If the action panel is already in the page, running
   // all the callbacks ensures the content is up to date
-  for (const callback of extensionCallbacks) {
+  for (const callback of callbacks) {
     try {
       callback();
     } catch (error: unknown) {
@@ -139,6 +145,8 @@ export function hideActionPanel(): void {
   reportEvent("SidePanelHide");
   restoreDocumentStyle();
   $(PANEL_CONTAINER_SELECTOR).remove();
+
+  window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
 }
 
 export function toggleActionPanel(): string | void {
@@ -154,7 +162,8 @@ export function isActionPanelVisible(): boolean {
 }
 
 export function getStore(): ActionPanelStore {
-  return { panels };
+  // `forms` state is managed by the action panel react component
+  return { panels, forms: [] };
 }
 
 function renderPanels() {
@@ -173,6 +182,41 @@ function renderPanels() {
       "Skipping renderPanels because the action panel is not visible"
     );
   }
+}
+
+export function showActionPanelForm(entry: FormEntry) {
+  expectContext("contentScript");
+
+  if (!isActionPanelVisible()) {
+    throw new Error(
+      "Cannot add action panel form if the action panel is not visible"
+    );
+  }
+
+  const seqNum = renderSequenceNumber;
+  renderSequenceNumber++;
+
+  browserAction.forwardFrameNotification(seqNum, {
+    type: SHOW_FORM_MESSAGE,
+    payload: entry,
+  } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
+}
+
+export function hideActionPanelForm(nonce: UUID) {
+  expectContext("contentScript");
+
+  if (!isActionPanelVisible()) {
+    // Already hidden
+    return;
+  }
+
+  const seqNum = renderSequenceNumber;
+  renderSequenceNumber++;
+
+  browserAction.forwardFrameNotification(seqNum, {
+    type: HIDE_FORM_MESSAGE,
+    payload: { nonce },
+  } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
 }
 
 export function removeExtension(extensionId: string): void {

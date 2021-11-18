@@ -30,7 +30,7 @@ import {
   getFormDefinition,
   resolveForm,
   cancelForm,
-} from "@/contentScript/modalForms";
+} from "@/contentScript/ephemeralFormProtocol";
 import {
   hideActionPanel,
   showActionPanel,
