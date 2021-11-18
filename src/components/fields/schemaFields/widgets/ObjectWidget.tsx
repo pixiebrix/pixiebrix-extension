@@ -34,8 +34,8 @@ type PropertyRowProps = {
   showActions?: boolean;
   readOnly: boolean;
   schema: Schema;
-  onDelete: () => void;
-  onRename: (newName: string) => void;
+  onDelete?: () => void;
+  onRename?: (newName: string) => void;
   isRequired?: boolean;
 };
 
@@ -80,7 +80,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
 
   const updateName = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
-      onRename(e.target.value);
+      onRename?.(e.target.value);
     },
     [onRename]
   );
