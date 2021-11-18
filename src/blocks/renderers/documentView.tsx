@@ -35,9 +35,11 @@ const knownComponents = {
   )) as React.FC<unknown>,
 };
 
+const UnknownType: React.FC<void> = () => "unknown type";
+
 export function getComponent(
   body: any
-): { Component: React.ElementType | string; props: unknown } {
+): { Component: React.ElementType; props: unknown } {
   const componentType = body.type;
   const Component = getProperty(
     knownComponents,
@@ -59,7 +61,7 @@ export function getComponent(
     case "container":
     case "row":
     case "column":
-      props.children = body.children.map((child, i) => {
+      props.children = body.children.map((child, i: number) => {
         const { Component: ChildComponent, props: childProps } = getComponent(
           child
         );
@@ -69,7 +71,7 @@ export function getComponent(
       break;
 
     default:
-      return { Component: "unknown type", props: null };
+      return { Component: UnknownType, props: null };
   }
 
   return { Component, props };
