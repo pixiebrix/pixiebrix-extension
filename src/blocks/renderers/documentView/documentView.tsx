@@ -20,8 +20,8 @@ import { getProperty } from "@/utils";
 import { get } from "lodash";
 import { UnknownObject } from "@/types";
 import { isPipelineExpression } from "@/runtime/mapArgs";
-import PipelineComponent from "@/blocks/renderers/documentFolder/PipelineComponent";
-import DocumentButton from "@/blocks/renderers/documentFolder/DocumentButton";
+import PipelineComponent from "./PipelineComponent";
+import DocumentButton from "./DocumentButton";
 
 const knownComponents = {
   container: Container,
@@ -113,7 +113,10 @@ export function getComponent(
     }
 
     default: {
-      return { Component: UnknownType, props: { componentType } };
+      return {
+        Component: UnknownType,
+        props: { componentType: componentType ?? "No Type Provided" },
+      };
     }
   }
 

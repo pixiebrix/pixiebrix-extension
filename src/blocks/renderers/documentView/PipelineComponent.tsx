@@ -20,7 +20,7 @@ import { BlockPipeline } from "@/blocks/types";
 import { useAsyncState } from "@/hooks/common";
 import { BlockArgContext } from "@/core";
 import { getErrorMessage } from "@/errors";
-import InnerComponentContext from "@/blocks/renderers/documentFolder/InnerComponentContext";
+import InnerComponentContext from "@/blocks/renderers/documentView/InnerComponentContext";
 import { runRendererPipeline } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";

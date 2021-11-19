@@ -19,8 +19,7 @@ import React from "react";
 import { Renderer } from "@/types";
 import { BlockArg, BlockOptions, ComponentRef, Schema } from "@/core";
 import { loadBrickYaml } from "@/runtime/brickYaml";
-import InnerComponentContext from "@/blocks/renderers/documentFolder/InnerComponentContext";
-import { getComponent } from "./documentView";
+import InnerComponentContext from "@/blocks/renderers/documentView/InnerComponentContext";
 
 export class DocumentRenderer extends Renderer {
   constructor() {
@@ -60,6 +59,12 @@ export class DocumentRenderer extends Renderer {
           // etc. outside of a !pipeline expression, the rendering will probably crash
           loadBrickYaml(body)
         : body;
+
+    // Dynamic import because documentView has a transitive dependency of react-shadow-root which assumed a proper
+    // `window` variable is present on module load. This isn't available on header generation
+    const { getComponent } = await import(
+      "@/blocks/renderers/documentView/documentView"
+    );
 
     const { Component, props } = getComponent(bodyObj);
 

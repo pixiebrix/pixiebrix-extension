@@ -5,7 +5,7 @@ import { whoAmI } from "@/background/messenger/api";
 import { runEffectPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import { BlockArgContext } from "@/core";
-import InnerComponentContext from "@/blocks/renderers/documentFolder/InnerComponentContext";
+import InnerComponentContext from "@/blocks/renderers/documentView/InnerComponentContext";
 
 type DocumentButtonProps = {
   title: string;

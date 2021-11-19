@@ -17,10 +17,11 @@
 
 import React, { Suspense } from "react";
 import { validateRegistryId } from "@/types/helpers";
-import { partial } from "lodash";
+import { isPlainObject, partial } from "lodash";
 import { joinName } from "@/utils";
 import { useField } from "formik";
 import AceEditor from "@/vendors/AceEditor";
+import { UnknownObject } from "@/types";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");
 
@@ -29,12 +30,18 @@ const DocumentOptions: React.FC<{
   configKey: string;
 }> = ({ name, configKey }) => {
   const configName = partial(joinName, name, configKey);
-  const [{ value }, , { setValue }] = useField<string>(configName("body"));
+  const [{ value }, , { setValue }] = useField<string | UnknownObject>(
+    configName("body")
+  );
+
+  if (isPlainObject(value)) {
+    return <div>Edit in the workshop</div>;
+  }
 
   return (
     <Suspense fallback={<div className="text-muted">Loading...</div>}>
       <AceEditor
-        value={value}
+        value={value as string}
         onChange={setValue}
         mode="yaml"
         theme="chrome"
