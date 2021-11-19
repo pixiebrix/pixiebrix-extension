@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { loadBrickYaml } from "@/runtime/brickYaml";
+import { waitForEffect } from "@/tests/testHelpers";
 import { render } from "@testing-library/react";
 import React from "react";
 import { getComponent } from "./documentView";
@@ -140,4 +142,36 @@ test("renders button", () => {
   };
   const rendered = renderDocument(config);
   expect(rendered.asFragment()).toMatchSnapshot();
+});
+
+describe("card", () => {
+  test("renders text body", () => {
+    const config = {
+      type: "card",
+      config: {
+        className: "test-class",
+        heading: "Test Heading of Card",
+        body: "Test body of card",
+      },
+    };
+    const rendered = renderDocument(config);
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
+
+  // FIXME This one fails to render the pipeline, see the snapshot
+  test("renders pipeline body", async () => {
+    const yamlConfig = `
+type: card
+config:
+  className: test-class
+  heading: Test Heading of Card
+  body: !pipeline
+    - id: "@pixiebrix/markdown"
+      config:
+        markdown: Pipeline text for card test.`;
+    const config = loadBrickYaml(yamlConfig);
+    const rendered = renderDocument(config);
+    await waitForEffect();
+    expect(rendered.asFragment()).toMatchSnapshot();
+  });
 });
