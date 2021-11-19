@@ -38,8 +38,6 @@ export class DocumentRenderer extends Renderer {
           {
             type: "string",
             description: "A YAML document config to render",
-            // Pass format so we get a multiline input.
-            format: "markdown",
           },
           {
             type: "object",
