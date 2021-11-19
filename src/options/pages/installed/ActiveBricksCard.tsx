@@ -126,7 +126,7 @@ const ActiveBricksCard: React.FunctionComponent<{
     }
 
     if (!installedRecipe.updated_at) {
-      return true;
+      return false;
     }
 
     const latestRecipe = recipes.find(

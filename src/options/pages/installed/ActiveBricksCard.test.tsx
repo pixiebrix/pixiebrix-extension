@@ -16,7 +16,6 @@
  */
 import React from "react";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
-import { StaticRouter } from "react-router-dom";
 import { screen, render, fireEvent } from "@testing-library/react";
 import { ResolvedExtension, UUID } from "@/core";
 
@@ -71,12 +70,11 @@ const recipeFactory: (timestamp: string) => RecipeDefinition = (
   timestamp: string
 ) =>
   (({
+    // Omitting properties for brevity
     metadata: ({
       id: "@user/foo",
-      // Omitting rest of data for brevity
     } as unknown) as Metadata,
     updated_at: timestamp,
-    // Omitting rest of data for brevity
   } as unknown) as RecipeDefinition);
 
 const mockGetRecipesImplementation = (recipe: RecipeDefinition) => {
@@ -98,13 +96,11 @@ describe("ExtensionGroup Update status", () => {
     mockGetRecipesImplementation(recipeFactory(newer_timestamp));
 
     render(
-      <StaticRouter>
-        <ActiveBricksCard
-          extensions={[extensionFactory({ timestamp: older_timestamp })]}
-          onRemove={jest.fn()}
-          onExportBlueprint={jest.fn()}
-        />
-      </StaticRouter>
+      <ActiveBricksCard
+        extensions={[extensionFactory({ timestamp: older_timestamp })]}
+        onRemove={jest.fn()}
+        onExportBlueprint={jest.fn()}
+      />
     );
 
     const updateStatus = screen.getByText("Update");
@@ -115,13 +111,11 @@ describe("ExtensionGroup Update status", () => {
     mockGetRecipesImplementation(recipeFactory(older_timestamp));
 
     const { container } = render(
-      <StaticRouter>
-        <ActiveBricksCard
-          extensions={[extensionFactory({ timestamp: newer_timestamp })]}
-          onRemove={jest.fn()}
-          onExportBlueprint={jest.fn()}
-        />
-      </StaticRouter>
+      <ActiveBricksCard
+        extensions={[extensionFactory({ timestamp: newer_timestamp })]}
+        onRemove={jest.fn()}
+        onExportBlueprint={jest.fn()}
+      />
     );
 
     const updateStatus = screen.queryByText("Update");
@@ -137,13 +131,11 @@ describe("ExtensionGroup Update status", () => {
     mockGetRecipesImplementation(recipeFactory(same_timestamp));
 
     const { container } = render(
-      <StaticRouter>
-        <ActiveBricksCard
-          extensions={[extensionFactory({ timestamp: same_timestamp })]}
-          onRemove={jest.fn()}
-          onExportBlueprint={jest.fn()}
-        />
-      </StaticRouter>
+      <ActiveBricksCard
+        extensions={[extensionFactory({ timestamp: same_timestamp })]}
+        onRemove={jest.fn()}
+        onExportBlueprint={jest.fn()}
+      />
     );
 
     const updateStatus = screen.queryByText("Update");
@@ -155,41 +147,53 @@ describe("ExtensionGroup Update status", () => {
   });
 
   // If the installed blueprint updated_at is undefined, this means that the user
-  // installed this extension before the Update feature was released. In order to
-  // detect future updates, the user needs to reactive the blueprint.
-  test("shows when installed Blueprint updated_at is undefined", () => {
+  // installed this extension before the Update feature was released.
+  test("doesn't show when installed Blueprint updated_at is undefined", () => {
     const arbitrary_timestamp = "2021-11-20T00:00:00.000000Z";
     mockGetRecipesImplementation(recipeFactory(arbitrary_timestamp));
 
     render(
-      <StaticRouter>
-        <ActiveBricksCard
-          extensions={[extensionFactory()]}
-          onRemove={jest.fn()}
-          onExportBlueprint={jest.fn()}
-        />
-      </StaticRouter>
+      <ActiveBricksCard
+        extensions={[extensionFactory()]}
+        onRemove={jest.fn()}
+        onExportBlueprint={jest.fn()}
+      />
     );
 
     const updateStatus = screen.queryByText("Update");
-    expect(updateStatus).not.toBeNull();
+    expect(updateStatus).toBeNull();
   });
 
-  test("doesn't show on Personal Bricks and Team Deployments", () => {
+  test("doesn't show on Personal Bricks", () => {
     const arbitrary_timestamp = "2021-11-20T00:00:00.000000Z";
     mockGetRecipesImplementation(recipeFactory(arbitrary_timestamp));
 
     const { container } = render(
-      <StaticRouter>
-        <ActiveBricksCard
-          extensions={[
-            extensionFactory({ isPersonalBrick: true }),
-            extensionFactory({ isTeamDeployment: true }),
-          ]}
-          onRemove={jest.fn()}
-          onExportBlueprint={jest.fn()}
-        />
-      </StaticRouter>
+      <ActiveBricksCard
+        extensions={[extensionFactory({ isPersonalBrick: true })]}
+        onRemove={jest.fn()}
+        onExportBlueprint={jest.fn()}
+      />
+    );
+
+    const updateStatus = screen.queryByText("Update");
+    expect(updateStatus).toBeNull();
+
+    expandEllipsisMenuOptions(container);
+    const reactivateOption = screen.queryByText("Reactivate");
+    expect(reactivateOption).toBeNull();
+  });
+
+  test("doesn't show on Team Deployments", () => {
+    const arbitrary_timestamp = "2021-11-20T00:00:00.000000Z";
+    mockGetRecipesImplementation(recipeFactory(arbitrary_timestamp));
+
+    const { container } = render(
+      <ActiveBricksCard
+        extensions={[extensionFactory({ isTeamDeployment: true })]}
+        onRemove={jest.fn()}
+        onExportBlueprint={jest.fn()}
+      />
     );
 
     const updateStatus = screen.queryByText("Update");

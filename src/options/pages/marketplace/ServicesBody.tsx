@@ -60,9 +60,6 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
 
   const installedServices = selectAuths(installedExtensions);
 
-  console.log("Installed Services:", installedServices);
-  console.log("Service Options:", authOptions);
-
   const visibleServiceIds = useMemo(
     // The PixieBrix service gets automatically configured, so don't need to show it. If the PixieBrix service is
     // the only service, the wizard won't render the ServicesBody component at all
@@ -103,12 +100,11 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
         </thead>
         <tbody>
           {field.value.map(({ id: serviceId }, index) => {
-            console.log("Service id:", serviceId);
             const installedServiceUUID = installedServices[serviceId];
 
-            const installedOption = authOptions.find((service) => {
-              return service.value === installedServiceUUID;
-            });
+            const installedOption = authOptions.find(
+              (service) => service.value === installedServiceUUID
+            );
 
             // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
             // consistent with the index in field.value

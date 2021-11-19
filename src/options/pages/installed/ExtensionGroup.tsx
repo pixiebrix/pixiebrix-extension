@@ -172,6 +172,52 @@ const ExtensionGroup: React.FunctionComponent<{
     );
   };
 
+  const actionOptions = useMemo(() => {
+    return [
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faList} /> View Logs
+          </>
+        ),
+        action: onViewLogs,
+      },
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faSyncAlt} />{" "}
+            {hasUpdate ? "Update" : "Reactivate"}
+          </>
+        ),
+        className: "text-info",
+        action: reinstall,
+        hide: hasUpdate === undefined,
+      },
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faTimes} /> Uninstall
+          </>
+        ),
+        // #1532: temporary approach to controlling whether or not deployments can be uninstalled. In
+        // the future we'll want this to depend on the member's role within the deployment's organization
+        hide: managed && flags.includes("restricted-uninstall"),
+        action: async () => {
+          await removeMany(extensions);
+        },
+        className: "text-danger",
+      },
+    ];
+  }, [
+    extensions,
+    flags,
+    hasUpdate,
+    managed,
+    onViewLogs,
+    reinstall,
+    removeMany,
+  ]);
+
   return (
     <>
       <tr
@@ -192,42 +238,7 @@ const ExtensionGroup: React.FunctionComponent<{
         <td>{label}</td>
         <td>{status}</td>
         <td>
-          <EllipsisMenu
-            items={[
-              {
-                title: (
-                  <>
-                    <FontAwesomeIcon icon={faList} /> View Logs
-                  </>
-                ),
-                action: onViewLogs,
-              },
-              {
-                title: (
-                  <>
-                    <FontAwesomeIcon icon={faSyncAlt} />{" "}
-                    {hasUpdate ? "Update" : "Reactivate"}
-                  </>
-                ),
-                className: "text-info",
-                action: reinstall,
-              },
-              {
-                title: (
-                  <>
-                    <FontAwesomeIcon icon={faTimes} /> Uninstall
-                  </>
-                ),
-                // #1532: temporary approach to controlling whether or not deployments can be uninstalled. In
-                // the future we'll want this to depend on the member's role within the deployment's organization
-                hide: managed && flags.includes("restricted-uninstall"),
-                action: async () => {
-                  await removeMany(extensions);
-                },
-                className: "text-danger",
-              },
-            ]}
-          />
+          <EllipsisMenu items={actionOptions} />
         </td>
       </tr>
       {expanded && expandable && (

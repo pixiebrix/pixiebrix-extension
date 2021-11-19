@@ -22,7 +22,6 @@ import genericOptionsFactory from "@/components/fields/schemaFields/genericOptio
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { useLocation } from "react-router";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/options/selectors";
 import { useFormikContext } from "formik";
@@ -36,9 +35,8 @@ const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
 
 const OptionsBody: React.FunctionComponent<{
   blueprint: RecipeDefinition;
-}> = ({ blueprint }) => {
-  const reinstall =
-    new URLSearchParams(useLocation().search).get("reinstall") === "1";
+  reinstall: boolean;
+}> = ({ blueprint, reinstall }) => {
   const extensions = useSelector(selectExtensions);
   const { setFieldValue } = useFormikContext();
 

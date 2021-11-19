@@ -255,6 +255,10 @@ export const optionsSlice = createSlice({
           throw new Error("extensionPointId is required");
         }
 
+        if (extensionPointId == null) {
+          throw new Error("updated_at is required");
+        }
+
         const extension: PersistedExtension = {
           id: extensionId,
           // Default to `v1` for backward compatability

@@ -28,7 +28,6 @@ import { Link } from "react-router-dom";
 import { ServiceAuthPair } from "@/core";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/options/selectors";
-import { useLocation } from "react-router";
 
 function selectedAuths(values: WizardValues): ServiceAuthPair[] {
   return values.services.filter((x) => x.config);
@@ -99,11 +98,13 @@ const ConfigureRow: React.FunctionComponent<{
 
 interface OwnProps {
   blueprint: RecipeDefinition;
+  reinstall: boolean;
 }
 
-const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  const reinstall =
-    new URLSearchParams(useLocation().search).get("reinstall") === "1";
+const ConfigureBody: React.FunctionComponent<OwnProps> = ({
+  blueprint,
+  reinstall,
+}) => {
   const extensions = useSelector(selectExtensions);
 
   const installedExtensions = useMemo(

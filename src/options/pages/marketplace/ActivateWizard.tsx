@@ -43,6 +43,7 @@ import { uninstallContextMenu } from "@/background/messenger/api";
 import { optionsSlice } from "@/options/slices";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
+import { selectOptions } from "@/pages/marketplace/useReinstall";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -53,7 +54,10 @@ interface OwnProps {
 type Step = {
   key: string;
   label: string;
-  Component: React.FunctionComponent<{ blueprint: RecipeDefinition }>;
+  Component: React.FunctionComponent<{
+    blueprint: RecipeDefinition;
+    reinstall: boolean;
+  }>;
 };
 
 const STEPS: Step[] = [
@@ -170,7 +174,9 @@ function useWizard(blueprint: RecipeDefinition): [Step[], WizardValues] {
 
 const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const [blueprintSteps, initialValues] = useWizard(blueprint);
-
+  const location = useLocation();
+  const reinstall =
+    new URLSearchParams(location.search).get("reinstall") === "1";
   const [stepKey, setStep] = useState(blueprintSteps[0].key);
   const install = useInstall(blueprint);
 
@@ -201,7 +207,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                 <Tab.Pane key={key} eventKey={key}>
                   <Card>
                     <Card.Header>{label}</Card.Header>
-                    <Component blueprint={blueprint} />
+                    <Component blueprint={blueprint} reinstall={reinstall} />
                     <Card.Footer className="d-inline-flex">
                       <div className="ml-auto">
                         <Button
