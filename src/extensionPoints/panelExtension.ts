@@ -37,13 +37,14 @@ import {
   ReaderOutput,
   Schema,
   UUID,
+  RendererOutput,
 } from "@/core";
 import {
   ExtensionPointDefinition,
   ExtensionPointConfig,
 } from "@/extensionPoints/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { PanelComponent, render } from "@/extensionPoints/dom";
+import { render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import { notifyError } from "@/contentScript/notify";
@@ -383,7 +384,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         const rendererPromise = reducePipeline(body, initialValues, {
           logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
-        }) as Promise<PanelComponent>;
+        }) as Promise<RendererOutput>;
 
         try {
           const bodyOrComponent = await errorBoundary(

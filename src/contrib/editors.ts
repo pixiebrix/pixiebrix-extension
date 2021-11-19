@@ -45,6 +45,9 @@ import DatabaseGetOptions, {
 import DatabasePutOptions, {
   DATABASE_PUT_ID,
 } from "@/devTools/editor/fields/DatabasePutOptions";
+import DocumentOptions, {
+  DOCUMENT_ID,
+} from "@/devTools/editor/fields/DocumentOptions";
 
 optionsRegistry.set(SERVICE_GOOGLE_SHEET_ID, SheetServiceOptions);
 optionsRegistry.set(ZAPIER_ID, PushOptions);
@@ -58,3 +61,4 @@ optionsRegistry.set(FORM_RENDERER_ID, FormRendererOptions);
 optionsRegistry.set(DATABASE_GET_ID, DatabaseGetOptions);
 optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
 optionsRegistry.set(COMPONENT_READER_ID, ComponentReaderOptions);
+optionsRegistry.set(DOCUMENT_ID, DocumentOptions);

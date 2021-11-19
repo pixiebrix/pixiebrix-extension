@@ -22,6 +22,7 @@ import { getPropByPath, isSimplePath } from "./pathHelpers";
 import { Expression, ExpressionType, TemplateEngine } from "@/core";
 import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
+import { BlockPipeline } from "@/blocks/types";
 
 const templateTypes: TemplateEngine[] = [
   "mustache",
@@ -50,6 +51,12 @@ export function isExpression(value: unknown): value is Expression<unknown> {
   return false;
 }
 
+export function isPipelineExpression(
+  value: unknown
+): value is Expression<BlockPipeline, "pipeline"> {
+  return isExpression(value) && value.__type__ === "pipeline";
+}
+
 /**
  * Returns true if value represents an explicit template engine expression
  * @see isExpression
@@ -57,17 +64,10 @@ export function isExpression(value: unknown): value is Expression<unknown> {
 export function isTemplateExpression(
   value: unknown
 ): value is Expression<string, TemplateEngine> {
-  if (
-    isPlainObject(value) &&
-    typeof value === "object" &&
-    "__type__" in value
-  ) {
-    return templateTypes.includes(
-      (value as Expression).__type__ as TemplateEngine
-    );
-  }
-
-  return false;
+  return (
+    isExpression(value) &&
+    templateTypes.includes((value as Expression).__type__ as TemplateEngine)
+  );
 }
 
 /**
