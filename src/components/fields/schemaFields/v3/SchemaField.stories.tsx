@@ -22,6 +22,7 @@ import SchemaField from "./SchemaField";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button } from "react-bootstrap";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
+import { action } from "@storybook/addon-actions";
 
 export default {
   title: "Fields/v3/SchemaField",
@@ -51,9 +52,7 @@ const Template: ComponentStory<
           },
         },
       }}
-      onSubmit={(values) => {
-        console.log("submit with form state:", values);
-      }}
+      onSubmit={action("onSubmit")}
     >
       <Form>
         <SchemaField {...args} isRequired={args.required ?? true} />
