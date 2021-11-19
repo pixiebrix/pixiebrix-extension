@@ -82,6 +82,7 @@ const RenderedField: React.FC<FieldProps> = ({
   children,
   blankValue = "",
   as: AsControl,
+  className,
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
@@ -121,7 +122,7 @@ const RenderedField: React.FC<FieldProps> = ({
       </AsControl>
     );
   return layout === "vertical" ? (
-    <BootstrapForm.Group className={styles.verticalFormGroup}>
+    <BootstrapForm.Group className={cx(styles.verticalFormGroup, className)}>
       {label && (
         <BootstrapForm.Label
           className={styles.verticalFormLabel}
@@ -143,9 +144,7 @@ const RenderedField: React.FC<FieldProps> = ({
   ) : (
     <BootstrapForm.Group
       as={Row}
-      className={cx(styles.horizontalFormGroup, {
-        "mb-0": removeBottomMargin,
-      })}
+      className={cx(styles.horizontalFormGroup, className)}
     >
       {label && (
         <BootstrapForm.Label

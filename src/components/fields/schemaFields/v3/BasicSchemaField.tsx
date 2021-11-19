@@ -47,6 +47,7 @@ import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchBut
 import IntegerWidget from "@/components/fields/schemaFields/widgets/IntegerWidget";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
 import OmitFieldWidget from "@/components/fields/schemaFields/widgets/OmitFieldWidget";
+import cx from "classnames";
 
 const varOption: StringOption = {
   label: "Variable",
@@ -388,7 +389,7 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
       name={name}
       label={fieldLabel}
       description={fieldDescription}
-      removeBottomMargin={hideLabel}
+      className={cx({ "mb-0": hideLabel })} // Remove bottom margin if we're already hiding the label
       as={TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
