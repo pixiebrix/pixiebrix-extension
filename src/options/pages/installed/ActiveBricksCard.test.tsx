@@ -18,71 +18,81 @@ import React from "react";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
 import { StaticRouter } from "react-router-dom";
 import { screen, render } from "@testing-library/react";
-import { ResolvedExtension } from "@/core";
+import { ResolvedExtension, UUID } from "@/core";
 
 jest.mock("@/services/api", () => ({
-  useGetOrganizationsQuery: jest.fn(),
+  useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
   useGetRecipesQuery: jest.fn(),
 }));
 
-jest.mock("@/hooks/useDeployments", () => jest.fn());
-
-import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
-import useDeployments from "@/hooks/useDeployments";
+import { useGetRecipesQuery } from "@/services/api";
 import { Organization } from "@/types/contract";
 
-const extensions: ResolvedExtension[] = [
-  {
-    id: "20152aa4-a39e-492a-a189-26006df54405",
-    apiVersion: "v1",
+const extensionFactory = ({
+  timestamp = undefined,
+  isPersonalBrick = false,
+  isTeamDeployment = false,
+}: {
+  timestamp?: string;
+  isPersonalBrick?: boolean;
+  isTeamDeployment?: boolean;
+} = {}) => ({
+  id: "",
+  apiVersion: "v1",
+  ...(!isPersonalBrick && {
     _recipe: {
-      id: "@user/test-brick",
-      version: "11.0.0",
-      name: "Search Etsy",
-      description: "Testing raw config",
+      id: "@user/foo",
+      version: "1.0.0",
+      name: "Test Brick",
+      description: "Testing update status",
       sharing: {
         public: false,
-        organizations: [],
+        organizations: [] as UUID[],
       },
-      updated_at: "2021-11-18T21:48:25.261939Z",
+      ...(timestamp && { updated_at: timestamp }),
     },
-    definitions: {},
-    optionsArgs: {},
-    services: [],
-    label: "Search Etsy?",
-    extensionPointId: "@pixiebrix/context-search",
-    config: {},
-    active: true,
-    createTimestamp: "2021-11-18T21:49:14.274Z",
-    updateTimestamp: "2021-11-18T21:49:14.274Z",
+  }),
+  ...(isTeamDeployment && {
+    _deployment: {
+      id: "@team/foo",
+    },
+  }),
+  definitions: {},
+  optionsArgs: {},
+  services: [],
+  label: "Test Brick",
+  extensionPointId: "@pixiebrix/bar",
+  config: {},
+  active: true,
+  createTimestamp: "2021-11-18T21:49:14.274Z",
+  updateTimestamp: "2021-11-18T21:49:14.274Z",
+});
+
+const recipeFactory = (timestamp: string) => ({
+  metadata: {
+    id: "@user/foo",
   },
-];
+  updated_at: timestamp,
+});
 
-describe("ExtensionGroup update", () => {
-  test("Update shows for latest version greater than installed version", () => {
-    (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
-      data: [{} as Organization],
-    }));
+const mockGetRecipesImplementation = (recipe) => {
+  (useGetRecipesQuery as jest.Mock).mockImplementation(() => ({
+    data: [recipe],
+    isLoading: false,
+  }));
+};
 
-    const newer_timestamp = "2021-11-20T21:48:25.261939Z";
-    (useGetRecipesQuery as jest.Mock).mockImplementation(() => ({
-      data: [
-        {
-          metadata: {
-            id: "@user/test-brick",
-          },
-          // TODO: refactor into earlier_timestamp constant
-          updated_at: newer_timestamp,
-        },
-      ],
-      isLoading: false,
-    }));
+describe("ExtensionGroup Update status", () => {
+  const older_timestamp = "2021-11-18T00:00:00.000000Z";
+  const newer_timestamp = "2021-11-20T00:00:00.000000Z";
+
+  test("shows when latest Blueprint is newer", () => {
+    mockGetRecipesImplementation(recipeFactory(newer_timestamp));
 
     render(
       <StaticRouter>
         <ActiveBricksCard
-          extensions={extensions}
+          extensions={[extensionFactory({ timestamp: older_timestamp })]}
           onRemove={jest.fn()}
           onExportBlueprint={jest.fn()}
         />
@@ -90,7 +100,83 @@ describe("ExtensionGroup update", () => {
     );
 
     const updateStatus = screen.getByText("Update");
-
     expect(updateStatus).not.toBeNull();
+  });
+
+  test("doesn't show when latest Blueprint is older", () => {
+    mockGetRecipesImplementation(recipeFactory(older_timestamp));
+
+    render(
+      <StaticRouter>
+        <ActiveBricksCard
+          extensions={[extensionFactory({ timestamp: newer_timestamp })]}
+          onRemove={jest.fn()}
+          onExportBlueprint={jest.fn()}
+        />
+      </StaticRouter>
+    );
+
+    const updateStatus = screen.queryByText("Update");
+    expect(updateStatus).toBeNull();
+  });
+
+  test("doesn't show Update when latest Blueprint has same timestamp", () => {
+    const same_timestamp = "2021-11-20T00:00:00.000000Z";
+    mockGetRecipesImplementation(recipeFactory(same_timestamp));
+
+    render(
+      <StaticRouter>
+        <ActiveBricksCard
+          extensions={[extensionFactory({ timestamp: same_timestamp })]}
+          onRemove={jest.fn()}
+          onExportBlueprint={jest.fn()}
+        />
+      </StaticRouter>
+    );
+
+    const updateStatus = screen.queryByText("Update");
+    expect(updateStatus).toBeNull();
+  });
+
+  // If the installed blueprint updated_at is undefined, this means that the user
+  // installed this extension before the Update feature was released. In order to
+  // detect future updates, the user needs to reactive the blueprint.
+  test("shows when installed Blueprint updated_at is undefined", () => {
+    const arbitrary_timestamp = "2021-11-20T00:00:00.000000Z";
+    mockGetRecipesImplementation(recipeFactory(arbitrary_timestamp));
+
+    render(
+      <StaticRouter>
+        <ActiveBricksCard
+          extensions={[extensionFactory()]}
+          onRemove={jest.fn()}
+          onExportBlueprint={jest.fn()}
+        />
+      </StaticRouter>
+    );
+
+    const updateStatus = screen.queryByText("Update");
+    expect(updateStatus).not.toBeNull();
+  });
+
+  test("doesn't show on Personal Bricks and Team Deployments", () => {
+    const arbitrary_timestamp = "2021-11-20T00:00:00.000000Z";
+    mockGetRecipesImplementation(recipeFactory(arbitrary_timestamp));
+
+    render(
+      <StaticRouter>
+        <ActiveBricksCard
+          extensions={[
+            extensionFactory({ isPersonalBrick: true }),
+            extensionFactory({ isTeamDeployment: true }),
+          ]}
+          onRemove={jest.fn()}
+          onExportBlueprint={jest.fn()}
+        />
+      </StaticRouter>
+    );
+
+    const updateStatus = screen.queryByText("Update");
+    expect(updateStatus).toBeNull();
   });
 });
