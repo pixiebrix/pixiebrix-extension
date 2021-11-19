@@ -44,6 +44,8 @@ import { optionsSlice } from "@/options/slices";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 import { selectOptions } from "@/pages/marketplace/useReinstall";
+import { loadOptions } from "@/options/loader";
+import { EmptyConfig, IExtension } from "@/core";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -133,9 +135,30 @@ const ActivateButton: React.FunctionComponent<{
   );
 };
 
-function useWizard(blueprint: RecipeDefinition): [Step[], WizardValues] {
+function getInstalledOptions(
+  blueprint: RecipeDefinition,
+  installedExtensions: IExtension[]
+) {
+  const installedExtensionsFromBlueprint = installedExtensions?.filter(
+    (extension) => extension._recipe?.id === blueprint?.metadata.id
+  );
+
+  return selectOptions(installedExtensionsFromBlueprint);
+}
+
+function useWizard(
+  blueprint: RecipeDefinition,
+  reinstall: boolean
+): [Step[], WizardValues] {
+  const installedExtensions = useSelector(selectExtensions);
+
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
+
+    const installedOptions = getInstalledOptions(
+      blueprint,
+      installedExtensions
+    );
 
     const serviceIds = uniq(
       extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
@@ -157,15 +180,19 @@ function useWizard(blueprint: RecipeDefinition): [Step[], WizardValues] {
         }
       }
     });
+
     const initialValues: WizardValues = {
       extensions: Object.fromEntries(
         extensionPoints.map((x, index) => [index, true])
       ),
       services: serviceIds.map((id) => ({ id, config: undefined })),
-      optionsArgs: mapValues(
-        blueprint.options?.schema ?? {},
-        (x) => (x as any).default
-      ),
+      optionsArgs: mapValues(blueprint.options?.schema ?? {}, (x) => {
+        if (reinstall && installedOptions[x.outputKey] !== undefined) {
+          return installedOptions[x.outputKey];
+        }
+
+        return (x as any).default;
+      }),
       grantPermissions: false,
     };
     return [steps, initialValues];
@@ -173,10 +200,10 @@ function useWizard(blueprint: RecipeDefinition): [Step[], WizardValues] {
 }
 
 const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  const [blueprintSteps, initialValues] = useWizard(blueprint);
   const location = useLocation();
   const reinstall =
     new URLSearchParams(location.search).get("reinstall") === "1";
+  const [blueprintSteps, initialValues] = useWizard(blueprint, reinstall);
   const [stepKey, setStep] = useState(blueprintSteps[0].key);
   const install = useInstall(blueprint);
 

@@ -37,31 +37,6 @@ const OptionsBody: React.FunctionComponent<{
   blueprint: RecipeDefinition;
   reinstall: boolean;
 }> = ({ blueprint, reinstall }) => {
-  const extensions = useSelector(selectExtensions);
-  const { setFieldValue } = useFormikContext();
-
-  const installedExtensions = useMemo(
-    () =>
-      extensions?.filter(
-        (extension) => extension._recipe?.id === blueprint?.metadata.id
-      ),
-    [blueprint, extensions]
-  );
-
-  const installedOptions = selectOptions(installedExtensions);
-
-  useEffect(() => {
-    if (!reinstall) {
-      return;
-    }
-
-    for (const [, [fieldName, installedValue]] of Object.entries(
-      installedOptions
-    ).entries()) {
-      setFieldValue(`optionsArgs.${fieldName}`, installedValue);
-    }
-  }, [installedOptions, setFieldValue, reinstall]);
-
   const OptionsGroup = useMemo(
     () =>
       genericOptionsFactory(
