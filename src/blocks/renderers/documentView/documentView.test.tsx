@@ -15,14 +15,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import React from "react";
 import { getComponent } from "./documentView";
 
-// ToDo write proper tests
-test("basic test for dev purposes", () => {
+const renderDocument = (config: any) => {
+  const { Component, props } = getComponent(config);
+  return render(<Component {...props} />);
+};
+
+test.each(["header_1", "header_2", "header_3"])(
+  "renders header, %s",
+  (headerType: string) => {
+    const config = {
+      type: headerType,
+      config: {
+        title: "Test Header",
+        className: "test-class",
+      },
+    };
+    const rendered = renderDocument(config);
+    expect(rendered.asFragment()).toMatchSnapshot();
+  }
+);
+
+test("renders paragraph text", () => {
+  const config = {
+    type: "text",
+    config: {
+      text: "Test Paragraph",
+      className: "test-class",
+    },
+  };
+  const rendered = renderDocument(config);
+  expect(rendered.asFragment()).toMatchSnapshot();
+});
+
+test("renders unknown type", () => {
+  const config = {
+    type: "TheTypeForWhichAComponentIsNotDefined",
+    className: "test-class",
+  };
+  const rendered = renderDocument(config);
+  expect(rendered.asFragment()).toMatchSnapshot();
+});
+
+test("renders grid", () => {
   const config = {
     type: "container",
+    config: {
+      className: "text-primary",
+    },
     children: [
       {
         type: "row",
@@ -33,13 +76,43 @@ test("basic test for dev purposes", () => {
               {
                 type: "header_1",
                 config: {
-                  title: "My document",
+                  title: "Header",
                 },
               },
+            ],
+          },
+        ],
+      },
+      {
+        type: "row",
+        config: {
+          className: "mt-5",
+        },
+        children: [
+          {
+            type: "column",
+            config: {
+              className: "p-3",
+            },
+            children: [
               {
-                type: "header_2",
+                type: "text",
                 config: {
-                  title: "Testing the doc",
+                  text: "left column",
+                },
+              },
+            ],
+          },
+          {
+            type: "column",
+            config: {
+              className: "p-5",
+            },
+            children: [
+              {
+                type: "text",
+                config: {
+                  text: "right column",
                 },
               },
             ],
@@ -49,10 +122,22 @@ test("basic test for dev purposes", () => {
     ],
   };
 
-  const { Component, props } = getComponent(config);
+  const rendered = renderDocument(config);
+  expect(rendered.asFragment()).toMatchSnapshot();
+});
 
-  const { container } = render(<Component {...props} />);
-  screen.debug();
-
-  expect(container).not.toBeNull();
+test("renders button", () => {
+  const config = {
+    type: "button",
+    config: {
+      title: "Button under test",
+      variant: "primary",
+      onClick: {
+        __type__: "pipeline",
+        __value__: jest.fn(),
+      },
+    },
+  };
+  const rendered = renderDocument(config);
+  expect(rendered.asFragment()).toMatchSnapshot();
 });
