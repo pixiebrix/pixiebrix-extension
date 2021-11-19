@@ -94,6 +94,26 @@ const TriggerConfiguration: React.FC<{
           </ConnectedFieldTemplate>
         )}
 
+        {trigger !== "load" && trigger !== "appear" && (
+          <ConnectedFieldTemplate
+            name="extensionPoint.definition.targetMode"
+            as="select"
+            title="Target Mode"
+            description={
+              <p>
+                Use <code>eventTarget</code> to use the event target as the root
+                element for brick execution. Use
+                <code>root</code> to use the closest element matching the
+                element selector.
+              </p>
+            }
+            {...makeLockableFieldProps("Trigger", isLocked)}
+          >
+            <option value="eventTarget">eventTarget</option>
+            <option value="root">root</option>
+          </ConnectedFieldTemplate>
+        )}
+
         <UrlMatchPatternField
           name="extensionPoint.definition.isAvailable.matchPatterns[0]"
           {...makeLockableFieldProps("Sites", isLocked)}
