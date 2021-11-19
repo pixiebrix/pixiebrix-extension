@@ -114,3 +114,15 @@ export function getPropByPath(
 
   return cleanValue(toJS(value));
 }
+
+export function getFieldNamesFromPathString(
+  name: string
+): [parentFieldName: string | undefined, fieldName: string] {
+  const fieldName = name.includes(".")
+    ? name.slice(name.lastIndexOf(".") + 1)
+    : name;
+  const parentFieldName = name.includes(".")
+    ? name.slice(0, name.lastIndexOf("."))
+    : undefined;
+  return [parentFieldName, fieldName];
+}

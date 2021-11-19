@@ -28,14 +28,15 @@ import { produce } from "immer";
 import { freshIdentifier } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
+import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 
 type PropertyRowProps = {
   name: string;
   showActions?: boolean;
   readOnly: boolean;
   schema: Schema;
-  onDelete: () => void;
-  onRename: (newName: string) => void;
+  onDelete?: () => void;
+  onRename?: (newName: string) => void;
   isRequired?: boolean;
 };
 
@@ -80,13 +81,12 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
 
   const updateName = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
-      onRename(e.target.value);
+      onRename?.(e.target.value);
     },
     [onRename]
   );
 
-  const parts = field.name.split(".");
-  const currentProperty = parts[parts.length - 1];
+  const currentProperty = getFieldNamesFromPathString(field.name)[1];
 
   return (
     <tr>

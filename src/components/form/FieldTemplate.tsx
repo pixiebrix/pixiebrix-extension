@@ -27,6 +27,7 @@ import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchBut
 import styles from "./FieldTemplate.module.scss";
 import FormTheme from "@/components/form/FormTheme";
 import { getErrorMessage } from "@/errors";
+import cx from "classnames";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType
@@ -79,6 +80,7 @@ const RenderedField: React.FC<FieldProps> = ({
   children,
   blankValue = "",
   as: AsControl,
+  className,
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
@@ -118,7 +120,7 @@ const RenderedField: React.FC<FieldProps> = ({
       </AsControl>
     );
   return layout === "vertical" ? (
-    <BootstrapForm.Group className={styles.verticalFormGroup}>
+    <BootstrapForm.Group className={cx(styles.verticalFormGroup, className)}>
       {label && (
         <BootstrapForm.Label
           className={styles.verticalFormLabel}
@@ -138,7 +140,10 @@ const RenderedField: React.FC<FieldProps> = ({
       )}
     </BootstrapForm.Group>
   ) : (
-    <BootstrapForm.Group as={Row} className={styles.horizontalFormGroup}>
+    <BootstrapForm.Group
+      as={Row}
+      className={cx(styles.horizontalFormGroup, className)}
+    >
       {label && (
         <BootstrapForm.Label
           column
