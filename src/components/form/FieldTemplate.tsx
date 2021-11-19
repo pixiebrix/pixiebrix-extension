@@ -39,7 +39,6 @@ export type FieldProps<
     description?: ReactNode;
     error?: string;
     touched?: boolean;
-    removeBottomMargin?: boolean;
 
     /**
      * This value is regarded as absence of value, unset property.
@@ -77,7 +76,6 @@ const RenderedField: React.FC<FieldProps> = ({
   description,
   error,
   touched,
-  removeBottomMargin,
   value,
   children,
   blankValue = "",
