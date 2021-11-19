@@ -39,6 +39,7 @@ const TriggerConfiguration: React.FC<{
       if (e.currentTarget.value) {
         setFieldValue("extensionPoint.definition.rootSelector", null);
         setFieldValue("extensionPoint.definition.attachMode", null);
+        setFieldValue("extensionPoint.definition.targetMode", null);
       }
 
       setFieldValue("extensionPoint.definition.trigger", e.currentTarget.value);
@@ -87,7 +88,7 @@ const TriggerConfiguration: React.FC<{
                 elements are added to the page.
               </p>
             }
-            {...makeLockableFieldProps("Trigger", isLocked)}
+            {...makeLockableFieldProps("Attach Mode", isLocked)}
           >
             <option value="once">once</option>
             <option value="watch">watch</option>
@@ -107,7 +108,7 @@ const TriggerConfiguration: React.FC<{
                 element selector.
               </p>
             }
-            {...makeLockableFieldProps("Trigger", isLocked)}
+            {...makeLockableFieldProps("Target Mode", isLocked)}
           >
             <option value="eventTarget">eventTarget</option>
             <option value="root">root</option>
