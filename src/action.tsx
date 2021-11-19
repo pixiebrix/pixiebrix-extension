@@ -27,6 +27,8 @@ import React from "react";
 import { browserAction } from "@/background/messenger/api";
 import { UUID } from "@/core";
 import "@/actionPanel/protocol";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 // Keep in order so precedence is preserved
 import "@/vendors/theme/app/app.scss";
@@ -39,5 +41,8 @@ const nonce = url.searchParams.get("nonce") as UUID;
 void browserAction.registerActionFrame(nonce).then(() => {
   console.debug("Registered action frame with background page");
 });
+
+registerContribBlocks();
+registerBuiltinBlocks();
 
 ReactDOM.render(<App />, document.querySelector("#container"));

@@ -20,6 +20,7 @@ import { Renderer } from "@/types";
 import { BlockArg, BlockOptions, ComponentRef, Schema } from "@/core";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import InnerComponentContext from "@/blocks/renderers/documentFolder/InnerComponentContext";
+import { getComponent } from "./documentView";
 
 export class DocumentRenderer extends Renderer {
   constructor() {
@@ -61,10 +62,6 @@ export class DocumentRenderer extends Renderer {
           // etc. outside of a !pipeline expression, the rendering will probably crash
           loadBrickYaml(body)
         : body;
-
-    // Import dynamically to avoid circular dependency. (This DocumentRenderer module is added to the registry that's
-    // referred to by PipelineComponent -> PanelBody -> registerBuiltinBlocks
-    const { getComponent } = await import("./documentView");
 
     const { Component, props } = getComponent(bodyObj);
 

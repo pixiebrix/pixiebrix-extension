@@ -35,7 +35,7 @@ const knownComponents = {
     <h2 {...restProps}>{children}</h2>
   )) as React.FC<unknown>,
   header_3: (({ children, ...restProps }) => (
-    <h2 {...restProps}>{children}</h2>
+    <h3 {...restProps}>{children}</h3>
   )) as React.FC<unknown>,
   text: (({ children, ...restProps }) => (
     <p {...restProps}>{children}</p>

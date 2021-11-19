@@ -22,14 +22,9 @@ import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage } from "@/errors";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { BlockArg, RendererOutput } from "@/core";
 import { PanelPayload } from "@/actionPanel/actionPanelTypes";
 import RendererComponent from "@/actionPanel/RendererComponent";
-
-registerContribBlocks();
-registerBuiltinBlocks();
 
 const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
   payload,
