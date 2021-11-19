@@ -24,8 +24,8 @@ import { getRecord, setRecord } from "@/background/dataStore";
 import { reportError } from "@/telemetry/logging";
 import { notifyResult } from "@/contentScript/notify";
 
-import theme from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
+import BootstrapStylesheet from "./BootstrapStylesheet";
 
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;
@@ -34,7 +34,7 @@ const CustomFormComponent: React.FunctionComponent<{
   onSubmit: (values: JsonObject) => Promise<void>;
 }> = ({ schema, uiSchema, formData, onSubmit }) => (
   <div className="CustomForm">
-    <link rel="stylesheet" href={theme} />
+    <BootstrapStylesheet />
     <link rel="stylesheet" href={custom} />
     <JsonSchemaForm
       schema={schema}

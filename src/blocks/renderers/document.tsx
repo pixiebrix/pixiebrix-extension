@@ -21,7 +21,7 @@ import { BlockArg, BlockOptions, ComponentRef, Schema } from "@/core";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import InnerComponentContext from "@/blocks/renderers/documentView/InnerComponentContext";
 
-import theme from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import BootstrapStylesheet from "./BootstrapStylesheet";
 
 export class DocumentRenderer extends Renderer {
   constructor() {
@@ -77,7 +77,7 @@ export class DocumentRenderer extends Renderer {
       <InnerComponentContext.Provider value={{ options }}>
         <div className="h-100">
           <ReactShadowRoot>
-            <link rel="stylesheet" href={theme} />
+            <BootstrapStylesheet />
             <Component {...props} />
           </ReactShadowRoot>
         </div>
