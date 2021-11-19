@@ -28,6 +28,7 @@ import { produce } from "immer";
 import { freshIdentifier } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
+import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 
 type PropertyRowProps = {
   name: string;
@@ -85,8 +86,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
     [onRename]
   );
 
-  const parts = field.name.split(".");
-  const currentProperty = parts[parts.length - 1];
+  const currentProperty = getFieldNamesFromPathString(field.name)[1];
 
   return (
     <tr>

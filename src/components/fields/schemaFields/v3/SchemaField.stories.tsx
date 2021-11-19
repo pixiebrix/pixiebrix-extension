@@ -21,7 +21,7 @@ import { Form, Formik } from "formik";
 import SchemaField from "./SchemaField";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button } from "react-bootstrap";
-import { lastIndexOf } from "lodash";
+import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 
 export default {
   title: "Fields/v3/SchemaField",
@@ -36,7 +36,7 @@ const Template: ComponentStory<
     }
   >
 > = (args) => {
-  const fieldName = args.name.slice(lastIndexOf(args.name, ".") + 1);
+  const fieldName = getFieldNamesFromPathString(args.name)[1];
   return (
     <Formik
       initialValues={{
