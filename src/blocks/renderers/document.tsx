@@ -21,6 +21,8 @@ import { BlockArg, BlockOptions, ComponentRef, Schema } from "@/core";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import InnerComponentContext from "@/blocks/renderers/documentView/InnerComponentContext";
 
+import theme from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+
 export class DocumentRenderer extends Renderer {
   constructor() {
     super(
@@ -62,6 +64,7 @@ export class DocumentRenderer extends Renderer {
 
     // Dynamic import because documentView has a transitive dependency of react-shadow-root which assumed a proper
     // `window` variable is present on module load. This isn't available on header generation
+    const { default: ReactShadowRoot } = await import("react-shadow-root");
     const { getComponent } = await import(
       "@/blocks/renderers/documentView/documentView"
     );
@@ -69,9 +72,15 @@ export class DocumentRenderer extends Renderer {
     const { Component, props } = getComponent(bodyObj);
 
     // Wrap in a React context provider that passes BlockOptions down to any embedded bricks
+    // ReactShadowRoot needs to be inside an HTMLElement so it has something to attach to
     const WrappedComponent = (props: any) => (
       <InnerComponentContext.Provider value={{ options }}>
-        <Component {...props} />
+        <div className="h-100">
+          <ReactShadowRoot>
+            <link rel="stylesheet" href={theme} />
+            <Component {...props} />
+          </ReactShadowRoot>
+        </div>
       </InnerComponentContext.Provider>
     );
 
