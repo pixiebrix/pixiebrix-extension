@@ -26,6 +26,7 @@ import { Except, Primitive } from "type-fest";
 import { ErrorObject } from "serialize-error";
 import { Permissions } from "webextension-polyfill";
 import { pick } from "lodash";
+import React from "react";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
@@ -54,8 +55,6 @@ export type SchemaPropertyType = JSONSchema7TypeName;
  * - v3: introduces explicit expressions
  */
 export type ApiVersion = "v1" | "v2" | "v3";
-
-export type RenderedHTML = string;
 
 export type ActionType = string;
 
@@ -812,3 +811,12 @@ export type RawConfig = {
  * (In the backend these are called `Package`s and `PackageVersion`s)
  */
 export type IBrick = IBlock | IService | IExtensionPoint;
+
+export type RenderedHTML = string;
+
+export type ComponentRef = {
+  Component: React.ComponentType;
+  props: Record<string, unknown>;
+};
+
+export type RendererOutput = RenderedHTML | ComponentRef;

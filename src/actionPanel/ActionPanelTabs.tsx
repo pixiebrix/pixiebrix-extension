@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { ActionPanelStore } from "@/actionPanel/actionPanelTypes";
+import { ActionPanelStore, PanelEntry } from "@/actionPanel/actionPanelTypes";
 import { mapTabEventKey } from "@/actionPanel/actionPanelUtils";
 import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { UUID } from "@/core";
@@ -94,7 +94,7 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
         </Card.Header>
         <Card.Body className="p-0 flex-grow-1" style={{ overflowY: "auto" }}>
           <Tab.Content className="p-0 h-100">
-            {panels.map((panel) => (
+            {panels.map((panel: PanelEntry) => (
               <Tab.Pane
                 className="h-100"
                 key={panel.extensionId}
@@ -102,7 +102,7 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
                 style={{ minHeight: "1px" }}
               >
                 <ErrorBoundary>
-                  <PanelBody panel={panel} />
+                  <PanelBody payload={panel.payload} />
                 </ErrorBoundary>
               </Tab.Pane>
             ))}

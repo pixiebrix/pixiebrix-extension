@@ -16,7 +16,7 @@
  */
 
 import { BlockConfig } from "@/blocks/types";
-import { BlockArg, IBlock, OutputKey } from "@/core";
+import { BlockArg, IBlock, OutputKey, RegistryId } from "@/core";
 import { BlockType } from "@/blocks/util";
 
 /**
@@ -28,6 +28,32 @@ export type ResolvedBlockConfig = {
   block: IBlock;
   config: BlockConfig;
   type: BlockType;
+};
+
+/**
+ * Information required to display a renderer
+ */
+export type RendererPayload = {
+  /**
+   * The registry id of the renderer block, e.g., @pixiebrix/table
+   */
+  blockId: RegistryId;
+  /**
+   * A unique id for the content, used control re-rendering (similar to `key` in React)
+   */
+  key: string;
+  /**
+   * The BlockArg to pass to the renderer
+   * @see BlockProps.args
+   * @see BlockArg
+   */
+  args: unknown;
+  /**
+   * The context to pass to the renderer
+   * @see BlockProps.context
+   * @see BlockOptions
+   */
+  ctxt: unknown;
 };
 
 /**

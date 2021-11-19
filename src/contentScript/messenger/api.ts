@@ -64,5 +64,8 @@ export const runBlockInContentScript = getMethod("RUN_BLOCK");
 export const cancelSelect = getMethod("CANCEL_SELECT_ELEMENT");
 export const selectElement = getMethod("SELECT_ELEMENT");
 
+export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
+export const runEffectPipeline = getMethod("RUN_EFFECT_PIPELINE");
+
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;

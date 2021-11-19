@@ -17,21 +17,15 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
-
-export interface ComponentRef {
-  Component: React.FunctionComponent;
-  props: Record<string, unknown>;
-}
+import { RendererOutput } from "@/core";
 
 interface RenderOptions {
   shadowDOM: boolean;
 }
 
-export type PanelComponent = string | ComponentRef;
-
 export function render(
   root: HTMLElement,
-  body: PanelComponent,
+  body: RendererOutput,
   { shadowDOM }: RenderOptions
 ): void {
   console.debug("render: panel body");

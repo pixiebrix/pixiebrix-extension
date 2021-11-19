@@ -15,43 +15,69 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { Renderer } from "@/types";
-import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, RenderedHTML } from "@/core";
-import yaml from "js-yaml";
-import { getComponent } from "./documentView";
+import { BlockArg, BlockOptions, ComponentRef, Schema } from "@/core";
+import { loadBrickYaml } from "@/runtime/brickYaml";
+import InnerComponentContext from "@/blocks/renderers/documentFolder/InnerComponentContext";
 
 export class DocumentRenderer extends Renderer {
   constructor() {
     super(
       "@pixiebrix/document",
       "Render Document",
-      "Render Document to sanitized HTML"
+      "Render an interactive document"
     );
   }
 
-  inputSchema = propertiesToSchema(
-    {
+  inputSchema: Schema = {
+    properties: {
       body: {
-        type: "string",
-        description: "The Document config to render",
-        format: "markdown",
+        oneOf: [
+          {
+            type: "string",
+            description: "A YAML document config to render",
+            // Pass format so we get a multiline input.
+            format: "markdown",
+          },
+          {
+            type: "object",
+            description: "A document configuration",
+            additionalProperties: true,
+          },
+        ],
       },
     },
-    ["body"]
-  );
+    required: ["body"],
+  };
 
-  async render({ body }: BlockArg): Promise<RenderedHTML> {
+  async render(
+    { body }: BlockArg,
+    options: BlockOptions
+  ): Promise<ComponentRef> {
     const bodyObj =
       typeof body === "string"
-        ? yaml.load(body, { schema: yaml.DEFAULT_SCHEMA })
+        ? // Using loadBrickYaml here in order to support !pipeline expressions. If there's any expressions (e.g., !var),
+          // etc. outside of a !pipeline expression, the rendering will probably crash
+          loadBrickYaml(body)
         : body;
+
+    // Import dynamically to avoid circular dependency. (This DocumentRenderer module is added to the registry that's
+    // referred to by PipelineComponent -> PanelBody -> registerBuiltinBlocks
+    const { getComponent } = await import("./documentView");
 
     const { Component, props } = getComponent(bodyObj);
 
+    // Wrap in a React context provider that passes BlockOptions down to any embedded bricks
+    const WrappedComponent = (props: any) => (
+      <InnerComponentContext.Provider value={{ options }}>
+        <Component {...props} />
+      </InnerComponentContext.Provider>
+    );
+
     return {
-      Component,
+      Component: WrappedComponent,
       props,
-    } as any;
+    };
   }
 }
