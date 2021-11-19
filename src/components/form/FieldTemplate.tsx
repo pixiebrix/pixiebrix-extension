@@ -144,7 +144,7 @@ const RenderedField: React.FC<FieldProps> = ({
     <BootstrapForm.Group
       as={Row}
       className={cx(styles.horizontalFormGroup, {
-        [styles.noBottomMargin]: removeBottomMargin,
+        "mb-0": removeBottomMargin,
       })}
     >
       {label && (
