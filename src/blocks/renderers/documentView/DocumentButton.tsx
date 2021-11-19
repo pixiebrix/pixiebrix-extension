@@ -1,18 +1,21 @@
 import React, { useCallback, useContext } from "react";
 import { BlockPipeline } from "@/blocks/types";
-import AsyncButton from "@/components/AsyncButton";
+import AsyncButton, { AsyncButtonProps } from "@/components/AsyncButton";
 import { whoAmI } from "@/background/messenger/api";
 import { runEffectPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import { BlockArgContext } from "@/core";
 import InnerComponentContext from "@/blocks/renderers/documentView/InnerComponentContext";
+import { Except } from "type-fest";
 
-type DocumentButtonProps = {
-  title: string;
+type DocumentButtonProps = Except<AsyncButtonProps, "onClick"> & {
   onClick: BlockPipeline;
 };
 
-const DocumentButton: React.FC<DocumentButtonProps> = ({ title, onClick }) => {
+const DocumentButton: React.FC<DocumentButtonProps> = ({
+  onClick,
+  ...restProps
+}) => {
   const context = useContext(InnerComponentContext);
 
   const handler = useCallback(async () => {
@@ -28,7 +31,7 @@ const DocumentButton: React.FC<DocumentButtonProps> = ({ title, onClick }) => {
     );
   }, [onClick, context]);
 
-  return <AsyncButton onClick={handler}>{title}</AsyncButton>;
+  return <AsyncButton onClick={handler} {...restProps} />;
 };
 
 export default DocumentButton;
