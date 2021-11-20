@@ -30,7 +30,7 @@ import {
   getFormDefinition,
   resolveForm,
   cancelForm,
-} from "@/contentScript/modalForms";
+} from "@/contentScript/ephemeralFormProtocol";
 import {
   hideActionPanel,
   showActionPanel,
@@ -61,6 +61,10 @@ import {
 } from "@/contentScript/executor";
 import { cancelSelect, selectElement } from "@/nativeEditor/selector";
 import { runExtensionPointReader } from "@/nativeEditor/dynamic";
+import {
+  runEffectPipeline,
+  runRendererPipeline,
+} from "@/contentScript/pipelineProtocol";
 
 expectContext("contentScript");
 
@@ -107,6 +111,9 @@ declare global {
     RUN_BLOCK: typeof runBlockInContentScript;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
+
+    RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
+    RUN_EFFECT_PIPELINE: typeof runEffectPipeline;
   }
 }
 
@@ -150,4 +157,7 @@ registerMethods({
   RUN_BLOCK: runBlockInContentScript,
   CANCEL_SELECT_ELEMENT: cancelSelect,
   SELECT_ELEMENT: selectElement,
+
+  RUN_RENDERER_PIPELINE: runRendererPipeline,
+  RUN_EFFECT_PIPELINE: runEffectPipeline,
 });

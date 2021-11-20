@@ -67,6 +67,14 @@ const EditorPane: React.FunctionComponent<{
               "Formik's submit should not be called to save an extension. Use 'saveElement' from 'useSavingWizard' instead."
             );
           }}
+          // We're validating on blur instead of on change as a stop-gap measure to improve typing
+          // performance in schema fields of block configs in dev builds of the extension.
+          // The long-term better solution is to split up our pipeline validation code to work
+          // on one block at a time, and then modify the usePipelineField hook to only validate
+          // one block at a time. Then we can re-enable change validation here once this doesn't
+          // cause re-rendering the entire form on every change.
+          validateOnChange={false}
+          validateOnBlur={true}
         >
           {({ values: element }) => (
             <>

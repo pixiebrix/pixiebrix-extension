@@ -21,36 +21,39 @@ import { Form, Formik } from "formik";
 import SchemaField from "./SchemaField";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button } from "react-bootstrap";
+import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
+import { action } from "@storybook/addon-actions";
 
 export default {
-  title: "Fields/SchemaField",
+  title: "Fields/v1/SchemaField",
   component: SchemaField,
 } as ComponentMeta<typeof SchemaField>;
 
 const Template: ComponentStory<
   React.FunctionComponent<SchemaFieldProps & { defaultValue: unknown }>
-> = (args) => (
-  <Formik
-    initialValues={{
-      myStr: "abc",
+> = (args) => {
+  const fieldName = getFieldNamesFromPathString(args.name)[1];
+  return (
+    <Formik
+      initialValues={{
+        myStr: "abc",
 
-      topObj: {
-        myNum: 2,
-        parentObj: {
-          [args.name]: args.defaultValue,
+        topObj: {
+          myNum: 2,
+          parentObj: {
+            [fieldName]: args.defaultValue,
+          },
         },
-      },
-    }}
-    onSubmit={(values) => {
-      console.log("submit with form state:", values);
-    }}
-  >
-    <Form>
-      <SchemaField {...args} />
-      <Button type="submit">Submit</Button>
-    </Form>
-  </Formik>
-);
+      }}
+      onSubmit={action("onSubmit")}
+    >
+      <Form>
+        <SchemaField {...args} />
+        <Button type="submit">Submit</Button>
+      </Form>
+    </Formik>
+  );
+};
 
 export const Boolean = Template.bind({});
 Boolean.args = {
@@ -64,7 +67,7 @@ Boolean.args = {
 
 export const NormalText = Template.bind({});
 NormalText.args = {
-  name: "testField",
+  name: "topObj.parentObj.testField",
   defaultValue: "",
   label: "Enter some text",
   schema: {
@@ -72,9 +75,9 @@ NormalText.args = {
   },
 };
 
-export const SelectText = Template.bind({});
-SelectText.args = {
-  name: "testField",
+export const SelectFromEnum = Template.bind({});
+SelectFromEnum.args = {
+  name: "topObj.parentObj.testField",
   label: "Select an option",
   defaultValue: null,
   schema: {
@@ -83,13 +86,62 @@ SelectText.args = {
   },
 };
 
-export const ExampleText = Template.bind({});
-ExampleText.args = {
-  name: "testField",
+export const CreatableSelect = Template.bind({});
+CreatableSelect.args = {
+  name: "topObj.parentObj.testField",
   label: "Select an option",
   defaultValue: null,
   schema: {
     type: "string",
     examples: ["Foo", "Bar"],
+  },
+};
+
+export const TextArea = Template.bind({});
+TextArea.args = {
+  name: "topObj.parentObj.testField",
+  label: "Write some text",
+  defaultValue: "",
+  schema: {
+    type: "string",
+    format: "markdown",
+  },
+};
+
+export const ArrayItems = Template.bind({});
+ArrayItems.args = {
+  name: "topObj.parentObj.testField",
+  label: "Add some array items",
+  defaultValue: [],
+  schema: {
+    type: "array",
+    items: {
+      type: "string",
+    },
+  },
+};
+
+export const ObjectProperties = Template.bind({});
+ObjectProperties.args = {
+  name: "topObj.parentObj.testField",
+  label: "Set the values for this object",
+  defaultValue: {},
+  schema: {
+    type: "object",
+    properties: {
+      foo: {
+        type: "string",
+      },
+      bar: {
+        type: "number",
+      },
+      baz: {
+        type: "boolean",
+      },
+      qux: {
+        type: "string",
+        enum: ["FOO", "BAR", "BAZ"],
+      },
+    },
   },
 };

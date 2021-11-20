@@ -35,6 +35,7 @@ export function getExampleBlockConfig(block: IBlock): UnknownObject | null {
       uiSchema: {},
       cancelable: true,
       submitCaption: "Submit",
+      location: "modal",
     };
   }
 

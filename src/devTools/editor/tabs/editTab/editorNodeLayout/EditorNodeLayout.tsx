@@ -155,4 +155,4 @@ const EditorNodeLayout: React.FC<{
   );
 };
 
-export default EditorNodeLayout;
+export default React.memo(EditorNodeLayout);

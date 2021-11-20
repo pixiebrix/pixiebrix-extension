@@ -17,15 +17,15 @@
 
 import React from "react";
 import { Renderer } from "@/types";
-import { BlockArg, BlockOptions, RenderedHTML, Schema, UiSchema } from "@/core";
+import { BlockArg, BlockOptions, ComponentRef, Schema, UiSchema } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { reportError } from "@/telemetry/logging";
 import { notifyResult } from "@/contentScript/notify";
 
-import theme from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
+import BootstrapStylesheet from "./BootstrapStylesheet";
 
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;
@@ -34,7 +34,7 @@ const CustomFormComponent: React.FunctionComponent<{
   onSubmit: (values: JsonObject) => Promise<void>;
 }> = ({ schema, uiSchema, formData, onSubmit }) => (
   <div className="CustomForm">
-    <link rel="stylesheet" href={theme} />
+    <BootstrapStylesheet />
     <link rel="stylesheet" href={custom} />
     <JsonSchemaForm
       schema={schema}
@@ -83,10 +83,10 @@ export class CustomFormRenderer extends Renderer {
   async render(
     { recordId, schema, uiSchema }: BlockArg,
     { logger }: BlockOptions
-  ): Promise<RenderedHTML> {
+  ): Promise<ComponentRef> {
     const formData = await getRecord(recordId);
 
-    console.debug(`Building panel for record: [[ ${recordId} ]]`);
+    console.debug("Building panel for record: [[ %s ]]", recordId);
 
     return {
       Component: CustomFormComponent,
@@ -115,6 +115,6 @@ export class CustomFormRenderer extends Renderer {
           }
         },
       },
-    } as any;
+    };
   }
 }

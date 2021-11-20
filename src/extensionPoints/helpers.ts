@@ -97,7 +97,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
 /**
  * Returns true if the browser natively supports the CSS selector
  */
-function isNativeCssSelector(selector: string): boolean {
+export function isNativeCssSelector(selector: string): boolean {
   try {
     document.querySelector(selector);
     return true;
@@ -147,6 +147,7 @@ function pollSelector(
   const $target = $(target);
   const promise = _wait<JQuery>(
     () => {
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
       const $elt = $target.find(selector);
       return $elt.length > 0 ? $elt : null;
     },
@@ -198,11 +199,12 @@ function _initialize(
 /**
  * Recursively await an element using one or more JQuery selectors.
  * @param selector selector, or an array of selectors to
- * @param rootElement the root element, defaults to `document`
+ * @param $rootElement the root element, defaults to `document`
+ * @returns [promise, cancel] the element promise and a callback for cancelling the promise
  */
 export function awaitElementOnce(
   selector: string | string[],
-  rootElement?: JQuery<HTMLElement | Document>
+  $rootElement?: JQuery<HTMLElement | Document>
 ): [Promise<JQuery<HTMLElement | Document>>, () => void] {
   if (selector == null) {
     throw new Error("awaitElementOnce expected selector");
@@ -210,7 +212,7 @@ export function awaitElementOnce(
 
   const selectors = castArray(selector);
   // Safe to pass rootElement to $ constructor since it's already a JQuery object
-  const $root = rootElement ? $(rootElement) : $(document);
+  const $root = $rootElement ? $($rootElement) : $(document);
 
   if (selectors.length === 0) {
     return [Promise.resolve($root), noop];

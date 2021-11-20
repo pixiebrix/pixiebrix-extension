@@ -24,18 +24,7 @@ import {
   inferInputMode,
 } from "@/components/fields/schemaFields/fieldInputMode";
 import { isObject } from "@/utils";
-
-export function getFieldNamesFromPathString(
-  name: string
-): [parentFieldName: string | undefined, fieldName: string] {
-  const fieldName = name.includes(".")
-    ? name.slice(name.lastIndexOf(".") + 1)
-    : name;
-  const parentFieldName = name.includes(".")
-    ? name.slice(0, name.lastIndexOf("."))
-    : undefined;
-  return [parentFieldName, fieldName];
-}
+import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 
 export function removeField(parent: unknown, fieldName: string): void {
   if (Array.isArray(parent)) {

@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import styles from "./FieldEditor.module.scss";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import { UI_WIDGET } from "./schemaFieldNames";
@@ -42,6 +42,8 @@ import SwitchButtonWidget, {
   CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { uniq } from "lodash";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 const FieldEditor: React.FC<{
   name: string;
@@ -54,16 +56,12 @@ const FieldEditor: React.FC<{
     { setValue: setRjsfSchema },
   ] = useField<RJSFSchema>(name);
   const { schema, uiSchema } = rjsfSchema;
-  const [{ value: propertySchema }] = useField<Schema>(
-    `${name}.schema.properties.${propertyName}`
-  );
-
+  const fullPropertyName = `${name}.schema.properties.${propertyName}`;
+  const [{ value: propertySchema }] = useField<Schema>(fullPropertyName);
   const getFullFieldName = (fieldName: string) =>
-    `${name}.schema.properties.${propertyName}.${fieldName}`;
+    `${fullPropertyName}.${fieldName}`;
 
-  const [internalPropertyName, setInternalPropertyName] = useState<string>(
-    null
-  );
+  const [internalPropertyName, setInternalPropertyName] = useState<string>("");
   const [propertyNameError, setPropertyNameError] = useState<string>(null);
   useEffect(() => {
     setInternalPropertyName(propertyName);
@@ -169,11 +167,46 @@ const FieldEditor: React.FC<{
 
   const selectedUiTypeOption = getSelectedUiTypeOption();
 
+  const {
+    labelFieldProps,
+    descriptionFieldProps,
+    defaultFieldProps,
+  } = useMemo(() => {
+    const labelFieldProps: SchemaFieldProps = {
+      name: getFullFieldName("title"),
+      schema: {
+        type: "string",
+        description: "The user-visible label for this field",
+      },
+      label: "Label",
+    };
+    const descriptionFieldProps: SchemaFieldProps = {
+      name: getFullFieldName("description"),
+      schema: {
+        type: "string",
+        description: "Explain to the user what this field is used for",
+      },
+      label: "Field Description",
+    };
+    const defaultFieldProps: SchemaFieldProps = {
+      name: getFullFieldName("default"),
+      schema: {
+        type: parseUiType(selectedUiTypeOption.value).propertyType,
+      },
+      label: "Default value",
+    };
+    return {
+      labelFieldProps,
+      descriptionFieldProps,
+      defaultFieldProps,
+    };
+  }, [getFullFieldName, selectedUiTypeOption.value]);
+
   return (
     <div className={styles.root}>
       <FieldTemplate
         required
-        name={`${name}.${propertyName}`}
+        name={fullPropertyName}
         label="Name"
         value={internalPropertyName}
         onChange={onPropertyNameChange}
@@ -182,16 +215,8 @@ const FieldEditor: React.FC<{
         error={propertyNameError}
         description="Enter a name to refer to this value in the output later"
       />
-      <ConnectedFieldTemplate
-        name={getFullFieldName("title")}
-        label="Label"
-        description="The user-visible label for this field"
-      />
-      <ConnectedFieldTemplate
-        name={getFullFieldName("description")}
-        label="Field Description"
-        description="Explain to the user what this field is used for"
-      />
+      <SchemaField {...labelFieldProps} />
+      <SchemaField {...descriptionFieldProps} />
       <FieldTemplate
         name={getFullFieldName("uiType")}
         label="Input Type"
@@ -203,11 +228,7 @@ const FieldEditor: React.FC<{
       />
 
       {!FIELD_TYPES_WITHOUT_DEFAULT.includes(selectedUiTypeOption.value) && (
-        <ConnectedFieldTemplate
-          name={getFullFieldName("default")}
-          label="Default value"
-          type={parseUiType(selectedUiTypeOption.value).propertyType}
-        />
+        <SchemaField {...defaultFieldProps} />
       )}
 
       {propertySchema.enum && (

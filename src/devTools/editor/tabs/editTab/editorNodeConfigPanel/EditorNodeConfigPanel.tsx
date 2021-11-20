@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { CustomFieldWidget, FieldProps } from "@/components/form/FieldTemplate";
-import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
+import BlockConfigurationV1 from "@/devTools/editor/tabs/effect/v1/BlockConfiguration";
+import BlockConfigurationV3 from "@/devTools/editor/tabs/effect/v3/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
@@ -29,6 +30,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./EditorNodeConfigPanel.module.scss";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
+import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 
 const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
   <InputGroup>
@@ -74,6 +76,16 @@ const EditorNodeConfigPanel: React.FC<{
     ? "Effect and renderer bricks do not produce outputs"
     : "Provide an output key to refer to the outputs of this block later.";
 
+  const outputKeyLabel = useMemo(
+    () => <PopoverOutputLabel description={outputDescription} />,
+    [outputDescription]
+  );
+
+  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
+  const VersionedBlockConfiguration = isApiAtLeastV3
+    ? BlockConfigurationV3
+    : BlockConfigurationV1;
+
   return (
     <>
       {blockError && (
@@ -92,7 +104,7 @@ const EditorNodeConfigPanel: React.FC<{
         <Col xl>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.outputKey`}
-            label={<PopoverOutputLabel description={outputDescription} />}
+            label={outputKeyLabel}
             disabled={isOutputDisabled}
             as={OutputKeyWidget}
           />
@@ -109,7 +121,7 @@ const EditorNodeConfigPanel: React.FC<{
         </Col>
       </Row>
 
-      <BlockConfiguration name={blockFieldName} blockId={blockId} />
+      <VersionedBlockConfiguration name={blockFieldName} blockId={blockId} />
     </>
   );
 };

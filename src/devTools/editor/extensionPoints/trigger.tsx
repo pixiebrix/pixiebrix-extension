@@ -34,6 +34,8 @@ import {
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import {
+  AttachMode,
+  TargetMode,
   Trigger,
   TriggerConfig,
   TriggerDefinition,
@@ -62,6 +64,8 @@ export interface TriggerFormState extends BaseFormState {
       rootSelector: string | null;
       trigger: Trigger;
       reader: SingleLayerReaderConfig;
+      attachMode: AttachMode;
+      targetMode: TargetMode;
       isAvailable: NormalizedAvailability;
     };
   };
@@ -79,8 +83,10 @@ function fromNativeElement(
     extensionPoint: {
       metadata,
       definition: {
-        rootSelector: null,
         trigger: "load",
+        rootSelector: null,
+        attachMode: null,
+        targetMode: null,
         reader: getImplicitReader("trigger"),
         isAvailable: makeIsAvailable(url),
       },
@@ -96,7 +102,14 @@ function selectExtensionPoint(
 ): ExtensionPointConfig<TriggerDefinition> {
   const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, rootSelector, reader, trigger },
+    definition: {
+      isAvailable,
+      rootSelector,
+      attachMode,
+      targetMode,
+      reader,
+      trigger,
+    },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
@@ -105,6 +118,8 @@ function selectExtensionPoint(
       reader,
       isAvailable: pickBy(isAvailable, identity),
       trigger,
+      attachMode,
+      targetMode,
       rootSelector,
     },
   });
@@ -144,6 +159,8 @@ async function fromExtensionPoint(
   const {
     type,
     rootSelector,
+    attachMode,
+    targetMode,
     reader,
     trigger = "load",
   } = extensionPoint.definition;
@@ -168,6 +185,8 @@ async function fromExtensionPoint(
       definition: {
         ...extensionPoint.definition,
         rootSelector,
+        attachMode,
+        targetMode,
         trigger,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
@@ -186,7 +205,13 @@ async function fromExtension(
     "trigger"
   >(config, "trigger");
 
-  const { rootSelector, trigger, reader } = extensionPoint.definition;
+  const {
+    rootSelector,
+    attachMode,
+    targetMode,
+    trigger,
+    reader,
+  } = extensionPoint.definition;
 
   const blockPipeline = withInstanceIds(castArray(config.config.action));
 
@@ -202,6 +227,8 @@ async function fromExtension(
       definition: {
         rootSelector,
         trigger,
+        attachMode,
+        targetMode,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },

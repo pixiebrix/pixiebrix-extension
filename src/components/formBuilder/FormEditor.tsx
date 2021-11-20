@@ -17,7 +17,7 @@
 
 /* eslint-disable security/detect-object-injection */
 import { useField } from "formik";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import { Button, ButtonGroup, Col, Row } from "react-bootstrap";
 import FieldEditor from "./FieldEditor";
@@ -37,11 +37,12 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { Schema } from "@/core";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import styles from "./FormEditor.module.scss";
 import { joinName } from "@/utils";
 import FieldTemplate from "@/components/form/FieldTemplate";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 export type FormEditorProps = {
   name: string;
@@ -112,6 +113,20 @@ const FormEditor: React.FC<FormEditorProps> = ({
     [name]
   );
 
+  const { titleFieldProps, descriptionFieldProps } = useMemo(() => {
+    const titleFieldProps: SchemaFieldProps = {
+      name: joinName(name, "schema", "title"),
+      schema: { type: "string" },
+      label: "Form Title",
+    };
+    const descriptionFieldProps: SchemaFieldProps = {
+      name: joinName(name, "schema", "description"),
+      schema: { type: "string" },
+      label: "Form Description",
+    };
+    return { titleFieldProps, descriptionFieldProps };
+  }, [name]);
+
   if (!schema || !uiSchema) {
     return null;
   }
@@ -180,14 +195,8 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   return (
     <>
-      <ConnectedFieldTemplate
-        name={joinName(name, "schema", "title")}
-        label="Form Title"
-      />
-      <ConnectedFieldTemplate
-        name={joinName(name, "schema", "description")}
-        label="Form Description"
-      />
+      <SchemaField {...titleFieldProps} />
+      <SchemaField {...descriptionFieldProps} />
       <hr />
 
       <Row className={styles.addRow}>

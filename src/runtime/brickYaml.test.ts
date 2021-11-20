@@ -34,6 +34,17 @@ describe("loadYaml", () => {
       },
     });
   });
+
+  test("deserialize pipeline", async () => {
+    expect(
+      loadBrickYaml("foo: !pipeline\n  - id: '@pixiebrix/confetti'")
+    ).toEqual({
+      foo: {
+        __type__: "pipeline",
+        __value__: [{ id: "@pixiebrix/confetti" }],
+      },
+    });
+  });
 });
 
 describe("dumpYaml", () => {
@@ -46,6 +57,17 @@ describe("dumpYaml", () => {
     });
 
     expect(dumped).toBe("foo: !var a.b.c\n");
+  });
+
+  test("serialize pipeline", () => {
+    const dumped = dumpBrickYaml({
+      foo: {
+        __type__: "pipeline",
+        __value__: [{ id: "@pixiebrix/confetti" }],
+      },
+    });
+
+    expect(dumped).toBe("foo: !pipeline \n  - id: '@pixiebrix/confetti'\n");
   });
 
   test("strips sharing information", () => {

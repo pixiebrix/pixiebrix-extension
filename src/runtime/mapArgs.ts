@@ -19,33 +19,55 @@ import { UnknownObject } from "@/types";
 import { Renderer, engineRenderer } from "./renderers";
 import { isPlainObject, mapValues, pickBy } from "lodash";
 import { getPropByPath, isSimplePath } from "./pathHelpers";
-import { Expression, TemplateEngine } from "@/core";
+import { Expression, ExpressionType, TemplateEngine } from "@/core";
 import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
+import { BlockPipeline } from "@/blocks/types";
 
-const rendererTypes: TemplateEngine[] = [
+const templateTypes: TemplateEngine[] = [
   "mustache",
   "nunjucks",
   "handlebars",
   "var",
 ];
 
+const expressionTypes: ExpressionType[] = [...templateTypes, "pipeline"];
+
 type Args = string | UnknownObject | UnknownObject[];
 
 /**
  * Returns true if value represents an explicit expression
- * @param value
+ * @see isTemplateExpression
  */
-export function isExpression(value: unknown): value is Expression {
+export function isExpression(value: unknown): value is Expression<unknown> {
   if (
     isPlainObject(value) &&
     typeof value === "object" &&
     "__type__" in value
   ) {
-    return rendererTypes.includes((value as Expression).__type__);
+    return expressionTypes.includes((value as Expression).__type__);
   }
 
   return false;
+}
+
+export function isPipelineExpression(
+  value: unknown
+): value is Expression<BlockPipeline, "pipeline"> {
+  return isExpression(value) && value.__type__ === "pipeline";
+}
+
+/**
+ * Returns true if value represents an explicit template engine expression
+ * @see isExpression
+ */
+export function isTemplateExpression(
+  value: unknown
+): value is Expression<string, TemplateEngine> {
+  return (
+    isExpression(value) &&
+    templateTypes.includes((value as Expression).__type__ as TemplateEngine)
+  );
 }
 
 /**
@@ -56,9 +78,14 @@ export async function renderExplicit(
   config: Args,
   ctxt: UnknownObject
 ): Promise<unknown> {
-  if (isExpression(config)) {
+  if (isTemplateExpression(config)) {
     const render = await engineRenderer(config.__type__);
     return render(config.__value__, ctxt);
+  }
+
+  if (isExpression(config) && config.__type__ === "pipeline") {
+    // Pipelines are passed through directly
+    return config.__value__;
   }
 
   // Array.isArray must come before the object check because arrays are objects

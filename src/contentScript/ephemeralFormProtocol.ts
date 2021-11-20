@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormDefinition } from "@/blocks/transformers/modalForm/formTypes";
+import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { UUID } from "@/core";
 import { expectContext } from "@/utils/expectContext";
 import { CancelError } from "@/errors";
@@ -29,7 +29,7 @@ type RegisteredForm = {
 const forms = new Map<UUID, RegisteredForm>();
 
 /**
- * Register a form with the content script.
+ * Register a form with the content script that resolves the the form is either submitted or cancelled
  * @param nonce the form nonce
  * @param definition the form definition
  */
@@ -41,6 +41,10 @@ export async function registerForm(
 
   const registration = pDefer();
 
+  if (forms.has(nonce)) {
+    console.warn("A form was already registered with nonce %s", nonce);
+  }
+
   forms.set(nonce, {
     definition,
     registration,
@@ -49,22 +53,45 @@ export async function registerForm(
   return registration.promise;
 }
 
-function unregisterForm(nonce: UUID) {
-  forms.delete(nonce);
+/**
+ * Helper method to unregister the deferred promise for the form.
+ * @param formNonce
+ */
+function unregisterForm(formNonce: UUID) {
+  expectContext("contentScript");
+
+  forms.delete(formNonce);
 }
 
 export async function getFormDefinition(nonce: UUID): Promise<FormDefinition> {
+  expectContext("contentScript");
+
   return forms.get(nonce).definition;
 }
 
-export async function resolveForm(nonce: UUID, values: unknown): Promise<void> {
-  forms.get(nonce).registration.resolve(values);
-  unregisterForm(nonce);
+export async function resolveForm(
+  formNonce: UUID,
+  values: unknown
+): Promise<void> {
+  expectContext("contentScript");
+
+  const form = forms.get(formNonce);
+  if (!form) {
+    throw new Error(`Form not registered: ${formNonce}`);
+  }
+
+  form.registration.resolve(values);
+  unregisterForm(formNonce);
 }
 
-export async function cancelForm(nonce: UUID) {
-  forms
-    .get(nonce)
-    .registration.reject(new CancelError("User cancelled the action"));
-  unregisterForm(nonce);
+/**
+ * Cancel the form. Is a NOP if the form is no longer registered.
+ * @param formNonce the form nonce
+ */
+export async function cancelForm(formNonce: UUID): Promise<void> {
+  expectContext("contentScript");
+
+  const form = forms.get(formNonce);
+  form?.registration.reject(new CancelError("User cancelled the action"));
+  unregisterForm(formNonce);
 }

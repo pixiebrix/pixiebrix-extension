@@ -18,7 +18,7 @@
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { FieldArray, useField } from "formik";
 import { Button } from "react-bootstrap";
-import React from "react";
+import React, { useMemo } from "react";
 import { Schema } from "@/core";
 import {
   booleanPredicate,
@@ -71,7 +71,11 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
     throw new TypeError("Schema required for items");
   }
 
-  const schemaItems = schema.items ?? { additionalProperties: true };
+  const schemaItems = useMemo<Schema>(
+    // Cast is okay here since we've already checked for array/boolean types
+    () => (schema.items as Schema) ?? { additionalProperties: true },
+    [schema.items]
+  );
 
   const apiVersionAtLeastV3 = useApiVersionAtLeast("v3");
   // Show explicit remove button before v3

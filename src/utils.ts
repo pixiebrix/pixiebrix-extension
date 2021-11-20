@@ -35,6 +35,7 @@ import {
 } from "lodash";
 import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
+import { UnknownObject } from "@/types";
 
 /**
  * Create a Formik field name, validating the individual path parts.
@@ -470,4 +471,12 @@ export function isApiVersionAtLeast(
   const atLeastNum = Number(atLeast.slice(1));
 
   return isNum >= atLeastNum;
+}
+
+export function getProperty(obj: UnknownObject, property: string) {
+  if (Object.prototype.hasOwnProperty.call(obj, property)) {
+    // Checking for hasOwnProperty
+    // eslint-disable-next-line security/detect-object-injection
+    return obj[property];
+  }
 }

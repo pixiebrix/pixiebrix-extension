@@ -15,33 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  getFieldNamesFromPathString,
-  removeField,
-} from "@/devTools/editor/hooks/useToggleFormField";
-
-describe("getFieldNamesFromPathString", () => {
-  test("root field name", () => {
-    expect(getFieldNamesFromPathString("foo")).toStrictEqual([
-      undefined,
-      "foo",
-    ]);
-  });
-
-  test("single parent", () => {
-    expect(getFieldNamesFromPathString("foo.bar")).toStrictEqual([
-      "foo",
-      "bar",
-    ]);
-  });
-
-  test("multiple ancestors", () => {
-    expect(getFieldNamesFromPathString("foo.bar.baz")).toStrictEqual([
-      "foo.bar",
-      "baz",
-    ]);
-  });
-});
+import { removeField } from "@/devTools/editor/hooks/useToggleFormField";
 
 describe("removeField", () => {
   test("remove field from object", () => {

@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="card card"
+    >
+      <div
+        class="cardHeader card-header"
+      >
+        Input
+      </div>
+      <div
+        class="card-body"
+      >
+        <div
+          class="horizontalFormGroup form-group row"
+        >
+          <label
+            class="horizontalLabel form-label col-form-label col-lg-3"
+            for="extension.blockPipeline[0].config.message"
+          >
+            message
+          </label>
+          <div
+            class="col-lg-9"
+          >
+            <div
+              class="root"
+            >
+              <div
+                class="field"
+              >
+                <input
+                  class="form-control"
+                  id="extension.blockPipeline[0].config.message"
+                  name="extension.blockPipeline[0].config.message"
+                  type="text"
+                  value=""
+                />
+              </div>
+              <div
+                class="dropdown dropdown"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  class="dropdown-toggle btn btn-link"
+                  type="button"
+                >
+                  <span
+                    class="symbol"
+                  >
+                    Abc
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="card card"
+    >
+      <div
+        class="cardHeader card-header"
+      >
+        Advanced Options
+      </div>
+      <div
+        class="card-body"
+      />
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;

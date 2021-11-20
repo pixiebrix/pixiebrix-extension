@@ -15,16 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/extensionContext";
-
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
-
 import React from "react";
-import { render } from "react-dom";
-import ModalForm from "@/blocks/transformers/modalForm/ModalForm";
+import theme from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/modalForm.scss";
+const BootstrapStylesheet: React.FC = () => (
+  <link rel="stylesheet" href={theme} />
+);
 
-render(<ModalForm />, document.querySelector("#container"));
+export default BootstrapStylesheet;
