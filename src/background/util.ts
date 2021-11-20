@@ -34,7 +34,7 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
     .getManifest()
     .content_scripts.flatMap((script) => script.matches);
 
-  // Inejcted by `webext-dynamic-content-scripts`
+  // Injected by `webext-dynamic-content-scripts`
   const { origins } = await getAdditionalPermissions({
     strictOrigins: false,
   });
