@@ -29,7 +29,12 @@ import {
 } from "@/devTools/editor/slices/editorSlice";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import useReset from "@/devTools/editor/hooks/useReset";
-import { RegistryId, Metadata, DeploymentContext } from "@/core";
+import {
+  RegistryId,
+  Metadata,
+  DeploymentContext,
+  RecipeMetadata,
+} from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import useNotifications from "@/hooks/useNotifications";
 import { selectExtensions } from "@/options/selectors";

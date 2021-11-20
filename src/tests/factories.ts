@@ -211,6 +211,7 @@ export const versionedExtensionPointRecipeFactory = ({
     sharing: undefined,
     definitions: undefined,
     options: undefined,
+    updated_at: undefined,
     extensionPoints: (n: number) => [
       {
         id: extensionPointId ?? validateRegistryId("test/extension-point"),
@@ -253,6 +254,7 @@ export const innerExtensionPointRecipeFactory = ({
         },
       },
     },
+    updated_at: undefined,
     options: undefined,
     extensionPoints: (n: number) => [
       {

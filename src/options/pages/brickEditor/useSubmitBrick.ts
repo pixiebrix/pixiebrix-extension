@@ -29,9 +29,9 @@ import useReinstall from "@/pages/marketplace/useReinstall";
 import useNotifications from "@/hooks/useNotifications";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { getErrorMessage, isAxiosError } from "@/errors";
-import { UUID } from "@/core";
 import { clearServiceCache } from "@/background/requests";
 import { loadBrickYaml } from "@/runtime/brickYaml";
+import { Package } from "@/types/contract";
 
 type SubmitOptions = {
   create: boolean;
@@ -88,13 +88,10 @@ function useSubmitBrick({
 
       try {
         const client = await getLinkedApiClient();
-        const { data } = await client[create ? "post" : "put"]<{ id: UUID }>(
-          url,
-          {
-            ...values,
-            kind,
-          }
-        );
+        const { data } = await client[create ? "post" : "put"]<Package>(url, {
+          ...values,
+          kind,
+        });
 
         // We attach the handler below, and don't want it to block the save
         let refreshPromise: Promise<void>;

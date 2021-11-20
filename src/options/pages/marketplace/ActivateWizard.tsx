@@ -134,33 +134,22 @@ const ActivateButton: React.FunctionComponent<{
   );
 };
 
-function getInstalledOptions(
-  blueprint: RecipeDefinition,
-  installedExtensions: IExtension[]
-) {
-  const installedExtensionsFromBlueprint = installedExtensions?.filter(
-    (extension) => extension._recipe?.id === blueprint?.metadata.id
-  );
-
-  return selectOptions(installedExtensionsFromBlueprint);
-}
-
 function useWizard(
   blueprint: RecipeDefinition,
   reinstall: boolean
 ): [Step[], WizardValues] {
   const installedExtensions = useSelector(selectExtensions);
+  const installedExtensionsFromBlueprint = installedExtensions?.filter(
+    (extension) => extension._recipe?.id === blueprint?.metadata.id
+  );
 
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
 
-    const installedOptions = getInstalledOptions(
-      blueprint,
-      installedExtensions
-    );
+    const installedOptions = selectOptions(installedExtensionsFromBlueprint);
+    const installedServices = selectAuths(installedExtensionsFromBlueprint);
 
-    const installedServices = selectAuths(installedExtensions);
-
+    console.log("useWizard blueprint:", blueprint);
     console.log("useWizard installedServices:", installedServices);
 
     const serviceIds = uniq(
