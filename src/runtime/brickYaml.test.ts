@@ -68,13 +68,9 @@ describe("dumpYaml", () => {
     const dumped = dumpBrickYaml({
       metadata: {
         id: "test/brick",
-        updated_at: {
-          foo: 42,
-        },
+        updated_at: "2021-11-18T00:00:00.000000Z",
       },
-      updated_at: {
-        foo: 42,
-      },
+      updated_at: "2021-11-18T00:00:00.000000Z",
     });
 
     expect(dumped).toBe("metadata:\n  id: test/brick\n");
