@@ -116,7 +116,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   // extension point?
   private readonly installedEvents: Set<string> = new Set();
 
-  private readonly domEventHandler: JQuery.EventHandler<unknown>;
+  /**
+   * A bound version of eventHandler
+   * @private
+   */
+  private readonly boundEventHandler: JQuery.EventHandler<unknown>;
 
   protected constructor(
     id: string,
@@ -127,7 +131,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     super(id, name, description, icon);
     this.cancelInitialWaitElements = null;
     this.cancelWatchNewElements = null;
-    this.domEventHandler = this.eventHandler.bind(this);
+
+    // Bind so we can pass as callback
+    this.boundEventHandler = this.eventHandler.bind(this);
   }
 
   async install(): Promise<boolean> {
@@ -166,7 +172,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         try {
           // This won't impact with other trigger extension points because the handler reference is unique to `this`
           for (const event of this.installedEvents) {
-            $currentElements.off(event, this.domEventHandler);
+            $currentElements.off(event, this.boundEventHandler);
           }
         } finally {
           this.installedEvents.clear();
@@ -224,6 +230,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private readonly eventHandler: JQuery.EventHandler<unknown> = async (
     event
   ) => {
+    console.debug("Handling DOM event", {
+      target: event.target,
+      event,
+    });
+
     let element = event.target;
 
     if (this.targetMode === "root") {
@@ -363,9 +374,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       "Removing existing %s handler for extension point",
       this.trigger
     );
-    $element.off(this.trigger, this.domEventHandler);
+    $element.off(this.trigger, this.boundEventHandler);
 
-    $element.on(this.trigger, this.domEventHandler);
+    $element.on(this.trigger, this.boundEventHandler);
     this.installedEvents.add(this.trigger);
     console.debug(
       "Installed %s event handler on %d elements",

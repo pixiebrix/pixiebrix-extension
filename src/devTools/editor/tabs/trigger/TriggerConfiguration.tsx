@@ -103,9 +103,9 @@ const TriggerConfiguration: React.FC<{
             description={
               <p>
                 Use <code>eventTarget</code> to use the event target as the root
-                element for brick execution. Use
-                <code>root</code> to use the closest element matching the
-                element selector.
+                element for brick execution. Use&nbsp;
+                <code>root</code> to use the closest ancestor element matching
+                the trigger's selector.
               </p>
             }
             {...makeLockableFieldProps("Target Mode", isLocked)}
