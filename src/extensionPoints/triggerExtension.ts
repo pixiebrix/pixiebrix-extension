@@ -41,7 +41,6 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import { notifyError } from "@/contentScript/notify";
-
 // @ts-expect-error using for the EventHandler type below
 import JQuery from "jquery";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
@@ -57,7 +56,19 @@ export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
 };
 
-export type AttachMode = "once" | "watch";
+export type AttachMode =
+  // Attach handlers once (for any elements available at the time of attaching handlers) (default)
+  | "once"
+  // Watch for new elements and attach triggers to any new elements that matches the selector. Only supports native
+  // CSS selectors (because it uses MutationObserver under the hood)
+  | "watch";
+
+export type TargetMode =
+  // The element that triggered the event
+  // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
+  | "eventTarget"
+  // The element the trigger is attached to
+  | "root";
 
 export type Trigger =
   // `load` is page load
@@ -75,25 +86,41 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   abstract get attachMode(): AttachMode;
 
+  abstract get targetMode(): TargetMode;
+
   abstract get triggerSelector(): string | null;
 
   /**
    * Cancel awaiting the element during this.run()
    * @private
    */
-  private cancelRun: (() => void) | null;
+  private cancelInitialWaitElements: (() => void) | null;
 
   /**
    * Cancel the initialize observer in "watch" attachMode.
    * @private
    */
-  private cancelWatch: (() => void) | null;
+  private cancelWatchNewElements: (() => void) | null;
 
-  private observer: IntersectionObserver | undefined;
+  /**
+   * Observer to watch for new elements to appear, or undefined if the trigger is not an `appear` trigger
+   * @private
+   */
+  private appearObserver: IntersectionObserver | undefined;
 
-  private $installedRoot: JQuery<HTMLElement | Document> | undefined;
-
+  /**
+   * Installed DOM event listeners, e.g., `click`
+   * @private
+   */
+  // XXX: does this need to be a set? Shouldn't there only ever be 1 trigger since the trigger is defined on the
+  // extension point?
   private readonly installedEvents: Set<string> = new Set();
+
+  /**
+   * A bound version of eventHandler
+   * @private
+   */
+  private readonly boundEventHandler: JQuery.EventHandler<unknown>;
 
   protected constructor(
     id: string,
@@ -102,8 +129,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     icon = "faBolt"
   ) {
     super(id, name, description, icon);
-    this.cancelRun = null;
-    this.cancelWatch = null;
+    this.cancelInitialWaitElements = null;
+    this.cancelWatchNewElements = null;
+
+    // Bind so we can pass as callback
+    this.boundEventHandler = this.eventHandler.bind(this);
   }
 
   async install(): Promise<boolean> {
@@ -114,25 +144,40 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     // NOP: the removeExtensions method doesn't need to unregister anything from the page because the
     // observers/handlers are installed for the extensionPoint itself, not the extensions. I.e., there's a single
     // load/click/etc. trigger that's shared by all extensions using this extension point.
+    console.debug("triggerExtension:removeExtensions");
   }
 
   uninstall(): void {
-    this.cancelRun?.();
-    this.cancelWatch?.();
+    console.debug("triggerExtension:uninstall");
 
-    try {
-      if (this.$installedRoot) {
-        // This won't impact with other trigger extension points because the handler is unique to `this`
-        for (const event of this.installedEvents) {
-          this.$installedRoot.off(event, this.eventHandler);
+    // Clean up observers
+    this.cancelInitialWaitElements?.();
+    this.cancelWatchNewElements?.();
+    this.appearObserver?.disconnect();
+    this.appearObserver = null;
+    this.cancelInitialWaitElements = null;
+    this.cancelWatchNewElements = null;
+
+    // Find latest set of DOM elements and uninstall handlers
+    if (this.triggerSelector) {
+      const $currentElements = $(document).find(this.triggerSelector);
+
+      console.debug(
+        "Removing %s handler from %d elements",
+        this.trigger,
+        $currentElements.length
+      );
+
+      if ($currentElements.length > 0) {
+        try {
+          // This won't impact with other trigger extension points because the handler reference is unique to `this`
+          for (const event of this.installedEvents) {
+            $currentElements.off(event, this.boundEventHandler);
+          }
+        } finally {
+          this.installedEvents.clear();
         }
       }
-    } finally {
-      this.$installedRoot = null;
-      this.installedEvents.clear();
-      this.cancelRun = null;
-      this.cancelWatch = null;
-      this.observer?.disconnect();
     }
   }
 
@@ -185,7 +230,22 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private readonly eventHandler: JQuery.EventHandler<unknown> = async (
     event
   ) => {
-    const promises = await Promise.allSettled([this.runTrigger(event.target)]);
+    console.debug("Handling DOM event", {
+      target: event.target,
+      event,
+    });
+
+    let element = event.target;
+
+    if (this.targetMode === "root") {
+      element = $(event.target).closest(this.triggerSelector).get(0);
+      console.debug(
+        "Locating closest element for target: %s",
+        this.triggerSelector
+      );
+    }
+
+    const promises = await Promise.allSettled([this.runTrigger(element)]);
     TriggerExtensionPoint.notifyErrors(compact(promises));
   };
 
@@ -228,7 +288,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       ? awaitElementOnce(rootSelector)
       : [document, noop];
 
-    this.cancelRun = cancelRun;
+    this.cancelInitialWaitElements = cancelRun;
 
     try {
       await rootPromise;
@@ -239,7 +299,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
       throw error;
     } finally {
-      this.cancelRun = null;
+      this.cancelInitialWaitElements = null;
     }
 
     // AwaitElementOnce doesn't work with multiple elements. Get everything that's on the current page
@@ -255,9 +315,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private attachAppearTrigger($element: JQuery): void {
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 
-    this.observer?.disconnect();
+    this.appearObserver?.disconnect();
 
-    this.observer = new IntersectionObserver(
+    this.appearObserver = new IntersectionObserver(
       (entries) => {
         for (const entry of entries.filter((x) => x.isIntersecting)) {
           void this.runTrigger(entry.target as HTMLElement).then((errors) => {
@@ -278,7 +338,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
 
     for (const element of $element) {
-      this.observer.observe(element);
+      this.appearObserver.observe(element);
     }
 
     if (this.attachMode === "watch") {
@@ -295,12 +355,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         selector,
         (index, element) => {
           console.debug("initialize: %s", selector);
-          this.observer.observe(element);
+          this.appearObserver.observe(element);
         },
         { target: document }
       );
 
-      this.cancelWatch = mutationObserver.disconnect.bind(mutationObserver);
+      this.cancelWatchNewElements = mutationObserver.disconnect.bind(
+        mutationObserver
+      );
     }
   }
 
@@ -308,19 +370,24 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     $element: JQuery,
     { watch = false }: { watch?: boolean }
   ): void {
-    if (this.eventHandler) {
-      console.debug(
-        `Removing existing ${this.trigger} handler for extension point (if it exists)`
-      );
-      $element.off(this.trigger, null, this.eventHandler);
-    }
-
-    this.$installedRoot = $element;
-    this.installedEvents.add(this.trigger);
-
-    $element.on(this.trigger, this.eventHandler);
     console.debug(
-      `Installed ${this.trigger} event handler on ${$element.length} elements`
+      "Removing existing %s handler for extension point",
+      this.trigger
+    );
+    $element.off(this.trigger, this.boundEventHandler);
+
+    $element.on(this.trigger, this.boundEventHandler);
+    this.installedEvents.add(this.trigger);
+    console.debug(
+      "Installed %s event handler on %d elements",
+      this.trigger,
+      $element.length,
+      {
+        trigger: this.trigger,
+        selector: this.triggerSelector,
+        targetMode: this.targetMode,
+        watch,
+      }
     );
 
     if (watch) {
@@ -330,8 +397,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         );
       }
 
-      this.cancelWatch?.();
-      this.cancelWatch = null;
+      this.cancelWatchNewElements?.();
+      this.cancelWatchNewElements = null;
 
       const mutationObserver = initialize(
         this.triggerSelector,
@@ -341,7 +408,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         },
         { target: document }
       );
-      this.cancelWatch = mutationObserver.disconnect.bind(mutationObserver);
+      this.cancelWatchNewElements = mutationObserver.disconnect.bind(
+        mutationObserver
+      );
     }
   }
 
@@ -354,10 +423,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   private cancelObservers() {
-    this.cancelRun?.();
-    this.cancelWatch?.();
-    this.cancelRun = null;
-    this.cancelWatch = null;
+    this.cancelInitialWaitElements?.();
+    this.cancelWatchNewElements?.();
+    this.cancelInitialWaitElements = null;
+    this.cancelWatchNewElements = null;
   }
 
   async run(): Promise<void> {
@@ -402,6 +471,11 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
   attachMode?: AttachMode;
 
   /**
+   * @since 1.4.8
+   */
+  targetMode?: TargetMode;
+
+  /**
    * The trigger event
    */
   trigger?: Trigger;
@@ -434,6 +508,10 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
 
   get trigger(): Trigger {
     return this._definition.trigger ?? "load";
+  }
+
+  get targetMode(): TargetMode {
+    return this._definition.targetMode ?? "eventTarget";
   }
 
   get attachMode(): AttachMode {
