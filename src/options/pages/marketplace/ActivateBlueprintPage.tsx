@@ -44,8 +44,6 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
     error: fetchError,
   } = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}`);
 
-  console.log("Blueprint:", blueprint);
-
   // Reshape to recipe definition
   const recipe: RecipeDefinition = useMemo(
     () => ({

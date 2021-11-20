@@ -149,9 +149,6 @@ function useWizard(
     const installedOptions = selectOptions(installedExtensionsFromBlueprint);
     const installedServices = selectAuths(installedExtensionsFromBlueprint);
 
-    console.log("useWizard blueprint:", blueprint);
-    console.log("useWizard installedServices:", installedServices);
-
     const serviceIds = uniq(
       extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
     );
@@ -191,9 +188,8 @@ function useWizard(
       grantPermissions: false,
     };
 
-    console.log("useWizard initialValues:", initialValues);
     return [steps, initialValues];
-  }, [blueprint]);
+  }, [blueprint, reinstall, installedExtensionsFromBlueprint]);
 }
 
 const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {

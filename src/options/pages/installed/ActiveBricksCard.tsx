@@ -197,7 +197,6 @@ const ActiveBricksCard: React.FunctionComponent<{
                     const messageContext: MessageContext = {
                       blueprintId: recipe.id,
                     };
-                    console.log("hasUpdate:", extensionGroupHasUpdate(recipe));
 
                     return (
                       <ExtensionGroup
