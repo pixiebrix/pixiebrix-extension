@@ -14,10 +14,9 @@ exports[`card renders pipeline body 1`] = `
       class="card-body"
     >
       <div
-        class="text-danger p-3"
-      >
-        Error running panel: No handler for ECHO_SENDER was registered in the receiving end
-      </div>
+        class="h-100"
+        data-block-id="@pixiebrix/markdown"
+      />
     </div>
   </div>
 </DocumentFragment>

@@ -18,8 +18,30 @@
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { waitForEffect } from "@/tests/testHelpers";
 import { render } from "@testing-library/react";
-import React from "react";
 import { getComponent } from "./documentView";
+import React from "react";
+import blockRegistry from "@/blocks/registry";
+import { MarkdownRenderer } from "@/blocks/renderers/markdown";
+
+// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
+// them with `void` instead of awaiting them in the reducePipeline methods
+import * as logging from "@/background/logging";
+import * as backgroundAPI from "@/background/messenger/api";
+import * as contentScriptAPI from "@/contentScript/messenger/api";
+import { uuidv4 } from "@/types/helpers";
+jest.mock("@/contentScript/messenger/api");
+jest.mock("@/background/messenger/api");
+jest.mock("@/background/trace");
+(logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
+  logValues: true,
+});
+
+const markdownBlock = new MarkdownRenderer();
+
+beforeEach(() => {
+  blockRegistry.clear();
+  blockRegistry.register(markdownBlock);
+});
 
 const renderDocument = (config: any) => {
   const { Component, props } = getComponent(config);
@@ -167,20 +189,43 @@ describe("card", () => {
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 
-  // FIXME This one fails to render the pipeline, see the snapshot
   test("renders pipeline body", async () => {
+    const markdown = "Pipeline text for card test.";
+    (backgroundAPI.whoAmI as any).mockResolvedValue({ tab: { id: 0 } });
+    (contentScriptAPI.runRendererPipeline as any).mockResolvedValue({
+      blockId: markdownBlock.id,
+      key: uuidv4(),
+      args: { markdown },
+      ctxt: { "@input": {}, "@options": {} },
+    });
+
     const yamlConfig = `
 type: card
 config:
   className: test-class
   heading: Test Heading of Card
   body: !pipeline
-    - id: "@pixiebrix/markdown"
+    - id: "${markdownBlock.id}"
       config:
-        markdown: Pipeline text for card test.`;
+        markdown: ${markdown}`;
     const config = loadBrickYaml(yamlConfig);
     const rendered = renderDocument(config);
+
+    // Wait for useAsyncState inside of PipelineComponent
     await waitForEffect();
+
+    // The className is applied to the card element
+    expect(
+      rendered.container.querySelector(".card.test-class .card-header")
+    ).toHaveTextContent("Test Heading of Card");
+
+    // We can't query by the text because PipelineComponent -> PanelBody wraps it in a shadow dom. If we want to
+    // test against the shadow DOM, we could either: 1) mock react-shadow-dom to not use the shadow dom, or 2) use
+    // a library like PipelineComponent
+    expect(
+      rendered.container.querySelector(`[data-block-id="${markdownBlock.id}"]`)
+    ).not.toBeNull();
+
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 });

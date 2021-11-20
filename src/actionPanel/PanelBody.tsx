@@ -41,7 +41,7 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
       );
     }
 
-    const { blockId, ctxt, args } = payload;
+    const { blockId, ctxt, args, key } = payload;
     console.debug("Render panel body", payload);
     const block = await blockRegistry.lookup(blockId);
     const body = await block.run(args as BlockArg, {
@@ -51,7 +51,7 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
       logger: new ConsoleLogger({ blockId }),
     });
     return (
-      <div className="h-100">
+      <div className="h-100" data-block-id={blockId}>
         <ReactShadowRoot>
           <RendererComponent body={body as RendererOutput} />
         </ReactShadowRoot>
