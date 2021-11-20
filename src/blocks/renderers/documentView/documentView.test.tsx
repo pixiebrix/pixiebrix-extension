@@ -26,17 +26,26 @@ const renderDocument = (config: any) => {
   return render(<Component {...props} />);
 };
 
-test.each(["header_1", "header_2", "header_3"])(
-  "renders header, %s",
-  (headerType: string) => {
+test.each`
+  type          | tagName
+  ${"header_1"} | ${"h1"}
+  ${"header_2"} | ${"h2"}
+  ${"header_3"} | ${"h3"}
+`(
+  "renders $tagName for $type",
+  ({ type, tagName }: { type: string; tagName: string }) => {
     const config = {
-      type: headerType,
+      type,
       config: {
         title: "Test Header",
         className: "test-class",
       },
     };
     const rendered = renderDocument(config);
+
+    expect(
+      rendered.container.querySelector(`${tagName}.test-class`)
+    ).toHaveTextContent("Test Header");
     expect(rendered.asFragment()).toMatchSnapshot();
   }
 );

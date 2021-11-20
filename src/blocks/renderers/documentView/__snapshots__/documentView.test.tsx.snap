@@ -91,7 +91,7 @@ exports[`renders grid 1`] = `
 </DocumentFragment>
 `;
 
-exports[`renders header, header_1 1`] = `
+exports[`renders h1 for header_1 1`] = `
 <DocumentFragment>
   <h1
     class="test-class"
@@ -101,7 +101,7 @@ exports[`renders header, header_1 1`] = `
 </DocumentFragment>
 `;
 
-exports[`renders header, header_2 1`] = `
+exports[`renders h2 for header_2 1`] = `
 <DocumentFragment>
   <h2
     class="test-class"
@@ -111,7 +111,7 @@ exports[`renders header, header_2 1`] = `
 </DocumentFragment>
 `;
 
-exports[`renders header, header_3 1`] = `
+exports[`renders h3 for header_3 1`] = `
 <DocumentFragment>
   <h3
     class="test-class"
