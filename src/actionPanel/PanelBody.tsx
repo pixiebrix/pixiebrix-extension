@@ -41,7 +41,7 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
       );
     }
 
-    const { blockId, ctxt, args, key } = payload;
+    const { blockId, ctxt, args } = payload;
     console.debug("Render panel body", payload);
     const block = await blockRegistry.lookup(blockId);
     const body = await block.run(args as BlockArg, {
