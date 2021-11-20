@@ -44,6 +44,18 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
   return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
 }
 
+export async function checkTargetPermissions(target: Target) {
+  return browser.tabs
+    .executeScript(target.tabId, {
+      code: "true",
+      frameId: target.frameId,
+    })
+    .then(
+      () => true,
+      () => false
+    );
+}
+
 interface TargetState {
   url: string;
   installed: boolean;
