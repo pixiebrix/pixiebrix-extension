@@ -221,7 +221,7 @@ config:
 
     // We can't query by the text because PipelineComponent -> PanelBody wraps it in a shadow dom. If we want to
     // test against the shadow DOM, we could either: 1) mock react-shadow-dom to not use the shadow dom, or 2) use
-    // a library like PipelineComponent
+    // a library like https://www.npmjs.com/package/testing-library__dom
     expect(
       rendered.container.querySelector(`[data-block-id="${markdownBlock.id}"]`)
     ).not.toBeNull();
