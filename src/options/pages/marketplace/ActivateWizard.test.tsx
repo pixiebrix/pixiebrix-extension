@@ -17,7 +17,7 @@
 import React from "react";
 import { RecipeDefinition } from "@/types/definitions";
 import { render, screen } from "@testing-library/react";
-import OptionsBody from "@/options/pages/marketplace/OptionsBody";
+import useWizard from "@/options/pages/marketplace/ActivateWizard";
 import { Form, Formik } from "formik";
 
 jest.mock("react-redux", () => ({
@@ -209,7 +209,7 @@ const blueprint: RecipeDefinition = {
   },
 };
 
-describe("ActivationWizard reinstall", () => {
+describe("useWizard reinstall", () => {
   // test("prefills existing configurations", () => {
   //   render(
   //     <ConfigureBody blueprint={blueprint} reinstall={true}/>
@@ -217,14 +217,6 @@ describe("ActivationWizard reinstall", () => {
   // });
 
   test("prefills existing options", () => {
-    render(
-      <Formik initialValues={{}} onSubmit={jest.fn()}>
-        <Form id="activate-wizard" noValidate onSubmit={jest.fn()}>
-          <OptionsBody blueprint={blueprint} reinstall={true} />
-        </Form>
-      </Formik>
-    );
-
     const reactivateOption = screen.getByText("doesn't exist");
   });
 

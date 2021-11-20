@@ -15,17 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Card } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { useSelector } from "react-redux";
-import { selectExtensions } from "@/options/selectors";
-import { useFormikContext } from "formik";
-import { selectOptions } from "@/pages/marketplace/useReinstall";
 
 // Use "v2" because the service configuration form expects literal values for everything. (I.e., expressions are not
 // supports). But we still want to get our SchemaField support for enums, etc.
@@ -35,8 +31,7 @@ const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
 
 const OptionsBody: React.FunctionComponent<{
   blueprint: RecipeDefinition;
-  reinstall: boolean;
-}> = ({ blueprint, reinstall }) => {
+}> = ({ blueprint }) => {
   const OptionsGroup = useMemo(
     () =>
       genericOptionsFactory(

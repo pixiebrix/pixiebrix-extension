@@ -29,9 +29,6 @@ import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import { useField } from "formik";
 import { ServiceAuthPair } from "@/core";
 import { useAuthOptions } from "@/hooks/auth";
-import { selectAuths } from "@/pages/marketplace/useReinstall";
-import { useSelector } from "react-redux";
-import { selectExtensions } from "@/options/selectors";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -47,18 +44,6 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
     "/api/services/"
   );
-
-  const extensions = useSelector(selectExtensions);
-
-  const installedExtensions = useMemo(
-    () =>
-      extensions?.filter(
-        (extension) => extension._recipe?.id === blueprint?.metadata.id
-      ),
-    [blueprint, extensions]
-  );
-
-  const installedServices = selectAuths(installedExtensions);
 
   const visibleServiceIds = useMemo(
     // The PixieBrix service gets automatically configured, so don't need to show it. If the PixieBrix service is
@@ -99,16 +84,10 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           </tr>
         </thead>
         <tbody>
-          {field.value.map(({ id: serviceId }, index) => {
-            const installedServiceUUID = installedServices[serviceId];
-
-            const installedOption = authOptions.find(
-              (service) => service.value === installedServiceUUID
-            );
-
+          {field.value.map(({ id: serviceId }, index) =>
             // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
             // consistent with the index in field.value
-            return visibleServiceIds.has(serviceId) ? (
+            visibleServiceIds.has(serviceId) ? (
               <tr key={serviceId}>
                 <td>
                   <ServiceDescriptor
@@ -120,14 +99,13 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                   <AuthWidget
                     authOptions={authOptions}
                     serviceId={serviceId}
-                    installedOption={installedOption}
                     name={[field.name, index, "config"].join(".")}
                     onRefresh={refreshAuthOptions}
                   />
                 </td>
               </tr>
-            ) : null;
-          })}
+            ) : null
+          )}
           {visibleServiceIds.size === 0 && (
             <tr>
               <td colSpan={2}>No services to configure</td>

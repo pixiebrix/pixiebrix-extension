@@ -43,9 +43,8 @@ import { uninstallContextMenu } from "@/background/messenger/api";
 import { optionsSlice } from "@/options/slices";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
-import { selectOptions } from "@/pages/marketplace/useReinstall";
-import { loadOptions } from "@/options/loader";
-import { EmptyConfig, IExtension } from "@/core";
+import { selectAuths, selectOptions } from "@/pages/marketplace/useReinstall";
+import { IExtension } from "@/core";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -160,6 +159,10 @@ function useWizard(
       installedExtensions
     );
 
+    const installedServices = selectAuths(installedExtensions);
+
+    console.log("useWizard installedServices:", installedServices);
+
     const serviceIds = uniq(
       extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
     );
@@ -185,7 +188,10 @@ function useWizard(
       extensions: Object.fromEntries(
         extensionPoints.map((x, index) => [index, true])
       ),
-      services: serviceIds.map((id) => ({ id, config: undefined })),
+      services: serviceIds.map((id) => ({
+        id,
+        config: reinstall && installedServices[id] && installedServices[id],
+      })),
       optionsArgs: mapValues(blueprint.options?.schema ?? {}, (x) => {
         if (reinstall && installedOptions[x.outputKey] !== undefined) {
           return installedOptions[x.outputKey];
@@ -195,6 +201,8 @@ function useWizard(
       }),
       grantPermissions: false,
     };
+
+    console.log("useWizard initialValues:", initialValues);
     return [steps, initialValues];
   }, [blueprint]);
 }
