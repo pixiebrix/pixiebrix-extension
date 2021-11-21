@@ -51,7 +51,7 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
       logger: new ConsoleLogger({ blockId }),
     });
     return (
-      <div className="h-100">
+      <div className="h-100" data-block-id={blockId}>
         <ReactShadowRoot>
           <RendererComponent body={body as RendererOutput} />
         </ReactShadowRoot>
