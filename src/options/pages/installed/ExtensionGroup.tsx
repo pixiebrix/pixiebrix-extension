@@ -59,7 +59,10 @@ const ExtensionGroup: React.FunctionComponent<{
    * uninstalling them).
    */
   paused?: boolean;
-  hasUpdate?: boolean;
+  /**
+   * True if an update is available for the recipe
+   */
+  hasUpdate: boolean;
   startExpanded?: boolean;
   groupMessageContext: MessageContext;
   onRemove: RemoveAction;
@@ -87,13 +90,15 @@ const ExtensionGroup: React.FunctionComponent<{
     extensions
   );
 
-  const recipe = extensions[0]._recipe;
+  const sourceRecipeMeta = extensions[0]._recipe;
 
   const reinstall = useCallback(() => {
     history.push(
-      `marketplace/activate/${encodeURIComponent(recipe.id)}?reinstall=1`
+      `marketplace/activate/${encodeURIComponent(
+        sourceRecipeMeta.id
+      )}?reinstall=1`
     );
-  }, [recipe.id, history]);
+  }, [sourceRecipeMeta.id, history]);
 
   const removeMany = useUserAction(
     async (extensions: IExtension[]) => {
@@ -126,7 +131,7 @@ const ExtensionGroup: React.FunctionComponent<{
     if (hasUpdate) {
       return (
         <Button size="sm" variant="info" onClick={reinstall}>
-          Update
+          <FontAwesomeIcon icon={faSyncAlt} /> Update
         </Button>
       );
     }
@@ -142,7 +147,10 @@ const ExtensionGroup: React.FunctionComponent<{
     if (managed) {
       return (
         <>
-          <FontAwesomeIcon icon={faCheck} /> Managed
+          <FontAwesomeIcon icon={faCheck} /> Managed{" "}
+          <span className="text-muted">
+            &ndash; v{sourceRecipeMeta.version}
+          </span>
         </>
       );
     }
@@ -151,7 +159,8 @@ const ExtensionGroup: React.FunctionComponent<{
     // groups start collapsed, you wouldn't know where to look)
     return (
       <>
-        <FontAwesomeIcon icon={faCheck} /> Active
+        <FontAwesomeIcon icon={faCheck} /> Active{" "}
+        <span className="text-muted">&ndash; v{sourceRecipeMeta.version}</span>
       </>
     );
   }, [
@@ -161,19 +170,20 @@ const ExtensionGroup: React.FunctionComponent<{
     requestPermissions,
     hasUpdate,
     reinstall,
+    sourceRecipeMeta,
   ]);
 
-  const onViewLogs = () => {
+  const onViewLogs = useCallback(() => {
     dispatch(
       installedPageSlice.actions.setLogsContext({
         title: label,
         messageContext: groupMessageContext,
       })
     );
-  };
+  }, [dispatch, label, groupMessageContext]);
 
-  const actionOptions = useMemo(() => {
-    return [
+  const actionOptions = useMemo(
+    () => [
       {
         title: (
           <>
@@ -189,9 +199,10 @@ const ExtensionGroup: React.FunctionComponent<{
             {hasUpdate ? "Update" : "Reactivate"}
           </>
         ),
-        className: "text-info",
+        className: hasUpdate ? "text-info" : "",
         action: reinstall,
-        hide: hasUpdate === undefined,
+        // Managed extensions are updated via the deployment banner
+        hide: managed,
       },
       {
         title: (
@@ -207,16 +218,9 @@ const ExtensionGroup: React.FunctionComponent<{
         },
         className: "text-danger",
       },
-    ];
-  }, [
-    extensions,
-    flags,
-    hasUpdate,
-    managed,
-    onViewLogs,
-    reinstall,
-    removeMany,
-  ]);
+    ],
+    [extensions, flags, hasUpdate, managed, onViewLogs, reinstall, removeMany]
+  );
 
   return (
     <>

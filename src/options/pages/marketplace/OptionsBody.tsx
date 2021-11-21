@@ -30,7 +30,7 @@ const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
 };
 
 const OptionsBody: React.FunctionComponent<{
-  blueprint: RecipeDefinition;
+  blueprint: Pick<RecipeDefinition, "options">;
 }> = ({ blueprint }) => {
   const OptionsGroup = useMemo(
     () =>

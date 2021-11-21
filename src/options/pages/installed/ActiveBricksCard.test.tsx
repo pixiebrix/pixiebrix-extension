@@ -28,6 +28,8 @@ import { useGetRecipesQuery } from "@/services/api";
 import { Organization } from "@/types/contract";
 import { RecipeDefinition } from "@/types/definitions";
 
+const arbitraryTimestamp = "2021-11-20T00:00:00.000000Z";
+
 type TestExtension = {
   timestamp?: string;
   isPersonalBrick?: boolean;
@@ -66,6 +68,7 @@ const extensionFactory = ({
     active: true,
   } as unknown) as ResolvedExtension);
 
+// XXX: use the factories.ts factory instead
 const recipeFactory: (timestamp: string) => RecipeDefinition = (
   timestamp: string
 ) =>
@@ -73,6 +76,8 @@ const recipeFactory: (timestamp: string) => RecipeDefinition = (
     // Omitting properties for brevity
     metadata: ({
       id: "@user/foo",
+      name: "Test recipe",
+      version: "1.0.0",
     } as unknown) as Metadata,
     updated_at: timestamp,
   } as unknown) as RecipeDefinition);
@@ -89,15 +94,15 @@ const expandEllipsisMenuOptions = (container: HTMLElement) => {
 };
 
 describe("ExtensionGroup Update status", () => {
-  const older_timestamp = "2021-11-18T00:00:00.000000Z";
-  const newer_timestamp = "2021-11-20T00:00:00.000000Z";
+  const olderTimestamp = "2021-11-18T00:00:00.000000Z";
+  const newerTimestamp = "2021-11-20T00:00:00.000000Z";
 
   test("shows when latest Blueprint is newer", () => {
-    mockGetRecipesImplementation(recipeFactory(newer_timestamp));
+    mockGetRecipesImplementation(recipeFactory(newerTimestamp));
 
     render(
       <ActiveBricksCard
-        extensions={[extensionFactory({ timestamp: older_timestamp })]}
+        extensions={[extensionFactory({ timestamp: olderTimestamp })]}
         onRemove={jest.fn()}
         onExportBlueprint={jest.fn()}
       />
@@ -108,11 +113,11 @@ describe("ExtensionGroup Update status", () => {
   });
 
   test("doesn't show when latest Blueprint is older", () => {
-    mockGetRecipesImplementation(recipeFactory(older_timestamp));
+    mockGetRecipesImplementation(recipeFactory(olderTimestamp));
 
     const { container } = render(
       <ActiveBricksCard
-        extensions={[extensionFactory({ timestamp: newer_timestamp })]}
+        extensions={[extensionFactory({ timestamp: newerTimestamp })]}
         onRemove={jest.fn()}
         onExportBlueprint={jest.fn()}
       />
@@ -127,12 +132,12 @@ describe("ExtensionGroup Update status", () => {
   });
 
   test("doesn't show Update when latest Blueprint has same timestamp", () => {
-    const same_timestamp = "2021-11-20T00:00:00.000000Z";
-    mockGetRecipesImplementation(recipeFactory(same_timestamp));
+    const sameTimestamp = "2021-11-20T00:00:00.000000Z";
+    mockGetRecipesImplementation(recipeFactory(sameTimestamp));
 
     const { container } = render(
       <ActiveBricksCard
-        extensions={[extensionFactory({ timestamp: same_timestamp })]}
+        extensions={[extensionFactory({ timestamp: sameTimestamp })]}
         onRemove={jest.fn()}
         onExportBlueprint={jest.fn()}
       />
@@ -149,8 +154,7 @@ describe("ExtensionGroup Update status", () => {
   // If the installed blueprint updated_at is undefined, this means that the user
   // installed this extension before the Update feature was released.
   test("doesn't show when installed Blueprint updated_at is undefined", () => {
-    const arbitrary_timestamp = "2021-11-20T00:00:00.000000Z";
-    mockGetRecipesImplementation(recipeFactory(arbitrary_timestamp));
+    mockGetRecipesImplementation(recipeFactory(arbitraryTimestamp));
 
     render(
       <ActiveBricksCard
@@ -165,8 +169,7 @@ describe("ExtensionGroup Update status", () => {
   });
 
   test("doesn't show on Personal Bricks", () => {
-    const arbitrary_timestamp = "2021-11-20T00:00:00.000000Z";
-    mockGetRecipesImplementation(recipeFactory(arbitrary_timestamp));
+    mockGetRecipesImplementation(recipeFactory(arbitraryTimestamp));
 
     const { container } = render(
       <ActiveBricksCard
@@ -185,8 +188,7 @@ describe("ExtensionGroup Update status", () => {
   });
 
   test("doesn't show on Team Deployments", () => {
-    const arbitrary_timestamp = "2021-11-20T00:00:00.000000Z";
-    mockGetRecipesImplementation(recipeFactory(arbitrary_timestamp));
+    mockGetRecipesImplementation(recipeFactory(arbitraryTimestamp));
 
     const { container } = render(
       <ActiveBricksCard

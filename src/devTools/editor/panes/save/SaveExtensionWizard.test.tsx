@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import SaveExtensionWizard from "./SaveExtensionWizard";
 import {
-  useGetRecipesQuery as useGetRecipesQueryMock,
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
+  useGetRecipesQuery as useGetRecipesQueryMock,
 } from "@/services/api";
 import useSavingWizardMock from "./useSavingWizard";
 import {
   formStateFactory,
-  metadataFactory,
+  installedRecipeMetadataFactory,
   recipeFactory,
 } from "@/tests/factories";
 import { uuidv4 } from "@/types/helpers";
@@ -93,7 +93,7 @@ test.each([
 
 test("calls Save as Personal extension", async () => {
   const saveElementAsPersonalExtensionMock = jest.fn();
-  const metadata = metadataFactory();
+  const metadata = installedRecipeMetadataFactory();
   (useSavingWizardMock as jest.Mock).mockReturnValue({
     isSaving: false,
     element: formStateFactory({
@@ -120,7 +120,7 @@ test("calls Save as Personal extension", async () => {
 
 test("calls Save as New Blueprint", async () => {
   const saveElementAndCreateNewRecipeMock = jest.fn();
-  const metadata = metadataFactory();
+  const metadata = installedRecipeMetadataFactory();
   (useSavingWizardMock as jest.Mock).mockReturnValue({
     isSaving: false,
     element: formStateFactory({
@@ -162,7 +162,7 @@ test("calls Save as New Blueprint", async () => {
 
 test("calls Update Blueprint", async () => {
   const saveElementAndUpdateRecipeMock = jest.fn();
-  const metadata = metadataFactory();
+  const metadata = installedRecipeMetadataFactory();
   (useSavingWizardMock as jest.Mock).mockReturnValue({
     isSaving: false,
     element: formStateFactory({

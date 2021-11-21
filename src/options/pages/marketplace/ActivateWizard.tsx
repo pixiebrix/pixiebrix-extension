@@ -18,23 +18,15 @@
 import React, { useMemo, useState } from "react";
 import { RecipeDefinition } from "@/types/definitions";
 import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
-import { isEmpty, mapValues, truncate, uniq } from "lodash";
+import { truncate } from "lodash";
 import "./ActivateWizard.scss";
 import { Formik } from "formik";
-import ConfigureBody, {
-  useSelectedAuths,
-  useSelectedExtensions,
-} from "./ConfigureBody";
-import ServicesBody from "./ServicesBody";
-import { WizardValues } from "./wizardTypes";
-import ActivateBody from "@/options/pages/marketplace/ActivateBody";
-import OptionsBody from "@/options/pages/marketplace/OptionsBody";
+import { useSelectedAuths, useSelectedExtensions } from "./ConfigureBody";
 import { useTitle } from "@/hooks/title";
 import useInstall from "@/pages/marketplace/useInstall";
 import AsyncButton from "@/components/AsyncButton";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import { useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
@@ -43,8 +35,7 @@ import { uninstallContextMenu } from "@/background/messenger/api";
 import { optionsSlice } from "@/options/slices";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
-import { selectAuths, selectOptions } from "@/pages/marketplace/useReinstall";
-import { IExtension } from "@/core";
+import useWizard from "@/options/pages/marketplace/useWizard";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -52,36 +43,13 @@ interface OwnProps {
   blueprint: RecipeDefinition;
 }
 
-type Step = {
-  key: string;
-  label: string;
-  Component: React.FunctionComponent<{
-    blueprint: RecipeDefinition;
-    reinstall: boolean;
-  }>;
-};
-
-const STEPS: Step[] = [
-  { key: "review", label: "Select Bricks", Component: ConfigureBody },
-  // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for Typescript
-  // to realize it's OK to pass in a whole RecipeDefinition for something that just needs the options prop
-  {
-    key: "options",
-    label: "Personalize",
-    Component: OptionsBody as React.FunctionComponent<{
-      blueprint: RecipeDefinition;
-    }>,
-  },
-  { key: "services", label: "Select Integrations", Component: ServicesBody },
-  { key: "activate", label: "Review & Activate", Component: ActivateBody },
-];
-
 const ActivateButton: React.FunctionComponent<{
   blueprint: RecipeDefinition;
 }> = ({ blueprint }) => {
   const extensions = useSelectedExtensions(blueprint.extensionPoints);
+  const location = useLocation();
   const reinstall =
-    new URLSearchParams(useLocation().search).get("reinstall") === "1";
+    new URLSearchParams(location.search).get("reinstall") === "1";
   const serviceAuths = useSelectedAuths();
   const { activate, isPending } = useEnsurePermissions(
     blueprint,
@@ -134,69 +102,11 @@ const ActivateButton: React.FunctionComponent<{
   );
 };
 
-function useWizard(
-  blueprint: RecipeDefinition,
-  reinstall: boolean
-): [Step[], WizardValues] {
-  const installedExtensions = useSelector(selectExtensions);
-  const installedExtensionsFromBlueprint = installedExtensions?.filter(
-    (extension) => extension._recipe?.id === blueprint?.metadata.id
-  );
-
-  return useMemo(() => {
-    const extensionPoints = blueprint.extensionPoints ?? [];
-
-    const installedOptions = selectOptions(installedExtensionsFromBlueprint);
-    const installedServices = selectAuths(installedExtensionsFromBlueprint);
-
-    const serviceIds = uniq(
-      extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
-    );
-    const steps = STEPS.filter((step) => {
-      switch (step.key) {
-        case "services": {
-          return serviceIds.some(
-            (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
-          );
-        }
-
-        case "options": {
-          return !isEmpty(blueprint.options?.schema);
-        }
-
-        default: {
-          return true;
-        }
-      }
-    });
-
-    const initialValues: WizardValues = {
-      extensions: Object.fromEntries(
-        extensionPoints.map((x, index) => [index, true])
-      ),
-      services: serviceIds.map((id) => ({
-        id,
-        config: reinstall && installedServices[id] && installedServices[id],
-      })),
-      optionsArgs: mapValues(blueprint.options?.schema ?? {}, (x) => {
-        if (reinstall && installedOptions[x.outputKey] !== undefined) {
-          return installedOptions[x.outputKey];
-        }
-
-        return (x as any).default;
-      }),
-      grantPermissions: false,
-    };
-
-    return [steps, initialValues];
-  }, [blueprint, reinstall, installedExtensionsFromBlueprint]);
-}
-
 const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const location = useLocation();
   const reinstall =
     new URLSearchParams(location.search).get("reinstall") === "1";
-  const [blueprintSteps, initialValues] = useWizard(blueprint, reinstall);
+  const [blueprintSteps, initialValues] = useWizard(blueprint);
   const [stepKey, setStep] = useState(blueprintSteps[0].key);
   const install = useInstall(blueprint);
 

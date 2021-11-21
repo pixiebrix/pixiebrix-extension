@@ -22,17 +22,27 @@ import {
   InnerDefinitions,
   Metadata,
   OutputKey,
+  RecipeMetadata,
   RegistryId,
   Schema,
   TemplateEngine,
+  Timestamp,
   UUID,
 } from "@/core";
 import { Permissions } from "webextension-polyfill";
 import { UiSchema } from "@rjsf/core";
+import { pick } from "lodash";
 
 export type EditablePackage = {
-  id: string;
-  name: string;
+  /**
+   * The surrogate key of the package
+   */
+  id: UUID;
+
+  /**
+   * The registry id of the package
+   */
+  name: RegistryId;
 };
 
 export type ExtensionPointConfig = {
@@ -71,18 +81,32 @@ export type ExtensionPointConfig = {
 };
 
 export type ResolvedExtensionPointConfig = ExtensionPointConfig & {
-  id: RegistryId;
-
   _resolvedExtensionPointConfigBrand: never;
+
+  id: RegistryId;
 };
 
+/**
+ * A section defining which options are available during recipe activation
+ * @see RecipeDefinition.options
+ */
 export interface OptionsDefinition {
   schema: Schema;
   uiSchema?: UiSchema;
 }
 
+/**
+ * Information about who a package has been shared with. Currently used only on recipes in the interface to indicate
+ * which team they were shared from
+ */
 export type SharingDefinition = {
+  /**
+   * True fi the package has been shared publicly on PixieBrix
+   */
   public: boolean;
+  /**
+   * Organizations the package has been shared with. Only includes the organizations that are visible to the user.
+   */
   organizations: UUID[];
 };
 
@@ -98,18 +122,64 @@ export interface Definition {
 }
 
 /**
- * Config of a Package. Used to install extensions. There is no
- * auto-generated swagger Type for this because config is saved in a single
- * JSON field on the server.
+ * A version of RecipeDefinition without the metadata properties that should not be included with the submitted
+ * YAML/JSON config for the recipe.
+ *
+ * When creating a recipe definition locally, this is probably what you want.
+ *
+ * @see RecipeDefinition
+ * @see PackageUpsertResponse
  */
-export interface RecipeDefinition extends Definition {
+export interface UnsavedRecipeDefinition extends Definition {
   kind: "recipe";
   extensionPoints: ExtensionPointConfig[];
   definitions?: InnerDefinitions;
   options?: OptionsDefinition;
-  sharing?: SharingDefinition;
-  // TODO: is there a timestamp type?
-  updated_at: string;
+}
+
+/**
+ * Config of a Package returned from the PixieBrix API. Used to install extensions.
+ *
+ * If you are creating a recipe definition locally, you probably want UnsavedRecipeDefinition, which doesn't include
+ * the `sharing` and `updated_at` fields which aren't stored on the YAML/JSON, but are added by the server on responses.
+ *
+ * There is no auto-generated swagger Type for this because config is saved in a single JSON field on the server.
+ *
+ * @see UnsavedRecipeDefinition
+ */
+export interface RecipeDefinition extends UnsavedRecipeDefinition {
+  /**
+   * Who the recipe is shared with. NOTE: does not appear in the recipe's YAML/JSON config -- the API endpoint's
+   * serializer adds it to the response.
+   */
+  sharing: SharingDefinition;
+
+  /**
+   * When the recipe was last updated. Can be used to detect updates where the version number of the recipe was
+   * not bumped. NOTE: does not appear in the recipe's YAML/JSON config -- the API endpoint's
+   * serializer adds it to the response.
+   */
+  updated_at: Timestamp;
+}
+
+/**
+ * Select information about the recipe used to install an IExtension
+ *
+ * TODO: find a better module for this method
+ *
+ * @see IExtension._recipe
+ */
+export function selectSourceRecipeMetadata(
+  recipeDefinition: RecipeDefinition
+): RecipeMetadata {
+  if (recipeDefinition.metadata?.id == null) {
+    throw new TypeError("Expected a RecipeDefinition");
+  }
+
+  return {
+    ...recipeDefinition.metadata,
+    ...pick(recipeDefinition, ["sharing", "updated_at"]),
+  };
 }
 
 export interface KeyAuthenticationDefinition {

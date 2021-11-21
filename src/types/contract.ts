@@ -18,7 +18,7 @@
 /**
  * Type contract between the backend and front-end.
  */
-import { RecipeDefinition } from "@/types/definitions";
+import { RecipeDefinition, SharingDefinition } from "@/types/definitions";
 import {
   ServiceConfig,
   SanitizedConfig,
@@ -27,6 +27,7 @@ import {
   Config,
   EmptyConfig,
   PersistedExtension,
+  Timestamp,
 } from "@/core";
 
 import { components } from "@/types/swagger";
@@ -58,6 +59,16 @@ export type Database = components["schemas"]["Database"];
 export type PackageVersion = components["schemas"]["PackageVersion"];
 
 export type Package = components["schemas"]["Package"];
+
+export type PackageUpsertResponse = Except<
+  components["schemas"]["Package"],
+  "share_dependencies"
+> & {
+  id: UUID;
+  public: boolean;
+  organizations: UUID[];
+  updated_at: Timestamp;
+};
 
 export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
   // XXX: update serialize to required id in response type
@@ -101,6 +112,15 @@ export type CloudExtension<T extends Config = EmptyConfig> = Except<
   _remoteUserExtensionBrand: never;
   _deployment: undefined;
   _recipe: undefined;
+};
+
+/**
+ * `/api/recipes/${blueprintId}`
+ */
+export type BlueprintResponse = {
+  config: RecipeDefinition;
+  sharing: SharingDefinition;
+  updated_at: Timestamp;
 };
 
 /**

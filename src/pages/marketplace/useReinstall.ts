@@ -34,7 +34,10 @@ function selectOptions(extensions: IExtension[]): UserOptions {
   return extensions[0]?.optionsArgs ?? {};
 }
 
-function selectAuths(extensions: IExtension[]): Record<RegistryId, UUID> {
+function selectAuths(
+  extensions: IExtension[],
+  { optional = false }: { optional?: boolean } = {}
+): Record<RegistryId, UUID> {
   // The extensions for the recipe will only have the services that are declared on each extension. So we have to take
   // the union of the service credentials. There's currently no way in the UX that the service auths could become
   // inconsistent for a given service key, but guard against that case anyway.
@@ -46,11 +49,13 @@ function selectAuths(extensions: IExtension[]): Record<RegistryId, UUID> {
   const result: Record<RegistryId, UUID> = {};
   for (const [id, auths] of Object.entries(serviceAuths)) {
     const configs = uniq(auths.map(({ config }) => config));
-    if (configs.length === 0) {
+    if (configs.length === 0 && !optional) {
       throw new Error(`Service ${id} is not configured`);
     }
 
-    if (configs.length > 1) {
+    // If optional is passed in, we know that the user is being given an opportunity to switch which config is applied,
+    // so the user can always switch to a different configuration if they want.
+    if (configs.length > 1 && !optional) {
       throw new Error(`Service ${id} has multiple configurations`);
     }
 
@@ -74,7 +79,7 @@ function useReinstall(): Reinstall {
         throw new Error(`No bricks to re-activate for ${recipe.metadata.id}`);
       }
 
-      const currentAuths = selectAuths(recipeExtensions);
+      const currentAuths = selectAuths(recipeExtensions, { optional: false });
       const currentOptions = selectOptions(recipeExtensions);
 
       // Uninstall first to avoid duplicates. Use a loop instead of Promise.all to ensure the sequence that each pair

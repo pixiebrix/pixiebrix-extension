@@ -23,7 +23,7 @@ import {
   Row,
 } from "react-bootstrap";
 import { FormikHelpers } from "formik";
-import { compact, isEmpty, sortBy, uniq } from "lodash";
+import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
 import * as Yup from "yup";
 import { PACKAGE_REGEX } from "@/types/helpers";
@@ -35,7 +35,10 @@ import { objToYaml } from "@/utils/objToYaml";
 import { makeBlueprint } from "@/options/pages/installed/exportBlueprint";
 import { useDispatch } from "react-redux";
 import { optionsSlice } from "@/options/slices";
-import { RecipeDefinition } from "@/types/definitions";
+import {
+  RecipeDefinition,
+  selectSourceRecipeMetadata,
+} from "@/types/definitions";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
 import { getHumanDetail } from "@/hooks/useUserAction";
@@ -49,6 +52,7 @@ import Form, {
 import FieldTemplate from "@/components/form/FieldTemplate";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useGetOrganizationsQuery } from "@/services/api";
+import { PackageUpsertResponse } from "@/types/contract";
 
 const { attachExtension } = optionsSlice.actions;
 
@@ -83,7 +87,7 @@ async function convertAndShare(
     version: "1.0.0",
   });
 
-  await client.post("api/bricks/", {
+  const { data } = await client.post<PackageUpsertResponse>("api/bricks/", {
     config: objToYaml(blueprint),
     kind: "recipe",
     public: form.public,
@@ -91,7 +95,11 @@ async function convertAndShare(
     share_dependencies: true,
   });
 
-  return blueprint;
+  return {
+    ...blueprint,
+    sharing: pick(data, ["public", "organizations"]),
+    ...pick(data, ["updated_at"]),
+  };
 }
 
 const ShareExtensionModal: React.FC<{
@@ -119,11 +127,14 @@ const ShareExtensionModal: React.FC<{
   const handleShare: OnSubmit = useCallback(
     async (values: FormState, helpers: FormikHelpers<FormState>) => {
       try {
-        const recipe = await convertAndShare(extension, values);
+        const recipe: RecipeDefinition = await convertAndShare(
+          extension,
+          values
+        );
         dispatch(
           attachExtension({
             extensionId: extension.id,
-            recipeMetadata: recipe.metadata,
+            recipeMetadata: selectSourceRecipeMetadata(recipe),
           })
         );
         dispatch(push("/installed"));

@@ -27,7 +27,7 @@ import {
   UserOptions,
   UUID,
 } from "@/core";
-import { orderBy } from "lodash";
+import { orderBy, pick } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { preloadContextMenus } from "@/background/initContextMenus";
 import { selectEventData } from "@/telemetry/deployments";
@@ -255,8 +255,14 @@ export const optionsSlice = createSlice({
           throw new Error("extensionPointId is required");
         }
 
-        if (extensionPointId == null) {
+        if (recipe.updated_at == null) {
+          // Since 1.4.8 we're tracking the updated_at timestamp of recipes
           throw new Error("updated_at is required");
+        }
+
+        if (recipe.sharing == null) {
+          // Since 1.4.6 we're tracking the sharing information of recipes
+          throw new Error("sharing is required");
         }
 
         const extension: PersistedExtension = {
@@ -265,10 +271,7 @@ export const optionsSlice = createSlice({
           apiVersion: recipe.apiVersion ?? "v1",
           _deployment: selectDeploymentContext(deployment),
           _recipe: {
-            id: recipe.metadata.id,
-            version: recipe.metadata.version,
-            name: recipe.metadata.name,
-            description: recipe.metadata.description,
+            ...pick(recipe.metadata, ["id", "version", "name", "description"]),
             sharing: recipe.sharing,
             updated_at: recipe.updated_at,
           },
@@ -387,7 +390,9 @@ export const optionsSlice = createSlice({
         return;
       }
 
+      // eslint-disable-next-line security/detect-object-injection -- index is number
       state.extensions[index] = {
+        // eslint-disable-next-line security/detect-object-injection -- index is number
         ...state.extensions[index],
         ...extensionUpdate,
       };
