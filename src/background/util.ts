@@ -34,7 +34,7 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
     .getManifest()
     .content_scripts.flatMap((script) => script.matches);
 
-  // Inejcted by `webext-dynamic-content-scripts`
+  // Injected by `webext-dynamic-content-scripts`
   const { origins } = await getAdditionalPermissions({
     strictOrigins: false,
   });
@@ -42,6 +42,18 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
   // Do not replace the 2 calls above with `permissions.getAll` because it might also
   // include hosts that are permitted by the manifest but have no content script registered.
   return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
+}
+
+export async function checkTargetPermissions(target: Target): Promise<boolean> {
+  return browser.tabs
+    .executeScript(target.tabId, {
+      code: "true",
+      frameId: target.frameId,
+    })
+    .then(
+      () => true,
+      () => false
+    );
 }
 
 interface TargetState {
