@@ -36,7 +36,9 @@ const Footer: React.FunctionComponent = () => {
           reserved.
         </span>
         {extensionVersion && (
-          <span className="text-muted text-sm-right">v{extensionVersion}</span>
+          <span className="text-muted text-center text-sm-right d-block d-sm-inline-block">
+            v{extensionVersion}
+          </span>
         )}
       </div>
     </footer>
