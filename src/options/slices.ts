@@ -19,15 +19,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   DeploymentContext,
   IExtension,
-  Metadata,
   OutputKey,
   PersistedExtension,
   RawServiceConfiguration,
+  RecipeMetadata,
   RegistryId,
   UserOptions,
   UUID,
 } from "@/core";
-import { orderBy } from "lodash";
+import { orderBy, pick } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { preloadContextMenus } from "@/background/initContextMenus";
 import { selectEventData } from "@/telemetry/deployments";
@@ -212,7 +212,7 @@ export const optionsSlice = createSlice({
       state,
       {
         payload,
-      }: PayloadAction<{ extensionId: UUID; recipeMetadata: Metadata }>
+      }: PayloadAction<{ extensionId: UUID; recipeMetadata: RecipeMetadata }>
     ) {
       const { extensionId, recipeMetadata } = payload;
       const extension = state.extensions.find((x) => x.id === extensionId);
@@ -255,17 +255,25 @@ export const optionsSlice = createSlice({
           throw new Error("extensionPointId is required");
         }
 
+        if (recipe.updated_at == null) {
+          // Since 1.4.8 we're tracking the updated_at timestamp of recipes
+          throw new Error("updated_at is required");
+        }
+
+        if (recipe.sharing == null) {
+          // Since 1.4.6 we're tracking the sharing information of recipes
+          throw new Error("sharing is required");
+        }
+
         const extension: PersistedExtension = {
           id: extensionId,
           // Default to `v1` for backward compatability
           apiVersion: recipe.apiVersion ?? "v1",
           _deployment: selectDeploymentContext(deployment),
           _recipe: {
-            id: recipe.metadata.id,
-            version: recipe.metadata.version,
-            name: recipe.metadata.name,
-            description: recipe.metadata.description,
+            ...pick(recipe.metadata, ["id", "version", "name", "description"]),
             sharing: recipe.sharing,
+            updated_at: recipe.updated_at,
           },
           // Definitions are pushed down into the extensions. That's OK because `resolveDefinitions` determines
           // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
@@ -382,7 +390,9 @@ export const optionsSlice = createSlice({
         return;
       }
 
+      // eslint-disable-next-line security/detect-object-injection -- index is number
       state.extensions[index] = {
+        // eslint-disable-next-line security/detect-object-injection -- index is number
         ...state.extensions[index],
         ...extensionUpdate,
       };

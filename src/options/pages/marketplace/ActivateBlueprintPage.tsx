@@ -19,7 +19,7 @@ import Page from "@/layout/Page";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
 import { useParams } from "react-router";
-import { RecipeDefinition, SharingDefinition } from "@/types/definitions";
+import { RecipeDefinition } from "@/types/definitions";
 import { Card, Col, Row } from "react-bootstrap";
 import GridLoader from "react-spinners/GridLoader";
 import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
@@ -27,37 +27,37 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useFetch from "@/hooks/useFetch";
-
-type BlueprintResponse = {
-  config: RecipeDefinition;
-  sharing: SharingDefinition;
-};
+import { BlueprintResponse } from "@/types/contract";
+import { pick } from "lodash";
 
 const ActivateBlueprintPage: React.FunctionComponent = () => {
   const { blueprintId } = useParams<{
     blueprintId: string;
   }>();
   const {
-    data: blueprint,
-    isLoading,
+    data: remoteBlueprint,
+    isLoading: fetchingBlueprint,
     error: fetchError,
   } = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}`);
 
   // Reshape to recipe definition
-  const recipe: RecipeDefinition = useMemo(
-    () => ({
-      ...blueprint?.config,
-      sharing: blueprint?.sharing,
-    }),
-    [blueprint]
-  );
-
-  const body = useMemo(() => {
-    if (blueprint?.config?.extensionPoints != null) {
-      return <ActivateWizard blueprint={recipe} />;
+  const recipeDefinition: RecipeDefinition | null = useMemo(() => {
+    if (remoteBlueprint) {
+      return {
+        ...remoteBlueprint.config,
+        ...pick(remoteBlueprint, ["sharing", "updated_at"]),
+      };
     }
 
-    if (blueprint != null) {
+    return null;
+  }, [remoteBlueprint]);
+
+  const body = useMemo(() => {
+    if (remoteBlueprint?.config?.extensionPoints != null) {
+      return <ActivateWizard blueprint={recipeDefinition} />;
+    }
+
+    if (remoteBlueprint != null) {
       // There's nothing stopping someone from hitting the link with a non-blueprint (e.g., service, component). So
       // show an error message if not a valid blueprint
       return (
@@ -78,14 +78,14 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
     }
 
     return <GridLoader />;
-  }, [recipe, blueprint, blueprintId]);
+  }, [recipeDefinition, remoteBlueprint, blueprintId]);
 
   return (
     <Page
       title="Activate Blueprint"
       icon={faStoreAlt}
       description="Configure and activate a blueprint from the marketplace"
-      isPending={isLoading}
+      isPending={fetchingBlueprint}
       error={fetchError}
     >
       <Row>

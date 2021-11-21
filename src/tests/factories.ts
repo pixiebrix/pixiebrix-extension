@@ -29,10 +29,11 @@ import {
   ServiceDependency,
   UserOptions,
   Metadata,
+  RecipeMetadata,
 } from "@/core";
 import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { TraceError } from "@/telemetry/trace";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
 import { Permissions } from "webextension-polyfill";
 import {
   BaseExtensionState,
@@ -54,6 +55,15 @@ export const metadataFactory = define<Metadata>({
   name: (n: number) => `Recipe ${n}`,
   description: "Recipe generated from factory",
   version: "1.0.0",
+});
+
+export const installedRecipeMetadataFactory = define<RecipeMetadata>({
+  id: (n: number) => validateRegistryId(`test/recipe-${n}`),
+  name: (n: number) => `Recipe ${n}`,
+  description: "Recipe generated from factory",
+  version: "1.0.0",
+  updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
+  sharing: { public: false, organizations: [] },
 });
 
 export const extensionFactory: (
@@ -197,7 +207,7 @@ type ExternalExtensionPointParams = {
  */
 export const versionedExtensionPointRecipeFactory = ({
   extensionPointId,
-}: ExternalExtensionPointParams) =>
+}: ExternalExtensionPointParams = {}) =>
   define<RecipeDefinition>({
     kind: "recipe",
     apiVersion: "v2",
@@ -207,8 +217,8 @@ export const versionedExtensionPointRecipeFactory = ({
       description: "Recipe generated from factory",
       version: "1.0.0",
     }),
-    // `sharing` is returned from the API, but is undefined when editing recipes
-    sharing: undefined,
+    sharing: { public: false, organizations: [] },
+    updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
     definitions: undefined,
     options: undefined,
     extensionPoints: (n: number) => [
@@ -238,8 +248,8 @@ export const innerExtensionPointRecipeFactory = ({
     kind: "recipe",
     apiVersion: "v2",
     metadata: metadataFactory,
-    // `sharing` is returned from the API, but is undefined when editing recipes
-    sharing: undefined,
+    sharing: { public: false, organizations: [] },
+    updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
     definitions: {
       [extensionPointRef]: {
         kind: "extensionPoint",

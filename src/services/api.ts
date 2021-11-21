@@ -21,6 +21,7 @@ import {
   EditablePackage,
   RecipeDefinition,
   ServiceDefinition,
+  UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
@@ -30,6 +31,7 @@ import {
   Group,
   MarketplaceListing,
   Organization,
+  PackageUpsertResponse,
   SanitizedAuth,
   UserRole,
 } from "@/types/contract";
@@ -185,9 +187,9 @@ export const appApi = createApi({
       providesTags: ["Recipes"],
     }),
     createRecipe: builder.mutation<
-      { id: UUID },
+      PackageUpsertResponse,
       {
-        recipe: RecipeDefinition;
+        recipe: UnsavedRecipeDefinition;
         organizations: UUID[];
         public: boolean;
       }
@@ -209,8 +211,8 @@ export const appApi = createApi({
       invalidatesTags: ["Recipes", "EditablePackages"],
     }),
     updateRecipe: builder.mutation<
-      { id: UUID },
-      { packageId: string; recipe: RecipeDefinition }
+      PackageUpsertResponse,
+      { packageId: UUID; recipe: UnsavedRecipeDefinition }
     >({
       query: ({ packageId, recipe }) => {
         const recipeConfig = dumpBrickYaml(recipe);

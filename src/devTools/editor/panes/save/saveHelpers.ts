@@ -22,10 +22,13 @@ import {
   SafeString,
   InnerDefinitionRef,
 } from "@/core";
-import { EditablePackage, RecipeDefinition } from "@/types/definitions";
+import {
+  EditablePackage,
+  RecipeDefinition,
+  UnsavedRecipeDefinition,
+} from "@/types/definitions";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
 import { compact, isEqual, pick } from "lodash";
-import { Except } from "type-fest";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { produce } from "immer";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
@@ -118,7 +121,7 @@ export function replaceRecipeExtension(
   metadata: Metadata,
   installedExtensions: IExtension[],
   element: FormState
-): Except<RecipeDefinition, "sharing"> {
+): UnsavedRecipeDefinition {
   const installedExtension = installedExtensions.find(
     (x) => x.id === element.uuid
   );

@@ -91,6 +91,14 @@ export type UUID = string & {
   _uuidBrand: never;
 };
 
+/**
+ * An ISO timestamp string
+ */
+export type Timestamp = string & {
+  // Nominal subtyping
+  _uuidTimestamp: never;
+};
+
 export type InnerDefinitionRef = string & {
   // Nominal subtyping
   _innerDefinitionRefBrand: never;
@@ -391,14 +399,25 @@ export type ExtensionRef = {
 };
 
 /**
- * Recipe with Sharing information.
+ * RecipeMetadata that includes sharing information.
+ *
+ * We created this type as an alternative to Metadata in order to include information about the origin of an extension,
+ * e.g. on the ActiveBricks page.
+ *
  * @see optionsSlice
- * We created this type as an alternative to Metadata
- * in order to include information about the origin of an
- * extension, e.g. on the ActiveBricks page.
+ * @see IExtension._recipe
  */
 export type RecipeMetadata = Metadata & {
-  sharing?: Sharing;
+  /**
+   * `undefined` for recipes that were activated prior to the field being added
+   */
+  sharing: Sharing | null;
+
+  /**
+   * `undefined` for recipes that were activated prior to the field being added
+   * @since 1.4.8
+   */
+  updated_at: Timestamp | null;
 };
 
 export type IExtension<T extends Config = EmptyConfig> = {
@@ -426,7 +445,7 @@ export type IExtension<T extends Config = EmptyConfig> = {
 
   /**
    * Metadata about the recipe used to install the extension, or `undefined` if the user created this extension
-   * directly.
+   * directly
    */
   _recipe: RecipeMetadata | undefined;
 

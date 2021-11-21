@@ -19,7 +19,10 @@ import { isEmpty } from "lodash";
 import { IExtension, Metadata, RegistryId, Schema, UserOptions } from "@/core";
 import { objToYaml } from "@/utils/objToYaml";
 import { saveAs } from "file-saver";
-import { OptionsDefinition, RecipeDefinition } from "@/types/definitions";
+import {
+  OptionsDefinition,
+  UnsavedRecipeDefinition,
+} from "@/types/definitions";
 import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
 
@@ -44,7 +47,7 @@ export function inferOptionsSchema(
 export function makeBlueprint(
   extension: IExtension,
   metadata: Metadata
-): RecipeDefinition {
+): UnsavedRecipeDefinition {
   const {
     extensionPointId,
     label,
