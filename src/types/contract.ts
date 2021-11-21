@@ -18,7 +18,11 @@
 /**
  * Type contract between the backend and front-end.
  */
-import { RecipeDefinition, SharingDefinition } from "@/types/definitions";
+import {
+  RecipeDefinition,
+  SharingDefinition,
+  UnsavedRecipeDefinition,
+} from "@/types/definitions";
 import {
   ServiceConfig,
   SanitizedConfig,
@@ -118,7 +122,8 @@ export type CloudExtension<T extends Config = EmptyConfig> = Except<
  * `/api/recipes/${blueprintId}`
  */
 export type BlueprintResponse = {
-  config: RecipeDefinition;
+  // On this endpoint, the sharing and updated_at are in the envelop of the response
+  config: UnsavedRecipeDefinition;
   sharing: SharingDefinition;
   updated_at: Timestamp;
 };
