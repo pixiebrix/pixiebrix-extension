@@ -63,12 +63,13 @@ test.each`
         className: "test-class",
       },
     };
-    const rendered = renderDocument(config);
+    const { container } = renderDocument(config);
 
-    expect(
-      rendered.container.querySelector(`${tagName}.test-class`)
-    ).toHaveTextContent("Test Header");
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const element = container.querySelector(tagName);
+
+    expect(element).not.toBeNull();
+    expect(element).toHaveClass("test-class");
+    expect(element).toHaveTextContent("Test Header");
   }
 );
 
@@ -80,8 +81,13 @@ test("renders paragraph text", () => {
       className: "test-class",
     },
   };
-  const rendered = renderDocument(config);
-  expect(rendered.asFragment()).toMatchSnapshot();
+  const { container } = renderDocument(config);
+
+  const element = container.querySelector("p");
+
+  expect(element).not.toBeNull();
+  expect(element).toHaveClass("test-class");
+  expect(element).toHaveTextContent("Test Paragraph");
 });
 
 test("renders unknown type", () => {
@@ -89,15 +95,21 @@ test("renders unknown type", () => {
     type: "TheTypeForWhichAComponentIsNotDefined",
     className: "test-class",
   };
-  const rendered = renderDocument(config);
-  expect(rendered.asFragment()).toMatchSnapshot();
+  const { container } = renderDocument(config);
+
+  const element = container.querySelector("span");
+
+  expect(element).not.toBeNull();
+  expect(element).toHaveTextContent(
+    "Unknown type: TheTypeForWhichAComponentIsNotDefined"
+  );
 });
 
 test("renders grid", () => {
   const config = {
     type: "container",
     config: {
-      className: "text-primary",
+      className: "container-test-class",
     },
     children: [
       {
@@ -119,13 +131,13 @@ test("renders grid", () => {
       {
         type: "row",
         config: {
-          className: "mt-5",
+          className: "row-test-class",
         },
         children: [
           {
             type: "column",
             config: {
-              className: "p-3",
+              className: "column-test-class",
             },
             children: [
               {
@@ -138,9 +150,6 @@ test("renders grid", () => {
           },
           {
             type: "column",
-            config: {
-              className: "p-5",
-            },
             children: [
               {
                 type: "text",
@@ -155,28 +164,76 @@ test("renders grid", () => {
     ],
   };
 
-  const rendered = renderDocument(config);
-  expect(rendered.asFragment()).toMatchSnapshot();
+  const { container } = renderDocument(config);
+
+  const bsContainer = container.querySelector(".container");
+  expect(bsContainer).not.toBeNull();
+  expect(bsContainer).toHaveClass("container-test-class");
+
+  const rows = bsContainer.querySelectorAll(".row");
+  expect(rows).toHaveLength(2);
+
+  // First row should have 1 column with h1
+  expect(rows[0].querySelector(".col h1")).not.toBeNull();
+
+  // Second row should have a class and 2 columns
+  const secondRow = rows[1];
+  expect(secondRow).toHaveClass("row-test-class");
+  const columns = secondRow.querySelectorAll(".col");
+  expect(columns).toHaveLength(2);
+  expect(columns[0]).toHaveClass("column-test-class");
+  expect(columns[0].querySelector("p")).not.toBeNull();
+  expect(columns[1].querySelector("p")).not.toBeNull();
 });
 
-test("renders button", () => {
-  const config = {
-    type: "button",
-    config: {
-      title: "Button under test",
-      variant: "primary",
-      onClick: {
-        __type__: "pipeline",
-        __value__: jest.fn(),
+describe("button", () => {
+  test("renders button", () => {
+    const config = {
+      type: "button",
+      config: {
+        title: "Button under test",
+        variant: "primary",
+        className: "test-class",
+        onClick: {
+          __type__: "pipeline",
+          __value__: jest.fn(),
+        },
       },
-    },
-  };
-  const rendered = renderDocument(config);
-  expect(rendered.asFragment()).toMatchSnapshot();
+    };
+    const { container } = renderDocument(config);
+    const element = container.querySelector("button");
+
+    expect(element).not.toBeNull();
+    expect(element).toHaveClass("test-class");
+    expect(element).toHaveTextContent("Button under test");
+  });
+
+  test.each`
+    variant        | className
+    ${"primary"}   | ${"btn-primary"}
+    ${"secondary"} | ${"btn-secondary"}
+    ${"link"}      | ${"btn-link"}
+  `("applies button variant: $variant", ({ variant, className }) => {
+    const config = {
+      type: "button",
+      config: {
+        title: "Button under test",
+        variant,
+        onClick: {
+          __type__: "pipeline",
+          __value__: jest.fn(),
+        },
+      },
+    };
+    const { container } = renderDocument(config);
+    const element = container.querySelector("button");
+
+    expect(element).toHaveClass(className);
+  });
 });
 
 describe("card", () => {
-  test("renders text body", () => {
+  test("renders card with text body", () => {
     const config = {
       type: "card",
       config: {
@@ -185,11 +242,20 @@ describe("card", () => {
         body: "Test body of card",
       },
     };
-    const rendered = renderDocument(config);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { container } = renderDocument(config);
+
+    const rootElement = container.querySelector(".card");
+    expect(rootElement).not.toBeNull();
+    expect(rootElement).toHaveClass("test-class");
+
+    const cardHeading = rootElement.querySelector(".card-header");
+    expect(cardHeading).toHaveTextContent("Test Heading of Card");
+
+    const cardBody = rootElement.querySelector(".card-body");
+    expect(cardBody).toHaveTextContent("Test body of card");
   });
 
-  test("renders pipeline body", async () => {
+  test("renders card with pipeline body", async () => {
     const markdown = "Pipeline text for card test.";
     (backgroundAPI.whoAmI as any).mockResolvedValue({ tab: { id: 0 } });
     (contentScriptAPI.runRendererPipeline as any).mockResolvedValue({
@@ -209,23 +275,57 @@ config:
       config:
         markdown: ${markdown}`;
     const config = loadBrickYaml(yamlConfig);
-    const rendered = renderDocument(config);
+    const { container } = renderDocument(config);
 
     // Wait for useAsyncState inside of PipelineComponent
     await waitForEffect();
 
-    // The className is applied to the card element
-    expect(
-      rendered.container.querySelector(".card.test-class .card-header")
-    ).toHaveTextContent("Test Heading of Card");
+    const rootElement = container.querySelector(".card");
+    expect(rootElement).not.toBeNull();
+    expect(rootElement).toHaveClass("test-class");
 
-    // We can't query by the text because PipelineComponent -> PanelBody wraps it in a shadow dom. If we want to
-    // test against the shadow DOM, we could either: 1) mock react-shadow-dom to not use the shadow dom, or 2) use
-    // a library like https://www.npmjs.com/package/testing-library__dom
-    expect(
-      rendered.container.querySelector(`[data-block-id="${markdownBlock.id}"]`)
-    ).not.toBeNull();
+    const cardHeading = rootElement.querySelector(".card-header");
+    expect(cardHeading).toHaveTextContent("Test Heading of Card");
 
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expectBlockContainerRendered(container, markdownBlock.id);
   });
 });
+
+test("renders block", async () => {
+  const markdown = "Pipeline text for card test.";
+  (backgroundAPI.whoAmI as any).mockResolvedValue({ tab: { id: 0 } });
+  (contentScriptAPI.runRendererPipeline as any).mockResolvedValue({
+    blockId: markdownBlock.id,
+    key: uuidv4(),
+    args: { markdown },
+    ctxt: { "@input": {}, "@options": {} },
+  });
+
+  const yamlConfig = `
+type: block
+config:
+  pipeline: !pipeline
+    - id: "${markdownBlock.id}"
+      config:
+        markdown: ${markdown}`;
+
+  const config = loadBrickYaml(yamlConfig);
+  const { container } = renderDocument(config);
+
+  // Wait for useAsyncState inside of PipelineComponent
+  await waitForEffect();
+
+  expectBlockContainerRendered(container, markdownBlock.id);
+});
+
+function expectBlockContainerRendered(container: HTMLElement, blockId: string) {
+  // We can't query by the text because PipelineComponent -> PanelBody wraps it in a shadow dom. If we want to
+  // test against the shadow DOM, we could either: 1) mock react-shadow-dom to not use the shadow dom, or 2) use
+  // a library like https://www.npmjs.com/package/testing-library__dom
+
+  const blockContainer = container.querySelector(
+    `[data-block-id="${blockId}"]`
+  );
+  expect(blockContainer).not.toBeNull();
+  expect(blockContainer).toHaveClass("h-100");
+}
