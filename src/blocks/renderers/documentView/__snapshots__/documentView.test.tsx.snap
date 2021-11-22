@@ -41,17 +41,6 @@ exports[`card renders text body 1`] = `
 </DocumentFragment>
 `;
 
-exports[`renders button 1`] = `
-<DocumentFragment>
-  <button
-    class="btn btn-primary"
-    type="button"
-  >
-    Button under test
-  </button>
-</DocumentFragment>
-`;
-
 exports[`renders grid 1`] = `
 <DocumentFragment>
   <div
@@ -87,53 +76,5 @@ exports[`renders grid 1`] = `
       </div>
     </div>
   </div>
-</DocumentFragment>
-`;
-
-exports[`renders h1 for header_1 1`] = `
-<DocumentFragment>
-  <h1
-    class="test-class"
-  >
-    Test Header
-  </h1>
-</DocumentFragment>
-`;
-
-exports[`renders h2 for header_2 1`] = `
-<DocumentFragment>
-  <h2
-    class="test-class"
-  >
-    Test Header
-  </h2>
-</DocumentFragment>
-`;
-
-exports[`renders h3 for header_3 1`] = `
-<DocumentFragment>
-  <h3
-    class="test-class"
-  >
-    Test Header
-  </h3>
-</DocumentFragment>
-`;
-
-exports[`renders paragraph text 1`] = `
-<DocumentFragment>
-  <p
-    class="test-class"
-  >
-    Test Paragraph
-  </p>
-</DocumentFragment>
-`;
-
-exports[`renders unknown type 1`] = `
-<DocumentFragment>
-  <span>
-    Unknown type: TheTypeForWhichAComponentIsNotDefined
-  </span>
 </DocumentFragment>
 `;
