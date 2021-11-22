@@ -109,7 +109,7 @@ test("renders grid", () => {
   const config = {
     type: "container",
     config: {
-      className: "text-primary",
+      className: "container-test-class",
     },
     children: [
       {
@@ -131,13 +131,13 @@ test("renders grid", () => {
       {
         type: "row",
         config: {
-          className: "mt-5",
+          className: "row-test-class",
         },
         children: [
           {
             type: "column",
             config: {
-              className: "p-3",
+              className: "column-test-class",
             },
             children: [
               {
@@ -150,9 +150,6 @@ test("renders grid", () => {
           },
           {
             type: "column",
-            config: {
-              className: "p-5",
-            },
             children: [
               {
                 type: "text",
@@ -167,8 +164,26 @@ test("renders grid", () => {
     ],
   };
 
-  const rendered = renderDocument(config);
-  expect(rendered.asFragment()).toMatchSnapshot();
+  const { container } = renderDocument(config);
+
+  const bsContainer = container.querySelector(".container");
+  expect(bsContainer).not.toBeNull();
+  expect(bsContainer).toHaveClass("container-test-class");
+
+  const rows = bsContainer.querySelectorAll(".row");
+  expect(rows).toHaveLength(2);
+
+  // First row should have 1 column with h1
+  expect(rows[0].querySelector(".col h1")).not.toBeNull();
+
+  // Second row should have a class and 2 columns
+  const secondRow = rows[1];
+  expect(secondRow).toHaveClass("row-test-class");
+  const columns = secondRow.querySelectorAll(".col");
+  expect(columns).toHaveLength(2);
+  expect(columns[0]).toHaveClass("column-test-class");
+  expect(columns[0].querySelector("p")).not.toBeNull();
+  expect(columns[1].querySelector("p")).not.toBeNull();
 });
 
 describe("button", () => {
@@ -218,7 +233,7 @@ describe("button", () => {
 });
 
 describe("card", () => {
-  test("renders text body", () => {
+  test("renders card with text body", () => {
     const config = {
       type: "card",
       config: {
@@ -227,11 +242,20 @@ describe("card", () => {
         body: "Test body of card",
       },
     };
-    const rendered = renderDocument(config);
-    expect(rendered.asFragment()).toMatchSnapshot();
+    const { container } = renderDocument(config);
+
+    const rootElement = container.querySelector(".card");
+    expect(rootElement).not.toBeNull();
+    expect(rootElement).toHaveClass("test-class");
+
+    const cardHeading = rootElement.querySelector(".card-header");
+    expect(cardHeading).toHaveTextContent("Test Heading of Card");
+
+    const cardBody = rootElement.querySelector(".card-body");
+    expect(cardBody).toHaveTextContent("Test body of card");
   });
 
-  test("renders pipeline body", async () => {
+  test("renders card with pipeline body", async () => {
     const markdown = "Pipeline text for card test.";
     (backgroundAPI.whoAmI as any).mockResolvedValue({ tab: { id: 0 } });
     (contentScriptAPI.runRendererPipeline as any).mockResolvedValue({
