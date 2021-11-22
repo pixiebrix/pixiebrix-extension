@@ -275,17 +275,19 @@ config:
       config:
         markdown: ${markdown}`;
     const config = loadBrickYaml(yamlConfig);
-    const rendered = renderDocument(config);
+    const { container } = renderDocument(config);
 
     // Wait for useAsyncState inside of PipelineComponent
     await waitForEffect();
 
-    // The className is applied to the card element
-    expect(
-      rendered.container.querySelector(".card.test-class .card-header")
-    ).toHaveTextContent("Test Heading of Card");
+    const rootElement = container.querySelector(".card");
+    expect(rootElement).not.toBeNull();
+    expect(rootElement).toHaveClass("test-class");
 
-    expectBlockContainerRendered(rendered.container, markdownBlock.id);
+    const cardHeading = rootElement.querySelector(".card-header");
+    expect(cardHeading).toHaveTextContent("Test Heading of Card");
+
+    expectBlockContainerRendered(container, markdownBlock.id);
   });
 });
 
