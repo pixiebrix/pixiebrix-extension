@@ -408,7 +408,7 @@ export async function allSettledValues<T = unknown>(
 ): Promise<T[]> {
   return (await Promise.allSettled(promises))
     .filter(
-      (promise): promise is PromiseFulfilledResult<T> =>
+      (promise): promise is PromiseFulfilledResult<Awaited<T>> =>
         promise.status === "fulfilled"
     )
     .map(({ value }) => value);
