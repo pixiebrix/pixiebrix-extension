@@ -34,7 +34,7 @@ export class WaitEffect extends Effect {
     type: "object",
     properties: {
       timeMillis: {
-        type: "number",
+        type: "integer",
         description:
           "Time in milliseconds. If value is less than or equal to zero, do not sleep",
       },
@@ -74,8 +74,9 @@ export class WaitElementEffect extends Effect {
         ],
       },
       maxWaitMillis: {
-        type: "number",
-        description: "Maximum time of to wait in milliseconds",
+        type: "integer",
+        description:
+          "Maximum time of to wait in milliseconds. If the value is less than or equal to zero, will wait indefinitely",
       },
     },
     required: ["selector"],
