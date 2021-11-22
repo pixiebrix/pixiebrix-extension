@@ -43,6 +43,12 @@ async function asyncFastCssSelector(element: HTMLElement): Promise<string> {
   });
 }
 
+function elementSelector(rootSelector: string | null, selector: string | null) {
+  const rawParts = compact([rootSelector, selector]);
+  const parts = rawParts.length > 0 ? rawParts : ["body"];
+  return compact(parts).join(" ");
+}
+
 export function frameworkReadFactory(
   framework: Framework
 ): Read<FrameworkConfig> {
@@ -60,13 +66,15 @@ export function frameworkReadFactory(
       pathSpec,
     } = reader;
 
+    // Selector to uniquely identify the root (because we can't pass the element itself between the content script
+    // and the page script)
     const rootSelector = isHTMLElement(root)
       ? await asyncFastCssSelector(root)
       : null;
 
     return getComponentData({
       framework,
-      selector: compact([rootSelector, selector]).join(" "),
+      selector: elementSelector(rootSelector, selector),
       rootProp,
       waitMillis,
       optional,

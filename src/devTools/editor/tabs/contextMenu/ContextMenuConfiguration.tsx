@@ -90,6 +90,24 @@ const ContextMenuConfiguration: React.FC<{
     </FieldSection>
 
     <FieldSection title="Advanced">
+      <ConnectedFieldTemplate
+        name="extensionPoint.definition.rootMode"
+        as="select"
+        title="Root Mode"
+        description={
+          <p>
+            Use&nbsp;<code>target</code> to pass the target of the right-click
+            as the action root. Use&nbsp;
+            <code>document</code> to pass the document
+          </p>
+        }
+        {...makeLockableFieldProps("Root Mode", isLocked)}
+      >
+        <option value="target">target</option>
+        <option value="document">document</option>
+        <option value="legacy">legacy</option>
+      </ConnectedFieldTemplate>
+
       <UrlMatchPatternField
         name="extensionPoint.definition.isAvailable.matchPatterns[0]"
         shortcuts={matchPatternShortcuts}
