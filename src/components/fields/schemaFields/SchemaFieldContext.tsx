@@ -41,6 +41,10 @@ import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schema
 function defaultFieldFactory(
   Widget: React.FC<SchemaFieldProps>
 ): SchemaFieldComponent {
+  if (Widget == null) {
+    throw new Error("Widget is required");
+  }
+
   const Field: React.FunctionComponent<SchemaFieldProps> = (props) => {
     const { schema, description } = props;
     return (
