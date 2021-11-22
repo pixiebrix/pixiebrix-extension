@@ -17,7 +17,7 @@
 
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { waitForEffect } from "@/tests/testHelpers";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { getComponent } from "./documentView";
 import React from "react";
 import blockRegistry from "@/blocks/registry";
@@ -285,13 +285,45 @@ config:
       rendered.container.querySelector(".card.test-class .card-header")
     ).toHaveTextContent("Test Heading of Card");
 
-    // We can't query by the text because PipelineComponent -> PanelBody wraps it in a shadow dom. If we want to
-    // test against the shadow DOM, we could either: 1) mock react-shadow-dom to not use the shadow dom, or 2) use
-    // a library like https://www.npmjs.com/package/testing-library__dom
-    expect(
-      rendered.container.querySelector(`[data-block-id="${markdownBlock.id}"]`)
-    ).not.toBeNull();
-
-    expect(rendered.asFragment()).toMatchSnapshot();
+    expectBlockContainerRendered(rendered.container, markdownBlock.id);
   });
 });
+
+test("renders block", async () => {
+  const markdown = "Pipeline text for card test.";
+  (backgroundAPI.whoAmI as any).mockResolvedValue({ tab: { id: 0 } });
+  (contentScriptAPI.runRendererPipeline as any).mockResolvedValue({
+    blockId: markdownBlock.id,
+    key: uuidv4(),
+    args: { markdown },
+    ctxt: { "@input": {}, "@options": {} },
+  });
+
+  const yamlConfig = `
+type: block
+config:
+  pipeline: !pipeline
+    - id: "${markdownBlock.id}"
+      config:
+        markdown: ${markdown}`;
+
+  const config = loadBrickYaml(yamlConfig);
+  const { container } = renderDocument(config);
+
+  // Wait for useAsyncState inside of PipelineComponent
+  await waitForEffect();
+
+  expectBlockContainerRendered(container, markdownBlock.id);
+});
+
+function expectBlockContainerRendered(container: HTMLElement, blockId: string) {
+  // We can't query by the text because PipelineComponent -> PanelBody wraps it in a shadow dom. If we want to
+  // test against the shadow DOM, we could either: 1) mock react-shadow-dom to not use the shadow dom, or 2) use
+  // a library like https://www.npmjs.com/package/testing-library__dom
+
+  const blockContainer = container.querySelector(
+    `[data-block-id="${blockId}"]`
+  );
+  expect(blockContainer).not.toBeNull();
+  expect(blockContainer).toHaveClass("h-100");
+}
