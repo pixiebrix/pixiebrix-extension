@@ -91,19 +91,20 @@ const ContextMenuConfiguration: React.FC<{
 
     <FieldSection title="Advanced">
       <ConnectedFieldTemplate
-        name="extensionPoint.definition.rootMode"
+        name="extensionPoint.definition.targetMode"
         as="select"
-        title="Root Mode"
+        title="Target Mode"
+        blankValue="legacy"
         description={
           <p>
-            Use&nbsp;<code>target</code> to pass the target of the right-click
-            as the action root. Use&nbsp;
-            <code>document</code> to pass the document
+            Use&nbsp;<code>eventTarget</code> to pass the target of the
+            right-click as the action root. Use&nbsp;
+            <code>document</code> to pass the document as the action root.
           </p>
         }
-        {...makeLockableFieldProps("Root Mode", isLocked)}
+        {...makeLockableFieldProps("Target Mode", isLocked)}
       >
-        <option value="target">target</option>
+        <option value="eventTarget">eventTarget</option>
         <option value="document">document</option>
         <option value="legacy">legacy</option>
       </ConnectedFieldTemplate>

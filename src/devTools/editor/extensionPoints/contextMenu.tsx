@@ -38,7 +38,7 @@ import { ExtensionPointConfig } from "@/extensionPoints/types";
 import {
   ContextMenuConfig,
   ContextMenuExtensionPoint,
-  ContextMenuRootMode,
+  ContextMenuTargetMode,
   MenuDefaultOptions as ContextMenuDefaultOptions,
   MenuDefinition,
 } from "@/extensionPoints/contextMenu";
@@ -67,7 +67,7 @@ export interface ContextMenuFormState extends BaseFormState<Extension> {
       defaultOptions: ContextMenuDefaultOptions;
       documentUrlPatterns: string[];
       contexts: Menus.ContextType[];
-      rootMode: ContextMenuRootMode;
+      targetMode: ContextMenuTargetMode;
       reader: SingleLayerReaderConfig;
       isAvailable: NormalizedAvailability;
     };
@@ -95,7 +95,7 @@ function fromNativeElement(
         reader: getImplicitReader("contextMenu"),
         documentUrlPatterns: isAvailable.matchPatterns,
         contexts: ["all"],
-        rootMode: "target",
+        targetMode: "eventTarget",
         defaultOptions: {},
         isAvailable,
       },
@@ -116,7 +116,7 @@ function selectExtensionPoint(
       isAvailable,
       documentUrlPatterns,
       reader,
-      rootMode,
+      targetMode,
       contexts = ["all"],
     },
   } = extensionPoint;
@@ -126,7 +126,7 @@ function selectExtensionPoint(
       type: "contextMenu",
       documentUrlPatterns,
       contexts,
-      rootMode,
+      targetMode,
       reader,
       isAvailable: cleanIsAvailable(isAvailable),
     },
@@ -163,7 +163,7 @@ async function fromExtension(
     documentUrlPatterns,
     defaultOptions,
     contexts,
-    rootMode,
+    targetMode,
     reader,
   } = extensionPoint.definition;
 
@@ -177,7 +177,7 @@ async function fromExtension(
       definition: {
         documentUrlPatterns,
         defaultOptions,
-        rootMode,
+        targetMode,
         contexts,
         // See comment on SingleLayerReaderConfig
         reader: reader as SingleLayerReaderConfig,
@@ -198,7 +198,7 @@ async function fromExtensionPoint(
   const {
     defaultOptions = {},
     documentUrlPatterns = [],
-    rootMode = "legacy",
+    targetMode = "legacy",
     type,
     reader,
   } = extensionPoint.definition;
@@ -224,7 +224,7 @@ async function fromExtensionPoint(
         ...extensionPoint.definition,
         defaultOptions,
         documentUrlPatterns,
-        rootMode,
+        targetMode,
         // See comment on SingleLayerReaderConfig
         reader: reader as SingleLayerReaderConfig,
         isAvailable: selectIsAvailable(extensionPoint),
