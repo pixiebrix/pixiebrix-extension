@@ -53,9 +53,9 @@ import { blockList } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { makeServiceContext } from "@/services/serviceUtils";
 
-export type ContextMenuRootMode =
+export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
-  "legacy" | "document" | "target";
+  "legacy" | "document" | "eventTarget";
 
 export type ContextMenuConfig = {
   title: string;
@@ -186,7 +186,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
   abstract getBaseReader(): Promise<IReader>;
 
-  abstract get rootMode(): ContextMenuRootMode;
+  abstract get targetMode(): ContextMenuTargetMode;
 
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
 
@@ -297,29 +297,29 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     }
   }
 
-  selectReaderElement(target: HTMLElement | Document): HTMLElement | Document {
-    switch (this.rootMode) {
+  decideReaderRoot(target: HTMLElement | Document): HTMLElement | Document {
+    switch (this.targetMode) {
       case "legacy":
-      case "target":
+      case "eventTarget":
         return target;
       case "document":
         return document;
       default:
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unknown rootMode: ${this.rootMode}`);
+        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
     }
   }
 
-  selectRootElement(target: HTMLElement | Document): HTMLElement | Document {
-    switch (this.rootMode) {
-      case "target":
+  decidePipelineRoot(target: HTMLElement | Document): HTMLElement | Document {
+    switch (this.targetMode) {
+      case "eventTarget":
         return target;
       case "legacy":
       case "document":
         return document;
       default:
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unknown rootMode: ${this.rootMode}`);
+        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
     }
   }
 
@@ -354,7 +354,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           clickedElement ?? guessSelectedElement() ?? document;
 
         const input = {
-          ...(await reader.read(this.selectReaderElement(targetElement))),
+          ...(await reader.read(this.decideReaderRoot(targetElement))),
           // ClickData provides the data from schema defined above in ContextMenuReader
           ...clickData,
           // Add some additional data that people will generally want
@@ -363,7 +363,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
         const initialValues: InitialValues = {
           input,
-          root: this.selectRootElement(targetElement),
+          root: this.decidePipelineRoot(targetElement),
           serviceContext,
           optionsArgs: extension.optionsArgs,
         };
@@ -405,7 +405,7 @@ export interface MenuDefaultOptions {
 export interface MenuDefinition extends ExtensionPointDefinition {
   documentUrlPatterns?: Manifest.MatchPattern[];
   contexts: Menus.ContextType[];
-  rootMode: ContextMenuRootMode;
+  targetMode: ContextMenuTargetMode;
   defaultOptions?: MenuDefaultOptions;
 }
 
@@ -438,9 +438,9 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
     };
   }
 
-  get rootMode(): ContextMenuRootMode {
-    // Default to "document" to match the legacy behavior
-    return this._definition.rootMode ?? "legacy";
+  get targetMode(): ContextMenuTargetMode {
+    // Default to "legacy" to match the legacy behavior
+    return this._definition.targetMode ?? "legacy";
   }
 
   async isAvailable(): Promise<boolean> {
