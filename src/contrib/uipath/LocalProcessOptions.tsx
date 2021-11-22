@@ -126,7 +126,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
             <ChildObjectField
               heading={selectedRelease?.release?.Name ?? "Input Arguments"}
               schema={selectedRelease?.schema}
-              name={joinName("inputArguments")}
+              name={configName("inputArguments")}
             />
           </>
         )}
