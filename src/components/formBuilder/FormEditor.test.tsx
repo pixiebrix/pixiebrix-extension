@@ -213,12 +213,9 @@ describe("FormEditor", () => {
       );
       await fireFormSubmit();
 
-      expect(onSubmitMock).toHaveBeenCalledWith(
-        {
-          [RJSF_SCHEMA_PROPERTY_NAME]: expectedSchema,
-        },
-        expect.any(Object)
-      );
+      expect(onSubmitMock).toHaveBeenCalledWith({
+        [RJSF_SCHEMA_PROPERTY_NAME]: expectedSchema,
+      });
     }
   );
 
@@ -285,12 +282,9 @@ describe("FormEditor", () => {
 
       await fireFormSubmit();
 
-      expect(onSubmitMock).toHaveBeenCalledWith(
-        {
-          [RJSF_SCHEMA_PROPERTY_NAME]: expectedSchema,
-        },
-        expect.any(Object)
-      );
+      expect(onSubmitMock).toHaveBeenCalledWith({
+        [RJSF_SCHEMA_PROPERTY_NAME]: expectedSchema,
+      });
     }
   );
 

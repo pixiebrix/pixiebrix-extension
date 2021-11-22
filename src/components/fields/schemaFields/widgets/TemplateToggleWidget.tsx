@@ -180,6 +180,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
         variant="link"
         onSelect={onModeChange}
         className={styles.dropdown}
+        data-testid={`toggle-${name}`}
       >
         {inputModeOptions.map((option) => (
           <Dropdown.Item
