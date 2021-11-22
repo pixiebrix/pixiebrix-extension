@@ -98,8 +98,7 @@ export function getComponent(
     }
 
     case "block": {
-      // ToDo update
-      const pipeline = get(body, "config.pipeline");
+      const { pipeline } = config;
       if (!isPipelineExpression(pipeline)) {
         throw new Error("Expected pipeline expression for pipeline");
       }

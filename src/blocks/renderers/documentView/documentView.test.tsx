@@ -17,7 +17,7 @@
 
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { waitForEffect } from "@/tests/testHelpers";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { getComponent } from "./documentView";
 import React from "react";
 import blockRegistry from "@/blocks/registry";
