@@ -15,70 +15,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ComponentRef, PanelComponent } from "@/extensionPoints/dom";
-import React, { useMemo } from "react";
+import React from "react";
 import GridLoader from "react-spinners/GridLoader";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage } from "@/errors";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
-import { BlockArg } from "@/core";
-import { PanelEntry } from "@/actionPanel/actionPanelTypes";
+import { BlockArg, RendererOutput } from "@/core";
+import { PanelPayload } from "@/actionPanel/actionPanelTypes";
+import RendererComponent from "@/actionPanel/RendererComponent";
 
-registerContribBlocks();
-registerBuiltinBlocks();
-
-const BodyComponent: React.FunctionComponent<{
-  body: string | ComponentRef;
-}> = ({ body }) =>
-  useMemo(() => {
-    if (typeof body === "string") {
-      return (
-        <div
-          style={{ height: "100%" }}
-          dangerouslySetInnerHTML={{ __html: body }}
-        />
-      );
-    }
-
-    const { Component, props } = body;
-    return <Component {...props} />;
-  }, [body]);
-
-const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
-  panel,
+const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
+  payload,
 }) => {
   const [component, pending, error] = useAsyncState(async () => {
-    if (!panel.payload) {
+    if (!payload) {
       return null;
     }
 
-    if ("error" in panel.payload) {
-      const { error } = panel.payload;
+    if ("error" in payload) {
+      const { error } = payload;
       return (
         <div className="text-danger p-3">Error running panel: {error}</div>
       );
     }
 
-    const { blockId, ctxt, args } = panel.payload;
-    console.debug("Render panel body", panel.payload);
+    const { blockId, ctxt, args } = payload;
+    console.debug("Render panel body", payload);
     const block = await blockRegistry.lookup(blockId);
     const body = await block.run(args as BlockArg, {
       ctxt,
       root: null,
-      logger: new ConsoleLogger(),
+      // TODO: use the correct logger here so the errors show up in the logs
+      logger: new ConsoleLogger({ blockId }),
     });
     return (
-      <div className="h-100">
+      <div className="h-100" data-block-id={blockId}>
         <ReactShadowRoot>
-          <BodyComponent body={body as PanelComponent} />
+          <RendererComponent body={body as RendererOutput} />
         </ReactShadowRoot>
       </div>
     );
-  }, [panel.payload?.key]);
+  }, [payload?.key]);
 
   if (error) {
     return (

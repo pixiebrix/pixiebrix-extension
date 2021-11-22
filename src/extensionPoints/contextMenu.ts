@@ -45,7 +45,7 @@ import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { isErrorObject } from "@/errors";
+import { BusinessError, isErrorObject } from "@/errors";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { isDeploymentActive } from "@/options/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
@@ -53,11 +53,18 @@ import { blockList } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { makeServiceContext } from "@/services/serviceUtils";
 
+export type ContextMenuTargetMode =
+  // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
+  "legacy" | "document" | "eventTarget";
+
 export type ContextMenuConfig = {
   title: string;
   action: BlockConfig | BlockPipeline;
 };
 
+/**
+ * The element the user right-clicked on to trigger the context menu
+ */
 let clickedElement: HTMLElement = null;
 let selectionHandlerInstalled = false;
 
@@ -68,6 +75,9 @@ function setActiveElement(event: MouseEvent): void {
   // useCapture: true to the event listener
   clickedElement = null;
   if (event?.button === BUTTON_SECONDARY) {
+    console.debug("Setting right-clicked element for contextMenu", {
+      target: event.target,
+    });
     clickedElement = event?.target as HTMLElement;
   }
 }
@@ -175,6 +185,8 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   abstract getBaseReader(): Promise<IReader>;
+
+  abstract get targetMode(): ContextMenuTargetMode;
 
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
 
@@ -285,6 +297,32 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     }
   }
 
+  decideReaderRoot(target: HTMLElement | Document): HTMLElement | Document {
+    switch (this.targetMode) {
+      case "legacy":
+      case "eventTarget":
+        return target;
+      case "document":
+        return document;
+      default:
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+    }
+  }
+
+  decidePipelineRoot(target: HTMLElement | Document): HTMLElement | Document {
+    switch (this.targetMode) {
+      case "eventTarget":
+        return target;
+      case "legacy":
+      case "document":
+        return document;
+      default:
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+    }
+  }
+
   private async registerExtension(
     extension: ResolvedExtension<ContextMenuConfig>
   ): Promise<void> {
@@ -316,7 +354,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           clickedElement ?? guessSelectedElement() ?? document;
 
         const input = {
-          ...(await reader.read(targetElement)),
+          ...(await reader.read(this.decideReaderRoot(targetElement))),
           // ClickData provides the data from schema defined above in ContextMenuReader
           ...clickData,
           // Add some additional data that people will generally want
@@ -325,7 +363,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
         const initialValues: InitialValues = {
           input,
-          root: document,
+          root: this.decidePipelineRoot(targetElement),
           serviceContext,
           optionsArgs: extension.optionsArgs,
         };
@@ -367,6 +405,7 @@ export interface MenuDefaultOptions {
 export interface MenuDefinition extends ExtensionPointDefinition {
   documentUrlPatterns?: Manifest.MatchPattern[];
   contexts: Menus.ContextType[];
+  targetMode: ContextMenuTargetMode;
   defaultOptions?: MenuDefaultOptions;
 }
 
@@ -397,6 +436,11 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
         ? castArray(isAvailable.matchPatterns)
         : [],
     };
+  }
+
+  get targetMode(): ContextMenuTargetMode {
+    // Default to "legacy" to match the legacy behavior
+    return this._definition.targetMode ?? "legacy";
   }
 
   async isAvailable(): Promise<boolean> {

@@ -70,14 +70,32 @@ const RUNTIME_SCHEMA = yaml.DEFAULT_SCHEMA.extend([
   pipelineExpression,
 ]);
 
+/**
+ * Return a new definition with auxiliary fields removed.
+ *
+ * The PixieBrix server adds a `sharing` and `updated_at` field to the YAML/JSON configs of packages, because the
+ * endpoint isn't set up to have an envelop around the package config. Therefore, we have to strip these out
+ * prior to showing the YAML/JSON config, or saving the values on the server.
+ *
+ * @see RecipeDefinition.updated_at
+ * @see RecipeDefinition.sharing
+ */
 function stripNonSchemaProps(brick: any) {
   return produce(brick, (draft: any) => {
-    if ("sharing" in draft) {
-      delete draft.sharing;
-    }
+    for (const prop of ["sharing", "updated_at"]) {
+      if (prop in draft) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection -- constant above
+        delete draft[prop];
+      }
 
-    if (typeof draft.metadata === "object" && "sharing" in draft.metadata) {
-      delete draft.metadata.sharing;
+      if (
+        draft.metadata != null &&
+        typeof draft.metadata === "object" &&
+        prop in draft.metadata
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection -- constant above
+        delete draft.metadata[prop];
+      }
     }
 
     return draft;

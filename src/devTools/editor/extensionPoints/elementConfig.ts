@@ -20,6 +20,7 @@ import {
   ApiVersion,
   IExtension,
   Metadata,
+  RecipeMetadata,
   RegistryId,
   ServiceDependency,
   UserOptions,
@@ -111,10 +112,11 @@ export interface BaseFormState<
   extension: TExtension;
 
   /**
-   * Metadata about the recipe (blueprint) used to install the extension,
-   * or `undefined` if the extension is not part of a recipe.
+   * Information about the recipe (i.e., blueprint) used to install the extension, or `undefined` if the extension
+   * is not part of a recipe.
+   * @see IExtension._recipe
    */
-  recipe: Metadata | undefined;
+  recipe: RecipeMetadata | undefined;
 }
 
 /**

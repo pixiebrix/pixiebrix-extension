@@ -35,6 +35,7 @@ import {
 } from "lodash";
 import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
+import { UnknownObject } from "@/types";
 
 /**
  * Create a Formik field name, validating the individual path parts.
@@ -407,7 +408,7 @@ export async function allSettledValues<T = unknown>(
 ): Promise<T[]> {
   return (await Promise.allSettled(promises))
     .filter(
-      (promise): promise is PromiseFulfilledResult<T> =>
+      (promise): promise is PromiseFulfilledResult<Awaited<T>> =>
         promise.status === "fulfilled"
     )
     .map(({ value }) => value);
@@ -470,4 +471,29 @@ export function isApiVersionAtLeast(
   const atLeastNum = Number(atLeast.slice(1));
 
   return isNum >= atLeastNum;
+}
+
+export function getProperty(obj: UnknownObject, property: string) {
+  if (Object.prototype.hasOwnProperty.call(obj, property)) {
+    // Checking for hasOwnProperty
+    // eslint-disable-next-line security/detect-object-injection
+    return obj[property];
+  }
+}
+
+export async function runInMillis<TResult>(
+  factory: () => Promise<TResult>,
+  maxMillis: number
+): Promise<TResult> {
+  const timeout = Symbol("timeout");
+  const value = await Promise.race([
+    factory(),
+    sleep(maxMillis).then(() => timeout),
+  ]);
+
+  if (value === timeout) {
+    throw new TimeoutError(`Method did not complete in ${maxMillis}ms`);
+  }
+
+  return value as TResult;
 }

@@ -24,7 +24,7 @@ import { CloseTabEffect, ActivateTabEffect } from "./tabs";
 import { HighlightEffect } from "./highlight";
 import { SetVueValues } from "./vue";
 import { ElementEvent } from "./event";
-import { WaitElementEffect } from "./wait";
+import { WaitEffect, WaitElementEffect } from "./wait";
 import { AlertEffect } from "./alert";
 import { GetPageState, SetPageState } from "./pageState";
 import { HideEffect } from "./hide";
@@ -50,6 +50,7 @@ function registerEffects(): void {
   registerBlock(new HighlightEffect());
   registerBlock(new SetVueValues());
   registerBlock(new ElementEvent());
+  registerBlock(new WaitEffect());
   registerBlock(new WaitElementEffect());
   registerBlock(new AlertEffect());
   registerBlock(new GetPageState());

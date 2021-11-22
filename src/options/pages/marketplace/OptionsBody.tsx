@@ -29,13 +29,9 @@ const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: "v2",
 };
 
-export interface OptionsBodyProps {
+const OptionsBody: React.FunctionComponent<{
   blueprint: Pick<RecipeDefinition, "options">;
-}
-
-const OptionsBody: React.FunctionComponent<OptionsBodyProps> = ({
-  blueprint,
-}) => {
+}> = ({ blueprint }) => {
   const OptionsGroup = useMemo(
     () =>
       genericOptionsFactory(
@@ -44,6 +40,7 @@ const OptionsBody: React.FunctionComponent<OptionsBodyProps> = ({
       ),
     [blueprint.options.schema, blueprint.options.uiSchema]
   );
+
   return (
     <>
       <Card.Body className="px-3 py-3">

@@ -17,6 +17,17 @@
 
 import { Primitive } from "type-fest";
 import { ServiceAuthPair } from "@/core";
+import React from "react";
+import { RecipeDefinition } from "@/types/definitions";
+
+export type WizardStep = {
+  key: string;
+  label: string;
+  Component: React.FunctionComponent<{
+    blueprint: RecipeDefinition;
+    reinstall: boolean;
+  }>;
+};
 
 export type WizardValues = {
   /**

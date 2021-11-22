@@ -15,17 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
+import { isExtensionContext } from "webext-detect-page";
 
-const Footer: React.FunctionComponent = () => (
-  <footer className="footer">
-    <div className="d-sm-flex justify-content-center justify-content-sm-between">
-      <span className="text-muted text-center text-sm-left d-block d-sm-inline-block">
-        Copyright © 2021 <a href="https://www.pixiebrix.com">PixieBrix, Inc.</a>{" "}
-        All rights reserved.
-      </span>
-    </div>
-  </footer>
-);
+const Footer: React.FunctionComponent = () => {
+  const extensionVersion = useMemo(() => {
+    if (isExtensionContext()) {
+      return browser.runtime.getManifest().version;
+    }
+
+    return null;
+  }, []);
+
+  return (
+    <footer className="footer">
+      <div className="d-sm-flex justify-content-center justify-content-sm-between">
+        <span className="text-muted text-center text-sm-left d-block d-sm-inline-block">
+          Copyright © 2021{" "}
+          <a href="https://www.pixiebrix.com">PixieBrix, Inc.</a> All rights
+          reserved.
+        </span>
+        {extensionVersion && (
+          <span className="text-muted text-center text-sm-right d-block d-sm-inline-block">
+            v{extensionVersion}
+          </span>
+        )}
+      </div>
+    </footer>
+  );
+};
 
 export default Footer;

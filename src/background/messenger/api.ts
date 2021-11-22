@@ -25,7 +25,7 @@ import browser from "webextension-polyfill";
 import { isBackgroundPage } from "webext-detect-page";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
-if (isBackgroundPage()) {
+if (isBackgroundPage() && process.env.DEBUG) {
   console.warn(
     "This should not have been imported in the background page. Use the API directly instead."
   );
@@ -36,6 +36,8 @@ export const containsPermissions = browser.permissions
   ? browser.permissions.contains
   : getMethod("CONTAINS_PERMISSIONS", bg);
 
+export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
+export const checkTargetPermissions = getMethod("CHECK_TARGET_PERMISSIONS", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
 export const whoAmI = getMethod("ECHO_SENDER", bg);
 export const activateTab = getMethod("ACTIVATE_TAB", bg);

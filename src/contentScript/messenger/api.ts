@@ -21,7 +21,7 @@ import browser from "webextension-polyfill";
 import { isContentScript } from "webext-detect-page";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
-if (isContentScript()) {
+if (isContentScript() && process.env.DEBUG) {
   console.warn(
     "This should not have been imported in the content script. Use the API directly instead."
   );
@@ -63,6 +63,9 @@ export const linkChildTab = getNotifier("LINK_CHILD_TAB");
 export const runBlockInContentScript = getMethod("RUN_BLOCK");
 export const cancelSelect = getMethod("CANCEL_SELECT_ELEMENT");
 export const selectElement = getMethod("SELECT_ELEMENT");
+
+export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
+export const runEffectPipeline = getMethod("RUN_EFFECT_PIPELINE");
 
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;

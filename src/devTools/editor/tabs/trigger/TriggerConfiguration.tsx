@@ -39,6 +39,7 @@ const TriggerConfiguration: React.FC<{
       if (e.currentTarget.value) {
         setFieldValue("extensionPoint.definition.rootSelector", null);
         setFieldValue("extensionPoint.definition.attachMode", null);
+        setFieldValue("extensionPoint.definition.targetMode", null);
       }
 
       setFieldValue("extensionPoint.definition.trigger", e.currentTarget.value);
@@ -87,10 +88,30 @@ const TriggerConfiguration: React.FC<{
                 elements are added to the page.
               </p>
             }
-            {...makeLockableFieldProps("Trigger", isLocked)}
+            {...makeLockableFieldProps("Attach Mode", isLocked)}
           >
             <option value="once">once</option>
             <option value="watch">watch</option>
+          </ConnectedFieldTemplate>
+        )}
+
+        {trigger !== "load" && trigger !== "appear" && (
+          <ConnectedFieldTemplate
+            name="extensionPoint.definition.targetMode"
+            as="select"
+            title="Target Mode"
+            description={
+              <p>
+                Use <code>eventTarget</code> to use the event target as the root
+                element for brick execution. Use&nbsp;
+                <code>root</code> to use the closest ancestor element matching
+                the trigger&apos;s selector.
+              </p>
+            }
+            {...makeLockableFieldProps("Target Mode", isLocked)}
+          >
+            <option value="eventTarget">eventTarget</option>
+            <option value="root">root</option>
           </ConnectedFieldTemplate>
         )}
 

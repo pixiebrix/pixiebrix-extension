@@ -17,7 +17,7 @@
 
 import { actions as savingExtensionActions } from "./savingExtensionSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { selectIsWizardOpen, selectIsSaving } from "./savingExtensionSelectors";
+import { selectIsSaving, selectIsWizardOpen } from "./savingExtensionSelectors";
 import {
   selectActiveElement,
   selectElements,
@@ -29,8 +29,14 @@ import {
 } from "@/devTools/editor/slices/editorSlice";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import useReset from "@/devTools/editor/hooks/useReset";
-import { RegistryId, Metadata, DeploymentContext } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
+import {
+  DeploymentContext,
+  Metadata,
+  PersistedExtension,
+  RecipeMetadata,
+  RegistryId,
+} from "@/core";
+import { UnsavedRecipeDefinition } from "@/types/definitions";
 import useNotifications from "@/hooks/useNotifications";
 import { selectExtensions } from "@/options/selectors";
 import {
@@ -42,6 +48,8 @@ import {
 import { replaceRecipeExtension } from "./saveHelpers";
 import { actions as optionsActions } from "@/options/slices";
 import pDefer, { DeferredPromise } from "p-defer";
+import { PackageUpsertResponse } from "@/types/contract";
+import { pick } from "lodash";
 
 export type RecipeConfiguration = {
   id: RegistryId;
@@ -51,6 +59,17 @@ export type RecipeConfiguration = {
 };
 
 let savingDeferred: DeferredPromise<void>;
+
+export function selectRecipeMetadata(
+  unsavedRecipe: UnsavedRecipeDefinition,
+  response: PackageUpsertResponse
+): RecipeMetadata {
+  return {
+    ...unsavedRecipe.metadata,
+    sharing: pick(response, ["public", "organizations"]),
+    ...pick(response, ["updated_at"]),
+  };
+}
 
 const useSavingWizard = () => {
   const dispatch = useDispatch();
@@ -116,8 +135,8 @@ const useSavingWizard = () => {
 
   /**
    * 1. Creates new recipe,
-   * 2. updates all extensions of the old recipe to point to the new one,
-   * 3. and saves the changes of the element.
+   * 2. updates all extensions of the old recipe to point to the new one, and
+   * 3. saves the changes of the element.
    */
   const saveElementAndCreateNewRecipe = async (
     recipeMeta: RecipeConfiguration
@@ -137,52 +156,46 @@ const useSavingWizard = () => {
       id: validateRegistryId(recipeMeta.id),
     };
 
-    const newRecipe = replaceRecipeExtension(
+    const newRecipe: UnsavedRecipeDefinition = replaceRecipeExtension(
       recipe,
       newMeta,
       extensions,
       element
     );
 
-    const createResult = await createRecipe({
+    const createRecipeResponse = await createRecipe({
       recipe: newRecipe,
+      // Don't share with anyone (only the author will have access)
       organizations: [],
       public: false,
     });
 
-    if ("error" in createResult) {
+    if ("error" in createRecipeResponse) {
       const errorMessage = "Failed to create new Blueprint";
       notify.error(errorMessage, {
-        error: createResult.error,
+        error: createRecipeResponse.error,
       });
       closeWizard(errorMessage);
       return;
     }
 
-    const error = await create({ element, pushToCloud: false });
-    if (error) {
-      notify.error(error);
-      closeWizard(error);
+    // `pushToCloud` to false because we don't want to save a copy of the individual extension to the user's account
+    // because it will already be available via the blueprint
+    const createExtensionError = await create({ element, pushToCloud: false });
+    if (createExtensionError) {
+      notify.error(createExtensionError);
+      closeWizard(createExtensionError);
       return;
     }
 
-    const recipeExtensions = extensions.filter(
-      (x) => x._recipe?.id === recipe.metadata.id
+    void updateExtensionRecipeLinks(
+      recipe.metadata.id,
+      selectRecipeMetadata(newRecipe, createRecipeResponse.data),
+      // Unlink the installed extensions from the deployment
+      { _deployment: null as DeploymentContext }
     );
 
-    for (const recipeExtension of recipeExtensions) {
-      const update = {
-        id: recipeExtension.id,
-        _recipe: newRecipe.metadata,
-        _deployment: undefined as DeploymentContext,
-      };
-
-      dispatch(optionsActions.updateExtension(update));
-    }
-
-    void updateRecipeElements(recipe.metadata.id, newRecipe);
-
-    closeWizard(error);
+    closeWizard(createExtensionError);
   };
 
   /**
@@ -198,7 +211,7 @@ const useSavingWizard = () => {
     const elementRecipeMeta = element.recipe;
     const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
 
-    const newRecipe = replaceRecipeExtension(
+    const newRecipe: UnsavedRecipeDefinition = replaceRecipeExtension(
       recipe,
       recipeMeta,
       extensions,
@@ -210,15 +223,15 @@ const useSavingWizard = () => {
       (x) => x.name === newRecipe.metadata.id
     )?.id;
 
-    const updateResult = await updateRecipe({
+    const updateRecipeResponse = await updateRecipe({
       packageId,
       recipe: newRecipe,
     });
 
-    if ("error" in updateResult) {
+    if ("error" in updateRecipeResponse) {
       const errorMessage = "Failed to update the Blueprint";
       notify.error(errorMessage, {
-        error: updateResult.error,
+        error: updateRecipeResponse.error,
       });
       closeWizard(errorMessage);
       return;
@@ -231,36 +244,41 @@ const useSavingWizard = () => {
       return;
     }
 
+    void updateExtensionRecipeLinks(
+      recipe.metadata.id,
+      selectRecipeMetadata(newRecipe, updateRecipeResponse.data)
+    );
+
+    closeWizard(error);
+  };
+
+  const updateExtensionRecipeLinks = async (
+    recipeId: RegistryId,
+    recipeMetadata: RecipeMetadata,
+    extraUpdate: Partial<PersistedExtension> = {}
+  ) => {
+    // 1) Update the extensions in the Redux optionsSlice
     const recipeExtensions = extensions.filter(
-      (x) => x._recipe?.id === recipe.metadata.id
+      (x) => x._recipe?.id === recipeId
     );
 
     for (const recipeExtension of recipeExtensions) {
       const update = {
         id: recipeExtension.id,
-        _recipe: newRecipe.metadata,
+        _recipe: recipeMetadata,
+        ...extraUpdate,
       };
 
       dispatch(optionsActions.updateExtension(update));
     }
 
-    void updateRecipeElements(recipe.metadata.id, newRecipe);
-
-    closeWizard(error);
-  };
-
-  const updateRecipeElements = async (
-    sourceRecipeId: RegistryId,
-    newRecipe: RecipeDefinition
-  ) => {
-    const recipeElements = elements.filter(
-      (x) => x.recipe?.id === sourceRecipeId
-    );
+    // 2) Update the extensions in the Redux editorSlice (the slice for the page editor)
+    const recipeElements = elements.filter((x) => x.recipe?.id === recipeId);
 
     for (const recipeElement of recipeElements) {
       const elementUpdate = {
         uuid: recipeElement.uuid,
-        recipe: newRecipe.metadata,
+        recipe: recipeMetadata,
       };
 
       dispatch(editorActions.updateElement(elementUpdate));

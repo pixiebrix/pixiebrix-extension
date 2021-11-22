@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.4.7-alpha.3",
+  "version": "1.4.8-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -125,7 +125,7 @@
     "rollbar": "^2.24.0",
     "schema-to-yup": "1.10.0",
     "semver": "^7.3.5",
-    "serialize-error": "^8.1.0",
+    "serialize-error": "^9.0.0",
     "simple-icons": "^5.8.0",
     "slugify": "^1.6.0",
     "to-json-schema": "^0.2.5",
@@ -211,7 +211,7 @@
     "axios-mock-adapter": "^1.19.0",
     "babel-jest": "^27.0.6",
     "babel-loader": "^8.2.2",
-    "chromedriver": "^94.0.0",
+    "chromedriver": "^96.0.0",
     "compass-mixins": "^0.12.10",
     "concurrently": "^6.2.1",
     "cooky-cutter": "^1.5.4",
@@ -255,60 +255,6 @@
     "yaml-jest-transform": "^1.0.0",
     "yaml-loader": "^0.6.0",
     "zip-dir": "^2.0.0"
-  },
-  "jest": {
-    "silent": true,
-    "testEnvironment": "jest-environment-jsdom",
-    "modulePaths": [
-      "/src"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "yaml",
-      "yml",
-      "json"
-    ],
-    "testPathIgnorePatterns": [
-      "<rootDir>/src/vendors/",
-      "<rootDir>/selenium/"
-    ],
-    "transform": {
-      "^.+\\.[jt]sx?$": "babel-jest",
-      "^.+\\.ya?ml$": "yaml-jest-transform",
-      "^.+\\.ya?ml\\?loadAsText$": "jest-raw-loader",
-      "^.+\\.txt$": "jest-raw-loader"
-    },
-    "transformIgnorePatterns": [
-      "node_modules/(?!@cfworker|idb|webext-|p-timeout|p-defer)"
-    ],
-    "setupFiles": [
-      "<rootDir>/src/testEnv.js",
-      "jest-webextension-mock",
-      "fake-indexeddb/auto"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/testAfterEnv.js"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.{ts,tsx}",
-      "!src/**/*.stories.tsx",
-      "!**/__mocks__/**",
-      "!**/node_modules/**",
-      "!**/vendor/**"
-    ],
-    "moduleNameMapper": {
-      "\\.module.(css|scss)$": "identity-obj-proxy",
-      "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",
-      "^@/(.*)$": "<rootDir>/src/$1",
-      "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
-      "^@contrib/(.*?)(\\?loadAsText)?$": "<rootDir>/contrib/$1",
-      "^@schemas/(.*)$": "<rootDir>/schemas/$1",
-      "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
-      "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
-    }
   },
   "webExt": {
     "sourceDir": "dist"

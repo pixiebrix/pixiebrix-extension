@@ -37,6 +37,7 @@ import {
   isInnerExtensionPoint,
 } from "@/devTools/editor/extensionPoints/base";
 import { useGetEditablePackagesQuery } from "@/services/api";
+import { UnknownObject } from "@/types";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -48,7 +49,7 @@ async function upsertConfig(
 ): Promise<void> {
   const client = await getLinkedApiClient();
 
-  const data = { config: objToYaml(config as Record<string, unknown>), kind };
+  const data = { config: objToYaml(config as UnknownObject), kind };
 
   if (packageUUID) {
     await client.put(`api/bricks/${packageUUID}/`, data);
@@ -105,6 +106,11 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
   }
 }
 
+/**
+ * @param element the page editor formik state
+ * @param pushToCloud true to save a copy of the extension to the user's account
+ * @returns errorMessage an error message, or null if no error error occurred
+ */
 type CreateCallback = (config: {
   element: FormState;
   pushToCloud: boolean;

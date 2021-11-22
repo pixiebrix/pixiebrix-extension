@@ -34,6 +34,7 @@ import {
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
 import * as browserAction from "@/background/browserAction";
+import { checkTargetPermissions, ensureContentScript } from "@/background/util";
 
 expectContext("background");
 
@@ -49,10 +50,13 @@ declare global {
     GOOGLE_SHEETS_BATCH_UPDATE: typeof sheets.batchUpdate;
     GOOGLE_SHEETS_BATCH_GET: typeof sheets.batchGet;
 
+    INJECT_SCRIPT: typeof ensureContentScript;
+    CHECK_TARGET_PERMISSIONS: typeof checkTargetPermissions;
     CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
     OPEN_POPUP_PROMPT: typeof openPopupPrompt;
+
     ECHO_SENDER: typeof whoAmI;
     ACTIVATE_TAB: typeof activateTab;
     CLOSE_TAB: typeof closeTab;
@@ -77,10 +81,13 @@ registerMethods({
   GOOGLE_SHEETS_BATCH_UPDATE: sheets.batchUpdate,
   GOOGLE_SHEETS_BATCH_GET: sheets.batchGet,
 
+  CHECK_TARGET_PERMISSIONS: checkTargetPermissions,
+  INJECT_SCRIPT: ensureContentScript,
   CONTAINS_PERMISSIONS: browser.permissions.contains,
   UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
   ENSURE_CONTEXT_MENU: ensureContextMenu,
   OPEN_POPUP_PROMPT: openPopupPrompt,
+
   ECHO_SENDER: whoAmI,
   ACTIVATE_TAB: activateTab,
   CLOSE_TAB: closeTab,

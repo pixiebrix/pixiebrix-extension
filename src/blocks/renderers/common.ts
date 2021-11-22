@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Logger } from "@/core";
-import { PanelComponent } from "@/extensionPoints/dom";
+import { Logger, RendererOutput } from "@/core";
+import { getErrorMessage } from "@/errors";
 
-function isRendererOutput(value: unknown): boolean {
+function isRendererOutput(value: unknown): value is RendererOutput {
   if (typeof value === "string") {
     return true;
   }
@@ -36,9 +36,9 @@ function isRendererOutput(value: unknown): boolean {
 
 /** An error boundary for renderers */
 export async function errorBoundary(
-  renderPromise: Promise<PanelComponent>,
+  renderPromise: Promise<RendererOutput>,
   logger: Logger
-): Promise<PanelComponent> {
+): Promise<RendererOutput> {
   try {
     const value = await renderPromise;
 
@@ -53,6 +53,6 @@ export async function errorBoundary(
     // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
     logger.error(error);
-    return `<div>An error occurred: ${error.toString()}</div>`;
+    return `<div>An error occurred: ${getErrorMessage(error)}</div>`;
   }
 }

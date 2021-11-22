@@ -28,6 +28,7 @@ import {
   menuItemFormStateFactory,
   metadataFactory,
   recipeFactory,
+  installedRecipeMetadataFactory,
 } from "@/tests/factories";
 import useCreateMock from "@/devTools/editor/hooks/useCreate";
 import useResetMock from "@/devTools/editor/hooks/useReset";
@@ -41,6 +42,7 @@ import { selectElements } from "@/devTools/editor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import menuItem from "@/devTools/editor/extensionPoints/menuItem";
 import pDefer from "p-defer";
+import { pick } from "lodash";
 
 jest.unmock("react-redux");
 
@@ -84,7 +86,7 @@ const renderUseSavingWizard = (store: Store) =>
   });
 
 test("maintains wizard open state", () => {
-  const metadata = metadataFactory();
+  const metadata = installedRecipeMetadataFactory();
   const element = formStateFactory({
     recipe: metadata,
   });
@@ -160,7 +162,11 @@ describe("saving a Recipe Extension", () => {
     const extensionLabel = recipe.extensionPoints[0].label;
     const element = menuItemFormStateFactory({
       label: extensionLabel,
-      recipe: recipe.metadata,
+      recipe: {
+        ...recipe.metadata,
+        updated_at: recipe.updated_at,
+        sharing: recipe.sharing,
+      },
     });
     const extension = menuItem.selectExtension(element);
     extension._recipe = element.recipe;
@@ -231,7 +237,10 @@ describe("saving a Recipe Extension", () => {
     // Check new element added
     const elements = selectElements(store.getState());
     expect(elements).toHaveLength(2);
-    expect(elements[0].recipe).toBe(recipe.metadata);
+    expect(elements[0].recipe).toStrictEqual({
+      ...recipe.metadata,
+      ...pick(recipe, ["sharing", "updated_at"]),
+    });
     expect(elements[1].recipe).toBeUndefined();
 
     // Check the source element is reset

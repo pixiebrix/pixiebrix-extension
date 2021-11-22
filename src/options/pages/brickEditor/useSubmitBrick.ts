@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { castArray } from "lodash";
+import { castArray, pick } from "lodash";
 import { useCallback } from "react";
 import { useHistory } from "react-router";
 import { push } from "connected-react-router";
@@ -24,14 +24,14 @@ import { EditorValues } from "./Editor";
 import { BrickValidationResult, validateSchema } from "./validate";
 import useRefresh from "@/hooks/useRefresh";
 import { reactivate } from "@/background/navigation";
-import { Definition, RecipeDefinition } from "@/types/definitions";
+import { Definition, UnsavedRecipeDefinition } from "@/types/definitions";
 import useReinstall from "@/pages/marketplace/useReinstall";
 import useNotifications from "@/hooks/useNotifications";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { getErrorMessage, isAxiosError } from "@/errors";
-import { UUID } from "@/core";
 import { clearServiceCache } from "@/background/requests";
 import { loadBrickYaml } from "@/runtime/brickYaml";
+import { PackageUpsertResponse } from "@/types/contract";
 
 type SubmitOptions = {
   create: boolean;
@@ -83,23 +83,31 @@ function useSubmitBrick({
     async (values, { setErrors, resetForm }) => {
       const { config, reactivate: reinstallBlueprint } = values;
 
-      const json = loadBrickYaml(config) as Definition | RecipeDefinition;
-      const { kind, metadata } = json;
+      const unsavedBrickJson = loadBrickYaml(config) as
+        | Definition
+        | UnsavedRecipeDefinition;
+      const { kind, metadata } = unsavedBrickJson;
 
       try {
         const client = await getLinkedApiClient();
-        const { data } = await client[create ? "post" : "put"]<{ id: UUID }>(
-          url,
-          {
-            ...values,
-            kind,
-          }
-        );
+        const { data } = await client[
+          create ? "post" : "put"
+        ]<PackageUpsertResponse>(url, {
+          ...values,
+          kind,
+        });
 
         // We attach the handler below, and don't want it to block the save
         let refreshPromise: Promise<void>;
         if (kind === "recipe" && reinstallBlueprint) {
-          refreshPromise = reinstall(json as RecipeDefinition);
+          // Typescript doesn't have enough information to kind === "recipe" distinguishes RecipeDefinition from
+          // Definition
+          const unsavedRecipeDefinition = unsavedBrickJson as UnsavedRecipeDefinition;
+          refreshPromise = reinstall({
+            ...unsavedRecipeDefinition,
+            sharing: pick(data, ["organizations", "public"]),
+            ...pick(data, ["updated_at"]),
+          });
         } else if (kind === "service") {
           // Fetch the remote definitions, then clear the background page's service cache so it's forced to read the
           // updated service definition.

@@ -22,6 +22,7 @@ import { MarkdownRenderer } from "./markdown";
 import { PropertyTableRenderer } from "./propertyTable";
 import { CustomFormRenderer } from "./customForm";
 import { TableRenderer } from "./table";
+import { DocumentRenderer } from "./document";
 
 function registerRenderers(): void {
   registerBlock(new HtmlRenderer());
@@ -30,6 +31,7 @@ function registerRenderers(): void {
   registerBlock(new PropertyTableRenderer());
   registerBlock(new CustomFormRenderer());
   registerBlock(new TableRenderer());
+  registerBlock(new DocumentRenderer());
 }
 
 export default registerRenderers;

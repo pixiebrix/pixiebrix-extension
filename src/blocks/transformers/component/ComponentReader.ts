@@ -41,7 +41,7 @@ export class ComponentReader extends Transformer {
 
   inputSchema: Schema = {
     type: "object",
-    required: ["framework", "selector"],
+    required: ["framework"],
     properties: {
       framework: {
         type: "string",
@@ -51,16 +51,17 @@ export class ComponentReader extends Transformer {
         type: "string",
         format: "selector",
         description:
-          "CSS/JQuery selector to select the HTML element that corresponds to the component",
+          "CSS/JQuery selector to select the HTML element that corresponds to the component. Or, leave blank to use root context.",
       },
       optional: {
         type: "boolean",
-        default: false,
         description: "Whether or not the selector is always available",
+        default: false,
       },
       traverseUp: {
         type: "number",
         description: "Traverse non-visible framework elements",
+        default: 0,
       },
     },
   };

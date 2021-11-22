@@ -28,13 +28,13 @@ import {
   OAuth2Context,
   AuthData,
   ReaderOutput,
-  RenderedHTML,
   Schema,
   TokenContext,
   KeyedConfig,
   RegistryId,
   ResolvedExtension,
   UUID,
+  RendererOutput,
 } from "@/core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
@@ -298,14 +298,14 @@ export abstract class Renderer extends Block {
   abstract render(
     inputs: BlockArg,
     options: BlockOptions
-  ): Promise<RenderedHTML>;
+  ): Promise<RendererOutput>;
 
   async isRootAware(): Promise<boolean> {
     // Most renderers don't use the root, so have them opt-in
     return false;
   }
 
-  async run(value: BlockArg, options: BlockOptions): Promise<RenderedHTML> {
+  async run(value: BlockArg, options: BlockOptions): Promise<RendererOutput> {
     return this.render(value, options);
   }
 }

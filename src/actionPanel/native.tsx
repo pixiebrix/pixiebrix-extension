@@ -33,8 +33,8 @@ import {
   FormEntry,
   PanelEntry,
   RendererError,
-  RendererPayload,
 } from "@/actionPanel/actionPanelTypes";
+import { RendererPayload } from "@/runtime/runtimeTypes";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-extension";

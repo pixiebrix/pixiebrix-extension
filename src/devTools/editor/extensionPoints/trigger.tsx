@@ -35,6 +35,7 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import {
   AttachMode,
+  TargetMode,
   Trigger,
   TriggerConfig,
   TriggerDefinition,
@@ -64,6 +65,7 @@ export interface TriggerFormState extends BaseFormState {
       trigger: Trigger;
       reader: SingleLayerReaderConfig;
       attachMode: AttachMode;
+      targetMode: TargetMode;
       isAvailable: NormalizedAvailability;
     };
   };
@@ -84,6 +86,7 @@ function fromNativeElement(
         trigger: "load",
         rootSelector: null,
         attachMode: null,
+        targetMode: null,
         reader: getImplicitReader("trigger"),
         isAvailable: makeIsAvailable(url),
       },
@@ -99,7 +102,14 @@ function selectExtensionPoint(
 ): ExtensionPointConfig<TriggerDefinition> {
   const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, rootSelector, attachMode, reader, trigger },
+    definition: {
+      isAvailable,
+      rootSelector,
+      attachMode,
+      targetMode,
+      reader,
+      trigger,
+    },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
@@ -109,6 +119,7 @@ function selectExtensionPoint(
       isAvailable: pickBy(isAvailable, identity),
       trigger,
       attachMode,
+      targetMode,
       rootSelector,
     },
   });
@@ -149,6 +160,7 @@ async function fromExtensionPoint(
     type,
     rootSelector,
     attachMode,
+    targetMode,
     reader,
     trigger = "load",
   } = extensionPoint.definition;
@@ -174,6 +186,7 @@ async function fromExtensionPoint(
         ...extensionPoint.definition,
         rootSelector,
         attachMode,
+        targetMode,
         trigger,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
@@ -195,6 +208,7 @@ async function fromExtension(
   const {
     rootSelector,
     attachMode,
+    targetMode,
     trigger,
     reader,
   } = extensionPoint.definition;
@@ -214,6 +228,7 @@ async function fromExtension(
         rootSelector,
         trigger,
         attachMode,
+        targetMode,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },

@@ -17,32 +17,7 @@
 
 import { RegistryId, UUID } from "@/core";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-
-/**
- * Information required to display a renderer
- */
-export type RendererPayload = {
-  /**
-   * The registry id of the renderer block, e.g., @pixiebrix/table
-   */
-  blockId: RegistryId;
-  /**
-   * A unique id for the content, used control re-rendering (similar to `key` in React)
-   */
-  key: string;
-  /**
-   * The BlockArg to pass to the renderer
-   * @see BlockProps.args
-   * @see BlockArg
-   */
-  args: unknown;
-  /**
-   * The context to pass to the renderer
-   * @see BlockProps.context
-   * @see BlockOptions
-   */
-  ctxt: unknown;
-};
+import { RendererPayload } from "@/runtime/runtimeTypes";
 
 export type RendererError = {
   /**
@@ -66,6 +41,11 @@ export type RendererError = {
 export type EntryType = "panel" | "form";
 
 /**
+ * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
+ */
+export type PanelPayload = RendererPayload | RendererError | null;
+
+/**
  * A panel added by an extension attached to an ActionPanelExtensionPoint
  * @see ActionPanelExtensionPoint
  */
@@ -83,7 +63,10 @@ export type PanelEntry = {
    * Heading for tab name in the action panel
    */
   heading: string;
-  payload: RendererPayload | RendererError | null;
+  /**
+   * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
+   */
+  payload: PanelPayload;
 };
 
 /**

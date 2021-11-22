@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getPropByPath, isSimplePath } from "@/runtime/pathHelpers";
+import {
+  getFieldNamesFromPathString,
+  getPropByPath,
+  isSimplePath,
+} from "@/runtime/pathHelpers";
 
 describe("getPropByPath", () => {
   test("can get array element by index", () => {
@@ -58,5 +62,28 @@ describe("isSimplePath", () => {
     expect(isSimplePath("@anOutputKey", { anOutputKey: "foo" })).toBeFalsy();
     expect(isSimplePath("kebab-case", { kebab_case: "foo" })).toBeFalsy();
     expect(isSimplePath("snake_case", { "snake-case": "foo" })).toBeFalsy();
+  });
+});
+
+describe("getFieldNamesFromPathString", () => {
+  test("root field name", () => {
+    expect(getFieldNamesFromPathString("foo")).toStrictEqual([
+      undefined,
+      "foo",
+    ]);
+  });
+
+  test("single parent", () => {
+    expect(getFieldNamesFromPathString("foo.bar")).toStrictEqual([
+      "foo",
+      "bar",
+    ]);
+  });
+
+  test("multiple ancestors", () => {
+    expect(getFieldNamesFromPathString("foo.bar.baz")).toStrictEqual([
+      "foo.bar",
+      "baz",
+    ]);
   });
 });

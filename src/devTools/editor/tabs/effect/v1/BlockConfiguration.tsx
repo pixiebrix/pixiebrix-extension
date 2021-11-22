@@ -135,16 +135,17 @@ const BlockConfiguration: React.FunctionComponent<{
           {
             // Only show if necessary. Currently only the trigger extension point passes the element that triggered the
             // event through for the reader root
-            isRootAware && context.values.type === "trigger" && (
-              <ConnectedFieldTemplate
-                name={configName("rootMode")}
-                label="Root Mode"
-                as={SelectWidget}
-                options={rootModeOptions}
-                blankValue="inherit"
-                description="The root mode controls which page element PixieBrix provides as the implicit element"
-              />
-            )
+            isRootAware &&
+              ["trigger", "contextMenu"].includes(context.values.type) && (
+                <ConnectedFieldTemplate
+                  name={configName("rootMode")}
+                  label="Root Mode"
+                  as={SelectWidget}
+                  options={rootModeOptions}
+                  blankValue="inherit"
+                  description="The root mode controls which page element PixieBrix provides as the implicit element"
+                />
+              )
           }
 
           {blockType && blockType !== "renderer" && (
