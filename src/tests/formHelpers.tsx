@@ -27,7 +27,10 @@ export const createFormikTemplate = (
   onSubmit = jest.fn()
 ) => {
   const FormikTemplate = ({ children }: PropsWithChildren<unknown>) => (
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={(values) => onSubmit(values)}
+    >
       <Form>
         {children}
         <button type="submit">Submit</button>

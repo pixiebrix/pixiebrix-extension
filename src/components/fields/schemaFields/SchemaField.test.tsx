@@ -16,10 +16,13 @@
  */
 
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Formik } from "formik";
-import { ApiVersion } from "@/core";
+import { ApiVersion, Expression, TemplateEngine } from "@/core";
+import { createFormikTemplate } from "@/tests/formHelpers";
+import { waitForEffect } from "@/tests/testHelpers";
+import userEvent from "@testing-library/user-event";
 
 function expectToggleOptions(container: HTMLElement, expected: string[]): void {
   // React Bootstrap dropdown does not render children items unless toggled
@@ -30,6 +33,16 @@ function expectToggleOptions(container: HTMLElement, expected: string[]): void {
     )
   );
   expect(actual).toEqual(new Set(expected));
+}
+
+function expressionValue<T extends TemplateEngine>(
+  type: T,
+  value?: string
+): Expression<string, T> {
+  return {
+    __type__: type,
+    __value__: value ?? "",
+  };
 }
 
 describe("SchemaField", () => {
@@ -110,6 +123,57 @@ describe("SchemaField", () => {
     expect(container.querySelector("input[type='number']")).not.toBeNull();
     expectToggleOptions(container, ["number", "var", "omit"]);
   });
+
+  test.each`
+    startValue                            | inputMode     | toggleOption  | expectedEndValue
+    ${{ foo: "bar" }}                     | ${"Object"}   | ${"Variable"} | ${expressionValue("var")}
+    ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Object"}   | ${{}}
+    ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Mustache"} | ${expressionValue("mustache", "")}
+    ${expressionValue("mustache", "def")} | ${"Mustache"} | ${"Array"}    | ${[]}
+  `(
+    "Test field toggle transition from $inputMode to $toggleOption",
+    async ({ startValue, toggleOption, expectedEndValue }) => {
+      const initialState = {
+        apiVersion: "v3",
+        myField: startValue,
+      };
+      const onSubmit = jest.fn();
+      const FormikTemplate = createFormikTemplate(initialState, onSubmit);
+
+      // Using an empty schema to allow anything, since we're testing toggling, not schema parsing
+      render(
+        <FormikTemplate>
+          <SchemaField name={"myField"} schema={{}} />
+        </FormikTemplate>
+      );
+
+      await waitForEffect();
+
+      const toggle = screen
+        .getByTestId("toggle-myField")
+        .querySelector("button");
+      expect(toggle).not.toBeNull();
+
+      userEvent.click(toggle);
+
+      const newOption = screen.getByText(toggleOption, { exact: false });
+      expect(newOption).not.toBeNull();
+
+      // Await this element to avoid the "unable to click element" error
+      await waitFor(() => {
+        userEvent.click(newOption);
+      });
+
+      userEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith({
+          apiVersion: "v3",
+          myField: expectedEndValue,
+        });
+      });
+    }
+  );
 
   test("string/integer field options", () => {
     const { container } = render(
