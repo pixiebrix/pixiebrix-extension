@@ -480,3 +480,20 @@ export function getProperty(obj: UnknownObject, property: string) {
     return obj[property];
   }
 }
+
+export async function runInMillis<TResult>(
+  factory: () => Promise<TResult>,
+  maxMillis: number
+): Promise<TResult> {
+  const timeout = Symbol("timeout");
+  const value = await Promise.race([
+    factory(),
+    sleep(maxMillis).then(() => timeout),
+  ]);
+
+  if (value === timeout) {
+    throw new TimeoutError(`Method did not complete in ${maxMillis}ms`);
+  }
+
+  return value as TResult;
+}
