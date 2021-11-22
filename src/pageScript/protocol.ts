@@ -42,7 +42,7 @@ export type ReadOptions = {
 
 export type ReadPayload = ReadOptions & {
   framework: Framework;
-  selector: string;
+  selector: string | null;
 };
 
 export interface WritePayload {
