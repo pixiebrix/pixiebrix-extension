@@ -342,7 +342,14 @@ async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
       const message = getErrorMessage(error);
 
       if (NOT_READY_PARTIAL_MESSAGES.some((query) => message.includes(query))) {
-        console.debug(`Target not ready. Retrying in ${100 * (retries + 1)}ms`);
+        console.debug(
+          `Target not ready. Retrying in ${100 * (retries + 1)}ms`,
+          {
+            retries,
+            error,
+            message,
+          }
+        );
         // eslint-disable-next-line no-await-in-loop -- retry loop
         await sleep(250 * (retries + 1));
       } else {
@@ -386,7 +393,11 @@ export async function executeInTarget(
   blockArgs: BlockArg,
   options: RemoteBlockOptions
 ): Promise<unknown> {
-  console.debug(`Running ${blockId} in the target tab`);
+  console.debug(`Running ${blockId} in the target tab`, {
+    blockId,
+    blockArgs,
+    options,
+  });
 
   const { maxRetries = DEFAULT_MAX_RETRIES } = options;
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import pTimeout from "p-timeout";
 import browser, { Runtime } from "webextension-polyfill";
 import { connectDevtools } from "@/devTools/protocol";
@@ -26,7 +26,6 @@ import { FrameworkMeta } from "@/messaging/constants";
 import { reportError } from "@/telemetry/logging";
 import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
-import { sleep } from "@/utils";
 import { getErrorMessage } from "@/errors";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
 import { Except } from "type-fest";
@@ -35,6 +34,7 @@ import {
   checkTargetPermissions,
   ensureContentScript,
 } from "@/background/messenger/api";
+import { runInMillis } from "@/utils";
 
 interface FrameMeta {
   url: string;
@@ -109,23 +109,6 @@ class PermissionsError extends Error {
     // Set the prototype explicitly.
     Object.setPrototypeOf(this, PermissionsError.prototype);
   }
-}
-
-async function runInMillis<TResult>(
-  factory: () => Promise<TResult>,
-  maxMillis: number
-): Promise<TResult> {
-  const timeout = Symbol("timeout");
-  const value = await Promise.race([
-    factory(),
-    sleep(maxMillis).then(() => timeout),
-  ]);
-
-  if (value === timeout) {
-    throw new Error(`Method did not complete in ${maxMillis}ms`);
-  }
-
-  return value as TResult;
 }
 
 async function connectToFrame(): Promise<FrameMeta> {
