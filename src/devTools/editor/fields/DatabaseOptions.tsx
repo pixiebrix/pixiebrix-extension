@@ -116,13 +116,19 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
         }}
       />
 
-      <SchemaField name={configName("key")} label="Key" schema={keySchema} />
+      <SchemaField
+        name={configName("key")}
+        label="Key"
+        schema={keySchema}
+        isRequired
+      />
 
       {showValueField && (
         <SchemaField
           name={configName("value")}
           label="Value"
           schema={valueSchema}
+          isRequired
         />
       )}
 
