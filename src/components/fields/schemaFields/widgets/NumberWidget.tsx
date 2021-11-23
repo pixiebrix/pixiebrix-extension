@@ -19,6 +19,7 @@ import React, { FocusEventHandler, useCallback, useState } from "react";
 import { Form, FormControlProps } from "react-bootstrap";
 import { useField } from "formik";
 import { round } from "lodash";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
 /**
  * A basic input widget for numbers
@@ -26,11 +27,21 @@ import { round } from "lodash";
  * @see: IntegerWidget
  */
 const NumberWidget: React.FC<
-  FormControlProps & {
-    name: string;
-    step?: number;
-  }
-> = ({ name, step, ...restProps }) => {
+  SchemaFieldProps &
+    FormControlProps & {
+      step?: number;
+    }
+> = ({
+  name,
+  schema,
+  isRequired,
+  uiSchema,
+  hideLabel,
+  isObjectProperty,
+  isArrayItem,
+  step,
+  ...restProps
+}) => {
   const [{ value: formValue }, , { setValue: setFormValue }] = useField<number>(
     name
   );
@@ -51,13 +62,14 @@ const NumberWidget: React.FC<
   }, [setFormValue, step, value]);
 
   return (
+    // Spread the input props first so that we override the explicit ones below
     <Form.Control
+      {...restProps}
       type="number"
       value={value}
       onChange={onChange}
       onBlur={onBlur}
       step={step ? String(step) : ""}
-      {...restProps}
     />
   );
 };
