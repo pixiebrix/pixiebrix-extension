@@ -19,7 +19,6 @@ import React, { useState } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { Schema } from "@/core";
-import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
 import { joinName } from "@/utils";
 import { SheetMeta } from "@/contrib/google/sheets/types";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
@@ -29,7 +28,7 @@ import { useAsyncState } from "@/hooks/common";
 import { sheets } from "@/background/messenger/api";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getErrorMessage } from "@/errors";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/lookup";
 
 const DEFAULT_HEADER_SCHEMA = {
   type: "string",
@@ -67,6 +66,7 @@ const HeaderField: React.FunctionComponent<{
         ) : null
       }
       schema={(headerSchema ?? DEFAULT_HEADER_SCHEMA) as Schema}
+      isRequired
     />
   );
 };
@@ -93,7 +93,7 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
       />
       <TabField
         name={joinName(basePath, "tabName")}
-        schema={APPEND_SCHEMA.properties.tabName as Schema}
+        schema={LOOKUP_SCHEMA.properties.tabName as Schema}
         doc={doc}
       />
       <HeaderField
@@ -101,16 +101,19 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         tabName={tabName}
         doc={doc}
       />
-      <ConnectedFieldTemplate
+      <SchemaField
         name={joinName(basePath, "query")}
         label="Query"
         description="Value to search for in the column"
+        schema={LOOKUP_SCHEMA.properties.query as Schema}
+        isRequired
       />
-      <ConnectedFieldTemplate
+      <SchemaField
         name={joinName(basePath, "multi")}
         label="All Matches"
-        as={SwitchButtonWidget}
         description="Toggle on to return an array of matches"
+        schema={LOOKUP_SCHEMA.properties.multi as Schema}
+        isRequired
       />
     </div>
   );

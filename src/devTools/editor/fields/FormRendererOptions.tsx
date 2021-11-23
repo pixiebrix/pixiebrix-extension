@@ -57,6 +57,7 @@ const FormRendererOptions: React.FC<{
         name={`${configName}.recordId`}
         label="Record ID"
         schema={recordIdSchema}
+        isRequired
       />
     </div>
   );
