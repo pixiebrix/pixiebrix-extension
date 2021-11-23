@@ -150,6 +150,7 @@ function useNotifications(): Notifications {
       notify(getErrorMessage(content), {
         report: true,
         autoDismiss: true,
+        appearance: "error",
         ...options,
       });
     },
