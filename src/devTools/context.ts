@@ -41,7 +41,7 @@ interface FrameMeta {
   frameworks: FrameworkMeta[];
 }
 
-interface FrameConnectionState {
+export interface FrameConnectionState {
   frameId: number;
 
   /**

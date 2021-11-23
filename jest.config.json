@@ -29,6 +29,7 @@
   "moduleNameMapper": {
     "\\.module.(css|scss)$": "identity-obj-proxy",
     "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",
+    "^@/telemetry/logging$": "<rootDir>/src/__mocks__/logging.ts",
     "^@/(.*)$": "<rootDir>/src/$1",
     "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
     "^@contrib/(.*?)(\\?loadAsText)?$": "<rootDir>/contrib/$1",

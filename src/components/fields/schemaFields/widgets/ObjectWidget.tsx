@@ -29,6 +29,7 @@ import { freshIdentifier } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
+import { UnknownObject } from "@/types";
 
 type PropertyRowProps = {
   name: string;
@@ -196,7 +197,7 @@ export function getPropertyRow(
   }
 }
 
-type ObjectValue = Record<string, unknown>;
+type ObjectValue = UnknownObject;
 
 const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
   const { name, schema } = props;

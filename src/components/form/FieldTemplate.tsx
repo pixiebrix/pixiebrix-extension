@@ -28,6 +28,7 @@ import styles from "./FieldTemplate.module.scss";
 import FormTheme from "@/components/form/FormTheme";
 import { getErrorMessage } from "@/errors";
 import cx from "classnames";
+import { isPlainObject } from "lodash";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType
@@ -88,6 +89,33 @@ const RenderedField: React.FC<FieldProps> = ({
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
   const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
 
+  const isBuiltinControl =
+    typeof AsControl === "undefined" || typeof AsControl === "string";
+
+  if (isBuiltinControl && isPlainObject(nonUndefinedValue)) {
+    console.warn(
+      "RenderedField received an object value to a built-in control",
+      {
+        as: AsControl,
+        nonUndefinedValue,
+        blankValue,
+        value,
+      }
+    );
+  }
+
+  if (AsControl != null && isPlainObject(AsControl)) {
+    console.debug(
+      "RenderedField received a plain object for 'as'. Are the test mocks configured correctly?",
+      {
+        as: AsControl,
+      }
+    );
+
+    // XXX: this breaks a lot of our tests, but should be a real precondition
+    //  throw new Error("RenderedField received a plain object for 'as'");
+  }
+
   // Note on `controlId` and Bootstrap FormGroup.
   // If we set `controlId` on the Bootstrap FormGroup, we must not set `id` on `FormLabel` and `FormControl`.
   // This makes it impossible to use a FormControl as a CustomWidget,
@@ -96,29 +124,29 @@ const RenderedField: React.FC<FieldProps> = ({
   // The most simple solution is to manually set `htmlFor` on the Label and `id` on the Control.
   const controlId = name;
 
-  const formControl =
-    typeof AsControl === "undefined" || typeof AsControl === "string" ? (
-      <BootstrapForm.Control
-        id={controlId}
-        name={name}
-        isInvalid={isInvalid}
-        value={nonUndefinedValue}
-        as={AsControl}
-        {...restFieldProps}
-      >
-        {children}
-      </BootstrapForm.Control>
-    ) : (
-      <AsControl
-        id={controlId}
-        name={name}
-        isInvalid={isInvalid}
-        value={nonUndefinedValue}
-        {...restFieldProps}
-      >
-        {children}
-      </AsControl>
-    );
+  const formControl = isBuiltinControl ? (
+    <BootstrapForm.Control
+      id={controlId}
+      name={name}
+      isInvalid={isInvalid}
+      value={nonUndefinedValue}
+      as={AsControl}
+      {...restFieldProps}
+    >
+      {children}
+    </BootstrapForm.Control>
+  ) : (
+    <AsControl
+      id={controlId}
+      name={name}
+      isInvalid={isInvalid}
+      value={nonUndefinedValue}
+      {...restFieldProps}
+    >
+      {children}
+    </AsControl>
+  );
+
   return layout === "vertical" ? (
     <BootstrapForm.Group className={cx(styles.verticalFormGroup, className)}>
       {label && (
