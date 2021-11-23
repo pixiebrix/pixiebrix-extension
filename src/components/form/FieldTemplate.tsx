@@ -104,18 +104,6 @@ const RenderedField: React.FC<FieldProps> = ({
     );
   }
 
-  if (AsControl != null && isPlainObject(AsControl)) {
-    console.debug(
-      "RenderedField received a plain object for 'as'. Are the test mocks configured correctly?",
-      {
-        as: AsControl,
-      }
-    );
-
-    // XXX: this breaks a lot of our tests, but should be a real precondition
-    //  throw new Error("RenderedField received a plain object for 'as'");
-  }
-
   // Note on `controlId` and Bootstrap FormGroup.
   // If we set `controlId` on the Bootstrap FormGroup, we must not set `id` on `FormLabel` and `FormControl`.
   // This makes it impossible to use a FormControl as a CustomWidget,
