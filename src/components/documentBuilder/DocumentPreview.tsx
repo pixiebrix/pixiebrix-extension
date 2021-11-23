@@ -15,8 +15,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useField } from "formik";
 import React from "react";
+import { BlockOptions } from "@/core";
+import { DocumentElement } from "./documentBuilderTypes";
+import AddElementAction from "./AddElementAction";
+import ElementPreview from "./ElementPreview";
+import { ROOT_ELEMENT_TYPES } from "./allowedElementTypes";
+import cx from "classnames";
+import { ToastProvider } from "react-toast-notifications";
 
-const DocumentPreview = () => <div>I am preview</div>;
+type DocumentPreviewProps = {
+  name: string;
+  options: BlockOptions;
+  activeElement: string;
+  setActiveElement: (activeElement: string) => void;
+};
+
+const DocumentPreview = ({
+  name,
+  activeElement,
+  setActiveElement,
+}: DocumentPreviewProps) => {
+  const [{ value: body }] = useField<DocumentElement[]>(name);
+
+  return (
+    <ToastProvider>
+      {body.map((childElement, i) => (
+        <ElementPreview
+          key={`${name}.${i}`}
+          elementName={`${name}.${i}`}
+          activeElement={activeElement}
+          setActiveElement={setActiveElement}
+        />
+      ))}
+      <div className={cx({ "mt-3": body.length > 0 })}>
+        <AddElementAction
+          as="button"
+          elementsCollectionName={name}
+          allowedTypes={ROOT_ELEMENT_TYPES}
+        />
+      </div>
+    </ToastProvider>
+  );
+};
 
 export default DocumentPreview;

@@ -15,15 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.addRow {
-  margin-bottom: 1.5rem;
-}
+import { UnknownObject } from "@/types";
 
-.currentFieldRow {
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
+export const DOCUMENT_ELEMENT_TYPES = [
+  "header_1",
+  "header_2",
+  "header_3",
+  "text",
+  "container",
+  "row",
+  "column",
+  "card",
+  "block",
+  "button",
+] as const;
 
-.currentField {
-  margin-top: 0.25rem;
-}
+export type DocumentElementType = typeof DOCUMENT_ELEMENT_TYPES[number];
+
+export type DocumentElement = {
+  type: DocumentElementType;
+  config: UnknownObject;
+  children?: DocumentElement[];
+};
+
+export type DocumentComponent = {
+  Component: React.ElementType;
+  props?: UnknownObject | undefined;
+};

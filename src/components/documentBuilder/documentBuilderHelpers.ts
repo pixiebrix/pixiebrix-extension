@@ -15,15 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.addRow {
-  margin-bottom: 1.5rem;
-}
+const elementsCollectionRegexp = /(?<collectionName>.*)\.(?<elementIndex>\d+)/;
 
-.currentFieldRow {
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
+export function getElementCollectionName(
+  elementName: string
+): { collectionName: string; elementIndex: number } {
+  const {
+    groups: { collectionName, elementIndex },
+  } = elementsCollectionRegexp.exec(elementName);
 
-.currentField {
-  margin-top: 0.25rem;
+  return { collectionName, elementIndex: Number(elementIndex) };
 }

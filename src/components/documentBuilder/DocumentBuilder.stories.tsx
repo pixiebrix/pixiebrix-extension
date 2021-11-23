@@ -17,7 +17,7 @@
 
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Formik } from "formik";
-import React, { Suspense, useState } from "react";
+import React, { useState } from "react";
 import * as yup from "yup";
 import {
   Button,
@@ -26,33 +26,13 @@ import {
   Form as BootstrapForm,
   Row,
 } from "react-bootstrap";
-import { action } from "@storybook/addon-actions";
 import DocumentEditor from "./DocumentEditor";
 import DocumentPreview from "./DocumentPreview";
+import ConsoleLogger from "@/tests/ConsoleLogger";
 
 const schemaShape: yup.ObjectSchema = yup.object().shape({
-  body: yup.string().required(),
+  body: yup.array(yup.object()).required(),
 });
-
-const initialValues = {
-  body: `
-type: container
-children:
-  - type: row
-    children:
-      - type: column
-        children:
-          - type: header_1
-            config:
-              title: My document
-          - type: header_2
-            config:
-              title: Testing the doc
-              className: text-danger
-          - type: text
-            config:
-              text: Testing the doc`,
-};
 
 const DocumentBuilder: React.FC = () => {
   const [activeElement, setActiveElement] = useState<string>(null);
@@ -60,19 +40,40 @@ const DocumentBuilder: React.FC = () => {
   return (
     <Formik
       validationSchema={schemaShape}
-      initialValues={initialValues}
-      onSubmit={action("onSubmit")}
+      initialValues={{ body: [] }}
+      onSubmit={console.log}
     >
       {({ handleSubmit }) => (
         <BootstrapForm noValidate onSubmit={handleSubmit}>
           <Container>
             <Row>
               <Col>
-                <DocumentEditor name="body" />
-                <Button type="submit">Submit</Button>
+                <DocumentEditor
+                  name="body"
+                  activeElement={activeElement}
+                  setActiveElement={setActiveElement}
+                />
               </Col>
               <Col>
-                <DocumentPreview name="body" />
+                <DocumentPreview
+                  name="body"
+                  options={{
+                    ctxt: {
+                      "@input": {},
+                      "@options": {},
+                    },
+                    root: null,
+                    logger: new ConsoleLogger(),
+                    headless: true,
+                  }}
+                  activeElement={activeElement}
+                  setActiveElement={setActiveElement}
+                />
+              </Col>
+            </Row>
+            <Row className="mt-5">
+              <Col>
+                <Button type="submit">Submit</Button>
               </Col>
             </Row>
           </Container>
