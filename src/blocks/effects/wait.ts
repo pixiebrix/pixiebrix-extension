@@ -92,7 +92,7 @@ export class WaitElementEffect extends Effect {
     }>,
     { logger }: BlockOptions
   ): Promise<void> {
-    // Single string for logging
+    // Single string for logging, the exact format isn't that important
     const combinedSelector = Array.isArray(selector)
       ? selector.join(" ")
       : selector;
@@ -123,5 +123,7 @@ export class WaitElementEffect extends Effect {
       const [promise] = awaitElementOnce(selector);
       await promise;
     }
+
+    logger.debug(`Found element: ${combinedSelector}`);
   }
 }
