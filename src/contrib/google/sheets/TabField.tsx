@@ -15,31 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { SheetMeta } from "@/contrib/google/sheets/types";
-import { DevToolsContext } from "@/devTools/context";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
-import { devtoolsProtocol } from "@/contrib/google/sheets/handlers";
+import { sheets } from "@/background/messenger/api";
 import { compact, uniq } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 
 const TabField: React.FunctionComponent<
-  SchemaFieldProps<string> & { doc: SheetMeta | null }
+  SchemaFieldProps & { doc: SheetMeta | null }
 > = ({ name, doc }) => {
-  const { port } = useContext(DevToolsContext);
-
   const [field] = useField<string>(name);
 
   const [tabNames, tabsPending, tabsError] = useAsyncState(async () => {
-    if (doc?.id && port) {
-      return devtoolsProtocol.getTabNames(port, doc.id);
+    if (doc?.id) {
+      return sheets.getTabNames(doc.id);
     }
 
     return [];
-  }, [doc?.id, port]);
+  }, [doc?.id]);
 
   const sheetOptions = useMemo(
     () =>

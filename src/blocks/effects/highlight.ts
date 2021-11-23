@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { Schema } from "@/core";
+import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { boolean } from "@/utils";
 
@@ -101,12 +101,12 @@ export class HighlightEffect extends Effect {
     backgroundColor = "#FFFF00",
     rootSelector,
     elements,
-  }: {
+  }: BlockArg<{
     condition: string | number | boolean;
     backgroundColor: string;
     rootSelector: string | undefined;
     elements: ColorRule[];
-  }): Promise<void> {
+  }>): Promise<void> {
     const $roots = rootSelector ? $(rootSelector) : $(document);
 
     if (condition !== undefined && !boolean(condition)) {

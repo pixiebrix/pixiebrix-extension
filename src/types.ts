@@ -28,16 +28,17 @@ import {
   OAuth2Context,
   AuthData,
   ReaderOutput,
-  RenderedHTML,
   Schema,
   TokenContext,
   KeyedConfig,
   RegistryId,
   ResolvedExtension,
+  UUID,
+  RendererOutput,
 } from "@/core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
@@ -65,9 +66,9 @@ export abstract class Service<
 
   abstract hasAuth: boolean;
 
-  abstract isOAuth2: boolean;
+  abstract get isOAuth2(): boolean;
 
-  abstract isToken: boolean;
+  abstract get isToken(): boolean;
 
   protected constructor(
     id: RegistryId,
@@ -141,8 +142,13 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     this.logger = new BackgroundLogger({ extensionPointId: this.id });
   }
 
-  /** Internal method to perform a partial uninstall of the extension point */
-  protected abstract removeExtensions(extensionIds: string[]): void;
+  /**
+   * Internal method to unregister extension's triggers/observers/etc. from the page.
+   *
+   * When this method is called, the extensions will still be in this.extensions. The caller is responsible for
+   * updating this.extensions after the call to removeExtensions
+   */
+  protected abstract removeExtensions(extensionIds: UUID[]): void;
 
   syncExtensions(extensions: Array<ResolvedExtension<TConfig>>): void {
     const before = this.extensions.map((x) => x.id);
@@ -292,14 +298,14 @@ export abstract class Renderer extends Block {
   abstract render(
     inputs: BlockArg,
     options: BlockOptions
-  ): Promise<RenderedHTML>;
+  ): Promise<RendererOutput>;
 
   async isRootAware(): Promise<boolean> {
     // Most renderers don't use the root, so have them opt-in
     return false;
   }
 
-  async run(value: BlockArg, options: BlockOptions): Promise<RenderedHTML> {
+  async run(value: BlockArg, options: BlockOptions): Promise<RendererOutput> {
     return this.render(value, options);
   }
 }
@@ -327,7 +333,7 @@ export abstract class Reader extends Block implements IReader {
 
   abstract read(root: HTMLElement | Document): Promise<ReaderOutput>;
 
-  async run({ root }: { root: HTMLElement | Document }): Promise<ReaderOutput> {
+  async run({ root }: BlockArg): Promise<ReaderOutput> {
     return this.read(root);
   }
 }

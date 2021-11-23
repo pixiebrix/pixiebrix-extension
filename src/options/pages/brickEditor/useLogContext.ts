@@ -17,9 +17,9 @@
 
 import { useDebounce } from "use-debounce";
 import { useState } from "react";
-import yaml from "js-yaml";
 import { MessageContext, RawConfig } from "@/core";
 import { useAsyncEffect } from "use-async-effect";
+import { loadBrickYaml } from "@/runtime/brickYaml";
 
 const LOG_MESSAGE_CONTEXT_DEBOUNCE_MS = 350;
 
@@ -38,7 +38,7 @@ function useLogContext(config: string | null): MessageContext | undefined {
   useAsyncEffect(async () => {
     let json: RawConfig;
     try {
-      json = yaml.load(debouncedConfig) as RawConfig;
+      json = loadBrickYaml(debouncedConfig) as RawConfig;
     } catch {
       // The config won't always be valid YAML when editing
       return;

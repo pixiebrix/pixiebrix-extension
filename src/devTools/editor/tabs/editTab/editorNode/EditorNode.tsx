@@ -21,11 +21,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import cx from "classnames";
 import {
+  faArrowDown,
+  faArrowUp,
   faExclamationCircle,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
+import { NodeId } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 
 export type EditorNodeProps = {
+  nodeId?: NodeId;
   title: string;
   outputKey?: string;
   icon?: IconProp | React.ReactNode;
@@ -34,6 +38,11 @@ export type EditorNodeProps = {
   active?: boolean;
   hasError?: boolean;
   hasWarning?: boolean;
+  canMoveAnything?: boolean;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
+  onClickMoveUp?: () => void;
+  onClickMoveDown?: () => void;
 };
 
 function isFontAwesomeIcon(
@@ -54,6 +63,11 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   active,
   hasError,
   hasWarning,
+  canMoveAnything,
+  canMoveUp,
+  canMoveDown,
+  onClickMoveUp,
+  onClickMoveDown,
 }) => {
   const outputName = outputKey ? `@${outputKey}` : "";
 
@@ -80,19 +94,63 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   return (
     // Use our own custom style here, not bootstrap
     <div className={styles.root}>
-      <div className={styles.title}>{title}</div>
-      <button
-        type="button"
-        onClick={onClick}
-        className={cx(styles.button, {
-          [styles.mutedNode]: muted,
-          [styles.activeNode]: active,
+      <div
+        className={cx(styles.title, {
+          [styles.addRightMargin]: canMoveAnything,
         })}
       >
-        {errorBadge}
-        {icon}
-      </button>
-      <div className={styles.outputKey}>{outputName}</div>
+        {title}
+      </div>
+      <div className={styles.buttonRow}>
+        <button
+          type="button"
+          onClick={onClick}
+          className={cx(styles.nodeButton, styles.button, {
+            [styles.mutedNode]: muted,
+            [styles.activeNode]: active,
+          })}
+        >
+          {errorBadge}
+          {icon}
+        </button>
+        {canMoveAnything && (
+          <div className={styles.moveButtons}>
+            {(canMoveUp || canMoveDown) && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClickMoveUp();
+                  }}
+                  title="Move brick higher"
+                  disabled={!canMoveUp}
+                  className={styles.button}
+                >
+                  <FontAwesomeIcon icon={faArrowUp} size="sm" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClickMoveDown();
+                  }}
+                  title="Move brick lower"
+                  disabled={!canMoveDown}
+                  className={styles.button}
+                >
+                  <FontAwesomeIcon icon={faArrowDown} size="sm" />
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+      <div
+        className={cx(styles.outputKey, {
+          [styles.addRightMargin]: canMoveAnything,
+        })}
+      >
+        {outputName}
+      </div>
     </div>
   );
 };

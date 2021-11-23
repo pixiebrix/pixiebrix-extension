@@ -17,17 +17,16 @@
 
 /* eslint-disable security/detect-object-injection */
 import { useField } from "formik";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import { Button, ButtonGroup, Col, Row } from "react-bootstrap";
 import FieldEditor from "./FieldEditor";
 import {
   DEFAULT_FIELD_TYPE,
   generateNewPropertyName,
-  MINIMAL_SCHEMA,
-  MINIMAL_UI_SCHEMA,
   moveStringInArray,
   replaceStringInArray,
+  updateRjsfSchemaWithDefaultsIfNeeded,
 } from "./formBuilderHelpers";
 import { UI_ORDER } from "./schemaFieldNames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -38,35 +37,18 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { Schema } from "@/core";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import styles from "./FormEditor.module.scss";
 import { joinName } from "@/utils";
-import { isEmpty } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 export type FormEditorProps = {
   name: string;
   activeField?: string;
   setActiveField: SetActiveField;
 };
-
-function initDefaults(obj: RJSFSchema): void {
-  if (!obj.schema) {
-    obj.schema = MINIMAL_SCHEMA;
-  }
-
-  if (!obj.uiSchema) {
-    obj.uiSchema = MINIMAL_UI_SCHEMA;
-  }
-
-  if (!obj.uiSchema[UI_ORDER]) {
-    const propertyKeys = Object.keys(obj.schema.properties || {});
-    obj.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
-  } else if (!obj.uiSchema[UI_ORDER].includes("*")) {
-    obj.uiSchema[UI_ORDER].push("*");
-  }
-}
 
 const LayoutWidget: React.FC<{
   canMoveUp: boolean;
@@ -107,25 +89,43 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   useEffect(() => {
     // Set default values if needed
-    if (!schema || !uiSchema || !uiOrder?.includes("*")) {
-      setRjsfSchema(
-        produce(rjsfSchema, (draft) => {
-          initDefaults(draft);
-        })
-      );
+    const nextRjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded(rjsfSchema);
+    if (nextRjsfSchema !== null) {
+      setRjsfSchema(nextRjsfSchema);
     }
-  }, [rjsfSchema, schema, uiSchema, uiOrder, setRjsfSchema]);
+  }, [rjsfSchema, setRjsfSchema]);
 
-  // Select the first field by default
+  // Select the active field when FormEditor field changes
   useEffect(
     () => {
-      if (activeField == null && !isEmpty(schema?.properties)) {
-        setActiveField(Object.keys(schema.properties)[0]);
+      const firstInOrder = uiSchema?.[UI_ORDER]?.[0];
+      if (firstInOrder && firstInOrder !== "*") {
+        setActiveField(firstInOrder);
+        return;
+      }
+
+      const firstInProperties = Object.keys(schema?.properties || {})[0];
+      if (firstInProperties) {
+        setActiveField(firstInProperties);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run onMount
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- resetting activeField only on new name
+    [name]
   );
+
+  const { titleFieldProps, descriptionFieldProps } = useMemo(() => {
+    const titleFieldProps: SchemaFieldProps = {
+      name: joinName(name, "schema", "title"),
+      schema: { type: "string" },
+      label: "Form Title",
+    };
+    const descriptionFieldProps: SchemaFieldProps = {
+      name: joinName(name, "schema", "description"),
+      schema: { type: "string" },
+      label: "Form Description",
+    };
+    return { titleFieldProps, descriptionFieldProps };
+  }, [name]);
 
   if (!schema || !uiSchema) {
     return null;
@@ -136,8 +136,6 @@ const FormEditor: React.FC<FormEditorProps> = ({
       Object.keys(schema.properties || {})
     );
     const newProperty: Schema = {
-      // @ts-expect-error -- name is valid in a property definition
-      name: propertyName,
       title: propertyName,
       type: DEFAULT_FIELD_TYPE,
     };
@@ -197,14 +195,8 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   return (
     <>
-      <ConnectedFieldTemplate
-        name={joinName(name, "schema", "title")}
-        label="Form Title"
-      />
-      <ConnectedFieldTemplate
-        name={joinName(name, "schema", "description")}
-        label="Form Description"
-      />
+      <SchemaField {...titleFieldProps} />
+      <SchemaField {...descriptionFieldProps} />
       <hr />
 
       <Row className={styles.addRow}>

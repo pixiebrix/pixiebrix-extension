@@ -16,11 +16,9 @@
  */
 
 .root {
-  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+  align-items: stretch;
   padding-bottom: 6px;
 }
 
@@ -37,16 +35,24 @@
 
   &:hover {
     color: #a462e6;
-    box-shadow: 1px 1px 1px gray;
-
-    &:active {
-      box-shadow: none;
-      color: #b66dff;
-    }
   }
+
+  &:active {
+    color: #b66dff;
+  }
+}
+
+.appendContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .appendArrow {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.addRightMargin {
+  margin-right: 36px; // move-buttons width + left margin
 }

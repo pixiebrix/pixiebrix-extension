@@ -18,12 +18,12 @@
 import { Schema } from "@/core";
 import React, { createContext } from "react";
 import {
-  FieldComponent,
+  SchemaFieldComponent,
   SchemaFieldProps,
 } from "@/components/fields/schemaFields/propTypes";
 import ServiceField, {
   isServiceField,
-} from "@/components/fields/schemaFields/ServiceField";
+} from "@/components/fields/schemaFields/v1/ServiceField";
 import {
   booleanPredicate,
   findOneOf,
@@ -32,21 +32,27 @@ import {
 import BooleanField from "@/components/fields/schemaFields/BooleanField";
 import { isEmpty } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
+import { InputModeOption } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 
-function defaultFieldFactory<T>(
-  Widget: CustomFieldWidget<SchemaFieldProps<T>>
-): FieldComponent {
-  const Field: React.FunctionComponent<SchemaFieldProps<unknown>> = (props) => {
-    const { name, label, schema, description } = props;
+export function defaultFieldFactory(
+  Widget: React.FC<SchemaFieldProps>
+): SchemaFieldComponent {
+  if (Widget == null) {
+    // This would indicate a problem with the imports b/c all the call sites are passing in an imported component?
+    // Circular import
+    throw new Error("Widget is required");
+  }
+
+  const Field: React.FunctionComponent<SchemaFieldProps> = (props) => {
+    const { schema, description } = props;
     return (
       <ConnectedFieldTemplate
         {...props}
-        label={label ?? fieldLabel(name)}
+        label={makeLabelForSchemaField(props)}
         description={description ?? schema.description}
         as={Widget}
       />
@@ -61,18 +67,16 @@ const TextField = defaultFieldFactory(TextWidget);
 
 const ArrayField = defaultFieldFactory(ArrayWidget);
 
-export const ObjectField = defaultFieldFactory(ObjectWidget);
-
-function makeOneOfField(oneOf: Schema): FieldComponent {
+function makeOneOfField(oneOf: Schema): SchemaFieldComponent {
   const Field = getDefaultField(oneOf);
-  const Component = (props: SchemaFieldProps<unknown>) => (
+  const Component = (props: SchemaFieldProps) => (
     <Field {...props} schema={oneOf} />
   );
   Component.displayName = Field.displayName;
   return Component;
 }
 
-export function getDefaultField(fieldSchema: Schema): FieldComponent {
+export function getDefaultField(fieldSchema: Schema): SchemaFieldComponent {
   if (isServiceField(fieldSchema)) {
     return ServiceField;
   }
@@ -82,7 +86,7 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
   }
 
   if (fieldSchema.type === "object") {
-    return ObjectField;
+    return defaultFieldFactory(ObjectWidget);
   }
 
   if (booleanPredicate(fieldSchema)) {
@@ -105,7 +109,7 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
     // An empty field schema supports any value. For now, provide an object field since this just shows up
     // in the @pixiebrix/http brick.
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
-    return ObjectField;
+    return defaultFieldFactory(ObjectWidget);
   }
 
   // Number, string, other primitives, etc.
@@ -117,7 +121,7 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
  */
 type CustomField = {
   match: (fieldSchema: Schema) => boolean;
-  Component: FieldComponent;
+  Component: SchemaFieldComponent;
 };
 
 /**
@@ -125,12 +129,18 @@ type CustomField = {
  */
 type CustomWidget = {
   match: (fieldSchema: Schema) => boolean;
-  Component: FieldComponent;
+  Component: SchemaFieldComponent;
+};
+
+export type CustomFieldToggleMode = {
+  match: (fieldSchema: Schema) => boolean;
+  option: InputModeOption;
 };
 
 export type CustomFieldDefinitions = {
   customFields: CustomField[];
   customWidgets: CustomWidget[];
+  customToggleModes: CustomFieldToggleMode[];
 };
 
 /**
@@ -139,6 +149,7 @@ export type CustomFieldDefinitions = {
 const SchemaFieldContext = createContext<CustomFieldDefinitions>({
   customFields: [],
   customWidgets: [],
+  customToggleModes: [],
 });
 
 export default SchemaFieldContext;

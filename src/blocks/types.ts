@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OutputKey, RegistryId, TemplateEngine, UUID } from "@/core";
+import {
+  Expression,
+  OutputKey,
+  RegistryId,
+  TemplateEngine,
+  UUID,
+} from "@/core";
 import { UnknownObject } from "@/types";
 
 export type Availability = {
@@ -37,6 +43,23 @@ export type ReaderConfig =
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
   | { [key: string]: ReaderConfig }
   | ReaderConfig[];
+
+/**
+ * Where to execute the brick
+ * - self: the current tab
+ * - opener: the tab that opened the current tab
+ * - target: the last tab that the current tab opened
+ * - broadcast: all tabs that PixieBrix has access to (the result is returned as an array)
+ * - remote: the server (currently only support identity, get, and http bricks)
+ * @see {@link BlockConfig.window}
+ */
+export type BlockWindow = "self" | "opener" | "target" | "broadcast" | "remote";
+
+/**
+ * Condition expression written in templateEngine for deciding if the step should be run.
+ * @see {@link BlockConfig.if}
+ */
+export type BlockIf = string | boolean | number | Expression;
 
 /**
  * A block configuration to be executed by the PixieBrix runtime.
@@ -80,13 +103,9 @@ export type BlockConfig = {
 
   /**
    * Where to execute the brick (default=`self`)
-   * - self: the current tab
-   * - opener: the tab that opened the current tab
-   * - target: the last tab that the current tab opened
-   * - broadcast: all tabs that PixieBrix has access to (the result is returned as an array)
-   * - remote: the server (currently only support identity, get, and http bricks)
+   * @see BlockWindow
    */
-  window?: "self" | "opener" | "target" | "broadcast" | "remote";
+  window?: BlockWindow;
 
   /**
    * The output key (without the preceding "@") to assign the brick output to
@@ -102,8 +121,9 @@ export type BlockConfig = {
   /**
    * (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
    * provided, the step is run unconditionally.
+   * @see BlockIf
    */
-  if?: string | boolean | number;
+  if?: BlockIf;
 
   /**
    * (Optional) whether the block should inherit the current root element, or if it should use the document
@@ -137,4 +157,7 @@ export type BlockConfig = {
   instanceId?: UUID;
 };
 
+/**
+ * A pipeline of blocks to execute sequentially
+ */
 export type BlockPipeline = BlockConfig[];

@@ -25,6 +25,7 @@ import TemplateWidget, {
 } from "@/devTools/editor/fields/TemplateWidget";
 import MultiSelectWidget from "@/devTools/editor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/devTools/editor/fields/makeLockableFieldProps";
+import { DEFAULT_SHORTCUTS } from "@/devTools/editor/components/UrlMatchPatternWidget";
 
 const menuSnippets: Snippet[] = [{ label: "selected text", value: "%s" }];
 
@@ -42,6 +43,11 @@ const contextOptions = [
   value,
   label: value,
 }));
+
+const matchPatternShortcuts = [
+  { caption: "None", getPattern: async () => "" },
+  ...DEFAULT_SHORTCUTS,
+];
 
 const ContextMenuConfiguration: React.FC<{
   isLocked: boolean;
@@ -84,8 +90,28 @@ const ContextMenuConfiguration: React.FC<{
     </FieldSection>
 
     <FieldSection title="Advanced">
+      <ConnectedFieldTemplate
+        name="extensionPoint.definition.targetMode"
+        as="select"
+        title="Target Mode"
+        blankValue="legacy"
+        description={
+          <p>
+            Use&nbsp;<code>eventTarget</code> to pass the target of the
+            right-click as the action root. Use&nbsp;
+            <code>document</code> to pass the document as the action root.
+          </p>
+        }
+        {...makeLockableFieldProps("Target Mode", isLocked)}
+      >
+        <option value="eventTarget">eventTarget</option>
+        <option value="document">document</option>
+        <option value="legacy">legacy</option>
+      </ConnectedFieldTemplate>
+
       <UrlMatchPatternField
         name="extensionPoint.definition.isAvailable.matchPatterns[0]"
+        shortcuts={matchPatternShortcuts}
         description={
           <span>
             URL match patterns give PixieBrix access to a page without you first

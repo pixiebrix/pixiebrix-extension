@@ -17,7 +17,7 @@
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import {
@@ -30,7 +30,7 @@ import {
   getFormDefinition,
   resolveForm,
   cancelForm,
-} from "@/contentScript/modalForms";
+} from "@/contentScript/ephemeralFormProtocol";
 import {
   hideActionPanel,
   showActionPanel,
@@ -60,6 +60,11 @@ import {
   runBlockInContentScript,
 } from "@/contentScript/executor";
 import { cancelSelect, selectElement } from "@/nativeEditor/selector";
+import { runExtensionPointReader } from "@/nativeEditor/dynamic";
+import {
+  runEffectPipeline,
+  runRendererPipeline,
+} from "@/contentScript/pipelineProtocol";
 
 expectContext("contentScript");
 
@@ -95,6 +100,7 @@ declare global {
 
     CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
     UPDATE_DYNAMIC_ELEMENT: typeof updateDynamicElement;
+    RUN_EXTENSION_POINT_READER: typeof runExtensionPointReader;
     ENABLE_OVERLAY: typeof enableOverlay;
     DISABLE_OVERLAY: typeof disableOverlay;
     INSTALLED_EXTENSIONS: typeof getInstalledIds;
@@ -105,6 +111,9 @@ declare global {
     RUN_BLOCK: typeof runBlockInContentScript;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
+
+    RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
+    RUN_EFFECT_PIPELINE: typeof runEffectPipeline;
   }
 }
 
@@ -136,6 +145,7 @@ registerMethods({
 
   CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
   UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
+  RUN_EXTENSION_POINT_READER: runExtensionPointReader,
   ENABLE_OVERLAY: enableOverlay,
   DISABLE_OVERLAY: disableOverlay,
   INSTALLED_EXTENSIONS: getInstalledIds,
@@ -147,4 +157,7 @@ registerMethods({
   RUN_BLOCK: runBlockInContentScript,
   CANCEL_SELECT_ELEMENT: cancelSelect,
   SELECT_ELEMENT: selectElement,
+
+  RUN_RENDERER_PIPELINE: runRendererPipeline,
+  RUN_EFFECT_PIPELINE: runEffectPipeline,
 });

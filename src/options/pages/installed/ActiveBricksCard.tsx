@@ -15,8 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { MessageContext, ResolvedExtension } from "@/core";
+import React, { useContext, useMemo } from "react";
+import {
+  MessageContext,
+  RecipeMetadata,
+  ResolvedExtension,
+  UUID,
+} from "@/core";
 import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { Card, Col, Row, Table } from "react-bootstrap";
 import ExtensionGroup from "./ExtensionGroup";
@@ -24,30 +29,165 @@ import ExtensionGroupHeader from "./ExtensionGroupHeader";
 import { groupBy } from "lodash";
 import ExtensionRows from "./ExtensionRows";
 import { isDeploymentActive } from "@/options/deploymentUtils";
+import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
+import AuthContext from "@/auth/AuthContext";
+import { RecipeDefinition } from "@/types/definitions";
+import * as semver from "semver";
 
 const groupByRecipe = (
   extensions: ResolvedExtension[]
 ): ResolvedExtension[][] =>
   Object.values(groupBy(extensions, (extension) => extension._recipe.id));
 
+const groupByOrganizationId = (
+  extensions: ResolvedExtension[]
+): Array<[UUID, ResolvedExtension[]]> =>
+  (Object.entries(
+    groupBy(
+      extensions,
+      // For the uncommon scenario that a user would be a part of two or more organizations
+      // with which the recipe is shared, we arbitrarily choose the first one
+      (extension) => extension._recipe.sharing.organizations[0]
+    )
+    // Could not figure out nominal type for UUID
+  ) as unknown) as Array<[UUID, ResolvedExtension[]]>;
+
+const isPublic = (extension: ResolvedExtension) =>
+  extension._recipe?.sharing?.public;
+
+const hasOrganization = (extension: ResolvedExtension) =>
+  extension._recipe?.sharing?.organizations.length > 0;
+
+const isPersonalBrick = (extension: ResolvedExtension) =>
+  !extension._recipe && !extension._deployment;
+
+const isPersonalBlueprint = (extension: ResolvedExtension, scope: string) =>
+  scope && extension._recipe?.id.startsWith(scope + "/");
+
+const groupExtensions = (extensions: ResolvedExtension[], scope: string) => {
+  const personal: {
+    bricks: ResolvedExtension[];
+    blueprints: ResolvedExtension[];
+  } = {
+    bricks: [],
+    blueprints: [],
+  };
+  const marketplace: ResolvedExtension[] = [];
+  const team: ResolvedExtension[] = [];
+  const deployment: ResolvedExtension[] = [];
+  const other: ResolvedExtension[] = [];
+
+  for (const extension of extensions) {
+    if (isPersonalBrick(extension)) {
+      personal.bricks.push(extension);
+      continue;
+    }
+
+    if (isPersonalBlueprint(extension, scope)) {
+      personal.blueprints.push(extension);
+      continue;
+    }
+
+    if (extension._deployment) {
+      deployment.push(extension);
+      continue;
+    }
+
+    if (isPublic(extension)) {
+      marketplace.push(extension);
+      continue;
+    }
+
+    if (hasOrganization(extension)) {
+      team.push(extension);
+      continue;
+    }
+
+    other.push(extension);
+  }
+
+  return { personal, marketplace, team, deployment, other };
+};
+
+function updateAvailable(
+  availableRecipes: RecipeDefinition[],
+  sourceRecipeMeta: RecipeMetadata | undefined
+): boolean {
+  const availableRecipe = availableRecipes?.find(
+    (recipe) => recipe.metadata.id === sourceRecipeMeta.id
+  );
+
+  if (!availableRecipe) {
+    return false;
+  }
+
+  if (semver.gt(availableRecipe.metadata.version, sourceRecipeMeta.version)) {
+    return true;
+  }
+
+  if (semver.eq(availableRecipe.metadata.version, sourceRecipeMeta.version)) {
+    // Check the updated_at timestamp
+
+    if (sourceRecipeMeta?.updated_at == null) {
+      // Extension was installed prior to us adding updated_at to RecipeMetadata
+      return false;
+    }
+
+    const availableDate = new Date(availableRecipe.updated_at);
+    const installedDate = new Date(sourceRecipeMeta.updated_at);
+
+    return availableDate > installedDate;
+  }
+
+  return false;
+}
+
 const ActiveBricksCard: React.FunctionComponent<{
   extensions: ResolvedExtension[];
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
-  const personalExtensions = extensions.filter(
-    (extension) => !extension._recipe && !extension._deployment
+  const { data: organizations = [] } = useGetOrganizationsQuery();
+  const { scope } = useContext(AuthContext);
+  const {
+    data: availableRecipes = [] as RecipeDefinition[],
+  } = useGetRecipesQuery();
+
+  const getOrganizationName = (organizationId: UUID) =>
+    organizations.find((organization) => organization.id === organizationId)
+      ?.name;
+
+  const groupedExtensions = useMemo(() => groupExtensions(extensions, scope), [
+    extensions,
+    scope,
+  ]);
+
+  const personalExtensions = groupedExtensions.personal.bricks;
+
+  const personalExtensionGroups = groupByRecipe(
+    groupedExtensions.personal.blueprints
   );
 
   const marketplaceExtensionGroups = groupByRecipe(
-    extensions.filter(
-      (extension) => extension._recipe && !extension._deployment
-    )
+    groupedExtensions.marketplace
   );
 
-  const deploymentGroups = groupByRecipe(
-    extensions.filter((extension) => extension._deployment)
+  const teamExtensionGroups = useMemo(
+    () =>
+      groupByOrganizationId(groupedExtensions.team).map(
+        ([organizationId, extensions]) => ({
+          organizationId,
+          extensions: groupByRecipe(extensions),
+        })
+      ),
+    [groupedExtensions]
   );
+
+  const deploymentExtensionGroups = groupByRecipe(groupedExtensions.deployment);
+
+  // Sharing was added to _recipe recently (see the RecipeMetadata type and optionsSlice)
+  // We still want to display extensions that do not have this information yet
+  const otherExtensionGroups = groupByRecipe(groupedExtensions.other);
 
   return (
     <Row>
@@ -67,20 +207,24 @@ const ActiveBricksCard: React.FunctionComponent<{
                 </>
               )}
 
-              {marketplaceExtensionGroups.length > 0 && (
+              {personalExtensionGroups.length > 0 && (
                 <>
-                  <ExtensionGroupHeader label="Marketplace Bricks" />
-                  {marketplaceExtensionGroups.map((extensions) => {
-                    const recipe = extensions[0]._recipe;
+                  <ExtensionGroupHeader label="Personal Blueprints" />
+                  {personalExtensionGroups.map((extensions) => {
+                    const sourceRecipeMeta = extensions[0]._recipe;
                     const messageContext: MessageContext = {
-                      blueprintId: recipe.id,
+                      blueprintId: sourceRecipeMeta.id,
                     };
 
                     return (
                       <ExtensionGroup
-                        key={recipe.id}
-                        label={recipe.name}
+                        key={sourceRecipeMeta.id}
+                        label={sourceRecipeMeta.name}
                         extensions={extensions}
+                        hasUpdate={updateAvailable(
+                          availableRecipes,
+                          sourceRecipeMeta
+                        )}
                         groupMessageContext={messageContext}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
@@ -90,10 +234,96 @@ const ActiveBricksCard: React.FunctionComponent<{
                 </>
               )}
 
-              {deploymentGroups.length > 0 && (
+              {otherExtensionGroups.length > 0 && (
+                <>
+                  <ExtensionGroupHeader label="Marketplace Blueprints" />
+                  {otherExtensionGroups.map((extensions) => {
+                    const sourceRecipeMeta = extensions[0]._recipe;
+                    const messageContext: MessageContext = {
+                      blueprintId: sourceRecipeMeta.id,
+                    };
+
+                    return (
+                      <ExtensionGroup
+                        key={sourceRecipeMeta.id}
+                        label={sourceRecipeMeta.name}
+                        extensions={extensions}
+                        groupMessageContext={messageContext}
+                        hasUpdate={updateAvailable(
+                          availableRecipes,
+                          sourceRecipeMeta
+                        )}
+                        onRemove={onRemove}
+                        onExportBlueprint={onExportBlueprint}
+                      />
+                    );
+                  })}
+                </>
+              )}
+
+              {marketplaceExtensionGroups.length > 0 && (
+                <>
+                  <ExtensionGroupHeader label="Public Marketplace Blueprints" />
+                  {marketplaceExtensionGroups.map((extensions) => {
+                    const sourceRecipeMeta = extensions[0]._recipe;
+                    const messageContext: MessageContext = {
+                      blueprintId: sourceRecipeMeta.id,
+                    };
+
+                    return (
+                      <ExtensionGroup
+                        key={sourceRecipeMeta.id}
+                        label={sourceRecipeMeta.name}
+                        extensions={extensions}
+                        groupMessageContext={messageContext}
+                        hasUpdate={updateAvailable(
+                          availableRecipes,
+                          sourceRecipeMeta
+                        )}
+                        onRemove={onRemove}
+                        onExportBlueprint={onExportBlueprint}
+                      />
+                    );
+                  })}
+                </>
+              )}
+
+              {teamExtensionGroups.map((team, index) => (
+                <React.Fragment key={team.organizationId}>
+                  <ExtensionGroupHeader
+                    key={index}
+                    label={`${getOrganizationName(
+                      team.organizationId
+                    )} Blueprints`}
+                  />
+                  {team.extensions.map((extensions) => {
+                    const sourceRecipeMeta = extensions[0]._recipe;
+                    const messageContext: MessageContext = {
+                      blueprintId: sourceRecipeMeta.id,
+                    };
+
+                    return (
+                      <ExtensionGroup
+                        key={sourceRecipeMeta.id}
+                        label={sourceRecipeMeta.name}
+                        extensions={extensions}
+                        groupMessageContext={messageContext}
+                        hasUpdate={updateAvailable(
+                          availableRecipes,
+                          sourceRecipeMeta
+                        )}
+                        onRemove={onRemove}
+                        onExportBlueprint={onExportBlueprint}
+                      />
+                    );
+                  })}
+                </React.Fragment>
+              ))}
+
+              {deploymentExtensionGroups.length > 0 && (
                 <>
                   <ExtensionGroupHeader label="Automatic Team Deployments" />
-                  {deploymentGroups.map((extensions) => {
+                  {deploymentExtensionGroups.map((extensions) => {
                     const recipe = extensions[0]._recipe;
                     const deployment = extensions[0]._deployment;
                     const messageContext: MessageContext = {
@@ -107,6 +337,8 @@ const ActiveBricksCard: React.FunctionComponent<{
                         label={extensions[0]._recipe.name}
                         extensions={extensions}
                         managed
+                        // Updates for deployments are handled by the DeploymentBanner
+                        hasUpdate={false}
                         paused={!isDeploymentActive(extensions[0])}
                         groupMessageContext={messageContext}
                         onRemove={onRemove}

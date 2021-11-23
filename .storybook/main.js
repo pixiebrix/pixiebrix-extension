@@ -39,7 +39,7 @@ module.exports = {
       "@contrib": path.resolve(rootDir, "contrib"),
       "@schemas": path.resolve(rootDir, "schemas"),
       vendors: path.resolve(rootDir, "src/vendors"),
-      "webextension-polyfill-ts": path.resolve(
+      "webextension-polyfill": path.resolve(
         rootDir,
         "src/__mocks__/browserMocks.ts"
       ),
@@ -49,8 +49,14 @@ module.exports = {
       ...[
         {
           test: /\.ya?ml$/,
+          resourceQuery: { not: [/loadAsText/] },
           type: "json",
           use: "yaml-loader",
+        },
+        {
+          test: /\.ya?ml$/,
+          resourceQuery: /loadAsText/,
+          use: "raw-loader",
         },
         {
           test: /\.scss$/,

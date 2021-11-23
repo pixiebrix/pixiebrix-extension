@@ -37,8 +37,37 @@ const UrlMatchShortcut: React.FC<{
   </Button>
 );
 
+export type Shortcut = {
+  caption: string;
+  getPattern: () => Promise<string>;
+};
+
+export const DEFAULT_SHORTCUTS: Shortcut[] = [
+  {
+    caption: "Site",
+    getPattern: async () => {
+      const url = await getCurrentURL();
+      return createSitePattern(url);
+    },
+  },
+  {
+    caption: "Domain",
+    getPattern: async () => {
+      const url = await getCurrentURL();
+      return createDomainPattern(url);
+    },
+  },
+  { caption: "HTTPS", getPattern: async () => HTTPS_PATTERN },
+  { caption: "All URLs", getPattern: async () => SITES_PATTERN },
+];
+
 const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
   const { name, disabled } = props;
+
+  // XXX: the generic type CustomFieldWidget doesn't seem to support exposing custom props for the widget
+  const shortcuts =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ((props as any).shortcuts as Shortcut[]) ?? DEFAULT_SHORTCUTS;
 
   // XXX: can we use props.onChange here? Maybe not unless we construct an event?
   const { setValue } = useField(name)[2];
@@ -48,34 +77,15 @@ const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
       {!disabled && (
         <div className="small">
           <span>Shortcuts:</span>
-          <UrlMatchShortcut
-            caption="Site"
-            onClick={async () => {
-              const url = await getCurrentURL();
-              const pattern = createSitePattern(url);
-              setValue(pattern);
-            }}
-          />{" "}
-          <UrlMatchShortcut
-            caption="Domain"
-            onClick={async () => {
-              const url = await getCurrentURL();
-              const pattern = createDomainPattern(url);
-              setValue(pattern);
-            }}
-          />
-          <UrlMatchShortcut
-            caption="HTTPS"
-            onClick={async () => {
-              setValue(HTTPS_PATTERN);
-            }}
-          />
-          <UrlMatchShortcut
-            caption="All URLs"
-            onClick={async () => {
-              setValue(SITES_PATTERN);
-            }}
-          />
+          {shortcuts.map(({ caption, getPattern }) => (
+            <UrlMatchShortcut
+              key={caption}
+              caption={caption}
+              onClick={async () => {
+                setValue(await getPattern());
+              }}
+            />
+          ))}
         </div>
       )}
       <Form.Control type="text" {...props} />

@@ -21,7 +21,7 @@ import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
 import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
-import { Alert, Nav, Tab, TabPaneProps } from "react-bootstrap";
+import { Alert, Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./DataPanel.module.scss";
 import FormPreview from "@/components/formBuilder/FormPreview";
@@ -41,6 +41,9 @@ import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
+import DataTab from "./DataTab";
+import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
+import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -58,50 +61,6 @@ const contextFilter = (value: unknown, key: string) => {
   return true;
 };
 
-type TabStateProps = {
-  isLoading?: boolean;
-  isTraceEmpty?: boolean;
-  isTraceOptional?: boolean;
-};
-
-const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
-  isTraceEmpty = false,
-  isTraceOptional = false,
-  children,
-  ...tabProps
-}) => {
-  let contents;
-  if (isTraceEmpty && isTraceOptional) {
-    contents = (
-      <>
-        <div className="text-muted">
-          No trace available, run the extension to generate data
-        </div>
-
-        <div className="text-info mt-2">
-          <FontAwesomeIcon icon={faInfoCircle} />
-          &nbsp;This brick supports traceless output previews. See the Preview
-          tab for the current preview
-        </div>
-      </>
-    );
-  } else if (isTraceEmpty) {
-    contents = (
-      <div className="text-muted">
-        No trace available, run the extension to generate data
-      </div>
-    );
-  } else {
-    contents = children;
-  }
-
-  return (
-    <Tab.Pane {...tabProps} className={styles.tabPane}>
-      {contents}
-    </Tab.Pane>
-  );
-};
-
 const DataPanel: React.FC<{
   instanceId: UUID;
 }> = ({ instanceId }) => {
@@ -109,7 +68,8 @@ const DataPanel: React.FC<{
 
   const showDeveloperTabs = flags.includes("page-editor-developer");
 
-  const { values: formState } = useFormikContext<FormState>();
+  const { values: formState, errors } = useFormikContext<FormState>();
+  const formikData = { errors, ...formState };
 
   const { blockPipeline } = formState.extension;
   const blockIndex = blockPipeline.findIndex(
@@ -122,19 +82,17 @@ const DataPanel: React.FC<{
   const record = traces.find((trace) => trace.blockInstanceId === instanceId);
 
   const isInputStale = useMemo(() => {
-    if (record === undefined) {
+    // Don't show the warning if there are no traces. Also, this block can't have a
+    // stale input if it's the first block in the pipeline.
+    if (record === undefined || blockIndex === 0) {
       return false;
-    }
-
-    if (traces.length !== blockPipeline.length) {
-      return true;
     }
 
     const currentInput = blockPipeline.slice(0, blockIndex);
     const tracedInput = currentInput.map(
       (block) =>
         traces.find((trace) => trace.blockInstanceId === block.instanceId)
-          .blockConfig
+          ?.blockConfig
     );
 
     return !isEqual(currentInput, tracedInput);
@@ -175,10 +133,19 @@ const DataPanel: React.FC<{
   const showFormPreview = block.config?.schema && block.config?.uiSchema;
   const showBlockPreview = record || previewInfo?.traceOptional;
 
-  const defaultKey = showFormPreview ? "preview" : "output";
+  const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
+    showFormPreview ? "preview" : "output"
+  );
+
+  const [contextQuery, setContextQuery] = useDataPanelTabSearchQuery("context");
+  const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery("formik");
+  const [renderedQuery, setRenderedQuery] = useDataPanelTabSearchQuery(
+    "rendered"
+  );
+  const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
 
   return (
-    <Tab.Container defaultActiveKey={defaultKey}>
+    <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <Nav variant="tabs">
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
@@ -215,6 +182,8 @@ const DataPanel: React.FC<{
             data={relevantContext}
             copyable
             searchable
+            initialSearchQuery={contextQuery}
+            onSearchQueryChanged={setContextQuery}
             shouldExpandNode={(keyPath) =>
               keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
             }
@@ -227,7 +196,12 @@ const DataPanel: React.FC<{
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
               </div>
-              <JsonTree data={formState ?? {}} searchable />
+              <JsonTree
+                data={formikData ?? {}}
+                searchable
+                initialSearchQuery={formikQuery}
+                onSearchQueryChanged={setFormikQuery}
+              />
             </DataTab>
             <DataTab eventKey="blockConfig">
               <div className="text-info">
@@ -251,6 +225,8 @@ const DataPanel: React.FC<{
                 data={record.renderedArgs}
                 copyable
                 searchable
+                initialSearchQuery={renderedQuery}
+                onSearchQueryChanged={setRenderedQuery}
                 label="Rendered Inputs"
               />
             </>
@@ -273,6 +249,8 @@ const DataPanel: React.FC<{
                 data={outputObj}
                 copyable
                 searchable
+                initialSearchQuery={outputQuery}
+                onSearchQueryChanged={setOutputQuery}
                 label="Data"
                 shouldExpandNode={(keyPath) =>
                   keyPath.length === 1 &&

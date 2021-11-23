@@ -23,7 +23,13 @@ import { RemoteServiceError } from "@/services/errors";
 import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
-import { ContextError, ExtensionNotLinkedError, isAxiosError } from "@/errors";
+import {
+  ContextError,
+  ExtensionNotLinkedError,
+  getErrorMessage,
+  isAxiosError,
+  selectError,
+} from "@/errors";
 import { isEmpty } from "lodash";
 import {
   deleteCachedAuthData,
@@ -127,6 +133,10 @@ async function authenticate(
 ): Promise<AxiosRequestConfig> {
   expectContext("background");
 
+  if (config == null) {
+    throw new Error("config is required for authenticate");
+  }
+
   const service = await serviceRegistry.lookup(config.serviceId);
 
   if (service.id === PIXIEBRIX_SERVICE_ID) {
@@ -176,22 +186,33 @@ async function proxyRequest<T>(
   service: SanitizedServiceConfiguration,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse<T>> {
+  if (service == null) {
+    throw new Error("service is required for proxyRequest");
+  }
+
   console.debug(`Proxying request for ${service.id}`);
+
+  const authenticatedRequestConfig = await authenticate(
+    await pixieServiceFactory(),
+    {
+      url: await absoluteApiUrl("/api/proxy/"),
+      method: "post" as Method,
+      data: {
+        ...requestConfig,
+        auth_id: service.id,
+        service_id: service.serviceId,
+      },
+    }
+  );
+
   let proxyResponse;
   try {
     proxyResponse = (await backgroundRequest(
-      await authenticate(await pixieServiceFactory(), {
-        url: await absoluteApiUrl("/api/proxy/"),
-        method: "post" as Method,
-        data: {
-          ...requestConfig,
-          auth_id: service.id,
-          service_id: service.serviceId,
-        },
-      })
+      authenticatedRequestConfig
     )) as SanitizedResponse<ProxyResponseData>;
-  } catch {
-    throw new Error("An error occurred when proxying the service request");
+  } catch (error: unknown) {
+    // If there's a server error with the proxy server itself, we'll also see it in the Rollbar logs for the server.
+    throw new Error(`API proxy error: ${getErrorMessage(error)}`);
   }
 
   const { data: remoteResponse } = proxyResponse;
@@ -231,10 +252,12 @@ const _proxyService = liftBackground(
       return await backgroundRequest(
         await authenticate(serviceConfig, requestConfig)
       );
-      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-    } catch (error) {
-      if (UNAUTHORIZED_STATUS_CODES.includes(error.response?.status)) {
-        // Try again - have the user login again, or automatically try to get a new token
+    } catch (error: unknown) {
+      // Try again - have the user login again, or automatically try to get a new token
+      if (
+        isAxiosError(error) &&
+        UNAUTHORIZED_STATUS_CODES.includes(error.response?.status)
+      ) {
         const service = await serviceRegistry.lookup(serviceConfig.serviceId);
         if (service.isOAuth2 || service.isToken) {
           await deleteCachedAuthData(serviceConfig.id);
@@ -248,8 +271,7 @@ const _proxyService = liftBackground(
         "Error occurred when making a request from the background page",
         { error }
       );
-      // Caught outside to add additional context to the exception
-      // noinspection ExceptionCaughtLocallyJS
+
       throw error;
     }
   }
@@ -262,6 +284,11 @@ export const clearServiceCache = liftBackground(
   }
 );
 
+/**
+ * Perform an request either directly, or via the PixieBrix authentication proxy
+ * @param serviceConfig the PixieBrix service configuration (used to locate the full configuration)
+ * @param requestConfig the unauthenticated axios request configuration
+ */
 export async function proxyService<TData>(
   serviceConfig: SanitizedServiceConfiguration | null,
   requestConfig: AxiosRequestConfig
@@ -302,9 +329,8 @@ export async function proxyService<TData>(
       serviceConfig,
       requestConfig
     )) as RemoteResponse<TData>;
-    // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-  } catch (error) {
-    throw new ContextError(error, {
+  } catch (error: unknown) {
+    throw new ContextError(selectError(error) as Error, {
       serviceId: serviceConfig.serviceId,
       authId: serviceConfig.id,
     });

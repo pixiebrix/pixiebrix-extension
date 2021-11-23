@@ -18,27 +18,26 @@
 
 import { IExtension, Metadata } from "@/core";
 import {
+  baseFromExtension,
+  baseSelectExtension,
   baseSelectExtensionPoint,
-  excludeInstanceIds,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
+  normalizePipeline,
+  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-  withInstanceIds,
-  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray } from "lodash";
 import {
   PanelConfig,
   PanelDefinition,
   PanelExtensionPoint,
 } from "@/extensionPoints/panelExtension";
-import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import { uuidv4 } from "@/types/helpers";
@@ -46,21 +45,17 @@ import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
-import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import { NormalizedAvailability } from "@/blocks/types";
 import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration";
 import { insertPanel } from "@/contentScript/messenger/api";
-
-const wizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
-  { step: "Logs", Component: LogsTab },
-];
+import { Except } from "type-fest";
 
 export type PanelTraits = {
   style: {
@@ -68,7 +63,9 @@ export type PanelTraits = {
   };
 };
 
-export interface PanelFormState extends BaseFormState {
+type Extension = BaseExtensionState & Except<PanelConfig, "body">;
+
+export interface PanelFormState extends BaseFormState<Extension> {
   type: "panel";
 
   containerInfo: ElementInfo;
@@ -83,13 +80,6 @@ export interface PanelFormState extends BaseFormState {
       isAvailable: NormalizedAvailability;
     };
     traits: PanelTraits;
-  };
-
-  extension: {
-    heading: string;
-    blockPipeline: BlockPipeline;
-    collapsible?: boolean;
-    shadowDOM?: boolean;
   };
 }
 
@@ -149,32 +139,20 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  {
-    uuid,
-    apiVersion,
-    label,
-    extensionPoint,
-    extension,
-    services,
-  }: PanelFormState,
+  { extension, ...state }: PanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<PanelConfig> {
   const config: PanelConfig = {
     heading: extension.heading,
-    body: extension.blockPipeline,
+    body: options.includeInstanceIds
+      ? extension.blockPipeline
+      : omitEditorMetadata(extension.blockPipeline),
     collapsible: extension.collapsible,
     shadowDOM: extension.shadowDOM,
   };
   return removeEmptyValues({
-    id: uuid,
-    apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: null,
-    label,
-    services,
-    config: options.includeInstanceIds
-      ? config
-      : excludeInstanceIds(config, "body"),
+    ...baseSelectExtension(state),
+    config,
   });
 }
 
@@ -206,6 +184,8 @@ async function fromExtensionPoint(
 
     services: [],
 
+    optionsArgs: {},
+
     extension: {
       heading,
       collapsible: boolean(collapsible ?? false),
@@ -227,6 +207,7 @@ async function fromExtensionPoint(
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
+    recipe: undefined,
   };
 }
 
@@ -239,22 +220,12 @@ async function fromExtension(
     "panel"
   >(config, "panel");
 
-  const blockPipeline = withInstanceIds(castArray(config.config.body));
-
   return {
-    uuid: config.id,
-    apiVersion: config.apiVersion,
-    installed: true,
-    type: extensionPoint.definition.type,
-    label: config.label,
+    ...baseFromExtension(config, extensionPoint.definition.type),
 
-    services: config.services,
-
-    extension: {
-      heading: config.config.heading ?? "",
-      ...config.config,
-      blockPipeline,
-    },
+    extension: normalizePipeline(config.config, "body", {
+      heading: "",
+    }),
 
     containerInfo: null,
 
@@ -281,7 +252,6 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   baseClass: PanelExtensionPoint,
   selectNativeElement: insertPanel,
   EditorNode: PanelConfiguration,
-  wizard,
   fromNativeElement,
   asDynamicElement,
   fromExtensionPoint,

@@ -20,13 +20,7 @@ import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, once, debounce, cloneDeep } from "lodash";
-import {
-  reducePipeline,
-  mergeReaders,
-  blockList,
-  makeServiceContext,
-  apiVersionOptions,
-} from "@/blocks/combinators";
+import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { reportError } from "@/telemetry/logging";
 import {
   awaitElementOnce,
@@ -48,7 +42,7 @@ import {
   IconConfig,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import {
   hasCancelRootCause,
@@ -64,11 +58,17 @@ import {
 } from "@/contentScript/notify";
 import { getNavigationId } from "@/contentScript/context";
 import { rejectOnCancelled, PromiseCancelled } from "@/utils";
-import { PanelDefinition } from "@/extensionPoints/panelExtension";
 import getSvgIcon from "@/icons/getSvgIcon";
-import { engineRenderer } from "@/utils/renderers";
 import { selectEventData } from "@/telemetry/deployments";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import apiVersionOptions, {
+  DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+} from "@/runtime/apiVersionOptions";
+import { engineRenderer } from "@/runtime/renderers";
+import { mapArgs } from "@/runtime/mapArgs";
+import { blockList } from "@/blocks/util";
+import { makeServiceContext } from "@/services/serviceUtils";
+import { mergeReaders } from "@/blocks/readers/readerUtils";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -460,29 +460,38 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       icon = { id: "box", size: 18 },
     } = extension.config;
 
-    const renderTemplate = await engineRenderer(extension.templateEngine);
+    const versionOptions = apiVersionOptions(extension.apiVersion);
+
+    const implicitRender = versionOptions.explicitRender
+      ? null
+      : await engineRenderer(
+          extension.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE
+        );
 
     let html: string;
 
     if (extension.config.if) {
       // Read latest state at the time of the action
-      const ctxt = await ctxtPromise;
+      const input = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
 
-      console.debug("Checking menuItem precondition", { ctxt, serviceContext });
+      console.debug("Checking menuItem precondition", {
+        input,
+        serviceContext,
+      });
 
-      const show = await reducePipeline(
-        extension.config.if,
-        ctxt,
-        extensionLogger,
-        document,
-        {
-          validate: true,
-          serviceArgs: serviceContext,
-          optionsArgs: extension.optionsArgs,
-          ...apiVersionOptions(extension.apiVersion),
-        }
-      );
+      const initialValues: InitialValues = {
+        input,
+        serviceContext,
+        optionsArgs: extension.optionsArgs,
+        root: document,
+      };
+
+      const show = await reducePipeline(extension.config.if, initialValues, {
+        // Don't pass extension: extensionLogger because our log display doesn't handle the in-extension point
+        // conditionals yet
+        ...versionOptions,
+      });
 
       if (!show) {
         this.watchDependencies(extension);
@@ -495,7 +504,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       const serviceContext = await makeServiceContext(extension.services);
       const extensionContext = { ...ctxt, ...serviceContext };
       html = Mustache.render(this.getTemplate(), {
-        caption: renderTemplate(caption, extensionContext),
+        caption: (await mapArgs(caption, extensionContext, {
+          implicitRender,
+        })) as string,
         icon: icon ? await getSvgIcon(icon) : null,
       });
     } else {
@@ -518,13 +529,16 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       try {
         // Read latest state at the time of the action
         const reader = await this.defaultReader();
-        const ctxt = await reader.read(this.getReaderRoot($menu));
-        const serviceContext = await makeServiceContext(extension.services);
 
-        await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
-          validate: true,
-          serviceArgs: serviceContext,
+        const initialValues: InitialValues = {
+          input: await reader.read(this.getReaderRoot($menu)),
+          serviceContext: await makeServiceContext(extension.services),
           optionsArgs: extension.optionsArgs,
+          root: document,
+        };
+
+        await reducePipeline(actionConfig, initialValues, {
+          logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         });
 
@@ -753,7 +767,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   public readonly permissions: Permissions.Permissions;
 
-  public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
+  public readonly rawConfig: ExtensionPointConfig<MenuDefinition>;
 
   public get defaultOptions(): {
     caption: string;
@@ -769,7 +783,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description, icon } = config.metadata;
+    const { id, name, description, icon } = cloned.metadata;
     super(id, name, description, icon);
     this._definition = cloned.definition;
     this.rawConfig = cloned;

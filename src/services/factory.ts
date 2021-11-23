@@ -17,7 +17,7 @@
 
 import { Service } from "@/types";
 import { produce } from "immer";
-import { mapArgs, missingProperties } from "@/helpers";
+import { renderMustache } from "@/runtime/mapArgs";
 import {
   IncompatibleServiceError,
   NotConfiguredError,
@@ -41,6 +41,7 @@ import {
 } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { isAbsoluteUrl } from "@/utils";
+import { missingProperties } from "@/helpers";
 
 /**
  * A service created from a local definition. Has the ability to authenticate requests because it has
@@ -108,7 +109,7 @@ class LocalDefinedService<
     ) {
       // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
       const baseUrlTemplate = this._definition.authentication.baseURL;
-      const baseUrl = mapArgs(baseUrlTemplate, serviceConfig);
+      const baseUrl = renderMustache(baseUrlTemplate, serviceConfig);
       patterns.push(baseUrl + (baseUrl.endsWith("/") ? "*" : "/*"));
     }
 
@@ -116,8 +117,8 @@ class LocalDefinedService<
       const oauth = this._definition
         .authentication as OAuth2AuthenticationDefinition;
       patterns.push(
-        mapArgs(oauth.oauth2.authorizeUrl, serviceConfig),
-        mapArgs(oauth.oauth2.tokenUrl, serviceConfig)
+        renderMustache(oauth.oauth2.authorizeUrl, serviceConfig),
+        renderMustache(oauth.oauth2.tokenUrl, serviceConfig)
       );
     }
 
@@ -125,7 +126,7 @@ class LocalDefinedService<
       const tokenUrl = (this
         ._definition as ServiceDefinition<TokenAuthenticationDefinition>)
         .authentication.token.url;
-      patterns.push(mapArgs(tokenUrl, serviceConfig));
+      patterns.push(renderMustache(tokenUrl, serviceConfig));
     }
 
     return uniq(compact(patterns));
@@ -136,7 +137,7 @@ class LocalDefinedService<
       const definition: TokenContext = (this._definition
         .authentication as TokenAuthenticationDefinition).token;
       // Console.debug("token context", { definition, serviceConfig });
-      return mapArgs<TokenContext>(definition, serviceConfig);
+      return renderMustache<TokenContext>(definition, serviceConfig);
     }
 
     return undefined;
@@ -147,7 +148,7 @@ class LocalDefinedService<
       const definition: OAuth2Context = (this._definition
         .authentication as OAuth2AuthenticationDefinition).oauth2;
       console.debug("getOAuth2Context", { definition, serviceConfig });
-      return mapArgs<OAuth2Context>(definition, serviceConfig);
+      return renderMustache<OAuth2Context>(definition, serviceConfig);
     }
 
     return undefined;
@@ -187,7 +188,7 @@ class LocalDefinedService<
       baseURL,
       headers = {},
       params = {},
-    } = mapArgs<KeyAuthenticationDefinition>(
+    } = renderMustache<KeyAuthenticationDefinition>(
       (this._definition.authentication as KeyAuthenticationDefinition) ?? {},
       serviceConfig
     );
@@ -218,7 +219,7 @@ class LocalDefinedService<
       throw new Error("Empty token data provided");
     }
 
-    const { baseURL, headers = {} } = mapArgs(
+    const { baseURL, headers = {} } = renderMustache(
       this._definition.authentication as
         | OAuth2AuthenticationDefinition
         | TokenAuthenticationDefinition,

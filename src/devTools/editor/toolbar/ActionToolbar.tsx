@@ -16,9 +16,7 @@
  */
 
 import React from "react";
-import { IExtension } from "@/core";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { useFormikContext } from "formik";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHistory, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -26,21 +24,27 @@ import useRemove from "@/devTools/editor/hooks/useRemove";
 import useReset from "@/devTools/editor/hooks/useReset";
 
 const ActionToolbar: React.FunctionComponent<{
-  installed: IExtension[];
   element: FormState;
   disabled: boolean;
-}> = ({ installed, element, disabled }) => {
+  onSave: () => void;
+}> = ({ element, disabled, onSave }) => {
   const remove = useRemove(element);
-  const reset = useReset(installed, element);
-  const { values } = useFormikContext<FormState>();
+  const reset = useReset();
 
   return (
     <ButtonGroup className="ml-2">
-      <Button disabled={disabled} type="submit" size="sm" variant="primary">
+      <Button disabled={disabled} size="sm" variant="primary" onClick={onSave}>
         <FontAwesomeIcon icon={faSave} /> Save
       </Button>
-      {values.installed && (
-        <Button disabled={disabled} size="sm" variant="warning" onClick={reset}>
+      {element.installed && (
+        <Button
+          disabled={disabled}
+          size="sm"
+          variant="warning"
+          onClick={() => {
+            reset({ element });
+          }}
+        >
           <FontAwesomeIcon icon={faHistory} /> Reset
         </Button>
       )}

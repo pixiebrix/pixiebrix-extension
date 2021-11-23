@@ -333,6 +333,7 @@ export interface components {
       config: string;
       public?: boolean;
       organizations?: string[];
+      updated_at?: string;
     };
     PackageVersion: {
       id?: string;

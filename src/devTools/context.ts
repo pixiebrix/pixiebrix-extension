@@ -15,33 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import pTimeout from "p-timeout";
-import { browser, Runtime } from "webextension-polyfill-ts";
+import browser, { Runtime } from "webextension-polyfill";
 import { connectDevtools } from "@/devTools/protocol";
-import {
-  checkTargetPermissions,
-  ensureScript,
-  navigationEvent,
-} from "@/background/devtools/index";
+import { navigationEvent } from "@/background/devtools/index";
 import { useAsyncEffect } from "use-async-effect";
 import { useAsyncState } from "@/hooks/common";
 import { FrameworkMeta } from "@/messaging/constants";
 import { reportError } from "@/telemetry/logging";
 import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
-import { sleep } from "@/utils";
 import { getErrorMessage } from "@/errors";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
 import { Except } from "type-fest";
 import { detectFrameworks } from "@/contentScript/messenger/api";
+import {
+  checkTargetPermissions,
+  ensureContentScript,
+} from "@/background/messenger/api";
+import { runInMillis } from "@/utils";
 
 interface FrameMeta {
   url: string;
   frameworks: FrameworkMeta[];
 }
 
-interface FrameConnectionState {
+export interface FrameConnectionState {
   frameId: number;
 
   /**
@@ -111,28 +111,11 @@ class PermissionsError extends Error {
   }
 }
 
-async function runInMillis<TResult>(
-  factory: () => Promise<TResult>,
-  maxMillis: number
-): Promise<TResult> {
-  const timeout = Symbol("timeout");
-  const value = await Promise.race([
-    factory(),
-    sleep(maxMillis).then(() => timeout),
-  ]);
-
-  if (value === timeout) {
-    throw new Error(`Method did not complete in ${maxMillis}ms`);
-  }
-
-  return value as TResult;
-}
-
-async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
+async function connectToFrame(): Promise<FrameMeta> {
   // TODO: drop the next few lines and just let ensureScript throw
 
   const [hasPermissions, url] = await Promise.all([
-    checkTargetPermissions(port),
+    checkTargetPermissions(thisTab),
     getCurrentURL(),
   ]);
   if (!hasPermissions) {
@@ -141,7 +124,11 @@ async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
   }
 
   console.debug(`connectToFrame: ensuring contentScript for ${url}`);
-  await pTimeout(ensureScript(port), 4000, "contentScript not ready in 4s");
+  await pTimeout(
+    ensureContentScript(thisTab),
+    4000,
+    "contentScript not ready in 4s"
+  );
 
   let frameworks: FrameworkMeta[] = [];
   try {
@@ -182,7 +169,7 @@ export function useDevConnection(): Context {
     try {
       console.debug(`useDevConnection.connect: connecting for ${uuid}`);
       setConnecting(true);
-      const meta = await connectToFrame(port);
+      const meta = await connectToFrame();
       console.debug(
         `useDevConnection.connect: replacing tabState for ${uuid}: ${meta.url}`
       );

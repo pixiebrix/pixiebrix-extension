@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { compact, isEmpty, sortBy, uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors";
@@ -29,12 +29,12 @@ import { ElementInfo } from "@/nativeEditor/frameworks";
 import SelectorListItem from "@/devTools/editor/fields/selectorListItem/SelectorListItem";
 import { Framework } from "@/messaging/constants";
 import { SelectMode } from "@/nativeEditor/selector";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { useField } from "formik";
 import {
   disableOverlay,
   enableOverlay,
   selectElement,
+  cancelSelect,
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
 
@@ -44,6 +44,8 @@ interface ElementSuggestion extends SuggestionTypeBase {
 }
 
 export type SelectorSelectorProps = {
+  name: string;
+  disabled?: boolean;
   initialElement?: ElementInfo;
   framework?: Framework;
   selectMode?: SelectMode;
@@ -51,7 +53,7 @@ export type SelectorSelectorProps = {
   isClearable?: boolean;
   sort?: boolean;
   root?: string;
-  disabled?: boolean;
+  placeholder?: string;
 };
 
 function getSuggestionsForElement(
@@ -82,7 +84,7 @@ function renderSuggestion(suggestion: ElementSuggestion): React.ReactNode {
   );
 }
 
-const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
+const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   name,
   initialElement,
   framework,
@@ -186,6 +188,15 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
     setValue,
     root,
   ]);
+
+  useEffect(
+    () => () => {
+      if (isSelecting) {
+        void cancelSelect(thisTab);
+      }
+    },
+    [isSelecting]
+  );
 
   return (
     <div className="d-flex">

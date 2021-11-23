@@ -23,6 +23,7 @@ import { actions as elementWizardActions } from "@/devTools/editor/slices/formBu
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import FormEditor from "@/components/formBuilder/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
+import ConfigErrorBoundary from "@/devTools/editor/fields/ConfigErrorBoundary";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 
@@ -38,6 +39,13 @@ const submitCaptionSchema: Schema = {
   default: "Submit",
 };
 
+const locationSchema: Schema = {
+  type: "string",
+  enum: ["modal", "sidebar"],
+  description: "The location of the form (default='modal')",
+  default: "modal",
+};
+
 const FormModalOptions: React.FC<{
   name: string;
   configKey: string;
@@ -51,11 +59,13 @@ const FormModalOptions: React.FC<{
 
   return (
     <div>
-      <FormEditor
-        name={configName}
-        activeField={activeField}
-        setActiveField={setActiveField}
-      />
+      <ConfigErrorBoundary>
+        <FormEditor
+          name={configName}
+          activeField={activeField}
+          setActiveField={setActiveField}
+        />
+      </ConfigErrorBoundary>
 
       <SchemaField
         name={`${configName}.cancelable`}
@@ -67,6 +77,12 @@ const FormModalOptions: React.FC<{
         name={`${configName}.submitCaption`}
         label="Submit Button Text"
         schema={submitCaptionSchema}
+      />
+
+      <SchemaField
+        name={`${configName}.location`}
+        label="Location"
+        schema={locationSchema}
       />
     </div>
   );

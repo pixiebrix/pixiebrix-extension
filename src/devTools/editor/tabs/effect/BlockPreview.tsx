@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer } from "react";
 import { BlockConfig } from "@/blocks/types";
 import { AsyncState, useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
@@ -35,10 +35,19 @@ import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
 import { BlockType, getType } from "@/blocks/util";
 import { removeEmptyValues } from "@/devTools/editor/extensionPoints/base";
-import { UnknownObject } from "@/types";
-import { IBlock, RegistryId } from "@/core";
+import {
+  ApiVersion,
+  BlockArgContext,
+  IBlock,
+  RegistryId,
+  ServiceDependency,
+} from "@/core";
 import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
+import { useField } from "formik";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
+import { makeServiceContext } from "@/services/serviceUtils";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -87,32 +96,74 @@ const traceWarning = (
   </div>
 );
 
+type PreviewState = {
+  isRunning: boolean;
+  output: unknown | undefined;
+  outputKey: string;
+};
+
+const initialState: PreviewState = {
+  isRunning: false,
+  output: undefined,
+  outputKey: null,
+};
+
+const previewSlice = createSlice({
+  name: "previewSlice",
+  initialState,
+  reducers: {
+    startRun: (state) => {
+      state.isRunning = true;
+    },
+    setSuccess: (
+      state,
+      action: PayloadAction<{ output: unknown; outputKey: string }>
+    ) => {
+      const { output, outputKey } = action.payload;
+      state.outputKey = outputKey;
+      state.output = outputKey ? { [`@${outputKey}`]: output } : output;
+      state.isRunning = false;
+    },
+    setError: (state, action: PayloadAction<{ error: unknown }>) => {
+      const { error } = action.payload;
+      state.output = error;
+      state.outputKey = null;
+      state.isRunning = false;
+    },
+  },
+});
+
 const BlockPreview: React.FunctionComponent<{
   traceRecord: TraceRecord;
   blockConfig: BlockConfig;
   previewRefreshMillis?: 250;
 }> = ({ blockConfig, traceRecord, previewRefreshMillis }) => {
-  const [isRunning, setIsRunning] = useState(false);
-  const [output, setOutput] = useState<unknown | undefined>();
-  const [outputKey, setOutputKey] = useState<string>(blockConfig.outputKey);
+  const [{ isRunning, output, outputKey }, dispatch] = useReducer(
+    previewSlice.reducer,
+    {
+      ...initialState,
+      outputKey: blockConfig.outputKey,
+    }
+  );
+
+  const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
+  const [{ value: services }] = useField<ServiceDependency[]>("services");
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 
   const debouncedRun = useDebouncedCallback(
-    async (blockConfig: BlockConfig, args: UnknownObject) => {
-      setIsRunning(true);
+    async (blockConfig: BlockConfig, context: BlockArgContext) => {
+      dispatch(previewSlice.actions.startRun());
+      const { outputKey } = blockConfig;
       try {
-        const result = await runBlock(thisTab, {
+        const output = await runBlock(thisTab, {
+          apiVersion,
           blockConfig: removeEmptyValues(blockConfig),
-          args,
+          context: { ...context, ...(await makeServiceContext(services)) },
         });
-        const { outputKey } = blockConfig;
-        setOutputKey(outputKey);
-        setOutput(outputKey ? { [`@${outputKey}`]: result } : result);
+        dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
       } catch (error: unknown) {
-        setOutput(error);
-      } finally {
-        setIsRunning(false);
+        dispatch(previewSlice.actions.setError({ error }));
       }
     },
     previewRefreshMillis,
@@ -125,10 +176,12 @@ const BlockPreview: React.FunctionComponent<{
 
   useEffect(() => {
     if ((context && blockInfo?.isPure) || blockInfo?.traceOptional) {
-      void debouncedRun(blockConfig, context);
+      void debouncedRun(blockConfig, (context as unknown) as BlockArgContext);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
+
+  const [previewQuery, setPreviewQuery] = useDataPanelTabSearchQuery("preview");
 
   if (blockInfo?.type === "renderer") {
     return (
@@ -177,7 +230,7 @@ const BlockPreview: React.FunctionComponent<{
           size="sm"
           disabled={!traceRecord}
           onClick={() => {
-            void debouncedRun(blockConfig, context);
+            void debouncedRun(blockConfig, context as BlockArgContext);
           }}
         >
           <FontAwesomeIcon icon={faSync} /> Refresh Preview
@@ -189,6 +242,8 @@ const BlockPreview: React.FunctionComponent<{
           data={output}
           searchable
           copyable
+          initialSearchQuery={previewQuery}
+          onSearchQueryChanged={setPreviewQuery}
           shouldExpandNode={(keyPath) =>
             keyPath.length === 1 && keyPath[0] === `@${outputKey}`
           }

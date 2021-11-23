@@ -18,52 +18,44 @@
 
 import { IExtension, Metadata } from "@/core";
 import {
+  baseFromExtension,
+  baseSelectExtension,
   baseSelectExtensionPoint,
-  excludeInstanceIds,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
+  normalizePipeline,
+  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-  withInstanceIds,
-  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray } from "lodash";
 import {
   ActionPanelConfig,
   ActionPanelExtensionPoint,
   PanelDefinition,
 } from "@/extensionPoints/actionPanelExtension";
-import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import ActionPanelConfiguration from "@/devTools/editor/tabs/actionPanel/ActionPanelConfiguration";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
-import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
-import { BlockPipeline } from "@/blocks/types";
+import { Except } from "type-fest";
 
-const wizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
-  { step: "Logs", Component: LogsTab },
-];
+type Extension = BaseExtensionState & Except<ActionPanelConfig, "body">;
 
-export interface ActionPanelFormState extends BaseFormState {
+export interface ActionPanelFormState extends BaseFormState<Extension> {
   type: "actionPanel";
-
-  extension: {
-    heading: string;
-    blockPipeline: BlockPipeline;
-  };
+  extension: Extension;
 }
 
 function fromNativeElement(
@@ -110,30 +102,18 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  {
-    uuid,
-    label,
-    extensionPoint,
-    extension,
-    services,
-    apiVersion,
-  }: ActionPanelFormState,
+  { extension, ...state }: ActionPanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ActionPanelConfig> {
   const config: ActionPanelConfig = {
     heading: extension.heading,
-    body: extension.blockPipeline,
+    body: options.includeInstanceIds
+      ? extension.blockPipeline
+      : omitEditorMetadata(extension.blockPipeline),
   };
   return removeEmptyValues({
-    id: uuid,
-    apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: null,
-    label,
-    services,
-    config: options.includeInstanceIds
-      ? config
-      : excludeInstanceIds(config, "body"),
+    ...baseSelectExtension(state),
+    config,
   });
 }
 
@@ -164,6 +144,8 @@ export async function fromExtensionPoint(
 
     services: [],
 
+    optionsArgs: {},
+
     extension: {
       heading,
       blockPipeline: [],
@@ -177,6 +159,7 @@ export async function fromExtensionPoint(
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
+    recipe: undefined,
   };
 }
 
@@ -189,21 +172,10 @@ async function fromExtension(
     "actionPanel"
   >(config, "actionPanel");
 
-  const blockPipeline = withInstanceIds(castArray(config.config.body));
-
   return {
-    uuid: config.id,
-    apiVersion: config.apiVersion,
-    installed: true,
-    type: extensionPoint.definition.type,
-    label: config.label,
+    ...baseFromExtension(config, extensionPoint.definition.type),
 
-    services: config.services,
-
-    extension: {
-      heading: config.config.heading,
-      blockPipeline,
-    },
+    extension: normalizePipeline(config.config, "body"),
 
     extensionPoint: {
       metadata: extensionPoint.metadata,
@@ -229,7 +201,6 @@ const config: ElementConfig<never, ActionPanelFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  wizard,
   EditorNode: ActionPanelConfiguration,
   insertModeHelp: (
     <div>

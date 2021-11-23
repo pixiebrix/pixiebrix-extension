@@ -18,21 +18,24 @@
 
 import { IExtension, Metadata } from "@/core";
 import {
+  baseFromExtension,
+  baseSelectExtension,
   baseSelectExtensionPoint,
-  excludeInstanceIds,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
+  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
-  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import {
+  AttachMode,
+  TargetMode,
   Trigger,
   TriggerConfig,
   TriggerDefinition,
@@ -41,7 +44,6 @@ import {
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
-import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -51,13 +53,7 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
-import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
-
-const wizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
-  { step: "Logs", Component: LogsTab },
-];
 
 export interface TriggerFormState extends BaseFormState {
   type: "trigger";
@@ -68,6 +64,8 @@ export interface TriggerFormState extends BaseFormState {
       rootSelector: string | null;
       trigger: Trigger;
       reader: SingleLayerReaderConfig;
+      attachMode: AttachMode;
+      targetMode: TargetMode;
       isAvailable: NormalizedAvailability;
     };
   };
@@ -85,8 +83,10 @@ function fromNativeElement(
     extensionPoint: {
       metadata,
       definition: {
-        rootSelector: null,
         trigger: "load",
+        rootSelector: null,
+        attachMode: null,
+        targetMode: null,
         reader: getImplicitReader("trigger"),
         isAvailable: makeIsAvailable(url),
       },
@@ -102,7 +102,14 @@ function selectExtensionPoint(
 ): ExtensionPointConfig<TriggerDefinition> {
   const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, rootSelector, reader, trigger },
+    definition: {
+      isAvailable,
+      rootSelector,
+      attachMode,
+      targetMode,
+      reader,
+      trigger,
+    },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
@@ -111,35 +118,25 @@ function selectExtensionPoint(
       reader,
       isAvailable: pickBy(isAvailable, identity),
       trigger,
+      attachMode,
+      targetMode,
       rootSelector,
     },
   });
 }
 
 function selectExtension(
-  {
-    uuid,
-    apiVersion,
-    label,
-    extensionPoint,
-    extension,
-    services,
-  }: TriggerFormState,
+  { extension, ...state }: TriggerFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<TriggerConfig> {
   const config: TriggerConfig = {
-    action: extension.blockPipeline,
+    action: options.includeInstanceIds
+      ? extension.blockPipeline
+      : omitEditorMetadata(extension.blockPipeline),
   };
   return removeEmptyValues({
-    id: uuid,
-    apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: null,
-    label,
-    services,
-    config: options.includeInstanceIds
-      ? config
-      : excludeInstanceIds(config, "action"),
+    ...baseSelectExtension(state),
+    config,
   });
 }
 
@@ -162,6 +159,8 @@ async function fromExtensionPoint(
   const {
     type,
     rootSelector,
+    attachMode,
+    targetMode,
     reader,
     trigger = "load",
   } = extensionPoint.definition;
@@ -175,6 +174,8 @@ async function fromExtensionPoint(
 
     services: [],
 
+    optionsArgs: {},
+
     extension: {
       blockPipeline: [],
     },
@@ -184,11 +185,14 @@ async function fromExtensionPoint(
       definition: {
         ...extensionPoint.definition,
         rootSelector,
+        attachMode,
+        targetMode,
         trigger,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
+    recipe: undefined,
   };
 }
 
@@ -201,18 +205,18 @@ async function fromExtension(
     "trigger"
   >(config, "trigger");
 
-  const { rootSelector, trigger, reader } = extensionPoint.definition;
+  const {
+    rootSelector,
+    attachMode,
+    targetMode,
+    trigger,
+    reader,
+  } = extensionPoint.definition;
 
   const blockPipeline = withInstanceIds(castArray(config.config.action));
 
   return {
-    uuid: config.id,
-    apiVersion: config.apiVersion,
-    installed: true,
-    type: extensionPoint.definition.type,
-    label: config.label,
-
-    services: config.services,
+    ...baseFromExtension(config, extensionPoint.definition.type),
 
     extension: {
       blockPipeline,
@@ -223,6 +227,8 @@ async function fromExtension(
       definition: {
         rootSelector,
         trigger,
+        attachMode,
+        targetMode,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
@@ -244,7 +250,6 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   selectExtension,
   fromExtension,
   fromExtensionPoint,
-  wizard,
   insertModeHelp: (
     <div>
       <p>

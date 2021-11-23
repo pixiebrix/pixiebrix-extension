@@ -21,7 +21,7 @@ import cx from "classnames";
 import useDeployments from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
 import { useRouteMatch } from "react-router";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 
 const Banner: React.FC<{ className?: string }> = ({ className, children }) => (
@@ -47,7 +47,6 @@ const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
   const matchRoot = useRouteMatch({ path: "/", exact: true });
   const matchInstalled = useRouteMatch({ path: "/installed", exact: true });
   const matchMarketplace = useRouteMatch({ path: "/blueprints", exact: true });
-  const matchTemplates = useRouteMatch({ path: "/templates", exact: true });
 
   const updateExtension = useCallback(async () => {
     await chromeP.runtime.requestUpdateCheck();
@@ -58,7 +57,7 @@ const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
     return null;
   }
 
-  if (!(matchRoot || matchInstalled || matchMarketplace || matchTemplates)) {
+  if (!(matchRoot || matchInstalled || matchMarketplace)) {
     return null;
   }
 

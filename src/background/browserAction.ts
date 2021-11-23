@@ -18,10 +18,9 @@
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
-import { browser } from "webextension-polyfill-ts";
+import browser, { Tabs } from "webextension-polyfill";
 import { safeParseUrl, sleep } from "@/utils";
 import { JsonObject, JsonValue } from "type-fest";
-import { HandlerMap } from "@/messaging/protocol";
 import { getErrorMessage } from "@/errors";
 import { emitDevtools } from "@/background/devtools/internal";
 import {
@@ -29,12 +28,11 @@ import {
   showActionPanel,
   toggleActionPanel,
 } from "@/contentScript/messenger/api";
+import { MessengerMeta } from "webext-messenger";
+import { UUID } from "@/core";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
-export const REGISTER_ACTION_FRAME = `${MESSAGE_PREFIX}/REGISTER_ACTION_FRAME`;
 export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAME_NOTIFICATION`;
-export const SHOW_ACTION_FRAME = `${MESSAGE_PREFIX}/SHOW_ACTION_FRAME`;
-export const HIDE_ACTION_FRAME = `${MESSAGE_PREFIX}/HIDE_ACTION_FRAME`;
 
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
@@ -56,7 +54,7 @@ const tabNonces = new Map<number, string | void>();
 const tabFrames = new Map<number, number>();
 
 const webstores = ["chrome.google.com", "addons.mozilla.org"];
-async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
+async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   const { protocol, hostname } = safeParseUrl(tab.url);
   if (webstores.includes(hostname)) {
     void showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE_WEBSTORE", tab.index);
@@ -93,21 +91,6 @@ async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
     reportError(error);
   }
 }
-
-type RegisterActionFrameMessage = {
-  type: typeof REGISTER_ACTION_FRAME;
-  payload: { nonce: string };
-};
-
-type ForwardActionFrameNotification = {
-  type: typeof FORWARD_FRAME_NOTIFICATION;
-  meta: { $seq: number };
-  payload: {
-    type: string;
-    meta?: JsonObject;
-    payload: JsonValue;
-  };
-};
 
 const FORWARD_RETRY_INTERVAL_MILLIS = 50;
 
@@ -220,40 +203,43 @@ async function forwardWhenReady(
   );
 }
 
-const handlers = new HandlerMap();
-
-handlers.set(
-  REGISTER_ACTION_FRAME,
-  async (request: RegisterActionFrameMessage, sender) => {
-    const tabId = sender.tab.id;
-    const expected = tabNonces.get(tabId);
-    if (expected != null && expected !== request.payload.nonce) {
-      console.warn("Action frame nonce mismatch", {
-        expected,
-        actual: request.payload.nonce,
-      });
-    }
-
-    console.debug("Setting action frame metadata", {
-      tabId,
-      frameId: sender.frameId,
+export async function registerActionFrame(
+  this: MessengerMeta,
+  nonce: UUID
+): Promise<void> {
+  const sender = this.trace[0];
+  const tabId = sender.tab.id;
+  const expected = tabNonces.get(tabId);
+  if (expected != null && expected !== nonce) {
+    console.warn("Action frame nonce mismatch", {
+      expected,
+      actual: nonce,
     });
-    tabFrames.set(tabId, sender.frameId);
-    tabSeqNumber.delete(tabId);
   }
-);
 
-handlers.set(
-  FORWARD_FRAME_NOTIFICATION,
-  async (request: ForwardActionFrameNotification, sender) => {
-    const tabId = sender.tab.id;
-    return forwardWhenReady(tabId, request.meta.$seq, request.payload).catch(
-      reportError
-    );
+  console.debug("Setting action frame metadata", {
+    tabId,
+    frameId: sender.frameId,
+  });
+  tabFrames.set(tabId, sender.frameId);
+  tabSeqNumber.delete(tabId);
+}
+
+export async function forwardFrameNotification(
+  this: MessengerMeta,
+  sequence: number,
+  payload: {
+    type: string;
+    meta?: JsonObject;
+    payload: JsonValue;
   }
-);
+) {
+  const tabId = this.trace[0].tab.id;
+  return forwardWhenReady(tabId, sequence, payload).catch(reportError);
+}
 
-handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
+export async function showActionFrame(this: MessengerMeta): Promise<void> {
+  const sender = this.trace[0];
   const tabId = sender.tab.id;
   tabFrames.delete(tabId);
   const nonce = await showActionPanel({
@@ -263,19 +249,19 @@ handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
   console.debug("Setting action frame nonce", { sender, nonce });
   tabNonces.set(tabId, nonce);
   tabSeqNumber.delete(tabId);
-});
+}
 
-handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
+export async function hideActionFrame(this: MessengerMeta): Promise<void> {
+  const sender = this.trace[0];
   const tabId = sender.tab.id;
   tabFrames.delete(tabId);
   await hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID });
   console.debug("Clearing action frame nonce", { sender });
   tabNonces.delete(tabId);
   tabSeqNumber.delete(tabId);
-});
+}
 
 if (isBackgroundPage()) {
   browser.browserAction.onClicked.addListener(handleBrowserAction);
   console.debug("Installed browserAction click listener");
-  browser.runtime.onMessage.addListener(handlers.asListener());
 }

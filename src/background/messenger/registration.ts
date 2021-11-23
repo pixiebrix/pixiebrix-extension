@@ -17,8 +17,9 @@
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
+import * as sheets from "@/contrib/google/sheets/handlers";
 import {
   ensureContextMenu,
   uninstallContextMenu,
@@ -32,18 +33,30 @@ import {
   openTab,
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
+import * as browserAction from "@/background/browserAction";
+import { checkTargetPermissions, ensureContentScript } from "@/background/util";
 
 expectContext("background");
 
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;
-
 declare global {
   interface MessengerMethods {
+    GOOGLE_SHEETS_GET_TAB_NAMES: typeof sheets.getTabNames;
+    GOOGLE_SHEETS_GET_SHEET_PROPERTIES: typeof sheets.getSheetProperties;
+    GOOGLE_SHEETS_GET_HEADERS: typeof sheets.getHeaders;
+    GOOGLE_SHEETS_CREATE_TAB: typeof sheets.createTab;
+    GOOGLE_SHEETS_APPEND_ROWS: typeof sheets.appendRows;
+    GOOGLE_SHEETS_BATCH_UPDATE: typeof sheets.batchUpdate;
+    GOOGLE_SHEETS_BATCH_GET: typeof sheets.batchGet;
+
+    INJECT_SCRIPT: typeof ensureContentScript;
+    CHECK_TARGET_PERMISSIONS: typeof checkTargetPermissions;
     CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
     OPEN_POPUP_PROMPT: typeof openPopupPrompt;
+
     ECHO_SENDER: typeof whoAmI;
     ACTIVATE_TAB: typeof activateTab;
     CLOSE_TAB: typeof closeTab;
@@ -52,14 +65,29 @@ declare global {
     REGISTRY_GET_KIND: typeof registry.getKind;
     REGISTRY_SYNC: typeof registry.syncRemote;
     REGISTRY_FIND: typeof registry.find;
+    REGISTER_ACTION_FRAME: typeof browserAction.registerActionFrame;
+    FORWARD_FRAME_NOTIFICATION: typeof browserAction.forwardFrameNotification;
+    SHOW_ACTION_FRAME: typeof browserAction.showActionFrame;
+    HIDE_ACTION_FRAME: typeof browserAction.hideActionFrame;
   }
 }
 
 registerMethods({
+  GOOGLE_SHEETS_GET_TAB_NAMES: sheets.getTabNames,
+  GOOGLE_SHEETS_GET_SHEET_PROPERTIES: sheets.getSheetProperties,
+  GOOGLE_SHEETS_GET_HEADERS: sheets.getHeaders,
+  GOOGLE_SHEETS_CREATE_TAB: sheets.createTab,
+  GOOGLE_SHEETS_APPEND_ROWS: sheets.appendRows,
+  GOOGLE_SHEETS_BATCH_UPDATE: sheets.batchUpdate,
+  GOOGLE_SHEETS_BATCH_GET: sheets.batchGet,
+
+  CHECK_TARGET_PERMISSIONS: checkTargetPermissions,
+  INJECT_SCRIPT: ensureContentScript,
   CONTAINS_PERMISSIONS: browser.permissions.contains,
   UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
   ENSURE_CONTEXT_MENU: ensureContextMenu,
   OPEN_POPUP_PROMPT: openPopupPrompt,
+
   ECHO_SENDER: whoAmI,
   ACTIVATE_TAB: activateTab,
   CLOSE_TAB: closeTab,
@@ -68,4 +96,8 @@ registerMethods({
   REGISTRY_GET_KIND: registry.getKind,
   REGISTRY_SYNC: registry.syncRemote,
   REGISTRY_FIND: registry.find,
+  REGISTER_ACTION_FRAME: browserAction.registerActionFrame,
+  FORWARD_FRAME_NOTIFICATION: browserAction.forwardFrameNotification,
+  SHOW_ACTION_FRAME: browserAction.showActionFrame,
+  HIDE_ACTION_FRAME: browserAction.hideActionFrame,
 });

@@ -19,18 +19,19 @@ import { isInputValidationError } from "@/blocks/errors";
 import { TraceError } from "@/telemetry/trace";
 import { joinName } from "@/utils";
 import { set } from "lodash";
+import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
 const requiredFieldRegex = /^Instance does not have required property "(?<property>.+)"\.$/;
 
 /**
  * Gets Input validation error from the Trace
  * @param pipelineErrors Pipeline validation errors for the Formik context.
- * @param traceError Serialized error from running the block ({@link TraceError.error}).
+ * @param errorTraceEntry Trace error from running the block ({@link TraceError}).
  * @param blockIndex Index of block that generated the Trace Error.
  * @returns True if errors found, false otherwise.
  */
 function applyTraceInputError(
-  pipelineErrors: Record<string, unknown>,
+  pipelineErrors: FormikErrorTree,
   errorTraceEntry: TraceError,
   blockIndex: number
 ) {

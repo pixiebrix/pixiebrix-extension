@@ -17,7 +17,6 @@
 
 import {
   ApiVersion,
-  Config,
   EmptyConfig,
   IExtension,
   InnerDefinitionRef,
@@ -36,6 +35,7 @@ import { registry } from "@/background/messenger/api";
 import React from "react";
 import { createSitePattern } from "@/permissions/patterns";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementType,
   SingleLayerReaderConfig,
@@ -47,7 +47,8 @@ import {
   NormalizedAvailability,
   ReaderConfig,
 } from "@/blocks/types";
-import { deepPickBy, freshIdentifier } from "@/utils";
+import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
+import { UnknownObject } from "@/types";
 
 export interface WizardStep {
   step: string;
@@ -56,13 +57,13 @@ export interface WizardStep {
     editable?: Set<string>;
     available?: boolean;
   }>;
-  extraProps?: Record<string, unknown>;
 }
 
 /**
  * Brick definition API controlling how the PixieBrix runtime interprets brick configurations
  * @see ApiVersion
  */
+// Keep at v2 until the Page Editor supports v3 expressions
 export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v2";
 
 /**
@@ -98,16 +99,62 @@ export function withInstanceIds(blocks: BlockPipeline): BlockPipeline {
 /**
  * Remove the automatically generated tracing ids.
  */
-export function excludeInstanceIds<T extends Config>(
-  config: T,
-  prop: keyof T
-): T {
+export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
+  return pipeline.map((blockConfig) => omit(blockConfig, "instanceId"));
+}
+
+/**
+ * Return common extension properties for the Page Editor form state
+ */
+export function baseFromExtension<T extends ElementType>(
+  config: IExtension,
+  type: T
+): Pick<
+  BaseFormState,
+  | "uuid"
+  | "apiVersion"
+  | "installed"
+  | "label"
+  | "services"
+  | "optionsArgs"
+  | "recipe"
+> & { type: T } {
   return {
-    ...config,
-    // eslint-disable-next-line security/detect-object-injection -- prop checked in signature
-    [prop]: (config[prop] as BlockPipeline).map((blockConfig) =>
-      omit(blockConfig, "instanceId")
-    ),
+    uuid: config.id,
+    apiVersion: config.apiVersion,
+    installed: true,
+    label: config.label,
+    services: config.services,
+    optionsArgs: config.optionsArgs,
+    type,
+    recipe: config._recipe,
+  };
+}
+
+export function baseSelectExtension({
+  uuid,
+  apiVersion,
+  extensionPoint,
+  label,
+  services,
+  optionsArgs,
+}: Except<BaseFormState, "extension">): Pick<
+  IExtension,
+  | "id"
+  | "apiVersion"
+  | "extensionPointId"
+  | "label"
+  | "services"
+  | "optionsArgs"
+> & { _recipe: null } {
+  return {
+    id: uuid,
+    apiVersion,
+    extensionPointId: extensionPoint.metadata.id,
+    _recipe: null,
+    label,
+    services,
+    optionsArgs,
   };
 }
 
@@ -118,9 +165,11 @@ export function makeInitialBaseState(
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     services: [],
+    optionsArgs: {},
     extension: {
       blockPipeline: [],
     },
+    recipe: undefined,
   };
 }
 
@@ -150,6 +199,24 @@ export function selectIsAvailable(
   return {
     matchPatterns,
     selectors,
+  };
+}
+
+/**
+ * Exclude malformed matchPatterns and selectors from an isAvailable section that may have found their way over from the
+ * Page Editor.
+ *
+ * Currently excludes:
+ * - Null values
+ * - Blank values
+ */
+export function cleanIsAvailable({
+  matchPatterns = [],
+  selectors = [],
+}: NormalizedAvailability): NormalizedAvailability {
+  return {
+    matchPatterns: matchPatterns.filter((x) => !isNullOrBlank(x)),
+    selectors: selectors.filter((x) => !isNullOrBlank(x)),
   };
 }
 
@@ -304,4 +371,27 @@ export function getImplicitReader(type: ElementType): SingleLayerReaderConfig {
  */
 export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
   return reader as SingleLayerReaderConfig;
+}
+
+/**
+ * Normalize the pipeline prop name and assign instance ids for tracing.
+ * @param config the extension configuration
+ * @param pipelineProp the name of the pipeline prop, currently either "action" or "body"
+ * @param defaults
+ */
+export function normalizePipeline<
+  T extends UnknownObject,
+  Prop extends keyof T
+>(
+  config: T,
+  pipelineProp: Prop,
+  defaults: Partial<T> = {}
+  // eslint-disable-next-line @typescript-eslint/ban-types -- not error-prone because parameters check keyof
+): BaseExtensionState & Omit<T, Prop> {
+  const { [pipelineProp]: pipeline, ...rest } = { ...config };
+  return {
+    blockPipeline: withInstanceIds(castArray(pipeline) as BlockPipeline),
+    ...defaults,
+    ...rest,
+  };
 }

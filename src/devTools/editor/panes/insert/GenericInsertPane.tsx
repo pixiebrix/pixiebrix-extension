@@ -18,7 +18,6 @@
 import React, { useCallback, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { DevToolsContext } from "@/devTools/context";
-import { showBrowserActionPanel } from "@/background/devtools";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import Centered from "@/devTools/editor/components/Centered";
 import { Button, Row } from "react-bootstrap";
@@ -33,7 +32,10 @@ import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
 import styles from "./GenericInsertPane.module.scss";
-import { updateDynamicElement } from "@/contentScript/messenger/api";
+import {
+  showActionPanel,
+  updateDynamicElement,
+} from "@/contentScript/messenger/api";
 
 const { addElement } = editorSlice.actions;
 
@@ -60,7 +62,7 @@ const GenericInsertPane: React.FunctionComponent<{
         if (config.elementType === "actionPanel") {
           // For convenience, open the side panel if it's not already open so that the user doesn't
           // have to manually toggle it
-          void showBrowserActionPanel(port);
+          void showActionPanel(thisTab);
         }
       } catch (error: unknown) {
         reportError(error);
@@ -125,10 +127,10 @@ const GenericInsertPane: React.FunctionComponent<{
 
         <BlockModal
           bricks={extensionPoints ?? []}
-          renderButton={({ show }) => (
+          renderButton={(onClick) => (
             <Button
               variant="info"
-              onClick={show}
+              onClick={onClick}
               disabled={!extensionPoints?.length}
               className={styles.searchButton}
             >

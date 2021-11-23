@@ -16,7 +16,7 @@
  */
 
 import { validate, v4 as uuidFactory } from "uuid";
-import { RegistryId, SemVerString, UUID } from "@/core";
+import { RegistryId, SemVerString, Timestamp, UUID } from "@/core";
 import { valid as semVerValid } from "semver";
 
 export const PACKAGE_REGEX = /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
@@ -63,6 +63,30 @@ export function validateRegistryId(id: string): RegistryId {
   console.debug("Invalid registry id: %s", id);
 
   throw new Error("Invalid registry id");
+}
+
+export function isTimestamp(value: string): value is Timestamp {
+  try {
+    return !Number.isNaN(Date.parse(value));
+  } catch {
+    return false;
+  }
+}
+
+export function validateTimestamp(value: string): Timestamp {
+  if (value == null) {
+    // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
+    // we can remove this check as strictNullChecks will check the call site
+    return value as Timestamp;
+  }
+
+  if (isTimestamp(value)) {
+    return value;
+  }
+
+  console.debug("Invalid timestamp %s", value);
+
+  throw new TypeError("Invalid timestamp");
 }
 
 export function validateSemVerString(value: string): value is SemVerString {

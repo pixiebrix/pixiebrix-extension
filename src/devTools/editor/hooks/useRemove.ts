@@ -22,13 +22,15 @@ import { useToasts } from "react-toast-notifications";
 import { useFormikContext } from "formik";
 import { useDispatch } from "react-redux";
 import { useModals } from "@/components/ConfirmationModal";
-import * as nativeOperations from "@/background/devtools";
 import { optionsSlice } from "@/options/slices";
 import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
 import { uninstallContextMenu } from "@/background/messenger/api";
 import { thisTab } from "@/devTools/utils";
-import { clearDynamicElements } from "@/contentScript/messenger/api";
+import {
+  clearDynamicElements,
+  removeActionPanel,
+} from "@/contentScript/messenger/api";
 
 /**
  * Remove the current element from the page and installed extensions
@@ -65,9 +67,9 @@ function useRemove(element: FormState): () => void {
         dispatch(optionsSlice.actions.removeExtension(ref));
       }
 
-      void Promise.allSettled([
+      await Promise.allSettled([
         uninstallContextMenu(ref),
-        nativeOperations.uninstallActionPanelPanel(port, ref),
+        removeActionPanel(thisTab, ref.extensionId),
       ]);
 
       // Remove from page editor

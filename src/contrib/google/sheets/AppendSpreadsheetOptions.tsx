@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { devtoolsProtocol } from "@/contrib/google/sheets/handlers";
+import { sheets } from "@/background/messenger/api";
 import { useField } from "formik";
 import { Schema } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
-import { DevToolsContext } from "@/devTools/context";
 import { isNullOrBlank, joinName } from "@/utils";
 import { SheetMeta } from "@/contrib/google/sheets/types";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
@@ -41,11 +40,9 @@ const PropertiesField: React.FunctionComponent<{
   doc: SheetMeta | null;
   tabName: string;
 }> = ({ name, tabName, doc }) => {
-  const { port } = useContext(DevToolsContext);
-
   const [sheetSchema, , schemaError] = useAsyncState(async () => {
     if (doc?.id && tabName) {
-      const headers = await devtoolsProtocol.getHeaders(port, {
+      const headers = await sheets.getHeaders({
         spreadsheetId: doc.id,
         tabName,
       });
@@ -66,6 +63,7 @@ const PropertiesField: React.FunctionComponent<{
     <SchemaField
       name={name}
       label="Row Values"
+      isRequired
       description={
         schemaError ? (
           <span className="text-warning">

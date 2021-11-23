@@ -15,11 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PageTitle } from "@/layout/Page";
-import {
-  faClipboardCheck,
-  faStoreAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import Page from "@/layout/Page";
+import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
 import { useParams } from "react-router";
 import { RecipeDefinition } from "@/types/definitions";
@@ -30,103 +27,73 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useFetch from "@/hooks/useFetch";
-
-type BlueprintResponse = {
-  config: RecipeDefinition;
-};
-
-const TEMPLATES_PAGE_PART = "templates";
-
-const TemplateHeader: React.FunctionComponent<{
-  blueprint: BlueprintResponse;
-}> = ({ blueprint }) => (
-  <>
-    <PageTitle
-      icon={faClipboardCheck}
-      title={
-        blueprint
-          ? `Activate: ${blueprint.config.metadata.name}`
-          : "Activate Blueprint"
-      }
-    />
-    <div className="pb-4">
-      <p>Configure and activate a pre-made template</p>
-    </div>
-  </>
-);
-
-const MarketplaceHeader: React.FunctionComponent<{
-  blueprint: BlueprintResponse;
-}> = ({ blueprint }) => (
-  <>
-    <PageTitle
-      icon={faStoreAlt}
-      title={
-        blueprint
-          ? `Activate: ${blueprint.config.metadata.name}`
-          : "Activate Blueprint"
-      }
-    />
-    <div className="pb-4">
-      <p>Configure and activate a blueprint from the marketplace</p>
-    </div>
-  </>
-);
+import { BlueprintResponse } from "@/types/contract";
+import { pick } from "lodash";
 
 const ActivateBlueprintPage: React.FunctionComponent = () => {
-  const { blueprintId, sourcePage } = useParams<{
+  const { blueprintId } = useParams<{
     blueprintId: string;
-    sourcePage: string;
   }>();
-  const { data: blueprint } = useFetch<BlueprintResponse>(
-    `/api/recipes/${blueprintId}`
-  );
+  const {
+    data: remoteBlueprint,
+    isLoading: fetchingBlueprint,
+    error: fetchError,
+  } = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}`);
 
-  const body = useMemo(() => {
-    if (blueprint?.config?.extensionPoints != null) {
-      return <ActivateWizard blueprint={blueprint.config} />;
+  // Reshape to recipe definition
+  const recipeDefinition: RecipeDefinition | null = useMemo(() => {
+    if (remoteBlueprint) {
+      return {
+        ...remoteBlueprint.config,
+        ...pick(remoteBlueprint, ["sharing", "updated_at"]),
+      };
     }
 
-    if (blueprint != null) {
+    return null;
+  }, [remoteBlueprint]);
+
+  const body = useMemo(() => {
+    if (remoteBlueprint?.config?.extensionPoints != null) {
+      return <ActivateWizard blueprint={recipeDefinition} />;
+    }
+
+    if (remoteBlueprint != null) {
+      // There's nothing stopping someone from hitting the link with a non-blueprint (e.g., service, component). So
+      // show an error message if not a valid blueprint
       return (
         <Card>
           <Card.Header>Invalid Blueprint</Card.Header>
           <Card.Body>
             <p className="text-danger">
-              Error: {decodeURIComponent(blueprintId)} is not a blueprint.
+              Error: {decodeURIComponent(blueprintId)} is not a valid blueprint.
               Please verify the link you received to activate the blueprint
             </p>
 
-            {sourcePage === TEMPLATES_PAGE_PART ? (
-              <Link to={"/templates"} className="btn btn-info">
-                <FontAwesomeIcon icon={faClipboardCheck} /> Go to Templates
-              </Link>
-            ) : (
-              <Link to={"/marketplace"} className="btn btn-info">
-                <FontAwesomeIcon icon={faStoreAlt} /> Go to Marketplace
-              </Link>
-            )}
+            <Link to={"/marketplace"} className="btn btn-info">
+              <FontAwesomeIcon icon={faStoreAlt} /> Go to Marketplace
+            </Link>
           </Card.Body>
         </Card>
       );
     }
 
     return <GridLoader />;
-  }, [blueprintId, blueprint, sourcePage]);
+  }, [recipeDefinition, remoteBlueprint, blueprintId]);
 
   return (
-    <div>
-      {sourcePage === TEMPLATES_PAGE_PART ? (
-        <TemplateHeader blueprint={blueprint} />
-      ) : (
-        <MarketplaceHeader blueprint={blueprint} />
-      )}
+    <Page
+      title="Activate Blueprint"
+      icon={faStoreAlt}
+      description="Configure and activate a blueprint from the marketplace"
+      isPending={fetchingBlueprint}
+      error={fetchError}
+    >
       <Row>
         <Col xl={8} lg={10} md={12}>
           <ErrorBoundary>{body}</ErrorBoundary>
         </Col>
       </Row>
-    </div>
+    </Page>
   );
 };
 

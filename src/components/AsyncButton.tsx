@@ -18,12 +18,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonProps } from "react-bootstrap";
 
-interface ExtraProps {
+export type AsyncButtonProps = ButtonProps & {
   onClick: (() => Promise<void>) | (() => void);
   autoFocus?: boolean;
-}
+};
 
-const AsyncButton: React.FunctionComponent<ButtonProps & ExtraProps> = ({
+const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
   onClick,
   children,
   disabled: manualDisabled = false,

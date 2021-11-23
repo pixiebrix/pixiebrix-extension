@@ -17,6 +17,7 @@
  */
 
 import { BusinessError } from "@/errors";
+import { UnknownObject } from "@/types";
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 export interface Row {
@@ -33,8 +34,11 @@ function renderValue<TRow extends Row>(
   column: ColumnDefinition<TRow>,
   row: TRow
 ) {
-  const renderer = column.renderer ?? ((value) => `${value}`);
-  return renderer(row[column.property], row);
+  const renderer = column.renderer ?? ((value) => String(value));
+  const value = Object.prototype.hasOwnProperty.call(row, column.property)
+    ? row[column.property]
+    : null;
+  return renderer(value, row);
 }
 
 function renderRow<TRow extends Row>(
@@ -47,7 +51,7 @@ function renderRow<TRow extends Row>(
   return `<tr>${columnHTML}</tr>`;
 }
 
-function makeDataTable<TRow extends Record<string, unknown>>(
+function makeDataTable<TRow extends UnknownObject>(
   columns: Array<ColumnDefinition<TRow>>
 ): (ctxt: unknown) => string {
   return (ctxt: unknown): string => {

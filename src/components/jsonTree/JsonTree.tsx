@@ -32,10 +32,21 @@ export type JsonTreeProps = Partial<JSONTree["props"]> & {
    * True if user can copy the path properties (default=false)
    */
   copyable?: boolean;
+
   /**
    * True to show a search widget (default=false)
    */
   searchable?: boolean;
+
+  /**
+   * Initial state for the search input
+   */
+  initialSearchQuery?: string;
+
+  /**
+   * Change listener for the search input text
+   */
+  onSearchQueryChanged?: (query: string) => void;
 
   /**
    * A label to show above the tree when no search query is active
@@ -46,11 +57,13 @@ export type JsonTreeProps = Partial<JSONTree["props"]> & {
 const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   copyable = false,
   searchable = false,
+  initialSearchQuery = "",
+  onSearchQueryChanged,
   label,
   data,
   ...restProps
 }) => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialSearchQuery);
 
   const [debouncedQuery] = useDebounce(query, SEARCH_DEBOUNCE_MS, {
     trailing: true,
@@ -70,8 +83,9 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   const onChangeQuery = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(e.target.value);
+      onSearchQueryChanged?.(e.target.value);
     },
-    [setQuery]
+    [onSearchQueryChanged]
   );
 
   const labelText = query ? `Search Results: ${query}` : label;

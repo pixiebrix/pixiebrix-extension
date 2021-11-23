@@ -16,12 +16,13 @@
  */
 
 import { validateKind } from "@/validators/generic";
-import yaml from "js-yaml";
 
 import serviceTemplate from "@contrib/templates/service.txt";
+import { loadBrickYaml } from "@/runtime/brickYaml";
+import { UnknownObject } from "@/types";
 
 test("can validate service", async () => {
-  const json = yaml.load(serviceTemplate) as Record<string, unknown>;
+  const json = loadBrickYaml(serviceTemplate) as UnknownObject;
   const result = await validateKind(json, "service");
   console.log(result.errors);
   expect(result.valid).toBeTruthy();

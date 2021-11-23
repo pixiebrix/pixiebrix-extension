@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { Component } from "react";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { reportError } from "@/telemetry/logging";
+import { getErrorMessage } from "@/errors";
+import { UnknownObject } from "@/types";
 
 interface State {
   hasError: boolean;
@@ -27,8 +29,8 @@ interface State {
   stack: string;
 }
 
-class ErrorBoundary extends React.Component<Record<string, unknown>, State> {
-  constructor(props: Record<string, unknown>) {
+class ErrorBoundary extends Component<UnknownObject, State> {
+  constructor(props: UnknownObject) {
     super(props);
     this.state = { hasError: false, errorMessage: undefined, stack: undefined };
   }
@@ -37,7 +39,7 @@ class ErrorBoundary extends React.Component<Record<string, unknown>, State> {
     // Update state so the next render will show the fallback UI.
     return {
       hasError: true,
-      errorMessage: error.toString(),
+      errorMessage: getErrorMessage(error),
       stack: error.stack,
     };
   }
@@ -49,7 +51,7 @@ class ErrorBoundary extends React.Component<Record<string, unknown>, State> {
   render(): React.ReactNode {
     if (this.state.hasError) {
       return (
-        <>
+        <div>
           <h1>Something went wrong.</h1>
           <div>
             <p>{this.state.errorMessage}</p>
@@ -63,8 +65,13 @@ class ErrorBoundary extends React.Component<Record<string, unknown>, State> {
               <FontAwesomeIcon icon={faRedo} /> Reload the Page
             </Button>
           </div>
-          <div className="mt-2">{this.state.stack}</div>
-        </>
+          <pre className="mt-2">
+            {this.state.stack.replaceAll(
+              `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
+              ""
+            )}
+          </pre>
+        </div>
       );
     }
 

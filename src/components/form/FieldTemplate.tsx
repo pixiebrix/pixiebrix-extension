@@ -27,6 +27,8 @@ import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchBut
 import styles from "./FieldTemplate.module.scss";
 import FormTheme from "@/components/form/FormTheme";
 import { getErrorMessage } from "@/errors";
+import cx from "classnames";
+import { isPlainObject } from "lodash";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType
@@ -38,12 +40,33 @@ export type FieldProps<
     description?: ReactNode;
     error?: string;
     touched?: boolean;
+
+    /**
+     * This value is regarded as absence of value, unset property.
+     * It will be passed to the UI input control when the value is undefined.
+     */
     blankValue?: unknown;
   };
 
-export type CustomFieldWidget<TExtra = never> = React.ComponentType<
-  FieldProps & { controlId?: string } & TExtra
->;
+type WidgetElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+export type CustomFieldWidgetProps<
+  TValue = string | string[] | number,
+  TInputElement = WidgetElement
+> = {
+  id?: string;
+  name: string;
+  disabled?: boolean;
+  value: TValue;
+  onChange: React.ChangeEventHandler<TInputElement>;
+};
+export type CustomFieldWidget<
+  TValue = string | string[] | number,
+  TInputElement = WidgetElement,
+  TFieldWidgetProps extends CustomFieldWidgetProps<
+    TValue,
+    TInputElement
+  > = CustomFieldWidgetProps<TValue, TInputElement>
+> = React.ComponentType<TFieldWidgetProps>;
 
 type FieldRenderProps = Except<FieldProps, "layout">;
 
@@ -58,12 +81,28 @@ const RenderedField: React.FC<FieldProps> = ({
   children,
   blankValue = "",
   as: AsControl,
+  className,
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
 
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
   const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
+
+  const isBuiltinControl =
+    typeof AsControl === "undefined" || typeof AsControl === "string";
+
+  if (isBuiltinControl && isPlainObject(nonUndefinedValue)) {
+    console.warn(
+      "RenderedField received an object value to a built-in control",
+      {
+        as: AsControl,
+        nonUndefinedValue,
+        blankValue,
+        value,
+      }
+    );
+  }
 
   // Note on `controlId` and Bootstrap FormGroup.
   // If we set `controlId` on the Bootstrap FormGroup, we must not set `id` on `FormLabel` and `FormControl`.
@@ -73,31 +112,31 @@ const RenderedField: React.FC<FieldProps> = ({
   // The most simple solution is to manually set `htmlFor` on the Label and `id` on the Control.
   const controlId = name;
 
-  const formControl =
-    typeof AsControl === "undefined" || typeof AsControl === "string" ? (
-      <BootstrapForm.Control
-        id={controlId}
-        name={name}
-        isInvalid={isInvalid}
-        value={nonUndefinedValue}
-        as={AsControl}
-        {...restFieldProps}
-      >
-        {children}
-      </BootstrapForm.Control>
-    ) : (
-      <AsControl
-        id={controlId}
-        name={name}
-        isInvalid={isInvalid}
-        value={nonUndefinedValue}
-        {...restFieldProps}
-      >
-        {children}
-      </AsControl>
-    );
+  const formControl = isBuiltinControl ? (
+    <BootstrapForm.Control
+      id={controlId}
+      name={name}
+      isInvalid={isInvalid}
+      value={nonUndefinedValue}
+      as={AsControl}
+      {...restFieldProps}
+    >
+      {children}
+    </BootstrapForm.Control>
+  ) : (
+    <AsControl
+      id={controlId}
+      name={name}
+      isInvalid={isInvalid}
+      value={nonUndefinedValue}
+      {...restFieldProps}
+    >
+      {children}
+    </AsControl>
+  );
+
   return layout === "vertical" ? (
-    <BootstrapForm.Group className={styles.verticalFormGroup}>
+    <BootstrapForm.Group className={cx(styles.verticalFormGroup, className)}>
       {label && (
         <BootstrapForm.Label
           className={styles.verticalFormLabel}
@@ -117,7 +156,10 @@ const RenderedField: React.FC<FieldProps> = ({
       )}
     </BootstrapForm.Group>
   ) : (
-    <BootstrapForm.Group as={Row} className={styles.horizontalFormGroup}>
+    <BootstrapForm.Group
+      as={Row}
+      className={cx(styles.horizontalFormGroup, className)}
+    >
       {label && (
         <BootstrapForm.Label
           column
@@ -146,11 +188,12 @@ const RenderedField: React.FC<FieldProps> = ({
 const RenderedSwitch: React.FC<FieldRenderProps> = ({
   name,
   label,
-  ...restFieldProps
+  onChange,
+  value,
 }) => (
   <BootstrapForm.Group as={Row} controlId={name}>
     <Col sm="3">
-      <SwitchButtonWidget name={name} {...restFieldProps} />
+      <SwitchButtonWidget name={name} onChange={onChange} value={value} />
     </Col>
     <Col sm="9" as="label" htmlFor={name}>
       {label}
@@ -169,4 +212,4 @@ const FieldTemplate: React.FC<FieldProps> = ({ layout, ...restProps }) => {
   }
 };
 
-export default FieldTemplate;
+export default React.memo(FieldTemplate);

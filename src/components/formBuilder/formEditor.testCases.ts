@@ -32,7 +32,6 @@ export const initAddingFieldCases: () => Array<
         type: "object",
         properties: {
           field1: {
-            name: "field1",
             title: "field1",
             type: "string",
           },
@@ -51,7 +50,6 @@ export const initAddingFieldCases: () => Array<
         required: ["field1"],
         properties: {
           field1: {
-            name: "field1",
             title: "field1",
             type: "string",
           },
@@ -67,12 +65,10 @@ export const initAddingFieldCases: () => Array<
         required: ["field1"],
         properties: {
           field1: {
-            name: "field1",
             title: "field1",
             type: "string",
           },
           field2: {
-            name: "field2",
             title: "field2",
             type: "string",
           },
@@ -169,6 +165,52 @@ export const initRenamingCases = () => {
         },
         uiSchema: {
           "ui:order": [newFieldName, "*"],
+        },
+      },
+    ],
+    [
+      {
+        schema: {
+          title: "A form",
+          type: "object",
+          properties: {
+            [fieldName]: {
+              type: "string",
+              title: "First name",
+            },
+            anotherFieldName: {
+              type: "string",
+              title: "Another field name",
+            },
+          },
+        },
+        uiSchema: {
+          "ui:order": [fieldName, "*"],
+          [fieldName]: {
+            "ui:widget": "textarea",
+          },
+        },
+      },
+      {
+        schema: {
+          title: "A form",
+          type: "object",
+          properties: {
+            [newFieldName]: {
+              type: "string",
+              title: "First name",
+            },
+            anotherFieldName: {
+              type: "string",
+              title: "Another field name",
+            },
+          },
+        },
+        uiSchema: {
+          "ui:order": [newFieldName, "*"],
+          [newFieldName]: {
+            "ui:widget": "textarea",
+          },
         },
       },
     ],

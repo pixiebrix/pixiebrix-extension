@@ -16,18 +16,42 @@
  */
 
 import { isEmpty } from "lodash";
-import { IExtension, Metadata, RegistryId } from "@/core";
+import { IExtension, Metadata, RegistryId, Schema, UserOptions } from "@/core";
 import { objToYaml } from "@/utils/objToYaml";
 import { saveAs } from "file-saver";
-import { RecipeDefinition } from "@/types/definitions";
+import {
+  OptionsDefinition,
+  UnsavedRecipeDefinition,
+} from "@/types/definitions";
+import { isNullOrBlank } from "@/utils";
+import GenerateSchema from "generate-schema";
+
+/**
+ * Infer optionsSchema from the options provided to the extension.
+ */
+export function inferOptionsSchema(
+  optionsArgs: UserOptions
+): OptionsDefinition {
+  if (isEmpty(optionsArgs)) {
+    return undefined;
+  }
+
+  return {
+    // The install flow supports passing in an object of properties, or a full schema where the top-level has
+    // `type: object` and a `properties` field. The following will output the full schema instead of the short-hand.
+    // This avoids a corner-case where we're using the short-hand version but one of the property names is "properties"
+    schema: GenerateSchema.json("Blueprint Options", optionsArgs) as Schema,
+  };
+}
 
 export function makeBlueprint(
   extension: IExtension,
   metadata: Metadata
-): RecipeDefinition {
+): UnsavedRecipeDefinition {
   const {
     extensionPointId,
     label,
+    apiVersion = "v1",
     templateEngine,
     permissions,
     definitions,
@@ -36,22 +60,19 @@ export function makeBlueprint(
     config,
   } = extension;
 
-  if (!isEmpty(optionsArgs)) {
-    throw new Error("optionsArgs not supported in extension conversion");
-  }
-
   return {
-    apiVersion: "v1",
+    apiVersion,
     kind: "recipe",
     metadata,
     definitions,
+    options: inferOptionsSchema(optionsArgs),
     extensionPoints: [
       {
         id: extensionPointId,
         label,
         services: Object.fromEntries(
           services
-            .filter((x) => x.outputKey !== null)
+            .filter((x) => !isNullOrBlank(x.outputKey))
             .map(({ outputKey, id }) => [outputKey, id])
         ),
         templateEngine,

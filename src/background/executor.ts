@@ -20,9 +20,9 @@ import {
   RemoteBlockOptions,
   RunBlockRequestAction,
 } from "@/contentScript/executor";
-import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
+import browser, { Runtime, Tabs } from "webextension-polyfill";
 import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
-import { RegistryId, RenderedArgs } from "@/core";
+import { BlockArg, RegistryId } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError, getErrorMessage } from "@/errors";
@@ -323,8 +323,9 @@ const DEFAULT_MAX_RETRIES = 5;
 const NOT_READY_PARTIAL_MESSAGES = [
   // Chrome/browser message
   "Could not establish connection",
-  // `webext-messenger` error
-  "No handlers registered in receiving end",
+  // `webext-messenger` error, must be kept in sync with the message in manageMessage
+  // see https://github.com/pixiebrix/webext-messenger/blob/main/source/sender.ts#L78
+  "No handler for",
 ];
 
 async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
@@ -341,7 +342,14 @@ async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
       const message = getErrorMessage(error);
 
       if (NOT_READY_PARTIAL_MESSAGES.some((query) => message.includes(query))) {
-        console.debug(`Target not ready. Retrying in ${100 * (retries + 1)}ms`);
+        console.debug(
+          `Target not ready. Retrying in ${100 * (retries + 1)}ms`,
+          {
+            retries,
+            error,
+            message,
+          }
+        );
         // eslint-disable-next-line no-await-in-loop -- retry loop
         await sleep(250 * (retries + 1));
       } else {
@@ -358,7 +366,7 @@ async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
 export async function executeForNonce(
   nonce: string,
   blockId: string,
-  blockArgs: RenderedArgs,
+  blockArgs: BlockArg,
   options: RemoteBlockOptions
 ): Promise<unknown> {
   console.debug(`Running ${blockId} in content script with nonce ${nonce}`);
@@ -382,10 +390,14 @@ export async function executeForNonce(
 
 export async function executeInTarget(
   blockId: string,
-  blockArgs: RenderedArgs,
+  blockArgs: BlockArg,
   options: RemoteBlockOptions
 ): Promise<unknown> {
-  console.debug(`Running ${blockId} in the target tab`);
+  console.debug(`Running ${blockId} in the target tab`, {
+    blockId,
+    blockArgs,
+    options,
+  });
 
   const { maxRetries = DEFAULT_MAX_RETRIES } = options;
 
@@ -405,7 +417,7 @@ export async function executeInTarget(
 
 export async function executeInAll(
   blockId: string,
-  blockArgs: RenderedArgs,
+  blockArgs: BlockArg,
   options: RemoteBlockOptions
 ): Promise<unknown> {
   console.debug(`Running ${blockId} in all ready tabs`);
@@ -421,7 +433,7 @@ export async function executeInAll(
 
 export async function executeInOpener(
   blockId: string,
-  blockArgs: RenderedArgs,
+  blockArgs: BlockArg,
   options: RemoteBlockOptions
 ): Promise<unknown> {
   console.debug(`Running ${blockId} in the opener tab`);
@@ -437,7 +449,7 @@ export async function executeInOpener(
 
 export const executeOnServer = liftBackground(
   "EXECUTE_ON_SERVER",
-  async (blockId: RegistryId, blockArgs: RenderedArgs) => {
+  async (blockId: RegistryId, blockArgs: BlockArg) => {
     console.debug(`Running ${blockId} on the server`);
     return (await getLinkedApiClient()).post<{
       data?: JsonObject;

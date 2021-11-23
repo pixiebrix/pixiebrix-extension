@@ -65,13 +65,7 @@ import {
   WritePayload,
   initialize,
 } from "@/pageScript/protocol";
-import {
-  awaitValue,
-  getPropByPath,
-  noopProxy,
-  ReadProxy,
-  TimeoutError,
-} from "@/utils";
+import { awaitValue, TimeoutError } from "@/utils";
 import {
   ReadableComponentAdapter,
   traverse,
@@ -79,6 +73,8 @@ import {
 } from "@/frameworks/component";
 import { elementInfo } from "@/nativeEditor/frameworks";
 import { requireSingleElement } from "@/nativeEditor/utils";
+import { getPropByPath, noopProxy, ReadProxy } from "@/runtime/pathHelpers";
+import { UnknownObject } from "@/types";
 
 const attachListener = initialize();
 
@@ -114,8 +110,8 @@ function readPathSpec(
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(obj as Record<string, unknown>, path, {
-        args: args as Record<string, unknown>,
+      values[key] = getPropByPath(obj as UnknownObject, path, {
+        args: args as UnknownObject,
         proxy,
       });
     } else {

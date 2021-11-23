@@ -1,8 +1,9 @@
 import { traceErrorFactory } from "@/tests/factories";
 import applyTraceInputError from "./applyTraceInputError";
+import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
 test("ignores non input errors", () => {
-  const pipelineErrors: Record<string, any> = {};
+  const pipelineErrors: FormikErrorTree = {};
   const errorTraceEntry = traceErrorFactory();
 
   applyTraceInputError(pipelineErrors, errorTraceEntry, 0);
@@ -11,7 +12,7 @@ test("ignores non input errors", () => {
 });
 
 test("figures required property error", () => {
-  const pipelineErrors: Record<string, unknown> = {};
+  const pipelineErrors: FormikErrorTree = {};
   const property = "testProp";
   const traceError = {
     schema: {},
@@ -34,7 +35,7 @@ test("figures required property error", () => {
 });
 
 test("sets unknown input error on the block level", () => {
-  const pipelineErrors: Record<string, unknown> = {};
+  const pipelineErrors: FormikErrorTree = {};
   const errorMessage = "This is an unknown input validation error";
   const traceError = {
     schema: {},

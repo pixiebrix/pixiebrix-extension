@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection,@typescript-eslint/no-dynamic-delete -- working with object props a lot here */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -15,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { Button, Form, Table } from "react-bootstrap";
 import { SafeString, Schema } from "@/core";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
@@ -25,20 +26,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import { freshIdentifier } from "@/utils";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
-import ComplexObjectValue from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
-import ExpressionWidget from "@/components/fields/schemaFields/widgets/ExpressionWidget";
-import SchemaFieldContext, {
-  getDefaultField,
-} from "@/components/fields/schemaFields/SchemaFieldContext";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
+import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
+import { UnknownObject } from "@/types";
 
 type PropertyRowProps = {
   name: string;
   showActions?: boolean;
   readOnly: boolean;
   schema: Schema;
-  onDelete: () => void;
-  onRename: (newName: string) => void;
+  onDelete?: () => void;
+  onRename?: (newName: string) => void;
+  isRequired?: boolean;
 };
 
 type RowProps = {
@@ -50,23 +50,24 @@ type RowProps = {
   onRename: (oldProp: string, newProp: string) => void;
 };
 
-const BOOLEAN_SCHEMA: Schema = { type: "string" };
-const FALLBACK_SCHEMA: Schema = { type: "string" };
-
 const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   name,
   schema,
   showActions,
-}) => {
-  const Renderer = useMemo(() => getDefaultField(schema), [schema]);
-  return (
-    <tr>
-      <td colSpan={showActions ? 3 : 2}>
-        <Renderer name={name} schema={schema} />
-      </td>
-    </tr>
-  );
-};
+  isRequired,
+}) => (
+  <tr>
+    <td colSpan={showActions ? 3 : 2}>
+      <SchemaField
+        hideLabel
+        isObjectProperty
+        isRequired={isRequired}
+        name={name}
+        schema={schema}
+      />
+    </td>
+  </tr>
+);
 
 const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   readOnly,
@@ -74,32 +75,19 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   onRename,
   showActions,
   schema,
+  isRequired,
   ...props
 }) => {
   const [field] = useField(props);
 
-  const { customWidgets } = useContext(SchemaFieldContext);
-
-  const isComplex = typeof field.value === "object";
-
-  const ValueComponent = useMemo(() => {
-    if (isComplex) {
-      return ComplexObjectValue;
-    }
-
-    const { Component } = customWidgets.find((x) => x.match(schema)) ?? {};
-    return Component ?? ExpressionWidget;
-  }, [isComplex, customWidgets, schema]);
-
   const updateName = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
-      onRename(e.target.value);
+      onRename?.(e.target.value);
     },
     [onRename]
   );
 
-  const parts = field.name.split(".");
-  const currentProperty = parts[parts.length - 1];
+  const currentProperty = getFieldNamesFromPathString(field.name)[1];
 
   return (
     <tr>
@@ -112,7 +100,13 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
         />
       </td>
       <td>
-        <ValueComponent {...field} schema={schema} />
+        <SchemaField
+          hideLabel
+          isObjectProperty
+          {...field}
+          schema={schema}
+          isRequired={isRequired}
+        />
       </td>
       {showActions && (
         <td>
@@ -135,15 +129,25 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
   onDelete,
   onRename,
 }) => {
+  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
+
   const propertySchema: Schema = useMemo(() => {
+    // As of v3, we allow object props of any type, not just string
+    const defaultSchema: Schema = isApiAtLeastV3 ? {} : { type: "string" };
     const rawSchema = defined
       ? parentSchema.properties[property]
-      : parentSchema.additionalProperties;
+      : parentSchema.additionalProperties ?? defaultSchema;
 
-    return typeof rawSchema === "boolean"
-      ? BOOLEAN_SCHEMA
-      : rawSchema ?? FALLBACK_SCHEMA;
-  }, [property, defined, parentSchema]);
+    return typeof rawSchema === "boolean" ? defaultSchema : rawSchema;
+  }, [
+    isApiAtLeastV3,
+    defined,
+    parentSchema.properties,
+    parentSchema.additionalProperties,
+    property,
+  ]);
+
+  const isRequired = parentSchema.required?.includes(property) ?? false;
 
   const PropertyRowComponent = useMemo(() => getPropertyRow(propertySchema), [
     propertySchema,
@@ -160,18 +164,22 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
     [property, onRename]
   );
 
+  const showActions =
+    // Don't show action on v3 or above
+    !isApiAtLeastV3 &&
+    (parentSchema.additionalProperties === true ||
+      typeof parentSchema.additionalProperties === "object");
+
   return (
     <PropertyRowComponent
       key={property}
       name={name}
       readOnly={defined}
       schema={propertySchema}
-      showActions={
-        parentSchema.additionalProperties === true ||
-        typeof parentSchema.additionalProperties === "object"
-      }
+      showActions={showActions}
       onDelete={defined ? undefined : deleteProp}
       onRename={defined ? undefined : renameProp}
+      isRequired={isRequired}
     />
   );
 };
@@ -189,13 +197,17 @@ export function getPropertyRow(
   }
 }
 
-type ObjectValue = Record<string, unknown>;
+type ObjectValue = UnknownObject;
 
-const ObjectWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = (props) => {
+const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
   const { name, schema } = props;
 
   // Allow additional properties for empty schema (empty schema allows shape)
   const additionalProperties = isEmpty(schema) || schema.additionalProperties;
+
+  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
+  // Don't show action on v3 or above
+  const showAction = !isApiAtLeastV3 && additionalProperties;
 
   // Helpers.setValue changes on every render, so use setFieldValue instead
   // https://github.com/formium/formik/issues/2268
@@ -260,7 +272,6 @@ const ObjectWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = (props) => {
         const prop = freshIdentifier("property" as SafeString, [
           ...Object.keys(draft),
         ]);
-        // eslint-disable-next-line security/detect-object-injection -- generated via constant
         draft[prop] = "";
       })
     );
@@ -268,12 +279,12 @@ const ObjectWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = (props) => {
 
   return (
     <div>
-      <Table size="sm">
+      <Table size="sm" className="mb-0">
         <thead>
           <tr>
             <th scope="col">Property</th>
             <th scope="col">Value</th>
-            {additionalProperties && <th scope="col">Action</th>}
+            {showAction && <th scope="col">Action</th>}
           </tr>
         </thead>
         <tbody>

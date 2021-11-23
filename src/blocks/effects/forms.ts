@@ -16,30 +16,124 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
-import { boolean } from "@/utils";
+import { BlockArg, BlockOptions, Logger, Schema } from "@/core";
 import { BusinessError } from "@/errors";
+import { boolean } from "@/utils";
 import { requireSingleElement } from "@/nativeEditor/utils";
+import { RequireExactlyOne } from "type-fest";
+
+type SetValueData = RequireExactlyOne<
+  {
+    form?: HTMLElement | Document;
+    value: unknown;
+    selector?: string;
+    name?: string;
+    dispatchEvent?: boolean;
+    logger: Logger;
+  },
+  "selector" | "name"
+>;
+
+const optionFields = ["checkbox", "radio"];
 
 /**
  * Set the value of an input, doing the right thing for check boxes, etc.
  */
-function setValue(
-  $input: JQuery,
-  value: unknown,
-  { dispatchEvent = true }: { dispatchEvent?: boolean } = {}
-) {
-  if ($input.is(":radio") || $input.is(":checkbox")) {
-    $input.prop("checked", boolean(value));
-  } else {
-    $input.val(String(value));
+function setValue({
+  form = document,
+  value,
+  logger,
+  name,
+  selector = `[name="${name}"]`,
+  dispatchEvent = true,
+}: SetValueData) {
+  const isNameBased = Boolean(name);
+  const fields = $(form)
+    .find<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(selector)
+    .toArray()
+    .filter((element) => {
+      const isField =
+        element.isContentEditable ||
+        element instanceof HTMLInputElement ||
+        element instanceof HTMLTextAreaElement ||
+        element instanceof HTMLSelectElement;
+      if (!isField) {
+        logger.warn(
+          "The selected element is not an input field nor an editable element",
+          { element }
+        );
+      }
+
+      return isField;
+    });
+
+  if (fields.length === 0) {
+    if (isNameBased) {
+      logger.warn(`Could not find input fields with name: ${name}`);
+    } else {
+      logger.warn(`Could not find input fields for selector: ${selector}`);
+    }
+
+    return;
   }
 
-  if (dispatchEvent) {
-    $input.each(function () {
-      const event = new Event("change", { bubbles: true });
-      this.dispatchEvent(event);
-    });
+  // Exact matches will be picked out of many, otherwise we'll treat them as booleans
+  const isOption =
+    isNameBased &&
+    fields.some(
+      (field) => field.value === value && optionFields.includes(field.type)
+    );
+
+  for (const field of fields) {
+    if (field.isContentEditable) {
+      // Field needs to be focused first
+      field.focus();
+
+      // `insertText` acts as a "paste", so if no text is selected it's just appended
+      document.execCommand("selectAll");
+
+      // It automatically triggers an `input` event
+      document.execCommand("insertText", false, String(value));
+
+      continue;
+    }
+
+    // `instanceof` is there as a type guard only
+    if (
+      !optionFields.includes(field.type) ||
+      field instanceof HTMLTextAreaElement ||
+      field instanceof HTMLSelectElement
+    ) {
+      // Plain text field
+      field.value = String(value);
+    } else if (isOption) {
+      // Value-based radio/checkbox
+      field.checked = field.value === value;
+    } else {
+      // Boolean checkbox
+      field.checked = boolean(value);
+    }
+
+    if (dispatchEvent) {
+      if (
+        !(
+          optionFields.includes(field.type) ||
+          field instanceof HTMLSelectElement
+        )
+      ) {
+        // Browsers normally fire these text events while typing
+        field.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true }));
+        field.dispatchEvent(new KeyboardEvent("keypress", { bubbles: true }));
+        field.dispatchEvent(
+          new CompositionEvent("textInput", { bubbles: true })
+        );
+        field.dispatchEvent(new InputEvent("input", { bubbles: true }));
+        field.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true }));
+      }
+
+      // Browsers normally fire this on `blur` if it's a text field, otherwise immediately
+      field.dispatchEvent(new KeyboardEvent("change", { bubbles: true }));
+    }
   }
 }
 
@@ -80,16 +174,13 @@ export class SetInputValue extends Effect {
   };
 
   async effect(
-    { inputs }: { inputs: Array<{ selector: string; value: unknown }> },
+    {
+      inputs,
+    }: BlockArg<{ inputs: Array<{ selector: string; value: unknown }> }>,
     { logger }: BlockOptions
   ): Promise<void> {
     for (const { selector, value } of inputs) {
-      const $input = $(document).find(selector);
-      if ($input.length === 0) {
-        logger.warn(`Could not find input for selector: ${selector}`);
-      } else {
-        setValue($input, value, { dispatchEvent: true });
-      }
+      setValue({ selector, value, logger, dispatchEvent: true });
     }
   }
 }
@@ -139,23 +230,11 @@ export class FormFill extends Effect {
     const $form = $(requireSingleElement(formSelector));
 
     for (const [name, value] of Object.entries(fieldNames)) {
-      const $input = $form.find(`[name="${name}"]`);
-      if ($input.length === 0) {
-        logger.warn(`No input ${name} exists in the form`);
-      }
-
-      setValue($input, value, { dispatchEvent: true });
+      setValue({ name, value, logger, dispatchEvent: true });
     }
 
     for (const [selector, value] of Object.entries(fieldSelectors)) {
-      const $input = $form.find(selector);
-      if ($input.length === 0) {
-        logger.warn(
-          `Could not find input with selector ${selector} on the form`
-        );
-      }
-
-      setValue($input, value, { dispatchEvent: true });
+      setValue({ selector, value, logger, dispatchEvent: true });
     }
 
     if (typeof submit === "boolean") {

@@ -18,10 +18,14 @@
 import React from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Form } from "react-bootstrap";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 
-const ComplexObjectWidget: CustomFieldWidget<
-  SchemaFieldProps<unknown>
-> = () => <Form.Control plaintext readOnly defaultValue="Complex object" />;
+const ComplexObjectWidget: React.FC<SchemaFieldProps> = () => (
+  <Form.Control
+    className="px-1"
+    plaintext
+    readOnly
+    defaultValue="Use Workshop to edit"
+  />
+);
 
 export default ComplexObjectWidget;

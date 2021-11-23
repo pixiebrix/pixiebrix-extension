@@ -38,6 +38,8 @@ const TriggerConfiguration: React.FC<{
     (e: React.FormEvent<HTMLSelectElement>) => {
       if (e.currentTarget.value) {
         setFieldValue("extensionPoint.definition.rootSelector", null);
+        setFieldValue("extensionPoint.definition.attachMode", null);
+        setFieldValue("extensionPoint.definition.targetMode", null);
       }
 
       setFieldValue("extensionPoint.definition.trigger", e.currentTarget.value);
@@ -56,6 +58,7 @@ const TriggerConfiguration: React.FC<{
           {...makeLockableFieldProps("Trigger", isLocked)}
         >
           <option value="load">Page Load</option>
+          <option value="appear">Appear</option>
           <option value="click">Click</option>
           <option value="dblclick">Double Click</option>
           <option value="blur">Blur</option>
@@ -66,10 +69,50 @@ const TriggerConfiguration: React.FC<{
           <ConnectedFieldTemplate
             name="extensionPoint.definition.rootSelector"
             as={LocationWidget}
-            selectionMode="element"
+            selectMode="element"
             description="An element to watch"
             {...makeLockableFieldProps("Element", isLocked)}
           />
+        )}
+
+        {trigger !== "load" && (
+          <ConnectedFieldTemplate
+            name="extensionPoint.definition.attachMode"
+            as="select"
+            title="Attach Mode"
+            description={
+              <p>
+                Use&nbsp;<code>once</code> to attach the trigger once one or
+                more elements are available. Use&nbsp;
+                <code>watch</code> to also add the trigger as new matching
+                elements are added to the page.
+              </p>
+            }
+            {...makeLockableFieldProps("Attach Mode", isLocked)}
+          >
+            <option value="once">once</option>
+            <option value="watch">watch</option>
+          </ConnectedFieldTemplate>
+        )}
+
+        {trigger !== "load" && trigger !== "appear" && (
+          <ConnectedFieldTemplate
+            name="extensionPoint.definition.targetMode"
+            as="select"
+            title="Target Mode"
+            description={
+              <p>
+                Use <code>eventTarget</code> to use the event target as the root
+                element for brick execution. Use&nbsp;
+                <code>root</code> to use the closest ancestor element matching
+                the trigger&apos;s selector.
+              </p>
+            }
+            {...makeLockableFieldProps("Target Mode", isLocked)}
+          >
+            <option value="eventTarget">eventTarget</option>
+            <option value="root">root</option>
+          </ConnectedFieldTemplate>
         )}
 
         <UrlMatchPatternField

@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import React from "react";
 
-const UnsupportedWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = ({
-  schema,
-}) => <div>Unsupported field type: {schema.type ?? "No type found"}</div>;
+const UnsupportedWidget: React.FC<SchemaFieldProps> = ({ schema }) => (
+  <div>Unsupported field type: {schema.type ?? "No type found"}</div>
+);
 
 export default UnsupportedWidget;

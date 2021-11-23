@@ -24,7 +24,7 @@ import {
   faScroll,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { Metadata, Sharing } from "@/core";
+import { Metadata, Sharing, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
 import "./MarketplacePage.scss";
@@ -69,7 +69,9 @@ const Entry: React.FunctionComponent<
     }
 
     // If more than one sharing organization, use the first
-    return organizations.find((org) => sharing.organizations.includes(org.id));
+    return organizations.find((org) =>
+      sharing.organizations.includes(org.id as UUID)
+    );
   }, [organizations, sharing.organizations]);
 
   const installButton = useMemo(() => {
@@ -122,8 +124,8 @@ const Entry: React.FunctionComponent<
             <div>
               <p className="mb-1 mt-1">{description}</p>
             </div>
-            <div className="small">
-              <p className="mb-1 mt-1">
+            <div className="small d-flex align-items-end">
+              <p className="mb-1 mt-1 pl-5 text-nowrap">
                 {organization ? (
                   <>
                     <FontAwesomeIcon icon={faUsers} /> {organization.name}

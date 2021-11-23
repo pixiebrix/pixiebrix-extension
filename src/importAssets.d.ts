@@ -26,6 +26,11 @@ declare module "*?loadAsUrl" {
   export default CONTENT;
 }
 
+declare module "*?loadAsText" {
+  const CONTENT: string;
+  export default CONTENT;
+}
+
 declare module "*.txt" {
   const CONTENT: string;
   export default CONTENT;

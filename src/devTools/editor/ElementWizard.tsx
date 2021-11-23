@@ -24,22 +24,27 @@ import React, {
 } from "react";
 import { useFormikContext } from "formik";
 import { groupBy } from "lodash";
-import { Badge, Form, Nav, Tab } from "react-bootstrap";
+import { Badge, Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
-import { IExtension } from "@/core";
 import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 import LogContext from "@/components/logViewer/LogContext";
-import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
-import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
+import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import styles from "./ElementWizard.module.scss";
 import { thisTab } from "@/devTools/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
+import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import useSavingWizard from "./panes/save/useSavingWizard";
 
 const LOG_STEP_NAME = "Logs";
+
+const wizard: WizardStep[] = [
+  { step: "Edit", Component: EditTab },
+  { step: LOG_STEP_NAME, Component: LogsTab },
+];
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
@@ -81,19 +86,14 @@ const WizardNavItem: React.FunctionComponent<{
 };
 
 const ElementWizard: React.FunctionComponent<{
-  installed: IExtension[];
   element: FormState;
   editable: Set<string>;
-}> = ({ element, editable, installed }) => {
-  const wizard = useMemo(() => ADAPTERS.get(element.type).wizard, [
-    element.type,
-  ]);
-
+}> = ({ element, editable }) => {
   const [step, setStep] = useState(wizard[0].step);
 
   useEffect(() => {
     setStep(wizard[0].step);
-  }, [wizard, setStep]);
+  }, [setStep]);
 
   const { refresh: refreshLogs } = useContext(LogContext);
 
@@ -104,12 +104,21 @@ const ElementWizard: React.FunctionComponent<{
   );
 
   const {
-    isSubmitting,
     isValid,
     status,
-    handleSubmit,
     handleReset,
+    setStatus,
   } = useFormikContext<FormState>();
+
+  const { isSaving, save } = useSavingWizard();
+
+  const onSave = async () => {
+    try {
+      await save();
+    } catch (error: unknown) {
+      setStatus(error);
+    }
+  };
 
   const selectTabHandler = useCallback(
     (step: string) => {
@@ -124,10 +133,12 @@ const ElementWizard: React.FunctionComponent<{
 
   return (
     <Tab.Container activeKey={step} key={element.uuid}>
-      <Form
+      <BootstrapForm
         autoComplete="off"
         noValidate
-        onSubmit={handleSubmit}
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
         onReset={handleReset}
         className={styles.form}
       >
@@ -146,31 +157,30 @@ const ElementWizard: React.FunctionComponent<{
 
           <PermissionsToolbar
             element={element}
-            disabled={isSubmitting || !isValid}
+            disabled={isSaving || !isValid}
           />
 
-          <ReloadToolbar element={element} disabled={isSubmitting} />
+          <ReloadToolbar element={element} disabled={isSaving} />
 
           <ActionToolbar
-            installed={installed}
             element={element}
-            disabled={isSubmitting}
+            disabled={isSaving}
+            onSave={onSave}
           />
         </Nav>
 
         {status && <div className="text-danger">{status}</div>}
         <Tab.Content className={styles.tabContent}>
-          {wizard.map(({ Component, step, extraProps = {} }) => (
+          {wizard.map(({ Component, step }) => (
             <Component
               key={step}
               eventKey={step}
               editable={editable}
               available={available}
-              {...extraProps}
             />
           ))}
         </Tab.Content>
-      </Form>
+      </BootstrapForm>
     </Tab.Container>
   );
 };

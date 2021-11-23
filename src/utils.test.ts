@@ -15,24 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { freshIdentifier, getPropByPath, removeUndefined } from "@/utils";
+import {
+  freshIdentifier,
+  isApiVersionAtLeast,
+  joinName,
+  removeUndefined,
+} from "@/utils";
 import type { SafeString } from "@/core";
-
-test("can get array element by index", () => {
-  expect(getPropByPath({ array: [1, 2, 3] }, "array.0")).toBe(1);
-});
-
-test("can get integer object property", () => {
-  expect(getPropByPath({ array: { 0: "foo" } }, "array.0")).toBe("foo");
-});
-
-test("can get object path in array", () => {
-  expect(getPropByPath({ array: [{ key: "foo" }] }, "array.0.key")).toBe("foo");
-});
-
-test("can apply null coalescing to array index", () => {
-  expect(getPropByPath({ array: [{ key: "foo" }] }, "array.1?.key")).toBeNull();
-});
 
 test("can generate fresh identifier", () => {
   const root = "field" as SafeString;
@@ -57,5 +46,43 @@ describe("removeUndefined", () => {
     expect(removeUndefined({ foo: { bar: undefined } })).toStrictEqual({
       foo: {},
     });
+  });
+});
+
+describe("isApiVersionAtLeast()", () => {
+  test("v2 is at least v1", () => {
+    expect(isApiVersionAtLeast("v2", "v1")).toStrictEqual(true);
+  });
+  test("v2 is at least v2", () => {
+    expect(isApiVersionAtLeast("v2", "v2")).toStrictEqual(true);
+  });
+  test("v3 is at least v1", () => {
+    expect(isApiVersionAtLeast("v3", "v1")).toStrictEqual(true);
+  });
+  test("v1 is not at least v2", () => {
+    expect(isApiVersionAtLeast("v1", "v2")).toStrictEqual(false);
+  });
+});
+
+describe("joinName", () => {
+  test("rejects no paths", () => {
+    expect(() => joinName("foo")).toThrow("Expected one or more field names");
+  });
+
+  test("compacts paths", () => {
+    expect(joinName("foo", null, "bar")).toBe("foo.bar");
+  });
+
+  test("rejects path part with period", () => {
+    expect(() => joinName("foo", "bar.baz")).toThrow("cannot contain periods");
+  });
+
+  test("accepts base path part with period", () => {
+    expect(joinName("foo.bar", "baz")).toBe("foo.bar.baz");
+  });
+
+  test("accepts null/undefined base path part", () => {
+    expect(joinName(null, "foo")).toBe("foo");
+    expect(joinName(undefined, "foo")).toBe("foo");
   });
 });

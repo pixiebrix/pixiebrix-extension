@@ -21,7 +21,6 @@ import {
   partial,
   partialRight,
   negate,
-  identity,
   countBy,
   maxBy,
   entries,
@@ -35,8 +34,8 @@ import {
   compact,
 } from "lodash";
 import { Primitive } from "type-fest";
-import { getErrorMessage } from "@/errors";
-import { SafeString } from "@/core";
+import { ApiVersion, SafeString } from "@/core";
+import { UnknownObject } from "@/types";
 
 /**
  * Create a Formik field name, validating the individual path parts.
@@ -48,17 +47,19 @@ export function joinName(
   baseFieldName: string | null,
   ...rest: string[]
 ): string {
-  if (rest.length === 0) {
+  const fieldNames = compact(rest);
+
+  if (fieldNames.length === 0) {
     throw new Error(
       "Expected one or more field names to join with the main path"
     );
   }
 
-  if (rest.some((x) => x.includes("."))) {
+  if (fieldNames.some((x) => x.includes("."))) {
     throw new Error("Formik path parts cannot contain periods");
   }
 
-  return compact([baseFieldName, ...rest]).join(".");
+  return compact([baseFieldName, ...fieldNames]).join(".");
 }
 
 export function mostCommonElement<T>(items: T[]): T {
@@ -295,83 +296,6 @@ export class InvalidPathError extends Error {
   }
 }
 
-export interface ReadProxy {
-  toJS: (value: unknown) => unknown;
-  get: (value: unknown, prop: number | string) => unknown;
-}
-
-export const noopProxy: ReadProxy = {
-  toJS: identity,
-  get: (value, prop) => {
-    if (isObject(value) && Object.prototype.hasOwnProperty.call(value, prop)) {
-      // Checking visibility of the property above
-      // eslint-disable-next-line security/detect-object-injection
-      return value[prop];
-    }
-  },
-};
-
-export function getPropByPath(
-  obj: Record<string, unknown>,
-  path: string,
-  {
-    args = {},
-    proxy = noopProxy,
-  }: { args?: Record<string, unknown>; proxy?: ReadProxy } | undefined = {}
-): unknown {
-  // Consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
-
-  const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
-
-  let value: unknown = obj;
-  const rawParts = path.trim().split(".");
-
-  for (const [index, rawPart] of rawParts.entries()) {
-    const previous = value;
-
-    // Handle null coalescing syntax
-    let part: string | number = rawPart;
-    let coalesce = false;
-    let numeric = false;
-
-    if (rawPart.endsWith("?")) {
-      part = rawPart.slice(0, -1);
-      coalesce = true;
-    }
-
-    if (/^\d+$/.test(part) && Array.isArray(value)) {
-      part = Number.parseInt(part, 10);
-      numeric = true;
-    }
-
-    if (!(typeof value == "object" || (Array.isArray(previous) && numeric))) {
-      throw new InvalidPathError(`Invalid path ${path}`, path);
-    }
-
-    value = get(value, part);
-
-    if (value == null) {
-      if (coalesce || index === rawParts.length - 1) {
-        return null;
-      }
-
-      throw new InvalidPathError(`${path} undefined (missing ${part})`, path);
-    }
-
-    if (typeof value === "function") {
-      try {
-        value = value.apply(previous, args);
-      } catch (error: unknown) {
-        throw new Error(
-          `Error running method ${part}: ${getErrorMessage(error)}`
-        );
-      }
-    }
-  }
-
-  return cleanValue(toJS(value));
-}
-
 export function isNullOrBlank(value: unknown): boolean {
   if (value == null) {
     return true;
@@ -484,7 +408,7 @@ export async function allSettledValues<T = unknown>(
 ): Promise<T[]> {
   return (await Promise.allSettled(promises))
     .filter(
-      (promise): promise is PromiseFulfilledResult<T> =>
+      (promise): promise is PromiseFulfilledResult<Awaited<T>> =>
         promise.status === "fulfilled"
     )
     .map(({ value }) => value);
@@ -537,4 +461,39 @@ export function safeParseUrl(url: string): URL {
   } catch {
     return new URL("invalid-url://");
   }
+}
+
+export function isApiVersionAtLeast(
+  is: ApiVersion,
+  atLeast: ApiVersion
+): boolean {
+  const isNum = Number(is.slice(1));
+  const atLeastNum = Number(atLeast.slice(1));
+
+  return isNum >= atLeastNum;
+}
+
+export function getProperty(obj: UnknownObject, property: string) {
+  if (Object.prototype.hasOwnProperty.call(obj, property)) {
+    // Checking for hasOwnProperty
+    // eslint-disable-next-line security/detect-object-injection
+    return obj[property];
+  }
+}
+
+export async function runInMillis<TResult>(
+  factory: () => Promise<TResult>,
+  maxMillis: number
+): Promise<TResult> {
+  const timeout = Symbol("timeout");
+  const value = await Promise.race([
+    factory(),
+    sleep(maxMillis).then(() => timeout),
+  ]);
+
+  if (value === timeout) {
+    throw new TimeoutError(`Method did not complete in ${maxMillis}ms`);
+  }
+
+  return value as TResult;
 }

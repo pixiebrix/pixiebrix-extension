@@ -24,13 +24,23 @@ import { UiSchema as StandardUiSchema } from "@rjsf/core";
 import { AxiosRequestConfig } from "axios";
 import { Except, Primitive } from "type-fest";
 import { ErrorObject } from "serialize-error";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions } from "webextension-polyfill";
 import { pick } from "lodash";
+import React from "react";
 
-export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
+export const KEYS_OF_UI_SCHEMA = [
+  "ui:order",
+  "ui:field",
+  "ui:widget",
+  "ui:options",
+  "ui:order",
+  "ui:FieldTemplate",
+  "ui:ArrayFieldTemplate",
+  "ui:ObjectFieldTemplate",
+];
 export type SchemaDefinition = JSONSchema7Definition;
 export type SchemaProperties = Record<string, SchemaDefinition>;
 export type SchemaPropertyType = JSONSchema7TypeName;
@@ -42,10 +52,9 @@ export type SchemaPropertyType = JSONSchema7TypeName;
  *
  * - v1: original, implicit templating and dataflow
  * - v2: introduces explicitDataFlow
+ * - v3: introduces explicit expressions
  */
-export type ApiVersion = "v1" | "v2";
-
-export type RenderedHTML = string;
+export type ApiVersion = "v1" | "v2" | "v3";
 
 export type ActionType = string;
 
@@ -82,6 +91,14 @@ export type UUID = string & {
   _uuidBrand: never;
 };
 
+/**
+ * An ISO timestamp string
+ */
+export type Timestamp = string & {
+  // Nominal subtyping
+  _uuidTimestamp: never;
+};
+
 export type InnerDefinitionRef = string & {
   // Nominal subtyping
   _innerDefinitionRefBrand: never;
@@ -96,6 +113,58 @@ export type RegistryId = string & {
 };
 type ServiceId = RegistryId;
 
+/**
+ * The tag of an available template engine for rendering an expression given a context.
+ * @see mapArgs
+ */
+export type TemplateEngine =
+  // https://mustache.github.io/
+  | "mustache"
+  // https://mozilla.github.io/nunjucks/
+  | "nunjucks"
+  // https://handlebarsjs.com/
+  | "handlebars"
+  // Variable, with support for ? operator
+  | "var";
+
+/**
+ * The tag of an expression type without the !-prefix that appears in YAML. These appear in YAML files as simple tags,
+ * e.g., !pipeline, and are converted into Expressions during deserialization
+ * @see Expression
+ * @see loadBrickYaml
+ * @see TemplateEngine
+ * @see BlockPipeline
+ */
+export type ExpressionType =
+  | TemplateEngine
+  // BlockPipeline with deferred execution
+  | "pipeline";
+
+/**
+ * The JSON/JS representation of an explicit template/variable expression (e.g., mustache, var, etc.)
+ * @see BlockConfig
+ * @see loadBrickYaml
+ * @since 1.5.0
+ */
+export type Expression<
+  // The value. TemplateEngine ExpressionTypes, this will be a string containing the template. For `pipeline`
+  // ExpressionType this will be a BlockPipeline. (The loadBrickYaml method will currently accept any array for
+  // pipeline at this time, though.
+  TTemplateOrPipeline = string,
+  // The type tag (without the !-prefix of the YAML simple tag)
+  TTypeTag extends ExpressionType = ExpressionType
+> = {
+  __type__: TTypeTag;
+  __value__: TTemplateOrPipeline;
+};
+
+/**
+ * The Meta section of a message (for message passing between extension components)
+ *
+ * Not to be mistaken with Metadata in brick definitions
+ *
+ * @see Message
+ */
 export interface Meta {
   nonce?: string;
   [index: string]: unknown;
@@ -154,7 +223,7 @@ export interface Logger {
 
 export type ReaderRoot = HTMLElement | Document;
 
-export interface BlockOptions {
+export type BlockOptions = {
   // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
   // the inputs using yup/jsonschema, so the types should match what's expected.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -162,12 +231,58 @@ export interface BlockOptions {
   logger: Logger;
   root: ReaderRoot;
   headless?: boolean;
-}
+};
 
-// Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
-// the inputs using jsonschema, so the types should match what's expected.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BlockArg = Record<string, any>;
+/**
+ * The JSON Schema validated arguments to pass into the `run` method of an IBlock.
+ *
+ * Singular name (as opposed to plural) because it's passed as a single argument to the `run` method.
+ *
+ * Uses `any` for values so that blocks don't have to assert/cast all their argument types. The input values
+ * are validated using JSON Schema in `reducePipeline`.
+ *
+ * @see IBlock.inputSchema
+ * @see IBlock.run
+ * @see reducePipeline
+ */
+export type BlockArg<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
+  T extends Record<string, any> = Record<string, any>
+> = T & {
+  _blockArgBrand: never;
+};
+
+/**
+ * The non-validated arguments to pass into the `run` method of an IBlock.
+ * @see BlockArg
+ */
+export type RenderedArgs = Record<string, unknown> & {
+  _renderedArgBrand: never;
+};
+
+/**
+ * Values available to a block to render its arguments.
+ * @see BlockArg
+ * @see RenderedArgs
+ * @see BlockConfig.outputKey
+ */
+export type BlockArgContext = Record<string, unknown> & {
+  _blockArgContextBrand: never;
+  "@input": Record<string, unknown>;
+  "@options"?: Record<string, unknown>;
+};
+
+/**
+ * Service context passed to blocks.
+ * @see BlockArgContext
+ */
+export type ServiceContext = Record<
+  ServiceKeyVar,
+  {
+    __service: SanitizedServiceConfiguration;
+    [prop: string]: string | SanitizedServiceConfiguration | null;
+  }
+>;
 
 export type BlockIcon = string;
 
@@ -199,7 +314,7 @@ export interface Metadata {
 
 export interface Sharing {
   readonly public: boolean;
-  readonly organizations: string[];
+  readonly organizations: UUID[];
 }
 
 export function selectMetadata(metadata: Metadata): Metadata {
@@ -283,6 +398,28 @@ export type ExtensionRef = {
   extensionPointId: RegistryId;
 };
 
+/**
+ * RecipeMetadata that includes sharing information.
+ *
+ * We created this type as an alternative to Metadata in order to include information about the origin of an extension,
+ * e.g. on the ActiveBricks page.
+ *
+ * @see optionsSlice
+ * @see IExtension._recipe
+ */
+export type RecipeMetadata = Metadata & {
+  /**
+   * `undefined` for recipes that were activated prior to the field being added
+   */
+  sharing: Sharing | null;
+
+  /**
+   * `undefined` for recipes that were activated prior to the field being added
+   * @since 1.4.8
+   */
+  updated_at: Timestamp | null;
+};
+
 export type IExtension<T extends Config = EmptyConfig> = {
   /**
    * UUID of the extension.
@@ -308,9 +445,9 @@ export type IExtension<T extends Config = EmptyConfig> = {
 
   /**
    * Metadata about the recipe used to install the extension, or `undefined` if the user created this extension
-   * directly.
+   * directly
    */
-  _recipe: Metadata | undefined;
+  _recipe: RecipeMetadata | undefined;
 
   /**
    * A human-readable label for the extension.
@@ -661,9 +798,6 @@ export interface IconConfig {
 
 export type UserOptions = Record<string, Primitive>;
 
-// Nice-to-have: add nominal typing to distinguish rendered vs. non-rendered args
-export type RenderedArgs = Record<string, unknown>;
-
 export interface OrganizationAuthState {
   readonly id: string;
   readonly name?: string;
@@ -696,3 +830,12 @@ export type RawConfig = {
  * (In the backend these are called `Package`s and `PackageVersion`s)
  */
 export type IBrick = IBlock | IService | IExtensionPoint;
+
+export type RenderedHTML = string;
+
+export type ComponentRef = {
+  Component: React.ComponentType;
+  props: Record<string, unknown>;
+};
+
+export type RendererOutput = RenderedHTML | ComponentRef;

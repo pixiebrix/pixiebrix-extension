@@ -24,7 +24,7 @@ import { CloseTabEffect, ActivateTabEffect } from "./tabs";
 import { HighlightEffect } from "./highlight";
 import { SetVueValues } from "./vue";
 import { ElementEvent } from "./event";
-import { WaitElementEffect } from "./wait";
+import { WaitEffect, WaitElementEffect } from "./wait";
 import { AlertEffect } from "./alert";
 import { GetPageState, SetPageState } from "./pageState";
 import { HideEffect } from "./hide";
@@ -34,6 +34,9 @@ import { CancelEffect } from "./cancel";
 import { ErrorEffect } from "./error";
 import { ShowEffect } from "./show";
 import { TelemetryEffect } from "./telemetry";
+import { ConfettiEffect } from "./confetti";
+import { TourEffect } from "./tour";
+import { AttachAutocomplete } from "./attachAutocomplete";
 
 function registerEffects(): void {
   registerBlock(new LogEffect());
@@ -47,6 +50,7 @@ function registerEffects(): void {
   registerBlock(new HighlightEffect());
   registerBlock(new SetVueValues());
   registerBlock(new ElementEvent());
+  registerBlock(new WaitEffect());
   registerBlock(new WaitElementEffect());
   registerBlock(new AlertEffect());
   registerBlock(new GetPageState());
@@ -59,6 +63,9 @@ function registerEffects(): void {
   registerBlock(new ErrorEffect());
   registerBlock(new ShowEffect());
   registerBlock(new TelemetryEffect());
+  registerBlock(new ConfettiEffect());
+  registerBlock(new TourEffect());
+  registerBlock(new AttachAutocomplete());
 }
 
 export default registerEffects;

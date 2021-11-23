@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,6 +24,7 @@ import {
   faCheck,
   faList,
   faPause,
+  faSyncAlt,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
@@ -41,6 +42,8 @@ import ExtensionRows from "./ExtensionRows";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
 import AuthContext from "@/auth/AuthContext";
+import { Button } from "react-bootstrap";
+import { useHistory } from "react-router";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
@@ -56,6 +59,10 @@ const ExtensionGroup: React.FunctionComponent<{
    * uninstalling them).
    */
   paused?: boolean;
+  /**
+   * True if an update is available for the recipe
+   */
+  hasUpdate: boolean;
   startExpanded?: boolean;
   groupMessageContext: MessageContext;
   onRemove: RemoveAction;
@@ -69,10 +76,12 @@ const ExtensionGroup: React.FunctionComponent<{
   groupMessageContext,
   onRemove,
   onExportBlueprint,
+  hasUpdate,
 }) => {
   const { flags } = useContext(AuthContext);
   const notify = useNotifications();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const expandable = !managed;
   const [expanded, setExpanded] = useState(expandable && startExpanded);
@@ -80,6 +89,16 @@ const ExtensionGroup: React.FunctionComponent<{
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extensions
   );
+
+  const sourceRecipeMeta = extensions[0]._recipe;
+
+  const reinstall = useCallback(() => {
+    history.push(
+      `marketplace/activate/${encodeURIComponent(
+        sourceRecipeMeta.id
+      )}?reinstall=1`
+    );
+  }, [sourceRecipeMeta.id, history]);
 
   const removeMany = useUserAction(
     async (extensions: IExtension[]) => {
@@ -109,6 +128,14 @@ const ExtensionGroup: React.FunctionComponent<{
       );
     }
 
+    if (hasUpdate) {
+      return (
+        <Button size="sm" variant="info" onClick={reinstall}>
+          <FontAwesomeIcon icon={faSyncAlt} /> Update
+        </Button>
+      );
+    }
+
     if (paused) {
       return (
         <>
@@ -120,7 +147,10 @@ const ExtensionGroup: React.FunctionComponent<{
     if (managed) {
       return (
         <>
-          <FontAwesomeIcon icon={faCheck} /> Managed
+          <FontAwesomeIcon icon={faCheck} /> Managed{" "}
+          <span className="text-muted">
+            &ndash; v{sourceRecipeMeta.version}
+          </span>
         </>
       );
     }
@@ -129,19 +159,68 @@ const ExtensionGroup: React.FunctionComponent<{
     // groups start collapsed, you wouldn't know where to look)
     return (
       <>
-        <FontAwesomeIcon icon={faCheck} /> Active
+        <FontAwesomeIcon icon={faCheck} /> Active{" "}
+        <span className="text-muted">&ndash; v{sourceRecipeMeta.version}</span>
       </>
     );
-  }, [paused, managed, hasPermissions, requestPermissions]);
+  }, [
+    paused,
+    managed,
+    hasPermissions,
+    requestPermissions,
+    hasUpdate,
+    reinstall,
+    sourceRecipeMeta,
+  ]);
 
-  const onViewLogs = () => {
+  const onViewLogs = useCallback(() => {
     dispatch(
       installedPageSlice.actions.setLogsContext({
         title: label,
         messageContext: groupMessageContext,
       })
     );
-  };
+  }, [dispatch, label, groupMessageContext]);
+
+  const actionOptions = useMemo(
+    () => [
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faList} /> View Logs
+          </>
+        ),
+        action: onViewLogs,
+      },
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faSyncAlt} />{" "}
+            {hasUpdate ? "Update" : "Reactivate"}
+          </>
+        ),
+        className: hasUpdate ? "text-info" : "",
+        action: reinstall,
+        // Managed extensions are updated via the deployment banner
+        hide: managed,
+      },
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faTimes} /> Uninstall
+          </>
+        ),
+        // #1532: temporary approach to controlling whether or not deployments can be uninstalled. In
+        // the future we'll want this to depend on the member's role within the deployment's organization
+        hide: managed && flags.includes("restricted-uninstall"),
+        action: async () => {
+          await removeMany(extensions);
+        },
+        className: "text-danger",
+      },
+    ],
+    [extensions, flags, hasUpdate, managed, onViewLogs, reinstall, removeMany]
+  );
 
   return (
     <>
@@ -163,32 +242,7 @@ const ExtensionGroup: React.FunctionComponent<{
         <td>{label}</td>
         <td>{status}</td>
         <td>
-          <EllipsisMenu
-            items={[
-              {
-                title: (
-                  <>
-                    <FontAwesomeIcon icon={faList} /> View Logs
-                  </>
-                ),
-                action: onViewLogs,
-              },
-              {
-                title: (
-                  <>
-                    <FontAwesomeIcon icon={faTimes} /> Uninstall
-                  </>
-                ),
-                // #1532: temporary approach to controlling whether or not deployments can be uninstalled. In
-                // the future we'll want this to depend on the member's role within the deployment's organization
-                hide: managed && flags.includes("restricted-uninstall"),
-                action: async () => {
-                  await removeMany(extensions);
-                },
-                className: "text-danger",
-              },
-            ]}
-          />
+          <EllipsisMenu items={actionOptions} />
         </td>
       </tr>
       {expanded && expandable && (

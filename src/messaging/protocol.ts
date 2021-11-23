@@ -17,7 +17,7 @@
 
 import { ActionType, Message, SerializedError, Meta } from "@/core";
 import { serializeError } from "serialize-error";
-import { browser, Runtime } from "webextension-polyfill-ts";
+import browser, { Runtime } from "webextension-polyfill";
 import isPromise from "is-promise";
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- Line can be dropped once we migrate to `webext-messenger`
@@ -77,8 +77,8 @@ export type MessageListener = (
 ) => Promise<unknown> | void;
 
 // Unlike MessageListener, the return type of this method means the message has been handled
-type MessageHandler<T extends ActionType> = (
-  request: Message<T>,
+export type MessageHandler<T extends ActionType, M extends Meta = Meta> = (
+  request: Message<T, M>,
   sender: Runtime.MessageSender
 ) => Promise<unknown>;
 

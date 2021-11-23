@@ -19,7 +19,6 @@ import React from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Card } from "react-bootstrap";
 import { inputProperties } from "@/helpers";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
@@ -27,7 +26,6 @@ import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget"
 import { Schema } from "@/core";
 import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { UnknownObject } from "@/types";
 import { joinName } from "@/utils";
 
 const FALLBACK_SCHEMA: Schema = {
@@ -59,9 +57,13 @@ const ChildContainer: React.FC<{ heading: string }> = ({
   </Card>
 );
 
-const ChildObjectWidget: CustomFieldWidget<
-  SchemaFieldProps<UnknownObject> & OwnProps
-> = ({ name, schema, schemaLoading, schemaError, heading }) => {
+const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProps> = ({
+  name,
+  schema,
+  schemaLoading,
+  schemaError,
+  heading,
+}) => {
   if (schemaLoading) {
     return (
       <ChildContainer heading={heading}>
@@ -106,9 +108,9 @@ const ChildObjectWidget: CustomFieldWidget<
   );
 };
 
-const ChildObjectField: React.FunctionComponent<
-  SchemaFieldProps<UnknownObject> & OwnProps
-> = (props) => (
+const ChildObjectField: React.FunctionComponent<SchemaFieldProps & OwnProps> = (
+  props
+) => (
   <ConnectedFieldTemplate
     {...props}
     description={

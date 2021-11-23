@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { getChromeExtensionId, RuntimeNotFoundError } from "@/chrome";
-import { browser, Runtime } from "webextension-polyfill-ts";
+import browser, { Runtime } from "webextension-polyfill";
 import { patternToRegex } from "webext-patterns";
 import chromeP from "webext-polyfill-kinda";
 import { isBackgroundPage, isExtensionContext } from "webext-detect-page";
@@ -104,7 +104,8 @@ async function callBackground(
 
   // `browser.*` APIs are not polyfilled outside the extension context (`externally_connectable` pages)
   // https://github.com/mozilla/webextension-polyfill/issues/326
-  const sendMessage = isExtensionContext()
+  // Explicit type currently needed due to a "mismatch" in type
+  const sendMessage: typeof browser.runtime.sendMessage = isExtensionContext()
     ? browser.runtime.sendMessage
     : chromeP.runtime.sendMessage;
   const extensionId = isExtensionContext() ? null : getChromeExtensionId();

@@ -16,7 +16,7 @@
  */
 
 import pDefer from "p-defer";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
@@ -30,11 +30,11 @@ import type { Target } from "@/types";
 /** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
   // Injected by the browser
-  const manifestScriptsOrigins = chrome.runtime
+  const manifestScriptsOrigins = browser.runtime
     .getManifest()
     .content_scripts.flatMap((script) => script.matches);
 
-  // Inejcted by `webext-dynamic-content-scripts`
+  // Injected by `webext-dynamic-content-scripts`
   const { origins } = await getAdditionalPermissions({
     strictOrigins: false,
   });
@@ -42,6 +42,18 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
   // Do not replace the 2 calls above with `permissions.getAll` because it might also
   // include hosts that are permitted by the manifest but have no content script registered.
   return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
+}
+
+export async function checkTargetPermissions(target: Target): Promise<boolean> {
+  return browser.tabs
+    .executeScript(target.tabId, {
+      code: "true",
+      frameId: target.frameId,
+    })
+    .then(
+      () => true,
+      () => false
+    );
 }
 
 interface TargetState {
@@ -145,7 +157,7 @@ export async function ensureContentScript(target: Target): Promise<void> {
       );
     } else {
       console.debug("ensureContentScript: injecting", target);
-      const loadingScripts = chrome.runtime
+      const loadingScripts = browser.runtime
         .getManifest()
         .content_scripts.map(async (script) => {
           script.all_frames = false;

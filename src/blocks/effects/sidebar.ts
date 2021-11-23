@@ -17,11 +17,7 @@
 
 import { Effect } from "@/types";
 import { Schema } from "@/core";
-import { browser } from "webextension-polyfill-ts";
-import {
-  HIDE_ACTION_FRAME,
-  SHOW_ACTION_FRAME,
-} from "@/background/browserAction";
+import { hideActionPanel, showActionPanel } from "@/actionPanel/native";
 
 const NO_PARAMS: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -41,11 +37,7 @@ export class ShowSidebar extends Effect {
   inputSchema: Schema = NO_PARAMS;
 
   async effect(): Promise<void> {
-    console.debug("show sidebar");
-    await browser.runtime.sendMessage({
-      type: SHOW_ACTION_FRAME,
-      payload: {},
-    });
+    showActionPanel();
   }
 }
 
@@ -61,9 +53,6 @@ export class HideSidebar extends Effect {
   inputSchema: Schema = NO_PARAMS;
 
   async effect(): Promise<void> {
-    await browser.runtime.sendMessage({
-      type: HIDE_ACTION_FRAME,
-      payload: {},
-    });
+    hideActionPanel();
   }
 }

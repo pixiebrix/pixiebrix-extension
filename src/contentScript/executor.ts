@@ -17,7 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import { BackgroundLogger } from "@/background/logging";
-import { MessageContext, RegistryId, RenderedArgs } from "@/core";
+import { BlockArg, MessageContext, RegistryId } from "@/core";
 import { Availability } from "@/blocks/types";
 
 export interface RemoteBlockOptions {
@@ -31,7 +31,7 @@ export interface RunBlock {
   sourceTabId?: number;
   nonce?: string;
   blockId: RegistryId;
-  blockArgs: RenderedArgs;
+  blockArgs: BlockArg;
   options: RemoteBlockOptions;
 }
 

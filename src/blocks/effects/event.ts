@@ -84,8 +84,16 @@ export class ElementEvent extends Effect {
       );
     }
 
-    // Triggers the event. NOTE: the event is not "trusted" as being a user action
+    // Trigger the event (without jQuery #1869)
+    // NOTE: the event is not "trusted" as being a user action
     // https://developer.mozilla.org/en-US/docs/Web/API/Event/isTrusted
-    $element.trigger(event);
+    for (const element of $element) {
+      if (event === "click") {
+        // Trigger a proper MouseEvent on the most common event
+        element.click();
+      } else {
+        element.dispatchEvent(new Event(event, { bubbles: true }));
+      }
+    }
   }
 }

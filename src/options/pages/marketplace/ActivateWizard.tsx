@@ -18,102 +18,95 @@
 import React, { useMemo, useState } from "react";
 import { RecipeDefinition } from "@/types/definitions";
 import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
-import { isEmpty, mapValues, truncate, uniq } from "lodash";
+import { truncate } from "lodash";
 import "./ActivateWizard.scss";
 import { Formik } from "formik";
-import ConfigureBody, {
-  useSelectedAuths,
-  useSelectedExtensions,
-} from "./ConfigureBody";
-import ServicesBody from "./ServicesBody";
-import { WizardValues } from "./wizardTypes";
-import ActivateBody from "@/options/pages/marketplace/ActivateBody";
-import OptionsBody from "@/options/pages/marketplace/OptionsBody";
+import { useSelectedAuths, useSelectedExtensions } from "./ConfigureBody";
 import { useTitle } from "@/hooks/title";
 import useInstall from "@/pages/marketplace/useInstall";
 import AsyncButton from "@/components/AsyncButton";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
+import { useLocation } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { selectExtensions } from "@/options/selectors";
+import { uninstallContextMenu } from "@/background/messenger/api";
+import { optionsSlice } from "@/options/slices";
+import { getErrorMessage } from "@/errors";
+import useNotifications from "@/hooks/useNotifications";
+import useWizard from "@/options/pages/marketplace/useWizard";
+
+const { removeExtension } = optionsSlice.actions;
 
 interface OwnProps {
   blueprint: RecipeDefinition;
 }
 
-type Step = {
-  key: string;
-  label: string;
-  Component: React.FunctionComponent<{ blueprint: RecipeDefinition }>;
-};
-
-const STEPS: Step[] = [
-  { key: "review", label: "Select Bricks", Component: ConfigureBody },
-  { key: "options", label: "Personalize", Component: OptionsBody },
-  { key: "services", label: "Select Integrations", Component: ServicesBody },
-  { key: "activate", label: "Review & Activate", Component: ActivateBody },
-];
-
 const ActivateButton: React.FunctionComponent<{
   blueprint: RecipeDefinition;
 }> = ({ blueprint }) => {
   const extensions = useSelectedExtensions(blueprint.extensionPoints);
+  const location = useLocation();
+  const reinstall =
+    new URLSearchParams(location.search).get("reinstall") === "1";
   const serviceAuths = useSelectedAuths();
   const { activate, isPending } = useEnsurePermissions(
     blueprint,
     extensions,
     serviceAuths
   );
+  const dispatch = useDispatch();
+  const localExtensions = useSelector(selectExtensions);
+  const installedExtensions = useMemo(
+    () =>
+      localExtensions?.filter(
+        (extension) => extension._recipe?.id === blueprint?.metadata.id
+      ),
+    [blueprint, localExtensions]
+  );
+  const notify = useNotifications();
+
+  const uninstallExtensions = async () => {
+    for (const extension of installedExtensions) {
+      const extensionRef = { extensionId: extension.id };
+      // eslint-disable-next-line no-await-in-loop -- see useReinstall.ts
+      await uninstallContextMenu(extensionRef);
+      dispatch(removeExtension(extensionRef));
+    }
+  };
+
+  const activateOrReinstall = () => {
+    if (reinstall) {
+      uninstallExtensions()
+        .then(() => {
+          activate();
+        })
+        .catch((error: unknown) => {
+          notify.error(
+            `Error re-installing bricks: ${getErrorMessage(error)}`,
+            {
+              error,
+            }
+          );
+        });
+    } else {
+      activate();
+    }
+  };
 
   return (
-    <AsyncButton size="sm" disabled={isPending} onClick={activate}>
+    <AsyncButton size="sm" disabled={isPending} onClick={activateOrReinstall}>
       <FontAwesomeIcon icon={faMagic} /> Activate
     </AsyncButton>
   );
 };
 
-function useWizard(blueprint: RecipeDefinition): [Step[], WizardValues] {
-  return useMemo(() => {
-    const extensionPoints = blueprint.extensionPoints ?? [];
-
-    const serviceIds = uniq(
-      extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
-    );
-    const steps = STEPS.filter((step) => {
-      switch (step.key) {
-        case "services": {
-          return serviceIds.some(
-            (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
-          );
-        }
-
-        case "options": {
-          return !isEmpty(blueprint.options?.schema);
-        }
-
-        default: {
-          return true;
-        }
-      }
-    });
-    const initialValues: WizardValues = {
-      extensions: Object.fromEntries(
-        extensionPoints.map((x, index) => [index, true])
-      ),
-      services: serviceIds.map((id) => ({ id, config: undefined })),
-      optionsArgs: mapValues(
-        blueprint.options?.schema ?? {},
-        (x) => (x as any).default
-      ),
-      grantPermissions: false,
-    };
-    return [steps, initialValues];
-  }, [blueprint]);
-}
-
 const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
+  const location = useLocation();
+  const reinstall =
+    new URLSearchParams(location.search).get("reinstall") === "1";
   const [blueprintSteps, initialValues] = useWizard(blueprint);
-
   const [stepKey, setStep] = useState(blueprintSteps[0].key);
   const install = useInstall(blueprint);
 
@@ -144,7 +137,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                 <Tab.Pane key={key} eventKey={key}>
                   <Card>
                     <Card.Header>{label}</Card.Header>
-                    <Component blueprint={blueprint} />
+                    <Component blueprint={blueprint} reinstall={reinstall} />
                     <Card.Footer className="d-inline-flex">
                       <div className="ml-auto">
                         <Button

@@ -18,7 +18,11 @@
 /**
  * Type contract between the backend and front-end.
  */
-import { RecipeDefinition } from "@/types/definitions";
+import {
+  RecipeDefinition,
+  SharingDefinition,
+  UnsavedRecipeDefinition,
+} from "@/types/definitions";
 import {
   ServiceConfig,
   SanitizedConfig,
@@ -27,6 +31,7 @@ import {
   Config,
   EmptyConfig,
   PersistedExtension,
+  Timestamp,
 } from "@/core";
 
 import { components } from "@/types/swagger";
@@ -37,7 +42,37 @@ export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 
 export type Invitation = components["schemas"]["Invitation"];
 
-export type Organization = components["schemas"]["Organization"];
+export enum UserRole {
+  member = 1,
+  admin = 2,
+  developer = 3,
+  restricted = 4,
+}
+
+export type Organization = components["schemas"]["Organization"] & {
+  // The `role` property is added in the Redux RTK definition for getOrganizations (see api.ts)
+  // WARNING: currently this role is only accurate for Admin. All other users are passed as Restricted even if they have
+  // a Member or Developer role on the team
+  role: UserRole;
+};
+
+export type Group = components["schemas"]["Group"];
+
+export type Database = components["schemas"]["Database"];
+
+export type PackageVersion = components["schemas"]["PackageVersion"];
+
+export type Package = components["schemas"]["Package"];
+
+export type PackageUpsertResponse = Except<
+  components["schemas"]["Package"],
+  "share_dependencies"
+> & {
+  id: UUID;
+  public: boolean;
+  organizations: UUID[];
+  updated_at: Timestamp;
+};
 
 export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
   // XXX: update serialize to required id in response type
@@ -81,6 +116,16 @@ export type CloudExtension<T extends Config = EmptyConfig> = Except<
   _remoteUserExtensionBrand: never;
   _deployment: undefined;
   _recipe: undefined;
+};
+
+/**
+ * `/api/recipes/${blueprintId}`
+ */
+export type BlueprintResponse = {
+  // On this endpoint, the sharing and updated_at are in the envelop of the response
+  config: UnsavedRecipeDefinition;
+  sharing: SharingDefinition;
+  updated_at: Timestamp;
 };
 
 /**

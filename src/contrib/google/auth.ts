@@ -17,11 +17,17 @@
 
 import chromeP from "webext-polyfill-kinda";
 import { getErrorMessage } from "@/errors";
+import { forbidContext } from "@/utils/expectContext";
 
 export async function ensureAuth(
   scopes: string[],
   { interactive = true } = {}
 ): Promise<string> {
+  forbidContext(
+    "contentScript",
+    "The Google API is not available in content scripts"
+  );
+
   if (!globalThis.gapi) {
     throw new TypeError("Google API not loaded");
   }

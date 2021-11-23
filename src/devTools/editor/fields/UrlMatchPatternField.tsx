@@ -16,7 +16,9 @@
  */
 
 import React from "react";
-import UrlMatchPatternWidget from "@/devTools/editor/components/UrlMatchPatternWidget";
+import UrlMatchPatternWidget, {
+  Shortcut,
+} from "@/devTools/editor/components/UrlMatchPatternWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const defaultDescription = (
@@ -38,11 +40,13 @@ const UrlMatchPatternField: React.FC<{
   disabled?: boolean;
   label?: React.ReactNode;
   description?: React.ReactNode;
+  shortcuts?: Shortcut[];
 }> = ({
   name,
   disabled,
   label = "Sites",
   description = defaultDescription,
+  shortcuts,
 }) => (
   <ConnectedFieldTemplate
     name={name}
@@ -50,6 +54,7 @@ const UrlMatchPatternField: React.FC<{
     disabled={disabled}
     label={label}
     description={description}
+    shortcuts={shortcuts}
   />
 );
 

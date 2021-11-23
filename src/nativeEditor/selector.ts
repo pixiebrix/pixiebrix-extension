@@ -96,7 +96,7 @@ export async function userSelectElement(
       event.preventDefault();
       event.stopPropagation();
 
-      console.log("Pointer down:", event.target);
+      console.debug("Pointer down:", event.target);
     }
 
     function onPointerOver(event: MouseEvent) {
@@ -111,9 +111,7 @@ export async function userSelectElement(
     }
 
     function onPointerLeave(event: MouseEvent) {
-      console.log("pointer leave");
       if (event.target === window.document) {
-        console.log("hiding overlay");
         hideOverlay();
       }
     }

@@ -21,34 +21,27 @@ import { DevToolsContext } from "@/devTools/context";
 import { useField } from "formik";
 import { useAsyncEffect } from "use-async-effect";
 import { isNullOrBlank } from "@/utils";
-import * as sheetHandlers from "@/contrib/google/sheets/handlers";
-import {
-  devtoolsProtocol,
-  GOOGLE_SHEETS_SCOPES,
-} from "@/contrib/google/sheets/handlers";
+import { sheets } from "@/background/messenger/api";
+import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/handlers";
 import { ensureAuth } from "@/contrib/google/auth";
-import { partial } from "lodash";
 import { isOptionsPage } from "webext-detect-page";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { Form, InputGroup } from "react-bootstrap";
 import useNotifications from "@/hooks/useNotifications";
 import { getErrorMessage } from "@/errors";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import AsyncButton from "@/components/AsyncButton";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
 
-type OwnProps = {
+type FileWidgetProps = {
+  id?: string;
+  name: string;
   doc: SheetMeta | null;
   onSelect: (doc: SheetMeta) => void;
 };
 
-const FileWidget: CustomFieldWidget<OwnProps> = ({
-  doc,
-  onSelect,
-  ...props
-}) => {
+const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
   const { port } = useContext(DevToolsContext);
   const notify = useNotifications();
 
@@ -80,11 +73,7 @@ const FileWidget: CustomFieldWidget<OwnProps> = ({
         if (!isNullOrBlank(field.value) && doc?.id !== spreadsheetId) {
           setSheetError(null);
 
-          const method = isOptionsPage()
-            ? sheetHandlers.getSheetProperties
-            : partial(devtoolsProtocol.getSheetProperties, port);
-
-          const properties = await method(field.value);
+          const properties = await sheets.getSheetProperties(field.value);
           if (!isMounted()) return;
           onSelect({ id: spreadsheetId, name: properties.title });
         } else {
@@ -162,13 +151,18 @@ const FileWidget: CustomFieldWidget<OwnProps> = ({
   return (
     <InputGroup>
       {doc ? (
-        <Form.Control type="text" disabled value={doc.name} />
+        // There's a time when doc.name is blank, so we're getting warnings about controlled/uncontrolled components
+        <Form.Control
+          type="text"
+          disabled
+          value={doc.name ?? field.value ?? ""}
+        />
       ) : (
         <Form.Control
           type="text"
           disabled
-          value={field.value ?? ""}
           {...field}
+          value={field.value ?? ""}
         />
       )}
       <InputGroup.Append>

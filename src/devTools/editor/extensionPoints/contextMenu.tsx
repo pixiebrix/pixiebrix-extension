@@ -18,48 +18,47 @@
 
 import { IExtension, Metadata } from "@/core";
 import {
+  baseFromExtension,
+  baseSelectExtension,
   baseSelectExtensionPoint,
-  excludeInstanceIds,
+  cleanIsAvailable,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
+  normalizePipeline,
+  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
   selectIsAvailable,
-  withInstanceIds,
-  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray } from "lodash";
-import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import {
   ContextMenuConfig,
   ContextMenuExtensionPoint,
+  ContextMenuTargetMode,
   MenuDefaultOptions as ContextMenuDefaultOptions,
   MenuDefinition,
 } from "@/extensionPoints/contextMenu";
 import { getDomain } from "@/permissions/patterns";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { Menus } from "webextension-polyfill-ts";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import { Menus } from "webextension-polyfill";
+import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
-import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
+import { Except } from "type-fest";
 
-const wizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
-  { step: "Logs", Component: LogsTab },
-];
+type Extension = BaseExtensionState & Except<ContextMenuConfig, "action">;
 
-export interface ContextMenuFormState extends BaseFormState {
+export interface ContextMenuFormState extends BaseFormState<Extension> {
   type: "contextMenu";
 
   extensionPoint: {
@@ -68,14 +67,10 @@ export interface ContextMenuFormState extends BaseFormState {
       defaultOptions: ContextMenuDefaultOptions;
       documentUrlPatterns: string[];
       contexts: Menus.ContextType[];
+      targetMode: ContextMenuTargetMode;
       reader: SingleLayerReaderConfig;
       isAvailable: NormalizedAvailability;
     };
-  };
-
-  extension: {
-    title: string;
-    blockPipeline: BlockPipeline;
   };
 }
 
@@ -100,6 +95,7 @@ function fromNativeElement(
         reader: getImplicitReader("contextMenu"),
         documentUrlPatterns: isAvailable.matchPatterns,
         contexts: ["all"],
+        targetMode: "eventTarget",
         defaultOptions: {},
         isAvailable,
       },
@@ -120,6 +116,7 @@ function selectExtensionPoint(
       isAvailable,
       documentUrlPatterns,
       reader,
+      targetMode,
       contexts = ["all"],
     },
   } = extensionPoint;
@@ -129,37 +126,26 @@ function selectExtensionPoint(
       type: "contextMenu",
       documentUrlPatterns,
       contexts,
+      targetMode,
       reader,
-      isAvailable,
+      isAvailable: cleanIsAvailable(isAvailable),
     },
   });
 }
 
 function selectExtension(
-  {
-    uuid,
-    apiVersion,
-    label,
-    extensionPoint,
-    extension,
-    services,
-  }: ContextMenuFormState,
+  { extension, ...state }: ContextMenuFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ContextMenuConfig> {
   const config: ContextMenuConfig = {
     title: extension.title,
-    action: extension.blockPipeline,
+    action: options.includeInstanceIds
+      ? extension.blockPipeline
+      : omitEditorMetadata(extension.blockPipeline),
   };
   return removeEmptyValues({
-    id: uuid,
-    apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: null,
-    label,
-    services,
-    config: options.includeInstanceIds
-      ? config
-      : excludeInstanceIds(config, "action"),
+    ...baseSelectExtension(state),
+    config,
   });
 }
 
@@ -177,30 +163,21 @@ async function fromExtension(
     documentUrlPatterns,
     defaultOptions,
     contexts,
+    targetMode,
     reader,
   } = extensionPoint.definition;
 
-  const blockPipeline = withInstanceIds(castArray(extensionConfig.action));
-
   return {
-    uuid: config.id,
-    apiVersion: config.apiVersion,
-    installed: true,
-    type: "contextMenu",
-    label: config.label,
+    ...baseFromExtension(config, extensionPoint.definition.type),
 
-    services: config.services,
-
-    extension: {
-      ...extensionConfig,
-      blockPipeline,
-    },
+    extension: normalizePipeline(extensionConfig, "action"),
 
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
         documentUrlPatterns,
         defaultOptions,
+        targetMode,
         contexts,
         // See comment on SingleLayerReaderConfig
         reader: reader as SingleLayerReaderConfig,
@@ -221,6 +198,7 @@ async function fromExtensionPoint(
   const {
     defaultOptions = {},
     documentUrlPatterns = [],
+    targetMode = "legacy",
     type,
     reader,
   } = extensionPoint.definition;
@@ -233,6 +211,7 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} context menu`,
 
     services: [],
+    optionsArgs: {},
 
     extension: {
       title: defaultOptions.title ?? "Custom Action",
@@ -245,11 +224,14 @@ async function fromExtensionPoint(
         ...extensionPoint.definition,
         defaultOptions,
         documentUrlPatterns,
+        targetMode,
         // See comment on SingleLayerReaderConfig
         reader: reader as SingleLayerReaderConfig,
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
+
+    recipe: undefined,
   };
 }
 
@@ -275,7 +257,6 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  wizard,
   insertModeHelp: (
     <div>
       <p>

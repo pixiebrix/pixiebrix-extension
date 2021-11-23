@@ -20,7 +20,6 @@ import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, BlockOptions } from "@/core";
 import { isNullOrBlank } from "@/utils";
 import { BusinessError } from "@/errors";
-import { mapArgs } from "@/helpers";
 import makeDataTable, { Row } from "@/blocks/renderers/dataTable";
 
 // Type ColumnDefinition = {
@@ -39,38 +38,68 @@ export class TableRenderer extends Renderer {
     );
   }
 
-  inputSchema = propertiesToSchema({
-    columns: {
-      type: "array",
-      description: "Column labels and values to show",
-      items: {
-        type: "object",
-        properties: {
-          label: { type: "string" },
-          property: { type: "string" },
-          href: { type: "string" },
+  inputSchema = propertiesToSchema(
+    {
+      data: {
+        // HACK: this should really just be "array", but by including string here the page editor will render a text
+        // input for the user to pass in a variable
+        type: ["array", "string"],
+        description: "The values to show in the table",
+        items: {
+          type: "object",
+          additionalProperties: true,
         },
-        required: ["label", "property"],
       },
-      minItems: 1,
+      columns: {
+        type: "array",
+        description: "Column labels and values to show",
+        items: {
+          type: "object",
+          properties: {
+            label: { type: "string" },
+            property: { type: "string" },
+            href: { type: "string" },
+          },
+          required: ["label", "property"],
+        },
+        minItems: 1,
+      },
     },
-  });
+    ["columns"]
+  );
 
   async render(
-    { columns, ...blockArgs }: BlockArg,
-    { ctxt = [] }: BlockOptions
+    { columns, data: userData }: BlockArg,
+    { ctxt = [], logger }: BlockOptions
   ): Promise<string> {
-    if (!Array.isArray(ctxt)) {
-      throw new BusinessError(
-        `Expected data to be an array, actual: ${typeof ctxt}`
+    const data = userData ?? ctxt;
+
+    if (!userData) {
+      logger.warn(
+        "Using implicit data from the previous step is deprecated, use the data parameter"
       );
     }
 
-    const makeLinkRenderer = (href: string) => (value: any, row: Row) => {
-      const anchorHref = mapArgs(href, { ...row, "@block": blockArgs });
-      return !isNullOrBlank(anchorHref)
-        ? `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${value}</a>`
-        : `${value}`;
+    if (!Array.isArray(data)) {
+      throw new BusinessError(
+        `Expected data to be an array, actual: ${typeof data}`
+      );
+    }
+
+    const makeLinkRenderer = (href: string) => (value: unknown, row: Row) => {
+      // Currently for TableRenderer we only support directly accessing the href. This matches the behavior in
+      // makeDataTable's renderValue
+
+      const anchorHref = Object.prototype.hasOwnProperty.call(row, href)
+        ? // eslint-disable-next-line security/detect-object-injection -- checked with hasOwnProperty
+          row[href]
+        : null;
+
+      return typeof anchorHref === "string" && !isNullOrBlank(anchorHref)
+        ? `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${String(
+            value
+          )}</a>`
+        : String(value);
     };
 
     const table = makeDataTable(
@@ -81,7 +110,7 @@ export class TableRenderer extends Renderer {
       }))
     );
 
-    return table(ctxt);
+    return table(data);
 
     // Const makeLinkTemplate = ({
     //   property,

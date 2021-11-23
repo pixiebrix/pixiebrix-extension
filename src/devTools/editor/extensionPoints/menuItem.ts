@@ -16,24 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IconConfig, IExtension, Metadata } from "@/core";
+import { IExtension, Metadata } from "@/core";
 import {
   ButtonDefinition,
   ButtonSelectionResult,
 } from "@/nativeEditor/insertButton";
 import {
+  baseFromExtension,
+  baseSelectExtension,
   baseSelectExtensionPoint,
-  excludeInstanceIds,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
+  normalizePipeline,
+  omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-  withInstanceIds,
-  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import {
   MenuDefinition,
@@ -42,28 +43,25 @@ import {
   MenuPosition,
 } from "@/extensionPoints/menuItemExtension";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray, identity, pickBy } from "lodash";
-import LogsTab from "@/devTools/editor/tabs/LogsTab";
+import { identity, pickBy } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import {
+  BaseExtensionState,
   BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
-import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
+import { NormalizedAvailability } from "@/blocks/types";
 import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfiguration";
-import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import { insertButton } from "@/contentScript/messenger/api";
+import { Except } from "type-fest";
 
-const wizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
-  { step: "Logs", Component: LogsTab },
-];
+type Extension = BaseExtensionState & Except<MenuItemExtensionConfig, "action">;
 
-export interface ActionFormState extends BaseFormState {
+export interface ActionFormState extends BaseFormState<Extension> {
   type: "menuItem";
 
   containerInfo: ElementInfo;
@@ -82,13 +80,6 @@ export interface ActionFormState extends BaseFormState {
         mode: "default" | "inherit";
       };
     };
-  };
-
-  extension: {
-    caption: string;
-    blockPipeline: BlockPipeline;
-    dynamicCaption?: boolean;
-    icon?: IconConfig;
   };
 }
 
@@ -144,32 +135,20 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  {
-    uuid,
-    apiVersion,
-    label,
-    extensionPoint,
-    extension,
-    services,
-  }: ActionFormState,
+  { extension, ...state }: ActionFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<MenuItemExtensionConfig> {
   const config: MenuItemExtensionConfig = {
     caption: extension.caption,
     icon: extension.icon,
-    action: extension.blockPipeline,
+    action: options.includeInstanceIds
+      ? extension.blockPipeline
+      : omitEditorMetadata(extension.blockPipeline),
     dynamicCaption: extension.dynamicCaption,
   };
   return removeEmptyValues({
-    id: uuid,
-    apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: null,
-    label,
-    services,
-    config: options.includeInstanceIds
-      ? config
-      : excludeInstanceIds(config, "action"),
+    ...baseSelectExtension(state),
+    config,
   });
 }
 
@@ -189,6 +168,8 @@ async function fromExtensionPoint(
     label: `My ${getDomain(url)} button`,
 
     services: [],
+
+    optionsArgs: {},
 
     extension: {
       caption:
@@ -211,6 +192,7 @@ async function fromExtensionPoint(
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
+    recipe: undefined,
   };
 }
 
@@ -223,22 +205,12 @@ export async function fromExtension(
     "menuItem"
   >(config, "menuItem");
 
-  const blockPipeline = withInstanceIds(castArray(config.config.action));
-
   return {
-    uuid: config.id,
-    apiVersion: config.apiVersion,
-    installed: true,
-    type: extensionPoint.definition.type,
-    label: config.label,
+    ...baseFromExtension(config, extensionPoint.definition.type),
 
-    services: config.services,
+    extension: normalizePipeline(config.config, "action"),
 
-    extension: {
-      ...config.config,
-      blockPipeline,
-    },
-
+    // `containerInfo` only populated on initial creation session
     containerInfo: null,
 
     extensionPoint: {
@@ -268,7 +240,6 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   baseClass: MenuItemExtensionPoint,
   EditorNode: MenuItemConfiguration,
   selectNativeElement: insertButton,
-  wizard,
   fromExtensionPoint,
   fromNativeElement,
   asDynamicElement,
