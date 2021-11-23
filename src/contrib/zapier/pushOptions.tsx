@@ -29,12 +29,13 @@ import { Webhook } from "@/contrib/zapier/contract";
 import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
-import { ObjectField } from "@/components/fields/schemaFields/SchemaFieldContext";
 import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
+import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
+import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -85,6 +86,8 @@ export const ZapField: React.FunctionComponent<
     />
   );
 };
+
+const ObjectField = defaultFieldFactory(ObjectWidget);
 
 const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,

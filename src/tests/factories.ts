@@ -34,7 +34,7 @@ import {
 import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
-import { Permissions } from "webextension-polyfill";
+import { Permissions, Runtime } from "webextension-polyfill";
 import {
   BaseExtensionState,
   ElementType,
@@ -49,6 +49,10 @@ import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { RecipeDefinition } from "@/types/definitions";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
+import {
+  Context as DevtoolsContextType,
+  FrameConnectionState,
+} from "@/devTools/context";
 
 export const metadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
@@ -64,6 +68,28 @@ export const installedRecipeMetadataFactory = define<RecipeMetadata>({
   version: "1.0.0",
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   sharing: { public: false, organizations: [] },
+});
+
+const activePortFactory = define<Runtime.Port>({
+  name: "Test Port",
+  postMessage: jest.fn(),
+  disconnect: jest.fn(),
+  onDisconnect: jest.fn(),
+  onMessage: jest.fn(),
+});
+
+const tabStateFactory = define<FrameConnectionState>({
+  frameId: 0,
+  hasPermissions: true,
+  navSequence: uuidv4(),
+  meta: null,
+});
+
+export const activeDevToolContextFactory = define<DevtoolsContextType>({
+  connect: jest.fn(),
+  connecting: false,
+  port: activePortFactory,
+  tabState: tabStateFactory,
 });
 
 export const extensionFactory: (

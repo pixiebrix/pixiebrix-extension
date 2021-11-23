@@ -1,0 +1,98 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UiPath LocalProcess Options Can render arguments 1`] = `
+<div>
+  <div>
+    <h1>
+      Something went wrong.
+    </h1>
+    <div>
+      <p>
+        Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+Check the render method of \`RenderedField\`.
+      </p>
+    </div>
+    <div>
+      <button
+        class="btn btn-primary"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-redo fa-w-16 "
+          data-icon="redo"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 512 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M500.33 0h-47.41a12 12 0 0 0-12 12.57l4 82.76A247.42 247.42 0 0 0 256 8C119.34 8 7.9 119.53 8 256.19 8.1 393.07 119.1 504 256 504a247.1 247.1 0 0 0 166.18-63.91 12 12 0 0 0 .48-17.43l-34-34a12 12 0 0 0-16.38-.55A176 176 0 1 1 402.1 157.8l-101.53-4.87a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12h200.33a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12z"
+            fill="currentColor"
+          />
+        </svg>
+         Reload the Page
+      </button>
+    </div>
+    <pre
+      class="mt-2"
+    >
+      Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+Check the render method of \`RenderedField\`.
+    at createFiberFromTypeAndProps (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:25058:21)
+    at createFiberFromElement (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:25086:15)
+    at createChild (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:13446:28)
+    at reconcileChildrenArray (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:13719:25)
+    at reconcileChildFibers (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:14125:14)
+    at reconcileChildren (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:16990:28)
+    at updateHostComponent (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:17632:3)
+    at beginWork (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:19080:14)
+    at HTMLUnknownElement.callCallback (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:3945:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/tschiller/projects/pixiebrix-extension/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/tschiller/projects/pixiebrix-extension/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:338:25)
+    at invokeEventListeners (/Users/tschiller/projects/pixiebrix-extension/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:274:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/tschiller/projects/pixiebrix-extension/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:221:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/tschiller/projects/pixiebrix-extension/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:94:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/tschiller/projects/pixiebrix-extension/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:231:34)
+    at Object.invokeGuardedCallbackDev (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:3994:16)
+    at invokeGuardedCallback (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:4056:31)
+    at beginWork$1 (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:23964:7)
+    at performUnitOfWork (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:22779:12)
+    at workLoopSync (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:22707:5)
+    at renderRootSync (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:22670:7)
+    at performSyncWorkOnRoot (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:22293:18)
+    at /Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:11327:26
+    at unstable_runWithPriority (/Users/tschiller/projects/pixiebrix-extension/node_modules/scheduler/cjs/scheduler.development.js:468:12)
+    at runWithPriority$1 (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:11276:10)
+    at flushSyncCallbackQueueImpl (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:11322:9)
+    at flushSyncCallbackQueue (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:11309:3)
+    at scheduleUpdateOnFiber (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:21893:9)
+    at setRobotAvailable (/Users/tschiller/projects/pixiebrix-extension/node_modules/react-dom/cjs/react-dom.development.js:16139:5)
+    at /Users/tschiller/projects/pixiebrix-extension/src/contrib/uipath/LocalProcessOptions.tsx:51:7
+    </pre>
+  </div>
+</div>
+`;
+
+exports[`UiPath LocalProcess Options Can render options 1`] = `
+<div>
+  <div>
+    <span
+      class="text-danger"
+    >
+      UiPath Assistant not found. Don't have the UiPath Assistant?
+       
+      <a
+        href="https://robotjs.uipath.com/download"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Get it now.
+      </a>
+    </span>
+  </div>
+</div>
+`;

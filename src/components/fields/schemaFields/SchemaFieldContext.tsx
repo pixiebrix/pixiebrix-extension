@@ -34,14 +34,16 @@ import { isEmpty } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
-import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import { InputModeOption } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
+import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 
-function defaultFieldFactory(
+export function defaultFieldFactory(
   Widget: React.FC<SchemaFieldProps>
 ): SchemaFieldComponent {
   if (Widget == null) {
+    // This would indicate a problem with the imports b/c all the call sites are passing in an imported component?
+    // Circular import
     throw new Error("Widget is required");
   }
 
@@ -65,8 +67,6 @@ const TextField = defaultFieldFactory(TextWidget);
 
 const ArrayField = defaultFieldFactory(ArrayWidget);
 
-export const ObjectField = defaultFieldFactory(ObjectWidget);
-
 function makeOneOfField(oneOf: Schema): SchemaFieldComponent {
   const Field = getDefaultField(oneOf);
   const Component = (props: SchemaFieldProps) => (
@@ -86,7 +86,7 @@ export function getDefaultField(fieldSchema: Schema): SchemaFieldComponent {
   }
 
   if (fieldSchema.type === "object") {
-    return ObjectField;
+    return defaultFieldFactory(ObjectWidget);
   }
 
   if (booleanPredicate(fieldSchema)) {
@@ -109,7 +109,7 @@ export function getDefaultField(fieldSchema: Schema): SchemaFieldComponent {
     // An empty field schema supports any value. For now, provide an object field since this just shows up
     // in the @pixiebrix/http brick.
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
-    return ObjectField;
+    return defaultFieldFactory(ObjectWidget);
   }
 
   // Number, string, other primitives, etc.

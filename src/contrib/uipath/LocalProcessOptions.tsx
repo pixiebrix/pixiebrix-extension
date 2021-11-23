@@ -19,7 +19,6 @@ import React, { useContext, useMemo, useState } from "react";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES as REMOTE_UIPATH_PROPERTIES } from "@/contrib/uipath/process";
 import { Schema } from "@/core";
-import { useField } from "formik";
 import { useAsyncEffect } from "use-async-effect";
 import { DevToolsContext } from "@/devTools/context";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
@@ -68,10 +67,8 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   const configName = partial(joinName, name, configKey);
 
-  const [{ value: releaseKey }] = useField<string>(configName("releaseKey"));
-
   const { robotAvailable, consentCode } = useLocalRobot();
-  const { selectedRelease } = useSelectedRelease(releaseKey);
+  const { selectedRelease } = useSelectedRelease(configName("releaseKey"));
 
   const processesPromise = useMemo(async () => {
     if (robotAvailable) {
