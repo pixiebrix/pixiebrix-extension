@@ -233,9 +233,14 @@ function useDeployments(): DeploymentState {
       return;
     }
 
-    activateDeployments(dispatch, deployments, installedExtensions);
-
-    notify.success("Activated team bricks");
+    try {
+      activateDeployments(dispatch, deployments, installedExtensions);
+      notify.success("Activated team deployments");
+    } catch (error: unknown) {
+      notify.error("Error activating team deployments", {
+        error,
+      });
+    }
   }, [deployments, dispatch, notify, installedExtensions]);
 
   return {
