@@ -74,10 +74,11 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
     );
   }
 
-  const patchedOnChange = ({ value }: TOption) => {
-    onChange({ target: { value, name, options } } as ChangeEvent<
-      SelectLike<TOption>
-    >);
+  // Option will be null when the select is "cleared"
+  const patchedOnChange = (option: TOption | null) => {
+    onChange({
+      target: { value: option?.value ?? null, name, options },
+    } as ChangeEvent<SelectLike<TOption>>);
   };
 
   // Pass null instead of undefined if options is not defined
