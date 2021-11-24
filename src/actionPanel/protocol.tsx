@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
-import { isBrowserActionPanel } from "@/chrome";
-import { HandlerMap, MessageHandler } from "@/messaging/protocol";
 import { reportError } from "@/telemetry/logging";
 import { ActionPanelStore } from "@/actionPanel/actionPanelTypes";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { ActionType, Message, Meta, UUID } from "@/core";
+import { UUID } from "@/core";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/browserAction/";
 
@@ -29,18 +26,11 @@ export const RENDER_PANELS_MESSAGE = `${MESSAGE_PREFIX}RENDER_PANELS`;
 export const SHOW_FORM_MESSAGE = `${MESSAGE_PREFIX}SHOW_FORM`;
 export const HIDE_FORM_MESSAGE = `${MESSAGE_PREFIX}HIDE_FORM`;
 
-let seqNumber = -1;
-
-/**
- * Redux message Meta with fields for ensuring message handling order
- */
-interface SeqMeta extends Meta {
-  $seq: number;
-}
+let lastMessageSeen = -1;
 
 export type StoreListener = {
   onRenderPanels: (store: Pick<ActionPanelStore, "panels">) => void;
-  onShowForm: (form: { form: FormDefinition; nonce: UUID }) => void;
+  onShowForm: (form: { nonce: UUID; form: FormDefinition }) => void;
   onHideForm: (form: { nonce: UUID }) => void;
 };
 
@@ -58,35 +48,27 @@ export function removeListener(fn: StoreListener): void {
   listeners.splice(0, listeners.length, ...listeners.filter((x) => x !== fn));
 }
 
-const handlers = new HandlerMap();
-
-function handlerFactory<
-  TAction extends ActionType,
-  M extends Message<string, SeqMeta>
->(
-  messageType: M["type"],
-  method: keyof StoreListener
-): MessageHandler<TAction, SeqMeta> {
+function handlerFactory<MethodName extends keyof StoreListener>(
+  method: MethodName
+): StoreListener[MethodName] {
   return async (message) => {
-    const messageSeq = message.meta.$seq;
+    const sequence = message.meta.$seq;
 
-    if (messageSeq < seqNumber) {
+    if (sequence < lastMessageSeen) {
       console.debug(
         "Skipping stale message (seq: %d, current: %d)",
-        seqNumber,
-        messageSeq,
+        lastMessageSeen,
+        sequence,
         message
       );
       return;
     }
 
-    seqNumber = messageSeq;
+    lastMessageSeen = sequence;
 
-    console.debug(
-      `Running ${listeners.length} listener(s) for %s`,
-      messageType,
-      { message }
-    );
+    console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
+      message,
+    });
 
     for (const listener of listeners) {
       try {
@@ -99,19 +81,6 @@ function handlerFactory<
   };
 }
 
-handlers.set(
-  RENDER_PANELS_MESSAGE,
-  handlerFactory(RENDER_PANELS_MESSAGE, "onRenderPanels")
-);
-handlers.set(
-  SHOW_FORM_MESSAGE,
-  handlerFactory(SHOW_FORM_MESSAGE, "onShowForm")
-);
-handlers.set(
-  HIDE_FORM_MESSAGE,
-  handlerFactory(HIDE_FORM_MESSAGE, "onHideForm")
-);
-
-if (isBrowserActionPanel()) {
-  browser.runtime.onMessage.addListener(handlers.asListener());
-}
+export const renderPanels = handlerFactory("onRenderPanels");
+export const showForm = handlerFactory("onShowForm");
+export const hideForm = handlerFactory("onHideForm");

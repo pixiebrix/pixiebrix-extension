@@ -32,13 +32,13 @@ import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
 import GridLoader from "react-spinners/GridLoader";
 import { PersistGate } from "redux-persist/integration/react";
-import { browserAction } from "@/background/messenger/api";
-import { ary } from "lodash";
 import { ActionPanelStore, FormEntry } from "@/actionPanel/actionPanelTypes";
 import ActionPanelTabs from "@/actionPanel/ActionPanelTabs";
 import slice, { blankActionPanelState } from "./actionPanelSlice";
-import { UUID } from "@/core";
 import { AnyAction } from "redux";
+import { UUID } from "@/core";
+import { hideActionPanel } from "@/contentScript/messenger/api";
+import { whoAmI } from "@/background/messenger/api";
 
 function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
   return {
@@ -83,10 +83,10 @@ const ActionPanelApp: React.FunctionComponent = () => {
             <div className="d-flex flex-row mb-2 p-2 justify-content-between align-content-center">
               <Button
                 className="action-panel-button"
-                onClick={
-                  // Ignore the onClick args since they can't be serialized by the messenging framework
-                  ary(browserAction.hideActionFrame, 0)
-                }
+                onClick={async () => {
+                  const sidebar = await whoAmI();
+                  await hideActionPanel({ tabId: sidebar.tab.id! });
+                }}
                 size="sm"
                 variant="link"
               >

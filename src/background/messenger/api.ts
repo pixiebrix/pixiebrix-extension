@@ -16,11 +16,7 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import {
-  backgroundTarget as bg,
-  getMethod,
-  getNotifier,
-} from "webext-messenger";
+import { backgroundTarget as bg, getMethod } from "webext-messenger";
 import browser from "webextension-polyfill";
 import { isBackgroundPage } from "webext-detect-page";
 
@@ -61,18 +57,8 @@ export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
 export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
 export const openTab = getMethod("OPEN_TAB", bg);
 
-export const browserAction = {
-  registerActionFrame: getMethod("REGISTER_ACTION_FRAME", bg),
-  forwardFrameNotification: getNotifier("FORWARD_FRAME_NOTIFICATION", bg),
-  showActionFrame: getMethod("SHOW_ACTION_FRAME", bg),
-  hideActionFrame: getMethod("HIDE_ACTION_FRAME", bg),
-};
-
 export const registry = {
   getKind: getMethod("REGISTRY_GET_KIND", bg),
   syncRemote: getMethod("REGISTRY_SYNC", bg),
   find: getMethod("REGISTRY_FIND", bg),
 };
-
-// Temporary, webext-messenger depends on this global
-(globalThis as any).browser = browser;

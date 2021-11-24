@@ -18,16 +18,10 @@
 import browser from "webextension-polyfill";
 import { reportError } from "@/telemetry/logging";
 import { uuidv4 } from "@/types/helpers";
-import {
-  HIDE_FORM_MESSAGE,
-  RENDER_PANELS_MESSAGE,
-  SHOW_FORM_MESSAGE,
-} from "@/actionPanel/protocol";
 import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef, UUID } from "@/core";
-import { browserAction } from "@/background/messenger/api";
 import {
   ActionPanelStore,
   FormEntry,
@@ -35,6 +29,7 @@ import {
   RendererError,
 } from "@/actionPanel/actionPanelTypes";
 import { RendererPayload } from "@/runtime/runtimeTypes";
+import { renderPanels, hideForm, showForm } from "@/actionPanel/messenger/api";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-extension";
@@ -166,18 +161,17 @@ export function getStore(): ActionPanelStore {
   return { panels, forms: [] };
 }
 
-function renderPanels() {
+function renderPanelsIfVisible() {
   expectContext("contentScript");
 
   if (isActionPanelVisible()) {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
 
-    browserAction.forwardFrameNotification(seqNum, {
-      type: RENDER_PANELS_MESSAGE,
-      payload: { panels },
-    } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
+    console.log("XXX will render");
+    void renderPanels({ page: "/action.html" }, seqNum, panels);
   } else {
+    console.log("XXX will skip");
     console.debug(
       "Skipping renderPanels because the action panel is not visible"
     );
@@ -195,11 +189,7 @@ export function showActionPanelForm(entry: FormEntry) {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-
-  browserAction.forwardFrameNotification(seqNum, {
-    type: SHOW_FORM_MESSAGE,
-    payload: entry,
-  } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
+  void showForm({ page: "/action.html" }, seqNum, entry);
 }
 
 export function hideActionPanelForm(nonce: UUID) {
@@ -212,11 +202,7 @@ export function hideActionPanelForm(nonce: UUID) {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-
-  browserAction.forwardFrameNotification(seqNum, {
-    type: HIDE_FORM_MESSAGE,
-    payload: { nonce },
-  } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
+  void hideForm({ page: "/action.html" }, seqNum, nonce);
 }
 
 export function removeExtension(extensionId: string): void {
@@ -225,7 +211,7 @@ export function removeExtension(extensionId: string): void {
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
   panels.push(...current.filter((x) => x.extensionId !== extensionId));
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 export function removeExtensionPoint(extensionPointId: string): void {
@@ -236,7 +222,7 @@ export function removeExtensionPoint(extensionPointId: string): void {
   panels.push(
     ...current.filter((x) => x.extensionPointId !== extensionPointId)
   );
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 /**
@@ -268,7 +254,7 @@ export function reservePanels(refs: ExtensionRef[]): void {
     }
   }
 
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 export function updateHeading(extensionId: string, heading: string): void {
@@ -281,7 +267,7 @@ export function updateHeading(extensionId: string, heading: string): void {
       entry.extensionPointId,
       { ...entry }
     );
-    renderPanels();
+    renderPanelsIfVisible();
   } else {
     console.warn(
       "updateHeading: No panel exists for extension %s",
@@ -320,7 +306,7 @@ export function upsertPanel(
     panels.push({ extensionId, extensionPointId, heading, payload });
   }
 
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 if (IS_BROWSER) {
