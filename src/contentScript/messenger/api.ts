@@ -17,7 +17,6 @@
 
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
-import browser from "webextension-polyfill";
 import { isContentScript } from "webext-detect-page";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
@@ -66,6 +65,3 @@ export const selectElement = getMethod("SELECT_ELEMENT");
 
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runEffectPipeline = getMethod("RUN_EFFECT_PIPELINE");
-
-// Temporary, webext-messenger depends on this global
-(globalThis as any).browser = browser;
