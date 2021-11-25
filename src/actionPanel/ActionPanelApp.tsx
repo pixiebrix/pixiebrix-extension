@@ -32,23 +32,22 @@ import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
 import GridLoader from "react-spinners/GridLoader";
 import { PersistGate } from "redux-persist/integration/react";
-import { ActionPanelStore, FormEntry } from "@/actionPanel/actionPanelTypes";
+import { PanelEntry, FormEntry } from "@/actionPanel/actionPanelTypes";
 import ActionPanelTabs from "@/actionPanel/ActionPanelTabs";
 import slice, { blankActionPanelState } from "./actionPanelSlice";
 import { AnyAction } from "redux";
-import { UUID } from "@/core";
 import { hideActionPanel } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 
 function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
   return {
-    onRenderPanels: ({ panels }: ActionPanelStore) => {
+    onRenderPanels: (panels: PanelEntry[]) => {
       dispatch(slice.actions.setPanels({ panels }));
     },
     onShowForm: (form: FormEntry) => {
       dispatch(slice.actions.addForm({ form }));
     },
-    onHideForm: ({ nonce }: { nonce: UUID }) => {
+    onHideForm: ({ nonce }: Partial<FormEntry>) => {
       dispatch(slice.actions.removeForm(nonce));
     },
   };

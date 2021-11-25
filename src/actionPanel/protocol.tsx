@@ -16,7 +16,7 @@
  */
 
 import { reportError } from "@/telemetry/logging";
-import { ActionPanelStore } from "@/actionPanel/actionPanelTypes";
+import { FormEntry, PanelEntry } from "@/actionPanel/actionPanelTypes";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { UUID } from "@/core";
 
@@ -29,7 +29,7 @@ export const HIDE_FORM_MESSAGE = `${MESSAGE_PREFIX}HIDE_FORM`;
 let lastMessageSeen = -1;
 
 export type StoreListener = {
-  onRenderPanels: (store: Pick<ActionPanelStore, "panels">) => void;
+  onRenderPanels: (panels: PanelEntry[]) => void;
   onShowForm: (form: { nonce: UUID; form: FormDefinition }) => void;
   onHideForm: (form: { nonce: UUID }) => void;
 };
@@ -48,39 +48,49 @@ export function removeListener(fn: StoreListener): void {
   listeners.splice(0, listeners.length, ...listeners.filter((x) => x !== fn));
 }
 
-function handlerFactory<MethodName extends keyof StoreListener>(
-  method: MethodName
-): StoreListener[MethodName] {
-  return async (message) => {
-    const sequence = message.meta.$seq;
+function runListeners<Method extends keyof StoreListener>(
+  method: Method,
+  sequence: number,
+  data: Parameters<StoreListener[Method]>[0]
+): void {
+  if (sequence < lastMessageSeen) {
+    console.debug(
+      "Skipping stale message (seq: %d, current: %d)",
+      lastMessageSeen,
+      sequence,
+      { data }
+    );
+    return;
+  }
 
-    if (sequence < lastMessageSeen) {
-      console.debug(
-        "Skipping stale message (seq: %d, current: %d)",
-        lastMessageSeen,
-        sequence,
-        message
-      );
-      return;
+  lastMessageSeen = sequence;
+
+  console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
+    data,
+  });
+
+  for (const listener of listeners) {
+    try {
+      // @ts-expect-error `data` is a intersection type instead of an union. TODO: Fix or rewrite
+      // eslint-disable-next-line security/detect-object-injection -- method is keyof StoreListener
+      listener[method](data);
+    } catch (error: unknown) {
+      reportError(error);
     }
-
-    lastMessageSeen = sequence;
-
-    console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
-      message,
-    });
-
-    for (const listener of listeners) {
-      try {
-        // eslint-disable-next-line security/detect-object-injection -- method is keyof StoreListener
-        listener[method](message.payload as any);
-      } catch (error: unknown) {
-        reportError(error);
-      }
-    }
-  };
+  }
 }
 
-export const renderPanels = handlerFactory("onRenderPanels");
-export const showForm = handlerFactory("onShowForm");
-export const hideForm = handlerFactory("onHideForm");
+export async function renderPanels(
+  sequence: number,
+  panels: PanelEntry[]
+): Promise<void> {
+  runListeners("onRenderPanels", sequence, panels);
+}
+
+export async function showForm(sequence: number, entry: FormEntry) {
+  runListeners("onShowForm", sequence, entry);
+}
+
+export async function hideForm(sequence: number, nonce: UUID) {
+  runListeners("onHideForm", sequence, { nonce });
+}

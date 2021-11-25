@@ -133,6 +133,7 @@ export function showActionPanel(callbacks = extensionCallbacks): string {
     }
   }
 
+  // TODO: Drop `nonce` if not used anywhere
   return nonce;
 }
 
@@ -169,9 +170,8 @@ function renderPanelsIfVisible() {
     renderSequenceNumber++;
 
     console.log("XXX will render");
-    void renderPanels({ page: "/action.html" }, seqNum, panels);
+    renderPanels({ page: "/action.html" }, seqNum, panels);
   } else {
-    console.log("XXX will skip");
     console.debug(
       "Skipping renderPanels because the action panel is not visible"
     );
@@ -189,7 +189,7 @@ export function showActionPanelForm(entry: FormEntry) {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-  void showForm({ page: "/action.html" }, seqNum, entry);
+  showForm({ page: "/action.html" }, seqNum, entry);
 }
 
 export function hideActionPanelForm(nonce: UUID) {
@@ -202,7 +202,7 @@ export function hideActionPanelForm(nonce: UUID) {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-  void hideForm({ page: "/action.html" }, seqNum, nonce);
+  hideForm({ page: "/action.html" }, seqNum, nonce);
 }
 
 export function removeExtension(extensionId: string): void {
