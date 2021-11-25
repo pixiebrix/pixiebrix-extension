@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import browser from "webextension-polyfill";
 import React, { useMemo } from "react";
 import { isExtensionContext } from "webext-detect-page";
 
