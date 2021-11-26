@@ -16,7 +16,7 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { getNotifier } from "webext-messenger";
+import { getMethod } from "webext-messenger";
 import { isBrowserActionPanel } from "@/chrome";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
@@ -26,6 +26,6 @@ if (isBrowserActionPanel() && process.env.DEBUG) {
   );
 }
 
-export const renderPanels = getNotifier("ACTION_PANEL_RENDER_PANELS");
-export const showForm = getNotifier("ACTION_PANEL_SHOW_FORM");
-export const hideForm = getNotifier("ACTION_PANEL_HIDE_FORM");
+export const renderPanels = getMethod("ACTION_PANEL_RENDER_PANELS");
+export const showForm = getMethod("ACTION_PANEL_SHOW_FORM");
+export const hideForm = getMethod("ACTION_PANEL_HIDE_FORM");
