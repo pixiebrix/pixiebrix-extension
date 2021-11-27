@@ -170,7 +170,7 @@ function renderPanelsIfVisible() {
     renderSequenceNumber++;
 
     console.log("XXX will render");
-    renderPanels({ page: "/action.html" }, seqNum, panels);
+    void renderPanels({ tabId: "this", page: "/action.html" }, seqNum, panels);
   } else {
     console.debug(
       "Skipping renderPanels because the action panel is not visible"
@@ -189,7 +189,7 @@ export function showActionPanelForm(entry: FormEntry) {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-  showForm({ page: "/action.html" }, seqNum, entry);
+  void showForm({ tabId: "this", page: "/action.html" }, seqNum, entry);
 }
 
 export function hideActionPanelForm(nonce: UUID) {
@@ -202,7 +202,7 @@ export function hideActionPanelForm(nonce: UUID) {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-  hideForm({ page: "/action.html" }, seqNum, nonce);
+  void hideForm({ tabId: "this", page: "/action.html" }, seqNum, nonce);
 }
 
 export function removeExtension(extensionId: string): void {
