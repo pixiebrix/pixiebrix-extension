@@ -168,8 +168,6 @@ function renderPanelsIfVisible() {
   if (isActionPanelVisible()) {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
-
-    console.log("XXX will render");
     void renderPanels({ tabId: "this", page: "/action.html" }, seqNum, panels);
   } else {
     console.debug(
