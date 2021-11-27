@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,24 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.tabContainer {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
+import React, { Suspense } from "react";
+import { DocumentViewProps } from "./DocumentViewProps";
 
-.tabNav {
-  font-size: small;
-}
+// Dynamic import because documentView has a transitive dependency of react-shadow-root which assumed a proper
+// `window` variable is present on module load. This isn't available on header generation
+const DocumentView = React.lazy(
+  async () =>
+    import(
+      /* webpackChunkName: "document-view" */
+      "./DocumentView"
+    )
+);
 
-.tabContent {
-  flex: 1;
-}
+const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (
+  <Suspense fallback={<div className="text-muted">Loading...</div>}>
+    <DocumentView {...props} />
+  </Suspense>
+);
 
-.selectablePreviewContainer {
-  padding: 4px;
-}
-
-.tabPane {
-  padding-top: 1rem;
-}
+export default DocumentViewLazy;

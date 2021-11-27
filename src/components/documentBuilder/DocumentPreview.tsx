@@ -17,17 +17,14 @@
 
 import { useField } from "formik";
 import React from "react";
-import { BlockOptions } from "@/core";
 import { DocumentElement } from "./documentBuilderTypes";
 import AddElementAction from "./AddElementAction";
 import ElementPreview from "./ElementPreview";
 import { ROOT_ELEMENT_TYPES } from "./allowedElementTypes";
 import cx from "classnames";
-import { ToastProvider } from "react-toast-notifications";
 
 type DocumentPreviewProps = {
   name: string;
-  options: BlockOptions;
   activeElement: string;
   setActiveElement: (activeElement: string) => void;
 };
@@ -40,7 +37,7 @@ const DocumentPreview = ({
   const [{ value: body }] = useField<DocumentElement[]>(name);
 
   return (
-    <ToastProvider>
+    <>
       {body.map((childElement, i) => (
         <ElementPreview
           key={`${name}.${i}`}
@@ -56,7 +53,7 @@ const DocumentPreview = ({
           allowedTypes={ROOT_ELEMENT_TYPES}
         />
       </div>
-    </ToastProvider>
+    </>
   );
 };
 

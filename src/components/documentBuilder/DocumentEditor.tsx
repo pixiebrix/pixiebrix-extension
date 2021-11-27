@@ -52,7 +52,10 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       </Col>
       {activeElement && (
         <Col xl>
-          <RemoveElementAction elementName={activeElement} />
+          <RemoveElementAction
+            elementName={activeElement}
+            setActiveElement={setActiveElement}
+          />
         </Col>
       )}
       <Col xl>

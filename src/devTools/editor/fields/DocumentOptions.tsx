@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense } from "react";
+import React, { useEffect } from "react";
 import { validateRegistryId } from "@/types/helpers";
-import { isPlainObject, partial } from "lodash";
+import { isPlainObject } from "lodash";
 import { joinName } from "@/utils";
 import { useField } from "formik";
-import AceEditor from "@/vendors/AceEditor";
-import { UnknownObject } from "@/types";
+import DocumentEditor from "@/components/documentBuilder/DocumentEditor";
+import useReduxState from "@/hooks/useReduxState";
+import { actions as documentBuilderActions } from "@/devTools/editor/slices/documentBuilderSlice";
+import documentBuilderSelectors from "@/devTools/editor/slices/documentBuilderSelectors";
+import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");
 
@@ -29,26 +32,33 @@ const DocumentOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
-  const configName = partial(joinName, name, configKey);
-  const [{ value }, , { setValue }] = useField<string | UnknownObject>(
-    configName("body")
+  const [activeElement, setActiveElement] = useReduxState(
+    documentBuilderSelectors.activeElement,
+    documentBuilderActions.setActiveElement
   );
+
+  const bodyName = joinName(name, configKey, "body");
+  const [{ value }, , { setValue }] = useField<DocumentElement[]>(bodyName);
+
+  useEffect(() => {
+    setActiveElement(null);
+  }, []);
+  useEffect(() => {
+    if (!Array.isArray(value)) {
+      setValue([]);
+    }
+  }, [value]);
 
   if (isPlainObject(value)) {
     return <div>Edit in the workshop</div>;
   }
 
   return (
-    <Suspense fallback={<div className="text-muted">Loading...</div>}>
-      <AceEditor
-        value={value as string}
-        onChange={setValue}
-        mode="yaml"
-        theme="chrome"
-        width="100%"
-        name="ACE_EDITOR_DIV"
-      />
-    </Suspense>
+    <DocumentEditor
+      name={bodyName}
+      activeElement={activeElement}
+      setActiveElement={setActiveElement}
+    />
   );
 };
 

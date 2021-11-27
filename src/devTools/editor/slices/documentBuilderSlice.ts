@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,24 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.tabContainer {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export interface DocumentBuilderState {
+  /**
+   * The currently active field in the Form Builder
+   */
+  activeElement: string | null;
 }
 
-.tabNav {
-  font-size: small;
-}
+export const initialState: DocumentBuilderState = {
+  activeElement: null,
+};
 
-.tabContent {
-  flex: 1;
-}
+export const documentBuilderSlice = createSlice({
+  name: "documentBuilder",
+  initialState,
+  reducers: {
+    setActiveElement: (state, action: PayloadAction<string>) => {
+      state.activeElement = action.payload;
+    },
+  },
+});
 
-.selectablePreviewContainer {
-  padding: 4px;
-}
-
-.tabPane {
-  padding-top: 1rem;
-}
+export const { actions } = documentBuilderSlice;

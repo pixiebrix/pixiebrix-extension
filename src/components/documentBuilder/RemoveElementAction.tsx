@@ -25,10 +25,12 @@ import { getElementCollectionName } from "./documentBuilderHelpers";
 
 type RemoveElementActionProps = {
   elementName: string;
+  setActiveElement: (activeElement: string) => void;
 };
 
 const RemoveElementAction: React.FC<RemoveElementActionProps> = ({
   elementName,
+  setActiveElement,
 }) => {
   const { collectionName, elementIndex } = getElementCollectionName(
     elementName
@@ -41,6 +43,9 @@ const RemoveElementAction: React.FC<RemoveElementActionProps> = ({
   const removeElement = () => {
     const newElementsCollection = [...elementsCollection];
     newElementsCollection.splice(Number(elementIndex), 1);
+
+    setActiveElement(null);
+
     setValue(newElementsCollection);
   };
 

@@ -19,7 +19,7 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Schema } from "@/core";
 import React from "react";
 import { validateRegistryId } from "@/types/helpers";
-import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
+import { actions as formBuilderActions } from "@/devTools/editor/slices/formBuilderSlice";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import FormEditor from "@/components/formBuilder/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
@@ -52,7 +52,7 @@ const FormModalOptions: React.FC<{
 }> = ({ name, configKey }) => {
   const [activeField, setActiveField] = useReduxState(
     formBuilderSelectors.activeField,
-    elementWizardActions.setActiveField
+    formBuilderActions.setActiveField
   );
 
   const configName = `${name}.${configKey}`;

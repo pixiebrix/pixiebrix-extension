@@ -26,9 +26,9 @@ import {
   Form as BootstrapForm,
   Row,
 } from "react-bootstrap";
+import { ToastProvider } from "react-toast-notifications";
 import DocumentEditor from "./DocumentEditor";
 import DocumentPreview from "./DocumentPreview";
-import ConsoleLogger from "@/tests/ConsoleLogger";
 
 const schemaShape: yup.ObjectSchema = yup.object().shape({
   body: yup.array(yup.object()).required(),
@@ -55,20 +55,13 @@ const DocumentBuilder: React.FC = () => {
                 />
               </Col>
               <Col>
-                <DocumentPreview
-                  name="body"
-                  options={{
-                    ctxt: {
-                      "@input": {},
-                      "@options": {},
-                    },
-                    root: null,
-                    logger: new ConsoleLogger(),
-                    headless: true,
-                  }}
-                  activeElement={activeElement}
-                  setActiveElement={setActiveElement}
-                />
+                <ToastProvider>
+                  <DocumentPreview
+                    name="body"
+                    activeElement={activeElement}
+                    setActiveElement={setActiveElement}
+                  />
+                </ToastProvider>
               </Col>
             </Row>
             <Row className="mt-5">

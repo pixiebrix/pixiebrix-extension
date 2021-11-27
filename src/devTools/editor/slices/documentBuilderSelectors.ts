@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,24 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.tabContainer {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
+import { RootState } from "@/devTools/store";
 
-.tabNav {
-  font-size: small;
-}
+const documentBuilderSelectors = {
+  activeElement: ({ documentBuilder }: RootState) =>
+    documentBuilder.activeElement,
+};
 
-.tabContent {
-  flex: 1;
-}
-
-.selectablePreviewContainer {
-  padding: 4px;
-}
-
-.tabPane {
-  padding-top: 1rem;
-}
+export default documentBuilderSelectors;
