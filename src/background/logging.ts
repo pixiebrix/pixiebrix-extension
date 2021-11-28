@@ -21,7 +21,7 @@ import { rollbar } from "@/telemetry/rollbar";
 import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
-import { DBSchema, openDB } from "idb/with-async-ittr";
+import { DBSchema, openDB } from "idb/with-async-ittr-cjs";
 import { sortBy, isEmpty } from "lodash";
 import { _getDNT } from "@/background/telemetry";
 import { isContentScript } from "webext-detect-page";

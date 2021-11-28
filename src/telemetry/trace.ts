@@ -17,7 +17,7 @@
 
 import { OutputKey, RegistryId, RenderedArgs, UUID } from "@/core";
 import { JsonObject } from "type-fest";
-import { DBSchema, openDB } from "idb/with-async-ittr";
+import { DBSchema, openDB } from "idb/with-async-ittr-cjs";
 import { sortBy } from "lodash";
 import { BlockConfig } from "@/blocks/types";
 

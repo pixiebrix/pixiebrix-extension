@@ -2,8 +2,9 @@
   "name": "@pixiebrix/extension",
   "version": "1.4.9-alpha.1",
   "description": "PixieBrix Browser Extension",
+  "type": "module",
   "scripts": {
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "test:watch": "jest --watchAll",
     "test:selenium": "jest --config selenium/jest.config.js",
     "test:selenium:local": "BROWSERSTACK_USERNAME= jest --config selenium/jest.config.js",
