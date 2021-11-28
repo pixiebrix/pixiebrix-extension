@@ -22,6 +22,7 @@ const start = Date.now();
 import "@/extensionContext";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 import "@/contentScript/messenger/registration";
+import browser from "webextension-polyfill";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";

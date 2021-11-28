@@ -138,7 +138,7 @@
     "webext-content-scripts": "^0.10.1",
     "webext-detect-page": "^3.0.2",
     "webext-dynamic-content-scripts": "^8.0.1",
-    "webext-messenger": "^0.14.0",
+    "webext-messenger": "^0.14.1",
     "webext-patterns": "^1.1.1",
     "webext-polyfill-kinda": "^0.1.0",
     "webextension-polyfill": "^0.8.0",
@@ -257,6 +257,11 @@
     "zip-dir": "^2.0.0"
   },
   "webExt": {
-    "sourceDir": "dist"
+    "sourceDir": "dist",
+    "run": {
+      "startUrl": [
+        "https://pixiebrix.github.io/playground/"
+      ]
+    }
   }
 }

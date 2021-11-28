@@ -238,11 +238,6 @@ module.exports = (env, options) =>
     // Explicitly handled by `SourceMapDevToolPlugin` below
     devtool: false,
 
-    // https://webpack.js.org/configuration/watch/#saving-in-webstorm
-    watchOptions: {
-      ignored: /node_modules/,
-    },
-
     output: {
       path: path.resolve("dist"),
       globalObject: "window",
