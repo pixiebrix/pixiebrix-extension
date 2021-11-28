@@ -274,7 +274,7 @@ const ServiceField: React.FunctionComponent<
   );
 
   // The SelectWidget re-looks up the option based on the value
-  const selectValue = useMemo(
+  const selectedValue = useMemo(
     () => (value ? lookupAuthId(root.services, authOptions, value) : null),
     [authOptions, root.services, value]
   );
@@ -301,7 +301,7 @@ const ServiceField: React.FunctionComponent<
       as={SelectWidget}
       isClearable
       options={options}
-      value={selectValue}
+      value={selectedValue}
       onChange={onChange}
       error={meta.error}
       touched={meta.touched}
