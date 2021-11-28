@@ -17,7 +17,6 @@
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
-import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import {
@@ -67,9 +66,6 @@ import {
 } from "@/contentScript/pipelineProtocol";
 
 expectContext("contentScript");
-
-// Temporary, webext-messenger depends on this global
-(globalThis as any).browser = browser;
 
 declare global {
   interface MessengerMethods {
