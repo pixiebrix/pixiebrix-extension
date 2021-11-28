@@ -5,7 +5,7 @@
   "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
   "testPathIgnorePatterns": ["<rootDir>/src/vendors/", "<rootDir>/selenium/"],
   "transform": {
-    "^.+\\.[jt]sx?$": "babel-jest",
+    "^.+\\.[jt]sx?$": "@swc/jest",
     "^.+\\.ya?ml$": "yaml-jest-transform",
     "^.+\\.ya?ml\\?loadAsText$": "jest-raw-loader",
     "^.+\\.txt$": "jest-raw-loader"
