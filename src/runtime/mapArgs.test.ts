@@ -89,6 +89,33 @@ describe("handlebars", () => {
   });
 });
 
+describe("defer", () => {
+  test("render !defer stops at defer", async () => {
+    const config = {
+      foo: {
+        __type__: "var",
+        __value__: "foo",
+      },
+    };
+
+    const rendered = await renderExplicit(
+      {
+        foo: {
+          __type__: "defer",
+          __value__: config,
+        },
+        bar: config,
+      },
+      { foo: 42 }
+    );
+
+    expect(rendered).toEqual({
+      foo: config,
+      bar: { foo: 42 },
+    });
+  });
+});
+
 describe("pipeline", () => {
   test("render !pipeline", async () => {
     const rendered = await renderExplicit(
