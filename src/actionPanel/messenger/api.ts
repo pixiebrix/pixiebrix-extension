@@ -15,11 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import $ from "jquery";
-import "@testing-library/jest-dom";
+/* Do not use `registerMethod` in this file */
+import { getMethod } from "webext-messenger";
+import { isBrowserActionPanel } from "@/chrome";
 
-global.$ = $;
-global.jQuery = $;
+// TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
+if (isBrowserActionPanel() && process.env.DEBUG) {
+  console.warn(
+    "This should not have been imported in the action panel. Use the API directly instead."
+  );
+}
 
-// Disable onMessage handler, or else it will respond to `sendMessage` calls locally
-global.browser.runtime.onMessage.addListener = jest.fn();
+export const renderPanels = getMethod("ACTION_PANEL_RENDER_PANELS");
+export const showForm = getMethod("ACTION_PANEL_SHOW_FORM");
+export const hideForm = getMethod("ACTION_PANEL_HIDE_FORM");
