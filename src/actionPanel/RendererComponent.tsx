@@ -10,6 +10,7 @@ const RendererComponent: React.FunctionComponent<{
 }> = ({ body }) =>
   useMemo(() => {
     if (typeof body === "string") {
+      // This is safe because if body is a string it's a SafeHTML value
       return (
         <div
           style={{ height: "100%" }}
