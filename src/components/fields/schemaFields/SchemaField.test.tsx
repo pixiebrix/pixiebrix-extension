@@ -19,7 +19,7 @@ import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Formik } from "formik";
-import { ApiVersion, Expression, TemplateEngine } from "@/core";
+import { ApiVersion, Expression, Schema, TemplateEngine } from "@/core";
 import { createFormikTemplate } from "@/tests/formHelpers";
 import { waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
@@ -202,5 +202,35 @@ describe("SchemaField", () => {
       "nunjucks",
       "omit",
     ]);
+  });
+
+  test("v2 field oneOf type priority shows text", () => {
+    const FormikTemplate = createFormikTemplate({ apiVersion: "v2" });
+    const schema: Schema = {
+      oneOf: [{ type: "boolean" }, { type: "string" }, { type: "number" }],
+    };
+    const { container } = render(
+      <FormikTemplate>
+        <SchemaField name="myField" schema={schema} />
+      </FormikTemplate>
+    );
+
+    // Should render text input for anything that includes text
+    expect(container.querySelector("input[type='text']")).not.toBeNull();
+  });
+
+  test("v2 field type array shows text", () => {
+    const FormikTemplate = createFormikTemplate({ apiVersion: "v2" });
+    const schema: Schema = {
+      type: ["boolean", "number", "string"],
+    };
+    const { container } = render(
+      <FormikTemplate>
+        <SchemaField name="myField" schema={schema} />
+      </FormikTemplate>
+    );
+
+    // Should render text input for anything that includes text
+    expect(container.querySelector("input[type='text']")).not.toBeNull();
   });
 });
