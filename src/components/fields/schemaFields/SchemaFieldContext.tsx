@@ -97,12 +97,12 @@ export function getDefaultField(fieldSchema: Schema): SchemaFieldComponent {
     return TextField;
   }
 
-  if (findOneOf(fieldSchema, booleanPredicate)) {
-    return makeOneOfField(findOneOf(fieldSchema, booleanPredicate));
-  }
-
   if (findOneOf(fieldSchema, textPredicate)) {
     return makeOneOfField(findOneOf(fieldSchema, textPredicate));
+  }
+
+  if (findOneOf(fieldSchema, booleanPredicate)) {
+    return makeOneOfField(findOneOf(fieldSchema, booleanPredicate));
   }
 
   if (isEmpty(fieldSchema)) {
