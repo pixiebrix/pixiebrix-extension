@@ -27,7 +27,7 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
   const buffer = new ArrayBuffer(len);
   const view = new Uint8Array(buffer);
   for (let i = 0; i < len; i++) {
-    // eslint-disable-next-line security/detect-object-injection -- is a numeric loop variable
+    // eslint-disable-next-line security/detect-object-injection, unicorn/prefer-code-point -- is a numeric loop variable
     view[i] = binary.charCodeAt(i);
   }
 

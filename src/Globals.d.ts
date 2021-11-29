@@ -25,8 +25,7 @@ declare module "*.module.scss" {
 }
 
 declare module "react-select-virtualized" {
-  import VirtualizedSelect from "react-virtualized-select";
-  export default VirtualizedSelect;
+  export { default } from "react-virtualized-select";
 }
 
 declare module "generate-schema" {

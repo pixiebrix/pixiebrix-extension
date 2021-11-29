@@ -406,7 +406,8 @@ export function makeURL(
 export async function allSettledValues<T = unknown>(
   promises: Array<Promise<T>>
 ): Promise<T[]> {
-  return (await Promise.allSettled(promises))
+  const settled = await Promise.allSettled(promises);
+  return settled
     .filter(
       (promise): promise is PromiseFulfilledResult<Awaited<T>> =>
         promise.status === "fulfilled"
@@ -417,7 +418,8 @@ export async function allSettledValues<T = unknown>(
 export async function allSettledRejections(
   promises: Array<Promise<unknown>>
 ): Promise<unknown[]> {
-  return (await Promise.allSettled(promises))
+  const settled = await Promise.allSettled(promises);
+  return settled
     .filter(
       (promise): promise is PromiseRejectedResult =>
         promise.status === "rejected"
