@@ -18,6 +18,7 @@
 import { Renderer } from "@/types";
 import { BlockArg, SafeHTML, Schema } from "@/core";
 import browser from "webextension-polyfill";
+import { assumeSafe } from "@/utils/sanitize";
 
 export class IFrameRenderer extends Renderer {
   constructor() {
@@ -72,18 +73,17 @@ export class IFrameRenderer extends Renderer {
     const parsedURL = new URL(url);
 
     if (safeMode) {
-      return `<iframe src="${parsedURL.toString()}" title="${title}" height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>` as SafeHTML;
+      return assumeSafe(
+        `<iframe src="${parsedURL.href}" title="${title}" height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>`
+      );
     }
 
     // https://transitory.technology/browser-extensions-and-csp-headers/
-    const frameSrc = browser.runtime.getURL("frame.html");
-    const src = `${frameSrc}?url=${encodeURIComponent(parsedURL.toString())}`;
+    const frameURL = browser.runtime.getURL("frame.html");
+    const src = `${frameURL}?url=${encodeURIComponent(parsedURL.href)}`;
 
-    console.debug("%s returning extension iframe", this.id, {
-      url,
-      src,
-    });
-
-    return `<iframe src="${frameSrc}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>` as SafeHTML;
+    return assumeSafe(
+      `<iframe src="${src}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`
+    );
   }
 }

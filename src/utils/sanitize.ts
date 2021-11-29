@@ -20,6 +20,10 @@ import { SafeHTML } from "@/core";
 
 let DOMPurify: DOMPurifyI;
 
+export function assumeSafe(html: string): SafeHTML {
+  return html as SafeHTML;
+}
+
 function sanitize(html: string): SafeHTML {
   if (!DOMPurify) {
     DOMPurify = createDOMPurify(window);

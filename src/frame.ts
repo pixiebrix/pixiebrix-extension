@@ -20,7 +20,14 @@
 
 const params = new URLSearchParams(window.location.search);
 
-const url = new URL(params.get("url"));
+const rawURL = params.get("url");
+
+console.debug("Initializing indirect frame", {
+  url: rawURL,
+  nonce: params.get("nonce"),
+});
+
+const url = new URL(rawURL);
 const nonce = params.get("nonce");
 
 if (nonce) {
@@ -28,10 +35,5 @@ if (nonce) {
 }
 
 const iframe = document.createElement("iframe");
-iframe.src = url.toString();
+iframe.src = url.href;
 document.body.append(iframe);
-
-console.debug("Initialized indirect iframe", {
-  url,
-  nonce,
-});
