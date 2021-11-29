@@ -1,8 +1,5 @@
 import React, { useMemo } from "react";
 import { RendererOutput } from "@/core";
-import createDOMPurify, { DOMPurifyI } from "dompurify";
-
-let DOMPurify: DOMPurifyI;
 
 /**
  * React component to display the output of a renderer brick
@@ -13,14 +10,10 @@ const RendererComponent: React.FunctionComponent<{
 }> = ({ body }) =>
   useMemo(() => {
     if (typeof body === "string") {
-      if (!DOMPurify) {
-        DOMPurify = createDOMPurify(window);
-      }
-
       return (
         <div
           style={{ height: "100%" }}
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(body) }}
+          dangerouslySetInnerHTML={{ __html: body }}
         />
       );
     }

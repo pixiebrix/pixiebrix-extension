@@ -16,7 +16,7 @@
  */
 
 import { Renderer } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { BlockArg, SafeHTML, Schema } from "@/core";
 import browser from "webextension-polyfill";
 
 export class IFrameRenderer extends Renderer {
@@ -60,15 +60,29 @@ export class IFrameRenderer extends Renderer {
     title = "PixieBrix",
     height = "100%",
     width = "100%",
-    safeMode,
-  }: BlockArg): Promise<string> {
+    safeMode = false,
+  }: BlockArg<{
+    url: string;
+    title?: string;
+    height?: string;
+    width?: string;
+    safeMode?: boolean;
+  }>): Promise<SafeHTML> {
+    const parsedURL = new URL(url);
+
     if (safeMode) {
-      return `<iframe src="${url}" title="${title}" height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>`;
+      return `<iframe src="${parsedURL.toString()}" title="${title}" height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>` as SafeHTML;
     }
 
     // https://transitory.technology/browser-extensions-and-csp-headers/
     const frameSrc = browser.runtime.getURL("frame.html");
-    const src = `${frameSrc}?url=${encodeURIComponent(url)}`;
-    return `<iframe src="${src}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`;
+    const src = `${frameSrc}?url=${encodeURIComponent(parsedURL.toString())}`;
+
+    console.debug("%s returning extension iframe", this.id, {
+      url,
+      src,
+    });
+
+    return `<iframe src="${frameSrc}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>` as SafeHTML;
   }
 }

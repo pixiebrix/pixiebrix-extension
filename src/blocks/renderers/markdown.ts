@@ -18,7 +18,7 @@
 import { Renderer } from "@/types";
 import createDOMPurify, { DOMPurifyI } from "dompurify";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg } from "@/core";
+import { BlockArg, SafeHTML } from "@/core";
 
 export class MarkdownRenderer extends Renderer {
   private DOMPurify: DOMPurifyI;
@@ -42,13 +42,13 @@ export class MarkdownRenderer extends Renderer {
     ["markdown"]
   );
 
-  async render({ markdown }: BlockArg): Promise<string> {
+  async render({ markdown }: BlockArg): Promise<SafeHTML> {
     const { marked } = await import("marked");
 
     if (!this.DOMPurify) {
       this.DOMPurify = createDOMPurify(window);
     }
 
-    return this.DOMPurify.sanitize(marked(markdown));
+    return this.DOMPurify.sanitize(marked(markdown)) as SafeHTML;
   }
 }

@@ -18,7 +18,7 @@
 import React from "react";
 import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, BlockOptions, RenderedHTML } from "@/core";
+import { BlockArg, BlockOptions, SafeHTML } from "@/core";
 import { sortBy, isPlainObject } from "lodash";
 
 interface Item {
@@ -122,10 +122,7 @@ export class PropertyTableRenderer extends Renderer {
     []
   );
 
-  async render(
-    { data }: BlockArg,
-    { ctxt }: BlockOptions
-  ): Promise<RenderedHTML> {
+  async render({ data }: BlockArg, { ctxt }: BlockOptions): Promise<SafeHTML> {
     const PropertyTree = (
       await import(
         /* webpackChunkName: "widgets" */

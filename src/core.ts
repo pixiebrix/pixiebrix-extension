@@ -833,11 +833,16 @@ export type RawConfig = {
  */
 export type IBrick = IBlock | IService | IExtensionPoint;
 
-export type RenderedHTML = string;
+/**
+ * Rendered HTML that has been sanitized.
+ */
+export type SafeHTML = string & {
+  _safeHTMLBrand: never;
+};
 
 export type ComponentRef = {
   Component: React.ComponentType;
   props: Record<string, unknown>;
 };
 
-export type RendererOutput = RenderedHTML | ComponentRef;
+export type RendererOutput = SafeHTML | ComponentRef;

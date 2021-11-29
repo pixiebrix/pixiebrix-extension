@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Logger, RendererOutput } from "@/core";
+import { Logger, SafeHTML, RendererOutput } from "@/core";
 import { getErrorMessage } from "@/errors";
 
 function isRendererOutput(value: unknown): value is RendererOutput {
@@ -44,13 +44,15 @@ export async function errorBoundary(
 
     if (!isRendererOutput(value)) {
       logger.warn("Expected a renderer brick");
-      return '<div style="color: red;">Expected a renderer brick</div>';
+      return '<div style="color: red;">Expected a renderer brick</div>' as SafeHTML;
     }
 
     // TODO: validate the shape of the value returned
     return value;
   } catch (error) {
     logger.error(error);
-    return `<div>An error occurred: ${getErrorMessage(error)}</div>`;
+    return `<div>An error occurred: ${getErrorMessage(
+      error
+    )}</div>` as SafeHTML;
   }
 }
