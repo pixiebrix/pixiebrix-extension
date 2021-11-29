@@ -17,7 +17,7 @@
 
 import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, BlockOptions } from "@/core";
+import { BlockArg, BlockOptions, SafeHTML } from "@/core";
 import { isNullOrBlank } from "@/utils";
 import { BusinessError } from "@/errors";
 import makeDataTable, { Row } from "@/blocks/renderers/dataTable";
@@ -71,7 +71,7 @@ export class TableRenderer extends Renderer {
   async render(
     { columns, data: userData }: BlockArg,
     { ctxt = [], logger }: BlockOptions
-  ): Promise<string> {
+  ): Promise<SafeHTML> {
     const data = userData ?? ctxt;
 
     if (!userData) {

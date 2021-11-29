@@ -15,25 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://transitory.technology/browser-extensions-and-csp-headers/
-// Load the passed URL into an another iframe to get around the parent page's CSP headers
+import createDOMPurify, { Config, DOMPurifyI } from "dompurify";
+import { SafeHTML } from "@/core";
 
-const params = new URLSearchParams(window.location.search);
+let DOMPurify: DOMPurifyI;
 
-const rawURL = params.get("url");
-
-console.debug("Initializing indirect frame", {
-  url: rawURL,
-  nonce: params.get("nonce"),
-});
-
-const url = new URL(rawURL);
-const nonce = params.get("nonce");
-
-if (nonce) {
-  url.searchParams.set("_pb", nonce);
+export function assumeSafe(html: string): SafeHTML {
+  return html as SafeHTML;
 }
 
-const iframe = document.createElement("iframe");
-iframe.src = url.href;
-document.body.append(iframe);
+function sanitize(html: string, config?: Config): SafeHTML {
+  if (!DOMPurify) {
+    DOMPurify = createDOMPurify(window);
+  }
+
+  return DOMPurify.sanitize(html, config) as SafeHTML;
+}
+
+export default sanitize;
