@@ -217,7 +217,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         ...apiVersionOptions(extension.apiVersion),
       });
       extensionLogger.info("Successfully ran trigger");
-      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       extensionLogger.error(error);
     }
