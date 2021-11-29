@@ -19,6 +19,7 @@ import { Logger, RendererOutput, SafeHTML } from "@/core";
 import { getErrorMessage } from "@/errors";
 import sanitize from "@/utils/sanitize";
 import { UnknownObject } from "@/types";
+import { escape } from "lodash";
 
 // Require SafeHTML here, because if we just accepted unknown, this would return `true` even for unsanitized strings
 function isRendererOutput(
@@ -58,6 +59,7 @@ export async function errorBoundary(
     return value;
   } catch (error: unknown) {
     logger.error(error);
-    return sanitize(`<div>An error occurred: ${getErrorMessage(error)}</div>`);
+    const escapedMessage = escape(getErrorMessage(error));
+    return sanitize(`<div>An error occurred: ${escapedMessage}</div>`);
   }
 }

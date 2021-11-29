@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createDOMPurify, { DOMPurifyI } from "dompurify";
+import createDOMPurify, { Config, DOMPurifyI } from "dompurify";
 import { SafeHTML } from "@/core";
 
 let DOMPurify: DOMPurifyI;
@@ -24,12 +24,12 @@ export function assumeSafe(html: string): SafeHTML {
   return html as SafeHTML;
 }
 
-function sanitize(html: string): SafeHTML {
+function sanitize(html: string, config?: Config): SafeHTML {
   if (!DOMPurify) {
     DOMPurify = createDOMPurify(window);
   }
 
-  return DOMPurify.sanitize(html) as SafeHTML;
+  return DOMPurify.sanitize(html, config) as SafeHTML;
 }
 
 export default sanitize;
