@@ -138,7 +138,9 @@ export type TemplateEngine =
 export type ExpressionType =
   | TemplateEngine
   // BlockPipeline with deferred execution
-  | "pipeline";
+  | "pipeline"
+  // Raw section with deferred rendering (rendered by the brick that executes it)
+  | "defer";
 
 /**
  * The JSON/JS representation of an explicit template/variable expression (e.g., mustache, var, etc.)

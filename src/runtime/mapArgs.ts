@@ -31,7 +31,11 @@ const templateTypes: TemplateEngine[] = [
   "var",
 ];
 
-const expressionTypes: ExpressionType[] = [...templateTypes, "pipeline"];
+const expressionTypes: ExpressionType[] = [
+  ...templateTypes,
+  "pipeline",
+  "defer",
+];
 
 type Args = string | UnknownObject | UnknownObject[];
 
@@ -83,7 +87,7 @@ export async function renderExplicit(
     return render(config.__value__, ctxt);
   }
 
-  if (isExpression(config) && config.__type__ === "pipeline") {
+  if (isExpression(config) && ["pipeline", "defer"].includes(config.__type__)) {
     // Pipelines are passed through directly
     return config.__value__;
   }
