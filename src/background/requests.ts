@@ -109,7 +109,6 @@ const backgroundRequest = liftBackground(
   async (config: AxiosRequestConfig) => {
     try {
       return cleanResponse(await axios(config));
-      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       // Axios offers its own serialization method, but it doesn't include the response.
       // By deleting toJSON, the serialize-error library will use its default serialization

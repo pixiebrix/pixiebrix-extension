@@ -386,7 +386,6 @@ export function normalizePipeline<
   config: T,
   pipelineProp: Prop,
   defaults: Partial<T> = {}
-  // eslint-disable-next-line @typescript-eslint/ban-types -- not error-prone because parameters check keyof
 ): BaseExtensionState & Omit<T, Prop> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {

@@ -291,7 +291,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         this.removeExtensions(extensions.map((x) => x.id));
         // Release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         this.logger.error(error);
       }
@@ -548,7 +547,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           extension.id,
           mergeConfig(onSuccess, DEFAULT_ACTION_RESULTS.success)
         );
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         if (hasCancelRootCause(error)) {
           notifyResult(

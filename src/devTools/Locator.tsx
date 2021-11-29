@@ -40,7 +40,6 @@ function useSearchWindow(query: string) {
         const { results } = await searchWindow(thisTab, query);
         if (!isMounted()) return;
         setResults(results as any);
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         if (!isMounted()) return;
         setError(error);
