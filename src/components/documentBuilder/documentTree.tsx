@@ -19,7 +19,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions -- for the onClick events on Preview wrappers div */
 import React from "react";
 import PipelineComponent from "@/blocks/renderers/documentView/PipelineComponent";
-import { isPipelineExpression } from "@/runtime/mapArgs";
+import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
 import { Card, Col, Container, Row } from "react-bootstrap";
@@ -145,8 +145,43 @@ export function getPreviewComponentDefinition(
   element: DocumentElement
 ): DocumentComponent {
   const componentType = String(element.type);
+  const config = get(element, "config", {} as UnknownObject);
 
   switch (componentType) {
+    case "header_1":
+    case "header_2":
+    case "header_3": {
+      const { title } = config;
+      if (isExpression(title)) {
+        const previewElement = {
+          ...element,
+          config: {
+            ...config,
+            title: title.__value__,
+          },
+        };
+        return getComponentDefinition(previewElement);
+      }
+
+      return getComponentDefinition(element);
+    }
+
+    case "text": {
+      const { text } = config;
+      if (isExpression(text)) {
+        const previewElement = {
+          ...element,
+          config: {
+            ...config,
+            text: text.__value__,
+          },
+        };
+        return getComponentDefinition(previewElement);
+      }
+
+      return getComponentDefinition(element);
+    }
+
     case "container":
     case "row":
     case "column": {
@@ -157,13 +192,20 @@ export function getPreviewComponentDefinition(
     }
 
     case "card": {
+      let { heading } = config;
+      if (isExpression(heading)) {
+        heading = heading.__value__;
+      }
+
       const previewElement = {
         ...element,
         config: {
-          ...element.config,
+          ...config,
+          heading,
           bodyProps: { className: styles.container },
         },
       };
+
       const { Component, props } = getComponentDefinition(previewElement);
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         onClick,
