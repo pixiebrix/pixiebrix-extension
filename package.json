@@ -126,7 +126,7 @@
     "schema-to-yup": "1.10.0",
     "semver": "^7.3.5",
     "serialize-error": "^9.0.0",
-    "simple-icons": "^5.8.0",
+    "simple-icons": "^6.0.0",
     "slugify": "^1.6.0",
     "to-json-schema": "^0.2.5",
     "url-join": "^4.0.1",
