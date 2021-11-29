@@ -15,33 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types";
-import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, SafeHTML } from "@/core";
-import sanitize from "@/utils/sanitize";
+import createDOMPurify, { DOMPurifyI } from "dompurify";
+import { SafeHTML } from "@/core";
 
-export class MarkdownRenderer extends Renderer {
-  constructor() {
-    super(
-      "@pixiebrix/markdown",
-      "Render Markdown",
-      "Render Markdown to sanitized HTML"
-    );
+let DOMPurify: DOMPurifyI;
+
+function sanitize(html: string): SafeHTML {
+  if (!DOMPurify) {
+    DOMPurify = createDOMPurify(window);
   }
 
-  inputSchema = propertiesToSchema(
-    {
-      markdown: {
-        type: "string",
-        description: "The Markdown to render",
-        format: "markdown",
-      },
-    },
-    ["markdown"]
-  );
-
-  async render({ markdown }: BlockArg): Promise<SafeHTML> {
-    const { marked } = await import("marked");
-    return sanitize(marked(markdown));
-  }
+  return DOMPurify.sanitize(html) as SafeHTML;
 }
+
+export default sanitize;

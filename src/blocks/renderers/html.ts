@@ -16,13 +16,11 @@
  */
 
 import { Renderer } from "@/types";
-import createDOMPurify, { DOMPurifyI } from "dompurify";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, SafeHTML } from "@/core";
+import sanitize from "@/utils/sanitize";
 
 export class HtmlRenderer extends Renderer {
-  private DOMPurify: DOMPurifyI;
-
   constructor() {
     super(
       "@pixiebrix/html",
@@ -39,10 +37,6 @@ export class HtmlRenderer extends Renderer {
   });
 
   async render({ html }: BlockArg): Promise<SafeHTML> {
-    if (!this.DOMPurify) {
-      this.DOMPurify = createDOMPurify(window);
-    }
-
-    return this.DOMPurify.sanitize(html) as SafeHTML;
+    return sanitize(html);
   }
 }

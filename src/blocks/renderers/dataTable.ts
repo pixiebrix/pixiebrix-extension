@@ -19,7 +19,7 @@
 import { BusinessError } from "@/errors";
 import { UnknownObject } from "@/types";
 import { SafeHTML } from "@/core";
-import createDOMPurify, { DOMPurifyI } from "dompurify";
+import sanitize from "@/utils/sanitize";
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 export interface Row {
@@ -115,18 +115,12 @@ table.blueTable tfoot .links a{
 </style>
 `;
 
-let DOMPurify: DOMPurifyI;
-
 function makeDataTable<TRow extends UnknownObject>(
   columns: Array<ColumnDefinition<TRow>>
 ): (ctxt: unknown) => SafeHTML {
   return (ctxt: unknown): SafeHTML => {
     if (!Array.isArray(ctxt)) {
       throw new BusinessError("makeDataTable expected an array of data");
-    }
-
-    if (!DOMPurify) {
-      DOMPurify = createDOMPurify(window);
     }
 
     const rawTable = `
@@ -144,7 +138,7 @@ function makeDataTable<TRow extends UnknownObject>(
 
     return `
         ${style}
-        ${DOMPurify.sanitize(rawTable)}
+        ${sanitize(rawTable)}
     ` as SafeHTML;
   };
 }

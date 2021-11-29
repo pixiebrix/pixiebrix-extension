@@ -68,6 +68,7 @@ export class IFrameRenderer extends Renderer {
     width?: string;
     safeMode?: boolean;
   }>): Promise<SafeHTML> {
+    // Parse the URL to ensure it's a real URL (i.e., not an XSS attempt)
     const parsedURL = new URL(url);
 
     if (safeMode) {
