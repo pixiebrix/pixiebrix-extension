@@ -45,7 +45,7 @@ function makeArgumentYaml(schema: Schema): string {
       continue;
     }
 
-    result += `# ${prop}: ${value.type} (${
+    result += `# ${prop}: ${value.type as string} (${
       schema.required.includes(prop) ? "required" : "optional"
     })\n`;
     if (value.description) {
@@ -57,7 +57,7 @@ function makeArgumentYaml(schema: Schema): string {
     if (value.enum) {
       result += "# valid values:\n";
       for (const line of value.enum) {
-        result += `# - ${line} \n`;
+        result += `# - ${line as string} \n`;
       }
     }
 

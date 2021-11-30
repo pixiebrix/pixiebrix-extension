@@ -212,6 +212,7 @@ export function useDevConnection(): Context {
     port,
     connecting,
     connect,
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string -- It's fine in this case
     portError: portError?.toString(),
     tabState: current,
   };

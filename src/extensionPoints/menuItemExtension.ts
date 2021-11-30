@@ -797,6 +797,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
     if (typeof position === "object") {
       if (position.sibling) {
+        // eslint-disable-next-line unicorn/no-array-callback-reference -- False positive with jQuery
         const $sibling = $menu.find(position.sibling);
         if ($sibling.length > 1) {
           throw new Error(

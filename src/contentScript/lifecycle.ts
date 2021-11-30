@@ -276,12 +276,12 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
   );
   if (rules.length > 0) {
     const $document = $(document);
+    const jointSelector = rules
+      .flatMap((rule) => rule.loadingSelectors)
+      .join(",");
     while (
-      rules.some((rule) =>
-        rule.loadingSelectors.some(
-          (selector) => $document.find(selector).length > 0
-        )
-      )
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- False positive with jQuery
+      $document.find(jointSelector).length > 0
     ) {
       if (cancel()) {
         return;
