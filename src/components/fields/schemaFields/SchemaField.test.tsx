@@ -201,13 +201,11 @@ describe("SchemaField", () => {
       );
 
       // Renders text entry HTML element
-      expect(container.querySelector("input[type='text']")).not.toBeNull();
+      expect(container.querySelector("textarea")).not.toBeNull();
       expect(container.querySelector("button")).toBeNull();
     }
   );
-});
 
-describe("SchemaField", () => {
   test("string field options", () => {
     const { container } = render(
       <Formik
@@ -226,7 +224,7 @@ describe("SchemaField", () => {
     );
 
     // Renders text entry HTML element
-    expect(container.querySelector("input[type='text']")).not.toBeNull();
+    expect(container.querySelector("textarea")).not.toBeNull();
 
     expectToggleOptions(container, [
       "string",
@@ -350,8 +348,8 @@ describe("SchemaField", () => {
       </FormikTemplate>
     );
 
-    // Should render text input for anything that includes text
-    expect(container.querySelector("input[type='text']")).not.toBeNull();
+    // Should render textarea for anything that includes text
+    expect(container.querySelector("textarea")).not.toBeNull();
   });
 
   test("v2 field type array shows text", () => {
@@ -365,8 +363,8 @@ describe("SchemaField", () => {
       </FormikTemplate>
     );
 
-    // Should render text input for anything that includes text
-    expect(container.querySelector("input[type='text']")).not.toBeNull();
+    // Should render textarea for anything that includes text
+    expect(container.querySelector("textarea")).not.toBeNull();
   });
 
   test.each(schemaTestCases)(

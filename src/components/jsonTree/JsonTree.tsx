@@ -110,7 +110,15 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
           data={searchResults}
           labelRenderer={copyable ? copyLabelRenderer : undefined}
           hideRoot
-          theme={theme}
+          theme={{
+            extend: theme,
+            value: ({ style }) => ({
+              style: {
+                ...style,
+                whiteSpace: "pre-wrap",
+              },
+            }),
+          }}
           invertTheme
           {...restProps}
         />
