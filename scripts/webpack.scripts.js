@@ -68,5 +68,9 @@ module.exports = mergeWithShared({
           : "self"
       ),
     }),
+    new webpack.NormalModuleReplacementPlugin(
+      /\.module\.(css|scss)$/,
+      "identity-obj-proxy"
+    ),
   ],
 });
