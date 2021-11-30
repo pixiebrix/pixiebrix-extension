@@ -278,6 +278,7 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
   if (rules.length > 0) {
     const jointSelector = rules
       .flatMap((rule) => rule.loadingSelectors)
+      .filter(Boolean) // Exclude empty selectors, if any
       .join(",");
     while (findjQuerySelector(jointSelector).length > 0) {
       if (cancel()) {
