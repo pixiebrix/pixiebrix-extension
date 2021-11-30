@@ -18,7 +18,7 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import {
-  GroupTypeBase,
+  GroupBase,
   MenuListComponentProps,
   OptionTypeBase,
 } from "react-select";
@@ -28,7 +28,7 @@ import {
 type MenuListProps<
   OptionType extends OptionTypeBase,
   IsMulti extends boolean,
-  GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
+  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
 > = MenuListComponentProps<OptionType, IsMulti, GroupType> & {
   /** Props to be passed to the menu-list wrapper. */
   innerProps: unknown;
@@ -37,7 +37,7 @@ type MenuListProps<
 type MenuListWithAddButtonProps<
   OptionType extends OptionTypeBase,
   IsMulti extends boolean,
-  GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
+  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
 > = MenuListProps<OptionType, IsMulti, GroupType> & {
   onAddClick: () => void;
 };
@@ -45,7 +45,7 @@ type MenuListWithAddButtonProps<
 const MenuListWithAddButton = <
   OptionType extends OptionTypeBase,
   IsMulti extends boolean,
-  GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
+  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
 >(
   props: MenuListWithAddButtonProps<OptionType, IsMulti, GroupType>
 ) => {
@@ -91,7 +91,7 @@ const createMenuListWithAddButton = (onAddClick: () => void) => {
   const MenuList = <
     OptionType extends OptionTypeBase,
     IsMulti extends boolean,
-    GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
+    GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
   >(
     menuListProps: MenuListWithAddButtonProps<OptionType, IsMulti, GroupType>
   ) => <MenuListWithAddButton onAddClick={onAddClick} {...menuListProps} />;

@@ -17,7 +17,7 @@
 
 import React, { ChangeEvent } from "react";
 import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
-import Select, { SelectComponentsConfig } from "react-select";
+import Select, { GroupBase, SelectComponentsConfig } from "react-select";
 import { getErrorMessage } from "@/errors";
 
 // Type of the Select options
@@ -51,7 +51,7 @@ type SelectWidgetProps<
   loadingMessage?: string;
   error?: unknown;
   disabled?: boolean;
-  components?: SelectComponentsConfig<TOption, boolean>;
+  components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
 };
 
 const SelectWidget = <TOption extends Option<TOption["value"]>>({

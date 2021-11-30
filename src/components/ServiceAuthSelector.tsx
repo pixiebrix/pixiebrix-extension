@@ -18,11 +18,8 @@
 import React, { ComponentType, CSSProperties, useEffect, useMemo } from "react";
 import { useField } from "formik";
 import { Form } from "react-bootstrap";
-import Select, {
-  GroupTypeBase,
-  MenuListComponentProps,
-  StylesConfig,
-} from "react-select";
+import Select, { GroupBase, StylesConfig, MenuListProps } from "react-select";
+
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { AuthOption } from "@/auth/authTypes";
 
@@ -32,7 +29,7 @@ const colors = {
   divider: "#ebedf2",
 };
 
-const customStyles: StylesConfig<AuthOption, boolean> = {
+const customStyles: StylesConfig<AuthOption> = {
   // @ts-expect-error not sure how to pass the genetic argument to the react-select types
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: (base: CSSProperties, state: { selectProps: any }) => {
@@ -55,7 +52,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
   serviceId: string;
   authOptions: AuthOption[];
   CustomMenuList?: ComponentType<
-    MenuListComponentProps<AuthOption, boolean, GroupTypeBase<AuthOption>>
+    MenuListProps<AuthOption, boolean, GroupBase<AuthOption>>
   >;
 }> = ({ authOptions, serviceId, CustomMenuList, ...props }) => {
   const [field, meta, helpers] = useField(props);
@@ -101,7 +98,6 @@ const ServiceAuthSelector: React.FunctionComponent<{
         name={field.name}
         options={options}
         value={value}
-        error={Boolean(meta.error)}
         components={components}
         onChange={(x: AuthOption) => {
           console.debug(`Selected option ${x.value} (${x.label})`);
