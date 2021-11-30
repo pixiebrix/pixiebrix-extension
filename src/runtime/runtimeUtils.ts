@@ -41,7 +41,7 @@ import { BusinessError } from "@/errors";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
-import { findjQuerySelector } from "@/helpers";
+import { $safeFind } from "@/helpers";
 
 /**
  * @throws InputValidationError if blockArgs does not match the input schema for block
@@ -152,7 +152,7 @@ export function selectBlockRootElement(
   const $root = $(root ?? document);
 
   const $stageRoot = blockConfig.root
-    ? findjQuerySelector(blockConfig.root, $root)
+    ? $safeFind(blockConfig.root, $root)
     : $root;
 
   if ($stageRoot.length > 1) {

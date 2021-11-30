@@ -18,7 +18,7 @@
 import { ReaderOutput } from "@/core";
 import { asyncMapValues, sleep } from "@/utils";
 import { BusinessError, MultipleElementsFoundError } from "@/errors";
-import { findjQuerySelector } from "@/helpers";
+import { $safeFind } from "@/helpers";
 
 type CastType = "string" | "boolean" | "number";
 
@@ -151,7 +151,7 @@ async function select(
   do {
     if ($root) {
       $elt = normalizedSelector.selector
-        ? findjQuerySelector(normalizedSelector.selector, $root)
+        ? $safeFind(normalizedSelector.selector, $root)
         : $root;
     } else {
       if (!normalizedSelector.selector) {

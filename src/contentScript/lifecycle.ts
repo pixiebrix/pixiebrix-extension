@@ -29,7 +29,7 @@ import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { clearExtensionTraces } from "@/background/trace";
 import { isDeploymentActive } from "@/options/deploymentUtils";
-import { findjQuerySelector } from "@/helpers";
+import { $safeFind } from "@/helpers";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
@@ -280,7 +280,7 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
       .flatMap((rule) => rule.loadingSelectors)
       .filter(Boolean) // Exclude empty selectors, if any
       .join(",");
-    while (findjQuerySelector(jointSelector).length > 0) {
+    while ($safeFind(jointSelector).length > 0) {
       if (cancel()) {
         return;
       }

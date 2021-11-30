@@ -19,7 +19,7 @@ import { castArray, noop, once } from "lodash";
 import initialize from "@/vendors/initialize";
 import { sleep, waitAnimationFrame } from "@/utils";
 import { MessageContext, ResolvedExtension } from "@/core";
-import { findjQuerySelector } from "@/helpers";
+import { $safeFind } from "@/helpers";
 
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
@@ -148,7 +148,7 @@ function pollSelector(
   const $target = $(target);
   const promise = _wait<JQuery>(
     () => {
-      const $elt = findjQuerySelector(selector, $target);
+      const $elt = $safeFind(selector, $target);
       return $elt.length > 0 ? $elt : null;
     },
     () => cancelled,
@@ -223,7 +223,7 @@ export function awaitElementOnce(
   const [nextSelector, ...rest] = selectors;
 
   // Find immediately, or wait for it to be initialized
-  const $element: JQuery<HTMLElement | Document> = findjQuerySelector(
+  const $element: JQuery<HTMLElement | Document> = $safeFind(
     nextSelector,
     $root
   );
