@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import Select, { OptionsType } from "react-select";
 import { sortBy, uniq } from "lodash";
 import Creatable from "react-select/creatable";
 import { Form, FormControlProps } from "react-bootstrap";
+import fitTextarea from "fit-textarea";
 
 const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   name,
@@ -52,6 +53,15 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
         : [];
     return [schema?.enum == null, options];
   }, [schema.examples, schema.enum, created, value, schema.type]);
+
+  const textAreaRef = useRef<HTMLTextAreaElement>();
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      // eslint-disable-next-line security/detect-non-literal-fs-filename -- not using fs.watch, false positive
+      fitTextarea.watch(textAreaRef.current);
+    }
+  }, []);
 
   if (options.length > 0 && creatable) {
     return (
@@ -88,25 +98,15 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     return <div>Cannot edit object value as text</div>;
   }
 
-  if (schema.format === "markdown" || uiSchema?.["ui:widget"] === "textarea") {
-    return (
-      <Form.Control
-        as="textarea"
-        value={value ?? ""}
-        {...field}
-        {...restProps}
-        isInvalid={Boolean(meta.error)}
-      />
-    );
-  }
-
   return (
     <Form.Control
-      type="text"
+      as="textarea"
+      rows="1"
       value={value ?? ""}
       {...field}
       {...restProps}
       isInvalid={Boolean(meta.error)}
+      ref={textAreaRef}
     />
   );
 };
