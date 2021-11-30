@@ -27,6 +27,7 @@ import {
 import styles from "./AddElementAction.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { createNewElement } from "./createNewElement";
 
 type AddElementActionProps = {
   elementsCollectionName: string;
@@ -52,46 +53,7 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
   >(elementsCollectionName);
 
   const addElement = (elementType: DocumentElementType) => {
-    const element: DocumentElement = {
-      type: elementType,
-      config: {},
-    };
-
-    switch (elementType) {
-      case "header_1":
-      case "header_2":
-      case "header_3":
-        element.config.title = "Header";
-        break;
-
-      case "text":
-        element.config.text = "Paragraph text.";
-        break;
-
-      case "container":
-      case "row":
-      case "column":
-        element.children = [];
-        break;
-
-      case "card":
-        element.config.heading = "Header";
-        element.children = [];
-        break;
-
-      case "block":
-        element.config.pipeline = "!pipeline";
-        break;
-
-      case "button":
-        element.config.title = "Click me";
-        break;
-
-      default:
-        throw new Error(
-          `Can't create new element. Type "${elementType} is not supported.`
-        );
-    }
+    const element = createNewElement(elementType);
 
     setValue([...elementsCollection, element]);
   };
