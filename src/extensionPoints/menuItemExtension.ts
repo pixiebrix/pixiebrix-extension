@@ -69,6 +69,7 @@ import { mapArgs } from "@/runtime/mapArgs";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { findjQuerySelector } from "@/helpers";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -797,8 +798,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
     if (typeof position === "object") {
       if (position.sibling) {
-        // eslint-disable-next-line unicorn/no-array-callback-reference -- False positive with jQuery
-        const $sibling = $menu.find(position.sibling);
+        const $sibling = findjQuerySelector(position.sibling, $menu);
         if ($sibling.length > 1) {
           throw new Error(
             `Multiple sibling elements for selector: ${position.sibling}`

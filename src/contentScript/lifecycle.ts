@@ -29,6 +29,7 @@ import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { clearExtensionTraces } from "@/background/trace";
 import { isDeploymentActive } from "@/options/deploymentUtils";
+import { findjQuerySelector } from "@/helpers";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
@@ -275,14 +276,10 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
     testMatchPatterns(rule.matchPatterns, url)
   );
   if (rules.length > 0) {
-    const $document = $(document);
     const jointSelector = rules
       .flatMap((rule) => rule.loadingSelectors)
       .join(",");
-    while (
-      // eslint-disable-next-line unicorn/no-array-callback-reference -- False positive with jQuery
-      $document.find(jointSelector).length > 0
-    ) {
+    while (findjQuerySelector(jointSelector).length > 0) {
       if (cancel()) {
         return;
       }

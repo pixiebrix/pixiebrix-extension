@@ -18,6 +18,7 @@
 import { ReaderOutput } from "@/core";
 import { asyncMapValues, sleep } from "@/utils";
 import { BusinessError, MultipleElementsFoundError } from "@/errors";
+import { findjQuerySelector } from "@/helpers";
 
 type CastType = "string" | "boolean" | "number";
 
@@ -150,8 +151,7 @@ async function select(
   do {
     if ($root) {
       $elt = normalizedSelector.selector
-        ? // eslint-disable-next-line unicorn/no-array-callback-reference -- False positive with jQuery
-          $root.find(normalizedSelector.selector)
+        ? findjQuerySelector(normalizedSelector.selector, $root)
         : $root;
     } else {
       if (!normalizedSelector.selector) {
