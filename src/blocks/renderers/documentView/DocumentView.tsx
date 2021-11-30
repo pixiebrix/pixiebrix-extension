@@ -20,12 +20,12 @@ import React from "react";
 import ReactShadowRoot from "react-shadow-root";
 import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
 import { DocumentViewProps } from "./DocumentViewProps";
-import InnerComponentContext from "./InnerComponentContext";
+import DocumentContext from "@/components/documentBuilder/DocumentContext";
 
 const DocumentView: React.FC<DocumentViewProps> = ({ body, options }) => (
   // Wrap in a React context provider that passes BlockOptions down to any embedded bricks
   // ReactShadowRoot needs to be inside an HTMLElement so it has something to attach to
-  <InnerComponentContext.Provider value={{ options }}>
+  <DocumentContext.Provider value={{ options }}>
     <div className="h-100">
       <ReactShadowRoot>
         <BootstrapStylesheet />
@@ -35,7 +35,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({ body, options }) => (
         })}
       </ReactShadowRoot>
     </div>
-  </InnerComponentContext.Provider>
+  </DocumentContext.Provider>
 );
 
 export default DocumentView;

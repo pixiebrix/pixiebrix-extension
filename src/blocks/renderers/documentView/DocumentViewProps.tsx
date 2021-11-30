@@ -1,7 +1,7 @@
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { BlockOptions } from "@/core";
+import { BlockArgContext, BlockOptions } from "@/core";
 
 export type DocumentViewProps = {
   body: DocumentElement[];
-  options: BlockOptions;
+  options: BlockOptions<BlockArgContext>;
 };

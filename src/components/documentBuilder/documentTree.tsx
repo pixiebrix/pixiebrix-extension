@@ -18,13 +18,13 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events -- for the onClick events on Preview wrappers div */
 /* eslint-disable jsx-a11y/no-static-element-interactions -- for the onClick events on Preview wrappers div */
 import React from "react";
-import PipelineComponent from "@/blocks/renderers/documentView/PipelineComponent";
+import BlockPipeline from "@/components/documentBuilder/DocumentBlock";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import { DocumentComponent, DocumentElement } from "./documentBuilderTypes";
-import DocumentButton from "@/blocks/renderers/documentView/DocumentButton";
+import DocumentButton from "@/components/documentBuilder/DocumentButton";
 import useNotifications from "@/hooks/useNotifications";
 import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
@@ -104,7 +104,7 @@ export function getComponentDefinition(
       }
 
       return {
-        Component: PipelineComponent,
+        Component: BlockPipeline,
         props: {
           pipeline: pipeline?.__value__,
         },
