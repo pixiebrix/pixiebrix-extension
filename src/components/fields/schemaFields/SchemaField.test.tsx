@@ -23,6 +23,7 @@ import { ApiVersion, Expression, Schema, TemplateEngine } from "@/core";
 import { createFormikTemplate } from "@/tests/formHelpers";
 import { waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
+import { uniq } from "lodash";
 
 function expectToggleOptions(container: HTMLElement, expected: string[]): void {
   // React Bootstrap dropdown does not render children items unless toggled
@@ -34,6 +35,140 @@ function expectToggleOptions(container: HTMLElement, expected: string[]): void {
   );
   expect(actual).toEqual(new Set(expected));
 }
+
+interface SchemaTestCase {
+  name: string;
+  schema: Schema;
+}
+
+const sampleSchemas: SchemaTestCase[] = [
+  {
+    name: "empty",
+    schema: {},
+  },
+
+  {
+    name: "any properties",
+    schema: {
+      additionalProperties: true,
+    },
+  },
+
+  {
+    name: "basic string",
+    schema: {
+      type: "string",
+    },
+  },
+  {
+    name: "basic number",
+    schema: {
+      type: "number",
+    },
+  },
+  {
+    name: "basic integer",
+    schema: {
+      type: "integer",
+    },
+  },
+  {
+    name: "basic boolean",
+    schema: {
+      type: "boolean",
+    },
+  },
+
+  {
+    name: "object with defined properties",
+    schema: {
+      type: "object",
+      properties: {
+        myString: { type: "string" },
+        myBool: { type: "boolean" },
+      },
+    },
+  },
+  {
+    name: "object with any additional properties",
+    schema: {
+      type: "object",
+      additionalProperties: true,
+    },
+  },
+  {
+    name: "object with property types",
+    schema: {
+      type: "object",
+      additionalProperties: {
+        type: ["string", "number", "boolean"],
+      },
+    },
+  },
+  {
+    name: "object with required fields",
+    schema: {
+      type: "object",
+      properties: {
+        myRequiredString: { type: "string" },
+        myRequiredBool: { type: "boolean" },
+        myString: { type: "string" },
+        myNumber: { type: "number" },
+      },
+      required: ["myRequiredString", "myRequiredBool"],
+    },
+  },
+
+  {
+    name: "string array",
+    schema: {
+      type: "array",
+      items: { type: "string" },
+    },
+  },
+  {
+    name: "array of objects with properties",
+    schema: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          value: { type: ["string", "number", "boolean"] },
+        },
+      },
+    },
+  },
+
+  {
+    name: "oneOf string or number",
+    schema: {
+      oneOf: [{ type: "string" }, { type: "number" }],
+    },
+  },
+  {
+    name: "oneOf boolean or number",
+    schema: {
+      oneOf: [{ type: "boolean" }, { type: "number" }],
+    },
+  },
+  {
+    name: "oneOf boolean or string",
+    schema: {
+      oneOf: [{ type: "boolean" }, { type: "string" }],
+    },
+  },
+  {
+    name: "oneOf boolean, string, or number",
+    schema: {
+      oneOf: [{ type: "boolean" }, { type: "string" }, { type: "number" }],
+    },
+  },
+];
+
+const schemaTestCases: ReadonlyArray<
+  [name: string, schema: Schema]
+> = sampleSchemas.map(({ name, schema }) => [name, schema]);
 
 function expressionValue<T extends TemplateEngine>(
   type: T,
@@ -233,4 +368,62 @@ describe("SchemaField", () => {
     // Should render text input for anything that includes text
     expect(container.querySelector("input[type='text']")).not.toBeNull();
   });
+
+  test.each(schemaTestCases)(
+    "v3 field toggle doesn't show duplicate options - %s",
+    async (_, schema) => {
+      const FormikTemplate = createFormikTemplate({ apiVersion: "v3" });
+      const { container } = render(
+        <FormikTemplate>
+          <SchemaField name="aTestField" schema={schema} />
+        </FormikTemplate>
+      );
+
+      await waitForEffect();
+
+      const toggle = screen
+        .getByTestId("toggle-aTestField")
+        .querySelector("button");
+      expect(toggle).not.toBeNull();
+
+      userEvent.click(toggle);
+
+      await waitFor(() => {
+        const testIds = [
+          ...container.querySelectorAll("a.dropdown-item"),
+        ].map((x) => x.getAttribute("data-testid"));
+        expect(testIds).toEqual(uniq(testIds));
+      });
+    }
+  );
+
+  test.each(schemaTestCases)(
+    "v3 field toggle always renders 'omit' last - %s",
+    async (_, schema) => {
+      const FormikTemplate = createFormikTemplate({ apiVersion: "v3" });
+      const { container } = render(
+        <FormikTemplate>
+          <SchemaField name="aTestField" schema={schema} />
+        </FormikTemplate>
+      );
+
+      await waitForEffect();
+
+      const toggle = screen
+        .getByTestId("toggle-aTestField")
+        .querySelector("button");
+      expect(toggle).not.toBeNull();
+
+      userEvent.click(toggle);
+
+      await waitFor(() => {
+        const testIds = [
+          ...container.querySelectorAll("a.dropdown-item"),
+        ].map((x) => x.getAttribute("data-testid"));
+        if (testIds.includes("omit")) {
+          expect(testIds[testIds.length - 1]).toEqual("omit");
+        }
+      });
+    }
+  );
 });
