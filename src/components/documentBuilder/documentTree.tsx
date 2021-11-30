@@ -188,6 +188,10 @@ export function getPreviewComponentDefinition(
       const { Component, props } = getComponentDefinition(element);
       props.className = cx(props.className, styles.container);
 
+      if (!element.children?.length) {
+        props.children = <span className="text-muted">{componentType}</span>;
+      }
+
       return { Component, props };
     }
 

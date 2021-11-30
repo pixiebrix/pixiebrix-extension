@@ -21,9 +21,14 @@ import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getElementEditSchemas } from "./elementEditSchemas";
 import { getProperty } from "@/utils";
+import { Row, Col } from "react-bootstrap";
+import styles from "./DocumentEditor.module.scss";
+import RemoveElementAction from "./RemoveElementAction";
+import MoveElementAction from "./MoveElementAction";
 
 type ElementEditProps = {
   elementName: string;
+  setActiveElement: (activeElement: string) => void;
 };
 
 const elementTypeLabels: Record<DocumentElementType, string> = {
@@ -39,22 +44,52 @@ const elementTypeLabels: Record<DocumentElementType, string> = {
   block: "Block",
 };
 
-const ElementEdit: React.FC<ElementEditProps> = ({ elementName }) => {
+const ElementEdit: React.FC<ElementEditProps> = ({
+  elementName,
+  setActiveElement,
+}) => {
   const [{ value: documentElement }] = useField<DocumentElement>(elementName);
 
   const editSchemas = getElementEditSchemas(documentElement, elementName);
 
   return (
-    <div>
-      <div>
-        {getProperty(elementTypeLabels, documentElement.type) ??
-          "Unknown element"}
-      </div>
+    <>
+      <Row className={styles.currentFieldRow}>
+        <Col xl="3" className={styles.currentField}>
+          <h6>
+            {getProperty(elementTypeLabels, documentElement.type) ??
+              "Unknown element"}
+          </h6>
+        </Col>
+        <Col xl>
+          <RemoveElementAction
+            elementName={elementName}
+            setActiveElement={setActiveElement}
+          />
+        </Col>
+        <Col xl>
+          <small className="text-muted">
+            Use the Preview Tab on the right to select an element to edit ⟶
+          </small>
+        </Col>
+      </Row>
 
-      {editSchemas.map((editSchema) => (
-        <SchemaField key={editSchema.name} {...editSchema} />
-      ))}
-    </div>
+      <Row>
+        <Col>
+          {editSchemas.map((editSchema) => (
+            <SchemaField key={editSchema.name} {...editSchema} />
+          ))}
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <MoveElementAction
+            elementName={elementName}
+            setActiveElement={setActiveElement}
+          />
+        </Col>
+      </Row>
+    </>
   );
 };
 

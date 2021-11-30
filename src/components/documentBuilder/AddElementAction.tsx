@@ -54,7 +54,6 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
 
   const addElement = (elementType: DocumentElementType) => {
     const element = createNewElement(elementType);
-
     setValue([...elementsCollection, element]);
   };
 

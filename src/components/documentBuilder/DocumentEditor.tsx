@@ -21,8 +21,6 @@ import styles from "./DocumentEditor.module.scss";
 import { ROOT_ELEMENT_TYPES } from "./allowedElementTypes";
 import ElementEdit from "./ElementEdit";
 import { Row, Col } from "react-bootstrap";
-import RemoveElementAction from "./RemoveElementAction";
-import MoveElementAction from "./MoveElementAction";
 
 type DocumentEditorProps = {
   name: string;
@@ -46,41 +44,22 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       </Col>
     </Row>
 
-    <Row className={styles.currentFieldRow}>
-      <Col xl="3" className={styles.currentField}>
-        <h6>Current Element</h6>
-      </Col>
-      {activeElement && (
-        <Col xl>
-          <RemoveElementAction
-            elementName={activeElement}
-            setActiveElement={setActiveElement}
-          />
+    {activeElement ? (
+      <ElementEdit
+        elementName={activeElement}
+        setActiveElement={setActiveElement}
+      />
+    ) : (
+      <Row className={styles.currentFieldRow}>
+        <Col xl="3" className={styles.currentField}>
+          <h6>Nothing selected</h6>
         </Col>
-      )}
-      <Col xl>
-        <small className="text-muted">
-          Use the Preview Tab on the right to select an element to edit ⟶
-        </small>
-      </Col>
-    </Row>
-
-    {activeElement && (
-      <>
-        <Row>
-          <Col>
-            <ElementEdit elementName={activeElement} />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <MoveElementAction
-              elementName={activeElement}
-              setActiveElement={setActiveElement}
-            />
-          </Col>
-        </Row>
-      </>
+        <Col xl>
+          <small className="text-muted">
+            Use the Preview Tab on the right to select an element to edit ⟶
+          </small>
+        </Col>
+      </Row>
     )}
   </>
 );
