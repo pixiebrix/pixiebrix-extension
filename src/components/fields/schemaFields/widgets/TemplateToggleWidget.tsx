@@ -178,6 +178,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
           <span className={styles.symbol}>{selectedOption?.symbol ?? ""}</span>
         }
         variant="link"
+        alignRight
         onSelect={onModeChange}
         className={styles.dropdown}
         data-testid={`toggle-${name}`}
