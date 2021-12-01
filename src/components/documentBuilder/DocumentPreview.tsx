@@ -27,12 +27,14 @@ type DocumentPreviewProps = {
   name: string;
   activeElement: string;
   setActiveElement: (activeElement: string) => void;
+  menuBoundary?: Element;
 };
 
 const DocumentPreview = ({
   name,
   activeElement,
   setActiveElement,
+  menuBoundary,
 }: DocumentPreviewProps) => {
   const [{ value: body }] = useField<DocumentElement[]>(name);
 
@@ -44,6 +46,7 @@ const DocumentPreview = ({
           elementName={`${name}.${i}`}
           activeElement={activeElement}
           setActiveElement={setActiveElement}
+          menuBoundary={menuBoundary}
         />
       ))}
       <div className={cx({ "mt-3": body.length > 0 })}>

@@ -149,7 +149,7 @@ const DataPanel: React.FC<{
   const showBlockPreview = record || previewInfo?.traceOptional;
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
-    showFormPreview ? "preview" : "output"
+    showFormPreview || showDocumentPreview ? "preview" : "output"
   );
 
   const [contextQuery, setContextQuery] = useDataPanelTabSearchQuery("context");
@@ -158,6 +158,10 @@ const DataPanel: React.FC<{
     "rendered"
   );
   const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
+
+  const popupBoundary = showDocumentPreview
+    ? document.querySelector(`.${styles.tabContent}`)
+    : undefined;
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -301,6 +305,7 @@ const DataPanel: React.FC<{
                       name={documentBodyName}
                       activeElement={documentBuilderActiveElement}
                       setActiveElement={setDocumentBuilderActiveElement}
+                      menuBoundary={popupBoundary}
                     />
                   )}
                 </ErrorBoundary>

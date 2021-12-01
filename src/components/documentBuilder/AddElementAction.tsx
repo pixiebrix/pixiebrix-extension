@@ -34,6 +34,7 @@ type AddElementActionProps = {
   allowedTypes?: DocumentElementType[];
   className?: string;
   as: "button" | "ellipsis";
+  menuBoundary?: Element;
 };
 
 const addButtonTitle = (
@@ -47,6 +48,7 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
   allowedTypes = DOCUMENT_ELEMENT_TYPES,
   className,
   as,
+  menuBoundary,
 }) => {
   const [{ value: elementsCollection }, , { setValue }] = useField<
     DocumentElement[]
@@ -67,6 +69,7 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
           addElement(elementType);
         },
       }))}
+      menuBoundary={menuBoundary}
     />
   ) : (
     <DropdownButton

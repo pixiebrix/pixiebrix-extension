@@ -28,12 +28,14 @@ interface ElementPreviewTemplateProps {
   elementName: string;
   activeElement: string;
   setActiveElement: (name: string) => void;
+  menuBoundary?: Element;
 }
 
 const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
   elementName,
   activeElement,
   setActiveElement,
+  menuBoundary,
 }) => {
   const [{ value: documentElement }] = useField<DocumentElement>(elementName);
   const isActive = activeElement === elementName;
@@ -67,6 +69,7 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
             elementName={`${elementName}.children.${i}`}
             activeElement={activeElement}
             setActiveElement={setActiveElement}
+            menuBoundary={menuBoundary}
           />
         ))}
       {isContainer && (
@@ -75,6 +78,7 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
           elementsCollectionName={`${elementName}.children`}
           allowedTypes={getAllowedChildTypes(documentElement)}
           className={styles.addElement}
+          menuBoundary={menuBoundary}
         />
       )}
     </PreviewComponent>

@@ -34,7 +34,14 @@ const EllipsisMenu: React.FunctionComponent<{
   toggleClassName?: string;
   variant?: string;
   items: Item[];
-}> = ({ className, toggleClassName, variant = "light", items }) => {
+  menuBoundary?: Element;
+}> = ({
+  className,
+  toggleClassName,
+  variant = "light",
+  items,
+  menuBoundary,
+}) => {
   const onToggle = (
     isOpen: boolean,
     event: SyntheticEvent<Dropdown>,
@@ -59,6 +66,20 @@ const EllipsisMenu: React.FunctionComponent<{
     }
   };
 
+  // This will set the boundary element for the Ellipsis menu popup
+  const dropdownMenuOptions = menuBoundary
+    ? {
+        modifiers: [
+          {
+            name: "flip",
+            options: {
+              boundary: menuBoundary,
+            },
+          },
+        ],
+      }
+    : undefined;
+
   return (
     <Dropdown alignRight onToggle={onToggle} className={className}>
       <Dropdown.Toggle
@@ -68,7 +89,7 @@ const EllipsisMenu: React.FunctionComponent<{
       >
         <FontAwesomeIcon icon={faEllipsisV} />
       </Dropdown.Toggle>
-      <Dropdown.Menu>
+      <Dropdown.Menu popperConfig={dropdownMenuOptions}>
         {items
           .filter((x) => !x.hide)
           .map((item, index) => (
