@@ -195,7 +195,7 @@ function getToggleOptions({
         defaultValue:
           typeof fieldSchema.default === "string"
             ? String(fieldSchema.default)
-            : "",
+            : null,
       });
     } else {
       pushOptions({

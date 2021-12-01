@@ -71,11 +71,13 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     }
   }, []);
 
-  const selectedValue = options.find((x) => x.value === value) ?? { value: "" };
+  const selectedValue = options.find((x) => x.value === value) ?? {
+    value: null,
+  };
 
   const selectOnChange = useCallback(
     (option: StringOption) => {
-      helpers.setValue(option?.value ?? "");
+      helpers.setValue(option?.value ?? null);
     },
     [helpers]
   );
