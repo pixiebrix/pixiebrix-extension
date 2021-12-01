@@ -160,7 +160,7 @@ async function select(
         );
       }
 
-      $elt = $(document).find(normalizedSelector.selector);
+      $elt = $safeFind(normalizedSelector.selector);
     }
 
     if (

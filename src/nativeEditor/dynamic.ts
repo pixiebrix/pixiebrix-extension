@@ -39,6 +39,7 @@ import {
   ContextMenuReader,
 } from "@/extensionPoints/contextMenu";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
+import { $safeFind } from "@/helpers";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
@@ -117,7 +118,7 @@ export async function runExtensionPointReader(
 
   // Handle element-based reader context for triggers
   if (rootSelector) {
-    const $root = $(document).find(rootSelector);
+    const $root = $safeFind(rootSelector);
     if ($root.length === 1) {
       // If there's a single root, use that even if it's not the active element (because that's likely the one the user
       // is intending to use).
@@ -185,7 +186,7 @@ export async function enableOverlay(selector: string): Promise<void> {
     _overlay = new Overlay();
   }
 
-  const $elt = $(document).find(selector);
+  const $elt = $safeFind(selector);
   _overlay.inspect($elt.toArray(), null);
 }
 

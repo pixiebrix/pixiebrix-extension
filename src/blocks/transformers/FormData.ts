@@ -18,6 +18,7 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { $safeFind } from "@/helpers";
 
 export class FormData extends Transformer {
   defaultOutputKey = "form";
@@ -49,8 +50,7 @@ export class FormData extends Transformer {
 
   async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
     const result: Record<string, unknown> = {};
-    $(document)
-      .find(selector)
+    $safeFind(selector)
       .find(":input")
       .each(function () {
         const name = $(this).attr("name") ?? "";
