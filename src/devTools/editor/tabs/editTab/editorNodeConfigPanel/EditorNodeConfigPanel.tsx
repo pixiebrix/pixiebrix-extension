@@ -87,7 +87,7 @@ const EditorNodeConfigPanel: React.FC<{
     : BlockConfigurationV1;
 
   return (
-    <>
+    <Col>
       {blockError && (
         <Row>
           <Col className={styles.errorMessage}>{blockError}</Col>
@@ -122,7 +122,7 @@ const EditorNodeConfigPanel: React.FC<{
       </Row>
 
       <VersionedBlockConfiguration name={blockFieldName} blockId={blockId} />
-    </>
+    </Col>
   );
 };
 

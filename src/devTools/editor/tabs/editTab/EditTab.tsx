@@ -383,16 +383,11 @@ const EditTab: React.FC<{
           >
             <FormTheme.Provider value={blockConfigTheme}>
               {activeNodeId === FOUNDATION_NODE_ID ? (
-                <>
-                  <Col>
-                    <ConnectedFieldTemplate
-                      name="label"
-                      label="Extension Name"
-                    />
-                    {showVersionField && <ApiVersionField />}
-                  </Col>
+                <Col>
+                  <ConnectedFieldTemplate name="label" label="Extension Name" />
+                  {showVersionField && <ApiVersionField />}
                   <FoundationNode isLocked={isLocked} />
-                </>
+                </Col>
               ) : (
                 <EditorNodeConfigPanel
                   key={activeNodeId}
