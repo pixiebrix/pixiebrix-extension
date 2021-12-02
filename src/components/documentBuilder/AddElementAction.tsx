@@ -17,7 +17,6 @@
 
 import { useField } from "formik";
 import React from "react";
-import { Dropdown, DropdownButton } from "react-bootstrap";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import {
   DocumentElement,
@@ -25,29 +24,19 @@ import {
   DOCUMENT_ELEMENT_TYPES,
 } from "./documentBuilderTypes";
 import styles from "./AddElementAction.module.scss";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { createNewElement } from "./createNewElement";
 
 type AddElementActionProps = {
   elementsCollectionName: string;
   allowedTypes?: DocumentElementType[];
   className?: string;
-  as: "button" | "ellipsis";
   menuBoundary?: Element;
 };
-
-const addButtonTitle = (
-  <>
-    <FontAwesomeIcon icon={faPlus} /> Add new element
-  </>
-);
 
 const AddElementAction: React.FC<AddElementActionProps> = ({
   elementsCollectionName,
   allowedTypes = DOCUMENT_ELEMENT_TYPES,
   className,
-  as,
   menuBoundary,
 }) => {
   const [{ value: elementsCollection }, , { setValue }] = useField<
@@ -59,7 +48,7 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
     setValue([...elementsCollection, element]);
   };
 
-  return as === "ellipsis" ? (
+  return (
     <EllipsisMenu
       className={className}
       toggleClassName={styles.toggle}
@@ -71,24 +60,6 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
       }))}
       menuBoundary={menuBoundary}
     />
-  ) : (
-    <DropdownButton
-      title={addButtonTitle}
-      className={className}
-      variant="primary"
-      size="sm"
-    >
-      {allowedTypes.map((elementType) => (
-        <Dropdown.Item
-          key={elementType}
-          onClick={() => {
-            addElement(elementType);
-          }}
-        >
-          {elementType}
-        </Dropdown.Item>
-      ))}
-    </DropdownButton>
   );
 };
 

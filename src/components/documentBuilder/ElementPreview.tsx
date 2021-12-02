@@ -95,7 +95,6 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
         ))}
       {isContainer && (
         <AddElementAction
-          as="ellipsis"
           elementsCollectionName={`${elementName}.children`}
           allowedTypes={getAllowedChildTypes(documentElement)}
           className={styles.addElement}

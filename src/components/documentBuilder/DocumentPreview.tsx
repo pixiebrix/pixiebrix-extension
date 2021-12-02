@@ -88,7 +88,6 @@ const DocumentPreview = ({
       ))}
       {body.length === 0 && <span className="text-muted">body</span>}
       <AddElementAction
-        as="ellipsis"
         elementsCollectionName={name}
         allowedTypes={ROOT_ELEMENT_TYPES}
         className={previewStyles.addElement}
