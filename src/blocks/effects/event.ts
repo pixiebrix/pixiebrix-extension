@@ -67,7 +67,7 @@ export class ElementEvent extends Effect {
         examples: DOM_EVENTS,
       },
     },
-    required: ["selector"],
+    required: ["selector", "event"],
   };
 
   async effect(

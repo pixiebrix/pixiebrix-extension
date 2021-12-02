@@ -78,8 +78,8 @@ type TemplateToggleWidgetProps = SchemaFieldProps & {
 export function getOptionForInputMode(
   options: InputModeOption[],
   inputMode: FieldInputMode
-): InputModeOption {
-  return options.find((option) => option.value === inputMode);
+): InputModeOption | null {
+  return options.find((option) => option.value === inputMode) ?? null;
 }
 
 /**
