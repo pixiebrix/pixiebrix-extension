@@ -22,6 +22,9 @@ import AddElementAction from "./AddElementAction";
 import ElementPreview from "./ElementPreview";
 import { ROOT_ELEMENT_TYPES } from "./allowedElementTypes";
 import cx from "classnames";
+import previewStyles from "./ElementPreview.module.scss";
+import documentTreeStyles from "./documentTree.module.scss";
+import styles from "./DocumentPreview.module.scss";
 
 type DocumentPreviewProps = {
   name: string;
@@ -39,12 +42,39 @@ const DocumentPreview = ({
   const [{ value: body }] = useField<DocumentElement[]>(name);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
 
+  const isHovered = hoveredElement === "body";
+
+  const onClick: MouseEventHandler<HTMLDivElement> = (event) => {
+    event.stopPropagation();
+
+    setActiveElement(null);
+  };
+
+  const onMouseOver: MouseEventHandler<HTMLDivElement> = (event) => {
+    event.stopPropagation();
+    setHoveredElement("body");
+  };
+
   const onMouseLeave: MouseEventHandler<HTMLDivElement> = () => {
     setHoveredElement(null);
   };
 
   return (
-    <div onMouseLeave={onMouseLeave}>
+    // eslint-disable-next-line jsx-a11y/mouse-events-have-key-events
+    <div
+      onClick={onClick}
+      className={cx(
+        styles.root,
+        previewStyles.root,
+        documentTreeStyles.container,
+        {
+          [previewStyles.hovered]: isHovered,
+          [styles.empty]: body.length === 0,
+        }
+      )}
+      onMouseOver={onMouseOver}
+      onMouseLeave={onMouseLeave}
+    >
       {body.map((childElement, i) => (
         <ElementPreview
           key={`${name}.${i}`}
@@ -56,13 +86,14 @@ const DocumentPreview = ({
           setHoveredElement={setHoveredElement}
         />
       ))}
-      <div className={cx({ "mt-3": body.length > 0 })}>
-        <AddElementAction
-          as="button"
-          elementsCollectionName={name}
-          allowedTypes={ROOT_ELEMENT_TYPES}
-        />
-      </div>
+      {body.length === 0 && <span className="text-muted">body</span>}
+      <AddElementAction
+        as="ellipsis"
+        elementsCollectionName={name}
+        allowedTypes={ROOT_ELEMENT_TYPES}
+        className={previewStyles.addElement}
+        menuBoundary={menuBoundary}
+      />
     </div>
   );
 };

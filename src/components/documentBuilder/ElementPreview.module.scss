@@ -1,32 +1,15 @@
 $color-active: #007bff;
-$color-border: darkgray;
 
 .root {
   margin: 3px;
   min-height: 30px;
+  border-radius: 0.25rem;
 }
 
 .addElement {
   position: absolute !important;
   top: 2px;
   right: 2px;
-}
-
-.container {
-  border: 2px dashed $color-border;
-  border-radius: 5px;
-  position: relative;
-  min-height: 50px;
-
-  padding-right: 15px;
-
-  &:global(.container) {
-    padding-right: 30px;
-  }
-  &:global(.row) {
-    margin-left: -12px;
-    margin-right: -12px;
-  }
 }
 
 .active {

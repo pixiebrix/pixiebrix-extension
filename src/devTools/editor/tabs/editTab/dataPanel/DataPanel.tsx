@@ -292,24 +292,24 @@ const DataPanel: React.FC<{
             unmountOnExit
           >
             {showFormPreview || showDocumentPreview ? (
-              <div className={styles.selectablePreviewContainer}>
-                <ErrorBoundary>
-                  {showFormPreview ? (
+              <ErrorBoundary>
+                {showFormPreview ? (
+                  <div className={styles.selectablePreviewContainer}>
                     <FormPreview
                       rjsfSchema={block.config as RJSFSchema}
                       activeField={formBuilderActiveField}
                       setActiveField={setFormBuilderActiveField}
                     />
-                  ) : (
-                    <DocumentPreview
-                      name={documentBodyName}
-                      activeElement={documentBuilderActiveElement}
-                      setActiveElement={setDocumentBuilderActiveElement}
-                      menuBoundary={popupBoundary}
-                    />
-                  )}
-                </ErrorBoundary>
-              </div>
+                  </div>
+                ) : (
+                  <DocumentPreview
+                    name={documentBodyName}
+                    activeElement={documentBuilderActiveElement}
+                    setActiveElement={setDocumentBuilderActiveElement}
+                    menuBoundary={popupBoundary}
+                  />
+                )}
+              </ErrorBoundary>
             ) : // eslint-disable-next-line unicorn/no-nested-ternary -- the style rule conflicts with prettier
             showBlockPreview ? (
               <ErrorBoundary>

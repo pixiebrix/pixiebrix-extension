@@ -8,3 +8,4 @@
 /httpRequests/
 # Prettier plugin
 /prettier.xml
+/watcherTasks.xml

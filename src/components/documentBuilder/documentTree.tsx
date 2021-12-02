@@ -24,7 +24,7 @@ import { Card, Col, Container, Row } from "react-bootstrap";
 import { DocumentComponent, DocumentElement } from "./documentBuilderTypes";
 import DocumentButton from "@/components/documentBuilder/DocumentButton";
 import useNotifications from "@/hooks/useNotifications";
-import styles from "./ElementPreview.module.scss";
+import documentTreeStyles from "./documentTree.module.scss";
 import cx from "classnames";
 
 const headerComponents = {
@@ -186,7 +186,7 @@ export function getPreviewComponentDefinition(
     case "row":
     case "column": {
       const { Component, props } = getComponentDefinition(element);
-      props.className = cx(props.className, styles.container);
+      props.className = cx(props.className, documentTreeStyles.container);
 
       if (!element.children?.length) {
         props.children = <span className="text-muted">{componentType}</span>;
@@ -206,7 +206,7 @@ export function getPreviewComponentDefinition(
         config: {
           ...config,
           heading,
-          bodyProps: { className: styles.container },
+          bodyProps: { className: documentTreeStyles.container },
         },
       };
 
@@ -225,10 +225,11 @@ export function getPreviewComponentDefinition(
 
     case "block": {
       const pipeline = get(element, "config.pipeline", "");
-      const PreviewComponent: React.FC<PreviewComponentProps> = (
-        previewProps
-      ) => (
-        <div {...previewProps}>
+      const PreviewComponent: React.FC<PreviewComponentProps> = ({
+        className,
+        ...restPreviewProps
+      }) => (
+        <div className={cx(className)} {...restPreviewProps}>
           <h3>Block</h3>
           <p>{pipeline}</p>
         </div>
@@ -239,18 +240,24 @@ export function getPreviewComponentDefinition(
 
     case "button": {
       const { Component, props } = getComponentDefinition(element);
-      const PreviewComponent: React.FC<PreviewComponentProps> = (
-        previewProps
-      ) => {
+      const PreviewComponent: React.FC<PreviewComponentProps> = ({
+        className,
+        ...restPreviewProps
+      }) => {
         const notify = useNotifications();
         return (
-          <div {...previewProps}>
-            <Component
-              {...props}
-              onClick={() => {
-                notify.info("Action button clicked.");
-              }}
-            />
+          <div>
+            <div
+              className={cx(className, documentTreeStyles.inlineWrapper)}
+              {...restPreviewProps}
+            >
+              <Component
+                {...props}
+                onClick={() => {
+                  notify.info("Action button clicked.");
+                }}
+              />
+            </div>
           </div>
         );
       };
