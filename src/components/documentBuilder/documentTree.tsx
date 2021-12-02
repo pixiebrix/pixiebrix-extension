@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable jsx-a11y/click-events-have-key-events -- for the onClick events on Preview wrappers div */
-/* eslint-disable jsx-a11y/no-static-element-interactions -- for the onClick events on Preview wrappers div */
 import React from "react";
 import BlockPipeline from "@/components/documentBuilder/DocumentBlock";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
@@ -137,8 +135,10 @@ export function getComponentDefinition(
 }
 
 type PreviewComponentProps = {
-  onClick: React.MouseEventHandler<HTMLDivElement>;
   className?: string;
+  onClick: React.MouseEventHandler<HTMLDivElement>;
+  onMouseEnter: React.MouseEventHandler<HTMLDivElement>;
+  onMouseLeave: React.MouseEventHandler<HTMLDivElement>;
 };
 
 export function getPreviewComponentDefinition(
@@ -212,11 +212,10 @@ export function getPreviewComponentDefinition(
 
       const { Component, props } = getComponentDefinition(previewElement);
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        onClick,
-        className,
         children,
+        ...restPreviewProps
       }) => (
-        <div onClick={onClick} className={className}>
+        <div {...restPreviewProps}>
           <Component {...props}>{children}</Component>
         </div>
       );
@@ -226,11 +225,10 @@ export function getPreviewComponentDefinition(
 
     case "block": {
       const pipeline = get(element, "config.pipeline", "");
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        onClick,
-        className,
-      }) => (
-        <div onClick={onClick} className={className}>
+      const PreviewComponent: React.FC<PreviewComponentProps> = (
+        previewProps
+      ) => (
+        <div {...previewProps}>
           <h3>Block</h3>
           <p>{pipeline}</p>
         </div>
@@ -241,13 +239,12 @@ export function getPreviewComponentDefinition(
 
     case "button": {
       const { Component, props } = getComponentDefinition(element);
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        onClick,
-        className,
-      }) => {
+      const PreviewComponent: React.FC<PreviewComponentProps> = (
+        previewProps
+      ) => {
         const notify = useNotifications();
         return (
-          <div onClick={onClick} className={className}>
+          <div {...previewProps}>
             <Component
               {...props}
               onClick={() => {

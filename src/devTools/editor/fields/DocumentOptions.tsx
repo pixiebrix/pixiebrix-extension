@@ -55,7 +55,6 @@ const DocumentOptions: React.FC<{
 
   return (
     <DocumentEditor
-      name={bodyName}
       activeElement={activeElement}
       setActiveElement={setActiveElement}
     />

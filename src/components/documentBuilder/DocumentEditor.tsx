@@ -16,52 +16,35 @@
  */
 
 import React from "react";
-import AddElementAction from "./AddElementAction";
 import styles from "./DocumentEditor.module.scss";
-import { ROOT_ELEMENT_TYPES } from "./allowedElementTypes";
 import ElementEdit from "./ElementEdit";
 import { Row, Col } from "react-bootstrap";
 
 type DocumentEditorProps = {
-  name: string;
   activeElement: string;
   setActiveElement: (activeElement: string) => void;
 };
 
 const DocumentEditor: React.FC<DocumentEditorProps> = ({
-  name,
   activeElement,
   setActiveElement,
-}) => (
-  <>
-    <Row className={styles.addRow}>
-      <Col>
-        <AddElementAction
-          as="button"
-          elementsCollectionName={name}
-          allowedTypes={ROOT_ELEMENT_TYPES}
-        />
+}) =>
+  activeElement ? (
+    <ElementEdit
+      elementName={activeElement}
+      setActiveElement={setActiveElement}
+    />
+  ) : (
+    <Row className={styles.currentFieldRow}>
+      <Col xl="3" className={styles.currentField}>
+        <h6>Nothing selected</h6>
+      </Col>
+      <Col xl>
+        <small className="text-muted">
+          Use the Preview Tab on the right to select an element to edit ⟶
+        </small>
       </Col>
     </Row>
-
-    {activeElement ? (
-      <ElementEdit
-        elementName={activeElement}
-        setActiveElement={setActiveElement}
-      />
-    ) : (
-      <Row className={styles.currentFieldRow}>
-        <Col xl="3" className={styles.currentField}>
-          <h6>Nothing selected</h6>
-        </Col>
-        <Col xl>
-          <small className="text-muted">
-            Use the Preview Tab on the right to select an element to edit ⟶
-          </small>
-        </Col>
-      </Row>
-    )}
-  </>
-);
+  );
 
 export default DocumentEditor;

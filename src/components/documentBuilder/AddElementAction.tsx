@@ -39,7 +39,7 @@ type AddElementActionProps = {
 
 const addButtonTitle = (
   <>
-    <FontAwesomeIcon icon={faPlus} /> Add new field
+    <FontAwesomeIcon icon={faPlus} /> Add new element
   </>
 );
 

@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import React from "react";
+import React, { MouseEventHandler, useState } from "react";
 import { DocumentElement } from "./documentBuilderTypes";
 import AddElementAction from "./AddElementAction";
 import ElementPreview from "./ElementPreview";
@@ -37,9 +37,14 @@ const DocumentPreview = ({
   menuBoundary,
 }: DocumentPreviewProps) => {
   const [{ value: body }] = useField<DocumentElement[]>(name);
+  const [hoveredElement, setHoveredElement] = useState<string | null>(null);
+
+  const onMouseLeave: MouseEventHandler<HTMLDivElement> = () => {
+    setHoveredElement(null);
+  };
 
   return (
-    <>
+    <div onMouseLeave={onMouseLeave}>
       {body.map((childElement, i) => (
         <ElementPreview
           key={`${name}.${i}`}
@@ -47,6 +52,8 @@ const DocumentPreview = ({
           activeElement={activeElement}
           setActiveElement={setActiveElement}
           menuBoundary={menuBoundary}
+          hoveredElement={hoveredElement}
+          setHoveredElement={setHoveredElement}
         />
       ))}
       <div className={cx({ "mt-3": body.length > 0 })}>
@@ -56,7 +63,7 @@ const DocumentPreview = ({
           allowedTypes={ROOT_ELEMENT_TYPES}
         />
       </div>
-    </>
+    </div>
   );
 };
 

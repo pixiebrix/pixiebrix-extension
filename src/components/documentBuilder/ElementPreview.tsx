@@ -26,8 +26,10 @@ import { getAllowedChildTypes } from "./allowedElementTypes";
 
 interface ElementPreviewTemplateProps {
   elementName: string;
-  activeElement: string;
-  setActiveElement: (name: string) => void;
+  activeElement: string | null;
+  setActiveElement: (name: string | null) => void;
+  hoveredElement: string | null;
+  setHoveredElement: (name: string | null) => void;
   menuBoundary?: Element;
 }
 
@@ -35,15 +37,29 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
   elementName,
   activeElement,
   setActiveElement,
+  hoveredElement,
+  setHoveredElement,
   menuBoundary,
 }) => {
   const [{ value: documentElement }] = useField<DocumentElement>(elementName);
   const isActive = activeElement === elementName;
+  const isHovered = hoveredElement === elementName && !isActive;
   const onClick: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
 
     if (!isActive) {
       setActiveElement(elementName);
+    }
+  };
+
+  const onMouseOver: MouseEventHandler<HTMLDivElement> = (event) => {
+    event.stopPropagation();
+    setHoveredElement(elementName);
+  };
+
+  const onMouseLeave: MouseEventHandler<HTMLDivElement> = () => {
+    if (hoveredElement === elementName) {
+      setHoveredElement(null);
     }
   };
 
@@ -59,7 +75,10 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
       onClick={onClick}
       className={cx(props?.className, styles.root, {
         [styles.active]: isActive,
+        [styles.hovered]: isHovered,
       })}
+      onMouseOver={onMouseOver}
+      onMouseLeave={onMouseLeave}
     >
       {props?.children}
       {isContainer &&
@@ -70,6 +89,8 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
             activeElement={activeElement}
             setActiveElement={setActiveElement}
             menuBoundary={menuBoundary}
+            hoveredElement={hoveredElement}
+            setHoveredElement={setHoveredElement}
           />
         ))}
       {isContainer && (
