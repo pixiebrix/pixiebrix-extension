@@ -243,7 +243,7 @@ function connectDevtools(port: Runtime.Port): void {
       deleteStaleConnections(port);
       numOpenConnections--;
       console.debug(
-        `Devtools port disconnected for tab: ${port.sender?.tab}; # open ports: ${numOpenConnections})`
+        `Devtools port disconnected for tab: ${port.sender?.tab.id}; # open ports: ${numOpenConnections})`
       );
     });
   } else {

@@ -41,6 +41,7 @@ import { BusinessError } from "@/errors";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
+import { $safeFind } from "@/helpers";
 
 /**
  * @throws InputValidationError if blockArgs does not match the input schema for block
@@ -150,8 +151,9 @@ export function selectBlockRootElement(
 
   const $root = $(root ?? document);
 
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jQuery
-  const $stageRoot = blockConfig.root ? $root.find(blockConfig.root) : $root;
+  const $stageRoot = blockConfig.root
+    ? $safeFind(blockConfig.root, $root)
+    : $root;
 
   if ($stageRoot.length > 1) {
     throw new BusinessError(`Multiple roots found for ${blockConfig.root}`);

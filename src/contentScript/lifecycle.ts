@@ -29,6 +29,7 @@ import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { clearExtensionTraces } from "@/background/trace";
 import { isDeploymentActive } from "@/options/deploymentUtils";
+import { $safeFind } from "@/helpers";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
@@ -275,14 +276,11 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
     testMatchPatterns(rule.matchPatterns, url)
   );
   if (rules.length > 0) {
-    const $document = $(document);
-    while (
-      rules.some((rule) =>
-        rule.loadingSelectors.some(
-          (selector) => $document.find(selector).length > 0
-        )
-      )
-    ) {
+    const jointSelector = rules
+      .flatMap((rule) => rule.loadingSelectors)
+      .filter(Boolean) // Exclude empty selectors, if any
+      .join(",");
+    while ($safeFind(jointSelector).length > 0) {
       if (cancel()) {
         return;
       }

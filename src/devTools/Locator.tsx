@@ -63,7 +63,9 @@ const Locator: React.FunctionComponent = () => {
   return (
     <div>
       <div>Welcome to the future of reverse engineering!</div>
-      {!isEmpty(frameworks) ? (
+      {isEmpty(frameworks) ? (
+        <span>No front-end frameworks detected</span>
+      ) : (
         <>
           Frameworks Detected
           <ul>
@@ -74,8 +76,6 @@ const Locator: React.FunctionComponent = () => {
             ))}
           </ul>
         </>
-      ) : (
-        <span>No front-end frameworks detected</span>
       )}
       <InputGroup className="mb-3">
         <InputGroup.Prepend>
@@ -94,7 +94,9 @@ const Locator: React.FunctionComponent = () => {
 
       {searchError?.toString()}
 
-      {searchResults != null ? (
+      {searchResults == null ? (
+        <GridLoader />
+      ) : (
         <Table>
           <thead>
             <tr>
@@ -111,8 +113,6 @@ const Locator: React.FunctionComponent = () => {
             ))}
           </tbody>
         </Table>
-      ) : (
-        <GridLoader />
       )}
     </div>
   );

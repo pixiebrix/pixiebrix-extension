@@ -60,6 +60,7 @@ export class RegexTransformer extends Transformer {
   }: BlockArg): Promise<
     Record<string, string> | Array<Record<string, string>>
   > {
+    // eslint-disable-next-line security/detect-non-literal-regexp -- It's what the brick is about
     const compiled = new RegExp(regex);
 
     const extract = (x: string | null) => {

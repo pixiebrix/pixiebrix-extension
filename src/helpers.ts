@@ -51,3 +51,10 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
  */
 export const IS_BROWSER =
   typeof window !== "undefined" && typeof window.document !== "undefined";
+
+export function $safeFind(
+  selector: string,
+  parent: Document | Element | JQuery<HTMLElement | Document> = document
+): JQuery {
+  return $(parent).find(selector);
+}
