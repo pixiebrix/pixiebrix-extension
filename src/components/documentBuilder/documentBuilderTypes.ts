@@ -28,6 +28,7 @@ export const DOCUMENT_ELEMENT_TYPES = [
   "card",
   "block",
   "button",
+  "list",
 ] as const;
 
 export type DocumentElementType = typeof DOCUMENT_ELEMENT_TYPES[number];

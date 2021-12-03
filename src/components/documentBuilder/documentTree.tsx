@@ -26,6 +26,7 @@ import DocumentButton from "@/components/documentBuilder/DocumentButton";
 import useNotifications from "@/hooks/useNotifications";
 import documentTreeStyles from "./documentTree.module.scss";
 import cx from "classnames";
+import DocumentList from "@/components/documentBuilder/DocumentList";
 
 const headerComponents = {
   header_1: "h1",
@@ -46,7 +47,7 @@ const UnknownType: React.FC<{ componentType: string }> = ({
 export function getComponentDefinition(
   element: DocumentElement
 ): DocumentComponent {
-  const componentType = String(element.type);
+  const componentType = element.type;
   const config = get(element, "config", {} as UnknownObject);
 
   switch (componentType) {
@@ -122,6 +123,21 @@ export function getComponentDefinition(
           onClick: onClick?.__value__,
           ...props,
         },
+      };
+    }
+
+    case "list": {
+      const props = {
+        array: config.array,
+        elementKey: config.elementKey,
+        config: config.element,
+      };
+
+      console.log("list", { element, props });
+
+      return {
+        Component: DocumentList,
+        props,
       };
     }
 
@@ -261,6 +277,19 @@ export function getPreviewComponentDefinition(
           </div>
         );
       };
+
+      return { Component: PreviewComponent };
+    }
+
+    case "list": {
+      const PreviewComponent: React.FC<PreviewComponentProps> = ({
+        className,
+        ...restPreviewProps
+      }) => (
+        <div className={cx(className)} {...restPreviewProps}>
+          <h3>List</h3>
+        </div>
+      );
 
       return { Component: PreviewComponent };
     }

@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getElementEditSchemas } from "./elementEditSchemas";
@@ -25,6 +25,7 @@ import { Row, Col } from "react-bootstrap";
 import styles from "./DocumentEditor.module.scss";
 import RemoveElementAction from "./RemoveElementAction";
 import MoveElementAction from "./MoveElementAction";
+import FieldTemplate from "@/components/form/FieldTemplate";
 
 type ElementEditProps = {
   elementName: string;
@@ -42,6 +43,7 @@ const elementTypeLabels: Record<DocumentElementType, string> = {
   text: "Text",
   button: "Button",
   block: "Block",
+  list: "List",
 };
 
 const ElementEdit: React.FC<ElementEditProps> = ({
@@ -49,8 +51,35 @@ const ElementEdit: React.FC<ElementEditProps> = ({
   setActiveElement,
 }) => {
   const [{ value: documentElement }] = useField<DocumentElement>(elementName);
+  const [{ value: element }, , { setValue: setElement }] = useField(
+    `${elementName}.config.element`
+  );
 
   const editSchemas = getElementEditSchemas(documentElement, elementName);
+
+  const [val, setVal] = useState<string>(element?.config?.text);
+  const onElChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    const { value } = event.target;
+
+    const element = {
+      __type__: "defer",
+      __value__: {
+        type: "text",
+        config: {
+          text: {
+            __type__: "var",
+            __value__: value,
+          },
+        },
+      } as DocumentElement,
+    };
+
+    setVal(value);
+    setElement(element);
+    setTimeout(() => {
+      console.log("ElementEdit", { documentElement });
+    }, 100);
+  };
 
   return (
     <>
@@ -79,6 +108,9 @@ const ElementEdit: React.FC<ElementEditProps> = ({
           {editSchemas.map((editSchema) => (
             <SchemaField key={editSchema.name} {...editSchema} />
           ))}
+          {documentElement.type === "list" && (
+            <FieldTemplate name="value" value={val} onChange={onElChange} />
+          )}
         </Col>
       </Row>
       <Row>

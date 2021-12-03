@@ -26,11 +26,12 @@ export const ROOT_ELEMENT_TYPES: DocumentElementType[] = [
   "card",
   "block",
   "button",
+  "list",
 ];
 
 const allowedChildTypes: Record<string, DocumentElementType[]> = {
-  container: ["row"],
-  row: ["column"],
+  container: ["row", "list"],
+  row: ["column", "list"],
   column: [
     "header_1",
     "header_2",
@@ -39,6 +40,7 @@ const allowedChildTypes: Record<string, DocumentElementType[]> = {
     "card",
     "block",
     "button",
+    "list",
   ],
   card: [
     "header_1",
@@ -48,6 +50,7 @@ const allowedChildTypes: Record<string, DocumentElementType[]> = {
     "container",
     "block",
     "button",
+    "list",
   ],
 };
 

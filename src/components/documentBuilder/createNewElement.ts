@@ -59,6 +59,9 @@ export function createNewElement(elementType: DocumentElementType) {
       element.config.title = "Click me";
       break;
 
+    case "list":
+      break;
+
     default:
       throw new Error(
         `Can't create new element. Type "${elementType} is not supported.`

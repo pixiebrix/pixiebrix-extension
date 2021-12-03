@@ -40,7 +40,80 @@ const DocumentBuilder: React.FC = () => {
   return (
     <Formik
       validationSchema={schemaShape}
-      initialValues={{ body: [] }}
+      initialValues={{
+        body: [
+          {
+            type: "container",
+            config: {},
+            children: [
+              {
+                type: "row",
+                config: {},
+                children: [
+                  {
+                    type: "column",
+                    config: {},
+                    children: [
+                      {
+                        type: "header_1",
+                        config: {
+                          title: "Header",
+                        },
+                      },
+                      {
+                        type: "text",
+                        config: {
+                          text: "Paragraph text.",
+                        },
+                      },
+                      {
+                        type: "block",
+                        config: {
+                          pipeline: "!pipeline",
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: "list",
+            config: {
+              array: {
+                __type__: "var",
+                __value__: [1, 2, 3],
+              },
+              elementKey: "element",
+              element: {
+                type: "text",
+                config: {
+                  text: {
+                    __type__: "mustache",
+                    __value__: "Note: {{ @element.text }}",
+                  },
+                },
+              },
+            },
+          },
+          /*
+          - type: list
+        config:
+        array: !var "@input.array"
+        # default elementKey is element
+        elementKey: "element"
+        element: !defer
+        type: card
+        config:
+        heading: !var "@element.name"
+        body: !pipeline
+        - id: "@pixiebrix/markdown"
+        config:
+        markdown: !mustache "Note: {{ @element.text }}"
+           */
+        ],
+      }}
       onSubmit={console.log}
     >
       {({ handleSubmit }) => (
