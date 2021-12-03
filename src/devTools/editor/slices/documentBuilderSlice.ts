@@ -15,15 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.addRow {
-  margin-bottom: 1.5rem;
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export interface DocumentBuilderState {
+  /**
+   * The currently active field in the Form Builder
+   */
+  activeElement: string | null;
 }
 
-.currentFieldRow {
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
+export const initialState: DocumentBuilderState = {
+  activeElement: null,
+};
 
-.currentField {
-  margin-top: 0.25rem;
-}
+export const documentBuilderSlice = createSlice({
+  name: "documentBuilder",
+  initialState,
+  reducers: {
+    setActiveElement: (state, action: PayloadAction<string>) => {
+      state.activeElement = action.payload;
+    },
+  },
+});
+
+export const { actions } = documentBuilderSlice;

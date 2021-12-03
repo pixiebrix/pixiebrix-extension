@@ -15,15 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.addRow {
-  margin-bottom: 1.5rem;
-}
+import { RootState } from "@/devTools/store";
 
-.currentFieldRow {
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
+const documentBuilderSelectors = {
+  activeElement: ({ documentBuilder }: RootState) =>
+    documentBuilder.activeElement,
+};
 
-.currentField {
-  margin-top: 0.25rem;
-}
+export default documentBuilderSelectors;

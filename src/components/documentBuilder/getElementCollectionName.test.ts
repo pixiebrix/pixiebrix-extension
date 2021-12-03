@@ -15,15 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.addRow {
-  margin-bottom: 1.5rem;
-}
+import getElementCollectionName from "@/components/documentBuilder/getElementCollectionName";
 
-.currentFieldRow {
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
-
-.currentField {
-  margin-top: 0.25rem;
-}
+test("returns collection name for an element", () => {
+  const elementName = "body.0.children.3";
+  const { collectionName, elementIndex } = getElementCollectionName(
+    elementName
+  );
+  expect(collectionName).toBe("body.0.children");
+  expect(elementIndex).toBe(3);
+});
+test("works for root element", () => {
+  const elementName = "body.5";
+  const { collectionName, elementIndex } = getElementCollectionName(
+    elementName
+  );
+  expect(collectionName).toBe("body");
+  expect(elementIndex).toBe(5);
+});

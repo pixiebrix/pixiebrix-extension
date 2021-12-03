@@ -76,10 +76,10 @@ exports[`FormEditor renders empty schema 1`] = `
       </div>
     </div>
     <div
-      class="currFieldRow row"
+      class="currentFieldRow row"
     >
       <div
-        class="currField col-xl-3"
+        class="currentField col-xl-3"
       >
         <h6>
           Current Field
@@ -184,10 +184,10 @@ exports[`FormEditor renders simple schema 1`] = `
       </div>
     </div>
     <div
-      class="currFieldRow row"
+      class="currentFieldRow row"
     >
       <div
-        class="currField col-xl-3"
+        class="currentField col-xl-3"
       >
         <h6>
           Current Field

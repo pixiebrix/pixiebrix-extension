@@ -15,15 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.addRow {
-  margin-bottom: 1.5rem;
-}
+import React, { Suspense } from "react";
+import { DocumentViewProps } from "./DocumentViewProps";
 
-.currentFieldRow {
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
+// Dynamic import because documentView has a transitive dependency of react-shadow-root which assumed a proper
+// `window` variable is present on module load. This isn't available on header generation
+const DocumentView = React.lazy(
+  async () =>
+    import(
+      /* webpackChunkName: "document-view" */
+      "./DocumentView"
+    )
+);
 
-.currentField {
-  margin-top: 0.25rem;
-}
+const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (
+  <Suspense fallback={<div className="text-muted">Loading...</div>}>
+    <DocumentView {...props} />
+  </Suspense>
+);
+
+export default DocumentViewLazy;

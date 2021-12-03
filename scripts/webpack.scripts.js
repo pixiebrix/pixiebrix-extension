@@ -68,5 +68,11 @@ module.exports = mergeWithShared({
           : "self"
       ),
     }),
+    // Don't fail on import of styles.
+    // Using an identity object instead of actual style sheet because styles are not needed for headers generations
+    new webpack.NormalModuleReplacementPlugin(
+      /\.module\.(css|scss)$/,
+      "identity-obj-proxy"
+    ),
   ],
 });

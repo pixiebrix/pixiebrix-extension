@@ -15,15 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.addRow {
-  margin-bottom: 1.5rem;
+const elementsCollectionRegexp = /(?<collectionName>.*)\.(?<elementIndex>\d+)/;
+
+/**
+ * Returns the name of the collection of a document element.
+ * Ex. for a given elementName `body.0.children.3` returns `body.0.children`
+ */
+function getElementCollectionName(
+  elementName: string
+): {
+  collectionName: string;
+  elementIndex: number;
+} {
+  const {
+    groups: { collectionName, elementIndex },
+  } = elementsCollectionRegexp.exec(elementName);
+
+  return { collectionName, elementIndex: Number(elementIndex) };
 }
 
-.currentFieldRow {
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
-
-.currentField {
-  margin-top: 0.25rem;
-}
+export default getElementCollectionName;

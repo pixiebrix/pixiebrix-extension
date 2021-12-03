@@ -59,4 +59,54 @@ export function getExampleBlockConfig(block: IBlock): UnknownObject | null {
       },
     };
   }
+
+  if (block.id === "@pixiebrix/document") {
+    return {
+      body: [
+        {
+          type: "container",
+          config: {},
+          children: [
+            {
+              type: "row",
+              config: {},
+              children: [
+                {
+                  type: "column",
+                  config: {},
+                  children: [
+                    {
+                      type: "header_1",
+                      config: {
+                        title: "Example document",
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: "row",
+              config: {},
+              children: [
+                {
+                  type: "column",
+                  config: {},
+                  children: [
+                    {
+                      type: "text",
+                      config: {
+                        text: "Example text element.",
+                        className: "text-success",
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+  }
 }
