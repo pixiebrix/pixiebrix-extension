@@ -68,6 +68,7 @@ module.exports = mergeWithShared({
           : "self"
       ),
     }),
+    // Don't fail on import of styles
     new webpack.NormalModuleReplacementPlugin(
       /\.module\.(css|scss)$/,
       "identity-obj-proxy"

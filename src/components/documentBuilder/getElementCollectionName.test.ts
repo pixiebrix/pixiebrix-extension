@@ -15,14 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const elementsCollectionRegexp = /(?<collectionName>.*)\.(?<elementIndex>\d+)/;
+import getElementCollectionName from "@/components/documentBuilder/getElementCollectionName";
 
-export function getElementCollectionName(
-  elementName: string
-): { collectionName: string; elementIndex: number } {
-  const {
-    groups: { collectionName, elementIndex },
-  } = elementsCollectionRegexp.exec(elementName);
-
-  return { collectionName, elementIndex: Number(elementIndex) };
-}
+test("returns collection name for an element", () => {
+  const elementName = "body.0.children.3";
+  const { collectionName, elementIndex } = getElementCollectionName(
+    elementName
+  );
+  expect(collectionName).toBe("body.0.children");
+  expect(elementIndex).toBe(3);
+});
+test("works for root element", () => {
+  const elementName = "body.5";
+  const { collectionName, elementIndex } = getElementCollectionName(
+    elementName
+  );
+  expect(collectionName).toBe("body");
+  expect(elementIndex).toBe(5);
+});

@@ -21,7 +21,7 @@ import { Button } from "react-bootstrap";
 import { DocumentElement } from "./documentBuilderTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { getElementCollectionName } from "./documentBuilderHelpers";
+import getElementCollectionName from "./getElementCollectionName";
 
 type RemoveElementActionProps = {
   elementName: string;

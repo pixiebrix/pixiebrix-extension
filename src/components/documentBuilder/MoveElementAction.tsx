@@ -18,7 +18,7 @@
 import { useField } from "formik";
 import React from "react";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { getElementCollectionName } from "./documentBuilderHelpers";
+import getElementCollectionName from "./getElementCollectionName";
 import { DocumentElement } from "./documentBuilderTypes";
 import LayoutWidget from "@/components/LayoutWidget";
 

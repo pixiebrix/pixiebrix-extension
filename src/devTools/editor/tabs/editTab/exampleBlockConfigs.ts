@@ -97,7 +97,7 @@ export function getExampleBlockConfig(block: IBlock): UnknownObject | null {
                       type: "text",
                       config: {
                         text: "Example text element.",
-                        className: "text-success5",
+                        className: "text-success",
                       },
                     },
                   ],

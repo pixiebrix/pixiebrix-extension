@@ -228,7 +228,9 @@ export type ReaderRoot = HTMLElement | Document;
 // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
 // the inputs using yup/jsonschema, so the types should match what's expected.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BlockOptions<TCtxt = Record<string, any>> = {
+export type BlockOptions<
+  TCtxt extends Record<string, any> = Record<string, any>
+> = {
   ctxt: TCtxt;
   logger: Logger;
   root: ReaderRoot;
