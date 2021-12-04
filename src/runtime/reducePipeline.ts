@@ -240,6 +240,8 @@ async function execute(
           isErrorObject(error) &&
           error.message.startsWith("Could not establish connection")
         ) {
+          // Either the target isn't receiving messages (due to lack of permissions or other errors)
+          // or it does not exist anymore
           throw new BusinessError("Sender tab has no target");
         }
       });
