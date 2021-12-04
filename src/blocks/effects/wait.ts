@@ -34,7 +34,7 @@ export class WaitEffect extends Effect {
     type: "object",
     properties: {
       timeMillis: {
-        type: "integer",
+        type: "string",
         description:
           "Time in milliseconds. If value is less than or equal to zero, do not sleep",
       },

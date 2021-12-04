@@ -41,7 +41,6 @@ import {
 
 const RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
-const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
 const MESSAGE_RUN_BLOCK_BROADCAST = `${MESSAGE_PREFIX}RUN_BLOCK_BROADCAST`;
 const MESSAGE_RUN_BLOCK_FRAME_NONCE = `${MESSAGE_PREFIX}RUN_BLOCK_FRAME_NONCE`;
 
@@ -94,25 +93,6 @@ async function waitNonceReady(
     if (Date.now() - startTime > maxWaitMillis) {
       throw new BusinessError(
         `Nonce ${nonce} was not ready after ${maxWaitMillis}ms`
-      );
-    }
-
-    // eslint-disable-next-line no-await-in-loop -- retry loop
-    await sleep(50);
-  }
-
-  return true;
-}
-
-async function waitReady(
-  { tabId, frameId }: Target,
-  { maxWaitMillis = 10_000 }: WaitOptions = {}
-): Promise<boolean> {
-  const startTime = Date.now();
-  while (tabReady[tabId]?.[frameId] == null) {
-    if (Date.now() - startTime > maxWaitMillis) {
-      throw new BusinessError(
-        `Tab ${tabId} was not ready after ${maxWaitMillis}ms`
       );
     }
 
@@ -220,35 +200,10 @@ handlers.set(
   }
 );
 
-handlers.set(
-  MESSAGE_RUN_BLOCK_TARGET,
-  async (request: RunBlockRequestAction, sender) => {
-    const target = tabToTarget.get(sender.tab.id);
-
-    if (!target) {
-      throw new BusinessError("Sender tab has no target");
-    }
-
-    console.debug(`Waiting for target tab ${target} to be ready`);
-    // For now, only support top-level frame as target
-    await waitReady({ tabId: target, frameId: 0 });
-    console.debug(
-      `Sending ${RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
-    );
-    return runBlockInContentScript(
-      { tabId: target, frameId: 0 },
-      {
-        sourceTabId: sender.tab.id,
-        ...request.payload,
-      }
-    );
-  }
-);
-
 export async function openTab(
   this: MessengerMeta,
   createProperties: Tabs.CreateCreatePropertiesType
-): Promise<void> {
+): Promise<number> {
   // Natively links the new tab to its opener + opens it right next to it
   const openerTabId = this.trace[0].tab.id;
   const tab = await browser.tabs.create({ ...createProperties, openerTabId });
@@ -256,6 +211,7 @@ export async function openTab(
   // FIXME: include frame information here
   tabToTarget.set(openerTabId, tab.id);
   tabToOpener.set(tab.id, openerTabId);
+  return tab.id;
 }
 
 export async function markTabAsReady(this: MessengerMeta) {
@@ -379,33 +335,6 @@ export async function executeForNonce(
         type: MESSAGE_RUN_BLOCK_FRAME_NONCE,
         payload: {
           nonce,
-          blockId,
-          blockArgs,
-          options,
-        },
-      }),
-    maxRetries
-  );
-}
-
-export async function executeInTarget(
-  blockId: string,
-  blockArgs: BlockArg,
-  options: RemoteBlockOptions
-): Promise<unknown> {
-  console.debug(`Running ${blockId} in the target tab`, {
-    blockId,
-    blockArgs,
-    options,
-  });
-
-  const { maxRetries = DEFAULT_MAX_RETRIES } = options;
-
-  return retrySend(
-    async () =>
-      browser.runtime.sendMessage({
-        type: MESSAGE_RUN_BLOCK_TARGET,
-        payload: {
           blockId,
           blockArgs,
           options,

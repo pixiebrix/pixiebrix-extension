@@ -24,6 +24,10 @@ import {
 } from "@/blocks/transformers/url";
 import { makeURL } from "@/utils";
 
+export const target = {
+  id: -1,
+};
+
 export class NavigateURLEffect extends Effect {
   constructor() {
     super(
@@ -62,7 +66,7 @@ export class OpenURLEffect extends Effect {
     params,
     spaceEncoding = URL_INPUT_SPACE_ENCODING_DEFAULT,
   }: BlockArg): Promise<void> {
-    await openTab({
+    target.id = await openTab({
       url: makeURL(url, params, spaceEncoding),
     });
   }

@@ -26,11 +26,10 @@ import {
   UUID,
 } from "@/core";
 import { castArray, isPlainObject } from "lodash";
-import { BusinessError, ContextError } from "@/errors";
+import { BusinessError, ContextError, isErrorObject } from "@/errors";
 import {
   executeInAll,
   executeInOpener,
-  executeInTarget,
   executeOnServer,
 } from "@/background/executor";
 import { getLoggingConfig } from "@/background/logging";
@@ -59,6 +58,8 @@ import {
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { UnknownObject } from "@/types";
+import { runBlockInContentScript } from "@/contentScript/messenger/api";
+import { target } from "@/blocks/effects/redirectPage";
 
 type CommonOptions = ApiVersionOptions & {
   /**
@@ -223,7 +224,25 @@ async function execute(
     }
 
     case "target": {
-      return executeInTarget(config.id, args, commonOptions);
+      if (target.id === -1) {
+        throw new BusinessError("Sender tab has no target");
+      }
+
+      return runBlockInContentScript(
+        { tabId: target.id },
+        {
+          blockId: config.id,
+          blockArgs: args,
+          options: commonOptions,
+        }
+      ).catch((error: unknown) => {
+        if (
+          isErrorObject(error) &&
+          error.message.startsWith("Could not establish connection")
+        ) {
+          throw new BusinessError("Sender tab has no target");
+        }
+      });
     }
 
     case "broadcast": {
