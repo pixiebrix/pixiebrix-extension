@@ -257,7 +257,7 @@
     "sourceDir": "dist",
     "run": {
       "startUrl": [
-        "https://pixiebrix.github.io/playground/"
+        "https://pbx.vercel.app/"
       ]
     }
   }
