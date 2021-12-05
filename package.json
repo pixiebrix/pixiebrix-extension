@@ -131,6 +131,7 @@
     "slugify": "^1.6.0",
     "to-json-schema": "^0.2.5",
     "url-join": "^4.0.1",
+    "urlpattern-polyfill": "^1.0.0-rc1",
     "use-async-effect": "^2.2.3",
     "use-debounce": "^7.0.0",
     "use-immer": "^0.6.0",

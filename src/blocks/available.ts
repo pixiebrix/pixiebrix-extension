@@ -19,6 +19,9 @@ import { patternToRegex } from "webext-patterns";
 import { castArray } from "lodash";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
+import { $safeFind } from "@/helpers";
+import { URLPatternInit } from "urlpattern-polyfill/dist/url-pattern.interfaces";
+import { URLPattern } from "urlpattern-polyfill/dist";
 
 export function testMatchPatterns(
   patterns: string[],
@@ -45,23 +48,61 @@ export function testMatchPatterns(
   return re.test(url);
 }
 
+function testUrlPattern(pattern: string | URLPatternInit): boolean {
+  let compiled;
+
+  try {
+    compiled = new URLPattern(pattern);
+  } catch {
+    if (typeof pattern === "object") {
+      for (const [key, entry] of Object.entries(pattern)) {
+        try {
+          // eslint-disable-next-line no-new -- constructor will throw a type error
+          new URLPattern({ key: entry } as URLPatternInit);
+        } catch {
+          throw new BusinessError(
+            `Pattern for ${key} not recognized as a valid url pattern: ${
+              entry as string
+            }`
+          );
+        }
+      }
+    }
+
+    // If pattern is an object, one of the entries should trigger the exception above
+    throw new BusinessError(
+      `Pattern not recognized as a valid url pattern: ${JSON.stringify(
+        pattern
+      )}`
+    );
+  }
+
+  return compiled.test(location.href);
+}
+
 function testSelector(selector: string): boolean {
-  return $(selector).length > 0;
+  return $safeFind(selector).length > 0;
 }
 
 export async function checkAvailable({
-  matchPatterns: rawPatterns = [],
+  matchPatterns: rawMatchPatterns = [],
+  urlPatterns: rawUrlPatterns = [],
   selectors: rawSelectors = [],
 }: Availability): Promise<boolean> {
-  const matchPatterns = rawPatterns ? castArray(rawPatterns) : [];
+  const matchPatterns = rawMatchPatterns ? castArray(rawMatchPatterns) : [];
+  const urlPatterns = rawUrlPatterns ? castArray(rawUrlPatterns) : [];
   const selectors = rawSelectors ? castArray(rawSelectors) : [];
 
-  // Check matchPatterns first b/c they'll be faster
+  // Check matchPatterns and urlPatterns first b/c they're faster than searching selectors
+
   if (matchPatterns.length > 0 && !testMatchPatterns(matchPatterns)) {
-    // Console.debug(
-    //   `Location doesn't match any pattern: ${document.location.href}`,
-    //   matchPatterns
-    // );
+    return false;
+  }
+
+  if (
+    urlPatterns.length > 0 &&
+    !urlPatterns.some((pattern) => testUrlPattern(pattern))
+  ) {
     return false;
   }
 
