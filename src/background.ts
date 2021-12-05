@@ -31,7 +31,7 @@ import "@/messaging/external";
 import "@/background/locator";
 import "@/background/logging";
 import "@/background/contextMenus";
-import "@/background/devtools/internal";
+import "@/background/devtools";
 import "@/background/browserAction";
 import "@/background/trace";
 

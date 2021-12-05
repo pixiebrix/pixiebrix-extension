@@ -36,7 +36,6 @@ import {
 import * as registry from "@/registry/localRegistry";
 import { checkTargetPermissions, ensureContentScript } from "@/background/util";
 import { queueReactivateEveryTab } from "@/background/deployment";
-import { registerPort } from "@/background/devtools/internal";
 import serviceRegistry from "@/services/registry";
 import { deleteCachedAuthData } from "@/background/auth";
 import { doCleanAxiosRequest, _proxyService } from "@/background/requests";
@@ -68,7 +67,6 @@ declare global {
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
     OPEN_POPUP_PROMPT: typeof openPopupPrompt;
 
-    REGISTER_PORT: typeof registerPort;
     ECHO_SENDER: typeof whoAmI;
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
@@ -114,7 +112,6 @@ registerMethods({
   ENSURE_CONTEXT_MENU: ensureContextMenu,
   OPEN_POPUP_PROMPT: openPopupPrompt,
 
-  REGISTER_PORT: registerPort,
   ECHO_SENDER: whoAmI,
   ACTIVATE_TAB: activateTab,
   REACTIVATE_EVERY_TAB: reactivateEveryTab,

@@ -40,7 +40,6 @@ export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const checkTargetPermissions = getMethod("CHECK_TARGET_PERMISSIONS", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
-export const registerPort = getMethod("REGISTER_PORT", bg);
 export const whoAmI = getMethod("ECHO_SENDER", bg);
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
