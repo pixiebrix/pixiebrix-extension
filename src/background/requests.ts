@@ -109,11 +109,14 @@ const backgroundRequest = liftBackground(
   async (config: AxiosRequestConfig) => {
     try {
       return cleanResponse(await axios(config));
-    } catch (error) {
-      // Axios offers its own serialization method, but it doesn't include the response.
-      // By deleting toJSON, the serialize-error library will use its default serialization
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        // Axios offers its own serialization method, but it doesn't include the response.
+        // By deleting toJSON, the serialize-error library will use its default serialization
+        delete error.toJSON;
+      }
+
       console.trace("Error performing request from background page", { error });
-      delete error.toJSON;
       throw error;
     }
   }

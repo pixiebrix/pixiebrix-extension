@@ -41,9 +41,9 @@ async function ensureBigQuery(): Promise<void> {
   // https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md
   try {
     await gapi.client.load("bigquery", "v2");
-  } catch (error) {
+  } catch (error: unknown) {
     console.debug("Error fetching BigQuery API definition", {
-      error: error.error,
+      error,
     });
     throw new Error("Error fetching BigQuery API definition");
   }
