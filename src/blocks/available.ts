@@ -22,6 +22,7 @@ import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
 import { URLPatternInit } from "urlpattern-polyfill/dist/url-pattern.interfaces";
 import { URLPattern } from "urlpattern-polyfill/dist";
+import { Entries } from "type-fest";
 
 export function testMatchPatterns(
   patterns: string[],
@@ -58,10 +59,11 @@ function testUrlPattern(
     compiled = new URLPattern(pattern);
   } catch {
     if (typeof pattern === "object") {
-      for (const [key, entry] of Object.entries(pattern)) {
+      for (const [key, entry] of Object.entries(pattern) as Entries<
+        typeof pattern
+      >) {
         try {
-          // eslint-disable-next-line no-new -- constructor will throw a type error
-          new URLPattern({ key: entry } as URLPatternInit);
+          void new URLPattern({ [key]: entry });
         } catch {
           throw new BusinessError(
             `Pattern for ${key} not recognized as a valid url pattern: ${
