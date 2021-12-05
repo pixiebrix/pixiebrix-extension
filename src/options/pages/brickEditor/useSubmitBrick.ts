@@ -29,7 +29,7 @@ import useReinstall from "@/pages/marketplace/useReinstall";
 import useNotifications from "@/hooks/useNotifications";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { getErrorMessage, isAxiosError } from "@/errors";
-import { clearServiceCache } from "@/background/requests";
+import { clearServiceCache } from "@/background/messenger/api";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { PackageUpsertResponse } from "@/types/contract";
 

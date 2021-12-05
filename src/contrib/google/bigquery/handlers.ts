@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftBackground } from "@/background/protocol";
 import { ensureAuth, handleRejection } from "@/contrib/google/auth";
 
 const GOOGLE_BIGQUERY_SCOPES = [
@@ -28,8 +27,6 @@ export const DISCOVERY_DOCS: string[] = [
   // Getting a 403 when requesting this - b/c mixing discovery versions?
   "https://bigquery.googleapis.com/discovery/v1/apis/bigquery/v2/rest",
 ];
-
-const actionId = (x: string) => `GOOGLE_BIGQUERY_${x}`;
 
 const initialized = false;
 
@@ -49,21 +46,21 @@ async function ensureBigQuery(): Promise<void> {
   }
 }
 
-export const readQuery = liftBackground(
-  actionId("READ"),
-  async (projectId: string, resource: gapi.client.bigquery.QueryRequest) => {
-    console.debug("Read query", { projectId, resource });
-    const token = await ensureAuth(GOOGLE_BIGQUERY_SCOPES);
-    await ensureBigQuery();
-    try {
-      return await gapi.client.bigquery.jobs.query({
-        projectId,
-        prettyPrint: true,
-        alt: "json",
-        resource,
-      });
-    } catch (error: unknown) {
+export async function readQuery(
+  projectId: string,
+  resource: gapi.client.bigquery.QueryRequest
+): Promise<gapi.client.Response<gapi.client.bigquery.QueryResponse>> {
+  console.debug("Read query", { projectId, resource });
+  const token = await ensureAuth(GOOGLE_BIGQUERY_SCOPES);
+  await ensureBigQuery();
+  return gapi.client.bigquery.jobs
+    .query({
+      projectId,
+      prettyPrint: true,
+      alt: "json",
+      resource,
+    })
+    .catch(async (error: unknown) => {
       throw await handleRejection(token, error);
-    }
-  }
-);
+    });
+}

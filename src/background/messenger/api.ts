@@ -16,7 +16,11 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { backgroundTarget as bg, getMethod } from "webext-messenger";
+import {
+  backgroundTarget as bg,
+  getMethod,
+  getNotifier,
+} from "webext-messenger";
 import browser from "webextension-polyfill";
 import { isBackgroundPage } from "webext-detect-page";
 
@@ -35,10 +39,17 @@ export const containsPermissions = browser.permissions
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const checkTargetPermissions = getMethod("CHECK_TARGET_PERMISSIONS", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
+export const registerPort = getMethod("REGISTER_PORT", bg);
 export const whoAmI = getMethod("ECHO_SENDER", bg);
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
+export const queueReactivateEveryTab = getNotifier(
+  "QUEUE_REACTIVATE_EVERY_TAB"
+);
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const markTabAsReady = getMethod("MARK_TAB_AS_READY", bg);
+export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
+export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
+export const readGoogleBigQuery = getMethod("GOOGLE_BIGQUERY_READ", bg);
 
 export const sheets = {
   getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),

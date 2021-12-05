@@ -29,7 +29,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
-import { deleteCachedAuth } from "@/background/requests";
+import { deleteCachedAuthData } from "@/background/messenger/api";
 import { ServicesState } from "@/options/slices";
 import useNotifications from "@/hooks/useNotifications";
 import styles from "./PrivateServicesCard.module.scss";
@@ -58,7 +58,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   const resetAuth = useCallback(
     async (authId: UUID) => {
       try {
-        await deleteCachedAuth(authId);
+        await deleteCachedAuthData(authId);
         notify.success("Reset login for integration");
       } catch (error: unknown) {
         notify.error("Error resetting login for integration", {

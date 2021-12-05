@@ -34,6 +34,12 @@ import {
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
 import { checkTargetPermissions, ensureContentScript } from "@/background/util";
+import { queueReactivateEveryTab } from "@/background/deployment";
+import { registerPort } from "@/background/devtools/internal";
+import serviceRegistry from "@/services/registry";
+import { deleteCachedAuthData } from "@/background/auth";
+import { doCleanAxiosRequest, _proxyService } from "@/background/requests";
+import { readQuery } from "@/contrib/google/bigquery/handlers";
 
 expectContext("background");
 
@@ -54,14 +60,22 @@ declare global {
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
     OPEN_POPUP_PROMPT: typeof openPopupPrompt;
 
+    REGISTER_PORT: typeof registerPort;
     ECHO_SENDER: typeof whoAmI;
     ACTIVATE_TAB: typeof activateTab;
+    QUEUE_REACTIVATE_EVERY_TAB: typeof queueReactivateEveryTab;
     CLOSE_TAB: typeof closeTab;
     MARK_TAB_AS_READY: typeof markTabAsReady;
     OPEN_TAB: typeof openTab;
     REGISTRY_GET_KIND: typeof registry.getKind;
     REGISTRY_SYNC: typeof registry.syncRemote;
     REGISTRY_FIND: typeof registry.find;
+
+    HTTP_REQUEST: typeof doCleanAxiosRequest;
+    DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
+    PROXY: typeof _proxyService;
+    CLEAR_SERVICE_CACHE: VoidFunction;
+    GOOGLE_BIGQUERY_READ: typeof readQuery;
   }
 }
 
@@ -81,12 +95,20 @@ registerMethods({
   ENSURE_CONTEXT_MENU: ensureContextMenu,
   OPEN_POPUP_PROMPT: openPopupPrompt,
 
+  REGISTER_PORT: registerPort,
   ECHO_SENDER: whoAmI,
   ACTIVATE_TAB: activateTab,
+  QUEUE_REACTIVATE_EVERY_TAB: queueReactivateEveryTab,
   CLOSE_TAB: closeTab,
   MARK_TAB_AS_READY: markTabAsReady,
   OPEN_TAB: openTab,
   REGISTRY_GET_KIND: registry.getKind,
   REGISTRY_SYNC: registry.syncRemote,
   REGISTRY_FIND: registry.find,
+
+  HTTP_REQUEST: doCleanAxiosRequest,
+  DELETE_CACHED_AUTH: deleteCachedAuthData,
+  CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
+  PROXY: _proxyService,
+  GOOGLE_BIGQUERY_READ: readQuery,
 });

@@ -16,7 +16,7 @@
  */
 
 import browser, { Runtime } from "webextension-polyfill";
-import { registerPort } from "@/background/devtools";
+import { registerPort } from "@/background/messenger/api";
 import { PORT_NAME } from "@/background/devtools/contract";
 import { installPortListeners } from "@/background/devtools/external";
 import { runtimeConnect } from "@/chrome";
@@ -53,7 +53,7 @@ export async function connectDevtools(): Promise<Runtime.Port> {
   });
 
   installPortListeners(port);
-  await registerPort(port);
+  await registerPort(tabId, port);
 
   _cachedPort = port;
   return port;

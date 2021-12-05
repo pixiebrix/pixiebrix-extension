@@ -36,7 +36,7 @@ const axiosMock = new MockAdapter(axios);
 const mockIsBackgroundPage = isBackgroundPage as jest.MockedFunction<
   typeof isBackgroundPage
 >;
-mockIsBackgroundPage.mockImplementation(() => false);
+mockIsBackgroundPage.mockImplementation(() => true);
 
 jest.mock("@/background/protocol");
 jest.mock("@/auth/token");
