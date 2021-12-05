@@ -19,7 +19,7 @@ import { Schema } from "@/core";
 import * as Yup from "yup";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
-import { locate } from "@/background/locator";
+import { services } from "@/background/messenger/api";
 import { DoesNotExistError } from "@/baseRegistry";
 import { MissingConfigurationError } from "@/services/errors";
 import { uniq, mapValues, isPlainObject } from "lodash";
@@ -205,7 +205,7 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
               }
 
               try {
-                await locate(this.parent.id, value);
+                await services.locate(this.parent.id, value);
               } catch (error: unknown) {
                 if (error instanceof MissingConfigurationError) {
                   return this.createError({

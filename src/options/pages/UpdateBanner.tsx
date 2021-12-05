@@ -20,13 +20,14 @@ import { Button } from "react-bootstrap";
 import "@/layout/Banner";
 import browser from "webextension-polyfill";
 import { useAsyncState } from "@/hooks/common";
-import { getAvailableVersion } from "@/background/installer";
+import { getAvailableVersion } from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
 
 const UpdateBanner: React.FunctionComponent = () => {
   const [updateAvailable] = useAsyncState(async () => {
     try {
-      const { installed, available } = await getAvailableVersion();
+      const available = await getAvailableVersion();
+      const installed = browser.runtime.getManifest().version;
       return available && installed !== available;
     } catch (error: unknown) {
       reportError(error);

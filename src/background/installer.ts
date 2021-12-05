@@ -16,7 +16,6 @@
  */
 
 import browser, { Runtime } from "webextension-polyfill";
-import { liftBackground } from "@/background/protocol";
 import { reportEvent, initTelemetry } from "@/telemetry/events";
 import { DNT_STORAGE_KEY, getDNT, getUID } from "@/background/telemetry";
 
@@ -45,13 +44,9 @@ function onUpdateAvailable({ version }: Runtime.OnUpdateAvailableDetailsType) {
   _availableVersion = version;
 }
 
-export const getAvailableVersion = liftBackground(
-  "GET_AVAILABLE_VERSION",
-  async () => ({
-    installed: browser.runtime.getManifest().version,
-    available: _availableVersion,
-  })
-);
+export function getAvailableVersion(): typeof _availableVersion {
+  return _availableVersion;
+}
 
 async function setUninstallURL(): Promise<void> {
   if (await getDNT()) {

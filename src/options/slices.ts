@@ -205,7 +205,7 @@ export const optionsSlice = createSlice({
 
       state.extensions.push({ ...extension, active: true });
 
-      void preloadContextMenus({ extensions: [extension] });
+      void preloadContextMenus([extension]);
     },
 
     attachExtension(
@@ -301,7 +301,7 @@ export const optionsSlice = createSlice({
 
         state.extensions.push(extension);
 
-        void preloadContextMenus({ extensions: [extension] });
+        void preloadContextMenus([extension]);
       }
     },
     // XXX: why do we expose a `extensionId` in addition IExtension's `id` prop here?

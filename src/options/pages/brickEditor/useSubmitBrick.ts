@@ -23,7 +23,7 @@ import { useDispatch } from "react-redux";
 import { EditorValues } from "./Editor";
 import { BrickValidationResult, validateSchema } from "./validate";
 import useRefresh from "@/hooks/useRefresh";
-import { reactivate } from "@/background/navigation";
+import { reactivateEveryTab } from "@/background/navigation";
 import { Definition, UnsavedRecipeDefinition } from "@/types/definitions";
 import useReinstall from "@/pages/marketplace/useReinstall";
 import useNotifications from "@/hooks/useNotifications";
@@ -119,7 +119,9 @@ function useSubmitBrick({
         notify.success(`${create ? "Created" : "Updated"} ${metadata.name}`);
 
         refreshPromise
-          .then(async () => reactivate())
+          .then(() => {
+            reactivateEveryTab();
+          })
           .catch((error: unknown) => {
             notify.warning(
               `Error re-activating bricks: ${getErrorMessage(error)}`,

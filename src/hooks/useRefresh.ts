@@ -19,11 +19,10 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
 import { stubTrue } from "lodash";
-import { refresh as refreshBackgroundAuthLocator } from "@/background/locator";
 import { useCallback, useState } from "react";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
-import { clearServiceCache } from "@/background/messenger/api";
+import { clearServiceCache, services } from "@/background/messenger/api";
 
 /**
  * Refresh registries for the current context.
@@ -36,7 +35,7 @@ export async function refreshRegistries(): Promise<void> {
     extensionPointRegistry.fetch(),
     blockRegistry.fetch(),
     serviceRegistry.fetch(),
-    refreshBackgroundAuthLocator(),
+    services.refresh(),
   ]);
 
   // Ensure the background page is using the latest service definitions for fulfilling requests. This must come after

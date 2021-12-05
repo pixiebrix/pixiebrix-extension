@@ -36,15 +36,20 @@ export const containsPermissions = browser.permissions
   ? browser.permissions.contains
   : getMethod("CONTAINS_PERMISSIONS", bg);
 
+export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const checkTargetPermissions = getMethod("CHECK_TARGET_PERMISSIONS", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
 export const registerPort = getMethod("REGISTER_PORT", bg);
 export const whoAmI = getMethod("ECHO_SENDER", bg);
+
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
+export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
 export const queueReactivateEveryTab = getNotifier(
-  "QUEUE_REACTIVATE_EVERY_TAB"
+  "QUEUE_REACTIVATE_EVERY_TAB",
+  bg
 );
+
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const markTabAsReady = getMethod("MARK_TAB_AS_READY", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
@@ -72,4 +77,22 @@ export const registry = {
   getKind: getMethod("REGISTRY_GET_KIND", bg),
   syncRemote: getMethod("REGISTRY_SYNC", bg),
   find: getMethod("REGISTRY_FIND", bg),
+};
+
+export const dataStore = {
+  get: getMethod("GET_DATA_STORE", bg),
+  set: getMethod("SET_DATA_STORE", bg),
+};
+
+export const executeBrick = {
+  onServer: getMethod("EXECUTE_ON_SERVER", bg),
+};
+
+export const contextMenus = {
+  preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
+};
+
+export const services = {
+  locate: getMethod("LOCATE_SERVICE", bg),
+  refresh: getMethod("REFRESH_SERVICE", bg),
 };

@@ -25,7 +25,7 @@ import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
 import { uniq } from "lodash";
 import { containsPermissions } from "@/background/messenger/api";
 import { collectPermissions } from "@/permissions";
-import { reactivate } from "@/background/navigation";
+import { reactivateEveryTab } from "@/background/navigation";
 import { push } from "connected-react-router";
 import { optionsSlice } from "@/options/slices";
 import { resolveRecipe } from "@/registry/internal";
@@ -108,7 +108,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
 
         setSubmitting(false);
 
-        void reactivate();
+        reactivateEveryTab();
 
         dispatch(push("/installed"));
       } catch (error: unknown) {

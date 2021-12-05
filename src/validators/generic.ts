@@ -18,7 +18,7 @@
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useMemo } from "react";
 import { AsyncState, useAsyncState } from "@/hooks/common";
-import { locate } from "@/background/locator";
+import { services } from "@/background/messenger/api";
 import {
   Validator,
   Schema as ValidatorSchema,
@@ -199,7 +199,7 @@ async function validateExtension(
     for (const service of extension.services) {
       console.debug(`Validating ${extension.id} service ${service.id}`);
       try {
-        await locate(service.id, service.config);
+        await services.locate(service.id, service.config);
       } catch (error: unknown) {
         if (error instanceof MissingConfigurationError) {
           missingConfiguration.push(error);

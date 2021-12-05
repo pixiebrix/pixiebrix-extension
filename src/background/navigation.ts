@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftBackground } from "@/background/protocol";
 import browser from "webextension-polyfill";
 import { handleNavigate, reactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/util";
@@ -26,13 +25,9 @@ function initNavigation(): void {
   browser.webNavigation.onHistoryStateUpdated.addListener(handleNavigate);
 }
 
-export const reactivate = liftBackground(
-  "REACTIVATE",
-  async () => {
-    console.debug("Reactivate all tabs");
-    void forEachTab(reactivateTab);
-  },
-  { asyncResponse: false }
-);
+export function reactivateEveryTab(): void {
+  console.debug("Reactivate all tabs");
+  void forEachTab(reactivateTab);
+}
 
 export default initNavigation;
