@@ -1,6 +1,6 @@
 {
   "silent": true,
-  "testEnvironment": "jest-environment-jsdom",
+  "testEnvironment": "jest-environment-jsdom-global",
   "modulePaths": ["/src"],
   "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
   "testPathIgnorePatterns": ["<rootDir>/src/vendors/", "<rootDir>/selenium/"],
@@ -11,7 +11,7 @@
     "^.+\\.txt$": "jest-raw-loader"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!@cfworker|idb|webext-|p-timeout|p-retry|p-defer|serialize-error)"
+    "node_modules/(?!@cfworker|idb|webext-|p-timeout|p-retry|p-defer|serialize-error|urlpattern-polyfill)"
   ],
   "setupFiles": [
     "<rootDir>/src/testEnv.js",
