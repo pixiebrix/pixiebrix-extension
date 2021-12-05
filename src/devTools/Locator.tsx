@@ -25,22 +25,23 @@ import { useAsyncEffect } from "use-async-effect";
 import { isEmpty } from "lodash";
 import { thisTab } from "@/devTools/utils";
 import { detectFrameworks, searchWindow } from "@/contentScript/messenger/api";
+import { getErrorMessage } from "@/errors";
 
-function useSearchWindow(query: string) {
+function useSearchWindow(query: string): [unknown[] | null, unknown | null] {
   const { tabId } = browser.devtools.inspectedWindow;
-  const [results, setResults] = useState([]);
-  const [error, setError] = useState();
+  const [results, setResults] = useState<unknown[] | null>([]);
+  const [error, setError] = useState<unknown | null>();
 
   useAsyncEffect(
     async (isMounted) => {
       if (!query) return;
-      setError(undefined);
-      setResults(undefined);
+      setError(null);
+      setResults(null);
       try {
         const { results } = await searchWindow(thisTab, query);
         if (!isMounted()) return;
-        setResults(results as any);
-      } catch (error) {
+        setResults(results);
+      } catch (error: unknown) {
         if (!isMounted()) return;
         setError(error);
       }
@@ -92,7 +93,7 @@ const Locator: React.FunctionComponent = () => {
         />
       </InputGroup>
 
-      {searchError?.toString()}
+      {searchError && getErrorMessage(searchError)}
 
       {searchResults == null ? (
         <GridLoader />
