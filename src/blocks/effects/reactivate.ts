@@ -18,6 +18,7 @@
 import { Effect, UnknownObject } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { reactivateTab } from "@/contentScript/lifecycle";
+import { expectContext } from "@/utils/expectContext";
 
 export class ReactivateEffect extends Effect {
   constructor() {
@@ -37,7 +38,9 @@ export class ReactivateEffect extends Effect {
     arg: BlockArg<UnknownObject>,
     { logger }: BlockOptions
   ): Promise<void> {
-    logger.debug("Sending navigation signal");
+    expectContext("contentScript");
+    console.debug("Sending reactivateTab signal");
+    logger.debug("Sending reactivateTab signal");
     await reactivateTab();
   }
 }

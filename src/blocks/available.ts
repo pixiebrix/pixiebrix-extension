@@ -48,7 +48,10 @@ export function testMatchPatterns(
   return re.test(url);
 }
 
-function testUrlPattern(pattern: string | URLPatternInit): boolean {
+function testUrlPattern(
+  pattern: string | URLPatternInit,
+  url: string = document.location.href
+): boolean {
   let compiled;
 
   try {
@@ -77,7 +80,7 @@ function testUrlPattern(pattern: string | URLPatternInit): boolean {
     );
   }
 
-  return compiled.test(location.href);
+  return compiled.test(url);
 }
 
 function testSelector(selector: string): boolean {

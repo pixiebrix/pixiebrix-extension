@@ -283,6 +283,7 @@ export const innerExtensionPointRecipeFactory = ({
           type: "menuItem",
           isAvailable: {
             matchPatterns: ["https://*/*"],
+            urlPatterns: [],
             selectors: [],
           },
           reader: validateRegistryId("@pixiebrix/document-context"),

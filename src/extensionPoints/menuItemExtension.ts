@@ -527,7 +527,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       reportEvent("MenuItemClick", selectEventData(extension));
 
       try {
-        // Read latest state at the time of the action
+        // Read the latest state at the time of the action
         const reader = await this.defaultReader();
 
         const initialValues: InitialValues = {
