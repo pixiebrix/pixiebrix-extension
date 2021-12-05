@@ -19,15 +19,20 @@ import { checkAvailable } from "@/blocks/available";
 
 describe("isAvailable.urlPatterns", () => {
   test("can match hash", async () => {
-    // @ts-expect-error -- made available via "jest-environment-jsdom-global"
     jsdom.reconfigure({ url: "https://www.example.com/#/foo/42" });
     expect(await checkAvailable({ urlPatterns: { hash: "/foo/:id" } })).toBe(
       true
     );
   });
 
+  test("invalid baseURL", async () => {
+    jsdom.reconfigure({ url: "https://www.example.com/#/foo/42" });
+    await expect(
+      checkAvailable({ urlPatterns: { baseURL: "NOTAREALURL" } })
+    ).rejects.toThrow("Pattern for baseURL not recognized");
+  });
+
   test("can reject hash", async () => {
-    // @ts-expect-error -- made available via "jest-environment-jsdom-global"
     jsdom.reconfigure({ url: "https://www.example.com/#/MISMATCH/42" });
     expect(await checkAvailable({ urlPatterns: { hash: "/foo/:id" } })).toBe(
       false
@@ -37,7 +42,6 @@ describe("isAvailable.urlPatterns", () => {
 
 describe("isAvailable.matchPatterns", () => {
   test("can match pattern", async () => {
-    // @ts-expect-error -- made available via "jest-environment-jsdom-global"
     jsdom.reconfigure({ url: "https://www.example.com/foo/bar/baz/" });
     expect(
       await checkAvailable({ matchPatterns: "https://www.example.com/*" })
@@ -47,7 +51,6 @@ describe("isAvailable.matchPatterns", () => {
 
 describe("isAvailable.matchPatterns", () => {
   test("require urlPattern and matchPattern", async () => {
-    // @ts-expect-error -- made available via "jest-environment-jsdom-global"
     jsdom.reconfigure({ url: "https://www.example.com/#/MISMATCH/42" });
     expect(
       await checkAvailable({

@@ -66,9 +66,7 @@ function testUrlPattern(
           void new URLPattern({ [key]: entry });
         } catch {
           throw new BusinessError(
-            `Pattern for ${key} not recognized as a valid url pattern: ${
-              entry as string
-            }`
+            `Pattern for ${key} not recognized as a valid url pattern: ${entry}`
           );
         }
       }
