@@ -87,14 +87,33 @@ function testSelector(selector: string): boolean {
   return $safeFind(selector).length > 0;
 }
 
-export async function checkAvailable({
-  matchPatterns: rawMatchPatterns = [],
-  urlPatterns: rawUrlPatterns = [],
-  selectors: rawSelectors = [],
-}: Availability): Promise<boolean> {
+export async function checkAvailable(
+  availability: Availability
+): Promise<boolean> {
+  const {
+    matchPatterns: rawMatchPatterns = [],
+    urlPatterns: rawUrlPatterns = [],
+    selectors: rawSelectors = [],
+  } = availability;
+
   const matchPatterns = rawMatchPatterns ? castArray(rawMatchPatterns) : [];
   const urlPatterns = rawUrlPatterns ? castArray(rawUrlPatterns) : [];
   const selectors = rawSelectors ? castArray(rawSelectors) : [];
+
+  if (process.env.DEBUG) {
+    const result = {
+      matchPatterns:
+        matchPatterns.length === 0 || testMatchPatterns(matchPatterns),
+      urlPatterns:
+        urlPatterns.length === 0 ||
+        urlPatterns.some((pattern) => testUrlPattern(pattern)),
+      selectors:
+        selectors.length === 0 ||
+        selectors.some((selector) => testSelector(selector)),
+    };
+
+    console.debug("Availability test for", availability, "had result", result);
+  }
 
   // Check matchPatterns and urlPatterns first b/c they're faster than searching selectors
 
@@ -113,7 +132,6 @@ export async function checkAvailable({
     selectors.length > 0 &&
     !selectors.some((selector) => testSelector(selector))
   ) {
-    // Console.debug("Page doesn't match any selectors", selectors);
     return false;
   }
 
