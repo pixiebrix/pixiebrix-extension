@@ -112,7 +112,14 @@ export async function checkAvailable(
         selectors.some((selector) => testSelector(selector)),
     };
 
-    console.debug("Availability test for", availability, "had result", result);
+    console.debug(
+      "Availability test for",
+      document.location.href,
+      "vs.",
+      availability,
+      "had result",
+      result
+    );
   }
 
   // Check matchPatterns and urlPatterns first b/c they're faster than searching selectors
