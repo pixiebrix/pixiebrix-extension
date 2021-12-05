@@ -23,13 +23,15 @@ import { useDispatch } from "react-redux";
 import { EditorValues } from "./Editor";
 import { BrickValidationResult, validateSchema } from "./validate";
 import useRefresh from "@/hooks/useRefresh";
-import { reactivateEveryTab } from "@/background/navigation";
 import { Definition, UnsavedRecipeDefinition } from "@/types/definitions";
 import useReinstall from "@/pages/marketplace/useReinstall";
 import useNotifications from "@/hooks/useNotifications";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { getErrorMessage, isAxiosError } from "@/errors";
-import { clearServiceCache } from "@/background/messenger/api";
+import {
+  clearServiceCache,
+  reactivateEveryTab,
+} from "@/background/messenger/api";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { PackageUpsertResponse } from "@/types/contract";
 

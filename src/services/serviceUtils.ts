@@ -53,11 +53,8 @@ export function extractServiceIds(schema: Schema): RegistryId[] {
 export async function makeServiceContext(
   dependencies: ServiceDependency[]
 ): Promise<ServiceContext> {
-  const dependencyContext = async (dependency: ServiceDependency) => {
-    const configuredService = await services.locate(
-      dependency.id,
-      dependency.config
-    );
+  const dependencyContext = async ({ id, config }: ServiceDependency) => {
+    const configuredService = await services.locate(id, config);
     return {
       // Our JSON validator gets mad at undefined values
       ...pickBy(configuredService.config, (x) => x !== undefined),
