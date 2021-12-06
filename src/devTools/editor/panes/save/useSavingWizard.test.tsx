@@ -337,7 +337,7 @@ describe("saving a Recipe Extension", () => {
     try {
       await creatingRecipePromise;
       await savingPromise;
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBe("Failed to create new Blueprint");
     }
 
@@ -426,7 +426,7 @@ describe("saving a Recipe Extension", () => {
     try {
       await updatingRecipePromise;
       await savingPromise;
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBe("Failed to update the Blueprint");
     }
 

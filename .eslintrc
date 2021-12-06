@@ -22,7 +22,6 @@
     "unicorn/no-await-expression-member": "warn", // Annoying sometimes, let's try it
 
     "@typescript-eslint/consistent-type-assertions": "warn",
-    "@typescript-eslint/no-implicit-any-catch": "warn",
 
     "jsx-a11y/click-events-have-key-events": "warn",
     "jsx-a11y/no-static-element-interactions": "warn",

@@ -77,7 +77,7 @@ export const rollbar: Rollbar = (() => {
         }
       },
     });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Error during rollbar init", { error });
   }
 })();

@@ -49,7 +49,7 @@ export async function fetch<TData = unknown>(
   try {
     const { data } = await client.get(relativeOrAbsoluteUrl);
     return data;
-  } catch (error: unknown) {
+  } catch (error) {
     if (
       isAxiosError(error) &&
       // There are some cases where `response` is undefined (because the browser blocked the request, e.g., b/c CORS)

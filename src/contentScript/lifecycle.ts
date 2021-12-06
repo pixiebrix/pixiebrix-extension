@@ -71,7 +71,7 @@ async function runExtensionPoint(
 
   try {
     installed = await extensionPoint.install();
-  } catch (error: unknown) {
+  } catch (error) {
     if (error instanceof PromiseCancelled) {
       console.debug(
         `Skipping ${extensionPoint.id} because user navigated away from the page`
@@ -161,7 +161,7 @@ export function clearDynamic(
         extensionPoint.uninstall({ global: true });
         actionPanel.removeExtensionPoint(extensionPoint.id);
         markUninstalled(extensionPoint.id);
-      } catch (error: unknown) {
+      } catch (error) {
         reportError(error);
       }
     }
@@ -246,7 +246,7 @@ async function loadExtensions() {
           // We cleared _extensionPoints prior to the loop, so we can just push w/o checking if it's already in the array
           _extensionPoints.push(extensionPoint);
         }
-      } catch (error: unknown) {
+      } catch (error) {
         console.warn(`Error adding extension point: ${extensionPointId}`, {
           error,
         });

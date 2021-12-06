@@ -35,7 +35,7 @@ async function updateElementProperties(): Promise<void> {
   try {
     await updateSelectedElement();
     await sidebar.setObject(await readSelected(thisTab));
-  } catch (error: unknown) {
+  } catch (error) {
     await sidebar.setObject({ error: serializeError(error) });
   }
 }

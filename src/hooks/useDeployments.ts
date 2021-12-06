@@ -195,7 +195,7 @@ function useDeployments(): DeploymentState {
       // Get the latest brick definitions so we have the latest permission and version requirements
       // XXX: is this being broadcast to the content scripts so they get the updated brick definition content?
       await refreshRegistries();
-    } catch (error: unknown) {
+    } catch (error) {
       // Try to proceed if we can't refresh the brick definitions
       notify.warning(
         `Error fetching latest bricks from server: ${getErrorMessage(error)}`,
@@ -219,7 +219,7 @@ function useDeployments(): DeploymentState {
     let accepted = false;
     try {
       accepted = await ensureAllPermissions(permissions);
-    } catch (error: unknown) {
+    } catch (error) {
       notify.error(`Error granting permissions: ${getErrorMessage(error)}`, {
         error,
       });
@@ -236,7 +236,7 @@ function useDeployments(): DeploymentState {
     try {
       activateDeployments(dispatch, deployments, installedExtensions);
       notify.success("Activated team deployments");
-    } catch (error: unknown) {
+    } catch (error) {
       notify.error("Error activating team deployments", {
         error,
       });

@@ -126,7 +126,7 @@ async function onContentScriptReceiveMessage(
   try {
     response.payload = await handler(...payload);
     console.debug(`${type}: ${meta.nonce}: Handler success`);
-  } catch (error: unknown) {
+  } catch (error) {
     response.payload = toErrorResponse(type, error);
     console.warn(`${type}: ${meta.nonce}: Handler error`, error);
   }

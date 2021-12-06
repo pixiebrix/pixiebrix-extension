@@ -197,7 +197,7 @@ async function updateDeployments() {
   // Fetch the current brick definitions, which will have the current permissions and extensionVersion requirements
   try {
     await refreshRegistries();
-  } catch (error: unknown) {
+  } catch (error) {
     reportError(error);
     await browser.runtime.openOptionsPage();
     // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user the to
@@ -237,7 +237,7 @@ async function updateDeployments() {
       console.info(
         `Applied automatic updates for ${automatic.length} deployment(s)`
       );
-    } catch (error: unknown) {
+    } catch (error) {
       reportError(error);
       automaticError = error;
     }

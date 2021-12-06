@@ -109,7 +109,7 @@ const backgroundRequest = liftBackground(
   async (config: AxiosRequestConfig) => {
     try {
       return cleanResponse(await axios(config));
-    } catch (error: unknown) {
+    } catch (error) {
       if (isAxiosError(error)) {
         // Axios offers its own serialization method, but it doesn't include the response.
         // By deleting toJSON, the serialize-error library will use its default serialization
@@ -212,7 +212,7 @@ async function proxyRequest<T>(
     proxyResponse = (await backgroundRequest(
       authenticatedRequestConfig
     )) as SanitizedResponse<ProxyResponseData>;
-  } catch (error: unknown) {
+  } catch (error) {
     // If there's a server error with the proxy server itself, we'll also see it in the Rollbar logs for the server.
     throw new Error(`API proxy error: ${getErrorMessage(error)}`);
   }
@@ -254,7 +254,7 @@ const _proxyService = liftBackground(
       return await backgroundRequest(
         await authenticate(serviceConfig, requestConfig)
       );
-    } catch (error: unknown) {
+    } catch (error) {
       // Try again - have the user login again, or automatically try to get a new token
       if (
         isAxiosError(error) &&
@@ -309,7 +309,7 @@ export async function proxyService<TData>(
       return (await backgroundRequest(
         requestConfig
       )) as SanitizedResponse<TData>;
-    } catch (error: unknown) {
+    } catch (error) {
       if (!isAxiosError(error)) {
         throw error;
       }
@@ -331,7 +331,7 @@ export async function proxyService<TData>(
       serviceConfig,
       requestConfig
     )) as RemoteResponse<TData>;
-  } catch (error: unknown) {
+  } catch (error) {
     throw new ContextError(selectError(error) as Error, {
       serviceId: serviceConfig.serviceId,
       authId: serviceConfig.id,

@@ -111,7 +111,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         void reactivate();
 
         dispatch(push("/installed"));
-      } catch (error: unknown) {
+      } catch (error) {
         notify.error(`Error installing ${recipe.metadata.name}`, {
           error,
         });

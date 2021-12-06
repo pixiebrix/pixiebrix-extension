@@ -104,7 +104,7 @@ export function getPropByPath(
     if (typeof value === "function") {
       try {
         value = value.apply(previous, args);
-      } catch (error: unknown) {
+      } catch (error) {
         throw new Error(
           `Error running method ${part}: ${getErrorMessage(error)}`
         );

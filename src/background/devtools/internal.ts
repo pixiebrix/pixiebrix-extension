@@ -185,7 +185,7 @@ export function liftBackground<
 async function resetTab(tabId: number): Promise<void> {
   try {
     await clearDynamicElements({ tabId, frameId: TOP_LEVEL_FRAME_ID }, {});
-  } catch (error: unknown) {
+  } catch (error) {
     console.warn("Error clearing dynamic elements for tab: %d", tabId, {
       error,
     });
@@ -280,7 +280,7 @@ async function attemptTemporaryAccess({
 
   try {
     await ensureContentScript({ tabId, frameId });
-  } catch (error: unknown) {
+  } catch (error) {
     if (isPrivatePageError(error)) {
       return;
     }
