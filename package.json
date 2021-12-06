@@ -131,6 +131,7 @@
     "slugify": "^1.6.0",
     "to-json-schema": "^0.2.5",
     "url-join": "^4.0.1",
+    "urlpattern-polyfill": "^1.0.0-rc1",
     "use-async-effect": "^2.2.3",
     "use-debounce": "^7.0.0",
     "use-immer": "^0.6.0",
@@ -225,6 +226,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.0.6",
     "jest-environment-jsdom": "^27.0.6",
+    "jest-environment-jsdom-global": "^3.0.0",
     "jest-raw-loader": "^1.0.1",
     "jest-webextension-mock": "^3.7.17",
     "min-document": "^2.19.0",
@@ -257,7 +259,7 @@
     "sourceDir": "dist",
     "run": {
       "startUrl": [
-        "https://pixiebrix.github.io/playground/"
+        "https://pbx.vercel.app/"
       ]
     }
   }

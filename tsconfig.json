@@ -10,6 +10,7 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "skipLibCheck": false,
+    "useUnknownInCatchVariables": true,
 
     // TODO: Drop these lines to make TS stricter https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "strictNullChecks": false,
@@ -19,7 +20,6 @@
     "noImplicitReturns": false,
     "noUnusedParameters": false,
     "useDefineForClassFields": false,
-    "useUnknownInCatchVariables": false, // https://github.com/pixiebrix/pixiebrix-extension/issues/779
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],

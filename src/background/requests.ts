@@ -100,11 +100,14 @@ export async function doCleanAxiosRequest<T>(
     // Firefox won't send response objects from the background page to the content script. So strip out the
     // potentially sensitive parts of the response (the request, headers, etc.)
     return JSON.parse(JSON.stringify({ data, status, statusText }));
-  } catch (error) {
-    // Axios offers its own serialization method, but it doesn't include the response.
-    // By deleting toJSON, the serialize-error library will use its default serialization
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      // Axios offers its own serialization method, but it doesn't include the response.
+      // By deleting toJSON, the serialize-error library will use its default serialization
+      delete error.toJSON;
+    }
+
     console.trace("Error performing request from background page", { error });
-    delete error.toJSON;
     throw error;
   }
 }

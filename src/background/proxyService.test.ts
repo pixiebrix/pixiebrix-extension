@@ -176,13 +176,15 @@ describe("proxy service requests", () => {
     expect(data).toEqual({ foo: 42 });
   });
 
-  describe.each([[400], [401], [403], [500]])(
+  describe.each([[400], [401], [403], [405], [500]])(
     "remote status: %s",
     (statusCode) => {
       it("can proxy remote error", async () => {
+        const reason = "Bad request";
+
         axiosMock.onAny().reply(200, {
           json: {},
-          reason: "Bad request",
+          reason,
           status_code: statusCode,
         });
 
@@ -194,7 +196,7 @@ describe("proxy service requests", () => {
           const { status, statusText } = ((error as ContextError)
             .cause as AxiosError).response;
           expect(status).toEqual(statusCode);
-          expect(statusText).toEqual("Bad request");
+          expect(statusText).toEqual(reason);
         }
       });
     }
