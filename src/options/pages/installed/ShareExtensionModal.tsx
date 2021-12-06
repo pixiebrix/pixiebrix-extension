@@ -139,7 +139,7 @@ const ShareExtensionModal: React.FC<{
         );
         dispatch(push("/installed"));
         notify.success("Converted/shared brick");
-      } catch (error: unknown) {
+      } catch (error) {
         if (isAxiosError(error) && error.response.data.config) {
           helpers.setStatus(error.response.data.config);
           return;

@@ -307,7 +307,7 @@ async function codeGrantFlow(
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error(error);
     throw new Error(`Error getting OAuth2 token: ${getErrorMessage(error)}`);
   }

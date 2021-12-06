@@ -65,7 +65,7 @@ function useSubmitBrick({
   const remove = useCallback(async () => {
     try {
       await (await getLinkedApiClient()).delete(url);
-    } catch (error: unknown) {
+    } catch (error) {
       notify.error("Error deleting brick", {
         error,
       });
@@ -120,7 +120,7 @@ function useSubmitBrick({
 
         refreshPromise
           .then(async () => reactivate())
-          .catch((error: unknown) => {
+          .catch((error) => {
             notify.warning(
               `Error re-activating bricks: ${getErrorMessage(error)}`,
               {
@@ -135,7 +135,7 @@ function useSubmitBrick({
         if (create) {
           history.push(`/workshop/bricks/${data.id}/`);
         }
-      } catch (error: unknown) {
+      } catch (error) {
         console.debug("Got validation error", error);
 
         if (isAxiosError(error)) {

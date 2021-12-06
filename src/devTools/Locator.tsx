@@ -41,7 +41,7 @@ function useSearchWindow(query: string): [unknown[] | null, unknown | null] {
         const { results } = await searchWindow(thisTab, query);
         if (!isMounted()) return;
         setResults(results);
-      } catch (error: unknown) {
+      } catch (error) {
         if (!isMounted()) return;
         setError(error);
       }

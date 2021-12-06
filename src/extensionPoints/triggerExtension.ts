@@ -259,7 +259,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         );
         try {
           await this.runExtension(readerContext, extension, root);
-        } catch (error: unknown) {
+        } catch (error) {
           reportError(error, extensionLogger.context);
           return error;
         }
@@ -292,7 +292,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     try {
       await rootPromise;
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PromiseCancelled) {
         return;
       }

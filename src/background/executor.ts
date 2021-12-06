@@ -338,7 +338,7 @@ async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
     try {
       // eslint-disable-next-line no-await-in-loop -- retry loop
       return await send();
-    } catch (error: unknown) {
+    } catch (error) {
       const message = getErrorMessage(error);
 
       if (NOT_READY_PARTIAL_MESSAGES.some((query) => message.includes(query))) {

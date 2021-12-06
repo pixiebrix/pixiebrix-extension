@@ -137,7 +137,7 @@ async function connectToFrame(): Promise<FrameMeta> {
       async () => detectFrameworks(thisTab, null),
       500
     );
-  } catch (error: unknown) {
+  } catch (error) {
     console.debug(`connectToFrame: error detecting frameworks ${url}`, {
       error,
     });
@@ -178,7 +178,7 @@ export function useDevConnection(): Context {
         hasPermissions: true,
         meta,
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PermissionsError) {
         setCurrent({
           ...common,

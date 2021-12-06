@@ -74,7 +74,7 @@ function runListeners<Method extends keyof StoreListener>(
       // @ts-expect-error `data` is a intersection type instead of an union. TODO: Fix or rewrite
       // eslint-disable-next-line security/detect-object-injection -- method is keyof StoreListener
       listener[method](data);
-    } catch (error: unknown) {
+    } catch (error) {
       reportError(error);
     }
   }

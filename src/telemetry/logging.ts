@@ -28,7 +28,7 @@ import { selectError } from "@/errors";
  * @param context optional context for error telemetry
  */
 export function reportError(error: unknown, context?: MessageContext): void {
-  void _reportError(error, context).catch((reportingError: unknown) => {
+  void _reportError(error, context).catch((reportingError) => {
     console.error("An error occurred when reporting an error", {
       originalError: error,
       reportingError,

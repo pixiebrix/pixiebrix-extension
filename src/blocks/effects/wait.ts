@@ -108,7 +108,7 @@ export class WaitElementEffect extends Effect {
       const [promise, cancel] = awaitElementOnce(selector);
       try {
         await runInMillis(async () => promise, maxWaitMillis);
-      } catch (error: unknown) {
+      } catch (error) {
         cancel();
 
         if (error instanceof TimeoutError) {

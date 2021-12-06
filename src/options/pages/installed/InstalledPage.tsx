@@ -222,7 +222,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     dispatch(removeExtension({ extensionId }));
     // XXX: also remove remove side panel panels that are already open?
     void uninstallContextMenu({ extensionId }).catch(reportError);
-    void reactivate().catch((error: unknown) => {
+    void reactivate().catch((error) => {
       console.warn("Error re-activating content scripts", { error });
     });
   },

@@ -151,7 +151,7 @@ export class GoogleSheetsAppend extends Effect {
       console.debug(
         `Found headers for ${tabName}: ${currentHeaders.join(", ")}`
       );
-    } catch (error: unknown) {
+    } catch (error) {
       logger.warn(`Error retrieving headers: ${getErrorMessage(error)}`, {
         error,
       });

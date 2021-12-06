@@ -24,13 +24,13 @@ import { JsonObject } from "type-fest";
  */
 export function reportEvent(event: string, data: JsonObject = {}): void {
   console.debug(event, data);
-  void recordEvent({ event, data }).catch((error: unknown) => {
+  void recordEvent({ event, data }).catch((error) => {
     console.warn("Error reporting event %s", event, { error });
   });
 }
 
 export function initTelemetry(): void {
-  void initUID().catch((error: unknown) => {
+  void initUID().catch((error) => {
     console.warn("Error initializing uid", { error });
   });
 }

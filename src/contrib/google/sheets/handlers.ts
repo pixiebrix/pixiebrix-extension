@@ -50,7 +50,7 @@ export async function createTab(spreadsheetId: string, tabName: string) {
         ],
       },
     })) as BatchUpdateSpreadsheetResponse;
-  } catch (error: unknown) {
+  } catch (error) {
     throw await handleRejection(token, error);
   }
 }
@@ -71,7 +71,7 @@ export async function appendRows(
         values,
       },
     })) as AppendValuesResponse;
-  } catch (error: unknown) {
+  } catch (error) {
     throw await handleRejection(token, error);
   }
 }
@@ -85,7 +85,7 @@ export async function batchUpdate(spreadsheetId: string, requests: any[]) {
         requests,
       },
     })) as BatchUpdateSpreadsheetResponse;
-  } catch (error: unknown) {
+  } catch (error) {
     throw await handleRejection(token, error);
   }
 }
@@ -109,7 +109,7 @@ export async function batchGet(
         }
       });
     });
-  } catch (error: unknown) {
+  } catch (error) {
     throw await handleRejection(token, error);
   }
 }
@@ -148,7 +148,7 @@ export async function getSheetProperties(
     }
 
     return spreadsheet.properties;
-  } catch (error: unknown) {
+  } catch (error) {
     throw await handleRejection(token, error);
   }
 }
@@ -185,7 +185,7 @@ export async function getTabNames(spreadsheetId: string): Promise<string[]> {
     }
 
     return spreadsheet.sheets.map((x) => x.properties.title);
-  } catch (error: unknown) {
+  } catch (error) {
     throw await handleRejection(token, error);
   }
 }

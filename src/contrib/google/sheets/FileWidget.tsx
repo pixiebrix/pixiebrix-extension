@@ -79,7 +79,7 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
         } else {
           onSelect(null);
         }
-      } catch (error: unknown) {
+      } catch (error) {
         if (!isMounted()) return;
         onSelect(null);
         setSheetError(error);
@@ -141,7 +141,7 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
         )
         .build();
       picker.setVisible(true);
-    } catch (error: unknown) {
+    } catch (error) {
       notify.error(`Error loading file picker: ${getErrorMessage(error)}`, {
         error,
       });

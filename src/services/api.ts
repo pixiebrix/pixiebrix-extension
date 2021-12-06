@@ -53,7 +53,7 @@ const appBaseQuery: BaseQueryFn<{
     const result = await client({ url, method, data });
 
     return { data: result.data, meta };
-  } catch (error: unknown) {
+  } catch (error) {
     if (isAxiosError(error)) {
       return {
         error: { status: error.response?.status, data: error.response?.data },
