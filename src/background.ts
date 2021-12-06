@@ -55,4 +55,4 @@ initFrames();
 initContextMenus();
 initDeploymentUpdater();
 void initFirefoxCompat();
-void activateBrowserActionIcon();
+activateBrowserActionIcon();

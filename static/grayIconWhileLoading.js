@@ -15,8 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default function activateBrowserActionIcon() {
-  // This re-sets the colored manifest icons
-  const { icons: path } = chrome.runtime.getManifest();
-  chrome.browserAction.setIcon({ path });
+/** @file This is a standalone background entry point that must run independendently of the rest of extension */
+
+const { icons } = chrome.runtime.getManifest();
+const inactiveIcons = {};
+for (const [size, path] of icons.entries()) {
+  // eslint-disable-next-line security/detect-object-injection -- Safe
+  inactiveIcons[size] = path.replace("icons", "icons/inactive");
 }
+
+chrome.browserAction.setIcon({ path: inactiveIcons });
