@@ -35,7 +35,6 @@ import {
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
 import { checkTargetPermissions, ensureContentScript } from "@/background/util";
-import { queueReactivateEveryTab } from "@/background/deployment";
 import serviceRegistry from "@/services/registry";
 import { deleteCachedAuthData } from "@/background/auth";
 import { doCleanAxiosRequest, _proxyService } from "@/background/requests";
@@ -70,7 +69,6 @@ declare global {
     ECHO_SENDER: typeof whoAmI;
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
-    QUEUE_REACTIVATE_EVERY_TAB: typeof queueReactivateEveryTab;
     CLOSE_TAB: typeof closeTab;
     MARK_TAB_AS_READY: typeof markTabAsReady;
     OPEN_TAB: typeof openTab;
@@ -115,7 +113,6 @@ registerMethods({
   ECHO_SENDER: whoAmI,
   ACTIVATE_TAB: activateTab,
   REACTIVATE_EVERY_TAB: reactivateEveryTab,
-  QUEUE_REACTIVATE_EVERY_TAB: queueReactivateEveryTab,
   CLOSE_TAB: closeTab,
   MARK_TAB_AS_READY: markTabAsReady,
   OPEN_TAB: openTab,

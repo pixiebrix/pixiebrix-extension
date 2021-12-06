@@ -44,10 +44,6 @@ export const whoAmI = getMethod("ECHO_SENDER", bg);
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
-export const queueReactivateEveryTab = getNotifier(
-  "QUEUE_REACTIVATE_EVERY_TAB",
-  bg
-);
 
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const markTabAsReady = getMethod("MARK_TAB_AS_READY", bg);
