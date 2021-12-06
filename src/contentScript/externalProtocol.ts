@@ -114,7 +114,7 @@ async function onContentScriptReceiveMessage(
   }
 
   if (!options.asyncResponse) {
-    void handler(...payload).catch((error: unknown) => {
+    void handler(...payload).catch((error) => {
       console.warn(`${type}: ${meta.nonce}: Notification error`, error);
     });
   }

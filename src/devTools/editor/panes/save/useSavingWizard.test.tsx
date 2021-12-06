@@ -100,7 +100,7 @@ test("maintains wizard open state", () => {
   // Save will open the modal window.
   // Should not await for the promise to resolve to check that window is open.
   act(() => {
-    void result.current.save().catch((error: unknown) => {
+    void result.current.save().catch((error) => {
       // Got an error, failing the test
       console.error(error);
       expect(error).toBeUndefined();
@@ -134,7 +134,7 @@ test("saves non recipe element", async () => {
   const { result } = renderUseSavingWizard(store);
 
   act(() => {
-    result.current.save().catch((error: unknown) => {
+    result.current.save().catch((error) => {
       // Got an error, failing the test
       console.error(error);
       expect(error).toBeUndefined();
@@ -212,7 +212,7 @@ describe("saving a Recipe Extension", () => {
 
     // Get into the saving process
     act(() => {
-      void result.current.save().catch((error: unknown) => {
+      void result.current.save().catch((error) => {
         // Got an error, failing the test
         console.error(error);
         expect(error).toBeUndefined();

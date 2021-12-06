@@ -120,7 +120,7 @@ function useSubmitBrick({
 
         refreshPromise
           .then(async () => reactivate())
-          .catch((error: unknown) => {
+          .catch((error) => {
             notify.warning(
               `Error re-activating bricks: ${getErrorMessage(error)}`,
               {

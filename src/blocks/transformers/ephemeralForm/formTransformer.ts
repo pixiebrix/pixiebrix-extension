@@ -34,7 +34,6 @@ import {
   hideActionPanelForm,
 } from "@/actionPanel/native";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
-import { unary } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import pDefer from "p-defer";
 
@@ -160,7 +159,7 @@ export class FormTransformer extends Transformer {
         // In the future we might creating/sending a closeIfEmpty message to the sidebar, so that it would close
         // if this form was the only entry in the panel
         hideActionPanelForm(nonce);
-        void cancelForm(nonce).catch(unary(reportError));
+        void cancelForm(nonce).catch(reportError);
       });
     } else {
       showModal(frameSrc, controller.signal);

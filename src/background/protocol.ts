@@ -114,7 +114,7 @@ async function callBackground(
     console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {
       extensionId,
     });
-    sendMessage(extensionId, message, {}).catch((error: unknown) => {
+    sendMessage(extensionId, message, {}).catch((error) => {
       console.warn(
         `An error occurred processing background notification ${type} (nonce: ${nonce})`,
         error

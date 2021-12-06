@@ -341,7 +341,7 @@ export async function handleNavigate({
         // Don't await each extension point since the extension point may never appear. For example, an
         // extension point that runs on the contact information modal on LinkedIn
         const runPromise = runExtensionPoint(extensionPoint, cancel).catch(
-          (error: unknown) => {
+          (error) => {
             console.error(`Error installing/running: ${extensionPoint.id}`, {
               error,
             });
