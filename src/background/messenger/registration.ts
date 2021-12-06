@@ -76,7 +76,7 @@ declare global {
     REGISTRY_SYNC: typeof registry.syncRemote;
     REGISTRY_FIND: typeof registry.find;
     LOCATE_SERVICE: typeof locator.locate;
-    REFRESH_SERVICE: typeof refreshServices;
+    REFRESH_SERVICES: typeof refreshServices;
 
     EXECUTE_ON_SERVER: typeof executeOnServer;
 
@@ -120,7 +120,7 @@ registerMethods({
   REGISTRY_SYNC: registry.syncRemote,
   REGISTRY_FIND: registry.find,
   LOCATE_SERVICE: locator.locate.bind(locator),
-  REFRESH_SERVICE: refreshServices,
+  REFRESH_SERVICES: refreshServices,
 
   EXECUTE_ON_SERVER: executeOnServer,
 

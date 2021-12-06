@@ -89,5 +89,5 @@ export const contextMenus = {
 
 export const services = {
   locate: getMethod("LOCATE_SERVICE", bg),
-  refresh: getMethod("REFRESH_SERVICE", bg),
+  refresh: getMethod("REFRESH_SERVICES", bg),
 };
