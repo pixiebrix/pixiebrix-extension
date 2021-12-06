@@ -16,11 +16,12 @@
  */
 
 import { useField } from "formik";
-import React from "react";
+import React, { ChangeEventHandler } from "react";
 import {
-  DOCUMENT_ELEMENT_TYPES,
   DocumentElement,
   DocumentElementType,
+  isListDocument,
+  ListDocumentElement,
 } from "./documentBuilderTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getElementEditSchemas } from "./elementEditSchemas";
@@ -29,8 +30,11 @@ import { Row, Col } from "react-bootstrap";
 import styles from "./DocumentEditor.module.scss";
 import RemoveElementAction from "./RemoveElementAction";
 import MoveElementAction from "./MoveElementAction";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import { ROOT_ELEMENT_TYPES } from "@/components/documentBuilder/allowedElementTypes";
+import { produce } from "immer";
+import { createNewElement } from "@/components/documentBuilder/createNewElement";
 
 type ElementEditProps = {
   elementName: string;
@@ -55,18 +59,30 @@ const ElementEdit: React.FC<ElementEditProps> = ({
   elementName,
   setActiveElement,
 }) => {
-  const [{ value: documentElement }] = useField<DocumentElement>(elementName);
+  const [
+    { value: documentElement },
+    ,
+    { setValue: setDocumentElement },
+  ] = useField<DocumentElement>(elementName);
 
   const editSchemas = getElementEditSchemas(documentElement, elementName);
-  if (documentElement.type === "list") {
-    const elementEditSchemas = getElementEditSchemas(
-      documentElement.config.element.__value__,
-      `${elementName}.config.element.__value__`
+
+  const isList = isListDocument(documentElement);
+
+  const onElementTypeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const nextType = event.target.value as DocumentElementType;
+
+    const nextDocumentElement = produce(
+      documentElement,
+      (draft: ListDocumentElement) => {
+        const nextElement = createNewElement(nextType);
+        draft.config.element.__value__ = nextElement;
+        return draft;
+      }
     );
-    for (const x of elementEditSchemas) {
-      editSchemas.push(x);
-    }
-  }
+
+    setDocumentElement(nextDocumentElement);
+  };
 
   return (
     <>
@@ -92,19 +108,23 @@ const ElementEdit: React.FC<ElementEditProps> = ({
 
       <Row>
         <Col>
-          {documentElement.type === "list" && (
-            <ConnectedFieldTemplate
-              name={`${elementName}.config.element.__value__.type`}
+          {editSchemas.map((editSchema) => (
+            <SchemaField key={editSchema.name} {...editSchema} />
+          ))}
+
+          {isList && (
+            <FieldTemplate
+              label="Item type"
+              name="elementType"
+              value={documentElement.config.element.__value__.type}
+              onChange={onElementTypeChange}
               as={SelectWidget}
-              options={DOCUMENT_ELEMENT_TYPES.map((x) => ({
+              options={ROOT_ELEMENT_TYPES.map((x) => ({
                 label: elementTypeLabels[x],
                 value: x,
               }))}
             />
           )}
-          {editSchemas.map((editSchema) => (
-            <SchemaField key={editSchema.name} {...editSchema} />
-          ))}
         </Col>
       </Row>
       <Row>

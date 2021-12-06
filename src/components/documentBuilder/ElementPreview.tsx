@@ -18,7 +18,7 @@
 import React, { MouseEventHandler } from "react";
 import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
-import { DocumentElement } from "./documentBuilderTypes";
+import { DocumentElement, isListDocument } from "./documentBuilderTypes";
 import { getPreviewComponentDefinition } from "./documentTree";
 import AddElementAction from "./AddElementAction";
 import { useField } from "formik";
@@ -63,7 +63,11 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
     }
   };
 
+  // Render children and Add Menu for the container element
   const isContainer = Array.isArray(documentElement.children);
+
+  // Render the item template and the Item Type Selector for the list element
+  const isList = isListDocument(documentElement);
 
   const { Component: PreviewComponent, props } = getPreviewComponentDefinition(
     documentElement
@@ -99,6 +103,16 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
           allowedTypes={getAllowedChildTypes(documentElement)}
           className={styles.addElement}
           menuBoundary={menuBoundary}
+        />
+      )}
+      {isList && (
+        <ElementPreview
+          elementName={`${elementName}.config.element.__value__`}
+          activeElement={activeElement}
+          setActiveElement={setActiveElement}
+          menuBoundary={menuBoundary}
+          hoveredElement={hoveredElement}
+          setHoveredElement={setHoveredElement}
         />
       )}
     </PreviewComponent>

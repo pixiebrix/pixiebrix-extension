@@ -282,12 +282,16 @@ export function getPreviewComponentDefinition(
     }
 
     case "list": {
+      const arrayValue = isExpression(config.array)
+        ? config.array.__value__
+        : String(config.array);
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        className,
+        children,
         ...restPreviewProps
       }) => (
-        <div className={cx(className)} {...restPreviewProps}>
-          <h3>List</h3>
+        <div {...restPreviewProps}>
+          <div className="text-muted">List: {arrayValue}</div>
+          {children}
         </div>
       );
 

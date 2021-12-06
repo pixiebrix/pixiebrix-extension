@@ -125,3 +125,100 @@ describe("dumpYaml", () => {
     expect(dumped).toBe("metadata:\n  id: test/brick\n");
   });
 });
+
+describe("parse/dump document", () => {
+  const brickYaml = `
+id: '@test/document'
+config:
+  body:
+    - type: header_1
+      config:
+        title: !var '@data.header'
+    - type: list
+      config:
+        element: !defer
+          type: text
+          config:
+            text: List item text.
+        array: !var '@data.items'`;
+  /*
+    - type: card
+      config:
+        heading: !var '@card.name'
+      children:
+        - type: block
+          config:
+            pipeline: !pipeline
+              - id: '@pixiebrix/markdown'
+                config:
+                  markdown: 'Markdown content.'
+*/
+
+  const brickJson = {
+    id: "@test/document",
+    config: {
+      body: [
+        {
+          type: "header_1",
+          config: {
+            title: {
+              __type__: "var",
+              __value__: "@data.header",
+            },
+          },
+        },
+        {
+          type: "list",
+          config: {
+            element: {
+              __type__: "defer",
+              __value__: {
+                type: "text",
+                config: {
+                  text: "List item text.",
+                },
+              },
+            },
+            array: {
+              __type__: "var",
+              __value__: "@data.items",
+            },
+          },
+        },
+        // {
+        //   type: "card",
+        //   config: {
+        //     heading: {
+        //       __type__: "var",
+        //       __value__: "@card.name",
+        //     },
+        //   },
+        //   children: [
+        //     {
+        //       type: "block",
+        //       config: {
+        //         pipeline: {
+        //           __type__: "pipeline",
+        //           __values__: {
+        //             id: "@pixiebrix/markdown",
+        //             config: {
+        //               markdown: "Markdown content.",
+        //             },
+        //           },
+        //         },
+        //       },
+        //     },
+        //   ],
+        // },
+      ],
+    },
+  };
+
+  test("serialize document", () => {
+    expect(dumpBrickYaml(brickJson)).toBe(brickYaml);
+  });
+
+  test("deserealize document", async () => {
+    expect(loadBrickYaml(brickYaml)).toEqual(brickJson);
+  });
+});
