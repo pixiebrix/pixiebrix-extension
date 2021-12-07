@@ -31,8 +31,8 @@ import {
   executeInAll,
   executeInOpener,
   executeInTarget,
-  executeOnServer,
 } from "@/background/executor";
+import { executeBrick } from "@/background/messenger/api";
 import { getLoggingConfig } from "@/background/logging";
 import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
 import { sendDeploymentAlert } from "@/background/telemetry";
@@ -231,7 +231,9 @@ async function execute(
     }
 
     case "remote": {
-      const { data, error } = (await executeOnServer(config.id, args)).data;
+      const { data, error } = (
+        await executeBrick.onServer(config.id, args)
+      ).data;
       if (error) {
         throw new RemoteExecutionError(
           "Error while executing brick remotely",

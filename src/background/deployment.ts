@@ -26,7 +26,6 @@ import { isLinked } from "@/auth/token";
 import { optionsSlice } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
-import { liftBackground } from "@/background/protocol";
 import { selectExtensions } from "@/options/selectors";
 import {
   uninstallContextMenu,
@@ -68,13 +67,9 @@ export function selectInstalledDeployments(
   );
 }
 
-export const queueReactivate = liftBackground(
-  "QUEUE_REACTIVATE",
-  async () => {
-    void forEachTab(queueReactivateTab);
-  },
-  { asyncResponse: false }
-);
+export function queueReactivateEveryTab(): void {
+  void forEachTab(queueReactivateTab);
+}
 
 function installDeployment(
   state: ExtensionOptionsState,
@@ -233,7 +228,7 @@ async function updateDeployments() {
       }
 
       await saveOptions(currentOptions);
-      void queueReactivate();
+      queueReactivateEveryTab();
       console.info(
         `Applied automatic updates for ${automatic.length} deployment(s)`
       );
