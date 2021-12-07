@@ -127,7 +127,8 @@ describe("dumpYaml", () => {
 });
 
 describe("parse/dump document", () => {
-  const brickYaml = `
+  const brick1 = [
+    `
 id: '@test/document'
 config:
   body:
@@ -140,8 +141,8 @@ config:
           type: text
           config:
             text: List item text.
-        array: !var '@data.items'`;
-  /*
+        array: !var '@data.items'`,
+    /*
     - type: card
       config:
         heading: !var '@card.name'
@@ -154,71 +155,249 @@ config:
                   markdown: 'Markdown content.'
 */
 
-  const brickJson = {
-    id: "@test/document",
-    config: {
-      body: [
-        {
-          type: "header_1",
-          config: {
-            title: {
-              __type__: "var",
-              __value__: "@data.header",
-            },
-          },
-        },
-        {
-          type: "list",
-          config: {
-            element: {
-              __type__: "defer",
-              __value__: {
-                type: "text",
-                config: {
-                  text: "List item text.",
-                },
+    {
+      id: "@test/document",
+      config: {
+        body: [
+          {
+            type: "header_1",
+            config: {
+              title: {
+                __type__: "var",
+                __value__: "@data.header",
               },
             },
-            array: {
-              __type__: "var",
-              __value__: "@data.items",
+          },
+          {
+            type: "list",
+            config: {
+              element: {
+                __type__: "defer",
+                __value__: {
+                  type: "text",
+                  config: {
+                    text: "List item text.",
+                  },
+                },
+              },
+              array: {
+                __type__: "var",
+                __value__: "@data.items",
+              },
+            },
+          },
+          // {
+          //   type: "card",
+          //   config: {
+          //     heading: {
+          //       __type__: "var",
+          //       __value__: "@card.name",
+          //     },
+          //   },
+          //   children: [
+          //     {
+          //       type: "block",
+          //       config: {
+          //         pipeline: {
+          //           __type__: "pipeline",
+          //           __values__: {
+          //             id: "@pixiebrix/markdown",
+          //             config: {
+          //               markdown: "Markdown content.",
+          //             },
+          //           },
+          //         },
+          //       },
+          //     },
+          //   ],
+          // },
+        ],
+      },
+    },
+  ];
+
+  const brick2 = [
+    `
+kind: recipe
+metadata:
+  id: '@balehok/side-panel-test'
+  version: 1.0.0
+  name: My habr.com side panel WS
+  description: Custom stuff available in WS only.
+apiVersion: v3
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: actionPanel
+      reader:
+        - '@pixiebrix/document-metadata'
+      isAvailable:
+        matchPatterns:
+          - https://habr.com/*
+        urlPatterns: []
+        selectors: []
+extensionPoints:
+  - id: extensionPoint
+    label: My habr.com side panel
+    config:
+      heading: Workshop
+      body:
+        - id: '@pixiebrix/jquery-reader'
+          config:
+            selectors:
+              header: h1
+              titles:
+                multi: true
+                selector: '[data-article-link] span'
+              className: .tm-tabs__tab-link[href='\\/en\\/companies\\/']
+              firstArticle: >-
+                [data-article-link][href='\\/en\\/company\\/pvs-studio\\/blog\\/592213\\/']
+                span
+          outputKey: data
+        - id: '@pixiebrix/get'
+          config:
+            url: https://api.publicapis.org/categories
+          outputKey: response
+        - id: '@pixiebrix/document'
+          config:
+            body:
+              - type: card
+                config:
+                  heading: !nunjucks jQuery ({{@data.titles | length}})
+                children:
+                  - type: list
+                    config:
+                      element: !defer
+                        type: text
+                        config:
+                          text: Paragraph text.
+                      array: !var '@data.titles'
+              - type: card
+                config:
+                  heading: !nunjucks API ({{@response | length}})
+                children: []
+    services: {}
+`,
+    {
+      kind: "recipe",
+      metadata: {
+        id: "@balehok/side-panel-test",
+        version: "1.0.0",
+        name: "My habr.com side panel WS",
+        description: "Custom stuff available in WS only.",
+      },
+      apiVersion: "v3",
+      definitions: {
+        extensionPoint: {
+          kind: "extensionPoint",
+          definition: {
+            type: "actionPanel",
+            reader: ["@pixiebrix/document-metadata"],
+            isAvailable: {
+              matchPatterns: ["https://habr.com/*"],
+              urlPatterns: [] as any[],
+              selectors: [] as any[],
             },
           },
         },
-        // {
-        //   type: "card",
-        //   config: {
-        //     heading: {
-        //       __type__: "var",
-        //       __value__: "@card.name",
-        //     },
-        //   },
-        //   children: [
-        //     {
-        //       type: "block",
-        //       config: {
-        //         pipeline: {
-        //           __type__: "pipeline",
-        //           __values__: {
-        //             id: "@pixiebrix/markdown",
-        //             config: {
-        //               markdown: "Markdown content.",
-        //             },
-        //           },
-        //         },
-        //       },
-        //     },
-        //   ],
-        // },
+      },
+      extensionPoints: [
+        {
+          id: "extensionPoint",
+          label: "My habr.com side panel",
+          config: {
+            heading: "Workshop",
+            body: [
+              {
+                id: "@pixiebrix/jquery-reader",
+                config: {
+                  selectors: {
+                    header: "h1",
+                    titles: {
+                      multi: true,
+                      selector: "[data-article-link] span",
+                    },
+                    className:
+                      ".tm-tabs__tab-link[href='\\/en\\/companies\\/']",
+                    firstArticle:
+                      "[data-article-link][href='\\/en\\/company\\/pvs-studio\\/blog\\/592213\\/'] span",
+                  },
+                },
+                outputKey: "data",
+              },
+              {
+                id: "@pixiebrix/get",
+                config: {
+                  url: "https://api.publicapis.org/categories",
+                },
+                outputKey: "response",
+              },
+              {
+                id: "@pixiebrix/document",
+                config: {
+                  body: [
+                    {
+                      type: "card",
+                      config: {
+                        heading: {
+                          __type__: "nunjucks",
+                          __value__: "jQuery ({{@data.titles | length}})",
+                        },
+                      },
+                      children: [
+                        {
+                          type: "list",
+                          config: {
+                            element: {
+                              __type__: "defer",
+                              __value__: {
+                                type: "text",
+                                config: {
+                                  text: "Paragraph text.",
+                                },
+                              },
+                            },
+                            array: {
+                              __type__: "var",
+                              __value__: "@data.titles",
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      type: "card",
+                      config: {
+                        heading: {
+                          __type__: "nunjucks",
+                          __value__: "API ({{@response | length}})",
+                        },
+                      },
+                      children: [],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+          services: {},
+        },
       ],
     },
-  };
+  ];
 
-  test("serialize document", () => {
-    expect(dumpBrickYaml(brickJson)).toBe(brickYaml);
-  });
+  test.each([brick1, brick2])(
+    "serialize document",
+    (brickYaml: string, brickJson: any) => {
+      expect(dumpBrickYaml(brickJson)).toBe(brickYaml);
+    }
+  );
 
-  test("deserealize document", async () => {
-    expect(loadBrickYaml(brickYaml)).toEqual(brickJson);
-  });
+  test.each([brick1, brick2])(
+    "deserealize document",
+    async (brickYaml: string, brickJson: any) => {
+      expect(loadBrickYaml(brickYaml)).toEqual(brickJson);
+    }
+  );
 });

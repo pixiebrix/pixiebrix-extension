@@ -287,10 +287,17 @@ export function getPreviewComponentDefinition(
         : String(config.array);
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         children,
+        className,
         ...restPreviewProps
       }) => (
-        <div {...restPreviewProps}>
+        <div
+          className={cx(className, documentTreeStyles.container)}
+          {...restPreviewProps}
+        >
           <div className="text-muted">List: {arrayValue}</div>
+          <div className="text-muted">
+            Element key: {config.elementKey ?? "@element"}
+          </div>
           {children}
         </div>
       );
