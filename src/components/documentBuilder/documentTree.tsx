@@ -21,7 +21,11 @@ import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
 import { Card, Col, Container, Row } from "react-bootstrap";
-import { DocumentComponent, DocumentElement } from "./documentBuilderTypes";
+import {
+  BuildDocumentBranch,
+  DocumentComponent,
+  DocumentElement,
+} from "./documentBuilderTypes";
 import DocumentButton from "@/components/documentBuilder/DocumentButton";
 import useNotifications from "@/hooks/useNotifications";
 import documentTreeStyles from "./documentTree.module.scss";
@@ -131,9 +135,8 @@ export function getComponentDefinition(
         array: config.array,
         elementKey: config.elementKey,
         config: config.element,
+        buildDocumentBranch,
       };
-
-      console.log("list", { element, props });
 
       return {
         Component: DocumentList,
@@ -310,7 +313,7 @@ export function getPreviewComponentDefinition(
   }
 }
 
-export function buildDocumentBranch(root: DocumentElement): DocumentComponent {
+export const buildDocumentBranch: BuildDocumentBranch = (root) => {
   const componentDefinition = getComponentDefinition(root);
   if (root.children?.length > 0) {
     componentDefinition.props.children = root.children.map((child, i) => {
@@ -320,4 +323,4 @@ export function buildDocumentBranch(root: DocumentElement): DocumentComponent {
   }
 
   return componentDefinition;
-}
+};

@@ -60,3 +60,5 @@ export type DocumentComponent = {
   Component: React.ElementType;
   props?: UnknownObject | undefined;
 };
+
+export type BuildDocumentBranch = (root: DocumentElement) => DocumentComponent;

@@ -21,51 +21,55 @@ import { UnknownObject } from "@/types";
 import { Args, mapArgs } from "@/runtime/mapArgs";
 import { useAsyncState } from "@/hooks/common";
 import { GridLoader } from "react-spinners";
-import { getComponentDefinition } from "./documentTree";
-import { DocumentElement } from "./documentBuilderTypes";
+import { BuildDocumentBranch, DocumentElement } from "./documentBuilderTypes";
+import { produce } from "immer";
 
 type DocumentListProps = {
   array: UnknownObject[];
   elementKey?: string;
   config: Args;
+  buildDocumentBranch: BuildDocumentBranch;
 };
 
 const DocumentList: React.FC<DocumentListProps> = ({
   array,
   elementKey = "element",
   config,
+  buildDocumentBranch,
 }) => {
-  const ctxt = useContext(DocumentContext);
-  console.log("DocumentList", {
-    array,
-    elementKey,
-    config,
-  });
-  const [componentDefinitions, isLoading] = useAsyncState(
+  const documentContext = useContext(DocumentContext);
+
+  const [rootDefinitions, isLoading] = useAsyncState(
     async () =>
       Promise.all(
-        array.map(async (data) => {
-          const elementContext = {
-            ...ctxt,
-            [`@${elementKey}`]: data,
-          };
-          return (mapArgs(config, elementContext, {
+        array.map(async (itemData) => {
+          const elementContext = produce(documentContext, (draft) => {
+            draft.options.ctxt[`@${elementKey}`] = itemData;
+          });
+
+          return (mapArgs(config, elementContext.options.ctxt, {
             implicitRender: null,
-          }) as Promise<DocumentElement>).then((documentElement) =>
-            getComponentDefinition(documentElement)
-          );
+          }) as Promise<DocumentElement>).then((documentElement) => ({
+            documentElement,
+            elementContext,
+          }));
         })
       ),
-    [array, elementKey, config, ctxt]
+    [array, elementKey, config, documentContext]
   );
 
   return isLoading ? (
     <GridLoader />
   ) : (
     <>
-      {componentDefinitions.map(({ Component, props }, index) => (
-        <Component key={index} {...props} />
-      ))}
+      {rootDefinitions.map(({ documentElement, elementContext }, i) => {
+        const { Component, props } = buildDocumentBranch(documentElement);
+        return (
+          <DocumentContext.Provider key={i} value={elementContext}>
+            <Component {...props} />
+          </DocumentContext.Provider>
+        );
+      })}
     </>
   );
 };
