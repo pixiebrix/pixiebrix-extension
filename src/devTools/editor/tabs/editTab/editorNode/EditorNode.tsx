@@ -77,7 +77,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
 
   const errorBadge =
     hasError || hasWarning ? (
-      <span className={styles.errorBadge}>
+      <span className={cx(styles.icon, styles.errorBadge)}>
         <span className={styles.exclamationBackground} />
         <FontAwesomeIcon
           icon={hasError ? faExclamationCircle : faExclamationTriangle}
@@ -100,8 +100,8 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       })}
     >
       <div className={styles.icon}>
-        {icon}
         {errorBadge}
+        {icon}
       </div>
       <div>
         <div>{title}</div>

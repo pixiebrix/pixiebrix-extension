@@ -15,31 +15,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.insertButton {
-  $size: 20px;
+.actions {
+  height: 0;
+  display: flex;
+  place-content: center;
+  gap: 0.2em;
 
-  position: absolute;
-  left: 50%;
-  border: none;
-  background: none;
-  color: inherit;
-  display: block;
-  padding: 0;
-  margin: -($size/2);
+  position: relative;
+  z-index: 1;
+
+  --size: 20px;
+  button {
+    border: none;
+    background: none;
+    color: inherit;
+    display: block;
+    padding: 0;
+  }
+
   svg {
     display: block;
-    font-size: $size;
+    font-size: var(--size);
     color: gray;
     background-color: white;
     border: solid 2px white;
     border-radius: 50%;
+    transform: translateY(-50%);
     &:hover {
       color: var(--blue);
     }
   }
 }
 
+.finalActions {
+  --size: 40px;
+  height: auto;
+  margin: 1em 0;
+  svg {
+    transform: none;
+  }
+}
+
 .appendInfo {
-  margin: 2em 0.5em;
+  padding: 0 2em 1em;
   text-align: center;
 }

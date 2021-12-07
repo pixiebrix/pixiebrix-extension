@@ -25,32 +25,33 @@ import { faPlus, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { IBlock, RegistryId, UUID } from "@/core";
 import BlockModal from "@/components/brickModal/BrickModal";
 import useBrickRecommendations from "@/devTools/editor/tabs/editTab/useBrickRecommendations";
+import cx from "classnames";
 
-function renderAppend(onClick: () => void) {
-  return (
-    <>
-      {renderInsert(onClick)}
-      <p className={styles.appendInfo}>
-        <small className="text-muted">
-          You can add more bricks by clicking the plus button
-        </small>
-      </p>
-    </>
-  );
-}
-
-function renderInsert(onClick: () => void) {
+function renderActions(
+  onClick: () => void,
+  { isFinal }: { isFinal?: boolean } = {}
+) {
   return (
     // Don't use bootstrap styling
-    <div className={styles.insertContainer}>
-      <button type="button" onClick={onClick} className={styles.insertButton}>
-        <FontAwesomeIcon
-          icon={faPlusCircle}
-          size="lg"
-          className={styles.plus}
-        />
-      </button>
-    </div>
+    <>
+      <div
+        className={cx(styles.actions, {
+          [styles.finalActions]: isFinal,
+        })}
+      >
+        <button type="button" onClick={onClick} className={styles.insertButton}>
+          <FontAwesomeIcon icon={faPlusCircle} />
+        </button>
+      </div>
+
+      {isFinal && (
+        <p className={styles.appendInfo}>
+          <small className="text-muted">
+            Add more bricks with the plus button
+          </small>
+        </p>
+      )}
+    </>
   );
 }
 
@@ -111,7 +112,7 @@ const EditorNodeLayout: React.FC<{
               {nodeId !== FOUNDATION_NODE_ID && (
                 <BlockModal
                   bricks={relevantBlocksToAdd}
-                  renderButton={(onClick) => renderInsert(onClick)}
+                  renderButton={(onClick) => renderActions(onClick)}
                   recommendations={recommendations}
                   selectCaption={addBrickCaption}
                   onSelect={(block) => {
@@ -130,7 +131,7 @@ const EditorNodeLayout: React.FC<{
       {showAppend && (
         <BlockModal
           bricks={relevantBlocksToAdd}
-          renderButton={(onClick) => renderAppend(onClick)}
+          renderButton={(onClick) => renderActions(onClick, { isFinal: true })}
           recommendations={recommendations}
           selectCaption={addBrickCaption}
           onSelect={addBlock}

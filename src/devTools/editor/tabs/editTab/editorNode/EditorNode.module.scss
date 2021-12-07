@@ -23,9 +23,8 @@
   border: solid 1px #ced4da;
   border-width: $borderWidth 0;
   margin-top: -$borderWidth; // Overlap borders
-  padding: 20px 7px;
+  padding: 20px 10px;
   padding-right: 0;
-  cursor: pointer;
 }
 .activeNode {
   background-color: var(--blue);
@@ -33,28 +32,31 @@
 }
 
 .icon {
-  $size: 24px;
-  width: $size;
-  flex-shrink: 0;
-  padding: 5px;
-
-  margin-right: 7px;
-  display: grid;
   display: flex;
+  flex-shrink: 0;
+  flex-grow: 0;
   place-items: center;
-  flex-direction: column;
+  place-content: center;
+  width: 1.2em;
+  margin-right: 10px;
+  font-size: 1.65em;
 
-  & > svg, // Font icon
-  & > img // External icon
-  {
-    width: $size;
-    height: $size;
+  // External icon
+  & > img {
+    width: 1.2em;
+    height: 1.2em;
+  }
+  svg {
+    font-size: inherit;
   }
 }
 
 .errorBadge {
-  height: 0;
-  font-size: 1.3em;
+  flex-basis: 0;
+  width: 0;
+  padding: 0;
+  font-size: 0.7em;
+  transform: translate(10px);
 }
 .exclamationBackground {
   position: absolute;
