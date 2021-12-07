@@ -39,7 +39,12 @@ const InvitationBanner: React.FunctionComponent = () => {
   return (
     <Banner variant="info">
       You have team invitations waiting for you! &nbsp;
-      <span>✨✉️</span>
+      <span role="img" aria-label="sparkles">
+        ✨
+      </span>
+      <span role="img" aria-label="envelope">
+        ✉️
+      </span>
       &nbsp; You can view them on the{" "}
       <a href={`${SERVICE_URL}/team`} target="_blank" rel="noopener noreferrer">
         &quot;My Team&quot; Page <FontAwesomeIcon icon={faExternalLinkAlt} />
