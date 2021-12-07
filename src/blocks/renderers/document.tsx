@@ -43,7 +43,6 @@ export class DocumentRenderer extends Renderer {
     { body }: BlockArg,
     options: BlockOptions
   ): Promise<ComponentRef> {
-    console.log("document", { options });
     return {
       Component: DocumentViewLazy,
       props: {

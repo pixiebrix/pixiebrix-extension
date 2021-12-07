@@ -217,11 +217,6 @@ export const appApi = createApi({
       query: ({ packageId, recipe }) => {
         const recipeConfig = dumpBrickYaml(recipe);
 
-        console.log("updateRecipe", {
-          json: recipe,
-          yaml: recipeConfig,
-        });
-
         return {
           url: `api/bricks/${packageId}/`,
           method: "put",
