@@ -91,9 +91,9 @@ const EditorNode: React.FC<EditorNodeProps> = ({
 
   return (
     // Use our own custom style here, not bootstrap
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events -- Buttons can't have buttons inside them; this one can
     <div
       tabIndex={0}
+      role="button"
       onClick={onClick}
       className={cx(styles.root, {
         [styles.activeNode]: active,
