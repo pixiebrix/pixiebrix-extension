@@ -117,7 +117,7 @@ describe("unauthenticated direct requests", () => {
     try {
       await proxyService(null, requestConfig);
       fail("Expected proxyService to throw a RemoteServiceError error");
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBeInstanceOf(RemoteServiceError);
       const { status } = (error as RemoteServiceError).response;
       expect(status).toEqual(500);
@@ -149,7 +149,7 @@ describe("authenticated direct requests", () => {
     try {
       await proxyService(directServiceConfig, requestConfig);
       fail("Expected proxyService to throw an error");
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBeInstanceOf(ContextError);
       const { status } = ((error as ContextError).cause as AxiosError).response;
       expect(status).toEqual(403);
@@ -191,7 +191,7 @@ describe("proxy service requests", () => {
         try {
           await proxyService(proxiedServiceConfig, requestConfig);
           fail("Expected proxyService to throw an error");
-        } catch (error: unknown) {
+        } catch (error) {
           expect(error).toBeInstanceOf(ContextError);
           const { status, statusText } = ((error as ContextError)
             .cause as AxiosError).response;
@@ -208,7 +208,7 @@ describe("proxy service requests", () => {
     try {
       await proxyService(proxiedServiceConfig, requestConfig);
       fail("Expected proxyService to throw an error");
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBeInstanceOf(Error);
       expect((error as Error).message).toEqual(
         "API proxy error: Request failed with status code 500"

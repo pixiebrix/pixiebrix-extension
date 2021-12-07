@@ -71,7 +71,7 @@ function useAddElement(): AddElement {
         );
 
         dispatch(actions.addElement(initialState as FormState));
-      } catch (error: unknown) {
+      } catch (error) {
         if (getErrorMessage(error) === "Selection cancelled") {
           return;
         }

@@ -620,7 +620,7 @@ export async function reducePipeline(
         ...options,
         logger: stageLogger,
       });
-    } catch (error: unknown) {
+    } catch (error) {
       // Must await because it will throw a wrapped error
       // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
       await throwBlockError(blockConfig, state, error, options);

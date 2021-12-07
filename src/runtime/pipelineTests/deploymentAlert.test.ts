@@ -92,7 +92,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
           { ...testOptions(apiVersion), logger }
         );
         fail("Expected reducePipeline to throw");
-      } catch (error: unknown) {
+      } catch (error) {
         serializedError = serializeError((error as ContextError).cause);
       }
 

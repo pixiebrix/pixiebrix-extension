@@ -29,7 +29,7 @@ const UpdateBanner: React.FunctionComponent = () => {
       const available = await getAvailableVersion();
       const installed = browser.runtime.getManifest().version;
       return available && installed !== available;
-    } catch (error: unknown) {
+    } catch (error) {
       reportError(error);
       return false;
     }

@@ -58,7 +58,7 @@ function useRefresh(options?: {
     async (isMounted = stubTrue) => {
       try {
         await refreshRegistries();
-      } catch (error: unknown) {
+      } catch (error) {
         console.error(error);
         if (!isMounted()) {
           return;

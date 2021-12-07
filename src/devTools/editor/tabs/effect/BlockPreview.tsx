@@ -162,7 +162,7 @@ const BlockPreview: React.FunctionComponent<{
           context: { ...context, ...(await makeServiceContext(services)) },
         });
         dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
-      } catch (error: unknown) {
+      } catch (error) {
         dispatch(previewSlice.actions.setError({ error }));
       }
     },

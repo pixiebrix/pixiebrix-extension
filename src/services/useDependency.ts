@@ -118,7 +118,7 @@ function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
       } else if (!result) {
         notify.warning("You must accept the permissions request");
       }
-    } catch (error: unknown) {
+    } catch (error) {
       setGrantedPermissions(false);
       notify.error(`Error granting permissions: ${getErrorMessage(error)}`, {
         error,

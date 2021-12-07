@@ -42,7 +42,7 @@ export async function validateSchema(
 
   try {
     json = loadBrickYaml(value) as PartialSchema;
-  } catch (error: unknown) {
+  } catch (error) {
     return {
       config: [`Invalid YAML: ${getErrorMessage(error)}`],
     };
@@ -63,7 +63,7 @@ export async function validateSchema(
       json as Record<string, unknown>,
       json.kind as keyof typeof KIND_SCHEMAS
     );
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("An error occurred when validating the schema", error);
     return { config: ["An error occurred when validating the schema"] };
   }

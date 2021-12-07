@@ -113,7 +113,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         reactivateEveryTab();
 
         dispatch(push("/installed"));
-      } catch (error: unknown) {
+      } catch (error) {
         notify.error(`Error installing ${recipe.metadata.name}`, {
           error,
         });

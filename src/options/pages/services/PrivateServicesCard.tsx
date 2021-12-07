@@ -60,7 +60,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
       try {
         await deleteCachedAuthData(authId);
         notify.success("Reset login for integration");
-      } catch (error: unknown) {
+      } catch (error) {
         notify.error("Error resetting login for integration", {
           error,
         });

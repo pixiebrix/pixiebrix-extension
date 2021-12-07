@@ -57,7 +57,7 @@ const EllipsisMenu: React.FunctionComponent<{
         // hence no other element knows that the click happened.
         // Simulating the click on the body will let other menus know user clicked somewhere.
         document.body.click();
-      } catch (error: unknown) {
+      } catch (error) {
         console.debug(
           "EllipsisMenu. Failed to trigger closing other menus",
           error

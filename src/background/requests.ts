@@ -100,7 +100,7 @@ export async function doCleanAxiosRequest<T>(
     // Firefox won't send response objects from the background page to the content script. So strip out the
     // potentially sensitive parts of the response (the request, headers, etc.)
     return JSON.parse(JSON.stringify({ data, status, statusText }));
-  } catch (error: unknown) {
+  } catch (error) {
     if (isAxiosError(error)) {
       // Axios offers its own serialization method, but it doesn't include the response.
       // By deleting toJSON, the serialize-error library will use its default serialization
@@ -198,7 +198,7 @@ async function proxyRequest<T>(
     proxyResponse = await doCleanAxiosRequest<ProxyResponseData>(
       authenticatedRequestConfig
     );
-  } catch (error: unknown) {
+  } catch (error) {
     // If there's a server error with the proxy server itself, we'll also see it in the Rollbar logs for the server.
     throw new Error(`API proxy error: ${getErrorMessage(error)}`);
   }
@@ -238,7 +238,7 @@ export async function _proxyService(
     return await doCleanAxiosRequest(
       await authenticate(serviceConfig, requestConfig)
     );
-  } catch (error: unknown) {
+  } catch (error) {
     // Try again - have the user login again, or automatically try to get a new token
     if (
       isAxiosError(error) &&
@@ -283,7 +283,7 @@ export async function proxyService<TData>(
 
     try {
       return await doCleanAxiosRequest<TData>(requestConfig);
-    } catch (error: unknown) {
+    } catch (error) {
       if (!isAxiosError(error)) {
         throw error;
       }
@@ -305,7 +305,7 @@ export async function proxyService<TData>(
       serviceConfig,
       requestConfig
     )) as RemoteResponse<TData>;
-  } catch (error: unknown) {
+  } catch (error) {
     throw new ContextError(selectError(error) as Error, {
       serviceId: serviceConfig.serviceId,
       authId: serviceConfig.id,
