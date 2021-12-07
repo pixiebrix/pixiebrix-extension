@@ -23,9 +23,11 @@ import { FormikHelpers } from "formik";
 import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
 import { uniq } from "lodash";
-import { containsPermissions } from "@/background/messenger/api";
+import {
+  containsPermissions,
+  reactivateEveryTab,
+} from "@/background/messenger/api";
 import { collectPermissions } from "@/permissions";
-import { reactivate } from "@/background/navigation";
 import { push } from "connected-react-router";
 import { optionsSlice } from "@/options/slices";
 import { resolveRecipe } from "@/registry/internal";
@@ -108,7 +110,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
 
         setSubmitting(false);
 
-        void reactivate();
+        reactivateEveryTab();
 
         dispatch(push("/installed"));
       } catch (error) {

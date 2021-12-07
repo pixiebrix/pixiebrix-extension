@@ -30,7 +30,7 @@ import useServiceDefinitions from "./useServiceDefinitions";
 import { persistor, RootState } from "@/options/store";
 import { RawServiceConfiguration } from "@/core";
 import { SanitizedAuth } from "@/types/contract";
-import { refresh as refreshBackgroundAuths } from "@/background/locator";
+import { services } from "@/background/messenger/api";
 import GridLoader from "react-spinners/GridLoader";
 import ZapierModal from "@/options/pages/services/ZapierModal";
 import AuthContext from "@/auth/AuthContext";
@@ -87,7 +87,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       await persistor.flush();
 
       try {
-        await refreshBackgroundAuths();
+        await services.refresh();
       } catch (error) {
         notify.warning(
           "Error refreshing service configurations, restart the PixieBrix extension",
@@ -111,7 +111,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       await persistor.flush();
 
       try {
-        await refreshBackgroundAuths();
+        await services.refresh();
       } catch (error) {
         notify.warning(
           "Error refreshing service configurations, restart the PixieBrix extension",

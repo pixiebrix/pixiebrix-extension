@@ -39,7 +39,7 @@ import { isBackgroundPage } from "webext-detect-page";
 import { uuidv4 } from "@/types/helpers";
 import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
-import { reactivate } from "@/background/navigation";
+import { reactivateEveryTab } from "@/background/messenger/api";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { getErrorMessage, isPrivatePageError } from "@/errors";
 import { clearDynamicElements } from "@/contentScript/messenger/api";
@@ -195,7 +195,7 @@ async function resetTab(tabId: number): Promise<void> {
   console.info("Removed dynamic elements for tab: %d", tabId);
 
   // Re-activate the content script so any saved extensions are added to the page as "permanent" extensions
-  await reactivate();
+  reactivateEveryTab();
 
   console.info("Re-activated extensions for tab: %d", tabId);
 }

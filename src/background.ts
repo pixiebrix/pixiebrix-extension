@@ -28,15 +28,11 @@ import "@/background/messenger/registration";
 import "@/development/autoreload";
 import "@/background/installer";
 import "@/messaging/external";
-import "@/background/requests";
 import "@/background/locator";
 import "@/background/logging";
-import "@/background/auth";
 import "@/background/contextMenus";
-import "@/background/dataStore";
 import "@/background/devtools";
 import "@/background/browserAction";
-import "@/background/permissionPrompt";
 import "@/background/trace";
 
 import initGoogle from "@/contrib/google/initGoogle";
