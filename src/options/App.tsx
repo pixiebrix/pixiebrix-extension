@@ -55,6 +55,7 @@ import "@/contrib/editors";
 import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import WorkshopPage from "./pages/workshop/WorkshopPage";
+import InvitationBanner from "@/options/pages/InvitationBanner";
 
 // Register the built-in bricks
 registerBuiltinBlocks();
@@ -95,6 +96,7 @@ const Layout = () => {
             <EnvironmentBanner />
             <UpdateBanner />
             <DeploymentBanner />
+            <InvitationBanner />
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>

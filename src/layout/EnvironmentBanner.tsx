@@ -16,7 +16,6 @@
  */
 
 import React, { useContext } from "react";
-import "./Banner.scss";
 import { getExtensionAuth } from "@/auth/token";
 import AuthContext from "@/auth/AuthContext";
 import { isExtensionContext } from "webext-detect-page";
@@ -33,9 +32,9 @@ const variantMap = new Map([
   ["", "warning"],
   ["development", "success"],
   ["staging", "info"],
-]) as Map<null | string, BannerVariant>;
+]) as Map<string, BannerVariant>;
 
-const EnvironmentBannerContent: React.FunctionComponent = () => {
+const EnvironmentBannerMessage: React.FunctionComponent = () => {
   const { extension } = useContext(AuthContext);
 
   const [hostname] = useAsyncState(async () => {
@@ -55,11 +54,11 @@ const EnvironmentBannerContent: React.FunctionComponent = () => {
     : "not synced with server";
 
   return (
-    <Banner variant={variantMap.get(environment)}>
+    <>
       You are using {extension ? "extension" : "server"}{" "}
       {environment ?? "unknown"} build {versionName ?? "unknown version"}{" "}
       {extension && syncText}
-    </Banner>
+    </>
   );
 };
 
@@ -68,7 +67,11 @@ const EnvironmentBanner: React.FunctionComponent = () => {
     return null;
   }
 
-  return <EnvironmentBannerContent />;
+  return (
+    <Banner variant={variantMap.get(environment)}>
+      <EnvironmentBannerMessage />
+    </Banner>
+  );
 };
 
 export default EnvironmentBanner;
