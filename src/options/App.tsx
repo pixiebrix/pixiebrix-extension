@@ -37,7 +37,7 @@ import { ToastProvider } from "react-toast-notifications";
 import "@/vendors/theme/app/app.scss";
 import AuthContext from "@/auth/AuthContext";
 import { useAsyncState } from "@/hooks/common";
-import Banner from "@/layout/Banner";
+import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
@@ -92,7 +92,7 @@ const Layout = () => {
           <Sidebar />
           <div className="main-panel">
             <ErrorModal />
-            <Banner />
+            <EnvironmentBanner />
             <UpdateBanner />
             <DeploymentBanner />
             <div className="content-wrapper">

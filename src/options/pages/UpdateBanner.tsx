@@ -17,7 +17,6 @@
 
 import React, { useCallback } from "react";
 import { Button } from "react-bootstrap";
-import "@/layout/Banner";
 import browser from "webextension-polyfill";
 import { useAsyncState } from "@/hooks/common";
 import { getAvailableVersion } from "@/background/installer";

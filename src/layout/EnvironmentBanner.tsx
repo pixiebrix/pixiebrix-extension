@@ -35,7 +35,7 @@ const classMap = new Map([
   ["staging", "staging"],
 ]);
 
-const EnvironmentBanner: React.FunctionComponent = () => {
+const EnvironmentBannerContent: React.FunctionComponent = () => {
   const { extension } = useContext(AuthContext);
 
   const [hostname] = useAsyncState(async () => {
@@ -67,12 +67,12 @@ const EnvironmentBanner: React.FunctionComponent = () => {
   );
 };
 
-const Banner: React.FunctionComponent = () => {
+const EnvironmentBanner: React.FunctionComponent = () => {
   if (environment === "production") {
     return null;
   }
 
-  return <EnvironmentBanner />;
+  return <EnvironmentBannerContent />;
 };
 
-export default Banner;
+export default EnvironmentBanner;
