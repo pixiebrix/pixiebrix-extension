@@ -32,6 +32,54 @@
   color: white;
 }
 
+.icon {
+  $size: 24px;
+  width: $size;
+  flex-shrink: 0;
+  padding: 5px;
+
+  margin-right: 7px;
+  display: grid;
+  display: flex;
+  place-items: center;
+  flex-direction: column;
+
+  & > svg, // Font icon
+  & > img // External icon
+  {
+    width: $size;
+    height: $size;
+  }
+}
+
+.errorBadge {
+  height: 0;
+  font-size: 1.3em;
+}
+.exclamationBackground {
+  position: absolute;
+  background: #fff;
+  height: 0.7em;
+  margin: 0.5em 0.4em;
+  width: 0.3em;
+}
+.warningBadgeBackground {
+  position: relative;
+  color: #efa31d;
+}
+.errorBadgeBackground {
+  position: relative;
+  color: #fc3939;
+}
+
+.outputKey {
+  font-size: 0.9em !important;
+  font-family: monospace;
+}
+.moveButtons {
+  margin-left: auto;
+}
+
 .moveButton {
   border: none;
   background: none;
@@ -53,20 +101,4 @@
   &:disabled {
     opacity: 0.5;
   }
-}
-
-.icon {
-  margin-right: 7px;
-  svg {
-    font-size: 1.5em;
-    display: block;
-  }
-}
-.outputKey {
-  font-size: 0.9em !important;
-  font-family: monospace;
-}
-
-.moveButtons {
-  margin-left: auto;
 }
