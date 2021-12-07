@@ -22,6 +22,7 @@ import useFetch from "@/hooks/useFetch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
+// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;
 
 const InvitationBanner: React.FunctionComponent = () => {
