@@ -34,7 +34,6 @@ export type EditorNodeProps = {
   outputKey?: string;
   icon?: IconProp | React.ReactNode;
   onClick?: () => void;
-  muted?: boolean;
   active?: boolean;
   hasError?: boolean;
   hasWarning?: boolean;
@@ -59,7 +58,6 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   icon: iconProp,
   title,
   outputKey,
-  muted,
   active,
   hasError,
   hasWarning,
@@ -93,6 +91,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
 
   return (
     // Use our own custom style here, not bootstrap
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events -- Buttons can't have buttons inside them; this one can
     <div
       tabIndex={0}
       onClick={onClick}
