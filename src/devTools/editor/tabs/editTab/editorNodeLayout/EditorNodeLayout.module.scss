@@ -15,44 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding-bottom: 6px;
-}
-
 .insertButton {
+  $size: 20px;
+
+  position: absolute;
+  left: 50%;
   border: none;
   background: none;
-  margin-top: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.plus {
-  border: none;
-  border-radius: 50%;
-
-  &:hover {
-    color: #a462e6;
+  color: inherit;
+  display: block;
+  padding: 0;
+  margin: -($size/2);
+  svg {
+    display: block;
+    font-size: $size;
+    color: gray;
+    background-color: white;
+    border: solid 2px white;
+    border-radius: 50%;
+    &:hover {
+      color: var(--blue);
+    }
   }
-
-  &:active {
-    color: #b66dff;
-  }
 }
 
-.appendContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.appendArrow {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.addRightMargin {
-  margin-right: 36px; // move-buttons width + left margin
+.appendInfo {
+  margin: 2em 0.5em;
+  text-align: center;
 }

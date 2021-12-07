@@ -93,64 +93,51 @@ const EditorNode: React.FC<EditorNodeProps> = ({
 
   return (
     // Use our own custom style here, not bootstrap
-    <div className={styles.root}>
-      <div
-        className={cx(styles.title, {
-          [styles.addRightMargin]: canMoveAnything,
-        })}
-      >
-        {title}
+    <div
+      tabIndex={0}
+      onClick={onClick}
+      className={cx(styles.root, {
+        [styles.activeNode]: active,
+      })}
+    >
+      <div className={styles.icon}>
+        {errorBadge}
+        {icon}
       </div>
-      <div className={styles.buttonRow}>
-        <button
-          type="button"
-          onClick={onClick}
-          className={cx(styles.nodeButton, styles.button, {
-            [styles.mutedNode]: muted,
-            [styles.activeNode]: active,
-          })}
-        >
-          {errorBadge}
-          {icon}
-        </button>
-        {canMoveAnything && (
-          <div className={styles.moveButtons}>
-            {(canMoveUp || canMoveDown) && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClickMoveUp();
-                  }}
-                  title="Move brick higher"
-                  disabled={!canMoveUp}
-                  className={styles.button}
-                >
-                  <FontAwesomeIcon icon={faArrowUp} size="sm" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClickMoveDown();
-                  }}
-                  title="Move brick lower"
-                  disabled={!canMoveDown}
-                  className={styles.button}
-                >
-                  <FontAwesomeIcon icon={faArrowDown} size="sm" />
-                </button>
-              </>
-            )}
-          </div>
-        )}
+      <div>
+        <div>{title}</div>
+        <div className={styles.outputKey}>{outputName}</div>
       </div>
-      <div
-        className={cx(styles.outputKey, {
-          [styles.addRightMargin]: canMoveAnything,
-        })}
-      >
-        {outputName}
-      </div>
+      {canMoveAnything && (
+        <div className={styles.moveButtons}>
+          {(canMoveUp || canMoveDown) && (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  onClickMoveUp();
+                }}
+                title="Move brick higher"
+                disabled={!canMoveUp}
+                className={styles.moveButton}
+              >
+                <FontAwesomeIcon icon={faArrowUp} size="sm" />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onClickMoveDown();
+                }}
+                title="Move brick lower"
+                disabled={!canMoveDown}
+                className={styles.moveButton}
+              >
+                <FontAwesomeIcon icon={faArrowDown} size="sm" />
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };
