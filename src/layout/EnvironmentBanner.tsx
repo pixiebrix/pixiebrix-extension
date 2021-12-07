@@ -16,24 +16,24 @@
  */
 
 import React, { useContext } from "react";
-import cx from "classnames";
 import "./Banner.scss";
 import { getExtensionAuth } from "@/auth/token";
 import AuthContext from "@/auth/AuthContext";
 import { isExtensionContext } from "webext-detect-page";
 import { connectPage } from "@/messaging/external";
 import { useAsyncState } from "@/hooks/common";
+import Banner, { BannerVariant } from "@/components/banner/Banner";
 
 // TODO: don't use process.env here so that we can use the same JS app bundle for all environments
 //  see https://github.com/pixiebrix/pixiebrix-app/issues/259
 const environment = process.env.ENVIRONMENT;
 
-const classMap = new Map([
-  [null, "development"],
-  ["", "development"],
-  ["development", "development"],
-  ["staging", "staging"],
-]);
+const variantMap = new Map([
+  [null, "warning"],
+  ["", "warning"],
+  ["development", "success"],
+  ["staging", "info"],
+]) as Map<null | string, BannerVariant>;
 
 const EnvironmentBannerContent: React.FunctionComponent = () => {
   const { extension } = useContext(AuthContext);
@@ -55,15 +55,11 @@ const EnvironmentBannerContent: React.FunctionComponent = () => {
     : "not synced with server";
 
   return (
-    <div
-      className={cx("environment-banner", "w-100", {
-        [classMap.get(environment) ?? "unknown"]: true,
-      })}
-    >
+    <Banner variant={variantMap.get(environment)}>
       You are using {extension ? "extension" : "server"}{" "}
       {environment ?? "unknown"} build {versionName ?? "unknown version"}{" "}
       {extension && syncText}
-    </div>
+    </Banner>
   );
 };
 

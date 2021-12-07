@@ -19,8 +19,9 @@ import React from "react";
 import styles from "./Banner.module.scss";
 import cx from "classnames";
 
+export type BannerVariant = "info" | "success" | "warning" | "danger";
 interface BannerProps {
-  variant?: "info" | "success" | "warning" | "danger";
+  variant?: BannerVariant;
 }
 
 const Banner: React.FunctionComponent<BannerProps> = ({
