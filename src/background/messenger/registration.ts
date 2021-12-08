@@ -32,6 +32,10 @@ import {
   whoAmI,
   openTab,
   executeOnServer,
+  runBlockInOpener,
+  runBlockInTarget,
+  runBlockInBroadcast,
+  runBlockInFrameNonce,
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
 import { checkTargetPermissions, ensureContentScript } from "@/background/util";
@@ -79,6 +83,10 @@ declare global {
     REFRESH_SERVICES: typeof refreshServices;
 
     EXECUTE_ON_SERVER: typeof executeOnServer;
+    RUN_BLOCK_OPENER: typeof runBlockInOpener;
+    RUN_BLOCK_TARGET: typeof runBlockInTarget;
+    RUN_BLOCK_BROADCAST: typeof runBlockInBroadcast;
+    RUN_BLOCK_FRAME_NONCE: typeof runBlockInFrameNonce;
 
     HTTP_REQUEST: typeof doCleanAxiosRequest;
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
@@ -123,6 +131,10 @@ registerMethods({
   REFRESH_SERVICES: refreshServices,
 
   EXECUTE_ON_SERVER: executeOnServer,
+  RUN_BLOCK_OPENER: runBlockInOpener,
+  RUN_BLOCK_TARGET: runBlockInTarget,
+  RUN_BLOCK_BROADCAST: runBlockInBroadcast,
+  RUN_BLOCK_FRAME_NONCE: runBlockInFrameNonce,
 
   HTTP_REQUEST: doCleanAxiosRequest,
   DELETE_CACHED_AUTH: deleteCachedAuthData,

@@ -35,14 +35,11 @@ export interface RunBlock {
   options: RemoteBlockOptions;
 }
 
-export interface RunBlockRequestAction {
-  type: string;
-  payload: RunBlock;
-}
-
 const childTabs = new Set<number>();
 
-export async function runBlockInContentScript(request: RunBlock) {
+export async function runBlockInContentScript(
+  request: RunBlock
+): Promise<unknown> {
   // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
   const { blockId, blockArgs, options } = request;
   const block = await blockRegistry.lookup(blockId);

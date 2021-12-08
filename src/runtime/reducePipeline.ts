@@ -27,17 +27,12 @@ import {
 } from "@/core";
 import { castArray, isPlainObject } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
-import {
-  executeInAll,
-  executeInOpener,
-  executeInTarget,
-} from "@/background/executor";
 import { executeBrick } from "@/background/messenger/api";
 import { getLoggingConfig } from "@/background/logging";
 import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
 import { sendDeploymentAlert } from "@/background/telemetry";
 import { serializeError } from "serialize-error";
-import { HeadlessModeError, RemoteExecutionError } from "@/blocks/errors";
+import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
@@ -59,6 +54,7 @@ import {
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { UnknownObject } from "@/types";
+import { RunBlock } from "@/contentScript/executor";
 
 type CommonOptions = ApiVersionOptions & {
   /**
@@ -217,31 +213,27 @@ async function execute(
     messageContext: options.logger.context,
   };
 
+  const request: RunBlock = {
+    blockId: config.id,
+    blockArgs: args,
+    options: commonOptions,
+  };
+
   switch (config.window ?? "self") {
     case "opener": {
-      return executeInOpener(config.id, args, commonOptions);
+      return executeBrick.inOpener(request);
     }
 
     case "target": {
-      return executeInTarget(config.id, args, commonOptions);
+      return executeBrick.inTarget(request);
     }
 
     case "broadcast": {
-      return executeInAll(config.id, args, commonOptions);
+      return executeBrick.inAll(request);
     }
 
     case "remote": {
-      const { data, error } = (
-        await executeBrick.onServer(config.id, args)
-      ).data;
-      if (error) {
-        throw new RemoteExecutionError(
-          "Error while executing brick remotely",
-          error
-        );
-      }
-
-      return data;
+      return executeBrick.onServer(request);
     }
 
     case "self": {

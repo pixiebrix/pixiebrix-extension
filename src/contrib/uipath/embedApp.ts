@@ -17,11 +17,11 @@
 
 import { Renderer, UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
-import { BlockArg, BlockOptions, SafeHTML, Schema } from "@/core";
+import { BlockArg, BlockOptions, RegistryId, SafeHTML, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import browser, { Permissions } from "webextension-polyfill";
-import { executeForNonce } from "@/background/executor";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { executeBrick } from "@/background/messenger/api";
 
 export class UiPathAppRenderer extends Renderer {
   constructor() {
@@ -90,31 +90,33 @@ export class UiPathAppRenderer extends Renderer {
     const inputs = rawInputs as UnknownObject;
 
     if (!isEmpty(inputs)) {
-      executeForNonce(
-        nonce,
-        "@pixiebrix/forms/set",
-        unsafeAssumeValidArg({
-          inputs: Object.entries(inputs).map(([key, value]) => ({
-            selector: `[placeholder="in:${key}"]`,
-            value,
-          })),
-        }),
-        {
-          isAvailable: {
-            // UiPath apps lazy load the inputs, so make sure they've been rendered before trying
-            // to set the values
-            selectors: [
-              isEmpty(inputs) ? ".root-container" : ".root-container input",
-            ],
+      executeBrick
+        .inFrame({
+          nonce,
+          blockId: "@pixiebrix/forms/set" as RegistryId,
+          blockArgs: unsafeAssumeValidArg({
+            inputs: Object.entries(inputs).map(([key, value]) => ({
+              selector: `[placeholder="in:${key}"]`,
+              value,
+            })),
+          }),
+          options: {
+            isAvailable: {
+              // UiPath apps lazy load the inputs, so make sure they've been rendered before trying
+              // to set the values
+              selectors: [
+                isEmpty(inputs) ? ".root-container" : ".root-container input",
+              ],
+            },
+            ctxt: {},
+            messageContext: {
+              blockId: this.id,
+            },
           },
-          ctxt: {},
-          messageContext: {
-            blockId: this.id,
-          },
-        }
-      ).catch((error) => {
-        logger.error(error);
-      });
+        })
+        .catch((error) => {
+          logger.error(error);
+        });
     }
 
     return `<iframe src="${frameURL.toString()}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>` as SafeHTML;
