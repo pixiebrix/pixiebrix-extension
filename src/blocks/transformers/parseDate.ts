@@ -112,12 +112,15 @@ export class ParseDate extends Transformer {
 
   async transform({ date }: BlockArg): Promise<unknown> {
     const parsed = parseDate(date);
+    const millisPerMinute = 60 * 1000;
+    const offsetInMinutes = parsed.getTimezoneOffset();
+    const utc = new Date(parsed.getTime() + offsetInMinutes * millisPerMinute);
 
     return {
       utc: {
         iso8601: parsed.toISOString(),
-        date: parsed.toDateString(),
-        time: parsed.toTimeString(),
+        date: utc.toLocaleDateString(),
+        time: utc.toLocaleTimeString(),
         humanReadable: parsed.toUTCString(),
       },
       local: {
