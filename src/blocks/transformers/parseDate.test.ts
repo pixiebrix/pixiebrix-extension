@@ -27,10 +27,14 @@ const cases = [
   ["Brazil/East", "2021-12-07T04:17:09.258-02:00"],
   ["UTC", "2021-12-07T06:17:09.258Z"],
   ["Europe/London", "2021-12-07T06:17:09.258Z"],
-  ["Australia/Adelaide", "2021-12-06T19:47:09.258+10:30"],
+  ["Australia/Adelaide", "2021-12-07T16:47:09.258+10:30"],
 ];
 
 describe("ParseDate block", () => {
+  afterEach(() => {
+    unregister();
+  });
+
   test.each(cases)(
     "getLocalIsoString() for %s",
     (timezone: TimeZone, expected: string) => {
@@ -42,7 +46,8 @@ describe("ParseDate block", () => {
     }
   );
 
-  test("Results snapshot - EST", async () => {
+  test("Results snapshot - EST input", async () => {
+    register("US/Eastern");
     const brick = new ParseDate();
     const arg = ({
       date: "Thursday, December 9th 2021, 10pm, EST",
@@ -65,13 +70,14 @@ describe("ParseDate block", () => {
             iso8601: "2021-12-09T22:00:00.000-05:00",
             date: "12/9/2021",
             time: "10:00:00 PM",
-            humanReadable: "12/9/2021, 10:00:00 PM",
+            humanReadable: "2021-12-10T03:00:00.000Z UTC (MockDate: GMT-0500)",
           },
         });
       });
   });
 
-  test("Results snapshot - GMT", async () => {
+  test("Results snapshot - GMT input", async () => {
+    register("US/Eastern");
     const brick = new ParseDate();
     const arg = ({
       date: "Thursday, December 9th 2021, 3am, GMT",
@@ -94,7 +100,7 @@ describe("ParseDate block", () => {
             iso8601: "2021-12-08T22:00:00.000-05:00",
             date: "12/8/2021",
             time: "10:00:00 PM",
-            humanReadable: "12/8/2021, 10:00:00 PM",
+            humanReadable: "2021-12-09T03:00:00.000Z UTC (MockDate: GMT-0500)",
           },
         });
       });
