@@ -42,7 +42,7 @@
   font-size: 1.65em;
 
   // External icon
-  & > img {
+  img {
     width: 1.2em;
     height: 1.2em;
   }
@@ -52,29 +52,18 @@
 }
 
 .errorBadge {
-  flex-basis: 0;
   width: 0;
-  padding: 0;
-  font-size: 0.7em;
-  transform: translate(10px);
-}
-.exclamationBackground {
-  position: absolute;
-  background: #fff;
-  height: 0.7em;
-  margin: 0.5em 0.4em;
-  width: 0.3em;
-}
-.warningBadgeBackground {
-  position: relative;
-  color: #efa31d;
-}
-.errorBadgeBackground {
-  position: relative;
-  color: #fc3939;
+  img {
+    font-size: 0.7em;
+    transform: translate(-0.7em, -0.8em);
+  }
 }
 
+.text {
+  line-height: 1.2;
+}
 .outputKey {
+  margin-top: 0.4em;
   font-size: 0.9em !important;
   font-family: monospace;
 }

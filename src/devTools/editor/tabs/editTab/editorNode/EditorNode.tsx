@@ -20,12 +20,7 @@ import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import cx from "classnames";
-import {
-  faArrowDown,
-  faArrowUp,
-  faExclamationCircle,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { NodeId } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 
 export type EditorNodeProps = {
@@ -77,14 +72,14 @@ const EditorNode: React.FC<EditorNodeProps> = ({
 
   const errorBadge =
     hasError || hasWarning ? (
-      <span className={cx(styles.icon, styles.errorBadge)}>
-        <span className={styles.exclamationBackground} />
-        <FontAwesomeIcon
-          icon={hasError ? faExclamationCircle : faExclamationTriangle}
-          className={cx({
-            [styles.errorBadgeBackground]: hasError,
-            [styles.warningBadgeBackground]: hasWarning,
-          })}
+      <span className={styles.errorBadge}>
+        <img
+          src={
+            hasError
+              ? "/img/fa-exclamation-circle-custom.svg"
+              : "/img/fa-exclamation-triangle-custom.svg"
+          }
+          alt=""
         />
       </span>
     ) : null;
@@ -100,10 +95,10 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       })}
     >
       <div className={styles.icon}>
-        {errorBadge}
         {icon}
+        {errorBadge}
       </div>
-      <div>
+      <div className={styles.text}>
         <div>{title}</div>
         <div className={styles.outputKey}>{outputName}</div>
       </div>
