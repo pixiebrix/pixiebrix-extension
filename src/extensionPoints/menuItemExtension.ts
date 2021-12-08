@@ -17,7 +17,6 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { ExtensionPoint } from "@/types";
-import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, once, debounce, cloneDeep } from "lodash";
 import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
@@ -70,6 +69,7 @@ import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { $safeFind } from "@/helpers";
+import sanitize from "@/utils/sanitize";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -465,13 +465,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const implicitRender = versionOptions.explicitRender
       ? null
       : await engineRenderer(
-          extension.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE
+          extension.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+          versionOptions
         );
 
     let html: string;
 
     if (extension.config.if) {
-      // Read latest state at the time of the action
+      // Read the latest state at the time of the action
       const input = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
 
@@ -499,21 +500,25 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       }
     }
 
+    const renderMustache = await engineRenderer("mustache", versionOptions);
+
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
       const extensionContext = { ...ctxt, ...serviceContext };
-      html = Mustache.render(this.getTemplate(), {
+
+      html = renderMustache(this.getTemplate(), {
         caption: (await mapArgs(caption, extensionContext, {
           implicitRender,
+          autoescape: versionOptions.autoescape,
         })) as string,
         icon: icon ? await getSvgIcon(icon) : null,
-      });
+      }) as string;
     } else {
-      html = Mustache.render(this.getTemplate(), {
+      html = renderMustache(this.getTemplate(), {
         caption,
         icon: icon ? await getSvgIcon(icon) : null,
-      });
+      }) as string;
     }
 
     const $menuItem = this.makeItem(html, extension);
@@ -871,18 +876,20 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   }
 
   protected makeItem(
-    html: string,
+    unsanitizedHTML: string,
     extension: ResolvedExtension<MenuItemExtensionConfig>
   ): JQuery {
+    const sanitizedHTML = sanitize(unsanitizedHTML);
+
     let $root: JQuery;
 
     if (this._definition.shadowDOM) {
       const root = document.createElement(this._definition.shadowDOM.tag);
       const shadowRoot = root.attachShadow({ mode: "closed" });
-      shadowRoot.innerHTML = html;
+      shadowRoot.innerHTML = sanitizedHTML;
       $root = $(root);
     } else {
-      $root = $(html);
+      $root = $(sanitizedHTML);
     }
 
     $root.attr(DATA_ATTR, extension.id);
