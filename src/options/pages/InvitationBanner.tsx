@@ -17,18 +17,15 @@
 
 import React, { useMemo } from "react";
 import Banner from "@/components/banner/Banner";
-import { PendingInvitation } from "@/types/contract";
-import useFetch from "@/hooks/useFetch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { useGetInvitationsQuery } from "@/services/api";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;
 
 const InvitationBanner: React.FunctionComponent = () => {
-  const { data: invitations } = useFetch<PendingInvitation[]>(
-    "/api/invitations/me/"
-  );
+  const { data: invitations } = useGetInvitationsQuery();
   const invitationsAvailable = useMemo(() => invitations?.length > 0, [
     invitations,
   ]);
