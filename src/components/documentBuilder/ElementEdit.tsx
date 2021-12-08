@@ -26,13 +26,13 @@ import {
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getElementEditSchemas } from "./elementEditSchemas";
 import { getProperty } from "@/utils";
-import { Row, Col } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import styles from "./DocumentEditor.module.scss";
 import RemoveElementAction from "./RemoveElementAction";
 import MoveElementAction from "./MoveElementAction";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { ROOT_ELEMENT_TYPES } from "@/components/documentBuilder/allowedElementTypes";
+import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import { produce } from "immer";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 
@@ -75,9 +75,7 @@ const ElementEdit: React.FC<ElementEditProps> = ({
     const nextDocumentElement = produce(
       documentElement,
       (draft: ListDocumentElement) => {
-        const nextElement = createNewElement(nextType);
-        draft.config.element.__value__ = nextElement;
-        return draft;
+        draft.config.element.__value__ = createNewElement(nextType);
       }
     );
 
@@ -119,7 +117,8 @@ const ElementEdit: React.FC<ElementEditProps> = ({
               value={documentElement.config.element.__value__.type}
               onChange={onElementTypeChange}
               as={SelectWidget}
-              options={ROOT_ELEMENT_TYPES.map((x) => ({
+              options={getAllowedChildTypes(documentElement).map((x) => ({
+                // eslint-disable-next-line security/detect-object-injection -- x is a know string
                 label: elementTypeLabels[x],
                 value: x,
               }))}

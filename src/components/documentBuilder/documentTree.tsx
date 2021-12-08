@@ -294,7 +294,11 @@ export function getPreviewComponentDefinition(
         ...restPreviewProps
       }) => (
         <div
-          className={cx(className, documentTreeStyles.container)}
+          className={cx(
+            className,
+            documentTreeStyles.container,
+            documentTreeStyles.listContainer
+          )}
           {...restPreviewProps}
         >
           <div className="text-muted">List: {arrayValue}</div>

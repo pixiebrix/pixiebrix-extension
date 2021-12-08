@@ -32,6 +32,11 @@
   }
 }
 
+:global(.container) > .listContainer {
+  margin-left: -12px;
+  padding-left: 15px;
+}
+
 .inlineWrapper {
   display: inline-block;
 }

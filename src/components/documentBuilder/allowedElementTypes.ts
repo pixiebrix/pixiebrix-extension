@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
+import {
+  DOCUMENT_ELEMENT_TYPES,
+  DocumentElement,
+  DocumentElementType,
+} from "./documentBuilderTypes";
 
 export const ROOT_ELEMENT_TYPES: DocumentElementType[] = [
   "header_1",
@@ -52,6 +56,8 @@ const allowedChildTypes: Record<string, DocumentElementType[]> = {
     "button",
     "list",
   ],
+  // Any element we can add to the list
+  list: (DOCUMENT_ELEMENT_TYPES as unknown) as DocumentElementType[],
 };
 
 export function getAllowedChildTypes(
