@@ -17,6 +17,7 @@
 
 import { UnknownObject } from "@/types";
 import { Expression } from "@/core";
+import { BlockPipeline } from "@/blocks/types";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header_1",
@@ -27,7 +28,7 @@ export const DOCUMENT_ELEMENT_TYPES = [
   "row",
   "column",
   "card",
-  "block",
+  "pipeline",
   "button",
   "list",
 ] as const;
@@ -43,17 +44,31 @@ export type DocumentElement<
   children?: DocumentElement[];
 };
 
-type ListConfig = {
+export type ListDocumentConfig = {
   array: Expression;
   elementKey?: string;
   element: Expression<DocumentElement, "defer">;
 };
-export type ListDocumentElement = DocumentElement<"list", ListConfig>;
+export type ListDocumentElement = DocumentElement<"list", ListDocumentConfig>;
 
 export function isListDocument(
   element: DocumentElement
 ): element is ListDocumentElement {
   return element.type === "list";
+}
+
+export type PipelineDocumentConfig = {
+  pipeline: Expression<BlockPipeline, "pipeline">;
+};
+export type PipelineDocumentElement = DocumentElement<
+  "pipeline",
+  PipelineDocumentConfig
+>;
+
+export function isPipelineDocument(
+  element: DocumentElement
+): element is PipelineDocumentElement {
+  return element.type === "pipeline";
 }
 
 export type DocumentComponent = {

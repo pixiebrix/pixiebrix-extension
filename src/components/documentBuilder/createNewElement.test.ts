@@ -75,7 +75,7 @@ test("sets default config and children for card", () => {
 });
 
 test("sets default config for block", () => {
-  const actual = createNewElement("block");
+  const actual = createNewElement("pipeline");
   expect(actual.config).toEqual({ pipeline: "!pipeline" });
 });
 

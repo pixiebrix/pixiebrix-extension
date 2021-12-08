@@ -21,7 +21,9 @@ import {
   DocumentElement,
   DocumentElementType,
   isListDocument,
+  isPipelineDocument,
   ListDocumentElement,
+  PipelineDocumentElement,
 } from "./documentBuilderTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getElementEditSchemas } from "./elementEditSchemas";
@@ -37,24 +39,20 @@ import { produce } from "immer";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
+import BrickModal from "@/components/brickModal/BrickModal";
+import { useAsyncState } from "@/hooks/common";
+import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
+import blockRegistry from "@/blocks/registry";
+import { defaultBlockConfig, getType } from "@/blocks/util";
+import { IBlock } from "@/core";
+import { BlockConfig } from "@/blocks/types";
+import { uuidv4 } from "@/types/helpers";
+import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
+import ElementBlockEdit from "@/components/documentBuilder/ElementBlockEdit";
 
 type ElementEditProps = {
   elementName: string;
   setActiveElement: (activeElement: string) => void;
-};
-
-const elementTypeLabels: Record<DocumentElementType, string> = {
-  header_1: "Header 1",
-  header_2: "Header 2",
-  header_3: "Header 3",
-  container: "Container",
-  row: "Row",
-  column: "Column",
-  card: "Card",
-  text: "Text",
-  button: "Button",
-  block: "Block",
-  list: "List",
 };
 
 const ElementEdit: React.FC<ElementEditProps> = ({
@@ -67,9 +65,35 @@ const ElementEdit: React.FC<ElementEditProps> = ({
     { setValue: setDocumentElement },
   ] = useField<DocumentElement>(elementName);
 
+  // ToDo refactor this and EditTab.tsx
+  const [blocksMap] = useAsyncState<BlocksMap>(
+    async () => {
+      const blocksMap: BlocksMap = {};
+      const blocks = await blockRegistry.all();
+      for (const block of blocks) {
+        blocksMap[block.id] = {
+          block,
+          // eslint-disable-next-line no-await-in-loop
+          type: await getType(block),
+        };
+      }
+
+      return blocksMap;
+    },
+    [],
+    {}
+  );
+
   const editSchemas = getElementEditSchemas(documentElement, elementName);
 
   const isList = isListDocument(documentElement);
+  const isPipeline = isPipelineDocument(documentElement);
+
+  if (isPipeline) {
+    const blockId = documentElement.config.pipeline.__value__[0]?.id;
+    const block = blocksMap[blockId]?.block;
+    console.log("ElementEdit.block", { block });
+  }
 
   const onElementTypeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     const nextType = event.target.value as DocumentElementType;
@@ -78,6 +102,25 @@ const ElementEdit: React.FC<ElementEditProps> = ({
       documentElement,
       (draft: ListDocumentElement) => {
         draft.config.element.__value__ = createNewElement(nextType);
+      }
+    );
+
+    setDocumentElement(nextDocumentElement);
+  };
+
+  const onPipelineBlockSelected = (block: IBlock) => {
+    console.log("block selected", block);
+
+    const blockConfig: BlockConfig = {
+      id: block.id,
+      instanceId: uuidv4(),
+      config: defaultBlockConfig(block.inputSchema),
+    };
+
+    const nextDocumentElement = produce(
+      documentElement,
+      (draft: PipelineDocumentElement) => {
+        draft.config.pipeline.__value__ = [blockConfig];
       }
     );
 
@@ -130,6 +173,28 @@ const ElementEdit: React.FC<ElementEditProps> = ({
                   label: elementTypeLabels[x],
                   value: x,
                 }))}
+              />
+            </>
+          )}
+
+          {isPipeline && (
+            <>
+              <Row>
+                <Col lg={3}>
+                  <BrickModal
+                    bricks={Object.values(blocksMap)
+                      .filter((x) => x.type === "renderer")
+                      .map((x) => x.block)}
+                    onSelect={onPipelineBlockSelected}
+                  />
+                </Col>
+                <Col>
+                  {documentElement.config.pipeline.__value__[0]?.id ?? "empty"}
+                </Col>
+              </Row>
+              <ElementBlockEdit
+                blockConfig={documentElement.config.pipeline.__value__[0]}
+                blockConfigName={`${elementName}.config.pipeline.__value__.0`}
               />
             </>
           )}

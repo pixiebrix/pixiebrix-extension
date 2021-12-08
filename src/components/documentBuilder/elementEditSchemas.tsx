@@ -1,4 +1,7 @@
-import { DocumentElement } from "./documentBuilderTypes";
+import {
+  DocumentElement,
+  PipelineDocumentElement,
+} from "./documentBuilderTypes";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { joinName } from "@/utils";
 
@@ -44,14 +47,8 @@ export function getElementEditSchemas(
       return [headingEdit, getClassNameEdit(elementName)];
     }
 
-    case "block": {
-      const pipelineEdit: SchemaFieldProps = {
-        name: joinName(elementName, "config", "pipeline"),
-        schema: { type: "string" },
-        label: "pipeline",
-      };
-
-      return [pipelineEdit];
+    case "pipeline": {
+      return [];
     }
 
     case "button": {

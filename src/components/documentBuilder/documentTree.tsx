@@ -25,6 +25,7 @@ import {
   BuildDocumentBranch,
   DocumentComponent,
   DocumentElement,
+  PipelineDocumentConfig,
 } from "./documentBuilderTypes";
 import DocumentButton from "@/components/documentBuilder/DocumentButton";
 import useNotifications from "@/hooks/useNotifications";
@@ -100,7 +101,7 @@ export function getComponentDefinition(
       };
     }
 
-    case "block": {
+    case "pipeline": {
       const { pipeline } = config;
       if (typeof pipeline !== "undefined" && !isPipelineExpression(pipeline)) {
         throw new Error("Expected pipeline expression for pipeline");
@@ -242,15 +243,15 @@ export function getPreviewComponentDefinition(
       return { Component: PreviewComponent };
     }
 
-    case "block": {
-      const pipeline = get(element, "config.pipeline", "");
+    case "pipeline": {
+      const { pipeline } = config as PipelineDocumentConfig;
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         className,
         ...restPreviewProps
       }) => (
         <div className={cx(className)} {...restPreviewProps}>
           <h3>Block</h3>
-          <p>{pipeline}</p>
+          <p>{pipeline.__value__[0].id}</p>
         </div>
       );
 
