@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import Banner from "@/components/banner/Banner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
@@ -26,9 +26,7 @@ const SERVICE_URL = process.env.SERVICE_URL;
 
 const InvitationBanner: React.FunctionComponent = () => {
   const { data: invitations } = useGetInvitationsQuery();
-  const invitationsAvailable = useMemo(() => invitations?.length > 0, [
-    invitations,
-  ]);
+  const invitationsAvailable = invitations?.length > 0;
 
   if (!invitationsAvailable) {
     return null;

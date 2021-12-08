@@ -27,12 +27,12 @@ import Banner, { BannerVariant } from "@/components/banner/Banner";
 //  see https://github.com/pixiebrix/pixiebrix-app/issues/259
 const environment = process.env.ENVIRONMENT;
 
-const variantMap = new Map([
+const variantMap = new Map<string, BannerVariant>([
   [null, "warning"],
   ["", "warning"],
   ["development", "success"],
   ["staging", "info"],
-]) as Map<string, BannerVariant>;
+]);
 
 const EnvironmentBannerMessage: React.FunctionComponent = () => {
   const { extension } = useContext(AuthContext);

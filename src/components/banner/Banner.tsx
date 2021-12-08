@@ -20,7 +20,7 @@ import styles from "./Banner.module.scss";
 import cx from "classnames";
 
 export type BannerVariant = "info" | "success" | "warning" | "danger";
-interface BannerProps {
+export interface BannerProps {
   variant?: BannerVariant;
 }
 
@@ -28,7 +28,7 @@ const Banner: React.FunctionComponent<BannerProps> = ({
   variant,
   children,
 }) => (
-  <div className={cx(styles.root, variant ? styles[variant] : styles.info)}>
+  <div className={cx(styles.root, styles[variant ?? "info"])}>
     <div className="mx-auto d-flex">
       <div className="flex-grow-1" />
       <div className="align-self-center">{children}</div>
