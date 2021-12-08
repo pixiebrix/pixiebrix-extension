@@ -93,7 +93,7 @@ export function searchData(query: string, data: unknown): unknown {
  */
 export const thisTab: Target = {
   // This code might end up (unused) in non-dev bundles, so use `?.` to avoid errors from undefined values
-  tabId: globalThis.browser?.devtools?.inspectedWindow?.tabId ?? 0,
+  tabId: globalThis.chrome?.devtools?.inspectedWindow?.tabId ?? 0,
   // The top-level frame
   frameId: 0,
 };

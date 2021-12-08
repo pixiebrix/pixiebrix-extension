@@ -51,6 +51,7 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { PromiseCancelled } from "@/utils";
 import initialize from "@/vendors/initialize";
+import { $safeFind } from "@/helpers";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -160,7 +161,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     // Find latest set of DOM elements and uninstall handlers
     if (this.triggerSelector) {
-      const $currentElements = $(document).find(this.triggerSelector);
+      const $currentElements = $safeFind(this.triggerSelector);
 
       console.debug(
         "Removing %s handler from %d elements",
@@ -217,7 +218,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         ...apiVersionOptions(extension.apiVersion),
       });
       extensionLogger.info("Successfully ran trigger");
-      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       extensionLogger.error(error);
     }
@@ -259,7 +259,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         );
         try {
           await this.runExtension(readerContext, extension, root);
-        } catch (error: unknown) {
+        } catch (error) {
           reportError(error, extensionLogger.context);
           return error;
         }
@@ -292,7 +292,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     try {
       await rootPromise;
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PromiseCancelled) {
         return;
       }
@@ -303,7 +303,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     }
 
     // AwaitElementOnce doesn't work with multiple elements. Get everything that's on the current page
-    const $root = rootSelector ? $(document).find(rootSelector) : $(document);
+    const $root = rootSelector ? $safeFind(rootSelector) : $(document);
 
     if ($root.length === 0) {
       console.warn("No elements found for trigger selector: %s", rootSelector);

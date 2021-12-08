@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
-import { isBrowserActionPanel } from "@/chrome";
-import { HandlerMap, MessageHandler } from "@/messaging/protocol";
 import { reportError } from "@/telemetry/logging";
-import { ActionPanelStore } from "@/actionPanel/actionPanelTypes";
+import { FormEntry, PanelEntry } from "@/actionPanel/actionPanelTypes";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
-import { ActionType, Message, Meta, UUID } from "@/core";
+import { UUID } from "@/core";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/browserAction/";
 
@@ -29,18 +26,11 @@ export const RENDER_PANELS_MESSAGE = `${MESSAGE_PREFIX}RENDER_PANELS`;
 export const SHOW_FORM_MESSAGE = `${MESSAGE_PREFIX}SHOW_FORM`;
 export const HIDE_FORM_MESSAGE = `${MESSAGE_PREFIX}HIDE_FORM`;
 
-let seqNumber = -1;
-
-/**
- * Redux message Meta with fields for ensuring message handling order
- */
-interface SeqMeta extends Meta {
-  $seq: number;
-}
+let lastMessageSeen = -1;
 
 export type StoreListener = {
-  onRenderPanels: (store: Pick<ActionPanelStore, "panels">) => void;
-  onShowForm: (form: { form: FormDefinition; nonce: UUID }) => void;
+  onRenderPanels: (panels: PanelEntry[]) => void;
+  onShowForm: (form: { nonce: UUID; form: FormDefinition }) => void;
   onHideForm: (form: { nonce: UUID }) => void;
 };
 
@@ -58,60 +48,49 @@ export function removeListener(fn: StoreListener): void {
   listeners.splice(0, listeners.length, ...listeners.filter((x) => x !== fn));
 }
 
-const handlers = new HandlerMap();
-
-function handlerFactory<
-  TAction extends ActionType,
-  M extends Message<string, SeqMeta>
->(
-  messageType: M["type"],
-  method: keyof StoreListener
-): MessageHandler<TAction, SeqMeta> {
-  return async (message) => {
-    const messageSeq = message.meta.$seq;
-
-    if (messageSeq < seqNumber) {
-      console.debug(
-        "Skipping stale message (seq: %d, current: %d)",
-        seqNumber,
-        messageSeq,
-        message
-      );
-      return;
-    }
-
-    seqNumber = messageSeq;
-
+function runListeners<Method extends keyof StoreListener>(
+  method: Method,
+  sequence: number,
+  data: Parameters<StoreListener[Method]>[0]
+): void {
+  if (sequence < lastMessageSeen) {
     console.debug(
-      `Running ${listeners.length} listener(s) for %s`,
-      messageType,
-      { message }
+      "Skipping stale message (seq: %d, current: %d)",
+      lastMessageSeen,
+      sequence,
+      { data }
     );
+    return;
+  }
 
-    for (const listener of listeners) {
-      try {
-        // eslint-disable-next-line security/detect-object-injection -- method is keyof StoreListener
-        listener[method](message.payload as any);
-      } catch (error: unknown) {
-        reportError(error);
-      }
+  lastMessageSeen = sequence;
+
+  console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
+    data,
+  });
+
+  for (const listener of listeners) {
+    try {
+      // @ts-expect-error `data` is a intersection type instead of an union. TODO: Fix or rewrite
+      // eslint-disable-next-line security/detect-object-injection -- method is keyof StoreListener
+      listener[method](data);
+    } catch (error) {
+      reportError(error);
     }
-  };
+  }
 }
 
-handlers.set(
-  RENDER_PANELS_MESSAGE,
-  handlerFactory(RENDER_PANELS_MESSAGE, "onRenderPanels")
-);
-handlers.set(
-  SHOW_FORM_MESSAGE,
-  handlerFactory(SHOW_FORM_MESSAGE, "onShowForm")
-);
-handlers.set(
-  HIDE_FORM_MESSAGE,
-  handlerFactory(HIDE_FORM_MESSAGE, "onHideForm")
-);
+export async function renderPanels(
+  sequence: number,
+  panels: PanelEntry[]
+): Promise<void> {
+  runListeners("onRenderPanels", sequence, panels);
+}
 
-if (isBrowserActionPanel()) {
-  browser.runtime.onMessage.addListener(handlers.asListener());
+export async function showForm(sequence: number, entry: FormEntry) {
+  runListeners("onShowForm", sequence, entry);
+}
+
+export async function hideForm(sequence: number, nonce: UUID) {
+  runListeners("onHideForm", sequence, { nonce });
 }

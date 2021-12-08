@@ -46,6 +46,10 @@ export function inferInputMode(
   // eslint-disable-next-line security/detect-object-injection -- config field names
   const value = fieldConfig[fieldName];
 
+  if (value == null) {
+    return "string";
+  }
+
   if (isTemplateExpression(value)) {
     return value.__type__;
   }

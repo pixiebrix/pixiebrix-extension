@@ -25,7 +25,7 @@ import {
   SafeString,
   UUID,
 } from "@/core";
-import { castArray, cloneDeep, omit } from "lodash";
+import { castArray, cloneDeep, isEmpty, omit } from "lodash";
 import {
   assertExtensionPointConfig,
   ExtensionPointConfig,
@@ -82,6 +82,7 @@ export function isInnerExtensionPoint(
 export function makeIsAvailable(url: string): NormalizedAvailability {
   return {
     matchPatterns: [createSitePattern(url)],
+    urlPatterns: [],
     selectors: [],
   };
 }
@@ -194,10 +195,12 @@ export function selectIsAvailable(
 
   const { isAvailable } = extensionPoint.definition;
   const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
+  const urlPatterns = castArray(isAvailable.urlPatterns ?? []);
   const selectors = castArray(isAvailable.selectors ?? []);
 
   return {
     matchPatterns,
+    urlPatterns,
     selectors,
   };
 }
@@ -206,16 +209,18 @@ export function selectIsAvailable(
  * Exclude malformed matchPatterns and selectors from an isAvailable section that may have found their way over from the
  * Page Editor.
  *
- * Currently excludes:
+ * Currently, excludes:
  * - Null values
  * - Blank values
  */
 export function cleanIsAvailable({
   matchPatterns = [],
+  urlPatterns = [],
   selectors = [],
 }: NormalizedAvailability): NormalizedAvailability {
   return {
     matchPatterns: matchPatterns.filter((x) => !isNullOrBlank(x)),
+    urlPatterns: urlPatterns.filter((x) => isEmpty(x)),
     selectors: selectors.filter((x) => !isNullOrBlank(x)),
   };
 }
@@ -386,7 +391,6 @@ export function normalizePipeline<
   config: T,
   pipelineProp: Prop,
   defaults: Partial<T> = {}
-  // eslint-disable-next-line @typescript-eslint/ban-types -- not error-prone because parameters check keyof
 ): BaseExtensionState & Omit<T, Prop> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {

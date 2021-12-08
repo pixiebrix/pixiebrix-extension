@@ -82,7 +82,7 @@ const ActivateButton: React.FunctionComponent<{
         .then(() => {
           activate();
         })
-        .catch((error: unknown) => {
+        .catch((error) => {
           notify.error(
             `Error re-installing bricks: ${getErrorMessage(error)}`,
             {

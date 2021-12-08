@@ -15,13 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import Select, { OptionsType } from "react-select";
 import { sortBy, uniq } from "lodash";
 import Creatable from "react-select/creatable";
 import { Form, FormControlProps } from "react-bootstrap";
+import fitTextarea from "fit-textarea";
+
+type StringOption = {
+  value: string;
+};
+type StringOptionsType = OptionsType<StringOption>;
 
 const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   name,
@@ -36,10 +48,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   const [created, setCreated] = useState([]);
   const [{ value, ...field }, meta, helpers] = useField<string>(name);
 
-  const [creatable, options]: [
-    boolean,
-    OptionsType<{ value: string }>
-  ] = useMemo(() => {
+  const [creatable, options]: [boolean, StringOptionsType] = useMemo(() => {
     const values = schema.examples ?? schema.enum;
     const options =
       schema.type === "string" && Array.isArray(values)
@@ -53,6 +62,26 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     return [schema?.enum == null, options];
   }, [schema.examples, schema.enum, created, value, schema.type]);
 
+  const textAreaRef = useRef<HTMLTextAreaElement>();
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      // eslint-disable-next-line security/detect-non-literal-fs-filename -- not using fs.watch, false positive
+      fitTextarea.watch(textAreaRef.current);
+    }
+  }, []);
+
+  const selectedValue = options.find((x) => x.value === value) ?? {
+    value: null,
+  };
+
+  const selectOnChange = useCallback(
+    (option: StringOption) => {
+      helpers.setValue(option?.value ?? null);
+    },
+    [helpers]
+  );
+
   if (options.length > 0 && creatable) {
     return (
       <Creatable
@@ -62,10 +91,8 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
           helpers.setValue(value);
           setCreated(uniq([...created, value]));
         }}
-        value={options.find((x) => x.value === value)}
-        onChange={(option) => {
-          helpers.setValue(option?.value);
-        }}
+        value={selectedValue}
+        onChange={selectOnChange}
       />
     );
   }
@@ -75,10 +102,8 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
       <Select
         isClearable
         options={options}
-        value={options.find((x) => x.value === value)}
-        onChange={(option) => {
-          helpers.setValue(option?.value);
-        }}
+        value={selectedValue}
+        onChange={selectOnChange}
       />
     );
   }
@@ -88,25 +113,15 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     return <div>Cannot edit object value as text</div>;
   }
 
-  if (schema.format === "markdown" || uiSchema?.["ui:widget"] === "textarea") {
-    return (
-      <Form.Control
-        as="textarea"
-        value={value ?? ""}
-        {...field}
-        {...restProps}
-        isInvalid={Boolean(meta.error)}
-      />
-    );
-  }
-
   return (
     <Form.Control
-      type="text"
+      as="textarea"
+      rows="1"
       value={value ?? ""}
       {...field}
       {...restProps}
       isInvalid={Boolean(meta.error)}
+      ref={textAreaRef}
     />
   );
 };

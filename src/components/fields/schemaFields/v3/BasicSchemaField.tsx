@@ -185,11 +185,8 @@ function getToggleOptions({
   }
 
   if (fieldSchema.type === "string" || anyType) {
-    if (
-      fieldSchema.enum &&
-      Array.isArray(fieldSchema.enum) &&
-      fieldSchema.enum.length > 0
-    ) {
+    const values = fieldSchema.examples ?? fieldSchema.enum;
+    if (Array.isArray(values) && values.length > 0) {
       pushOptions({
         label: "Select...",
         value: "string",
@@ -198,7 +195,7 @@ function getToggleOptions({
         defaultValue:
           typeof fieldSchema.default === "string"
             ? String(fieldSchema.default)
-            : "",
+            : null,
       });
     } else {
       pushOptions({

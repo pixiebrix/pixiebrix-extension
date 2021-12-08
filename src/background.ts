@@ -28,15 +28,11 @@ import "@/background/messenger/registration";
 import "@/development/autoreload";
 import "@/background/installer";
 import "@/messaging/external";
-import "@/background/requests";
 import "@/background/locator";
 import "@/background/logging";
-import "@/background/auth";
 import "@/background/contextMenus";
-import "@/background/dataStore";
 import "@/background/devtools";
 import "@/background/browserAction";
-import "@/background/permissionPrompt";
 import "@/background/trace";
 
 import initGoogle from "@/contrib/google/initGoogle";
@@ -46,6 +42,7 @@ import initExecutor from "@/background/executor";
 import initContextMenus from "@/background/initContextMenus";
 import initDeploymentUpdater from "@/background/deployment";
 import initFirefoxCompat from "@/background/firefoxCompat";
+import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 
 initNavigation();
 initExecutor();
@@ -54,3 +51,4 @@ initFrames();
 initContextMenus();
 initDeploymentUpdater();
 void initFirefoxCompat();
+activateBrowserActionIcon();

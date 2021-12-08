@@ -18,6 +18,7 @@
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { $safeFind } from "@/helpers";
 
 export class ShowEffect extends Effect {
   constructor() {
@@ -39,7 +40,7 @@ export class ShowEffect extends Effect {
   );
 
   async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
-    const $elt = $(document).find(selector);
+    const $elt = $safeFind(selector);
     $elt.show();
   }
 }

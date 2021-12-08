@@ -115,7 +115,7 @@ const ElementWizard: React.FunctionComponent<{
   const onSave = async () => {
     try {
       await save();
-    } catch (error: unknown) {
+    } catch (error) {
       setStatus(error);
     }
   };

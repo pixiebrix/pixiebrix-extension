@@ -138,7 +138,9 @@ export type TemplateEngine =
 export type ExpressionType =
   | TemplateEngine
   // BlockPipeline with deferred execution
-  | "pipeline";
+  | "pipeline"
+  // Raw section with deferred rendering (rendered by the brick that executes it)
+  | "defer";
 
 /**
  * The JSON/JS representation of an explicit template/variable expression (e.g., mustache, var, etc.)
@@ -223,11 +225,13 @@ export interface Logger {
 
 export type ReaderRoot = HTMLElement | Document;
 
-export type BlockOptions = {
-  // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
-  // the inputs using yup/jsonschema, so the types should match what's expected.
+// Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
+// the inputs using yup/jsonschema, so the types should match what's expected.
+export type BlockOptions<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ctxt: Record<string, any>;
+  TCtxt extends Record<string, any> = Record<string, any>
+> = {
+  ctxt: TCtxt;
   logger: Logger;
   root: ReaderRoot;
   headless?: boolean;
@@ -831,11 +835,16 @@ export type RawConfig = {
  */
 export type IBrick = IBlock | IService | IExtensionPoint;
 
-export type RenderedHTML = string;
+/**
+ * Rendered HTML that has been sanitized.
+ */
+export type SafeHTML = string & {
+  _safeHTMLBrand: never;
+};
 
 export type ComponentRef = {
   Component: React.ComponentType;
   props: Record<string, unknown>;
 };
 
-export type RendererOutput = RenderedHTML | ComponentRef;
+export type RendererOutput = SafeHTML | ComponentRef;

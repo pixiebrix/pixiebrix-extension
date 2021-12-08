@@ -54,7 +54,7 @@ export async function runBlockInContentScript(request: RunBlock) {
       logger,
       root: document,
     });
-  } catch (error: unknown) {
+  } catch (error) {
     // Provide extra logging on the tab because `handlers` doesn't report errors. It's also nice to log here because
     // we still have the original (non-serialized) error
     console.info("Error running remote block on tab", {

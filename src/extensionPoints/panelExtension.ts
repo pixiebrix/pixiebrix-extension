@@ -395,7 +395,6 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
             shadowDOM,
           });
           extensionLogger.debug("Successfully installed panel");
-          // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
         } catch (error) {
           extensionLogger.error(error);
         }
@@ -460,7 +459,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         // Running in loop to ensure consistent placement. OK because `installBody` in runExtension is runs asynchronously
         // eslint-disable-next-line no-await-in-loop
         await this.runExtension(readerContext, extension);
-      } catch (error: unknown) {
+      } catch (error) {
         errors.push(error);
         this.logger
           .childLogger({

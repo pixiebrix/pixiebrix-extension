@@ -20,7 +20,14 @@
 
 const params = new URLSearchParams(window.location.search);
 
-const url = new URL(params.get("url"));
+const rawURL = params.get("url");
+
+console.debug("Initializing indirect frame", {
+  url: rawURL,
+  nonce: params.get("nonce"),
+});
+
+const url = new URL(rawURL);
 const nonce = params.get("nonce");
 
 if (nonce) {
@@ -28,18 +35,5 @@ if (nonce) {
 }
 
 const iframe = document.createElement("iframe");
-iframe.src = url.toString();
+iframe.src = url.href;
 document.body.append(iframe);
-
-// Import {REQUEST_FRAME_DATA} from "@/messaging/constants";
-// import {sendMessage} from "@/chrome";
-//
-// const id = new URLSearchParams(window.location.search).get('id');
-//
-// console.log(`Loaded iframe ${id}`);
-//
-// document.addEventListener("DOMContentLoaded", async function(){
-//     const response = await sendMessage(REQUEST_FRAME_DATA, {id});
-//     console.log(`receive ${REQUEST_FRAME_DATA}`, response)
-//     document.body.innerHTML = response.html;
-// });

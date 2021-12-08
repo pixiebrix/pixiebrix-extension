@@ -21,7 +21,7 @@ import {
   RunBlockRequestAction,
 } from "@/contentScript/executor";
 import browser, { Runtime, Tabs } from "webextension-polyfill";
-import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
+import { MESSAGE_PREFIX } from "@/background/protocol";
 import { BlockArg, RegistryId } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
@@ -338,7 +338,7 @@ async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
     try {
       // eslint-disable-next-line no-await-in-loop -- retry loop
       return await send();
-    } catch (error: unknown) {
+    } catch (error) {
       const message = getErrorMessage(error);
 
       if (NOT_READY_PARTIAL_MESSAGES.some((query) => message.includes(query))) {
@@ -447,18 +447,18 @@ export async function executeInOpener(
   });
 }
 
-export const executeOnServer = liftBackground(
-  "EXECUTE_ON_SERVER",
-  async (blockId: RegistryId, blockArgs: BlockArg) => {
-    console.debug(`Running ${blockId} on the server`);
-    return (await getLinkedApiClient()).post<{
-      data?: JsonObject;
-      error?: JsonObject;
-    }>("/api/run/", {
-      id: blockId,
-      args: blockArgs,
-    });
-  }
-);
+export async function executeOnServer(
+  blockId: RegistryId,
+  blockArgs: BlockArg
+) {
+  console.debug(`Running ${blockId} on the server`);
+  return (await getLinkedApiClient()).post<{
+    data?: JsonObject;
+    error?: JsonObject;
+  }>("/api/run/", {
+    id: blockId,
+    args: blockArgs,
+  });
+}
 
 export default initExecutor;

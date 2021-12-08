@@ -24,7 +24,7 @@ import { reportError } from "@/telemetry/logging";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import { reactivate } from "@/background/navigation";
+import { reactivateEveryTab } from "@/background/messenger/api";
 import { reportEvent } from "@/telemetry/events";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { extensionPermissions } from "@/permissions";
@@ -146,7 +146,7 @@ function useCreate(): CreateCallback {
 
         try {
           await ensurePermissions(element, addToast);
-        } catch (error: unknown) {
+        } catch (error) {
           // Continue to allow saving (because there's a workaround)
           reportError(error);
           console.error("Error checking/enabling permissions", { error });
@@ -190,7 +190,7 @@ function useCreate(): CreateCallback {
                 "extensionPoint",
                 extensionPointConfig
               );
-            } catch (error: unknown) {
+            } catch (error) {
               return onStepError(error, "saving foundation");
             }
           }
@@ -206,7 +206,7 @@ function useCreate(): CreateCallback {
             blockRegistry.fetch(),
             extensionPointRegistry.fetch(),
           ]);
-        } catch (error: unknown) {
+        } catch (error) {
           reportError(error);
           addToast(
             `Error fetching remote bricks: ${selectErrorMessage(error)}`,
@@ -235,31 +235,18 @@ function useCreate(): CreateCallback {
           }
 
           dispatch(markSaved(element.uuid));
-        } catch (error: unknown) {
+        } catch (error) {
           return onStepError(error, "saving extension");
         }
 
-        try {
-          await reactivate();
-        } catch (error: unknown) {
-          reportError(error);
-          addToast(
-            `Error re-activating bricks on page(s): ${selectErrorMessage(
-              error
-            )}`,
-            {
-              appearance: "warning",
-              autoDismiss: true,
-            }
-          );
-        }
+        reactivateEveryTab();
 
         addToast("Saved extension", {
           appearance: "success",
           autoDismiss: true,
         });
         return null;
-      } catch (error: unknown) {
+      } catch (error) {
         console.error("Error saving extension", { error });
         reportError(error);
         addToast(`Error saving extension: ${getErrorMessage(error)}`, {

@@ -15,10 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Logger, RendererOutput } from "@/core";
+import { Logger, RendererOutput, SafeHTML } from "@/core";
 import { getErrorMessage } from "@/errors";
+import sanitize from "@/utils/sanitize";
+import { UnknownObject } from "@/types";
+import { escape } from "lodash";
 
-function isRendererOutput(value: unknown): value is RendererOutput {
+// Require SafeHTML here, because if we just accepted unknown, this would return `true` even for unsanitized strings
+function isRendererOutput(
+  value: SafeHTML | UnknownObject
+): value is RendererOutput {
   if (typeof value === "string") {
     return true;
   }
@@ -43,16 +49,17 @@ export async function errorBoundary(
     const value = await renderPromise;
 
     if (!isRendererOutput(value)) {
-      logger.warn("Expected a renderer brick");
-      return '<div style="color: red;">Expected a renderer brick</div>';
+      logger.warn("Expected a renderer output");
+      return sanitize(
+        '<div style="color: red;">Expected a renderer brick</div>'
+      );
     }
 
     // TODO: validate the shape of the value returned
     return value;
-
-    // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
     logger.error(error);
-    return `<div>An error occurred: ${getErrorMessage(error)}</div>`;
+    const escapedMessage = escape(getErrorMessage(error));
+    return sanitize(`<div>An error occurred: ${escapedMessage}</div>`);
   }
 }

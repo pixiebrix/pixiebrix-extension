@@ -21,13 +21,11 @@ import {
   setStorage,
 } from "@/chrome";
 import { JsonObject } from "type-fest";
-import { liftBackground } from "./protocol";
-import { SerializableResponse } from "@/messaging/protocol";
 
 export const LOCAL_DATA_STORE = "LOCAL_DATA_STORE" as ManualStorageKey;
 export const KEY_PREFIX = "@@";
 
-async function _getRecord(primaryKey: string): Promise<unknown> {
+export async function getRecord(primaryKey: string): Promise<unknown> {
   const data = await readStorageWithMigration<Record<string, unknown>>(
     LOCAL_DATA_STORE,
     {}
@@ -35,7 +33,7 @@ async function _getRecord(primaryKey: string): Promise<unknown> {
   return data[`${KEY_PREFIX}${primaryKey}`] ?? {};
 }
 
-async function _setRecord(
+export async function setRecord(
   primaryKey: string,
   value: JsonObject
 ): Promise<void> {
@@ -46,15 +44,3 @@ async function _setRecord(
   data[`${KEY_PREFIX}${primaryKey}`] = value;
   await setStorage(LOCAL_DATA_STORE, data);
 }
-
-export const getRecord = liftBackground(
-  "GET_DATA_STORE",
-  async (primaryKey: string) => _getRecord(primaryKey) as SerializableResponse
-);
-
-export const setRecord = liftBackground(
-  "SET_DATA_STORE",
-  async (primaryKey: string, value: JsonObject) => {
-    await _setRecord(primaryKey, value);
-  }
-);

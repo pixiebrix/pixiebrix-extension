@@ -22,6 +22,7 @@ const start = Date.now();
 import "@/extensionContext";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 import "@/contentScript/messenger/registration";
+import browser from "webextension-polyfill";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
@@ -72,7 +73,7 @@ async function init(): Promise<void> {
 
   try {
     await handleNavigate();
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Error initializing contentScript", error);
     throw error;
   }
@@ -87,7 +88,7 @@ async function init(): Promise<void> {
     // Informs the standard background listener to track this tab
     await markTabAsReady();
     console.info(`contentScript ready in ${Date.now() - start}ms`);
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Error pinging the background script", error);
     throw error;
   }

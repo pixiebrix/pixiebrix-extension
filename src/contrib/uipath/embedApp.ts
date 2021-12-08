@@ -17,7 +17,7 @@
 
 import { Renderer, UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { BlockArg, BlockOptions, SafeHTML, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import browser, { Permissions } from "webextension-polyfill";
 import { executeForNonce } from "@/background/executor";
@@ -77,7 +77,7 @@ export class UiPathAppRenderer extends Renderer {
       width = "100%",
     }: BlockArg,
     { logger }: BlockOptions
-  ): Promise<string> {
+  ): Promise<SafeHTML> {
     // https://transitory.technology/browser-extensions-and-csp-headers/
     const frameSrc = browser.runtime.getURL("frame.html");
 
@@ -117,6 +117,6 @@ export class UiPathAppRenderer extends Renderer {
       });
     }
 
-    return `<iframe src="${frameURL.toString()}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`;
+    return `<iframe src="${frameURL.toString()}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>` as SafeHTML;
   }
 }

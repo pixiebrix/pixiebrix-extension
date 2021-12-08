@@ -25,8 +25,7 @@ declare module "*.module.scss" {
 }
 
 declare module "react-select-virtualized" {
-  import VirtualizedSelect from "react-virtualized-select";
-  export default VirtualizedSelect;
+  export { default } from "react-virtualized-select";
 }
 
 declare module "generate-schema" {
@@ -48,4 +47,24 @@ declare module "@/vendors/initialize" {
 // Missing from TS types, but it's a standard
 interface HTMLDialogElement extends HTMLElement {
   showModal(): void;
+}
+
+// Made available via: "jest-environment-jsdom-global" for jest tests
+declare const jsdom: {
+  reconfigure: (options: { url: string }) => void;
+};
+
+// `useUnknownInCatchVariables` for .catch method https://github.com/microsoft/TypeScript/issues/45602
+interface Promise<T> {
+  /**
+   * Attaches a callback for only the rejection of the Promise.
+   * @param onrejected The callback to execute when the Promise is rejected.
+   * @returns A Promise for the completion of the callback.
+   */
+  catch<TResult = never>(
+    onrejected?:
+      | ((reason: unknown) => TResult | PromiseLike<TResult>)
+      | undefined
+      | null
+  ): Promise<T | TResult>;
 }

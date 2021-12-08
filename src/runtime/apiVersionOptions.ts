@@ -32,18 +32,16 @@ export type ApiVersionOptions = {
   explicitDataFlow?: boolean;
 
   /**
-   * The was a hack in older versions to pass primitive values and lists directly to the next block without applying
+   * This was a hack in older versions to pass primitive values and lists directly to the next block without applying
    * any template engine. (Because originally in PixieBrix there was no way to explicitly pass list variables
    * via outputKeys/variable expressions).
    * @since apiVersion 3
-   * @since 1.5.0
    */
   explicitArg?: boolean;
 
   /**
    * Encode renderers directly in the object instead of a single renderer with implicit behavior for simple paths.
    * @since apiVersion 3
-   * @since 1.5.0
    */
   explicitRender?: boolean;
 
@@ -55,9 +53,23 @@ export type ApiVersionOptions = {
    * to remember to provide. We had been enforcing validation since 1.2.0 or potentially even earlier.
    *
    * @since apiVersion 3
-   * @since 1.5.0
    */
   validateInput: boolean;
+
+  /**
+   * True to auto-escape output of mustache and nunjucks templates (default=true) if not provided.
+   *
+   * To avoid escaping the end-user must explicitly use the template library's affordances for marking a string as safe:
+   *
+   * - mustache: `{{{var}}}` or `{{&var}}
+   * - handlebars: `{{{ var }}}`
+   * - nunjucks: `{{ var | safe }}`
+   *
+   * @see https://mozilla.github.io/nunjucks/api.html
+   * @since apiVersion 3
+   * @since 1.5.0
+   */
+  autoescape: boolean;
 };
 
 /**
@@ -72,6 +84,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitArg: true,
         explicitRender: true,
         validateInput: true,
+        autoescape: false,
       };
     }
 
@@ -81,6 +94,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitArg: false,
         explicitRender: false,
         validateInput: true,
+        autoescape: true,
       };
     }
 
@@ -91,6 +105,7 @@ function apiVersionOptions(version: ApiVersion): ApiVersionOptions {
         explicitArg: false,
         explicitRender: false,
         validateInput: true,
+        autoescape: true,
       };
     }
   }

@@ -23,13 +23,15 @@ import { useDispatch } from "react-redux";
 import { EditorValues } from "./Editor";
 import { BrickValidationResult, validateSchema } from "./validate";
 import useRefresh from "@/hooks/useRefresh";
-import { reactivate } from "@/background/navigation";
 import { Definition, UnsavedRecipeDefinition } from "@/types/definitions";
 import useReinstall from "@/pages/marketplace/useReinstall";
 import useNotifications from "@/hooks/useNotifications";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { getErrorMessage, isAxiosError } from "@/errors";
-import { clearServiceCache } from "@/background/requests";
+import {
+  clearServiceCache,
+  reactivateEveryTab,
+} from "@/background/messenger/api";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { PackageUpsertResponse } from "@/types/contract";
 
@@ -65,7 +67,7 @@ function useSubmitBrick({
   const remove = useCallback(async () => {
     try {
       await (await getLinkedApiClient()).delete(url);
-    } catch (error: unknown) {
+    } catch (error) {
       notify.error("Error deleting brick", {
         error,
       });
@@ -119,8 +121,10 @@ function useSubmitBrick({
         notify.success(`${create ? "Created" : "Updated"} ${metadata.name}`);
 
         refreshPromise
-          .then(async () => reactivate())
-          .catch((error: unknown) => {
+          .then(() => {
+            reactivateEveryTab();
+          })
+          .catch((error) => {
             notify.warning(
               `Error re-activating bricks: ${getErrorMessage(error)}`,
               {
@@ -135,7 +139,7 @@ function useSubmitBrick({
         if (create) {
           history.push(`/workshop/bricks/${data.id}/`);
         }
-      } catch (error: unknown) {
+      } catch (error) {
         console.debug("Got validation error", error);
 
         if (isAxiosError(error)) {
