@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLocalISOString } from "@/blocks/transformers/parseDate";
-import { register, TimeZone } from "timezone-mock";
+import { getLocalISOString, ParseDate } from "@/blocks/transformers/parseDate";
+import { register, TimeZone, unregister } from "timezone-mock";
+import { BlockArg } from "@/core";
 
 const refDate = "2021-12-07T06:17:09.258Z";
 
@@ -37,6 +38,65 @@ describe("ParseDate block", () => {
       const input = new Date(refDate);
       const result = getLocalISOString(input);
       expect(result).toStrictEqual(expected);
+      unregister();
     }
   );
+
+  test("Results snapshot - EST", async () => {
+    const brick = new ParseDate();
+    const arg = ({
+      date: "Thursday, December 9th 2021, 10pm, EST",
+    } as unknown) as BlockArg<Record<string, string>>;
+    await brick
+      .run(arg, {
+        ctxt: null,
+        logger: null,
+        root: null,
+      })
+      .then((result) => {
+        expect(result).toEqual({
+          utc: {
+            iso8601: "2021-12-10T03:00:00.000Z",
+            date: "12/10/2021",
+            time: "3:00:00 AM",
+            humanReadable: "Fri, 10 Dec 2021 03:00:00 GMT",
+          },
+          local: {
+            iso8601: "2021-12-09T22:00:00.000-05:00",
+            date: "12/9/2021",
+            time: "10:00:00 PM",
+            humanReadable: "12/9/2021, 10:00:00 PM",
+          },
+        });
+      });
+  });
+
+  test("Results snapshot - GMT", async () => {
+    const brick = new ParseDate();
+    const arg = ({
+      date: "Thursday, December 9th 2021, 3am, GMT",
+    } as unknown) as BlockArg<Record<string, string>>;
+    await brick
+      .run(arg, {
+        ctxt: null,
+        logger: null,
+        root: null,
+      })
+      .then((result) => {
+        expect(result).toEqual({
+          utc: {
+            iso8601: "2021-12-09T03:00:00.000Z",
+            date: "12/9/2021",
+            time: "3:00:00 AM",
+            humanReadable: "Thu, 09 Dec 2021 03:00:00 GMT",
+          },
+          local: {
+            iso8601: "2021-12-08T22:00:00.000-05:00",
+            date: "12/8/2021",
+            time: "10:00:00 PM",
+            humanReadable: "12/8/2021, 10:00:00 PM",
+          },
+        });
+      });
+  });
 });
