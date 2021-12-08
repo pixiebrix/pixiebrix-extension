@@ -52,7 +52,8 @@ export async function engineRenderer(
           ctxt,
           {},
           {
-            escape: options.autoescape ? undefined : identity,
+            // By passing undefined here if autoescape = true, mustache will use it's built-in escaping method.
+            escape: autoescape ? undefined : identity,
           }
         );
     }

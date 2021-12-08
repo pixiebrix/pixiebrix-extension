@@ -171,7 +171,7 @@ describe("pipeline", () => {
 });
 
 describe("autoescape", () => {
-  it.each([["mustache"], ["nunjucks"], ["handlebars"]])(
+  test.each([["mustache"], ["nunjucks"], ["handlebars"]])(
     "should autoescape for %s",
     async (templateEngine) => {
       const rendered = await renderExplicit(
@@ -184,7 +184,7 @@ describe("autoescape", () => {
     }
   );
 
-  it.each([["mustache"], ["nunjucks"], ["handlebars"]])(
+  test.each([["mustache"], ["nunjucks"], ["handlebars"]])(
     "should not autoescape for %s",
     async (templateEngine) => {
       const rendered = await renderExplicit(

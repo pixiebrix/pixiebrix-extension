@@ -57,11 +57,13 @@ export type ApiVersionOptions = {
   validateInput: boolean;
 
   /**
-   * True to auto-escape output of mustache and nunjucks templates. To avoid escaping the use must explicitly use
-   * the template library's affordances for marking a string as safe:
+   * True to auto-escape output of mustache and nunjucks templates (default=true) if not provided.
    *
-   * - mustache: `{{{var}}}` or `{{&var}} sy
-   * - nunjucks: `{{ var | safe}}`
+   * To avoid escaping the end-user must explicitly use the template library's affordances for marking a string as safe:
+   *
+   * - mustache: `{{{var}}}` or `{{&var}}
+   * - handlebars: `{{{ var }}}`
+   * - nunjucks: `{{ var | safe }}`
    *
    * @see https://mozilla.github.io/nunjucks/api.html
    * @since apiVersion 3
