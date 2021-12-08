@@ -21,19 +21,21 @@ import { propertiesToSchema } from "@/validators/generic";
 
 export function getLocalISOString(date: Date): string {
   let offsetInMinutes = date.getTimezoneOffset();
-  const offsetSign =
-    // eslint-disable-next-line unicorn/no-nested-ternary -- eslint removes the parens
-    offsetInMinutes === 0 ? "Z" : offsetInMinutes > 0 ? "-" : "+";
-  offsetInMinutes = Math.abs(offsetInMinutes);
   const offsetMillis = offsetInMinutes * 60 * 1000;
+  const shiftedDate = new Date(date.getTime() - offsetMillis);
+  const isoString = shiftedDate.toISOString();
+
+  if (offsetInMinutes === 0) {
+    return isoString;
+  }
+
+  const offsetSign = offsetInMinutes > 0 ? "-" : "+";
+  offsetInMinutes = Math.abs(offsetInMinutes);
   const offsetHours = String(Math.trunc(offsetInMinutes / 60)).padStart(2, "0");
   const offsetMinutes = String(offsetInMinutes % 60).padStart(2, "0");
-  const shiftedMillis = date.getTime() - offsetMillis;
-  const shiftedDate = new Date(shiftedMillis);
-  const isoString = shiftedDate.toISOString();
+  // Remove the 'Z' on the end
   const isoTrimmed = isoString.slice(0, -1);
-  const offset = offsetSign === "Z" ? "" : `${offsetHours}:${offsetMinutes}`;
-  return `${isoTrimmed}${offsetSign}${offset}`;
+  return `${isoTrimmed}${offsetSign}${offsetHours}:${offsetMinutes}`;
 }
 
 export class ParseDate extends Transformer {
