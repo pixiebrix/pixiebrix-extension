@@ -20,6 +20,7 @@ import React from "react";
 
 import Panel from "@/devTools/Panel";
 
+import "@/development/darkMode";
 import "@/telemetry/reportUncaughtErrors";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@/vendors/overrides.scss";

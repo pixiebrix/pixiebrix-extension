@@ -24,6 +24,7 @@ import { render } from "react-dom";
 import React from "react";
 import App from "@/options/App";
 import initGoogle from "@/contrib/google/initGoogle";
+import "@/development/darkMode";
 
 import "@/options.scss";
 import "@/vendors/overrides.scss";
