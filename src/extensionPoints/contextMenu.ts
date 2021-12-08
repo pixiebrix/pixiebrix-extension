@@ -280,7 +280,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       this.extensions.map(async (extension) => {
         try {
           await this.registerExtension(extension);
-        } catch (error: unknown) {
+        } catch (error) {
           reportError(error, {
             deploymentId: extension._deployment?.id,
             extensionPointId: extension.extensionPointId,
@@ -372,7 +372,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           logger: extensionLogger,
           ...apiVersionOptions(extension.apiVersion),
         });
-      } catch (error: unknown) {
+      } catch (error) {
         if (isErrorObject(error)) {
           reportError(error);
           extensionLogger.error(error);

@@ -49,7 +49,7 @@ const FactoryResetSettings: React.FunctionComponent<{
                 appearance: "success",
                 autoDismiss: true,
               });
-            } catch (error: unknown) {
+            } catch (error) {
               addToast(
                 `Error resetting options and service configurations: ${getErrorMessage(
                   error

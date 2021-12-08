@@ -333,7 +333,7 @@ export async function rejectOnCancelled<T>(
   let rv: T;
   try {
     rv = await promise;
-  } catch (error: unknown) {
+  } catch (error) {
     if (isCancelled()) {
       throw new PromiseCancelled("Promise was cancelled");
     }

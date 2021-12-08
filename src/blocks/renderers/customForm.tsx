@@ -20,7 +20,7 @@ import { Renderer } from "@/types";
 import { BlockArg, BlockOptions, ComponentRef, Schema, UiSchema } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
-import { getRecord, setRecord } from "@/background/dataStore";
+import { dataStore } from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
 import { notifyResult } from "@/contentScript/notify";
 
@@ -84,7 +84,7 @@ export class CustomFormRenderer extends Renderer {
     { recordId, schema, uiSchema }: BlockArg,
     { logger }: BlockOptions
   ): Promise<ComponentRef> {
-    const formData = await getRecord(recordId);
+    const formData = await dataStore.get(recordId);
 
     console.debug("Building panel for record: [[ %s ]]", recordId);
 
@@ -97,14 +97,14 @@ export class CustomFormRenderer extends Renderer {
         uiSchema,
         onSubmit: async (values: JsonObject) => {
           try {
-            await setRecord(recordId, values);
+            await dataStore.set(recordId, values);
             notifyResult(logger.context.extensionId, {
               message: "Saved record",
               config: {
                 className: "success",
               },
             });
-          } catch (error: unknown) {
+          } catch (error) {
             reportError(error);
             notifyResult(logger.context.extensionId, {
               message: "Error saving record",

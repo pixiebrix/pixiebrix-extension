@@ -73,7 +73,7 @@ async function init(): Promise<void> {
 
   try {
     await handleNavigate();
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Error initializing contentScript", error);
     throw error;
   }
@@ -88,7 +88,7 @@ async function init(): Promise<void> {
     // Informs the standard background listener to track this tab
     await markTabAsReady();
     console.info(`contentScript ready in ${Date.now() - start}ms`);
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Error pinging the background script", error);
     throw error;
   }

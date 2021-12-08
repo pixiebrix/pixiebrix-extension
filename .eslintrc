@@ -15,17 +15,13 @@
 
     // Rules to fix and enforce over time
     "no-await-in-loop": "warn",
-    "no-negated-condition": "warn",
 
-    "unicorn/no-array-callback-reference": "warn", // Buggy with jQuery
     "unicorn/no-useless-undefined": "warn", // Buggy with React
     "unicorn/no-nested-ternary": "warn", // Sometimes it conflicts with Prettier
     "unicorn/consistent-function-scoping": "warn", // Complains about some of the lifted functions
     "unicorn/no-await-expression-member": "warn", // Annoying sometimes, let's try it
 
-    "@typescript-eslint/no-base-to-string": "warn",
     "@typescript-eslint/consistent-type-assertions": "warn",
-    "@typescript-eslint/no-implicit-any-catch": "warn",
 
     "jsx-a11y/click-events-have-key-events": "warn",
     "jsx-a11y/no-static-element-interactions": "warn",

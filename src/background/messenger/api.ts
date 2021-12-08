@@ -16,7 +16,11 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { backgroundTarget as bg, getMethod } from "webext-messenger";
+import {
+  backgroundTarget as bg,
+  getMethod,
+  getNotifier,
+} from "webext-messenger";
 import browser from "webextension-polyfill";
 import { isBackgroundPage } from "webext-detect-page";
 
@@ -32,13 +36,20 @@ export const containsPermissions = browser.permissions
   ? browser.permissions.contains
   : getMethod("CONTAINS_PERMISSIONS", bg);
 
+export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const checkTargetPermissions = getMethod("CHECK_TARGET_PERMISSIONS", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
 export const whoAmI = getMethod("ECHO_SENDER", bg);
+
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
+export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
+
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const markTabAsReady = getMethod("MARK_TAB_AS_READY", bg);
+export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
+export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
+export const readGoogleBigQuery = getMethod("GOOGLE_BIGQUERY_READ", bg);
 
 export const sheets = {
   getTabNames: getMethod("GOOGLE_SHEETS_GET_TAB_NAMES", bg),
@@ -61,4 +72,22 @@ export const registry = {
   getKind: getMethod("REGISTRY_GET_KIND", bg),
   syncRemote: getMethod("REGISTRY_SYNC", bg),
   find: getMethod("REGISTRY_FIND", bg),
+};
+
+export const dataStore = {
+  get: getMethod("GET_DATA_STORE", bg),
+  set: getMethod("SET_DATA_STORE", bg),
+};
+
+export const executeBrick = {
+  onServer: getMethod("EXECUTE_ON_SERVER", bg),
+};
+
+export const contextMenus = {
+  preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
+};
+
+export const services = {
+  locate: getMethod("LOCATE_SERVICE", bg),
+  refresh: getMethod("REFRESH_SERVICES", bg),
 };

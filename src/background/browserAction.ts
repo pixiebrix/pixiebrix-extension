@@ -54,7 +54,7 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
       tabId: tab.id,
       frameId: TOP_LEVEL_FRAME_ID,
     });
-  } catch (error: unknown) {
+  } catch (error) {
     await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
     console.error(error);
     reportError(error);

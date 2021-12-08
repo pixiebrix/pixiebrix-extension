@@ -15,12 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftBackground } from "@/background/protocol";
-import browser, { Notifications } from "webextension-polyfill";
+import React, { Suspense } from "react";
+import { DocumentViewProps } from "./DocumentViewProps";
 
-export const createNotification = liftBackground(
-  "CREATE_NOTIFICATION",
-  async (options: Notifications.CreateNotificationOptions) =>
-    // Generate id automatically
-    browser.notifications.create(undefined, options)
+// Dynamic import because documentView has a transitive dependency of react-shadow-root which assumed a proper
+// `window` variable is present on module load. This isn't available on header generation
+const DocumentView = React.lazy(
+  async () =>
+    import(
+      /* webpackChunkName: "document-view" */
+      "./DocumentView"
+    )
 );
+
+const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (
+  <Suspense fallback={<div className="text-muted">Loading...</div>}>
+    <DocumentView {...props} />
+  </Suspense>
+);
+
+export default DocumentViewLazy;

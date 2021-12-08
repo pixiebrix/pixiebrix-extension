@@ -18,9 +18,8 @@
 import React, { useContext } from "react";
 import { BlockPipeline } from "@/blocks/types";
 import { useAsyncState } from "@/hooks/common";
-import { BlockArgContext } from "@/core";
 import { getErrorMessage } from "@/errors";
-import InnerComponentContext from "@/blocks/renderers/documentView/InnerComponentContext";
+import DocumentContext from "@/components/documentBuilder/DocumentContext";
 import { runRendererPipeline } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
@@ -30,10 +29,8 @@ import { RendererPayload } from "@/runtime/runtimeTypes";
 /**
  * A React component that messages the contentScript to run a pipeline and then shows the result
  */
-const PipelineComponent: React.FC<{ pipeline: BlockPipeline }> = ({
-  pipeline,
-}) => {
-  const context = useContext(InnerComponentContext);
+const DocumentBlock: React.FC<{ pipeline: BlockPipeline }> = ({ pipeline }) => {
+  const context = useContext(DocumentContext);
 
   const [
     payload,
@@ -46,7 +43,7 @@ const PipelineComponent: React.FC<{ pipeline: BlockPipeline }> = ({
       { tabId: me.tab.id, frameId: 0 },
       {
         nonce: uuidv4(),
-        context: (context.options.ctxt as unknown) as BlockArgContext,
+        context: context.options.ctxt,
         pipeline,
       }
     );
@@ -70,4 +67,4 @@ const PipelineComponent: React.FC<{ pipeline: BlockPipeline }> = ({
   return <PanelBody payload={payload} />;
 };
 
-export default PipelineComponent;
+export default DocumentBlock;

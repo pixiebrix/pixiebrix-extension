@@ -4,8 +4,7 @@ import AsyncButton, { AsyncButtonProps } from "@/components/AsyncButton";
 import { whoAmI } from "@/background/messenger/api";
 import { runEffectPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import { BlockArgContext } from "@/core";
-import InnerComponentContext from "@/blocks/renderers/documentView/InnerComponentContext";
+import DocumentContext from "@/components/documentBuilder/DocumentContext";
 import { Except } from "type-fest";
 
 type DocumentButtonProps = Except<AsyncButtonProps, "onClick"> & {
@@ -16,7 +15,7 @@ const DocumentButton: React.FC<DocumentButtonProps> = ({
   onClick,
   ...restProps
 }) => {
-  const context = useContext(InnerComponentContext);
+  const context = useContext(DocumentContext);
 
   const handler = useCallback(async () => {
     const me = await whoAmI();
@@ -25,7 +24,7 @@ const DocumentButton: React.FC<DocumentButtonProps> = ({
       { tabId: me.tab.id, frameId: 0 },
       {
         nonce: uuidv4(),
-        context: (context.options.ctxt as unknown) as BlockArgContext,
+        context: context.options.ctxt,
         pipeline: onClick,
       }
     );

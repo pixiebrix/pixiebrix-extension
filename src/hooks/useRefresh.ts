@@ -19,11 +19,10 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
 import { stubTrue } from "lodash";
-import { refresh as refreshBackgroundAuthLocator } from "@/background/locator";
 import { useCallback, useState } from "react";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
-import { clearServiceCache as clearBackgroundServiceCache } from "@/background/requests";
+import { clearServiceCache, services } from "@/background/messenger/api";
 
 /**
  * Refresh registries for the current context.
@@ -36,12 +35,12 @@ export async function refreshRegistries(): Promise<void> {
     extensionPointRegistry.fetch(),
     blockRegistry.fetch(),
     serviceRegistry.fetch(),
-    refreshBackgroundAuthLocator(),
+    services.refresh(),
   ]);
 
   // Ensure the background page is using the latest service definitions for fulfilling requests. This must come after
   // the call to serviceRegistry, because that populates the local IDB definitions.
-  await clearBackgroundServiceCache();
+  await clearServiceCache();
 }
 
 function useRefresh(options?: {
@@ -59,7 +58,7 @@ function useRefresh(options?: {
     async (isMounted = stubTrue) => {
       try {
         await refreshRegistries();
-      } catch (error: unknown) {
+      } catch (error) {
         console.error(error);
         if (!isMounted()) {
           return;

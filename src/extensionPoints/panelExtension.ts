@@ -459,7 +459,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         // Running in loop to ensure consistent placement. OK because `installBody` in runExtension is runs asynchronously
         // eslint-disable-next-line no-await-in-loop
         await this.runExtension(readerContext, extension);
-      } catch (error: unknown) {
+      } catch (error) {
         errors.push(error);
         this.logger
           .childLogger({

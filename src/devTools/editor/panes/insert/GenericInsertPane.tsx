@@ -64,7 +64,7 @@ const GenericInsertPane: React.FunctionComponent<{
           // have to manually toggle it
           void showActionPanel(thisTab);
         }
-      } catch (error: unknown) {
+      } catch (error) {
         reportError(error);
         addToast("Error adding element", {
           autoDismiss: true,
@@ -85,7 +85,7 @@ const GenericInsertPane: React.FunctionComponent<{
             extensionPoint.rawConfig
           )) as FormState
         );
-      } catch (error: unknown) {
+      } catch (error) {
         reportError(error);
         addToast("Error using existing foundation", {
           autoDismiss: true,
@@ -105,7 +105,7 @@ const GenericInsertPane: React.FunctionComponent<{
       await start(
         config.fromNativeElement(url, metadata, undefined, []) as FormState
       );
-    } catch (error: unknown) {
+    } catch (error) {
       reportError(error);
       addToast("Error using adding new element", {
         autoDismiss: true,

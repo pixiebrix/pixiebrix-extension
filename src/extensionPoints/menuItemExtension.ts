@@ -69,6 +69,7 @@ import { mapArgs } from "@/runtime/mapArgs";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { $safeFind } from "@/helpers";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -239,7 +240,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         if (cancelObserver) {
           cancelObserver();
         }
-      } catch (error: unknown) {
+      } catch (error) {
         // Try to proceed as normal
         reportError(error, this.logger.context);
       }
@@ -256,7 +257,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     );
     // Can't use this.menus.values() here b/c because it may have already been cleared
     for (const extensionId of extensionIds) {
-      const $item = $(document).find(`[${DATA_ATTR}="${extensionId}"]`);
+      const $item = $safeFind(`[${DATA_ATTR}="${extensionId}"]`);
       if ($item.length === 0) {
         console.warn(`Item for ${extensionId} was not in the menu`);
       }
@@ -526,7 +527,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       reportEvent("MenuItemClick", selectEventData(extension));
 
       try {
-        // Read latest state at the time of the action
+        // Read the latest state at the time of the action
         const reader = await this.defaultReader();
 
         const initialValues: InitialValues = {
@@ -608,7 +609,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
       let elementCount = 0;
       for (const dependency of dependencies) {
-        const $dependency = $(document).find(dependency);
+        const $dependency = $safeFind(dependency);
         if ($dependency.length > 0) {
           for (const element of $dependency) {
             elementCount++;
@@ -633,14 +634,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       this.cancelDependencyObservers.set(extension.id, () => {
         try {
           observer.disconnect();
-        } catch (error: unknown) {
+        } catch (error) {
           console.error("Error cancelling mutation observer", error);
         }
 
         for (const cancel of cancellers) {
           try {
             cancel();
-          } catch (error: unknown) {
+          } catch (error) {
             console.error("Error cancelling dependency observer", error);
           }
         }
@@ -661,9 +662,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const errors = [];
 
     const containerSelector = this.getContainerSelector();
-    const $currentMenus = $(document).find(
-      castArray(containerSelector).join(" ")
-    );
+    const $currentMenus = $safeFind(castArray(containerSelector).join(" "));
     const currentMenus = $currentMenus.toArray();
 
     for (const menu of this.menus.values()) {
@@ -703,7 +702,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
         try {
           await this.runExtension(menu, ctxtPromise, extension);
-        } catch (error: unknown) {
+        } catch (error) {
           if (error instanceof PromiseCancelled) {
             console.debug(
               `menuItemExtension run promise cancelled for extension: ${extension.id}`
@@ -797,7 +796,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
     if (typeof position === "object") {
       if (position.sibling) {
-        const $sibling = $menu.find(position.sibling);
+        const $sibling = $safeFind(position.sibling, $menu);
         if ($sibling.length > 1) {
           throw new Error(
             `Multiple sibling elements for selector: ${position.sibling}`

@@ -30,7 +30,6 @@ export interface FormPreviewFieldProps extends FieldProps {
 
 interface FormPreviewFieldTemplateProps extends FormPreviewFieldProps {
   as: Field;
-  setActiveField: SetActiveField;
   className?: string;
 }
 

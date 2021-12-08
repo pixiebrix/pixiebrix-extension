@@ -54,7 +54,7 @@ describe("apiVersion: v1", () => {
         simpleInput({ inputArg: 42 }),
         testOptions("v1")
       );
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBeInstanceOf(InputValidationError);
     }
   });
@@ -68,7 +68,7 @@ describe("apiVersion: v1", () => {
     ];
     try {
       await reducePipeline(pipeline, simpleInput({}), testOptions("v1"));
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBeInstanceOf(InputValidationError);
     }
   });
@@ -89,7 +89,7 @@ describe("apiVersion: v2", () => {
         simpleInput({ inputArg: 42 }),
         testOptions("v2")
       );
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBeInstanceOf(InputValidationError);
     }
   });

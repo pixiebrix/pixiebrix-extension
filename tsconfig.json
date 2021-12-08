@@ -19,7 +19,6 @@
     "noImplicitReturns": false,
     "noUnusedParameters": false,
     "useDefineForClassFields": false,
-    "useUnknownInCatchVariables": false, // https://github.com/pixiebrix/pixiebrix-extension/issues/779
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],

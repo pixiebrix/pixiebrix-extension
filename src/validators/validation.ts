@@ -19,7 +19,7 @@ import { Schema } from "@/core";
 import * as Yup from "yup";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
-import { locate } from "@/background/locator";
+import { services } from "@/background/messenger/api";
 import { DoesNotExistError } from "@/baseRegistry";
 import { MissingConfigurationError } from "@/services/errors";
 import { uniq, mapValues, isPlainObject } from "lodash";
@@ -163,7 +163,7 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
           async (value) => {
             try {
               await serviceRegistry.lookup(validateRegistryId(value));
-            } catch (error: unknown) {
+            } catch (error) {
               if (error instanceof DoesNotExistError) {
                 return false;
               }
@@ -205,8 +205,8 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
               }
 
               try {
-                await locate(this.parent.id, value);
-              } catch (error: unknown) {
+                await services.locate(this.parent.id, value);
+              } catch (error) {
                 if (error instanceof MissingConfigurationError) {
                   return this.createError({
                     message: "Configuration no longer available",
