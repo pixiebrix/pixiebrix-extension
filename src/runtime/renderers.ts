@@ -17,7 +17,7 @@
 
 import { TemplateEngine } from "@/core";
 import Mustache from "mustache";
-import { mapKeys, once } from "lodash";
+import { mapKeys, identity, once } from "lodash";
 import { getPropByPath } from "@/runtime/pathHelpers";
 import { UnknownObject } from "@/types";
 
@@ -27,12 +27,16 @@ export type Renderer = (template: string, context: unknown) => unknown;
 
 const ensureNunjucks = once(async () => {
   const { default: nunjucks } = await import("nunjucks");
-  nunjucks.configure({ autoescape: true });
   return nunjucks;
 });
 
+export type RendererOptions = {
+  autoescape?: boolean;
+};
+
 export async function engineRenderer(
-  templateEngine: TemplateEngine
+  templateEngine: TemplateEngine,
+  options: RendererOptions
 ): Promise<Renderer | undefined> {
   if (templateEngine == null) {
     throw new Error("templateEngine is required");
@@ -40,11 +44,20 @@ export async function engineRenderer(
 
   switch (templateEngine.toLowerCase()) {
     case "mustache": {
-      return Mustache.render;
+      return (template, ctxt) =>
+        Mustache.render(
+          template,
+          ctxt,
+          {},
+          {
+            escape: options.autoescape ? undefined : identity,
+          }
+        );
     }
 
     case "nunjucks": {
       const nunjucks = await ensureNunjucks();
+      nunjucks.configure({ autoescape: options.autoescape ?? true });
       return (template, ctxt) => {
         // Convert top level data from kebab case to snake case in order to be valid identifiers
         const snakeCased = mapKeys(ctxt as UnknownObject, (value, key) =>
@@ -56,6 +69,13 @@ export async function engineRenderer(
 
     case "handlebars": {
       const { default: handlebars } = await import("handlebars");
+
+      if (!options.autoescape ?? true) {
+        throw new Error(
+          "Runtime v3 features are not implemented for handlebars"
+        );
+      }
+
       return (template, ctxt) => {
         const compiledTemplate = handlebars.compile(template);
         return compiledTemplate(ctxt);
