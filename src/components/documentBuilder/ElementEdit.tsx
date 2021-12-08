@@ -25,7 +25,7 @@ import {
 } from "./documentBuilderTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getElementEditSchemas } from "./elementEditSchemas";
-import { getProperty } from "@/utils";
+import { getProperty, joinName } from "@/utils";
 import { Col, Row } from "react-bootstrap";
 import styles from "./DocumentEditor.module.scss";
 import RemoveElementAction from "./RemoveElementAction";
@@ -35,6 +35,8 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 import { produce } from "immer";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 
 type ElementEditProps = {
   elementName: string;
@@ -111,18 +113,25 @@ const ElementEdit: React.FC<ElementEditProps> = ({
           ))}
 
           {isList && (
-            <FieldTemplate
-              label="Item type"
-              name="elementType"
-              value={documentElement.config.element.__value__.type}
-              onChange={onElementTypeChange}
-              as={SelectWidget}
-              options={getAllowedChildTypes(documentElement).map((x) => ({
-                // eslint-disable-next-line security/detect-object-injection -- x is a know string
-                label: elementTypeLabels[x],
-                value: x,
-              }))}
-            />
+            <>
+              <ConnectedFieldTemplate
+                label="Element key"
+                name={joinName(elementName, "config", "elementKey")}
+                as={KeyNameWidget}
+              />
+              <FieldTemplate
+                label="Item type"
+                name="elementType"
+                value={documentElement.config.element.__value__.type}
+                onChange={onElementTypeChange}
+                as={SelectWidget}
+                options={getAllowedChildTypes(documentElement).map((x) => ({
+                  // eslint-disable-next-line security/detect-object-injection -- x is a know string
+                  label: elementTypeLabels[x],
+                  value: x,
+                }))}
+              />
+            </>
           )}
         </Col>
       </Row>

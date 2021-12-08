@@ -303,7 +303,7 @@ export function getPreviewComponentDefinition(
         >
           <div className="text-muted">List: {arrayValue}</div>
           <div className="text-muted">
-            Element key: {config.elementKey ?? "@element"}
+            Element key: @{config.elementKey || "element"}
           </div>
           {children}
         </div>

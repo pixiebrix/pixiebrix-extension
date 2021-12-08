@@ -33,10 +33,13 @@ type DocumentListProps = {
 
 const DocumentList: React.FC<DocumentListProps> = ({
   array,
-  elementKey = "element",
+  elementKey,
   config,
   buildDocumentBranch,
 }) => {
+  // Should be 'element' for any falsy value including empty strings.
+  elementKey = elementKey || "element";
+
   const documentContext = useContext(DocumentContext);
 
   const [rootDefinitions, isLoading] = useAsyncState(

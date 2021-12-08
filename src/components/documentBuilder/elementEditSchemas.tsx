@@ -101,13 +101,8 @@ export function getElementEditSchemas(
         schema: { type: "array" },
         label: "Array",
       };
-      const elementKeyEdit: SchemaFieldProps = {
-        name: joinName(elementName, "config", "elementKey"),
-        schema: { type: "string" },
-        label: "Element Key",
-      };
 
-      return [arraySourceEdit, elementKeyEdit];
+      return [arraySourceEdit];
     }
 
     default:
