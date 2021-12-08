@@ -18,7 +18,6 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { parseDate } from "chrono-node";
 
 export function getLocalISOString(date: Date): string {
   let offsetInMinutes = date.getTimezoneOffset();
@@ -111,6 +110,8 @@ export class ParseDate extends Transformer {
   };
 
   async transform({ date }: BlockArg): Promise<unknown> {
+    const { parseDate } = await import("chrono-node");
+
     const parsed = parseDate(date);
     const millisPerMinute = 60 * 1000;
     const offsetInMinutes = parsed.getTimezoneOffset();
