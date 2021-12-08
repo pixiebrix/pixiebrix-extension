@@ -38,6 +38,8 @@ export async function engineRenderer(
   templateEngine: TemplateEngine,
   options: RendererOptions
 ): Promise<Renderer | undefined> {
+  const autoescape = options.autoescape ?? true;
+
   if (templateEngine == null) {
     throw new Error("templateEngine is required");
   }
@@ -57,7 +59,7 @@ export async function engineRenderer(
 
     case "nunjucks": {
       const nunjucks = await ensureNunjucks();
-      nunjucks.configure({ autoescape: options.autoescape ?? true });
+      nunjucks.configure({ autoescape });
       return (template, ctxt) => {
         // Convert top level data from kebab case to snake case in order to be valid identifiers
         const snakeCased = mapKeys(ctxt as UnknownObject, (value, key) =>
@@ -69,15 +71,10 @@ export async function engineRenderer(
 
     case "handlebars": {
       const { default: handlebars } = await import("handlebars");
-
-      if (!options.autoescape ?? true) {
-        throw new Error(
-          "Runtime v3 features are not implemented for handlebars"
-        );
-      }
-
       return (template, ctxt) => {
-        const compiledTemplate = handlebars.compile(template);
+        const compiledTemplate = handlebars.compile(template, {
+          noEscape: !autoescape,
+        });
         return compiledTemplate(ctxt);
       };
     }
