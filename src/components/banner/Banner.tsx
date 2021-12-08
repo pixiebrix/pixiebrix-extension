@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,40 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.environment-banner {
-  text-align: center;
-  padding: 10px;
+import React from "react";
+import styles from "./Banner.module.scss";
+import cx from "classnames";
 
-  &.unknown {
-    background-color: #ffd9b1;
-  }
-
-  &.development {
-    background-color: #bfd7bf;
-  }
-
-  &.staging {
-    background-color: #8bcaff;
-  }
+export type BannerVariant = "info" | "success" | "warning" | "danger";
+export interface BannerProps {
+  variant?: BannerVariant;
 }
 
-.deployment-banner {
-  text-align: center;
-  padding: 10px;
+const Banner: React.FunctionComponent<BannerProps> = ({
+  variant,
+  children,
+}) => (
+  <div className={cx(styles.root, styles[variant ?? "info"])}>
+    <div className="mx-auto d-flex">
+      <div className="flex-grow-1" />
+      <div className="align-self-center">{children}</div>
+      <div className="flex-grow-1" />
+    </div>
+  </div>
+);
 
-  background-color: #8bcaff;
-}
-
-.update-banner {
-  text-align: center;
-  padding: 10px;
-
-  background-color: #ffd9b1;
-}
-
-.error-banner {
-  text-align: center;
-  padding: 10px;
-
-  background-color: #fe7c96;
-}
+export default Banner;
