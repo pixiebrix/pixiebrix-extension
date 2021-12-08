@@ -23,6 +23,7 @@ import { useAsyncState } from "@/hooks/common";
 import { GridLoader } from "react-spinners";
 import { BuildDocumentBranch, DocumentElement } from "./documentBuilderTypes";
 import { produce } from "immer";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -31,13 +32,13 @@ type DocumentListProps = {
   buildDocumentBranch: BuildDocumentBranch;
 };
 
-const DocumentList: React.FC<DocumentListProps> = ({
+const DocumentListInternal: React.FC<DocumentListProps> = ({
   array,
   elementKey,
   config,
   buildDocumentBranch,
 }) => {
-  // Should be 'element' for any falsy value including empty strings.
+  // Should be 'element' for any falsy value including empty string.
   elementKey = elementKey || "element";
 
   const documentContext = useContext(DocumentContext);
@@ -76,5 +77,11 @@ const DocumentList: React.FC<DocumentListProps> = ({
     </>
   );
 };
+
+const DocumentList: React.FC<DocumentListProps> = (props) => (
+  <ErrorBoundary>
+    <DocumentListInternal {...props} />
+  </ErrorBoundary>
+);
 
 export default DocumentList;
