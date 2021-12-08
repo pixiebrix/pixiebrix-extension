@@ -56,10 +56,16 @@
     "user-icons/*"
   ],
   "browser_action": {
-    "default_title": "PixieBrix"
+    "default_title": "PixieBrix",
+    "default_icon": {
+      "16": "icons/inactive/logo16.png",
+      "32": "icons/inactive/logo32.png",
+      "48": "icons/inactive/logo48.png",
+      "128": "icons/inactive/logo128.png"
+    }
   },
   "background": {
-    "scripts": ["vendors.js", "background.js"]
+    "scripts": ["grayIconWhileLoading.js", "vendors.js", "background.js"]
   },
   "options_ui": {
     "page": "options.html",
