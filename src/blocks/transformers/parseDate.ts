@@ -20,18 +20,21 @@ import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { parseDate } from "chrono-node";
 
-function getLocalISOString(date: Date): string {
-  const offsetInMinutes = date.getTimezoneOffset();
-  let offsetMillis = offsetInMinutes * 60 * 1000;
-  const offsetSign = offsetMillis > 0 ? "-" : "+";
-  offsetMillis = Math.abs(offsetMillis);
+export function getLocalISOString(date: Date): string {
+  let offsetInMinutes = date.getTimezoneOffset();
+  const offsetSign =
+    // eslint-disable-next-line unicorn/no-nested-ternary -- eslint removes the parens
+    offsetInMinutes === 0 ? "Z" : offsetInMinutes > 0 ? "-" : "+";
+  offsetInMinutes = Math.abs(offsetInMinutes);
+  const offsetMillis = offsetInMinutes * 60 * 1000;
   const offsetHours = String(Math.trunc(offsetInMinutes / 60)).padStart(2, "0");
   const offsetMinutes = String(offsetInMinutes % 60).padStart(2, "0");
   const shiftedMillis = date.getTime() - offsetMillis;
   const shiftedDate = new Date(shiftedMillis);
   const isoString = shiftedDate.toISOString();
   const isoTrimmed = isoString.slice(0, -1);
-  return `${isoTrimmed}${offsetSign}${offsetHours}:${offsetMinutes}`;
+  const offset = offsetSign === "Z" ? "" : `${offsetHours}:${offsetMinutes}`;
+  return `${isoTrimmed}${offsetSign}${offset}`;
 }
 
 export class ParseDate extends Transformer {

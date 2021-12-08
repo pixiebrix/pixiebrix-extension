@@ -130,6 +130,7 @@
     "serialize-error": "^9.0.0",
     "simple-icons": "^5.8.0",
     "slugify": "^1.6.0",
+    "timezone-mock": "^1.2.2",
     "to-json-schema": "^0.2.5",
     "url-join": "^4.0.1",
     "urlpattern-polyfill": "^1.0.0-rc1",
