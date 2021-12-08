@@ -65,7 +65,7 @@
     }
   },
   "background": {
-    "scripts": ["vendors.js", "background.js"]
+    "scripts": ["grayIconWhileLoading.js", "vendors.js", "background.js"]
   },
   "options_ui": {
     "page": "options.html",
