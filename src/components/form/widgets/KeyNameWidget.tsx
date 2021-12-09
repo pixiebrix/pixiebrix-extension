@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,28 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.container {
-  border: 2px dashed darkgray;
-  border-radius: 0.25rem;
-  position: relative;
-  min-height: 50px;
+import { Form, InputGroup, FormControlProps } from "react-bootstrap";
+import React from "react";
 
-  padding-right: 15px;
+const KeyNameWidget: React.FC<FormControlProps> = (props) => (
+  <InputGroup>
+    <InputGroup.Prepend>
+      <InputGroup.Text>@</InputGroup.Text>
+    </InputGroup.Prepend>
+    <Form.Control {...props} />
+  </InputGroup>
+);
 
-  &:global(.container) {
-    padding-right: 30px;
-  }
-  &:global(.row) {
-    margin-left: -12px;
-    margin-right: -12px;
-  }
-}
-
-:global(.container) > .listContainer {
-  margin-left: -12px;
-  padding-left: 15px;
-}
-
-.inlineWrapper {
-  display: inline-block;
-}
+export default KeyNameWidget;

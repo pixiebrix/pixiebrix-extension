@@ -16,6 +16,7 @@
  */
 
 import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
+import { Expression } from "@/core";
 
 export function createNewElement(elementType: DocumentElementType) {
   const element: DocumentElement = {
@@ -57,6 +58,13 @@ export function createNewElement(elementType: DocumentElementType) {
 
     case "button":
       element.config.title = "Click me";
+      break;
+
+    case "list":
+      element.config.element = {
+        __type__: "defer",
+        __value__: createNewElement("text"),
+      } as Expression<DocumentElement, "defer">;
       break;
 
     default:

@@ -21,11 +21,16 @@ import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
 import { Card, Col, Container, Row } from "react-bootstrap";
-import { DocumentComponent, DocumentElement } from "./documentBuilderTypes";
+import {
+  BuildDocumentBranch,
+  DocumentComponent,
+  DocumentElement,
+} from "./documentBuilderTypes";
 import DocumentButton from "@/components/documentBuilder/DocumentButton";
 import useNotifications from "@/hooks/useNotifications";
 import documentTreeStyles from "./documentTree.module.scss";
 import cx from "classnames";
+import DocumentList from "@/components/documentBuilder/DocumentList";
 
 const headerComponents = {
   header_1: "h1",
@@ -46,7 +51,7 @@ const UnknownType: React.FC<{ componentType: string }> = ({
 export function getComponentDefinition(
   element: DocumentElement
 ): DocumentComponent {
-  const componentType = String(element.type);
+  const componentType = element.type;
   const config = get(element, "config", {} as UnknownObject);
 
   switch (componentType) {
@@ -122,6 +127,20 @@ export function getComponentDefinition(
           onClick: onClick?.__value__,
           ...props,
         },
+      };
+    }
+
+    case "list": {
+      const props = {
+        array: config.array,
+        elementKey: config.elementKey,
+        config: config.element,
+        buildDocumentBranch,
+      };
+
+      return {
+        Component: DocumentList,
+        props,
       };
     }
 
@@ -265,12 +284,40 @@ export function getPreviewComponentDefinition(
       return { Component: PreviewComponent };
     }
 
+    case "list": {
+      const arrayValue = isExpression(config.array)
+        ? config.array.__value__
+        : String(config.array);
+      const PreviewComponent: React.FC<PreviewComponentProps> = ({
+        children,
+        className,
+        ...restPreviewProps
+      }) => (
+        <div
+          className={cx(
+            className,
+            documentTreeStyles.container,
+            documentTreeStyles.listContainer
+          )}
+          {...restPreviewProps}
+        >
+          <div className="text-muted">List: {arrayValue}</div>
+          <div className="text-muted">
+            Element key: @{config.elementKey || "element"}
+          </div>
+          {children}
+        </div>
+      );
+
+      return { Component: PreviewComponent };
+    }
+
     default:
       return getComponentDefinition(element);
   }
 }
 
-export function buildDocumentBranch(root: DocumentElement): DocumentComponent {
+export const buildDocumentBranch: BuildDocumentBranch = (root) => {
   const componentDefinition = getComponentDefinition(root);
   if (root.children?.length > 0) {
     componentDefinition.props.children = root.children.map((child, i) => {
@@ -280,4 +327,4 @@ export function buildDocumentBranch(root: DocumentElement): DocumentComponent {
   }
 
   return componentDefinition;
-}
+};

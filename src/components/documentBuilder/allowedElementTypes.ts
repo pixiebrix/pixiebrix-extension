@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
+import {
+  DOCUMENT_ELEMENT_TYPES,
+  DocumentElement,
+  DocumentElementType,
+} from "./documentBuilderTypes";
 
 export const ROOT_ELEMENT_TYPES: DocumentElementType[] = [
   "header_1",
@@ -26,11 +30,12 @@ export const ROOT_ELEMENT_TYPES: DocumentElementType[] = [
   "card",
   "block",
   "button",
+  "list",
 ];
 
 const allowedChildTypes: Record<string, DocumentElementType[]> = {
-  container: ["row"],
-  row: ["column"],
+  container: ["row", "list"],
+  row: ["column", "list"],
   column: [
     "header_1",
     "header_2",
@@ -39,6 +44,7 @@ const allowedChildTypes: Record<string, DocumentElementType[]> = {
     "card",
     "block",
     "button",
+    "list",
   ],
   card: [
     "header_1",
@@ -48,7 +54,10 @@ const allowedChildTypes: Record<string, DocumentElementType[]> = {
     "container",
     "block",
     "button",
+    "list",
   ],
+  // Any element we can add to the list
+  list: (DOCUMENT_ELEMENT_TYPES as unknown) as DocumentElementType[],
 };
 
 export function getAllowedChildTypes(

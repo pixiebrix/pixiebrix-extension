@@ -16,6 +16,7 @@
  */
 
 import { UnknownObject } from "@/types";
+import { Expression } from "@/core";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header_1",
@@ -28,17 +29,36 @@ export const DOCUMENT_ELEMENT_TYPES = [
   "card",
   "block",
   "button",
+  "list",
 ] as const;
 
 export type DocumentElementType = typeof DOCUMENT_ELEMENT_TYPES[number];
 
-export type DocumentElement = {
-  type: DocumentElementType;
-  config: UnknownObject;
+export type DocumentElement<
+  TType extends DocumentElementType = DocumentElementType,
+  TConfig = UnknownObject
+> = {
+  type: TType;
+  config: TConfig;
   children?: DocumentElement[];
 };
+
+type ListConfig = {
+  array: Expression;
+  elementKey?: string;
+  element: Expression<DocumentElement, "defer">;
+};
+export type ListDocumentElement = DocumentElement<"list", ListConfig>;
+
+export function isListDocument(
+  element: DocumentElement
+): element is ListDocumentElement {
+  return element.type === "list";
+}
 
 export type DocumentComponent = {
   Component: React.ElementType;
   props?: UnknownObject | undefined;
 };
+
+export type BuildDocumentBranch = (root: DocumentElement) => DocumentComponent;

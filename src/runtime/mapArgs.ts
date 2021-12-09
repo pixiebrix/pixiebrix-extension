@@ -37,7 +37,7 @@ const expressionTypes: ExpressionType[] = [
   "defer",
 ];
 
-type Args = string | UnknownObject | UnknownObject[];
+export type Args = string | UnknownObject | UnknownObject[];
 
 /**
  * Returns true if value represents an explicit expression

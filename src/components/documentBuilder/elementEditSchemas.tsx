@@ -95,6 +95,16 @@ export function getElementEditSchemas(
       return [titleEdit, variantEdit, sizeEdit, getClassNameEdit(elementName)];
     }
 
+    case "list": {
+      const arraySourceEdit: SchemaFieldProps = {
+        name: joinName(elementName, "config", "array"),
+        schema: { type: "array" },
+        label: "Array",
+      };
+
+      return [arraySourceEdit];
+    }
+
     default:
       return [getClassNameEdit(elementName)];
   }

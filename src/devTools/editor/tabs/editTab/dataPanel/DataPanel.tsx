@@ -22,7 +22,7 @@ import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
 import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
-import { Alert, Nav, Tab } from "react-bootstrap";
+import { Alert, Button, Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./DataPanel.module.scss";
 import FormPreview from "@/components/formBuilder/FormPreview";
@@ -48,6 +48,7 @@ import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel
 import DocumentPreview from "@/components/documentBuilder/DocumentPreview";
 import documentBuilderSelectors from "@/devTools/editor/slices/documentBuilderSelectors";
 import { actions as documentBuilderActions } from "@/devTools/editor/slices/documentBuilderSlice";
+import copy from "copy-to-clipboard";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -229,6 +230,14 @@ const DataPanel: React.FC<{
                   visible to developers
                 </div>
                 <JsonTree data={block ?? {}} />
+                <Button
+                  onClick={() => {
+                    copy(JSON.stringify(block, undefined, 2));
+                  }}
+                  size="sm"
+                >
+                  Copy JSON
+                </Button>
               </DataTab>
             </>
           )}

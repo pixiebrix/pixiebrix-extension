@@ -16,10 +16,9 @@
  */
 
 import React, { useMemo } from "react";
-import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { CustomFieldWidget, FieldProps } from "@/components/form/FieldTemplate";
 import BlockConfigurationV1 from "@/devTools/editor/tabs/effect/v1/BlockConfiguration";
 import BlockConfigurationV3 from "@/devTools/editor/tabs/effect/v3/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
@@ -31,15 +30,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./EditorNodeConfigPanel.module.scss";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
-
-const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
-  <InputGroup>
-    <InputGroup.Prepend>
-      <InputGroup.Text>@</InputGroup.Text>
-    </InputGroup.Prepend>
-    <Form.Control {...props} />
-  </InputGroup>
-);
+import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 
 const PopoverOutputLabel: React.FC<{
   description: string;
@@ -106,7 +97,7 @@ const EditorNodeConfigPanel: React.FC<{
             name={`${blockFieldName}.outputKey`}
             label={outputKeyLabel}
             disabled={isOutputDisabled}
-            as={OutputKeyWidget}
+            as={KeyNameWidget}
           />
         </Col>
         <Col sm="auto">
