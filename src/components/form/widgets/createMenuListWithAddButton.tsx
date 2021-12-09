@@ -17,25 +17,10 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import {
-  GroupBase,
-  MenuListComponentProps,
-  OptionTypeBase,
-} from "react-select";
-
-// The TS typings (v 4.0.18, the latest available version) do not exactly correspond
-// to the actual implementation of react-select that we use (v4.3.1). Need to adjust.
-type MenuListProps<
-  OptionType extends OptionTypeBase,
-  IsMulti extends boolean,
-  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
-> = MenuListComponentProps<OptionType, IsMulti, GroupType> & {
-  /** Props to be passed to the menu-list wrapper. */
-  innerProps: unknown;
-};
+import { GroupBase, MenuListProps } from "react-select";
 
 type MenuListWithAddButtonProps<
-  OptionType extends OptionTypeBase,
+  OptionType,
   IsMulti extends boolean,
   GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
 > = MenuListProps<OptionType, IsMulti, GroupType> & {
@@ -43,7 +28,7 @@ type MenuListWithAddButtonProps<
 };
 
 const MenuListWithAddButton = <
-  OptionType extends OptionTypeBase,
+  OptionType,
   IsMulti extends boolean,
   GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
 >(
@@ -62,6 +47,7 @@ const MenuListWithAddButton = <
 
   return (
     <div
+      // @ts-expect-error TS2322 Maybe there's a mismatch in types
       style={getStyles("menuList", props)}
       className={cx(
         {
@@ -89,7 +75,7 @@ const MenuListWithAddButton = <
  */
 const createMenuListWithAddButton = (onAddClick: () => void) => {
   const MenuList = <
-    OptionType extends OptionTypeBase,
+    OptionType,
     IsMulti extends boolean,
     GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
   >(
