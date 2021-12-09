@@ -39,7 +39,9 @@ function renderActions(
           [styles.finalActions]: isFinal,
         })}
       >
-        <button type="button" onClick={onClick} className={styles.insertButton}>
+        <button type="button" onClick={onClick}>
+          {/* Don't replace this with `faPlus` because exact  centering of the
+          plus in a circle is only possible at certain pre-set sizes */}
           <FontAwesomeIcon icon={faPlusCircle} />
         </button>
       </div>
