@@ -53,6 +53,7 @@ const DocumentListInternal: React.FC<DocumentListProps> = ({
 
           return (mapArgs(config, elementContext.options.ctxt, {
             implicitRender: null,
+            autoescape: true,
           }) as Promise<DocumentElement>).then((documentElement) => ({
             documentElement,
             elementContext,
