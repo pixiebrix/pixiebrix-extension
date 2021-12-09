@@ -32,6 +32,7 @@ import {
   pickBy,
   isPlainObject,
   compact,
+  unary,
 } from "lodash";
 import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
@@ -498,4 +499,12 @@ export async function runInMillis<TResult>(
   }
 
   return value as TResult;
+}
+
+/** Loop an iterable with the ability to place `await` in the loop itself */
+export async function asyncLoop<Item>(
+  iterable: Iterable<Item>,
+  iteratee: (item: Item) => Promise<void>
+): Promise<void> {
+  await Promise.all([...iterable].map(unary(iteratee)));
 }

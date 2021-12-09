@@ -22,8 +22,7 @@ import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
-import { sleep } from "@/utils";
-import { partition, zip } from "lodash";
+import { asyncLoop, sleep } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
 import { MessengerMeta } from "webext-messenger";
@@ -32,13 +31,11 @@ import {
   linkChildTab,
   runBlockInContentScript,
 } from "@/contentScript/messenger/api";
+import { Target } from "@/types";
+import { TabId } from "@/background/devtools/contract";
+import { RemoteExecutionError } from "@/blocks/errors";
 
 const TOP_LEVEL_FRAME = 0;
-
-interface Target {
-  tabId: number;
-  frameId: number;
-}
 
 const tabToOpener = new Map<number, number>();
 const tabToTarget = new Map<number, number>();
@@ -57,6 +54,7 @@ async function waitNonceReady(
   nonce: string,
   { maxWaitMillis = 10_000, isAvailable }: WaitOptions = {}
 ) {
+  console.debug(`Waiting for frame with nonce ${nonce} to be ready`);
   const startTime = Date.now();
 
   const isReady = async () => {
@@ -115,124 +113,85 @@ export async function runBlockInOpener(
   this: MessengerMeta,
   request: RunBlock
 ): Promise<unknown> {
-  const [sender] = this.trace;
-  const opener = tabToOpener.get(sender.tab.id);
+  const sourceTabId = this.trace[0].tab.id;
 
-  if (!opener) {
+  if (!tabToOpener.has(sourceTabId)) {
     throw new BusinessError("Sender tab has no opener");
   }
 
-  return runBlockInContentScript(
-    // For now, only support top-level frame as opener
-    { tabId: opener, frameId: TOP_LEVEL_FRAME },
-    {
-      sourceTabId: sender.tab.id,
-      ...request,
-    }
-  );
+  const opener = {
+    tabId: tabToOpener.get(sourceTabId),
+  };
+  const subRequest = { ...request, sourceTabId };
+  return runBlockInContentScript(opener, subRequest);
 }
 
 export async function runBlockInBroadcast(
   this: MessengerMeta,
   request: RunBlock
-): Promise<unknown> {
-  const [sender] = this.trace;
-  const tabIds = Object.entries(tabReady)
-    .filter(
-      ([tabId, ready]) =>
-        tabId !== String(sender.tab.id) && ready[TOP_LEVEL_FRAME]
-    )
-    .map(([tabId]) => Number.parseInt(tabId, 10));
+): Promise<unknown[]> {
+  const sourceTabId = this.trace[0].tab.id;
+  const subRequest = { ...request, sourceTabId };
 
-  console.debug(`Broadcasting to ${tabIds.length} ready top-level frames`, {
-    // Convert to string for consistency with the types of `ready`
-    sender: String(sender.tab.id),
-    ready: Object.keys(tabReady),
-  });
+  const fulfilled = new Map<TabId, unknown>();
+  const rejected = new Map<TabId, unknown>();
 
-  const results = await Promise.allSettled(
-    tabIds.map(async (tabId) =>
-      runBlockInContentScript(
-        {
-          tabId,
-          // For now, only support top-level frame as opener
-          frameId: TOP_LEVEL_FRAME,
-        },
-        {
-          ...request,
-          sourceTabId: sender.tab.id,
-        }
-      )
-    )
+  await asyncLoop(
+    Object.entries(tabReady),
+    async ([tab, { [TOP_LEVEL_FRAME]: isReady }]): Promise<void> => {
+      const tabId = Number(tab);
+      if (tabId === sourceTabId || !isReady) {
+        return;
+      }
+
+      try {
+        const response = runBlockInContentScript({ tabId }, subRequest);
+        fulfilled.set(tabId, await response);
+      } catch (error) {
+        rejected.set(tabId, error);
+      }
+    }
   );
 
-  const [fulfilled, rejected] = partition(
-    zip(tabIds, results),
-    ([, result]) => result.status === "fulfilled"
-  );
-
-  if (rejected.length > 0) {
-    console.warn(`Broadcast rejected for ${rejected.length} tabs`, {
-      reasons: Object.fromEntries(
-        rejected.map(([tabId, result]) => [
-          tabId,
-          (result as PromiseRejectedResult).reason,
-        ])
-      ),
-    });
+  if (rejected.size > 0) {
+    console.warn(`Broadcast rejected for ${rejected.size} tabs`, { rejected });
   }
 
-  return fulfilled.map(
-    ([, result]) => (result as PromiseFulfilledResult<unknown>).value
-  );
+  return [...fulfilled].map(([, value]) => value);
 }
 
 export async function runBlockInFrameNonce(
   this: MessengerMeta,
-  request: RunBlock
+  { nonce, ...request }: RunBlock
 ): Promise<unknown> {
-  const [sender] = this.trace;
-  const { nonce, ...payload } = request;
+  const sourceTabId = this.trace[0].tab.id;
 
-  console.debug(`Waiting for frame with nonce ${nonce} to be ready`);
   await waitNonceReady(nonce, {
-    isAvailable: payload.options.isAvailable,
+    isAvailable: request.options.isAvailable,
   });
 
   const target = nonceToTarget.get(nonce);
-  console.debug(
-    `Sending RUN_BLOCK to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
-  );
-  return runBlockInContentScript(target, {
-    sourceTabId: sender.tab.id,
-    ...request,
-  });
+  const subRequest = { ...request, sourceTabId };
+  return runBlockInContentScript(target, subRequest);
 }
 
 export async function runBlockInTarget(
   this: MessengerMeta,
   request: RunBlock
 ): Promise<unknown> {
-  const [sender] = this.trace;
-  const target = tabToTarget.get(sender.tab.id);
+  const sourceTabId = this.trace[0].tab.id;
+  const target = tabToTarget.get(sourceTabId);
 
   if (!target) {
     throw new BusinessError("Sender tab has no target");
   }
 
-  console.debug(`Waiting for target tab ${target} to be ready`);
   // For now, only support top-level frame as target
+  console.debug(`Waiting for target tab ${target} to be ready`);
   await waitReady({ tabId: target, frameId: 0 });
-  console.debug(
-    `Sending RUN_BLOCK to target tab ${target} (sender=${sender.tab.id})`
-  );
-  return runBlockInContentScript(
-    { tabId: target, frameId: 0 },
-    {
-      sourceTabId: sender.tab.id,
-      ...request,
-    }
-  );
+
+  const subRequest = { ...request, sourceTabId };
+  return runBlockInContentScript({ tabId: target }, subRequest);
 }
 
 export async function openTab(
@@ -244,6 +203,8 @@ export async function openTab(
   const tab = await browser.tabs.create({ ...createProperties, openerTabId });
 
   // FIXME: include frame information here
+  // Note: This is already handled natively
+  console.log("Linking tab to opener and target");
   tabToTarget.set(openerTabId, tab.id);
   tabToOpener.set(tab.id, openerTabId);
 }
@@ -278,6 +239,8 @@ export async function markTabAsReady(this: MessengerMeta) {
 
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {
   if (tab.openerTabId) {
+    console.log("Linking tab to opener and target");
+
     tabToOpener.set(tab.id, tab.openerTabId);
     tabToTarget.set(tab.openerTabId, tab.id);
     linkChildTab({ tabId: tab.openerTabId, frameId: 0 }, tab.id);
@@ -306,15 +269,31 @@ export async function whoAmI(
   return this.trace[0];
 }
 
+interface ServerResponse {
+  data?: JsonObject;
+  error?: JsonObject;
+}
+
 export async function executeOnServer({ blockId, blockArgs }: RunBlock) {
   console.debug(`Running ${blockId} on the server`);
-  return (await getLinkedApiClient()).post<{
-    data?: JsonObject;
-    error?: JsonObject;
-  }>("/api/run/", {
+  const client = await getLinkedApiClient();
+
+  const {
+    data: { data, error },
+  } = await client.post<ServerResponse>("/api/run/", {
     id: blockId,
     args: blockArgs,
   });
+
+  if (error) {
+    throw new RemoteExecutionError(
+      "Error while executing brick remotely",
+      // TODO: Ensure this error is reaching the caller in CS
+      error
+    );
+  }
+
+  return data;
 }
 
 export default initExecutor;
