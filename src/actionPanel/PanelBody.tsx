@@ -41,6 +41,7 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
       );
     }
 
+    // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
     const { blockId, ctxt, args } = payload;
     console.debug("Render panel body", payload);
     const block = await blockRegistry.lookup(blockId);

@@ -18,13 +18,17 @@
 import React, { useContext } from "react";
 import DocumentContext from "./DocumentContext";
 import { UnknownObject } from "@/types";
-import { Args, mapArgs } from "@/runtime/mapArgs";
+import { Args } from "@/runtime/mapArgs";
 import { useAsyncState } from "@/hooks/common";
 import { GridLoader } from "react-spinners";
 import { BuildDocumentBranch, DocumentElement } from "./documentBuilderTypes";
 import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { getErrorMessage } from "@/errors";
+import { runMapArgs } from "@/contentScript/messenger/api";
+import { isNullOrBlank } from "@/utils";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { whoAmI } from "@/background/messenger/api";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -40,29 +44,48 @@ const DocumentListInternal: React.FC<DocumentListProps> = ({
   buildDocumentBranch,
 }) => {
   // Should be 'element' for any falsy value including empty string.
-  elementKey = elementKey || "element";
+  elementKey = isNullOrBlank(elementKey) ? "element" : elementKey;
 
   const documentContext = useContext(DocumentContext);
 
-  const [rootDefinitions, isLoading, error] = useAsyncState(
-    async () =>
-      Promise.all(
-        array.map(async (itemData) => {
-          const elementContext = produce(documentContext, (draft) => {
-            draft.options.ctxt[`@${elementKey}`] = itemData;
-          });
+  const [rootDefinitions, isLoading, error] = useAsyncState(async () => {
+    const me = await whoAmI();
+    const target = { tabId: me.tab.id, frameId: 0 };
 
-          return (mapArgs(config, elementContext.options.ctxt, {
-            implicitRender: null,
-            autoescape: true,
-          }) as Promise<DocumentElement>).then((documentElement) => ({
-            documentElement,
-            elementContext,
-          }));
-        })
-      ),
-    [array, elementKey, config, documentContext]
-  );
+    const key = `@${elementKey}`;
+
+    if (
+      Object.prototype.hasOwnProperty.call(documentContext.options.ctxt, key)
+    ) {
+      documentContext.options.logger.warn(
+        `List key ${key} shadows an existing key`
+      );
+    }
+
+    return Promise.all(
+      array.map(async (itemData) => {
+        const elementContext = produce(documentContext, (draft) => {
+          // eslint-disable-next-line security/detect-object-injection -- we appended a @ to the front of key and are using immer
+          draft.options.ctxt[key] = itemData;
+        });
+
+        const documentElement = (await runMapArgs(
+          target,
+          // TODO: pass runtime version via DocumentContext instead of hardcoding it
+          {
+            config,
+            context: elementContext.options.ctxt,
+            options: apiVersionOptions("v3"),
+          }
+        )) as DocumentElement;
+
+        return {
+          documentElement,
+          elementContext,
+        };
+      })
+    );
+  }, [array, elementKey, config, documentContext]);
 
   if (isLoading) {
     return <GridLoader />;
