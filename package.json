@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.4.10-alpha.1",
+  "version": "1.4.11-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -49,6 +49,7 @@
     "bootstrap-icons": "^1.5.0",
     "bootstrap-switch-button-react": "^1.2.0",
     "canvas-confetti": "^1.4.0",
+    "chrono-node": "^2.3.4",
     "classnames": "^2.3.1",
     "connected-react-router": "^6.9.1",
     "copy-to-clipboard": "^3.3.1",
@@ -129,6 +130,7 @@
     "serialize-error": "^9.0.0",
     "simple-icons": "^5.8.0",
     "slugify": "^1.6.0",
+    "timezone-mock": "^1.2.2",
     "to-json-schema": "^0.2.5",
     "url-join": "^4.0.1",
     "urlpattern-polyfill": "^1.0.0-rc1",

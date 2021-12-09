@@ -21,30 +21,39 @@ import EditorNode, {
   EditorNodeProps,
 } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowDown,
-  faPlus,
-  faPlusCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { IBlock, RegistryId, UUID } from "@/core";
 import BlockModal from "@/components/brickModal/BrickModal";
 import useBrickRecommendations from "@/devTools/editor/tabs/editTab/useBrickRecommendations";
 import cx from "classnames";
 
-function renderAppend(onClick: () => void, addRightMargin: boolean) {
+function renderActions(
+  onClick: () => void,
+  { isFinal }: { isFinal?: boolean } = {}
+) {
   return (
-    <div
-      className={cx(styles.appendContainer, {
-        [styles.addRightMargin]: addRightMargin,
-      })}
-    >
-      <FontAwesomeIcon
-        icon={faArrowDown}
-        size="lg"
-        className={styles.appendArrow}
-      />
-      <EditorNode muted title="Add" icon={faPlus} onClick={onClick} />
-    </div>
+    // Don't use bootstrap styling
+    <>
+      <div
+        className={cx(styles.actions, {
+          [styles.finalActions]: isFinal,
+        })}
+      >
+        <button type="button" onClick={onClick}>
+          {/* Don't replace this with `faPlus` because exact  centering of the
+          plus in a circle is only possible at certain pre-set sizes */}
+          <FontAwesomeIcon icon={faPlusCircle} />
+        </button>
+      </div>
+
+      {isFinal && (
+        <p className={styles.appendInfo}>
+          <small className="text-muted">
+            Add more bricks with the plus button
+          </small>
+        </p>
+      )}
+    </>
   );
 }
 
@@ -77,25 +86,6 @@ const EditorNodeLayout: React.FC<{
 }) => {
   const recommendations: RegistryId[] = useBrickRecommendations();
 
-  function renderInsert(onClick: () => void, addRightMargin: boolean) {
-    return (
-      // Don't use bootstrap styling
-      <button
-        type="button"
-        onClick={onClick}
-        className={cx(styles.insertButton, {
-          [styles.addRightMargin]: addRightMargin,
-        })}
-      >
-        <FontAwesomeIcon
-          icon={faPlusCircle}
-          size="lg"
-          className={styles.plus}
-        />
-      </button>
-    );
-  }
-
   const canMoveAnything = nodes.length > 2;
 
   return (
@@ -124,9 +114,7 @@ const EditorNodeLayout: React.FC<{
               {nodeId !== FOUNDATION_NODE_ID && (
                 <BlockModal
                   bricks={relevantBlocksToAdd}
-                  renderButton={(onClick) =>
-                    renderInsert(onClick, canMoveAnything)
-                  }
+                  renderButton={(onClick) => renderActions(onClick)}
                   recommendations={recommendations}
                   selectCaption={addBrickCaption}
                   onSelect={(block) => {
@@ -145,7 +133,7 @@ const EditorNodeLayout: React.FC<{
       {showAppend && (
         <BlockModal
           bricks={relevantBlocksToAdd}
-          renderButton={(onClick) => renderAppend(onClick, canMoveAnything)}
+          renderButton={(onClick) => renderActions(onClick, { isFinal: true })}
           recommendations={recommendations}
           selectCaption={addBrickCaption}
           onSelect={addBlock}

@@ -147,9 +147,7 @@ const BrickIcon: React.FunctionComponent<{
   const cssSize = `${sizeMultiplier}em`;
 
   return listing?.image ? (
-    <svg width={cssSize} height={cssSize}>
-      <image xlinkHref={listing.image.url} width={cssSize} height={cssSize} />
-    </svg>
+    <img width={cssSize} height={cssSize} src={listing.image.url} alt="Icon" />
   ) : (
     <FontAwesomeIcon
       icon={listingFaIcon ?? getDefaultBrickIcon(brick, type)}

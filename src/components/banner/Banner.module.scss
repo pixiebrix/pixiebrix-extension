@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,20 +14,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+.root {
+  text-align: center;
+  padding: 10px;
+  width: 100%;
+  flex: none;
+}
 
-import ReactDOM from "react-dom";
-import React from "react";
+.success {
+  background-color: #bfd7bf;
+}
 
-import Panel from "@/devTools/Panel";
+.info {
+  background-color: #8bcaff;
+}
 
-import "@/development/darkMode";
-import "@/telemetry/reportUncaughtErrors";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/vendors/overrides.scss";
-import "@/devTools/Panel.scss";
+.warning {
+  background-color: #ffd9b1;
+}
 
-import initGoogle from "@/contrib/google/initGoogle";
-
-initGoogle();
-
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+.danger {
+  background-color: #fe7c96;
+}

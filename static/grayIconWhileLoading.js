@@ -15,19 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ReactDOM from "react-dom";
-import React from "react";
+/** @file This is a standalone background entry point that must run independendently of the rest of extension */
 
-import Panel from "@/devTools/Panel";
+const { icons } = chrome.runtime.getManifest();
+const inactiveIcons = {};
+for (const [size, path] of Object.entries(icons)) {
+  // eslint-disable-next-line security/detect-object-injection -- Safe
+  inactiveIcons[size] = path.replace("icons", "icons/inactive");
+}
 
-import "@/development/darkMode";
-import "@/telemetry/reportUncaughtErrors";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/vendors/overrides.scss";
-import "@/devTools/Panel.scss";
-
-import initGoogle from "@/contrib/google/initGoogle";
-
-initGoogle();
-
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+chrome.browserAction.setIcon({ path: inactiveIcons });
+/* `activateBrowserActionIcon()` will later fix the icon if the file runs */
