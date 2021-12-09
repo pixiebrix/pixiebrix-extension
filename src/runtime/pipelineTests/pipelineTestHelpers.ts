@@ -170,7 +170,6 @@ class DeferBlock extends Block {
           [`@${elementKey}`]: data,
         };
         return mapArgs(element, elementContext, {
-          implicitRender: null,
           ...apiVersionOptions("v3"),
         });
       })

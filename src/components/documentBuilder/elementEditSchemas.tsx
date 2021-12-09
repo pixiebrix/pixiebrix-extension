@@ -1,7 +1,4 @@
-import {
-  DocumentElement,
-  PipelineDocumentElement,
-} from "./documentBuilderTypes";
+import { DocumentElement } from "./documentBuilderTypes";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { joinName } from "@/utils";
 

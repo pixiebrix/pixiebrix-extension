@@ -121,7 +121,7 @@ const DocumentListInternal: React.FC<DocumentListProps> = ({
 };
 
 const DocumentList: React.FC<DocumentListProps> = (props) => (
-  <ErrorBoundary>
+  <ErrorBoundary errorContext="List element.">
     <DocumentListInternal {...props} />
   </ErrorBoundary>
 );

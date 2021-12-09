@@ -184,12 +184,17 @@ export type MapOptions = {
   /**
    * Render method for v1-v2 implicit runtime behavior
    */
-  implicitRender: Renderer | null;
+  implicitRender?: Renderer | null;
 
   /**
    * True to auto-escape the values.
    */
-  autoescape: boolean | null;
+  autoescape?: boolean | null;
+};
+
+const defaultMapOptions: MapOptions = {
+  implicitRender: null,
+  autoescape: true,
 };
 
 /**
@@ -198,8 +203,9 @@ export type MapOptions = {
 export async function mapArgs(
   config: Args,
   ctxt: UnknownObject,
-  { implicitRender = null, autoescape = true }: MapOptions
+  options?: MapOptions
 ): Promise<unknown> {
+  const { implicitRender, autoescape } = { ...defaultMapOptions, ...options };
   if (implicitRender) {
     return renderImplicit(config, ctxt, implicitRender);
   }

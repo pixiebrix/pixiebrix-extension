@@ -25,12 +25,17 @@ import { whoAmI } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import PanelBody from "@/actionPanel/PanelBody";
 import { RendererPayload } from "@/runtime/runtimeTypes";
+import { mapArgs } from "@/runtime/mapArgs";
+
+type DocumentBlockProps = { pipeline: BlockPipeline };
 
 /**
  * A React component that messages the contentScript to run a pipeline and then shows the result
  */
-const DocumentBlock: React.FC<{ pipeline: BlockPipeline }> = ({ pipeline }) => {
-  const context = useContext(DocumentContext);
+const DocumentBlock: React.FC<DocumentBlockProps> = ({ pipeline }) => {
+  const {
+    options: { ctxt },
+  } = useContext(DocumentContext);
 
   const [
     payload,
@@ -38,16 +43,30 @@ const DocumentBlock: React.FC<{ pipeline: BlockPipeline }> = ({ pipeline }) => {
     error,
   ] = useAsyncState<RendererPayload>(async () => {
     const me = await whoAmI();
+    const resolvedPipeline: BlockPipeline = (await mapArgs(
+      pipeline,
+      ctxt
+    )) as BlockPipeline;
+
+    console.log({ resolvedPipeline });
+
     // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
     return runRendererPipeline(
       { tabId: me.tab.id, frameId: 0 },
       {
         nonce: uuidv4(),
-        context: context.options.ctxt,
-        pipeline,
+        context: ctxt,
+        pipeline: resolvedPipeline,
       }
     );
   }, [pipeline]);
+
+  console.log("DocumentBlock", {
+    pipeline,
+    ctxt,
+    payload,
+    error,
+  });
 
   if (isLoading) {
     return <PanelBody payload={null} />;

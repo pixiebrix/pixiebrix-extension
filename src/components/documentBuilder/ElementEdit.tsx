@@ -89,12 +89,6 @@ const ElementEdit: React.FC<ElementEditProps> = ({
   const isList = isListDocument(documentElement);
   const isPipeline = isPipelineDocument(documentElement);
 
-  if (isPipeline) {
-    const blockId = documentElement.config.pipeline.__value__[0]?.id;
-    const block = blocksMap[blockId]?.block;
-    console.log("ElementEdit.block", { block });
-  }
-
   const onElementTypeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     const nextType = event.target.value as DocumentElementType;
 
@@ -109,8 +103,6 @@ const ElementEdit: React.FC<ElementEditProps> = ({
   };
 
   const onPipelineBlockSelected = (block: IBlock) => {
-    console.log("block selected", block);
-
     const blockConfig: BlockConfig = {
       id: block.id,
       instanceId: uuidv4(),
@@ -177,27 +169,36 @@ const ElementEdit: React.FC<ElementEditProps> = ({
             </>
           )}
 
-          {isPipeline && (
-            <>
-              <Row>
-                <Col lg={3}>
-                  <BrickModal
-                    bricks={Object.values(blocksMap)
-                      .filter((x) => x.type === "renderer")
-                      .map((x) => x.block)}
-                    onSelect={onPipelineBlockSelected}
-                  />
-                </Col>
-                <Col>
-                  {documentElement.config.pipeline.__value__[0]?.id ?? "empty"}
-                </Col>
-              </Row>
-              <ElementBlockEdit
-                blockConfig={documentElement.config.pipeline.__value__[0]}
-                blockConfigName={`${elementName}.config.pipeline.__value__.0`}
-              />
-            </>
+          {isPipeline && documentElement.config.pipeline.__value__.length > 1 && (
+            <Row>
+              <Col>
+                Use Workshop to edit a pipeline made of multiple bricks.
+              </Col>
+            </Row>
           )}
+          {isPipeline &&
+            documentElement.config.pipeline.__value__.length === 1 && (
+              <>
+                <Row>
+                  <Col>
+                    <BrickModal
+                      bricks={Object.values(blocksMap)
+                        .filter((x) => x.type === "renderer")
+                        .map((x) => x.block)}
+                      onSelect={onPipelineBlockSelected}
+                    />
+                  </Col>
+                  <Col>
+                    {documentElement.config.pipeline.__value__[0]?.id ??
+                      "empty"}
+                  </Col>
+                </Row>
+                <ElementBlockEdit
+                  blockConfig={documentElement.config.pipeline.__value__[0]}
+                  blockConfigName={`${elementName}.config.pipeline.__value__.0`}
+                />
+              </>
+            )}
         </Col>
       </Row>
       <Row>

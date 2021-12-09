@@ -102,15 +102,10 @@ export function getComponentDefinition(
     }
 
     case "pipeline": {
-      const { pipeline } = config;
-      if (typeof pipeline !== "undefined" && !isPipelineExpression(pipeline)) {
-        throw new Error("Expected pipeline expression for pipeline");
-      }
-
       return {
         Component: BlockPipeline,
         props: {
-          pipeline: pipeline?.__value__,
+          pipeline: config.pipeline,
         },
       };
     }
@@ -251,7 +246,9 @@ export function getPreviewComponentDefinition(
       }) => (
         <div className={cx(className)} {...restPreviewProps}>
           <h3>Block</h3>
-          <p>{pipeline.__value__[0].id}</p>
+          {pipeline.__value__.map(({ id }) => (
+            <p key={id}>{id}</p>
+          ))}
         </div>
       );
 
