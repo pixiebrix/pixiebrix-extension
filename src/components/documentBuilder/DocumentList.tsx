@@ -24,6 +24,7 @@ import { GridLoader } from "react-spinners";
 import { BuildDocumentBranch, DocumentElement } from "./documentBuilderTypes";
 import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { getErrorMessage } from "@/errors";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -43,7 +44,7 @@ const DocumentListInternal: React.FC<DocumentListProps> = ({
 
   const documentContext = useContext(DocumentContext);
 
-  const [rootDefinitions, isLoading] = useAsyncState(
+  const [rootDefinitions, isLoading, error] = useAsyncState(
     async () =>
       Promise.all(
         array.map(async (itemData) => {
@@ -63,9 +64,26 @@ const DocumentListInternal: React.FC<DocumentListProps> = ({
     [array, elementKey, config, documentContext]
   );
 
-  return isLoading ? (
-    <GridLoader />
-  ) : (
+  if (isLoading) {
+    return <GridLoader />;
+  }
+
+  if (error) {
+    return (
+      <details>
+        <summary className="text-danger">{getErrorMessage(error)}</summary>
+
+        <pre className="mt-2">
+          {((error as Error).stack ?? "").replaceAll(
+            `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
+            ""
+          )}
+        </pre>
+      </details>
+    );
+  }
+
+  return (
     <>
       {rootDefinitions.map(({ documentElement, elementContext }, i) => {
         const { Component, props } = buildDocumentBranch(documentElement);
