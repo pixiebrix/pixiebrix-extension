@@ -91,7 +91,7 @@ async function messageHandler(event: MessageEvent): Promise<void> {
     try {
       // Chrome will drop the whole detail if it contains non-serializable values, e.g., methods
       cleanResult = cleanValue(result ?? null);
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Cannot serialize result", { result, error });
       throw new Error(`Cannot serialize result for result ${type}`);
     }
@@ -106,7 +106,7 @@ async function messageHandler(event: MessageEvent): Promise<void> {
         detail,
       })
     );
-  } catch (error: unknown) {
+  } catch (error) {
     try {
       const detail = {
         id: meta.id,
@@ -118,7 +118,7 @@ async function messageHandler(event: MessageEvent): Promise<void> {
           detail,
         })
       );
-    } catch (error_: unknown) {
+    } catch (error_) {
       console.error(
         "An error occurred while dispatching an error for %s",
         type,

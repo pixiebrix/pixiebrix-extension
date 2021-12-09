@@ -78,8 +78,8 @@ type TemplateToggleWidgetProps = SchemaFieldProps & {
 export function getOptionForInputMode(
   options: InputModeOption[],
   inputMode: FieldInputMode
-): InputModeOption {
-  return options.find((option) => option.value === inputMode);
+): InputModeOption | null {
+  return options.find((option) => option.value === inputMode) ?? null;
 }
 
 /**
@@ -178,6 +178,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
           <span className={styles.symbol}>{selectedOption?.symbol ?? ""}</span>
         }
         variant="link"
+        alignRight
         onSelect={onModeChange}
         className={styles.dropdown}
         data-testid={`toggle-${name}`}

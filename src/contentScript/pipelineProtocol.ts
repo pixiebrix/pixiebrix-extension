@@ -49,7 +49,7 @@ export async function runRendererPipeline({
       }
     );
     throw new BusinessError("Pipeline does not include a renderer");
-  } catch (error: unknown) {
+  } catch (error) {
     if (error instanceof HeadlessModeError) {
       return {
         key: nonce,

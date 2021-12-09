@@ -29,6 +29,7 @@ import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { clearExtensionTraces } from "@/background/trace";
 import { isDeploymentActive } from "@/options/deploymentUtils";
+import { $safeFind } from "@/helpers";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
@@ -70,7 +71,7 @@ async function runExtensionPoint(
 
   try {
     installed = await extensionPoint.install();
-  } catch (error: unknown) {
+  } catch (error) {
     if (error instanceof PromiseCancelled) {
       console.debug(
         `Skipping ${extensionPoint.id} because user navigated away from the page`
@@ -160,7 +161,7 @@ export function clearDynamic(
         extensionPoint.uninstall({ global: true });
         actionPanel.removeExtensionPoint(extensionPoint.id);
         markUninstalled(extensionPoint.id);
-      } catch (error: unknown) {
+      } catch (error) {
         reportError(error);
       }
     }
@@ -245,7 +246,7 @@ async function loadExtensions() {
           // We cleared _extensionPoints prior to the loop, so we can just push w/o checking if it's already in the array
           _extensionPoints.push(extensionPoint);
         }
-      } catch (error: unknown) {
+      } catch (error) {
         console.warn(`Error adding extension point: ${extensionPointId}`, {
           error,
         });
@@ -275,14 +276,11 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
     testMatchPatterns(rule.matchPatterns, url)
   );
   if (rules.length > 0) {
-    const $document = $(document);
-    while (
-      rules.some((rule) =>
-        rule.loadingSelectors.some(
-          (selector) => $document.find(selector).length > 0
-        )
-      )
-    ) {
+    const jointSelector = rules
+      .flatMap((rule) => rule.loadingSelectors)
+      .filter(Boolean) // Exclude empty selectors, if any
+      .join(",");
+    while ($safeFind(jointSelector).length > 0) {
       if (cancel()) {
         return;
       }
@@ -343,7 +341,7 @@ export async function handleNavigate({
         // Don't await each extension point since the extension point may never appear. For example, an
         // extension point that runs on the contact information modal on LinkedIn
         const runPromise = runExtensionPoint(extensionPoint, cancel).catch(
-          (error: unknown) => {
+          (error) => {
             console.error(`Error installing/running: ${extensionPoint.id}`, {
               error,
             });

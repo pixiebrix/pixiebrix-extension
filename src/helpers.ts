@@ -51,3 +51,16 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
  */
 export const IS_BROWSER =
   typeof window !== "undefined" && typeof window.document !== "undefined";
+
+/**
+ * Find an element(s) by its JQuery selector. A safe alternative to $(selector), which constructs an element it it's
+ * passed HTML.
+ * @param selector a JQuery selector
+ * @param parent parent element to search (default=document)
+ */
+export function $safeFind(
+  selector: string,
+  parent: Document | Element | JQuery<HTMLElement | Document> = document
+): JQuery {
+  return $(parent).find(selector);
+}

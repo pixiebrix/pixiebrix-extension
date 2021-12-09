@@ -15,12 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftBackground } from "@/background/protocol";
-import browser, { Notifications } from "webextension-polyfill";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export const createNotification = liftBackground(
-  "CREATE_NOTIFICATION",
-  async (options: Notifications.CreateNotificationOptions) =>
-    // Generate id automatically
-    browser.notifications.create(undefined, options)
-);
+export interface DocumentBuilderState {
+  /**
+   * The currently active field in the Form Builder
+   */
+  activeElement: string | null;
+}
+
+export const initialState: DocumentBuilderState = {
+  activeElement: null,
+};
+
+export const documentBuilderSlice = createSlice({
+  name: "documentBuilder",
+  initialState,
+  reducers: {
+    setActiveElement: (state, action: PayloadAction<string>) => {
+      state.activeElement = action.payload;
+    },
+  },
+});
+
+export const { actions } = documentBuilderSlice;

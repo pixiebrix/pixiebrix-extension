@@ -15,14 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { $safeFind } from "@/helpers";
 import { inferButtonHTML, inferPanelHTML } from "@/nativeEditor/infer";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";
 
   const inferred = inferButtonHTML(
-    $(document).find("div").get(0),
-    $(document).find("button").get()
+    $safeFind("div").get(0),
+    $safeFind("button").get()
   );
   expect(inferred).toBe("<button>{{{ caption }}}</button>");
 });
@@ -31,8 +32,8 @@ test("infer button with icon", () => {
   document.body.innerHTML = "<div><button><svg></svg>More</button></div>";
 
   const inferred = inferButtonHTML(
-    $(document).find("div").get(0),
-    $(document).find("button").get()
+    $safeFind("div").get(0),
+    $safeFind("button").get()
   );
   expect(inferred).toBe("<button>{{{ icon }}}{{{ caption }}}</button>");
 });
@@ -40,8 +41,8 @@ test("infer button with icon", () => {
 test("infer submit button", () => {
   document.body.innerHTML = '<div><input type="submit" value="Submit" /></div>';
   const inferred = inferButtonHTML(
-    $(document).find("div").get(0),
-    $(document).find("input").get()
+    $safeFind("div").get(0),
+    $safeFind("input").get()
   );
   expect(inferred).toBe('<input type="button" value="{{{ caption }}}" />');
 });
@@ -49,8 +50,8 @@ test("infer submit button", () => {
 test("infer button", () => {
   document.body.innerHTML = '<div><input type="button" value="Action" /></div>';
   const inferred = inferButtonHTML(
-    $(document).find("div").get(0),
-    $(document).find("input").get()
+    $safeFind("div").get(0),
+    $safeFind("input").get()
   );
   expect(inferred).toBe('<input type="button" value="{{{ caption }}}" />');
 });
@@ -59,8 +60,8 @@ test("ignore chevron down in key", () => {
   document.body.innerHTML =
     '<div><button>More <icon key="chevron-down"></icon></button></div>';
   const inferred = inferButtonHTML(
-    $(document).find("div").get(0),
-    $(document).find("button").get()
+    $safeFind("div").get(0),
+    $safeFind("button").get()
   );
   expect(inferred).toBe("<button>{{{ caption }}}</button>");
 });
@@ -69,8 +70,8 @@ test("ignore chevron down in class name", () => {
   document.body.innerHTML =
     '<div><button>More <i class="fas fa-chevron-down"></i></button></div>';
   const inferred = inferButtonHTML(
-    $(document).find("div").get(0),
-    $(document).find("button").get()
+    $safeFind("div").get(0),
+    $safeFind("button").get()
   );
   expect(inferred).toBe("<button>{{{ caption }}}</button>");
 });
@@ -90,8 +91,8 @@ test("infer anchor with button sibling", () => {
     "</div>";
 
   const inferred = inferButtonHTML(
-    $(document).find("div").get(0),
-    $(document).find("a").get()
+    $safeFind("div").get(0),
+    $safeFind("a").get()
   );
   expect(inferred).toBe(
     '<a href="#" class="org-top-card-primary-actions__action"><span class="org-top-card-primary-actions__action-inner artdeco-button artdeco-button--secondary">{{{ caption }}}<li-icon>{{{ icon }}}</li-icon></span></a>'
@@ -102,8 +103,8 @@ test("infer bootstrap anchor button", () => {
   document.body.innerHTML =
     '<div><a href="/docs/5.0/getting-started/download/" class="btn btn-lg btn-outline-secondary mb-3">Download</a></div>';
   const inferred = inferButtonHTML(
-    $(document).find("div").get(0),
-    $(document).find("a").get()
+    $safeFind("div").get(0),
+    $safeFind("a").get()
   );
   expect(inferred).toBe(
     '<a href="#" class="btn btn-lg btn-outline-secondary mb-3">{{{ caption }}}</a>'
@@ -121,8 +122,8 @@ test("infer list item mixed elements", () => {
     "</ul>";
 
   const inferred = inferButtonHTML(
-    $(document).find("ul").get(0),
-    $(document).find("button").toArray()
+    $safeFind("ul").get(0),
+    $safeFind("button").toArray()
   );
   expect(inferred).toBe("<li><button>{{{ caption }}}</button></li>");
 });
@@ -138,8 +139,8 @@ test("infer list item mixed elements with icons", () => {
     "</ul>";
 
   const inferred = inferButtonHTML(
-    $(document).find("ul").get(0),
-    $(document).find("button").toArray()
+    $safeFind("ul").get(0),
+    $safeFind("button").toArray()
   );
   expect(inferred).toBe(
     "<li><button><li-icon>{{{ icon }}}</li-icon>{{{ caption }}}</button></li>"
@@ -154,8 +155,8 @@ test("ignore blank surrounding div", () => {
     "</ul>";
 
   const inferred = inferButtonHTML(
-    $(document).find("ul").get(0),
-    $(document).find("button").toArray()
+    $safeFind("ul").get(0),
+    $safeFind("button").toArray()
   );
   expect(inferred).toBe("<li><button>{{{ caption }}}</button></li>");
 });
@@ -169,8 +170,8 @@ test("infer list item mixed elements with surrounding div", () => {
     "</ul>";
 
   const inferred = inferButtonHTML(
-    $(document).find("ul").get(0),
-    $(document).find("button").toArray()
+    $safeFind("ul").get(0),
+    $safeFind("button").toArray()
   );
   expect(inferred).toBe("<li><button>{{{ caption }}}</button></li>");
 });
@@ -182,8 +183,8 @@ test("do not duplicate button caption", () => {
     "    View in Sales Navigator\n" +
     "</span></button></div>";
   const inferred = inferButtonHTML(
-    $(document).find("div").get(0),
-    $(document).find("button").get()
+    $safeFind("div").get(0),
+    $safeFind("button").get()
   );
   expect(inferred).toBe(
     '<button type="button"><span class="artdeco-button__text">{{{ caption }}}</span></button>'
@@ -198,8 +199,8 @@ test("infer ember button", () => {
     ' type="button" tabIndex="0">More<!----></button></div>';
 
   const inferred = inferButtonHTML(
-    $(document).find("div").get(0),
-    $(document).find("button").get()
+    $safeFind("div").get(0),
+    $safeFind("button").get()
   );
 
   expect(inferred).toBe(
@@ -217,8 +218,8 @@ test("infer multiple buttons", () => {
     "</div>";
 
   const inferred = inferButtonHTML(
-    $(document).find("div").get(0),
-    $(document).find("button").get()
+    $safeFind("div").get(0),
+    $safeFind("button").get()
   );
 
   expect(inferred).toBe('<button class="a">{{{ caption }}}</button>');
@@ -228,8 +229,8 @@ test("infer list items", () => {
   document.body.innerHTML = "<div><ul><li>Foo</li><li>Bar</li></ul></div>";
 
   const inferred = inferButtonHTML(
-    $(document).find("ul").get(0),
-    $(document).find("li").get()
+    $safeFind("ul").get(0),
+    $safeFind("li").get()
   );
 
   expect(inferred).toBe("<li>{{{ caption }}}</li>");
@@ -243,8 +244,8 @@ test("infer list item from inside div", () => {
     "</ul></div>";
 
   const inferred = inferButtonHTML(
-    $(document).find("ul").get(0),
-    $(document).find("li div").get()
+    $safeFind("ul").get(0),
+    $safeFind("li div").get()
   );
 
   expect(inferred).toBe("<li><div>{{{ caption }}}</div></li>");
@@ -257,8 +258,8 @@ test("infer single panel", () => {
     "</div>";
 
   const inferred = inferPanelHTML(
-    $(document).find("div").get(0),
-    $(document).find("section").get()
+    $safeFind("div").get(0),
+    $safeFind("section").get()
   );
 
   expect(inferred).toBe(
@@ -274,8 +275,8 @@ test("infer basic panel structure with header", () => {
     "</div>";
 
   const inferred = inferPanelHTML(
-    $(document).find("div").get(0),
-    $(document).find("section").get()
+    $safeFind("div").get(0),
+    $safeFind("section").get()
   );
 
   expect(inferred).toBe(
@@ -291,8 +292,8 @@ test("infer basic panel structure with div header", () => {
     "</div>";
 
   const inferred = inferPanelHTML(
-    $(document).find("div").get(0),
-    $(document).find("section").get()
+    $safeFind("div").get(0),
+    $safeFind("section").get()
   );
 
   expect(inferred).toBe(
@@ -308,8 +309,8 @@ test("infer header structure mismatch", () => {
     "</div>";
 
   const inferred = inferPanelHTML(
-    $(document).find("div").get(0),
-    $(document).find("section").get()
+    $safeFind("div").get(0),
+    $safeFind("section").get()
   );
 
   expect(inferred).toBe(

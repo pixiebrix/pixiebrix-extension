@@ -20,6 +20,7 @@ import { getCssSelector } from "css-selector-generator";
 import { isNullOrBlank, mostCommonElement } from "@/utils";
 import { BusinessError } from "@/errors";
 import { CssSelectorType } from "css-selector-generator/types/types";
+import { $safeFind } from "@/helpers";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -202,7 +203,7 @@ function commonButtonStructure(
 
   try {
     setCommonAttrs($common, $items);
-  } catch (error: unknown) {
+  } catch (error) {
     if (error instanceof SkipElement) {
       // Shouldn't happen at the top level
       return [$(), currentCaptioned];
@@ -518,7 +519,7 @@ export function inferSelectors(
   const makeSelector = (allowed: CssSelectorType[]) => {
     try {
       return safeCssSelector(element, allowed, root);
-    } catch (error: unknown) {
+    } catch (error) {
       console.warn("Selector inference failed", {
         element,
         allowed,
@@ -546,7 +547,7 @@ export function inferSelectors(
  * Returns true if selector uniquely identifies an element on the page
  */
 function isUniqueSelector(selector: string): boolean {
-  return $(document).find(selector).length === 1;
+  return $safeFind(selector).length === 1;
 }
 
 export function getCommonAncestor(...args: Node[]): Node {

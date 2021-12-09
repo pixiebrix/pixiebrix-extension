@@ -27,17 +27,12 @@ import {
 } from "@/core";
 import { castArray, isPlainObject } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
-import {
-  executeInAll,
-  executeInOpener,
-  executeInTarget,
-  executeOnServer,
-} from "@/background/executor";
+import { requestRun } from "@/background/messenger/api";
 import { getLoggingConfig } from "@/background/logging";
 import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
 import { sendDeploymentAlert } from "@/background/telemetry";
 import { serializeError } from "serialize-error";
-import { HeadlessModeError, RemoteExecutionError } from "@/blocks/errors";
+import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
@@ -59,6 +54,7 @@ import {
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { UnknownObject } from "@/types";
+import { RunBlock } from "@/contentScript/executor";
 
 type CommonOptions = ApiVersionOptions & {
   /**
@@ -217,29 +213,27 @@ async function execute(
     messageContext: options.logger.context,
   };
 
+  const request: RunBlock = {
+    blockId: config.id,
+    blockArgs: args,
+    options: commonOptions,
+  };
+
   switch (config.window ?? "self") {
     case "opener": {
-      return executeInOpener(config.id, args, commonOptions);
+      return requestRun.inOpener(request);
     }
 
     case "target": {
-      return executeInTarget(config.id, args, commonOptions);
+      return requestRun.inTarget(request);
     }
 
     case "broadcast": {
-      return executeInAll(config.id, args, commonOptions);
+      return requestRun.inAll(request);
     }
 
     case "remote": {
-      const { data, error } = (await executeOnServer(config.id, args)).data;
-      if (error) {
-        throw new RemoteExecutionError(
-          "Error while executing brick remotely",
-          error
-        );
-      }
-
-      return data;
+      return requestRun.onServer(request);
     }
 
     case "self": {
@@ -270,6 +264,7 @@ async function renderBlockArg(
     explicitArg,
     explicitDataFlow,
     explicitRender,
+    autoescape,
   } = options;
 
   // Support YAML short-hand of leaving of `config:` directive for blocks that don't have parameters
@@ -308,12 +303,16 @@ async function renderBlockArg(
     ? state.context
     : { ...state.context, ...(state.previousOutput as UnknownObject) };
 
+  const implicitRender = explicitRender
+    ? null
+    : await engineRenderer(
+        config.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+        { autoescape }
+      );
+
   const blockArgs = (await mapArgs(stageTemplate, ctxt, {
-    implicitRender: explicitRender
-      ? null
-      : await engineRenderer(
-          config.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE
-        ),
+    implicitRender,
+    autoescape,
   })) as RenderedArgs;
 
   if (logValues) {
@@ -404,6 +403,7 @@ async function applyReduceDefaults({
     // Default to the `apiVersion: v1, v2` data passing behavior and renderer behavior
     explicitArg: false,
     explicitRender: false,
+    autoescape: true,
     // Default to the `apiVersion: v1` data flow behavior
     explicitDataFlow: false,
     // If logValues not provided explicitly, default to the global setting
@@ -618,7 +618,7 @@ export async function reducePipeline(
         ...options,
         logger: stageLogger,
       });
-    } catch (error: unknown) {
+    } catch (error) {
       // Must await because it will throw a wrapped error
       // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
       await throwBlockError(blockConfig, state, error, options);

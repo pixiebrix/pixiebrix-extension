@@ -16,7 +16,7 @@
  */
 
 import { UnknownObject } from "@/types";
-import { Renderer, engineRenderer } from "./renderers";
+import { Renderer, engineRenderer, RendererOptions } from "./renderers";
 import { isPlainObject, mapValues, pickBy } from "lodash";
 import { getPropByPath, isSimplePath } from "./pathHelpers";
 import { Expression, ExpressionType, TemplateEngine } from "@/core";
@@ -37,7 +37,7 @@ const expressionTypes: ExpressionType[] = [
   "defer",
 ];
 
-type Args = string | UnknownObject | UnknownObject[];
+export type Args = string | UnknownObject | UnknownObject[];
 
 /**
  * Returns true if value represents an explicit expression
@@ -80,10 +80,11 @@ export function isTemplateExpression(
  */
 export async function renderExplicit(
   config: Args,
-  ctxt: UnknownObject
+  ctxt: UnknownObject,
+  options: RendererOptions
 ): Promise<unknown> {
   if (isTemplateExpression(config)) {
-    const render = await engineRenderer(config.__type__);
+    const render = await engineRenderer(config.__type__, options);
     return render(config.__value__, ctxt);
   }
 
@@ -94,12 +95,14 @@ export async function renderExplicit(
 
   // Array.isArray must come before the object check because arrays are objects
   if (Array.isArray(config)) {
-    return Promise.all(config.map(async (x) => renderExplicit(x, ctxt)));
+    return Promise.all(
+      config.map(async (x) => renderExplicit(x, ctxt, options))
+    );
   }
 
   if (isPlainObject(config)) {
     const renderedEntries = await asyncMapValues(config, async (subConfig) =>
-      renderExplicit(subConfig as UnknownObject, ctxt)
+      renderExplicit(subConfig as UnknownObject, ctxt, options)
     );
 
     return pickBy(renderedEntries, (x) => x != null);
@@ -182,6 +185,11 @@ type MapOptions = {
    * Render method for v1-v2 implicit runtime behavior
    */
   implicitRender: Renderer | null;
+
+  /**
+   * True to auto-escape the values.
+   */
+  autoescape: boolean | null;
 };
 
 /**
@@ -190,11 +198,11 @@ type MapOptions = {
 export async function mapArgs(
   config: Args,
   ctxt: UnknownObject,
-  { implicitRender }: MapOptions
+  { implicitRender = null, autoescape = true }: MapOptions
 ): Promise<unknown> {
   if (implicitRender) {
     return renderImplicit(config, ctxt, implicitRender);
   }
 
-  return renderExplicit(config, ctxt);
+  return renderExplicit(config, ctxt, { autoescape });
 }

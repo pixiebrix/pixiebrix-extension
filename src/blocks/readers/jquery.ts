@@ -18,6 +18,7 @@
 import { ReaderOutput } from "@/core";
 import { asyncMapValues, sleep } from "@/utils";
 import { BusinessError, MultipleElementsFoundError } from "@/errors";
+import { $safeFind } from "@/helpers";
 
 type CastType = "string" | "boolean" | "number";
 
@@ -150,7 +151,7 @@ async function select(
   do {
     if ($root) {
       $elt = normalizedSelector.selector
-        ? $root.find(normalizedSelector.selector)
+        ? $safeFind(normalizedSelector.selector, $root)
         : $root;
     } else {
       if (!normalizedSelector.selector) {
@@ -159,7 +160,7 @@ async function select(
         );
       }
 
-      $elt = $(document).find(normalizedSelector.selector);
+      $elt = $safeFind(normalizedSelector.selector);
     }
 
     if (

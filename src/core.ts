@@ -225,11 +225,13 @@ export interface Logger {
 
 export type ReaderRoot = HTMLElement | Document;
 
-export type BlockOptions = {
-  // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
-  // the inputs using yup/jsonschema, so the types should match what's expected.
+// Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
+// the inputs using yup/jsonschema, so the types should match what's expected.
+export type BlockOptions<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ctxt: Record<string, any>;
+  TCtxt extends Record<string, any> = Record<string, any>
+> = {
+  ctxt: TCtxt;
   logger: Logger;
   root: ReaderRoot;
   headless?: boolean;

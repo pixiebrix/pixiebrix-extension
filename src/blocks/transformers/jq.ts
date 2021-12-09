@@ -69,7 +69,7 @@ export class JQTransformer extends Transformer {
     try {
       // eslint-disable-next-line @typescript-eslint/return-await -- Type is `any`, it throws the rule off
       return await jq.promised.json(input, filter);
-    } catch (error: unknown) {
+    } catch (error) {
       if (!isErrorObject(error) || !error.message.includes("compile error")) {
         throw error;
       }

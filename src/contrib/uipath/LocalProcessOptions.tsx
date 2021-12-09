@@ -49,7 +49,7 @@ function useLocalRobot() {
       const { available, consentCode } = await initRobot(thisTab);
       setConsentCode(consentCode);
       setRobotAvailable(available);
-    } catch (error: unknown) {
+    } catch (error) {
       setInitError(error);
     }
   }, [port, setConsentCode, setRobotAvailable, setInitError]);

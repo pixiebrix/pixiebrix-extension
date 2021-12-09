@@ -35,14 +35,9 @@ export interface RunBlock {
   options: RemoteBlockOptions;
 }
 
-export interface RunBlockRequestAction {
-  type: string;
-  payload: RunBlock;
-}
-
 const childTabs = new Set<number>();
 
-export async function runBlockInContentScript(request: RunBlock) {
+export async function runBrick(request: RunBlock): Promise<unknown> {
   // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
   const { blockId, blockArgs, options } = request;
   const block = await blockRegistry.lookup(blockId);
@@ -54,7 +49,7 @@ export async function runBlockInContentScript(request: RunBlock) {
       logger,
       root: document,
     });
-  } catch (error: unknown) {
+  } catch (error) {
     // Provide extra logging on the tab because `handlers` doesn't report errors. It's also nice to log here because
     // we still have the original (non-serialized) error
     console.info("Error running remote block on tab", {

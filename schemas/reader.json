@@ -19,6 +19,44 @@
         }
       ]
     },
+    "urlPattern": {
+      "description": " A URL pattern: https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "properties": {
+            "baseURL": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            },
+            "protocol": {
+              "type": "string"
+            },
+            "hostname": {
+              "type": "string"
+            },
+            "port": {
+              "type": "string"
+            },
+            "pathname": {
+              "type": "string"
+            },
+            "search": {
+              "type": "string"
+            },
+            "hash": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
     "frameworkReader": {
       "type": "object",
       "properties": {
@@ -187,6 +225,20 @@
           "properties": {
             "matchPatterns": {
               "$ref": "#/definitions/stringArray"
+            },
+            "urlPatterns": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/urlPattern"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/urlPattern"
+                  },
+                  "minItems": 1
+                }
+              ]
             },
             "selectors": {
               "$ref": "#/definitions/stringArray"

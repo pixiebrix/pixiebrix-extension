@@ -37,7 +37,7 @@ export async function connectDevtools(): Promise<Runtime.Port> {
   let port: Runtime.Port;
   try {
     port = await runtimeConnect(PORT_NAME);
-  } catch (error: unknown) {
+  } catch (error) {
     // Not helpful to use recordError here because it can't connect to the background page to send
     // the error telemetry
     console.error("Devtools cannot connect to the background page", {

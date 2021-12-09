@@ -154,7 +154,7 @@ async function read<TComponent>(
 
   try {
     element = requireSingleElement(selector);
-  } catch (error: unknown) {
+  } catch (error) {
     console.debug("read: error calling requireSingleElement", {
       error,
       options,
@@ -174,7 +174,7 @@ async function read<TComponent>(
       retryMillis,
       predicate: identity,
     });
-  } catch (error: unknown) {
+  } catch (error) {
     if (error instanceof TimeoutError) {
       console.warn(
         `Could not find framework component for selector ${selector} in ${waitMillis}ms`

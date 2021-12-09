@@ -39,7 +39,7 @@ import { isBackgroundPage } from "webext-detect-page";
 import { uuidv4 } from "@/types/helpers";
 import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
-import { reactivate } from "@/background/navigation";
+import { reactivateEveryTab } from "@/background/messenger/api";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { getErrorMessage, isPrivatePageError } from "@/errors";
 import { clearDynamicElements } from "@/contentScript/messenger/api";
@@ -87,7 +87,7 @@ function backgroundMessageListener(
     let responded = false;
 
     if (notification) {
-      handlerPromise.catch((error: unknown) => {
+      handlerPromise.catch((error) => {
         console.warn(
           `An error occurred when handling notification ${type} (nonce: ${meta?.nonce})`,
           error
@@ -185,7 +185,7 @@ export function liftBackground<
 async function resetTab(tabId: number): Promise<void> {
   try {
     await clearDynamicElements({ tabId, frameId: TOP_LEVEL_FRAME_ID }, {});
-  } catch (error: unknown) {
+  } catch (error) {
     console.warn("Error clearing dynamic elements for tab: %d", tabId, {
       error,
     });
@@ -195,7 +195,7 @@ async function resetTab(tabId: number): Promise<void> {
   console.info("Removed dynamic elements for tab: %d", tabId);
 
   // Re-activate the content script so any saved extensions are added to the page as "permanent" extensions
-  await reactivate();
+  reactivateEveryTab();
 
   console.info("Re-activated extensions for tab: %d", tabId);
 }
@@ -243,7 +243,7 @@ function connectDevtools(port: Runtime.Port): void {
       deleteStaleConnections(port);
       numOpenConnections--;
       console.debug(
-        `Devtools port disconnected for tab: ${port.sender?.tab}; # open ports: ${numOpenConnections})`
+        `Devtools port disconnected for tab: ${port.sender?.tab.id}; # open ports: ${numOpenConnections})`
       );
     });
   } else {
@@ -280,7 +280,7 @@ async function attemptTemporaryAccess({
 
   try {
     await ensureContentScript({ tabId, frameId });
-  } catch (error: unknown) {
+  } catch (error) {
     if (isPrivatePageError(error)) {
       return;
     }

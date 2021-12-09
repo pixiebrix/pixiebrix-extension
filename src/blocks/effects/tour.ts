@@ -22,6 +22,7 @@ import { BusinessError, CancelError } from "@/errors";
 import { attachStylesheet } from "@/blocks/util";
 // Can't get introjs.scss directly with loadAsUrl because the browser doesn't understand sass/scss
 import stylesheetUrl from "@/vendors/intro.js/introjs.css?loadAsUrl";
+import { $safeFind } from "@/helpers";
 
 type Step = {
   title: string;
@@ -125,7 +126,7 @@ export class TourEffect extends Effect {
       }
 
       const [firstStep] = steps as Step[];
-      if ($(document).find(firstStep.element).length === 0) {
+      if ($safeFind(firstStep.element).length === 0) {
         throw new BusinessError(
           "No matching element found for first step in tour"
         );
@@ -140,7 +141,7 @@ export class TourEffect extends Effect {
           disableInteraction,
           steps: (steps as Step[]).map(({ element, ...rest }) => ({
             ...rest,
-            element: $(document).find(element).get(0),
+            element: $safeFind(element).get(0),
           })),
         })
         .oncomplete(() => {

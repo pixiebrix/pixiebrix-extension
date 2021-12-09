@@ -88,7 +88,7 @@ function useUserAction<T extends (...args: never[]) => unknown>(
       }
 
       return rv;
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof CancelError) {
         return;
       }

@@ -57,7 +57,7 @@ export async function errorBoundary(
 
     // TODO: validate the shape of the value returned
     return value;
-  } catch (error: unknown) {
+  } catch (error) {
     logger.error(error);
     const escapedMessage = escape(getErrorMessage(error));
     return sanitize(`<div>An error occurred: ${escapedMessage}</div>`);

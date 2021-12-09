@@ -26,7 +26,6 @@ import { isLinked } from "@/auth/token";
 import { optionsSlice } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
-import { liftBackground } from "@/background/protocol";
 import { selectExtensions } from "@/options/selectors";
 import {
   uninstallContextMenu,
@@ -68,13 +67,9 @@ export function selectInstalledDeployments(
   );
 }
 
-export const queueReactivate = liftBackground(
-  "QUEUE_REACTIVATE",
-  async () => {
-    void forEachTab(queueReactivateTab);
-  },
-  { asyncResponse: false }
-);
+export function queueReactivateEveryTab(): void {
+  void forEachTab(queueReactivateTab);
+}
 
 function installDeployment(
   state: ExtensionOptionsState,
@@ -197,7 +192,7 @@ async function updateDeployments() {
   // Fetch the current brick definitions, which will have the current permissions and extensionVersion requirements
   try {
     await refreshRegistries();
-  } catch (error: unknown) {
+  } catch (error) {
     reportError(error);
     await browser.runtime.openOptionsPage();
     // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user the to
@@ -233,11 +228,11 @@ async function updateDeployments() {
       }
 
       await saveOptions(currentOptions);
-      void queueReactivate();
+      queueReactivateEveryTab();
       console.info(
         `Applied automatic updates for ${automatic.length} deployment(s)`
       );
-    } catch (error: unknown) {
+    } catch (error) {
       reportError(error);
       automaticError = error;
     }

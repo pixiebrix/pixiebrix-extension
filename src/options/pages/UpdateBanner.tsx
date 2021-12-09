@@ -17,18 +17,19 @@
 
 import React, { useCallback } from "react";
 import { Button } from "react-bootstrap";
-import "@/layout/Banner";
 import browser from "webextension-polyfill";
 import { useAsyncState } from "@/hooks/common";
-import { getAvailableVersion } from "@/background/installer";
+import { getAvailableVersion } from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
+import Banner from "@/components/banner/Banner";
 
 const UpdateBanner: React.FunctionComponent = () => {
   const [updateAvailable] = useAsyncState(async () => {
     try {
-      const { installed, available } = await getAvailableVersion();
+      const available = await getAvailableVersion();
+      const installed = browser.runtime.getManifest().version;
       return available && installed !== available;
-    } catch (error: unknown) {
+    } catch (error) {
       reportError(error);
       return false;
     }
@@ -43,20 +44,12 @@ const UpdateBanner: React.FunctionComponent = () => {
   }
 
   return (
-    <div className="update-banner w-100">
-      <div className="mx-auto d-flex">
-        <div className="flex-grow-1" />
-        <div className="align-self-center">
-          An update to PixieBrix is available
-        </div>
-        <div className="ml-3">
-          <Button className="info" size="sm" onClick={update}>
-            Update
-          </Button>
-        </div>
-        <div className="flex-grow-1" />
-      </div>
-    </div>
+    <Banner variant="warning">
+      An update to PixieBrix is available
+      <Button className="info ml-3" size="sm" onClick={update}>
+        Update
+      </Button>
+    </Banner>
   );
 };
 

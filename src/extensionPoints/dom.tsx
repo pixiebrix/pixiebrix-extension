@@ -33,6 +33,7 @@ export function render(
   if (typeof body === "string") {
     if (shadowDOM) {
       const shadowRoot = root.attachShadow({ mode: "closed" });
+      // Must be SafeHTML at this point given body has type RendererOutput
       shadowRoot.innerHTML = body;
     } else {
       $(root).html(body);

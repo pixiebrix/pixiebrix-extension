@@ -15,8 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.tabContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+
+  :global(.tab-pane) {
+    flex: 1;
+  }
+}
+
 .tabNav {
   font-size: small;
+}
+
+.tabContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.selectablePreviewContainer {
+  padding: 4px;
 }
 
 .tabPane {

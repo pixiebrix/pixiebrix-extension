@@ -31,9 +31,23 @@ import {
   markTabAsReady,
   whoAmI,
   openTab,
+  requestRunOnServer,
+  requestRunInOpener,
+  requestRunInTarget,
+  requestRunInBroadcast,
+  requestRunInFrameNonce,
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
 import { checkTargetPermissions, ensureContentScript } from "@/background/util";
+import serviceRegistry from "@/services/registry";
+import { deleteCachedAuthData } from "@/background/auth";
+import { doCleanAxiosRequest, _proxyService } from "@/background/requests";
+import { readQuery } from "@/contrib/google/bigquery/handlers";
+import { getRecord, setRecord } from "@/background/dataStore";
+import { preloadContextMenus } from "@/background/initContextMenus";
+import { getAvailableVersion } from "@/background/installer";
+import { locator, refreshServices } from "@/background/locator";
+import { reactivateEveryTab } from "@/background/navigation";
 
 expectContext("background");
 
@@ -47,21 +61,41 @@ declare global {
     GOOGLE_SHEETS_BATCH_UPDATE: typeof sheets.batchUpdate;
     GOOGLE_SHEETS_BATCH_GET: typeof sheets.batchGet;
 
+    GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     INJECT_SCRIPT: typeof ensureContentScript;
     CHECK_TARGET_PERMISSIONS: typeof checkTargetPermissions;
     CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
+    PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
     OPEN_POPUP_PROMPT: typeof openPopupPrompt;
 
     ECHO_SENDER: typeof whoAmI;
     ACTIVATE_TAB: typeof activateTab;
+    REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
     CLOSE_TAB: typeof closeTab;
     MARK_TAB_AS_READY: typeof markTabAsReady;
     OPEN_TAB: typeof openTab;
     REGISTRY_GET_KIND: typeof registry.getKind;
     REGISTRY_SYNC: typeof registry.syncRemote;
     REGISTRY_FIND: typeof registry.find;
+    LOCATE_SERVICE: typeof locator.locate;
+    REFRESH_SERVICES: typeof refreshServices;
+
+    REQUEST_RUN_ON_SERVER: typeof requestRunOnServer;
+    REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
+    REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
+    REQUEST_RUN_IN_ALL: typeof requestRunInBroadcast;
+    REQUEST_RUN_IN_FRAME_NONCE: typeof requestRunInFrameNonce;
+
+    HTTP_REQUEST: typeof doCleanAxiosRequest;
+    DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
+    PROXY: typeof _proxyService;
+    CLEAR_SERVICE_CACHE: VoidFunction;
+    GOOGLE_BIGQUERY_READ: typeof readQuery;
+
+    GET_DATA_STORE: typeof getRecord;
+    SET_DATA_STORE: typeof setRecord;
   }
 }
 
@@ -74,19 +108,40 @@ registerMethods({
   GOOGLE_SHEETS_BATCH_UPDATE: sheets.batchUpdate,
   GOOGLE_SHEETS_BATCH_GET: sheets.batchGet,
 
-  CHECK_TARGET_PERMISSIONS: checkTargetPermissions,
+  GET_AVAILABLE_VERSION: getAvailableVersion,
   INJECT_SCRIPT: ensureContentScript,
+  CHECK_TARGET_PERMISSIONS: checkTargetPermissions,
   CONTAINS_PERMISSIONS: browser.permissions.contains,
+
+  PRELOAD_CONTEXT_MENUS: preloadContextMenus,
   UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
   ENSURE_CONTEXT_MENU: ensureContextMenu,
   OPEN_POPUP_PROMPT: openPopupPrompt,
 
   ECHO_SENDER: whoAmI,
   ACTIVATE_TAB: activateTab,
+  REACTIVATE_EVERY_TAB: reactivateEveryTab,
   CLOSE_TAB: closeTab,
   MARK_TAB_AS_READY: markTabAsReady,
   OPEN_TAB: openTab,
   REGISTRY_GET_KIND: registry.getKind,
   REGISTRY_SYNC: registry.syncRemote,
   REGISTRY_FIND: registry.find,
+  LOCATE_SERVICE: locator.locate.bind(locator),
+  REFRESH_SERVICES: refreshServices,
+
+  REQUEST_RUN_ON_SERVER: requestRunOnServer,
+  REQUEST_RUN_IN_OPENER: requestRunInOpener,
+  REQUEST_RUN_IN_TARGET: requestRunInTarget,
+  REQUEST_RUN_IN_ALL: requestRunInBroadcast,
+  REQUEST_RUN_IN_FRAME_NONCE: requestRunInFrameNonce,
+
+  HTTP_REQUEST: doCleanAxiosRequest,
+  DELETE_CACHED_AUTH: deleteCachedAuthData,
+  CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
+  PROXY: _proxyService,
+  GOOGLE_BIGQUERY_READ: readQuery,
+
+  GET_DATA_STORE: getRecord,
+  SET_DATA_STORE: setRecord,
 });

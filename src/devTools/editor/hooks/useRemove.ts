@@ -80,11 +80,11 @@ function useRemove(element: FormState): () => void {
         await clearDynamicElements(thisTab, {
           uuid: element.uuid,
         });
-      } catch (error: unknown) {
+      } catch (error) {
         // Element might not be on the page anymore
         console.info("Cannot clear dynamic element from page", { error });
       }
-    } catch (error: unknown) {
+    } catch (error) {
       reportError(error);
       addToast(`Error removing element: ${getErrorMessage(error)}`, {
         appearance: "error",

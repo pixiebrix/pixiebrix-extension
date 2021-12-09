@@ -54,7 +54,7 @@ export function liftBackground<
 
       try {
         handlerResult = await method(...args);
-      } catch (error: unknown) {
+      } catch (error) {
         console.log("Error running method", error);
         handlerResult = toErrorResponse(fullType, error);
       }

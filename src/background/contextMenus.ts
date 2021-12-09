@@ -72,7 +72,7 @@ async function dispatchMenu(
 
   try {
     reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
-  } catch (error: unknown) {
+  } catch (error) {
     console.warn("Error reporting ContextMenuClick event", { error });
   }
 
@@ -96,7 +96,7 @@ async function dispatchMenu(
       message: "Ran content menu item action",
       className: "success",
     });
-  } catch (error: unknown) {
+  } catch (error) {
     if (hasCancelRootCause(error)) {
       void showNotification(target, {
         message: "The action was cancelled",
@@ -145,7 +145,7 @@ export async function uninstallContextMenu({
 
     console.debug(`Uninstalled context menu ${extensionId}`);
     return true;
-  } catch (error: unknown) {
+  } catch (error) {
     // Will throw if extensionId doesn't refer to a context menu. The callers don't have an easy way to check the type
     // without having to resolve the extensionPointId. So instead we'll just expect some of the calls to fail.
     console.debug("Could not uninstall context menu %s", extensionId, {
@@ -193,7 +193,7 @@ export async function ensureContextMenu({
       try {
         await browser.contextMenus.update(menuId, updateProperties);
         return;
-      } catch (error: unknown) {
+      } catch (error) {
         console.debug("Cannot update context menu", { error });
       }
     } else {
@@ -225,7 +225,7 @@ export async function ensureContextMenu({
     });
 
     extensionMenuItems.set(extensionId, menuId);
-  } catch (error: unknown) {
+  } catch (error) {
     if (
       getErrorMessage(error).includes("Cannot create item with duplicate id")
     ) {

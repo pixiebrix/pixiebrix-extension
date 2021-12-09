@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,40 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.environment-banner {
-  text-align: center;
-  padding: 10px;
+import React, { Suspense } from "react";
+import { DocumentViewProps } from "./DocumentViewProps";
 
-  &.unknown {
-    background-color: #ffd9b1;
-  }
+// Dynamic import because documentView has a transitive dependency of react-shadow-root which assumed a proper
+// `window` variable is present on module load. This isn't available on header generation
+const DocumentView = React.lazy(
+  async () =>
+    import(
+      /* webpackChunkName: "document-view" */
+      "./DocumentView"
+    )
+);
 
-  &.development {
-    background-color: #bfd7bf;
-  }
+const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (
+  <Suspense fallback={<div className="text-muted">Loading...</div>}>
+    <DocumentView {...props} />
+  </Suspense>
+);
 
-  &.staging {
-    background-color: #8bcaff;
-  }
-}
-
-.deployment-banner {
-  text-align: center;
-  padding: 10px;
-
-  background-color: #8bcaff;
-}
-
-.update-banner {
-  text-align: center;
-  padding: 10px;
-
-  background-color: #ffd9b1;
-}
-
-.error-banner {
-  text-align: center;
-  padding: 10px;
-
-  background-color: #fe7c96;
-}
+export default DocumentViewLazy;

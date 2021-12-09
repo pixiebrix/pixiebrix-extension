@@ -126,7 +126,7 @@ export function showActionPanel(callbacks = extensionCallbacks): string {
   for (const callback of callbacks) {
     try {
       callback();
-    } catch (error: unknown) {
+    } catch (error) {
       // The callbacks should each have their own error handling. But wrap in a try-catch to ensure running
       // the callbacks does not interfere prevent showing the sidebar
       reportError(error);

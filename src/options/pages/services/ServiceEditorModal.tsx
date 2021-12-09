@@ -107,7 +107,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
 
     try {
       return buildYup(schema, {});
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Error building Yup validator from JSON Schema");
       reportError(error);
       return Yup.object();
