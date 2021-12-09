@@ -27,7 +27,7 @@ import {
 } from "@/core";
 import { castArray, isPlainObject } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
-import { executeBrick } from "@/background/messenger/api";
+import { requestRun } from "@/background/messenger/api";
 import { getLoggingConfig } from "@/background/logging";
 import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
 import { sendDeploymentAlert } from "@/background/telemetry";
@@ -221,19 +221,19 @@ async function execute(
 
   switch (config.window ?? "self") {
     case "opener": {
-      return executeBrick.inOpener(request);
+      return requestRun.inOpener(request);
     }
 
     case "target": {
-      return executeBrick.inTarget(request);
+      return requestRun.inTarget(request);
     }
 
     case "broadcast": {
-      return executeBrick.inAll(request);
+      return requestRun.inAll(request);
     }
 
     case "remote": {
-      return executeBrick.onServer(request);
+      return requestRun.onServer(request);
     }
 
     case "self": {

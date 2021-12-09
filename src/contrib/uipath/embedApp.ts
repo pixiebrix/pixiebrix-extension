@@ -21,7 +21,7 @@ import { BlockArg, BlockOptions, RegistryId, SafeHTML, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import browser, { Permissions } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { executeBrick } from "@/background/messenger/api";
+import { requestRun } from "@/background/messenger/api";
 
 export class UiPathAppRenderer extends Renderer {
   constructor() {
@@ -90,7 +90,7 @@ export class UiPathAppRenderer extends Renderer {
     const inputs = rawInputs as UnknownObject;
 
     if (!isEmpty(inputs)) {
-      executeBrick
+      requestRun
         .inFrame({
           nonce,
           blockId: "@pixiebrix/forms/set" as RegistryId,

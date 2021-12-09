@@ -31,11 +31,11 @@ import {
   markTabAsReady,
   whoAmI,
   openTab,
-  executeOnServer,
-  runBlockInOpener,
-  runBlockInTarget,
-  runBlockInBroadcast,
-  runBlockInFrameNonce,
+  requestRunOnServer,
+  requestRunInOpener,
+  requestRunInTarget,
+  requestRunInBroadcast,
+  requestRunInFrameNonce,
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
 import { checkTargetPermissions, ensureContentScript } from "@/background/util";
@@ -82,11 +82,11 @@ declare global {
     LOCATE_SERVICE: typeof locator.locate;
     REFRESH_SERVICES: typeof refreshServices;
 
-    EXECUTE_ON_SERVER: typeof executeOnServer;
-    RUN_BLOCK_OPENER: typeof runBlockInOpener;
-    RUN_BLOCK_TARGET: typeof runBlockInTarget;
-    RUN_BLOCK_BROADCAST: typeof runBlockInBroadcast;
-    RUN_BLOCK_FRAME_NONCE: typeof runBlockInFrameNonce;
+    REQUEST_RUN_ON_SERVER: typeof requestRunOnServer;
+    REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
+    REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
+    REQUEST_RUN_IN_ALL: typeof requestRunInBroadcast;
+    REQUEST_RUN_IN_FRAME_NONCE: typeof requestRunInFrameNonce;
 
     HTTP_REQUEST: typeof doCleanAxiosRequest;
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
@@ -130,11 +130,11 @@ registerMethods({
   LOCATE_SERVICE: locator.locate.bind(locator),
   REFRESH_SERVICES: refreshServices,
 
-  EXECUTE_ON_SERVER: executeOnServer,
-  RUN_BLOCK_OPENER: runBlockInOpener,
-  RUN_BLOCK_TARGET: runBlockInTarget,
-  RUN_BLOCK_BROADCAST: runBlockInBroadcast,
-  RUN_BLOCK_FRAME_NONCE: runBlockInFrameNonce,
+  REQUEST_RUN_ON_SERVER: requestRunOnServer,
+  REQUEST_RUN_IN_OPENER: requestRunInOpener,
+  REQUEST_RUN_IN_TARGET: requestRunInTarget,
+  REQUEST_RUN_IN_ALL: requestRunInBroadcast,
+  REQUEST_RUN_IN_FRAME_NONCE: requestRunInFrameNonce,
 
   HTTP_REQUEST: doCleanAxiosRequest,
   DELETE_CACHED_AUTH: deleteCachedAuthData,

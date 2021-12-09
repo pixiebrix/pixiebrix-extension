@@ -29,7 +29,7 @@ import { MessengerMeta } from "webext-messenger";
 import {
   checkAvailable,
   linkChildTab,
-  runBlockInContentScript,
+  runBrick,
 } from "@/contentScript/messenger/api";
 import { Target } from "@/types";
 import { TabId } from "@/background/devtools/contract";
@@ -109,7 +109,7 @@ async function waitReady(
   return true;
 }
 
-export async function runBlockInOpener(
+export async function requestRunInOpener(
   this: MessengerMeta,
   request: RunBlock
 ): Promise<unknown> {
@@ -123,10 +123,10 @@ export async function runBlockInOpener(
     tabId: tabToOpener.get(sourceTabId),
   };
   const subRequest = { ...request, sourceTabId };
-  return runBlockInContentScript(opener, subRequest);
+  return runBrick(opener, subRequest);
 }
 
-export async function runBlockInBroadcast(
+export async function requestRunInBroadcast(
   this: MessengerMeta,
   request: RunBlock
 ): Promise<unknown[]> {
@@ -145,7 +145,7 @@ export async function runBlockInBroadcast(
       }
 
       try {
-        const response = runBlockInContentScript({ tabId }, subRequest);
+        const response = runBrick({ tabId }, subRequest);
         fulfilled.set(tabId, await response);
       } catch (error) {
         rejected.set(tabId, error);
@@ -160,7 +160,7 @@ export async function runBlockInBroadcast(
   return [...fulfilled].map(([, value]) => value);
 }
 
-export async function runBlockInFrameNonce(
+export async function requestRunInFrameNonce(
   this: MessengerMeta,
   { nonce, ...request }: RunBlock
 ): Promise<unknown> {
@@ -172,10 +172,10 @@ export async function runBlockInFrameNonce(
 
   const target = nonceToTarget.get(nonce);
   const subRequest = { ...request, sourceTabId };
-  return runBlockInContentScript(target, subRequest);
+  return runBrick(target, subRequest);
 }
 
-export async function runBlockInTarget(
+export async function requestRunInTarget(
   this: MessengerMeta,
   request: RunBlock
 ): Promise<unknown> {
@@ -191,7 +191,7 @@ export async function runBlockInTarget(
   await waitReady({ tabId: target, frameId: 0 });
 
   const subRequest = { ...request, sourceTabId };
-  return runBlockInContentScript({ tabId: target }, subRequest);
+  return runBrick({ tabId: target }, subRequest);
 }
 
 export async function openTab(
@@ -203,8 +203,6 @@ export async function openTab(
   const tab = await browser.tabs.create({ ...createProperties, openerTabId });
 
   // FIXME: include frame information here
-  // Note: This is already handled natively
-  console.log("Linking tab to opener and target");
   tabToTarget.set(openerTabId, tab.id);
   tabToOpener.set(tab.id, openerTabId);
 }
@@ -239,11 +237,9 @@ export async function markTabAsReady(this: MessengerMeta) {
 
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {
   if (tab.openerTabId) {
-    console.log("Linking tab to opener and target");
-
     tabToOpener.set(tab.id, tab.openerTabId);
     tabToTarget.set(tab.openerTabId, tab.id);
-    linkChildTab({ tabId: tab.openerTabId, frameId: 0 }, tab.id);
+    linkChildTab({ tabId: tab.openerTabId }, tab.id);
   }
 }
 
@@ -274,7 +270,7 @@ interface ServerResponse {
   error?: JsonObject;
 }
 
-export async function executeOnServer({ blockId, blockArgs }: RunBlock) {
+export async function requestRunOnServer({ blockId, blockArgs }: RunBlock) {
   console.debug(`Running ${blockId} on the server`);
   const client = await getLinkedApiClient();
 

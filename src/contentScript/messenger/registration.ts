@@ -54,10 +54,7 @@ import {
 } from "@/contentScript/devTools";
 import { checkAvailable } from "@/blocks/available";
 import { showNotification } from "@/contentScript/notify";
-import {
-  linkChildTab,
-  runBlockInContentScript,
-} from "@/contentScript/executor";
+import { linkChildTab, runBrick } from "@/contentScript/executor";
 import { cancelSelect, selectElement } from "@/nativeEditor/selector";
 import { runExtensionPointReader } from "@/nativeEditor/dynamic";
 import {
@@ -104,7 +101,7 @@ declare global {
     HANDLE_NAVIGATE: typeof handleNavigate;
     SHOW_NOTIFICATION: typeof showNotification;
     LINK_CHILD_TAB: typeof linkChildTab;
-    RUN_BLOCK: typeof runBlockInContentScript;
+    RUN_BRICK: typeof runBrick;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
 
@@ -150,7 +147,7 @@ registerMethods({
   SHOW_NOTIFICATION: showNotification,
 
   LINK_CHILD_TAB: linkChildTab,
-  RUN_BLOCK: runBlockInContentScript,
+  RUN_BRICK: runBrick,
   CANCEL_SELECT_ELEMENT: cancelSelect,
   SELECT_ELEMENT: selectElement,
 

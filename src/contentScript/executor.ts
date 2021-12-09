@@ -37,9 +37,7 @@ export interface RunBlock {
 
 const childTabs = new Set<number>();
 
-export async function runBlockInContentScript(
-  request: RunBlock
-): Promise<unknown> {
+export async function runBrick(request: RunBlock): Promise<unknown> {
   // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
   const { blockId, blockArgs, options } = request;
   const block = await blockRegistry.lookup(blockId);
