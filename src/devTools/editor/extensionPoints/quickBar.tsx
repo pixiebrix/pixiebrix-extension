@@ -241,7 +241,7 @@ function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
 }
 
 const config: ElementConfig<undefined, QuickBarFormState> = {
-  displayOrder: 6,
+  displayOrder: 2,
   elementType: "quickBar",
   label: "Quick Bar",
   baseClass: QuickBarExtensionPoint,

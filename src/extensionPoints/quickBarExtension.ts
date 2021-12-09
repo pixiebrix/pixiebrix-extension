@@ -23,6 +23,7 @@ import {
   IReader,
   ResolvedExtension,
   Schema,
+  UUID,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { Manifest, Menus, Permissions } from "webextension-polyfill";
@@ -110,8 +111,10 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
     }
   }
 
-  removeExtensions(): void {
-    // Don't need to do any cleanup since context menu registration is handled globally
+  removeExtensions(extensionIds: UUID[]): void {
+    for (const extensionId of extensionIds) {
+      quickBarRegistry.remove(extensionId);
+    }
   }
 
   async install(): Promise<boolean> {
@@ -143,7 +146,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
 
     const numErrors = results.filter((x) => x.status === "rejected").length;
     if (numErrors > 0) {
-      notifyError(`An error occurred adding ${numErrors} context menu item(s)`);
+      notifyError(`An error occurred adding ${numErrors} quick bar items(s)`);
     }
   }
 
@@ -223,7 +226,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
     );
 
     console.debug(
-      "Register context menu handler for: %s (%s)",
+      "Register quick back action handler for: %s (%s)",
       extension.id,
       extension.label ?? "No Label",
       {

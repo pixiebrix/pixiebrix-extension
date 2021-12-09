@@ -17,32 +17,72 @@
 
 import { Action } from "kbar";
 
+export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
+
 const defaultActions: Action[] = [
   {
-    id: "blog",
-    name: "Blog",
-    shortcut: ["b"],
-    keywords: "writing words",
+    id: "marketplace",
+    name: "Open PixieBrix Marketplace",
+    keywords: "marketplace",
     perform: () => {
-      window.location.pathname = "blog";
+      window.location.href = "https://www.pixiebrix.com/marketplace/";
+    },
+  },
+  {
+    id: "admin",
+    name: "Open PixieBrix Admin Console",
+    keywords: "admin",
+    perform: () => {
+      window.location.href = DEFAULT_SERVICE_URL;
+    },
+  },
+  {
+    id: "quick-start",
+    name: "Open PixieBrix Quick Start",
+    keywords: "quick start, tutorials",
+    perform: () => {
+      window.location.href = "https://docs.pixiebrix.com/quick-start-guide";
+    },
+  },
+  {
+    id: "documentation",
+    name: "Open PixieBrix Documentation",
+    keywords: "docs, tutorials, documentation, how to",
+    perform: () => {
+      window.location.href = "https://docs.pixiebrix.com/";
     },
   },
 ];
 
+type ChangeHandler = (actions: Action[]) => void;
+
 class QuickBarRegistry {
   private _actions: Action[];
+  private readonly listeners: ChangeHandler[] = [];
 
   constructor() {
     this._actions = defaultActions;
   }
 
+  private notifyListeners() {
+    for (const listener of this.listeners) {
+      listener(this._actions);
+    }
+  }
+
   add(action: Action): void {
     this._actions = this._actions.filter((x) => x.id !== action.id);
     this._actions.push(action);
+    this.notifyListeners();
   }
 
   remove(id: string): void {
     this._actions = this._actions.filter((x) => x.id !== id);
+  }
+
+  addListener(handler: ChangeHandler) {
+    this.listeners.push(handler);
+    this.notifyListeners();
   }
 
   public get actions(): Action[] {

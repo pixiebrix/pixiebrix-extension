@@ -63,9 +63,9 @@ const GenericInsertPane: React.FunctionComponent<{
           void showActionPanel(thisTab);
         }
       } catch (error) {
-        console.warn("Error adding element", error);
+        // If you're looking for the error message, it's in the logs for the page editor, not the host page
         reportError(error);
-        addToast("Error adding element!!!", {
+        addToast("Error adding element", {
           autoDismiss: true,
           appearance: "error",
         });
