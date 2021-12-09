@@ -79,8 +79,12 @@ export const dataStore = {
   set: getMethod("SET_DATA_STORE", bg),
 };
 
-export const executeBrick = {
-  onServer: getMethod("EXECUTE_ON_SERVER", bg),
+export const requestRun = {
+  onServer: getMethod("REQUEST_RUN_ON_SERVER", bg),
+  inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
+  inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),
+  inFrame: getMethod("REQUEST_RUN_IN_FRAME_NONCE", bg),
+  inAll: getMethod("REQUEST_RUN_IN_ALL", bg),
 };
 
 export const contextMenus = {
