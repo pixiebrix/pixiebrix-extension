@@ -82,7 +82,7 @@ function setActiveElement(event: MouseEvent): void {
   }
 }
 
-function guessSelectedElement(): HTMLElement | null {
+export function guessSelectedElement(): HTMLElement | null {
   const selection = document.getSelection();
   if (selection?.rangeCount) {
     const start = selection.getRangeAt(0).startContainer.parentNode;

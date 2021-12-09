@@ -20,53 +20,25 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Card } from "react-bootstrap";
 import FieldSection from "@/devTools/editor/fields/FieldSection";
 import UrlMatchPatternField from "@/devTools/editor/fields/UrlMatchPatternField";
-import TemplateWidget, {
-  Snippet,
-} from "@/devTools/editor/fields/TemplateWidget";
 import MultiSelectWidget from "@/devTools/editor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/devTools/editor/fields/makeLockableFieldProps";
+import { contextOptions } from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
 import { DEFAULT_SHORTCUTS } from "@/devTools/editor/components/UrlMatchPatternWidget";
-
-const menuSnippets: Snippet[] = [{ label: "selected text", value: "%s" }];
-
-export const contextOptions = [
-  "page",
-  "all",
-  "frame",
-  "selection",
-  "link",
-  "editable",
-  "image",
-  "video",
-  "audio",
-].map((value) => ({
-  value,
-  label: value,
-}));
 
 const matchPatternShortcuts = [
   { caption: "None", getPattern: async () => "" },
   ...DEFAULT_SHORTCUTS,
 ];
 
-const ContextMenuConfiguration: React.FC<{
+const QuickBarConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
   <Card>
     <FieldSection title="Configuration">
       <ConnectedFieldTemplate
         name="extension.title"
-        label="Title"
-        as={TemplateWidget}
-        rows={1}
-        snippets={menuSnippets}
-        description={
-          <span>
-            The context menu item caption. Use the <code>%s</code> placeholder
-            to have the browser dynamically insert the current selection in the
-            menu caption
-          </span>
-        }
+        label="Action Title"
+        description="Quick Bar action title"
       />
 
       <ConnectedFieldTemplate
@@ -75,9 +47,9 @@ const ContextMenuConfiguration: React.FC<{
         options={contextOptions}
         description={
           <span>
-            One or more contexts to include the context menu item. For example,
-            use the <code>selection</code> context to show the menu item when
-            right-clicking selected text.
+            One or more contexts to include the quick bar item. For example, use
+            the <code>selection</code> context to show the action item when text
+            is selected.
           </span>
         }
         {...makeLockableFieldProps("Contexts", isLocked)}
@@ -94,7 +66,7 @@ const ContextMenuConfiguration: React.FC<{
         name="extensionPoint.definition.targetMode"
         as="select"
         title="Target Mode"
-        blankValue="legacy"
+        blankValue="eventTarget"
         description={
           <p>
             Use&nbsp;<code>eventTarget</code> to pass the target of the
@@ -106,7 +78,6 @@ const ContextMenuConfiguration: React.FC<{
       >
         <option value="eventTarget">eventTarget</option>
         <option value="document">document</option>
-        <option value="legacy">legacy</option>
       </ConnectedFieldTemplate>
 
       <UrlMatchPatternField
@@ -126,4 +97,4 @@ const ContextMenuConfiguration: React.FC<{
   </Card>
 );
 
-export default ContextMenuConfiguration;
+export default QuickBarConfiguration;
