@@ -42,6 +42,7 @@ import initExecutor from "@/background/executor";
 import initContextMenus from "@/background/initContextMenus";
 import initDeploymentUpdater from "@/background/deployment";
 import initFirefoxCompat from "@/background/firefoxCompat";
+import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 
 initNavigation();
 initExecutor();
@@ -50,3 +51,4 @@ initFrames();
 initContextMenus();
 initDeploymentUpdater();
 void initFirefoxCompat();
+activateBrowserActionIcon();

@@ -18,12 +18,14 @@
 import { renderExplicit, renderImplicit } from "@/runtime/mapArgs";
 import Mustache from "mustache";
 import { engineRenderer } from "@/runtime/renderers";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 
 describe("renderExplicit", () => {
   test("render var path", async () => {
     const rendered = await renderExplicit(
       { foo: { __type__: "var", __value__: "array.0" } },
-      { array: ["bar"] }
+      { array: ["bar"] },
+      apiVersionOptions("v3")
     );
 
     expect(rendered).toEqual({
@@ -34,7 +36,8 @@ describe("renderExplicit", () => {
   test("render mustache", async () => {
     const rendered = await renderExplicit(
       { foo: { __type__: "mustache", __value__: "{{ array.0 }}!" } },
-      { array: ["bar"] }
+      { array: ["bar"] },
+      apiVersionOptions("v3")
     );
 
     expect(rendered).toEqual({
@@ -67,7 +70,7 @@ describe("handlebars", () => {
       renderImplicit(
         { foo: "{{ obj.prop }}" },
         { obj: { prop: 42 } },
-        await engineRenderer("handlebars")
+        await engineRenderer("handlebars", apiVersionOptions("v3"))
       )
     ).toEqual({
       foo: "42",
@@ -81,7 +84,7 @@ describe("handlebars", () => {
       renderImplicit(
         { foo: "{{ obj.prop }}" },
         { "@obj": { prop: 42 } },
-        await engineRenderer("handlebars")
+        await engineRenderer("handlebars", apiVersionOptions("v3"))
       )
     ).toEqual({
       foo: "",
@@ -106,7 +109,8 @@ describe("defer", () => {
         },
         bar: config,
       },
-      { foo: 42 }
+      { foo: 42 },
+      { autoescape: false }
     );
 
     expect(rendered).toEqual({
@@ -125,7 +129,8 @@ describe("pipeline", () => {
           __value__: [{ id: "@pixiebrix/confetti" }],
         },
       },
-      { array: ["bar"] }
+      { array: ["bar"] },
+      { autoescape: false }
     );
 
     expect(rendered).toEqual({
@@ -154,7 +159,8 @@ describe("pipeline", () => {
         },
         bar: config,
       },
-      { foo: 42 }
+      { foo: 42 },
+      apiVersionOptions("v3")
     );
 
     expect(rendered).toEqual({
@@ -162,4 +168,32 @@ describe("pipeline", () => {
       bar: { foo: 42 },
     });
   });
+});
+
+describe("autoescape", () => {
+  test.each([["mustache"], ["nunjucks"], ["handlebars"]])(
+    "should autoescape for %s",
+    async (templateEngine) => {
+      const rendered = await renderExplicit(
+        { foo: { __type__: templateEngine, __value__: "{{ special }}" } },
+        { special: "a & b" },
+        { autoescape: true }
+      );
+
+      expect(rendered).toEqual({ foo: "a &amp; b" });
+    }
+  );
+
+  test.each([["mustache"], ["nunjucks"], ["handlebars"]])(
+    "should not autoescape for %s",
+    async (templateEngine) => {
+      const rendered = await renderExplicit(
+        { foo: { __type__: templateEngine, __value__: "{{ special }}" } },
+        { special: "a & b" },
+        { autoescape: false }
+      );
+
+      expect(rendered).toEqual({ foo: "a & b" });
+    }
+  );
 });

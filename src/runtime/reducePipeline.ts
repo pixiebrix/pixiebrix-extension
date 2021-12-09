@@ -264,6 +264,7 @@ async function renderBlockArg(
     explicitArg,
     explicitDataFlow,
     explicitRender,
+    autoescape,
   } = options;
 
   // Support YAML short-hand of leaving of `config:` directive for blocks that don't have parameters
@@ -302,12 +303,16 @@ async function renderBlockArg(
     ? state.context
     : { ...state.context, ...(state.previousOutput as UnknownObject) };
 
+  const implicitRender = explicitRender
+    ? null
+    : await engineRenderer(
+        config.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+        { autoescape }
+      );
+
   const blockArgs = (await mapArgs(stageTemplate, ctxt, {
-    implicitRender: explicitRender
-      ? null
-      : await engineRenderer(
-          config.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE
-        ),
+    implicitRender,
+    autoescape,
   })) as RenderedArgs;
 
   if (logValues) {
@@ -398,6 +403,7 @@ async function applyReduceDefaults({
     // Default to the `apiVersion: v1, v2` data passing behavior and renderer behavior
     explicitArg: false,
     explicitRender: false,
+    autoescape: true,
     // Default to the `apiVersion: v1` data flow behavior
     explicitDataFlow: false,
     // If logValues not provided explicitly, default to the global setting

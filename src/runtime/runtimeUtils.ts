@@ -109,17 +109,19 @@ export async function logIfInvalidOutput(
 export async function shouldRunBlock(
   blockConfig: BlockConfig,
   context: BlockArgContext,
-  { explicitRender }: ApiVersionOptions
+  { explicitRender, autoescape }: ApiVersionOptions
 ): Promise<boolean> {
   if (blockConfig.if !== undefined) {
     const render = explicitRender
       ? null
       : await engineRenderer(
-          blockConfig.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE
+          blockConfig.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+          { autoescape }
         );
 
     const { if: condition } = (await mapArgs({ if: blockConfig.if }, context, {
       implicitRender: render,
+      autoescape,
     })) as { if: unknown };
 
     return boolean(condition);

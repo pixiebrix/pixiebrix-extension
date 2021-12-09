@@ -169,7 +169,10 @@ class DeferBlock extends Block {
           ...ctxt,
           [`@${elementKey}`]: data,
         };
-        return mapArgs(element, elementContext, { implicitRender: null });
+        return mapArgs(element, elementContext, {
+          implicitRender: null,
+          ...apiVersionOptions("v3"),
+        });
       })
     );
   }
