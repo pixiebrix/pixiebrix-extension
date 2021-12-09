@@ -32,6 +32,7 @@
     background: none;
     color: inherit;
     padding: 0;
+    outline: none;
   }
 
   svg {
@@ -41,7 +42,6 @@
     background-color: white;
     border: solid 2px white;
     border-radius: 50%;
-    outline: none;
     &:focus,
     &:hover {
       color: var(--blue);
