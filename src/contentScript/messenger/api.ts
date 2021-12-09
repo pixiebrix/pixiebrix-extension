@@ -65,3 +65,4 @@ export const selectElement = getMethod("SELECT_ELEMENT");
 
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runEffectPipeline = getMethod("RUN_EFFECT_PIPELINE");
+export const runMapArgs = getMethod("RUN_MAP_ARGS");

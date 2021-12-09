@@ -180,7 +180,7 @@ export function renderImplicit(
   return config;
 }
 
-type MapOptions = {
+export type MapOptions = {
   /**
    * Render method for v1-v2 implicit runtime behavior
    */
