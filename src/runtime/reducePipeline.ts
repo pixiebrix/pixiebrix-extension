@@ -364,7 +364,7 @@ export async function runBlock(
 
   let notification: string;
 
-  if (true) {
+  if (stage.notifyProgress) {
     notification = showNotification({
       message: stage.label ?? block.name,
       type: "loading",
