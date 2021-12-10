@@ -18,8 +18,54 @@
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import { IBlock, RegistryId } from "@/core";
+import { BlockType, getType } from "@/blocks/util";
 
-const registry = new BaseRegistry<RegistryId, IBlock>(
+export type BlocksMap = Record<RegistryId, TypedBlock>;
+
+export type TypedBlock = {
+  block: IBlock;
+  type: BlockType;
+};
+
+class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
+  private readonly blocksMap = new Map<RegistryId, TypedBlock>();
+
+  async allTyped(): Promise<BlocksMap> {
+    // ToDo await for all types to get resolved
+    const blocksMap: BlocksMap = {};
+    const blocks = this.cached();
+    for (const block of blocks) {
+      blocksMap[block.id] = {
+        block,
+        // eslint-disable-next-line no-await-in-loop
+        type: await getType(block),
+      };
+    }
+
+    return blocksMap;
+  }
+
+  register(...items: IBlock[]): void {
+    super.register(...items);
+
+    for (const item of items) {
+      void getType(item).then((itemType) => {
+        this.blocksMap.set(item.id, {
+          block: item,
+          type: itemType,
+        });
+      });
+    }
+  }
+
+  clear() {
+    super.clear();
+
+    this.blocksMap.clear();
+  }
+}
+
+const registry = new BlocksRegistry(
   ["block", "component", "effect", "reader"],
   "blocks",
   fromJS

@@ -19,10 +19,8 @@ import { BlockPipeline } from "@/blocks/types";
 import { BlockType } from "@/blocks/util";
 import { joinName } from "@/utils";
 import { isEmpty, set } from "lodash";
-import {
-  BlocksMap,
-  FormikErrorTree,
-} from "@/devTools/editor/tabs/editTab/editTabTypes";
+import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
+import { BlocksMap } from "@/blocks/registry";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 

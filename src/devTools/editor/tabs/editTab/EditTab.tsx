@@ -24,9 +24,9 @@ import EditorNodeLayout, {
 import { useFormikContext } from "formik";
 import { BlockConfig } from "@/blocks/types";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
+import { BlockType, defaultBlockConfig } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry, { BlocksMap } from "@/blocks/registry";
 import { compact } from "lodash";
 import { IBlock, OutputKey, UUID } from "@/core";
 import { produce } from "immer";
@@ -50,7 +50,6 @@ import { produceExcludeUnusedDependencies as produceExcludeUnusedDependenciesV3 
 import usePipelineField, {
   PIPELINE_BLOCKS_FIELD_NAME,
 } from "@/devTools/editor/hooks/usePipelineField";
-import { BlocksMap } from "./editTabTypes";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
@@ -86,21 +85,8 @@ const EditTab: React.FC<{
     ? produceExcludeUnusedDependenciesV3
     : produceExcludeUnusedDependenciesV1;
 
-  // Load once
   const [allBlocks] = useAsyncState<BlocksMap>(
-    async () => {
-      const blocksMap: BlocksMap = {};
-      const blocks = await blockRegistry.all();
-      for (const block of blocks) {
-        blocksMap[block.id] = {
-          block,
-          // eslint-disable-next-line no-await-in-loop
-          type: await getType(block),
-        };
-      }
-
-      return blocksMap;
-    },
+    async () => blockRegistry.allTyped(),
     [],
     {}
   );

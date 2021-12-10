@@ -31,7 +31,6 @@ import {
   Metadata,
   RecipeMetadata,
 } from "@/core";
-import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
 import { Permissions, Runtime } from "webextension-polyfill";
@@ -53,6 +52,7 @@ import {
   Context as DevtoolsContextType,
   FrameConnectionState,
 } from "@/devTools/context";
+import { BlocksMap } from "@/blocks/registry";
 
 export const metadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),

@@ -1,9 +1,7 @@
 import { BlockPipeline } from "@/blocks/types";
-import {
-  BlocksMap,
-  FormikErrorTree,
-} from "@/devTools/editor/tabs/editTab/editTabTypes";
+import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
+import { BlocksMap } from "@/blocks/registry";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
   "A panel can only have one renderer. There are one or more renderers configured after this brick.";
