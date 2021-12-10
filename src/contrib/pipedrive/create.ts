@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { proxyService } from "@/background/requests";
+import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
 

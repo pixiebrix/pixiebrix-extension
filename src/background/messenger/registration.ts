@@ -41,7 +41,7 @@ import * as registry from "@/registry/localRegistry";
 import { checkTargetPermissions, ensureContentScript } from "@/background/util";
 import serviceRegistry from "@/services/registry";
 import { deleteCachedAuthData } from "@/background/auth";
-import { doCleanAxiosRequest, _proxyService } from "@/background/requests";
+import { doCleanAxiosRequest, proxyService } from "@/background/requests";
 import { readQuery } from "@/contrib/google/bigquery/handlers";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { preloadContextMenus } from "@/background/initContextMenus";
@@ -90,7 +90,7 @@ declare global {
 
     HTTP_REQUEST: typeof doCleanAxiosRequest;
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
-    PROXY: typeof _proxyService;
+    PROXY: typeof proxyService;
     CLEAR_SERVICE_CACHE: VoidFunction;
     GOOGLE_BIGQUERY_READ: typeof readQuery;
 
@@ -139,7 +139,7 @@ registerMethods({
   HTTP_REQUEST: doCleanAxiosRequest,
   DELETE_CACHED_AUTH: deleteCachedAuthData,
   CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
-  PROXY: _proxyService,
+  PROXY: proxyService,
   GOOGLE_BIGQUERY_READ: readQuery,
 
   GET_DATA_STORE: getRecord,

@@ -23,6 +23,9 @@ import {
 } from "webext-messenger";
 import browser from "webextension-polyfill";
 import { isBackgroundPage } from "webext-detect-page";
+import type { SanitizedServiceConfiguration } from "@/core";
+import type { AxiosRequestConfig } from "axios";
+import type { RemoteResponse } from "@/background/requests";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
 if (isBackgroundPage() && process.env.DEBUG) {
@@ -95,3 +98,11 @@ export const services = {
   locate: getMethod("LOCATE_SERVICE", bg),
   refresh: getMethod("REFRESH_SERVICES", bg),
 };
+
+export const httpRequest = getMethod("HTTP_REQUEST", bg);
+
+// `getMethod` currently strips generics, so we must copy the function signature here
+export const proxyService = getMethod("PROXY", bg) as <TData>(
+  serviceConfig: SanitizedServiceConfiguration | null,
+  requestConfig: AxiosRequestConfig
+) => Promise<RemoteResponse<TData>>;
