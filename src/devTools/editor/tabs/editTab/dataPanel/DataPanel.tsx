@@ -45,7 +45,7 @@ import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
 import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
-import DocumentPreview from "@/components/documentBuilder/DocumentPreview";
+import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
 import documentBuilderSelectors from "@/devTools/editor/slices/documentBuilderSelectors";
 import { actions as documentBuilderActions } from "@/devTools/editor/slices/documentBuilderSlice";
 import copy from "copy-to-clipboard";

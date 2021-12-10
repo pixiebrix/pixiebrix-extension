@@ -17,7 +17,7 @@
 
 import React from "react";
 import styles from "./DocumentEditor.module.scss";
-import ElementEdit from "./ElementEdit";
+import ElementEditor from "./ElementEditor";
 import { Row, Col } from "react-bootstrap";
 
 type DocumentEditorProps = {
@@ -30,7 +30,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
   setActiveElement,
 }) =>
   activeElement ? (
-    <ElementEdit
+    <ElementEditor
       elementName={activeElement}
       setActiveElement={setActiveElement}
     />

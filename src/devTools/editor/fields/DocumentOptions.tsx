@@ -20,7 +20,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { isPlainObject } from "lodash";
 import { joinName } from "@/utils";
 import { useField } from "formik";
-import DocumentEditor from "@/components/documentBuilder/DocumentEditor";
+import DocumentEditor from "@/components/documentBuilder/edit/DocumentEditor";
 import useReduxState from "@/hooks/useReduxState";
 import { actions as documentBuilderActions } from "@/devTools/editor/slices/documentBuilderSlice";
 import documentBuilderSelectors from "@/devTools/editor/slices/documentBuilderSelectors";

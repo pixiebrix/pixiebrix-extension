@@ -27,8 +27,8 @@ import {
   Row,
 } from "react-bootstrap";
 import { ToastProvider } from "react-toast-notifications";
-import DocumentEditor from "./DocumentEditor";
-import DocumentPreview from "./DocumentPreview";
+import DocumentEditor from "./edit/DocumentEditor";
+import DocumentPreview from "./preview/DocumentPreview";
 
 const schemaShape: yup.ObjectSchema = yup.object().shape({
   body: yup.array(yup.object()).required(),

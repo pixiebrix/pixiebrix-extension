@@ -19,7 +19,7 @@ import React, { useContext } from "react";
 import { BlockPipeline } from "@/blocks/types";
 import { useAsyncState } from "@/hooks/common";
 import { getErrorMessage } from "@/errors";
-import DocumentContext from "@/components/documentBuilder/DocumentContext";
+import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { runMapArgs, runRendererPipeline } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";

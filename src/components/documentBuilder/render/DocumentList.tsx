@@ -21,7 +21,10 @@ import { UnknownObject } from "@/types";
 import { Args } from "@/runtime/mapArgs";
 import { useAsyncState } from "@/hooks/common";
 import { GridLoader } from "react-spinners";
-import { BuildDocumentBranch, DocumentElement } from "./documentBuilderTypes";
+import {
+  BuildDocumentBranch,
+  DocumentElement,
+} from "@/components/documentBuilder/documentBuilderTypes";
 import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { getErrorMessage } from "@/errors";

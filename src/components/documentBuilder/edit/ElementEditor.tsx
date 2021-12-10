@@ -24,7 +24,7 @@ import {
   isPipelineDocument,
   ListDocumentElement,
   PipelineDocumentElement,
-} from "./documentBuilderTypes";
+} from "@/components/documentBuilder/documentBuilderTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getElementEditSchemas } from "./elementEditSchemas";
 import { getProperty, joinName } from "@/utils";
@@ -48,14 +48,14 @@ import { IBlock } from "@/core";
 import { BlockConfig } from "@/blocks/types";
 import { uuidv4 } from "@/types/helpers";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
-import ElementBlockEdit from "@/components/documentBuilder/ElementBlockEdit";
+import ElementBlockEdit from "@/components/documentBuilder/edit/ElementBlockEdit";
 
 type ElementEditProps = {
   elementName: string;
   setActiveElement: (activeElement: string) => void;
 };
 
-const ElementEdit: React.FC<ElementEditProps> = ({
+const ElementEditor: React.FC<ElementEditProps> = ({
   elementName,
   setActiveElement,
 }) => {
@@ -213,4 +213,4 @@ const ElementEdit: React.FC<ElementEditProps> = ({
   );
 };
 
-export default ElementEdit;
+export default ElementEditor;

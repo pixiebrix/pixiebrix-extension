@@ -18,7 +18,7 @@
 import { useField } from "formik";
 import React from "react";
 import { Button } from "react-bootstrap";
-import { DocumentElement } from "./documentBuilderTypes";
+import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import getElementCollectionName from "./getElementCollectionName";
