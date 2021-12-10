@@ -81,6 +81,7 @@
     "json-schema-ref-parser": "^9.0.9",
     "jsonpath-plus": "^6.0.1",
     "jsonschema": "^1.4.0",
+    "kbar": "^0.1.0-beta.23",
     "lodash-es": "^4.17.21",
     "marked": "^4.0.3",
     "mustache": "^4.2.0",

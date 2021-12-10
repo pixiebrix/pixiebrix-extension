@@ -366,7 +366,7 @@ export function getImplicitReader(type: ElementType): SingleLayerReaderConfig {
     ]);
   }
 
-  // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by the
+  // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by
   // the contextMenu extension point.
   return [validateRegistryId("@pixiebrix/document-metadata")];
 }

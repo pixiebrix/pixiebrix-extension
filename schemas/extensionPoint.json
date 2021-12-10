@@ -49,7 +49,14 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["menuItem", "panel", "trigger", "contextMenu", "actionPanel"]
+          "enum": [
+            "menuItem",
+            "panel",
+            "trigger",
+            "contextMenu",
+            "actionPanel",
+            "quickBar"
+          ]
         },
         "reader": {
           "$ref": "#/definitions/readerDefinition"

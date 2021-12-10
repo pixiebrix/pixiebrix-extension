@@ -37,7 +37,8 @@ export type ElementType =
   | "trigger"
   | "panel"
   | "contextMenu"
-  | "actionPanel";
+  | "actionPanel"
+  | "quickBar";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation

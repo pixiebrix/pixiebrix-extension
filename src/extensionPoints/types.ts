@@ -23,7 +23,8 @@ type ExtensionPointType =
   | "menuItem"
   | "trigger"
   | "contextMenu"
-  | "actionPanel";
+  | "actionPanel"
+  | "quickBar";
 
 export interface ExtensionPointDefinition {
   type: ExtensionPointType;
