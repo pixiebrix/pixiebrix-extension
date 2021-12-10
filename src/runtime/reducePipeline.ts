@@ -29,7 +29,7 @@ import { castArray, isPlainObject } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import { requestRun } from "@/background/messenger/api";
 import { getLoggingConfig } from "@/background/logging";
-import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
+import { hideNotification, showNotification } from "@/contentScript/notify";
 import { sendDeploymentAlert } from "@/background/telemetry";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/blocks/errors";
@@ -362,13 +362,13 @@ export async function runBlock(
     await throwIfInvalidInput(block, props.args);
   }
 
-  let progressCallbacks: NotificationCallbacks;
+  let notification: string;
 
-  if (stage.notifyProgress) {
-    progressCallbacks = notifyProgress(
-      logger.context.extensionId,
-      stage.label ?? block.name
-    );
+  if (true) {
+    notification = showNotification({
+      message: stage.label ?? block.name,
+      type: "loading",
+    });
   }
 
   if (type === "renderer" && headless) {
@@ -385,9 +385,7 @@ export async function runBlock(
     const validatedProps = (props as unknown) as BlockProps<BlockArg>;
     return await execute(resolvedConfig, validatedProps, options);
   } finally {
-    if (progressCallbacks) {
-      progressCallbacks.hide();
-    }
+    hideNotification(notification);
   }
 }
 

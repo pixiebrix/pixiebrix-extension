@@ -15,18 +15,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { merge } from "lodash";
+import { render } from "react-dom";
+import toast, { Toaster } from "react-hot-toast";
+import { uuidv4 } from "@/types/helpers";
 
 interface Notification {
   message: string;
-  className: "error" | "info" | "success";
+  type?: "info" | "success" | "error" | "loading";
+  id?: string;
+  duration?: number;
 }
-export async function showNotification(
-  notification: Notification
-): Promise<void> {
-  $.notify(notification.message, {
-    className: notification.className,
-  });
+
+let root: Element | null;
+function initToaster(): void {
+  if (!root) {
+    root = document.createElement("div");
+  }
+
+  if (root.isConnected) {
+    return;
+  }
+
+  document.body.append(root);
+  render(<Toaster />, root);
+}
+
+export function showNotification({
+  message,
+  type,
+  id = uuidv4(),
+  duration,
+}: Notification): string {
+  initToaster();
+  const options = { id, duration };
+  switch (type) {
+    case "error":
+    case "success":
+    case "loading":
+      // eslint-disable-next-line security/detect-object-injection -- Filtered
+      toast[type](message, options);
+      break;
+
+    default:
+      toast(message, options);
+  }
+
+  return id;
+}
+
+export function hideNotification(id: string): void {
+  toast.remove(id);
 }
 
 export const DEFAULT_ACTION_RESULTS = {
@@ -72,29 +112,16 @@ export interface NotificationCallbacks {
 }
 
 export function notifyError(message: string): void {
-  // Call getErrorMessage on err and include in the details
-  $.notify(message, {
-    className: "error",
-  });
+  showNotification({ message, type: "error" });
 }
 
-export function notifyResult(extensionId: string, config: MessageConfig): void {
-  $.notify(config.message, config.config);
-}
-
-export function notifyProgress(
+export function notifyResult(
   extensionId: string,
-  message: string
-): NotificationCallbacks {
-  const element = $.notify(message, {
-    autoHide: false,
-    clickToHide: false,
-    className: "info",
-  });
-
-  return {
-    hide: () => {
-      $(element).trigger("notify-hide");
-    },
-  };
+  { message, config }: MessageConfig
+): void {
+  if (config) {
+    $.notify(message, config);
+  } else {
+    showNotification({ message });
+  }
 }
