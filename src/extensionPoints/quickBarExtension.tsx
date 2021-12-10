@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { ExtensionPoint } from "@/types";
 import {
   IBlock,
+  IconConfig,
   IExtensionPoint,
   IReader,
   ResolvedExtension,
@@ -47,13 +49,18 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { guessSelectedElement } from "@/extensionPoints/contextMenu";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import Icon from "@/icons/Icon";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 
 export type QuickBarConfig = {
-  // TODO: shortcut
-  // TODO: keywords
   title: string;
+
+  /**
+   * (Optional) the icon to supply to the icon in the extension point template
+   */
+  icon?: IconConfig;
+
   action: BlockConfig | BlockPipeline;
 };
 
@@ -177,11 +184,20 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
   private async registerExtension(
     extension: ResolvedExtension<QuickBarConfig>
   ): Promise<void> {
-    const { title: name, action: actionConfig } = extension.config;
+    const {
+      title: name,
+      action: actionConfig,
+      icon: iconConfig,
+    } = extension.config;
+
+    const icon = iconConfig ? (
+      <Icon icon={iconConfig.id} library={iconConfig.library} />
+    ) : undefined;
 
     quickBarRegistry.add({
       id: extension.id,
       name,
+      icon,
       perform: async () => {
         reportEvent("HandleQuickBar", selectEventData(extension));
 

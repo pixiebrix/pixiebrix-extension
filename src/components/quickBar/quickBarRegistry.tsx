@@ -15,39 +15,68 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { Action } from "kbar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAppleAlt,
+  faInfoCircle,
+  faSeedling,
+  faStore,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
+
+const PIXIEBRIX_SECTION = "PixieBrix";
 
 const defaultActions: Action[] = [
   {
     id: "marketplace",
-    name: "Open PixieBrix Marketplace",
+    name: "Open Marketplace",
     keywords: "marketplace",
+    icon: <FontAwesomeIcon icon={faStore} fixedWidth />,
+    section: PIXIEBRIX_SECTION,
     perform: () => {
       window.location.href = "https://www.pixiebrix.com/marketplace/";
     },
   },
   {
     id: "admin",
-    name: "Open PixieBrix Admin Console",
-    keywords: "admin",
+    name: "Open Admin Console",
+    keywords: "admin, admin console",
+    section: PIXIEBRIX_SECTION,
+    icon: <FontAwesomeIcon icon={faUsers} fixedWidth />,
     perform: () => {
       window.location.href = DEFAULT_SERVICE_URL;
     },
   },
   {
     id: "quick-start",
-    name: "Open PixieBrix Quick Start",
+    name: "Open Quick Start",
     keywords: "quick start, tutorials",
+    section: PIXIEBRIX_SECTION,
+    icon: <FontAwesomeIcon icon={faAppleAlt} fixedWidth />,
     perform: () => {
       window.location.href = "https://docs.pixiebrix.com/quick-start-guide";
     },
   },
   {
+    id: "community",
+    name: "Open Community",
+    keywords: "community, how to",
+    section: PIXIEBRIX_SECTION,
+    icon: <FontAwesomeIcon icon={faSeedling} fixedWidth />,
+    perform: () => {
+      window.location.href = "https://community.pixiebrix.com/";
+    },
+  },
+  {
     id: "documentation",
-    name: "Open PixieBrix Documentation",
+    name: "Open Documentation",
     keywords: "docs, tutorials, documentation, how to",
+    section: PIXIEBRIX_SECTION,
+    icon: <FontAwesomeIcon icon={faInfoCircle} fixedWidth />,
     perform: () => {
       window.location.href = "https://docs.pixiebrix.com/";
     },

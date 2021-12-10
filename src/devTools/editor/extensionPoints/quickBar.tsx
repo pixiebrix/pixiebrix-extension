@@ -136,6 +136,7 @@ function selectExtension(
 ): IExtension<QuickBarConfig> {
   const config: QuickBarConfig = {
     title: extension.title,
+    icon: extension.icon,
     action: options.includeInstanceIds
       ? extension.blockPipeline
       : omitEditorMetadata(extension.blockPipeline),

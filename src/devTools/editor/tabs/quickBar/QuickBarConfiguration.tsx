@@ -24,6 +24,7 @@ import MultiSelectWidget from "@/devTools/editor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/devTools/editor/fields/makeLockableFieldProps";
 import { contextOptions } from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
 import { DEFAULT_SHORTCUTS } from "@/devTools/editor/components/UrlMatchPatternWidget";
+import IconWidget from "@/components/fields/IconWidget";
 
 const matchPatternShortcuts = [
   { caption: "None", getPattern: async () => "" },
@@ -62,6 +63,13 @@ const QuickBarConfiguration: React.FC<{
     </FieldSection>
 
     <FieldSection title="Advanced">
+      <ConnectedFieldTemplate
+        name="extension.icon"
+        label="Icon"
+        as={IconWidget}
+        description="Icon to show in the menu"
+      />
+
       <ConnectedFieldTemplate
         name="extensionPoint.definition.targetMode"
         as="select"
