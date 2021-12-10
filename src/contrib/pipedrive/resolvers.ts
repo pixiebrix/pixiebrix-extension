@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types";
-import { proxyService } from "@/background/requests";
+import { proxyService } from "@/background/messenger/api";
 import { BlockArg, Schema } from "@/core";
 import { BusinessError } from "@/errors";
 

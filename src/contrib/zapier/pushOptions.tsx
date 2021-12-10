@@ -22,7 +22,7 @@ import { compact } from "lodash";
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
-import { proxyService } from "@/background/requests";
+import { proxyService } from "@/background/messenger/api";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Webhook } from "@/contrib/zapier/contract";

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { proxyService } from "@/background/requests";
+import { proxyService } from "@/background/messenger/api";
 import { Effect, UnknownObject } from "@/types";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
