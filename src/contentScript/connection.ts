@@ -24,7 +24,7 @@ export function showConnectionLost(): void {
     id,
     message: "Connection to PixieBrix lost. Please reload the page",
     type: "error",
-    duration: Infinity,
+    duration: Number.POSITIVE_INFINITY,
   });
 }
 
