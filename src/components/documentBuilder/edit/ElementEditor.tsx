@@ -16,39 +16,15 @@
  */
 
 import { useField } from "formik";
-import React, { ChangeEventHandler } from "react";
-import {
-  DocumentElement,
-  DocumentElementType,
-  isListDocument,
-  isPipelineDocument,
-  ListDocumentElement,
-  PipelineDocumentElement,
-} from "@/components/documentBuilder/documentBuilderTypes";
-import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { getElementEditSchemas } from "./elementEditSchemas";
-import { getProperty, joinName } from "@/utils";
+import React from "react";
+import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { getProperty } from "@/utils";
 import { Col, Row } from "react-bootstrap";
 import styles from "./DocumentEditor.module.scss";
 import RemoveElement from "./RemoveElement";
 import MoveElement from "./MoveElement";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
-import FieldTemplate from "@/components/form/FieldTemplate";
-import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
-import { produce } from "immer";
-import { createNewElement } from "@/components/documentBuilder/createNewElement";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
-import BrickModal from "@/components/brickModal/BrickModal";
-import { useAsyncState } from "@/hooks/common";
-import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
-import blockRegistry from "@/blocks/registry";
-import { defaultBlockConfig, getType } from "@/blocks/util";
-import { IBlock } from "@/core";
-import { BlockConfig } from "@/blocks/types";
-import { uuidv4 } from "@/types/helpers";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
-import ElementBlockEdit from "@/components/documentBuilder/edit/ElementBlockEdit";
+import useElementOptions from "@/components/documentBuilder/edit/useElementOptions";
 
 type ElementEditorProps = {
   elementName: string;
@@ -59,65 +35,9 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
   elementName,
   setActiveElement,
 }) => {
-  const [
-    { value: documentElement },
-    ,
-    { setValue: setDocumentElement },
-  ] = useField<DocumentElement>(elementName);
+  const [{ value: documentElement }] = useField<DocumentElement>(elementName);
 
-  // ToDo refactor this and EditTab.tsx
-  const [blocksMap] = useAsyncState<BlocksMap>(
-    async () => {
-      const blocksMap: BlocksMap = {};
-      const blocks = await blockRegistry.all();
-      for (const block of blocks) {
-        blocksMap[block.id] = {
-          block,
-          // eslint-disable-next-line no-await-in-loop
-          type: await getType(block),
-        };
-      }
-
-      return blocksMap;
-    },
-    [],
-    {}
-  );
-
-  const editSchemas = getElementEditSchemas(documentElement, elementName);
-
-  const isList = isListDocument(documentElement);
-  const isPipeline = isPipelineDocument(documentElement);
-
-  const onElementTypeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    const nextType = event.target.value as DocumentElementType;
-
-    const nextDocumentElement = produce(
-      documentElement,
-      (draft: ListDocumentElement) => {
-        draft.config.element.__value__ = createNewElement(nextType);
-      }
-    );
-
-    setDocumentElement(nextDocumentElement);
-  };
-
-  const onPipelineBlockSelected = (block: IBlock) => {
-    const blockConfig: BlockConfig = {
-      id: block.id,
-      instanceId: uuidv4(),
-      config: defaultBlockConfig(block.inputSchema),
-    };
-
-    const nextDocumentElement = produce(
-      documentElement,
-      (draft: PipelineDocumentElement) => {
-        draft.config.pipeline.__value__ = [blockConfig];
-      }
-    );
-
-    setDocumentElement(nextDocumentElement);
-  };
+  const ElementOptions = useElementOptions(documentElement, elementName);
 
   return (
     <>
@@ -143,62 +63,7 @@ const ElementEditor: React.FC<ElementEditorProps> = ({
 
       <Row>
         <Col>
-          {editSchemas.map((editSchema) => (
-            <SchemaField key={editSchema.name} {...editSchema} />
-          ))}
-
-          {isList && (
-            <>
-              <ConnectedFieldTemplate
-                label="Element key"
-                name={joinName(elementName, "config", "elementKey")}
-                as={KeyNameWidget}
-              />
-              <FieldTemplate
-                label="Item type"
-                name="elementType"
-                value={documentElement.config.element.__value__.type}
-                onChange={onElementTypeChange}
-                as={SelectWidget}
-                options={getAllowedChildTypes(documentElement).map((x) => ({
-                  // eslint-disable-next-line security/detect-object-injection -- x is a know string
-                  label: elementTypeLabels[x],
-                  value: x,
-                }))}
-              />
-            </>
-          )}
-
-          {isPipeline && documentElement.config.pipeline.__value__.length > 1 && (
-            <Row>
-              <Col>
-                Use Workshop to edit a pipeline made of multiple bricks.
-              </Col>
-            </Row>
-          )}
-          {isPipeline &&
-            documentElement.config.pipeline.__value__.length === 1 && (
-              <>
-                <Row>
-                  <Col>
-                    <BrickModal
-                      bricks={Object.values(blocksMap)
-                        .filter((x) => x.type === "renderer")
-                        .map((x) => x.block)}
-                      onSelect={onPipelineBlockSelected}
-                    />
-                  </Col>
-                  <Col>
-                    {documentElement.config.pipeline.__value__[0]?.id ??
-                      "empty"}
-                  </Col>
-                </Row>
-                <ElementBlockEdit
-                  blockConfig={documentElement.config.pipeline.__value__[0]}
-                  blockConfigName={`${elementName}.config.pipeline.__value__.0`}
-                />
-              </>
-            )}
+          <ElementOptions />
         </Col>
       </Row>
       <Row>

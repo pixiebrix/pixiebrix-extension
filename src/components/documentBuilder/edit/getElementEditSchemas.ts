@@ -17,7 +17,7 @@
 
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { joinName } from "@/utils";
-import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 
 function getClassNameEdit(elementName: string): SchemaFieldProps {
   return {
@@ -27,11 +27,11 @@ function getClassNameEdit(elementName: string): SchemaFieldProps {
   };
 }
 
-export function getElementEditSchemas(
-  element: DocumentElement,
+function getElementEditSchemas(
+  elementType: DocumentElementType,
   elementName: string
 ): SchemaFieldProps[] {
-  switch (element.type) {
+  switch (elementType) {
     case "header_1":
     case "header_2":
     case "header_3": {
@@ -61,9 +61,8 @@ export function getElementEditSchemas(
       return [headingEdit, getClassNameEdit(elementName)];
     }
 
-    case "pipeline": {
-      return [];
-    }
+    case "pipeline":
+      throw new Error("Use custom Options for pipeline element.");
 
     case "button": {
       const titleEdit: SchemaFieldProps = {
@@ -106,17 +105,12 @@ export function getElementEditSchemas(
       return [titleEdit, variantEdit, sizeEdit, getClassNameEdit(elementName)];
     }
 
-    case "list": {
-      const arraySourceEdit: SchemaFieldProps = {
-        name: joinName(elementName, "config", "array"),
-        schema: { type: "array" },
-        label: "Array",
-      };
-
-      return [arraySourceEdit];
-    }
+    case "list":
+      throw new Error("Use custom Options for list element.");
 
     default:
       return [getClassNameEdit(elementName)];
   }
 }
+
+export default getElementEditSchemas;
