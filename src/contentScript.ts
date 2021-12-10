@@ -27,7 +27,6 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import "@/messaging/external";
-import "@/vendors/notify";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
 import { markTabAsReady, whoAmI } from "@/background/messenger/api";

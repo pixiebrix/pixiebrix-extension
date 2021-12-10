@@ -18,12 +18,13 @@
 import React from "react";
 import { merge } from "lodash";
 import { render } from "react-dom";
-import toast, { Toaster } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
 
+type NotificationType = "info" | "success" | "error" | "loading";
 interface Notification {
   message: string;
-  type?: "info" | "success" | "error" | "loading";
+  type?: NotificationType;
   id?: string;
   duration?: number;
 }
@@ -117,11 +118,7 @@ export function notifyError(message: string): void {
 
 export function notifyResult(
   extensionId: string,
-  { message, config }: MessageConfig
+  { message, config: { className } }: MessageConfig
 ): void {
-  if (config) {
-    $.notify(message, config);
-  } else {
-    showNotification({ message });
-  }
+  showNotification({ message, type: className as NotificationType });
 }
