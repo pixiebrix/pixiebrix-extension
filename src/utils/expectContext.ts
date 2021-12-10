@@ -47,7 +47,6 @@ const contextMap = new Map<typeof contexts[number], () => boolean>([
   ["extension", isExtensionContext],
   ["background", isBackgroundPage],
   ["contentScript", isContentScript],
-  ["extension", isExtensionContext],
 ]);
 
 /**
