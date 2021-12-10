@@ -93,6 +93,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
         }}
         value={selectedValue}
         onChange={selectOnChange}
+        menuPlacement="auto"
       />
     );
   }
@@ -104,6 +105,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
         options={options}
         value={selectedValue}
         onChange={selectOnChange}
+        menuPlacement="auto"
       />
     );
   }
