@@ -27,12 +27,12 @@ import PanelBody from "@/actionPanel/PanelBody";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 
-type DocumentBlockProps = { pipeline: BlockPipeline };
+type BlockElementProps = { pipeline: BlockPipeline };
 
 /**
  * A React component that messages the contentScript to run a pipeline and then shows the result
  */
-const DocumentBlock: React.FC<DocumentBlockProps> = ({ pipeline }) => {
+const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
   const {
     options: { ctxt },
   } = useContext(DocumentContext);
@@ -65,7 +65,7 @@ const DocumentBlock: React.FC<DocumentBlockProps> = ({ pipeline }) => {
     });
   }, [pipeline]);
 
-  console.log("DocumentBlock", {
+  console.log("BlockElement", {
     pipeline,
     ctxt,
     payload,
@@ -90,4 +90,4 @@ const DocumentBlock: React.FC<DocumentBlockProps> = ({ pipeline }) => {
   return <PanelBody payload={payload} />;
 };
 
-export default DocumentBlock;
+export default BlockElement;

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import BlockPipeline from "@/components/documentBuilder/render/DocumentBlock";
+import BlockPipeline from "@/components/documentBuilder/render/BlockElement";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
@@ -27,11 +27,11 @@ import {
   DocumentElement,
   PipelineDocumentConfig,
 } from "./documentBuilderTypes";
-import DocumentButton from "@/components/documentBuilder/render/DocumentButton";
+import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
 import useNotifications from "@/hooks/useNotifications";
 import documentTreeStyles from "./documentTree.module.scss";
 import cx from "classnames";
-import DocumentList from "@/components/documentBuilder/render/DocumentList";
+import ListElement from "@/components/documentBuilder/render/ListElement";
 
 const headerComponents = {
   header_1: "h1",
@@ -117,7 +117,7 @@ export function getComponentDefinition(
       }
 
       return {
-        Component: DocumentButton,
+        Component: ButtonElement,
         props: {
           children: title,
           onClick: onClick?.__value__,
@@ -135,7 +135,7 @@ export function getComponentDefinition(
       };
 
       return {
-        Component: DocumentList,
+        Component: ListElement,
         props,
       };
     }

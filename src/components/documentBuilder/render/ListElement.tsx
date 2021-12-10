@@ -40,7 +40,7 @@ type DocumentListProps = {
   buildDocumentBranch: BuildDocumentBranch;
 };
 
-const DocumentListInternal: React.FC<DocumentListProps> = ({
+const ListElementInternal: React.FC<DocumentListProps> = ({
   array,
   elementKey,
   config,
@@ -123,10 +123,10 @@ const DocumentListInternal: React.FC<DocumentListProps> = ({
   );
 };
 
-const DocumentList: React.FC<DocumentListProps> = (props) => (
+const ListElement: React.FC<DocumentListProps> = (props) => (
   <ErrorBoundary errorContext="List element.">
-    <DocumentListInternal {...props} />
+    <ListElementInternal {...props} />
   </ErrorBoundary>
 );
 
-export default DocumentList;
+export default ListElement;

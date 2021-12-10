@@ -24,11 +24,11 @@ import { uuidv4 } from "@/types/helpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { Except } from "type-fest";
 
-type DocumentButtonProps = Except<AsyncButtonProps, "onClick"> & {
+type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
   onClick: BlockPipeline;
 };
 
-const DocumentButton: React.FC<DocumentButtonProps> = ({
+const ButtonElement: React.FC<ButtonElementProps> = ({
   onClick,
   ...restProps
 }) => {
@@ -50,4 +50,4 @@ const DocumentButton: React.FC<DocumentButtonProps> = ({
   return <AsyncButton onClick={handler} {...restProps} />;
 };
 
-export default DocumentButton;
+export default ButtonElement;

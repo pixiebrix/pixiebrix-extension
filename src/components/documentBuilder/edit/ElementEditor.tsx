@@ -30,8 +30,8 @@ import { getElementEditSchemas } from "./elementEditSchemas";
 import { getProperty, joinName } from "@/utils";
 import { Col, Row } from "react-bootstrap";
 import styles from "./DocumentEditor.module.scss";
-import RemoveElementAction from "./RemoveElementAction";
-import MoveElementAction from "./MoveElementAction";
+import RemoveElement from "./RemoveElement";
+import MoveElement from "./MoveElement";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
@@ -50,12 +50,12 @@ import { uuidv4 } from "@/types/helpers";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 import ElementBlockEdit from "@/components/documentBuilder/edit/ElementBlockEdit";
 
-type ElementEditProps = {
+type ElementEditorProps = {
   elementName: string;
   setActiveElement: (activeElement: string) => void;
 };
 
-const ElementEditor: React.FC<ElementEditProps> = ({
+const ElementEditor: React.FC<ElementEditorProps> = ({
   elementName,
   setActiveElement,
 }) => {
@@ -129,7 +129,7 @@ const ElementEditor: React.FC<ElementEditProps> = ({
           </h6>
         </Col>
         <Col xl>
-          <RemoveElementAction
+          <RemoveElement
             elementName={elementName}
             setActiveElement={setActiveElement}
           />
@@ -203,7 +203,7 @@ const ElementEditor: React.FC<ElementEditProps> = ({
       </Row>
       <Row>
         <Col>
-          <MoveElementAction
+          <MoveElement
             elementName={elementName}
             setActiveElement={setActiveElement}
           />
