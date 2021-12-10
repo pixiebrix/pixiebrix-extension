@@ -33,6 +33,7 @@ let root: Element | null;
 function initToaster(): void {
   if (!root) {
     root = document.createElement("div");
+    root.setAttribute("style", "all: initial; font-family: sans-serif;");
   }
 
   if (root.isConnected) {
