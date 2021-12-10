@@ -285,16 +285,21 @@ describe("When rendered in panel", () => {
 
   test("renders block", async () => {
     const markdown = "Pipeline text for card test.";
-    (backgroundAPI.whoAmI as any).mockResolvedValue({ tab: { id: 0 } });
-    (contentScriptAPI.runRendererPipeline as any).mockResolvedValue({
+    (backgroundAPI.whoAmI as jest.Mock).mockResolvedValueOnce({
+      tab: { id: 0 },
+    });
+    (contentScriptAPI.runRendererPipeline as jest.Mock).mockResolvedValueOnce({
       blockId: markdownBlock.id,
       key: uuidv4(),
       args: { markdown },
       ctxt: { "@input": {}, "@options": {} },
     });
+    (contentScriptAPI.runMapArgs as jest.Mock).mockImplementationOnce(
+      async (inputConfig) => Promise.resolve(inputConfig)
+    );
 
     const yamlConfig = `
-type: block
+type: pipeline
 config:
   pipeline: !pipeline
     - id: "${markdownBlock.id}"
@@ -304,7 +309,7 @@ config:
     const config = loadBrickYaml(yamlConfig);
     const { container } = renderDocument(config);
 
-    // Wait for useAsyncState inside of PipelineComponent
+    // Wait for useAsyncState inside the PipelineComponent
     await waitForEffect();
 
     expectBlockContainerRendered(container, markdownBlock.id);
