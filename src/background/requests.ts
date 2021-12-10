@@ -94,6 +94,12 @@ interface SanitizedResponse<T = unknown> {
 export async function doCleanAxiosRequest<T>(
   config: AxiosRequestConfig
 ): Promise<SanitizedResponse<T>> {
+  // Network requests must go through background page for permissions/CORS to work properly
+  expectContext(
+    "background",
+    "Network requests must be made from the background page"
+  );
+
   try {
     const { data, status, statusText } = await axios(config);
 
