@@ -34,6 +34,7 @@ import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { serializeError } from "serialize-error";
 import { ContextError } from "@/errors";
+
 jest.mock("@/background/trace");
 jest.mock("@/background/telemetry");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({

@@ -201,6 +201,3 @@ export function liftExternal<
     return payload;
   };
 }
-
-/** @deprecated The registration now happens automatically */
-export default () => {};

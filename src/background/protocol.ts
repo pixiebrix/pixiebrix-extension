@@ -32,6 +32,7 @@ import {
   isErrorResponse,
   RemoteProcedureCallRequest,
 } from "@/messaging/protocol";
+
 type ChromeMessageSender = chrome.runtime.MessageSender;
 
 export const MESSAGE_PREFIX = "@@pixiebrix/background/";
