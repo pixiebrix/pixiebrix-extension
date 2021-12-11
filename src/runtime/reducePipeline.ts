@@ -385,7 +385,9 @@ export async function runBlock(
     const validatedProps = (props as unknown) as BlockProps<BlockArg>;
     return await execute(resolvedConfig, validatedProps, options);
   } finally {
-    hideNotification(notification);
+    if (stage.notifyProgress) {
+      hideNotification(notification);
+    }
   }
 }
 
