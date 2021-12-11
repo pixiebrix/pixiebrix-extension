@@ -159,7 +159,7 @@ function customizeManifest(manifest, isProduction) {
         "http://localhost:8000/*",
       ];
 
-  const policy = new Policy(manifest.content_security_policy);
+  const policy = new Policy(manifest.content_security_policy.extension_pages);
 
   policy.add("connect-src", process.env.SERVICE_URL);
   if (!isProduction) {
@@ -173,7 +173,7 @@ function customizeManifest(manifest, isProduction) {
     policy.add("img-src", "https://pixiebrix-marketplace-dev.s3.amazonaws.com");
   }
 
-  manifest.content_security_policy = policy.toString();
+  manifest.content_security_policy.extension_pages = policy.toString();
 
   if (process.env.EXTERNALLY_CONNECTABLE) {
     manifest.externally_connectable.matches = uniq([
@@ -240,7 +240,6 @@ module.exports = (env, options) =>
 
     output: {
       path: path.resolve("dist"),
-      globalObject: "window",
       chunkFilename: "bundles/[name].bundle.js",
       environment: {
         dynamicImport: true,

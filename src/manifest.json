@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "author": "PixieBrix, Inc.",
   "name": "PixieBrix",
   "short_name": "PixieBrix",
@@ -18,7 +18,9 @@
     "48": "icons/logo48.png",
     "128": "icons/logo128.png"
   },
-  "content_security_policy": "script-src 'self' https://apis.google.com https://w.chatlio.com; font-src 'self' https://fonts.gstatic.com https://w.chatlio.com; connect-src 'self' https: https://api.chatlio.com https://api-cdn.chatlio.com wss://push.chatlio.com wss://ws.pusherapp.com; object-src 'self'; img-src 'self' data: https://w.chatlio.com https://avatars.slack-edge.com https://pixiebrix-marketplace.s3.amazonaws.com https://files.slack.com https://files-origin.slack.com https://secure.gravatar.com https://uploads-cdn.chatlio.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://w.chatlio.com; frame-src 'self' https: https://*.googleapis.com https://docs.google.com https://player.vimeo.com",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https: https://api.chatlio.com https://api-cdn.chatlio.com wss://push.chatlio.com wss://ws.pusherapp.com; object-src 'self'; img-src 'self' data: https://avatars.slack-edge.com https://pixiebrix-marketplace.s3.amazonaws.com https://files.slack.com https://files-origin.slack.com https://secure.gravatar.com https://uploads-cdn.chatlio.com; style-src 'self' 'unsafe-inline'; frame-src 'self' https: https://*.googleapis.com https://docs.google.com https://player.vimeo.com"
+  },
   "content_scripts": [
     {
       "matches": ["https://*.pixiebrix.com/*"],
@@ -34,28 +36,33 @@
     "identity",
     "tabs",
     "webNavigation",
-    "contextMenus",
-    "https://*.pixiebrix.com/*"
+    "contextMenus"
   ],
+  "host_permissions": ["https://*.pixiebrix.com/*"],
   "devtools_page": "devtools.html",
   "externally_connectable": {
     "matches": ["https://app.pixiebrix.com/*"]
   },
   "web_accessible_resources": [
-    "css/*",
-    "bundles/*",
-    "frame.html",
-    "frame.css",
-    "action.html",
-    "action.css",
-    "devtoolsPanel.css",
-    "script.js",
-    "ephemeralForm.html",
-    "ephemeralForm.css",
-    "audio/*",
-    "user-icons/*"
+    {
+      "resources": [
+        "css/*",
+        "bundles/*",
+        "frame.html",
+        "frame.css",
+        "action.html",
+        "action.css",
+        "devtoolsPanel.css",
+        "script.js",
+        "ephemeralForm.html",
+        "ephemeralForm.css",
+        "audio/*",
+        "user-icons/*"
+      ],
+      "matches": ["*://*/*"]
+    }
   ],
-  "browser_action": {
+  "action": {
     "default_title": "PixieBrix",
     "default_icon": {
       "16": "icons/inactive/logo16.png",
@@ -65,7 +72,7 @@
     }
   },
   "background": {
-    "scripts": ["grayIconWhileLoading.js", "vendors.js", "background.js"]
+    "service_worker": "background.worker.js"
   },
   "options_ui": {
     "page": "options.html",
