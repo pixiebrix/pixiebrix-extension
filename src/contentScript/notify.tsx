@@ -29,19 +29,18 @@ interface Notification {
   duration?: number;
 }
 
-let root: Element | null;
-export function initToaster(): void {
-  if (!root) {
-    root = document.createElement("div");
-    root.setAttribute("style", "all: initial; font-family: sans-serif;");
-  }
+const containerStyle: React.CSSProperties = {
+  zIndex: 9_999_999,
+  fontFamily: "sans-serif",
+};
 
-  if (root.isConnected) {
-    return;
-  }
+export function initToaster(): void {
+  const root = document.createElement("div");
+  // This style cannot be on containerStyle because it overrides some of its props there
+  root.setAttribute("style", "all: initial");
 
   document.body.append(root);
-  render(<Toaster />, root);
+  render(<Toaster containerStyle={containerStyle} />, root);
 }
 
 export function showNotification({
