@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line import/no-extraneous-dependencies -- Required for react-select-virtualized https://github.com/guiyep/react-select-virtualized/issues/283
+// Required for react-select-virtualized https://github.com/guiyep/react-select-virtualized/issues/283
 import "regenerator-runtime/runtime";
 
 import Select from "react-select-virtualized";
