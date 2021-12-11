@@ -30,7 +30,7 @@ interface Notification {
 }
 
 let root: Element | null;
-function initToaster(): void {
+export function initToaster(): void {
   if (!root) {
     root = document.createElement("div");
     root.setAttribute("style", "all: initial; font-family: sans-serif;");
@@ -50,7 +50,6 @@ export function showNotification({
   id = uuidv4(),
   duration,
 }: Notification): string {
-  initToaster();
   const options = { id, duration };
   switch (type) {
     case "error":

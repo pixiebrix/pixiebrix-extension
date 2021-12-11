@@ -34,6 +34,7 @@ import { showConnectionLost } from "@/contentScript/connection";
 import { isConnectionError } from "@/errors";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { addListenerForUpdateSelectedElement } from "@/devTools/getSelectedElement";
+import { initToaster } from "@/contentScript/notify";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();
@@ -62,6 +63,7 @@ declare global {
 async function init(): Promise<void> {
   addListenerForUpdateSelectedElement();
   initTelemetry();
+  initToaster();
 
   const sender = await whoAmI();
 
