@@ -45,7 +45,7 @@ const recipeConfigurationSchema: yup.ObjectSchema<RecipeConfiguration> = yup
 const SAVE_AS_NEW_BLUEPRINT = "Save as New Blueprint";
 const UPDATE_BLUEPRINT = "Update Blueprint";
 
-type OwnProps = {
+type OwnProperties = {
   initialValues: RecipeConfiguration;
   isNewRecipe: boolean;
   close: () => void;
@@ -53,7 +53,7 @@ type OwnProps = {
   save: OnSubmit<RecipeConfiguration>;
 };
 
-const RecipeConfigurationModal: React.FC<OwnProps> = ({
+const RecipeConfigurationModal: React.FC<OwnProperties> = ({
   initialValues,
   isNewRecipe,
   close,

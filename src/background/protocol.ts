@@ -90,7 +90,7 @@ async function handleRequest(
 
 async function callBackground(
   type: string,
-  args: unknown[],
+  arguments_: unknown[],
   options: HandlerOptions
 ): Promise<unknown> {
   if (!isExtensionContext() && chrome.runtime == null) {
@@ -100,7 +100,7 @@ async function callBackground(
   }
 
   const nonce = uuidv4();
-  const message = { type, payload: args, meta: { nonce } };
+  const message = { type, payload: arguments_, meta: { nonce } };
 
   // `browser.*` APIs are not polyfilled outside the extension context (`externally_connectable` pages)
   // https://github.com/mozilla/webextension-polyfill/issues/326
@@ -159,9 +159,9 @@ export function liftBackground<
   R extends SerializableResponse
 >(
   type: string,
-  method: (...args: TArguments) => Promise<R>,
+  method: (...arguments_: TArguments) => Promise<R>,
   options?: HandlerOptions
-): (...args: TArguments) => Promise<R> {
+): (...arguments_: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isBackgroundPage()) {
@@ -174,8 +174,8 @@ export function liftBackground<
     return method;
   }
 
-  return async (...args: TArguments) =>
-    callBackground(fullType, args, options) as R;
+  return async (...arguments_: TArguments) =>
+    callBackground(fullType, arguments_, options) as R;
 }
 
 function backgroundListener(

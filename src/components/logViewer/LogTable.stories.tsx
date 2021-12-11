@@ -33,11 +33,11 @@ export default {
   component: LogTable,
 } as ComponentMeta<typeof LogTable>;
 
-const Template: ComponentStory<typeof LogTable> = (args) => (
+const Template: ComponentStory<typeof LogTable> = (arguments_) => (
   <Card>
     <Card.Header>Error Log</Card.Header>
     <Card.Body className="p-0">
-      <LogTable {...args} />
+      <LogTable {...arguments_} />
     </Card.Body>
   </Card>
 );

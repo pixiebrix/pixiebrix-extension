@@ -76,23 +76,25 @@ const items = [
   },
 ];
 
-const SingleMenuTemplate: ComponentStory<typeof EllipsisMenu> = (args) => (
-  <EllipsisMenu {...args} />
-);
+const SingleMenuTemplate: ComponentStory<typeof EllipsisMenu> = (
+  arguments_
+) => <EllipsisMenu {...arguments_} />;
 
 export const SingleMenu = SingleMenuTemplate.bind({});
 SingleMenu.args = {
   items,
 };
 
-const MultipleMenuTemplate: ComponentStory<typeof EllipsisMenu> = (args) => (
+const MultipleMenuTemplate: ComponentStory<typeof EllipsisMenu> = (
+  arguments_
+) => (
   <Card onClick={action("parent clicked")}>
     <Card.Body>
       <div className="p-3">
-        <EllipsisMenu {...args} />
+        <EllipsisMenu {...arguments_} />
       </div>
       <div className="p-3">
-        <EllipsisMenu {...args} />
+        <EllipsisMenu {...arguments_} />
       </div>
     </Card.Body>
   </Card>

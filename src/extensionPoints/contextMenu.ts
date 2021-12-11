@@ -291,9 +291,11 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       })
     );
 
-    const numErrors = results.filter((x) => x.status === "rejected").length;
-    if (numErrors > 0) {
-      notifyError(`An error occurred adding ${numErrors} context menu item(s)`);
+    const numberErrors = results.filter((x) => x.status === "rejected").length;
+    if (numberErrors > 0) {
+      notifyError(
+        `An error occurred adding ${numberErrors} context menu item(s)`
+      );
     }
   }
 

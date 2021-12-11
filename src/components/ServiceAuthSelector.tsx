@@ -57,8 +57,8 @@ const ServiceAuthSelector: React.FunctionComponent<{
   CustomMenuList?: ComponentType<
     MenuListComponentProps<AuthOption, boolean, GroupTypeBase<AuthOption>>
   >;
-}> = ({ authOptions, serviceId, CustomMenuList, ...props }) => {
-  const [field, meta, helpers] = useField(props);
+}> = ({ authOptions, serviceId, CustomMenuList, ...properties }) => {
+  const [field, meta, helpers] = useField(properties);
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === serviceId),
     [authOptions, serviceId]

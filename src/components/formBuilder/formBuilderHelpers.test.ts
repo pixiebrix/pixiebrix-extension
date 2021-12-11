@@ -36,10 +36,10 @@ describe("replaceStringInArray", () => {
   });
 
   test("does not mutate the source array", () => {
-    const refToTheInitialArray = array;
+    const referenceToTheInitialArray = array;
     const copyOfInitialArray = [...array];
     replaceStringInArray(array, array[1]);
-    expect(array).toBe(refToTheInitialArray);
+    expect(array).toBe(referenceToTheInitialArray);
     expect(array).toEqual(copyOfInitialArray);
   });
 

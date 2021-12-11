@@ -22,11 +22,11 @@ import ServiceField from "@/components/fields/schemaFields/v1/ServiceField";
 import { Button } from "react-bootstrap";
 import { extractServiceIds } from "@/services/serviceUtils";
 
-type ConfigProps = {
+type ConfigProperties = {
   serviceSchema: Schema;
   serviceFieldName: string;
   message?: React.ReactNode;
-  children: (childProps: {
+  children: (childProperties: {
     config: SanitizedServiceConfiguration;
   }) => React.ReactNode;
 };
@@ -41,7 +41,7 @@ const defaultMessage = (
 /**
  * HOC for options that require a configured service (e.g., because they fetch their options from that service.
  */
-const RequireServiceConfig: React.FC<ConfigProps> = ({
+const RequireServiceConfig: React.FC<ConfigProperties> = ({
   serviceSchema,
   serviceFieldName,
   message = defaultMessage,

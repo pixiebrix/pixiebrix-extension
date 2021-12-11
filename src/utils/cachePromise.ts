@@ -53,14 +53,16 @@ async function cachePromise<T = unknown>(
   return promise;
 }
 
-type PromiseFactory<T = unknown> = (...args: unknown[]) => Promise<T>;
+type PromiseFactory<T = unknown> = (...arguments_: unknown[]) => Promise<T>;
 
 export function cachePromiseMethod<T extends PromiseFactory>(
   keys: unknown[],
   promiseFactory: T
 ): T {
-  return (async (...args: unknown[]) =>
-    cachePromise([...keys, ...args], async () => promiseFactory(...args))) as T;
+  return (async (...arguments_: unknown[]) =>
+    cachePromise([...keys, ...arguments_], async () =>
+      promiseFactory(...arguments_)
+    )) as T;
 }
 
 export default cachePromise;

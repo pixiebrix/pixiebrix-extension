@@ -33,7 +33,7 @@ const FALLBACK_SCHEMA: Schema = {
   additionalProperties: true,
 };
 
-type OwnProps = {
+type OwnProperties = {
   heading: string;
 
   /**
@@ -57,7 +57,7 @@ const ChildContainer: React.FC<{ heading: string }> = ({
   </Card>
 );
 
-const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProps> = ({
+const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProperties> = ({
   name,
   schema,
   schemaLoading,
@@ -91,32 +91,34 @@ const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProps> = ({
   return (
     <ChildContainer heading={heading}>
       {schema &&
-        Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
-          if (typeof fieldSchema === "boolean") {
-            throw new TypeError("Expected schema for input property type");
-          }
+        Object.entries(inputProperties(schema)).map(
+          ([property, fieldSchema]) => {
+            if (typeof fieldSchema === "boolean") {
+              throw new TypeError("Expected schema for input property type");
+            }
 
-          return (
-            <SchemaField
-              key={prop}
-              name={joinName(name, prop)}
-              schema={schema}
-            />
-          );
-        })}
+            return (
+              <SchemaField
+                key={property}
+                name={joinName(name, property)}
+                schema={schema}
+              />
+            );
+          }
+        )}
     </ChildContainer>
   );
 };
 
-const ChildObjectField: React.FunctionComponent<SchemaFieldProps & OwnProps> = (
-  props
-) => (
+const ChildObjectField: React.FunctionComponent<
+  SchemaFieldProps & OwnProperties
+> = (properties) => (
   <ConnectedFieldTemplate
-    {...props}
+    {...properties}
     description={
-      props.schemaError
-        ? getErrorMessage(props.schemaError)
-        : props.schema?.description
+      properties.schemaError
+        ? getErrorMessage(properties.schemaError)
+        : properties.schema?.description
     }
     as={ChildObjectWidget}
   />

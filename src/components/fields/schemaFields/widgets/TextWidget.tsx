@@ -43,7 +43,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   hideLabel,
   isObjectProperty,
   isArrayItem,
-  ...restProps
+  ...restProperties
 }) => {
   const [created, setCreated] = useState([]);
   const [{ value, ...field }, meta, helpers] = useField<string>(name);
@@ -62,12 +62,12 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     return [schema?.enum == null, options];
   }, [schema.examples, schema.enum, created, value, schema.type]);
 
-  const textAreaRef = useRef<HTMLTextAreaElement>();
+  const textAreaReference = useRef<HTMLTextAreaElement>();
 
   useEffect(() => {
-    if (textAreaRef.current) {
+    if (textAreaReference.current) {
       // eslint-disable-next-line security/detect-non-literal-fs-filename -- not using fs.watch, false positive
-      fitTextarea.watch(textAreaRef.current);
+      fitTextarea.watch(textAreaReference.current);
     }
   }, []);
 
@@ -121,9 +121,9 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
       rows="1"
       value={value ?? ""}
       {...field}
-      {...restProps}
+      {...restProperties}
       isInvalid={Boolean(meta.error)}
-      ref={textAreaRef}
+      ref={textAreaReference}
     />
   );
 };

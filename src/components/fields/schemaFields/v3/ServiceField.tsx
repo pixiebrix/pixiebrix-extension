@@ -84,10 +84,10 @@ function defaultOutputKey(
 }
 
 export function keyToFieldValue(key: OutputKey): Expression<ServiceKeyVar> {
-  const val = key == null ? null : (`@${key}` as ServiceKeyVar);
+  const value = key == null ? null : (`@${key}` as ServiceKeyVar);
   return {
     __type__: "var",
-    __value__: val,
+    __value__: value,
   };
 }
 
@@ -115,7 +115,9 @@ function lookupAuthId(
     : authOptions.find((x) => x.value === dependency.config)?.value;
 }
 
-function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
+function selectTopLevelVariables(
+  state: Pick<FormState, "extension">
+): Set<string> {
   const pipeline = castArray(state.extension.blockPipeline ?? []);
   const identifiers = pipeline.flatMap((blockConfig) => {
     const expressions = Object.values(blockConfig.config).filter(
@@ -135,7 +137,7 @@ function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
 export function produceExcludeUnusedDependencies<
   T extends ServiceSlice = ServiceSlice
 >(state: T): T {
-  const used = selectTopLevelVars(state);
+  const used = selectTopLevelVariables(state);
   return produce(state, (draft) => {
     draft.services = draft.services.filter((x) =>
       used.has(keyToFieldValue(x.outputKey).__value__)
@@ -219,8 +221,8 @@ const ServiceField: React.FunctionComponent<
     /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */
     detectDefault?: boolean;
   }
-> = ({ detectDefault = true, ...props }) => {
-  const { schema } = props;
+> = ({ detectDefault = true, ...properties }) => {
+  const { schema } = properties;
   const [authOptions] = useAuthOptions();
   const {
     values: root,
@@ -228,7 +230,7 @@ const ServiceField: React.FunctionComponent<
   } = useFormikContext<ServiceSlice>();
   const [{ value, ...field }, meta, helpers] = useField<
     Expression<ServiceKeyVar>
-  >(props);
+  >(properties);
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);
@@ -298,7 +300,7 @@ const ServiceField: React.FunctionComponent<
   return (
     <FieldTemplate
       name={field.name}
-      label={makeLabelForSchemaField(props)}
+      label={makeLabelForSchemaField(properties)}
       description={
         <span>
           A configured integration.{" "}

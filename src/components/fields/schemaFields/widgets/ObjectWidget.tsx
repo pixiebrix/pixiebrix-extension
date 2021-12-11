@@ -31,7 +31,7 @@ import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { UnknownObject } from "@/types";
 
-type PropertyRowProps = {
+type PropertyRowProperties = {
   name: string;
   showActions?: boolean;
   readOnly: boolean;
@@ -41,16 +41,16 @@ type PropertyRowProps = {
   isRequired?: boolean;
 };
 
-type RowProps = {
+type RowProperties = {
   parentSchema: Schema;
   name: string;
   property: string;
   defined: boolean;
-  onDelete: (prop: string) => void;
-  onRename: (oldProp: string, newProp: string) => void;
+  onDelete: (property: string) => void;
+  onRename: (oldProperty: string, newProperty: string) => void;
 };
 
-const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
+const CompositePropertyRow: React.FunctionComponent<PropertyRowProperties> = ({
   name,
   schema,
   showActions,
@@ -69,16 +69,16 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   </tr>
 );
 
-const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
+const ValuePropertyRow: React.FunctionComponent<PropertyRowProperties> = ({
   readOnly,
   onDelete,
   onRename,
   showActions,
   schema,
   isRequired,
-  ...props
+  ...properties
 }) => {
-  const [field] = useField(props);
+  const [field] = useField(properties);
 
   const updateName = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
@@ -121,7 +121,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   );
 };
 
-const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
+const ObjectFieldRow: React.FunctionComponent<RowProperties> = ({
   parentSchema,
   defined,
   name,
@@ -153,13 +153,13 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
     propertySchema,
   ]);
 
-  const deleteProp = useCallback(() => {
+  const deleteProperty = useCallback(() => {
     onDelete(property);
   }, [property, onDelete]);
 
-  const renameProp = useCallback(
-    (newProp: string) => {
-      onRename(property, newProp);
+  const renameProperty = useCallback(
+    (newProperty: string) => {
+      onRename(property, newProperty);
     },
     [property, onRename]
   );
@@ -177,8 +177,8 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
       readOnly={defined}
       schema={propertySchema}
       showActions={showActions}
-      onDelete={defined ? undefined : deleteProp}
-      onRename={defined ? undefined : renameProp}
+      onDelete={defined ? undefined : deleteProperty}
+      onRename={defined ? undefined : renameProperty}
       isRequired={isRequired}
     />
   );
@@ -186,7 +186,7 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
 
 export function getPropertyRow(
   schema: Schema
-): React.FunctionComponent<PropertyRowProps> {
+): React.FunctionComponent<PropertyRowProperties> {
   switch (schema?.type) {
     case "array":
     case "object":
@@ -199,8 +199,8 @@ export function getPropertyRow(
 
 type ObjectValue = UnknownObject;
 
-const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
-  const { name, schema } = props;
+const ObjectWidget: React.FC<SchemaFieldProps> = (properties_) => {
+  const { name, schema } = properties_;
 
   // Allow additional properties for empty schema (empty schema allows shape)
   const additionalProperties = isEmpty(schema) || schema.additionalProperties;
@@ -211,12 +211,12 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
 
   // Helpers.setValue changes on every render, so use setFieldValue instead
   // https://github.com/formium/formik/issues/2268
-  const [field] = useField<ObjectValue>(props);
+  const [field] = useField<ObjectValue>(properties_);
   const { setFieldValue } = useFormikContext();
 
   // UseRef indirection layer so the callbacks below don't re-calculate on every change
-  const valueRef = useRef(field.value);
-  valueRef.current = field.value ?? {};
+  const valueReference = useRef(field.value);
+  valueReference.current = field.value ?? {};
 
   const [properties, declaredProperties] = useMemo(() => {
     const declared = schema.properties ?? {};
@@ -232,50 +232,50 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
     (property: string) => {
       setFieldValue(
         name,
-        produce(valueRef.current, (draft) => {
+        produce(valueReference.current, (draft) => {
           if (draft != null) {
             delete draft[property];
           }
         })
       );
     },
-    [name, setFieldValue, valueRef]
+    [name, setFieldValue, valueReference]
   );
 
   const onRename = useCallback(
-    (oldProp: string, newProp: string) => {
-      if (oldProp !== newProp) {
-        const previousValue = valueRef.current;
+    (oldProperty: string, newProperty: string) => {
+      if (oldProperty !== newProperty) {
+        const previousValue = valueReference.current;
 
         console.debug("Renaming property", {
-          newProp,
-          oldProp,
+          newProp: newProperty,
+          oldProp: oldProperty,
           previousValue,
         });
 
         setFieldValue(
           name,
           produce(previousValue, (draft) => {
-            draft[newProp] = draft[oldProp] ?? "";
-            delete draft[oldProp];
+            draft[newProperty] = draft[oldProperty] ?? "";
+            delete draft[oldProperty];
           })
         );
       }
     },
-    [name, setFieldValue, valueRef]
+    [name, setFieldValue, valueReference]
   );
 
   const addProperty = useCallback(() => {
     setFieldValue(
       name,
-      produce(valueRef.current, (draft) => {
-        const prop = freshIdentifier("property" as SafeString, [
+      produce(valueReference.current, (draft) => {
+        const property = freshIdentifier("property" as SafeString, [
           ...Object.keys(draft),
         ]);
-        draft[prop] = "";
+        draft[property] = "";
       })
     );
-  }, [name, setFieldValue, valueRef]);
+  }, [name, setFieldValue, valueReference]);
 
   return (
     <div>

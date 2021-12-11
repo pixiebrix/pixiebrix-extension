@@ -26,7 +26,7 @@ import {
 } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors";
 
-type RemoteMultiSelectWidgetProps = {
+type RemoteMultiSelectWidgetProperties = {
   id?: string;
   name: string;
   disabled?: boolean;
@@ -39,15 +39,15 @@ type RemoteMultiSelectWidgetProps = {
 /**
  * @see RemoteSelectWidget
  */
-const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProps> = ({
+const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProperties> = ({
   id,
   isClearable = false,
   disabled,
   optionsFactory,
   config,
-  ...props
+  ...properties
 }) => {
-  const [field, , helpers] = useField<unknown[]>(props);
+  const [field, , helpers] = useField<unknown[]>(properties);
   const [options, isLoading, loadError] = useOptionsResolver(
     config,
     optionsFactory

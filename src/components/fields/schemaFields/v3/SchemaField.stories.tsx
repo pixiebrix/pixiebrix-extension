@@ -36,8 +36,8 @@ const Template: ComponentStory<
       required?: boolean;
     }
   >
-> = (args) => {
-  const fieldName = getFieldNamesFromPathString(args.name)[1];
+> = (arguments_) => {
+  const fieldName = getFieldNamesFromPathString(arguments_.name)[1];
   return (
     <Formik
       initialValues={{
@@ -48,14 +48,14 @@ const Template: ComponentStory<
         topObj: {
           myNum: 2,
           parentObj: {
-            [fieldName]: args.defaultValue,
+            [fieldName]: arguments_.defaultValue,
           },
         },
       }}
       onSubmit={action("onSubmit")}
     >
       <Form>
-        <SchemaField {...args} isRequired={args.required ?? true} />
+        <SchemaField {...arguments_} isRequired={arguments_.required ?? true} />
         <Button type="submit">Submit</Button>
       </Form>
     </Formik>

@@ -62,11 +62,11 @@ const initialValues = {
   },
 };
 
-const FormBuilderTemplate: ComponentStory<typeof Formik> = (args) => (
+const FormBuilderTemplate: ComponentStory<typeof Formik> = (arguments_) => (
   <Formik
     validationSchema={schemaShape}
     onSubmit={action("onSubmit")}
-    {...args}
+    {...arguments_}
   >
     {({ handleSubmit }) => (
       <BootstrapForm noValidate onSubmit={handleSubmit}>

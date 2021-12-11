@@ -39,7 +39,7 @@ import useWizard from "@/options/pages/marketplace/useWizard";
 
 const { removeExtension } = optionsSlice.actions;
 
-interface OwnProps {
+interface OwnProperties {
   blueprint: RecipeDefinition;
 }
 
@@ -69,10 +69,10 @@ const ActivateButton: React.FunctionComponent<{
 
   const uninstallExtensions = async () => {
     for (const extension of installedExtensions) {
-      const extensionRef = { extensionId: extension.id };
+      const extensionReference = { extensionId: extension.id };
       // eslint-disable-next-line no-await-in-loop -- see useReinstall.ts
-      await uninstallContextMenu(extensionRef);
-      dispatch(removeExtension(extensionRef));
+      await uninstallContextMenu(extensionReference);
+      dispatch(removeExtension(extensionReference));
     }
   };
 
@@ -102,7 +102,9 @@ const ActivateButton: React.FunctionComponent<{
   );
 };
 
-const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
+const ActivateWizard: React.FunctionComponent<OwnProperties> = ({
+  blueprint,
+}) => {
   const location = useLocation();
   const reinstall =
     new URLSearchParams(location.search).get("reinstall") === "1";

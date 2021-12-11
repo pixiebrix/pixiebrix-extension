@@ -44,14 +44,14 @@ type Mode = "modal" | "panel";
 export async function createFrameSrc(nonce: string, mode: Mode): Promise<URL> {
   const { tab, frameId } = await whoAmI();
 
-  const frameSrc = new URL(browser.runtime.getURL("ephemeralForm.html"));
-  frameSrc.searchParams.set("nonce", nonce);
-  frameSrc.searchParams.set(
+  const frameSource = new URL(browser.runtime.getURL("ephemeralForm.html"));
+  frameSource.searchParams.set("nonce", nonce);
+  frameSource.searchParams.set(
     "opener",
     JSON.stringify({ tabId: tab.id, frameId })
   );
-  frameSrc.searchParams.set("mode", mode);
-  return frameSrc;
+  frameSource.searchParams.set("mode", mode);
+  return frameSource;
 }
 
 export class FormTransformer extends Transformer {
@@ -116,7 +116,7 @@ export class FormTransformer extends Transformer {
     // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?
 
     const nonce = uuidv4();
-    const frameSrc = await createFrameSrc(nonce, location);
+    const frameSource = await createFrameSrc(nonce, location);
 
     const definition = {
       schema,
@@ -162,7 +162,7 @@ export class FormTransformer extends Transformer {
         void cancelForm(nonce).catch(reportError);
       });
     } else {
-      showModal(frameSrc, controller.signal);
+      showModal(frameSource, controller.signal);
     }
 
     try {

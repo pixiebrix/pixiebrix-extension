@@ -20,12 +20,12 @@ import styles from "./DocumentEditor.module.scss";
 import ElementEdit from "./ElementEdit";
 import { Row, Col } from "react-bootstrap";
 
-type DocumentEditorProps = {
+type DocumentEditorProperties = {
   activeElement: string;
   setActiveElement: (activeElement: string) => void;
 };
 
-const DocumentEditor: React.FC<DocumentEditorProps> = ({
+const DocumentEditor: React.FC<DocumentEditorProperties> = ({
   activeElement,
   setActiveElement,
 }) =>

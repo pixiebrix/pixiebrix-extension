@@ -33,15 +33,17 @@ const useDatabaseOptions = () => {
   const databaseOptions = useMemo(
     () =>
       databases && organizations
-        ? databases.map((db) => {
+        ? databases.map((database) => {
             const organization = organizations.find(
-              (o) => o.id === db.organization_id
+              (o) => o.id === database.organization_id
             );
-            const dbName = `${db.name} - ${organization?.name ?? "Private"}`;
+            const databaseName = `${database.name} - ${
+              organization?.name ?? "Private"
+            }`;
 
             return {
-              label: dbName,
-              value: db.id,
+              label: databaseName,
+              value: database.id,
             };
           })
         : [],

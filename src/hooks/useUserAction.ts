@@ -66,7 +66,7 @@ export function getHumanDetail(error: unknown): string {
 /**
  * Replacement for useCallback that handles success/error notifications and telemetry.
  */
-function useUserAction<T extends (...args: never[]) => unknown>(
+function useUserAction<T extends (...arguments_: never[]) => unknown>(
   callback: T,
   options: Options,
   deps: DependencyList
@@ -75,9 +75,9 @@ function useUserAction<T extends (...args: never[]) => unknown>(
   const { event, successMessage, errorMessage = "An error occurred" } = options;
 
   // @ts-expect-error -- need to figure out how to correct the types on this
-  const enhancedCallback: T = async (...args) => {
+  const enhancedCallback: T = async (...arguments_) => {
     try {
-      const rv = await callback(...args);
+      const rv = await callback(...arguments_);
 
       if (successMessage) {
         notify.success(successMessage);

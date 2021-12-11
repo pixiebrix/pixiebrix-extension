@@ -31,7 +31,7 @@ import { DetectElement } from "./detect";
 import { FormTransformer } from "./ephemeralForm/formTransformer";
 import { Base64Decode, Base64Encode } from "./encode";
 import { TemplateTransformer } from "./template";
-import { UrlParams } from "./url";
+import { UrlParams as UrlParameters } from "./url";
 import { ComponentReader } from "./component/ComponentReader";
 import { JQueryReader } from "./jquery/JQueryReader";
 import { ParseCsv } from "./parseCsv";
@@ -54,7 +54,7 @@ function registerTransformers() {
   registerBlock(new Base64Encode());
   registerBlock(new Base64Decode());
   registerBlock(new TemplateTransformer());
-  registerBlock(new UrlParams());
+  registerBlock(new UrlParameters());
   registerBlock(new JQueryReader());
   registerBlock(new ComponentReader());
   registerBlock(new ParseCsv());

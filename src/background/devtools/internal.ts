@@ -46,7 +46,7 @@ import { clearDynamicElements } from "@/contentScript/messenger/api";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
-let numOpenConnections = 0;
+let numberOpenConnections = 0;
 
 type Nonce = string;
 
@@ -158,9 +158,9 @@ export function liftBackground<
   method: (
     target: Target,
     port: Runtime.Port
-  ) => (...args: TArguments) => Promise<R>,
+  ) => (...arguments_: TArguments) => Promise<R>,
   options?: HandlerOptions
-): (port: Runtime.Port, ...args: TArguments) => Promise<R> {
+): (port: Runtime.Port, ...arguments_: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isBackgroundPage()) {
@@ -171,14 +171,14 @@ export function liftBackground<
     }
   }
 
-  return async (port: Runtime.Port, ...args: unknown[]): Promise<R> => {
+  return async (port: Runtime.Port, ...arguments_: unknown[]): Promise<R> => {
     forbidContext("background");
 
     if (!port) {
       throw new Error("Devtools port is required");
     }
 
-    return callBackground(port, fullType, args, options) as Promise<R>;
+    return callBackground(port, fullType, arguments_, options) as Promise<R>;
   };
 }
 
@@ -236,14 +236,14 @@ function connectDevtools(port: Runtime.Port): void {
     });
 
     // Add/cleanup listener
-    numOpenConnections++;
+    numberOpenConnections++;
     port.onMessage.addListener(backgroundMessageListener);
     port.onDisconnect.addListener(() => {
       port.onMessage.removeListener(backgroundMessageListener);
       deleteStaleConnections(port);
-      numOpenConnections--;
+      numberOpenConnections--;
       console.debug(
-        `Devtools port disconnected for tab: ${port.sender?.tab.id}; # open ports: ${numOpenConnections})`
+        `Devtools port disconnected for tab: ${port.sender?.tab.id}; # open ports: ${numberOpenConnections})`
       );
     });
   } else {

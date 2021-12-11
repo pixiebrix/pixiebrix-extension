@@ -27,10 +27,10 @@ export default {
   component: OptionsBody,
 } as ComponentMeta<typeof OptionsBody>;
 
-const Template: ComponentStory<typeof OptionsBody> = (args) => (
+const Template: ComponentStory<typeof OptionsBody> = (arguments_) => (
   <MemoryRouter>
     <Formik initialValues={{ optionsArgs: {} }} onSubmit={action("onSubmit")}>
-      <OptionsBody {...args} />
+      <OptionsBody {...arguments_} />
     </Formik>
   </MemoryRouter>
 );

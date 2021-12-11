@@ -25,11 +25,11 @@ import { SanitizedAuth } from "@/types/contract";
 import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-interface OwnProps {
+interface OwnProperties {
   remoteAuths: SanitizedAuth[];
 }
 
-const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
+const SharedServicesCard: React.FunctionComponent<OwnProperties> = ({
   remoteAuths,
 }) => {
   const [serviceUrl] = useAsyncState(getBaseURL);

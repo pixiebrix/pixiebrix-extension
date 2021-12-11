@@ -37,7 +37,7 @@ import { ExtensionOptionsState } from "@/store/extensions";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "./util";
-import { parse as parseSemVer, satisfies, SemVer } from "semver";
+import { parse as parseSemVersion, satisfies, SemVer } from "semver";
 
 const { reducer, actions } = optionsSlice;
 
@@ -81,13 +81,16 @@ function installDeployment(
   // Uninstall existing versions of the extensions
   for (const extension of installed) {
     if (extension._recipe.id === deployment.package.package_id) {
-      const extensionRef = {
+      const extensionReference = {
         extensionId: extension.id,
       };
 
-      void uninstallContextMenu(extensionRef).catch(reportError);
+      void uninstallContextMenu(extensionReference).catch(reportError);
 
-      returnState = reducer(returnState, actions.removeExtension(extensionRef));
+      returnState = reducer(
+        returnState,
+        actions.removeExtension(extensionReference)
+      );
     }
   }
 
@@ -164,7 +167,7 @@ async function updateDeployments() {
   }
 
   const { version: extensionVersionString } = browser.runtime.getManifest();
-  const extensionVersion = parseSemVer(extensionVersionString);
+  const extensionVersion = parseSemVersion(extensionVersionString);
 
   const { data: deployments } = await (await getLinkedApiClient()).post<
     Deployment[]

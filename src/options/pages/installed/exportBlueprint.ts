@@ -30,9 +30,9 @@ import GenerateSchema from "generate-schema";
  * Infer optionsSchema from the options provided to the extension.
  */
 export function inferOptionsSchema(
-  optionsArgs: UserOptions
+  optionsArguments: UserOptions
 ): OptionsDefinition {
-  if (isEmpty(optionsArgs)) {
+  if (isEmpty(optionsArguments)) {
     return undefined;
   }
 
@@ -40,7 +40,10 @@ export function inferOptionsSchema(
     // The install flow supports passing in an object of properties, or a full schema where the top-level has
     // `type: object` and a `properties` field. The following will output the full schema instead of the short-hand.
     // This avoids a corner-case where we're using the short-hand version but one of the property names is "properties"
-    schema: GenerateSchema.json("Blueprint Options", optionsArgs) as Schema,
+    schema: GenerateSchema.json(
+      "Blueprint Options",
+      optionsArguments
+    ) as Schema,
   };
 }
 

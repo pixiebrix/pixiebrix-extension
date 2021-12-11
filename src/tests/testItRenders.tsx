@@ -19,16 +19,16 @@ import React, { PropsWithChildren } from "react";
 import { render } from "@testing-library/react";
 import { waitForEffect } from "./testHelpers";
 
-export type ItRendersOptions<TProps> = {
-  Component: React.ComponentType<TProps>;
-  props: TProps;
+export type ItRendersOptions<TProperties> = {
+  Component: React.ComponentType<TProperties>;
+  props: TProperties;
   testName?: string;
   TemplateComponent?: React.ComponentType<PropsWithChildren<unknown>>;
   isAsync?: boolean;
 };
 
-function testItRenders<TProps = unknown>(
-  options: ItRendersOptions<TProps> | (() => ItRendersOptions<TProps>)
+function testItRenders<TProperties = unknown>(
+  options: ItRendersOptions<TProperties> | (() => ItRendersOptions<TProperties>)
 ) {
   const {
     Component,

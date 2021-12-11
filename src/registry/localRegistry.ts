@@ -68,15 +68,20 @@ interface LogDB extends DBSchema {
   };
 }
 
-function getKey(obj: Package): [string, number, number, number] {
-  return [obj.id, obj.version.major, obj.version.minor, obj.version.patch];
+function getKey(object: Package): [string, number, number, number] {
+  return [
+    object.id,
+    object.version.major,
+    object.version.minor,
+    object.version.patch,
+  ];
 }
 
 async function getBrickDB() {
   return openDB<LogDB>(STORAGE_KEY, VERSION, {
-    upgrade(db) {
+    upgrade(database) {
       // Create a store of objects
-      const store = db.createObjectStore(BRICK_STORE, {
+      const store = database.createObjectStore(BRICK_STORE, {
         keyPath: ["id", "version.major", "version.minor", "version.patch"],
       });
       store.createIndex("id", "id", {
@@ -101,8 +106,8 @@ function latestVersion(versions: Package[]): Package | null {
 }
 
 export async function getKind(kind: Kind) {
-  const db = await getBrickDB();
-  const bricks = await db.getAllFromIndex(BRICK_STORE, "kind", kind);
+  const database = await getBrickDB();
+  const bricks = await database.getAllFromIndex(BRICK_STORE, "kind", kind);
   return Object.entries(groupBy(bricks, (x) => x.id)).map(([, versions]) =>
     latestVersion(versions)
   );
@@ -111,33 +116,33 @@ export async function getKind(kind: Kind) {
 // `getLocal` is for supporting local bricks that aren't synced with the server. This feature is not implemented yet,
 // but there's some parts of it floating around. See https://github.com/pixiebrix/pixiebrix-extension/issues/14
 export async function getLocal() {
-  const db = await getBrickDB();
-  return db.getAllFromIndex(BRICK_STORE, "scope", LOCAL_SCOPE);
+  const database = await getBrickDB();
+  return database.getAllFromIndex(BRICK_STORE, "scope", LOCAL_SCOPE);
 }
 
 // `getLocal` is for supporting local bricks that aren't synced with the server. This feature is not implemented yet,
 // but there's some parts of it floating around. See https://github.com/pixiebrix/pixiebrix-extension/issues/14
-export async function add(obj: Package) {
-  const db = await getBrickDB();
-  await db.put(BRICK_STORE, obj);
+export async function add(object: Package) {
+  const database = await getBrickDB();
+  await database.put(BRICK_STORE, object);
 }
 
 export async function syncRemote(kind: Kind, objs: Package[]) {
-  const db = await getBrickDB();
-  const tx = db.transaction(BRICK_STORE, "readwrite");
+  const database = await getBrickDB();
+  const tx = database.transaction(BRICK_STORE, "readwrite");
 
   const current = await tx.store.getAll();
 
   let deleteCnt = 0;
-  for (const obj of current) {
-    if (obj.kind === kind && obj.scope !== LOCAL_SCOPE) {
-      void tx.store.delete(getKey(obj));
+  for (const object of current) {
+    if (object.kind === kind && object.scope !== LOCAL_SCOPE) {
+      void tx.store.delete(getKey(object));
       deleteCnt++;
     }
   }
 
-  for (const obj of objs) {
-    void tx.store.put(obj);
+  for (const object of objs) {
+    void tx.store.put(object);
   }
 
   await tx.done;
@@ -157,7 +162,7 @@ export async function find(id: string) {
     throw new Error("invalid brick id");
   }
 
-  const db = await getBrickDB();
-  const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
+  const database = await getBrickDB();
+  const versions = await database.getAllFromIndex(BRICK_STORE, "id", id);
   return latestVersion(versions);
 }

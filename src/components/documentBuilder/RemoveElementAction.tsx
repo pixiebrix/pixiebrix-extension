@@ -23,12 +23,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import getElementCollectionName from "./getElementCollectionName";
 
-type RemoveElementActionProps = {
+type RemoveElementActionProperties = {
   elementName: string;
   setActiveElement: (activeElement: string) => void;
 };
 
-const RemoveElementAction: React.FC<RemoveElementActionProps> = ({
+const RemoveElementAction: React.FC<RemoveElementActionProperties> = ({
   elementName,
   setActiveElement,
 }) => {

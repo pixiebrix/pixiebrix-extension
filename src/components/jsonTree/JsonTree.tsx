@@ -61,7 +61,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   onSearchQueryChanged,
   label,
   data,
-  ...restProps
+  ...restProperties
 }) => {
   const [query, setQuery] = useState(initialSearchQuery);
 
@@ -120,7 +120,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
             }),
           }}
           invertTheme
-          {...restProps}
+          {...restProperties}
         />
       )}
     </div>

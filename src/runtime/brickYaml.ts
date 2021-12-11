@@ -100,21 +100,21 @@ const RUNTIME_SCHEMA = yaml.DEFAULT_SCHEMA.extend([
  * @see RecipeDefinition.updated_at
  * @see RecipeDefinition.sharing
  */
-function stripNonSchemaProps(brick: any) {
+function stripNonSchemaProperties(brick: any) {
   return produce(brick, (draft: any) => {
-    for (const prop of ["sharing", "updated_at"]) {
-      if (prop in draft) {
+    for (const property of ["sharing", "updated_at"]) {
+      if (property in draft) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection -- constant above
-        delete draft[prop];
+        delete draft[property];
       }
 
       if (
         draft.metadata != null &&
         typeof draft.metadata === "object" &&
-        prop in draft.metadata
+        property in draft.metadata
       ) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection -- constant above
-        delete draft.metadata[prop];
+        delete draft.metadata[property];
       }
     }
 
@@ -134,7 +134,7 @@ export function dumpBrickYaml(
   brick: unknown,
   options: yaml.DumpOptions = {}
 ): string {
-  return yaml.dump(stripNonSchemaProps(brick), {
+  return yaml.dump(stripNonSchemaProperties(brick), {
     ...options,
     schema: RUNTIME_SCHEMA,
   });

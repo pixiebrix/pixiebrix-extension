@@ -49,11 +49,11 @@ export type DatabaseGetPutOptionsProps = {
   configKey: string;
 };
 
-type DatabaseOptionsProps = DatabaseGetPutOptionsProps & {
+type DatabaseOptionsProperties = DatabaseGetPutOptionsProps & {
   showValueField: boolean;
 };
 
-const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
+const DatabaseOptions: React.FC<DatabaseOptionsProperties> = ({
   name,
   configKey,
   showValueField,
@@ -69,16 +69,16 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
     isLoading: isLoadingDatabaseOptions,
   } = useDatabaseOptions();
 
-  const isMountedRef = useRef(true);
+  const isMountedReference = useRef(true);
   useEffect(
     () => () => {
-      isMountedRef.current = false;
+      isMountedReference.current = false;
     },
     []
   );
 
   const onModalClose = () => {
-    if (!isMountedRef.current) {
+    if (!isMountedReference.current) {
       return;
     }
 
@@ -86,7 +86,7 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
   };
 
   const onDatabaseCreated = (databaseId: UUID) => {
-    if (!isMountedRef.current) {
+    if (!isMountedReference.current) {
       return;
     }
 

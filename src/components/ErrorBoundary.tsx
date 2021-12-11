@@ -30,8 +30,8 @@ interface State {
 }
 
 class ErrorBoundary extends Component<UnknownObject, State> {
-  constructor(props: UnknownObject) {
-    super(props);
+  constructor(properties: UnknownObject) {
+    super(properties);
     this.state = { hasError: false, errorMessage: undefined, stack: undefined };
   }
 

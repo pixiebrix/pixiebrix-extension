@@ -96,7 +96,7 @@ function useSearch<T extends IBrick>(
   );
 }
 
-type ModalProps<T extends IBrick = IBlock> = {
+type ModalProperties<T extends IBrick = IBlock> = {
   bricks: T[];
   onSelect: (brick: T) => void;
   selectCaption?: React.ReactNode;
@@ -105,7 +105,7 @@ type ModalProps<T extends IBrick = IBlock> = {
   modalClassName?: string;
 };
 
-type ButtonProps = {
+type ButtonProperties = {
   caption?: string | React.ReactNode;
   renderButton?: (onClick: () => void) => React.ReactNode;
 };
@@ -183,7 +183,7 @@ function ActualModal<T extends IBrick>({
   selectCaption = defaultAddCaption,
   recommendations = [],
   modalClassName,
-}: ModalProps<T>): React.ReactElement<T> {
+}: ModalProperties<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
   const searchInput = useRef(null);
@@ -320,8 +320,9 @@ function ActualModal<T extends IBrick>({
 function BrickModal<T extends IBrick>({
   caption = "Select a Brick",
   renderButton,
-  ...modalProps
-}: Except<ModalProps<T>, "close"> & ButtonProps): React.ReactElement<T> {
+  ...modalProperties
+}: Except<ModalProperties<T>, "close"> &
+  ButtonProperties): React.ReactElement<T> {
   const [show, setShow] = useState(false);
 
   const close = useCallback(() => {
@@ -330,7 +331,7 @@ function BrickModal<T extends IBrick>({
 
   return (
     <>
-      {show && <ActualModal {...modalProps} close={close} />}
+      {show && <ActualModal {...modalProperties} close={close} />}
 
       {renderButton ? (
         renderButton(() => {

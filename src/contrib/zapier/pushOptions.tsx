@@ -59,8 +59,8 @@ function useHooks(): {
 
 export const ZapField: React.FunctionComponent<
   SchemaFieldProps & { hooks: Webhook[]; error: unknown }
-> = ({ label, schema, hooks, error, ...props }) => {
-  const [{ value, ...field }] = useField(props);
+> = ({ label, schema, hooks, error, ...properties }) => {
+  const [{ value, ...field }] = useField(properties);
 
   const options = useMemo(
     () =>
@@ -74,7 +74,7 @@ export const ZapField: React.FunctionComponent<
 
   return (
     <ConnectedFieldTemplate
-      name={props.name}
+      name={properties.name}
       label={label ?? fieldLabel(field.name)}
       description="The Zap to run"
       as={SelectWidget}

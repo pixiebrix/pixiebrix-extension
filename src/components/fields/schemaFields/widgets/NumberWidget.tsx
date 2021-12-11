@@ -40,7 +40,7 @@ const NumberWidget: React.FC<
   isObjectProperty,
   isArrayItem,
   step,
-  ...restProps
+  ...restProperties
 }) => {
   const [{ value: formValue }, , { setValue: setFormValue }] = useField<number>(
     name
@@ -55,16 +55,16 @@ const NumberWidget: React.FC<
   );
 
   const onBlur: FocusEventHandler<HTMLInputElement> = useCallback(() => {
-    const numberVal = Number(value);
-    const newVal = step ? round(numberVal / step) * step : numberVal;
-    setFormValue(newVal);
-    setValue(String(newVal));
+    const numberValue = Number(value);
+    const newValue = step ? round(numberValue / step) * step : numberValue;
+    setFormValue(newValue);
+    setValue(String(newValue));
   }, [setFormValue, step, value]);
 
   return (
     // Spread the input props first so that we override the explicit ones below
     <Form.Control
-      {...restProps}
+      {...restProperties}
       type="number"
       value={value}
       onChange={onChange}

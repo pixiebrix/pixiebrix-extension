@@ -154,9 +154,9 @@ export function liftExternal<
   R extends SerializableResponse
 >(
   type: string,
-  method: (...args: TArguments) => Promise<R>,
+  method: (...arguments_: TArguments) => Promise<R>,
   options: HandlerOptions = {}
-): (...args: TArguments) => Promise<R> {
+): (...arguments_: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
   // Set defaults
   options = {
@@ -176,7 +176,7 @@ export function liftExternal<
     return method;
   }
 
-  return async (...args: TArguments) => {
+  return async (...arguments_: TArguments) => {
     forbidContext("extension");
 
     await waitExtensionLoaded();
@@ -184,7 +184,7 @@ export function liftExternal<
     const nonce = uuidv4();
     const message: Message = {
       type: fullType,
-      payload: args,
+      payload: arguments_,
       meta: { nonce },
     };
 

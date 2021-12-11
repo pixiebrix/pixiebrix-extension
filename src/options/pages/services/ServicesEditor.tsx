@@ -43,13 +43,13 @@ const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
 
-type OwnProps = {
+type OwnProperties = {
   updateServiceConfig: typeof updateServiceConfig;
   deleteServiceConfig: typeof deleteServiceConfig;
   navigate: typeof push;
 };
 
-const ServicesEditor: React.FunctionComponent<OwnProps> = ({
+const ServicesEditor: React.FunctionComponent<OwnProperties> = ({
   updateServiceConfig,
   deleteServiceConfig,
   navigate,

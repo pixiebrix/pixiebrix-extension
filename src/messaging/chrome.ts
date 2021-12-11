@@ -38,7 +38,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
   const listen = (
     type: string,
     callbacks: CallbackMap,
-    prop: "result" | "error"
+    property: "result" | "error"
   ) => {
     document.addEventListener(type, (event: CustomEvent) => {
       if (!event.detail) {
@@ -59,7 +59,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
 
         // Only getting called with "result" or "error"
         // eslint-disable-next-line security/detect-object-injection
-        callback(event.detail[prop]);
+        callback(event.detail[property]);
       }
     });
   };

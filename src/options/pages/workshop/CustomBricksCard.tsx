@@ -32,7 +32,10 @@ import "./WorkshopPage.scss";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Card, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { EnrichedBrick, NavigateProps } from "./workshopTypes";
+import {
+  EnrichedBrick,
+  NavigateProps as NavigateProperties,
+} from "./workshopTypes";
 import Pagination from "@/components/pagination/Pagination";
 
 function inferIcon(kind: Kind, verboseName: string): IconProp {
@@ -90,10 +93,10 @@ const KindIcon: React.FunctionComponent<{ brick: EnrichedBrick }> = ({
 }) => <FontAwesomeIcon icon={inferIcon(kind, verbose_name)} fixedWidth />;
 
 const CustomBricksCard: React.FunctionComponent<
-  NavigateProps & { bricks: EnrichedBrick[]; maxRows?: number }
+  NavigateProperties & { bricks: EnrichedBrick[]; maxRows?: number }
 > = ({ navigate, bricks, maxRows = 10 }) => {
   const [page, setPage] = useState(0);
-  const numPages = Math.ceil(bricks.length / maxRows);
+  const numberPages = Math.ceil(bricks.length / maxRows);
 
   useEffect(() => {
     setPage(0);
@@ -139,7 +142,11 @@ const CustomBricksCard: React.FunctionComponent<
           {bricks.length >= maxRows && (
             <tr className="WorkshopPage__BrickTable__more">
               <td colSpan={5} className="text-info text-center">
-                <Pagination page={page} setPage={setPage} numPages={numPages} />
+                <Pagination
+                  page={page}
+                  setPage={setPage}
+                  numPages={numberPages}
+                />
               </td>
             </tr>
           )}

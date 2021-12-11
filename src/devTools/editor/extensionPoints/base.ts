@@ -345,12 +345,12 @@ export function extensionWithInnerDefinitions(
  * - PixieBrix does not want those because it treats an empty string as "", not null/undefined
  */
 // eslint-disable-next-line @typescript-eslint/ban-types -- support interfaces that don't have index types
-export function removeEmptyValues<T extends object>(obj: T): T {
+export function removeEmptyValues<T extends object>(object: T): T {
   // Technically the return type is Partial<T> (with recursive partials). However, we'll trust that the PageEditor
   // requires the user to set values that actually need to be set. (They'll also get caught by input validation in
   // when the bricks are run.
   return deepPickBy(
-    obj,
+    object,
     (x: unknown) => typeof x !== "undefined" && x !== ""
   ) as T;
 }
@@ -386,13 +386,13 @@ export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
  */
 export function normalizePipeline<
   T extends UnknownObject,
-  Prop extends keyof T
+  Property extends keyof T
 >(
   config: T,
-  pipelineProp: Prop,
+  pipelineProperty: Property,
   defaults: Partial<T> = {}
-): BaseExtensionState & Omit<T, Prop> {
-  const { [pipelineProp]: pipeline, ...rest } = { ...config };
+): BaseExtensionState & Omit<T, Property> {
+  const { [pipelineProperty]: pipeline, ...rest } = { ...config };
   return {
     blockPipeline: withInstanceIds(castArray(pipeline) as BlockPipeline),
     ...defaults,

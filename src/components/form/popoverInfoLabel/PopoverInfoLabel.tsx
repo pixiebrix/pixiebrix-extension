@@ -26,8 +26,8 @@ const PopoverInfoLabel: React.FC<{
   label: string;
   description: string;
 }> = ({ name, label, description }) => {
-  const renderTooltip = (props: unknown) => (
-    <Tooltip id={`${name}-tooltip`} {...props}>
+  const renderTooltip = (properties: unknown) => (
+    <Tooltip id={`${name}-tooltip`} {...properties}>
       {description}
     </Tooltip>
   );

@@ -187,7 +187,7 @@ class LocalDefinedService<
     const {
       baseURL,
       headers = {},
-      params = {},
+      params: parameters = {},
     } = renderMustache<KeyAuthenticationDefinition>(
       (this._definition.authentication as KeyAuthenticationDefinition) ?? {},
       serviceConfig
@@ -202,7 +202,7 @@ class LocalDefinedService<
     const result = produce(requestConfig, (draft) => {
       requestConfig.baseURL = baseURL;
       draft.headers = { ...draft.headers, ...headers };
-      draft.params = { ...draft.params, ...params };
+      draft.params = { ...draft.params, ...parameters };
     });
 
     this.checkRequestUrl(baseURL, requestConfig);

@@ -17,12 +17,12 @@ import {
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
 type ActionOptions<D extends object> = Partial<{
-  actions: Record<string, (...args: unknown[]) => void>;
+  actions: Record<string, (...arguments_: unknown[]) => void>;
 }>;
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
-export interface ActionInstanceProps<D extends object> {
-  actions: Record<string, (...args: unknown[]) => void>;
+export interface ActionInstanceProperties<D extends object> {
+  actions: Record<string, (...arguments_: unknown[]) => void>;
 }
 
 declare module "react-table" {

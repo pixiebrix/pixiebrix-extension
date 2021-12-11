@@ -26,11 +26,11 @@ export type ConnectedFieldProps<Values> = FieldProps & {
 
 const FormikFieldTemplate = <Values,>({
   formik,
-  ...fieldProps
+  ...fieldProperties
 }: ConnectedFieldProps<Values>) => {
-  const error = getIn(formik.errors, fieldProps.name);
-  const touched = getIn(formik.touched, fieldProps.name);
-  const value = getIn(formik.values, fieldProps.name);
+  const error = getIn(formik.errors, fieldProperties.name);
+  const touched = getIn(formik.touched, fieldProperties.name);
+  const value = getIn(formik.values, fieldProperties.name);
 
   return (
     <FieldTemplate
@@ -39,7 +39,7 @@ const FormikFieldTemplate = <Values,>({
       touched={touched}
       onChange={formik.handleChange}
       onBlur={formik.handleBlur}
-      {...fieldProps}
+      {...fieldProperties}
     />
   );
 };

@@ -70,9 +70,9 @@ const BlockConfiguration: React.FunctionComponent<{
 
   const [isRootAware] = useAsyncState(async () => block.isRootAware(), [block]);
 
-  const advancedOptionsRef = useRef<HTMLDivElement>();
+  const advancedOptionsReference = useRef<HTMLDivElement>();
 
-  const ifSchemaProps: SchemaFieldProps = useMemo(
+  const ifSchemaProperties: SchemaFieldProps = useMemo(
     () => ({
       name: configName("if"),
       schema: {
@@ -93,7 +93,7 @@ const BlockConfiguration: React.FunctionComponent<{
 
   return (
     <>
-      <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
+      <AdvancedLinks name={name} scrollToRef={advancedOptionsReference} />
 
       <Card className={styles.card}>
         <Card.Header className={styles.cardHeader}>Input</Card.Header>
@@ -120,7 +120,7 @@ const BlockConfiguration: React.FunctionComponent<{
         <Card.Header className={styles.cardHeader}>
           Advanced Options
         </Card.Header>
-        <Card.Body ref={advancedOptionsRef}>
+        <Card.Body ref={advancedOptionsReference}>
           {
             // Only show if necessary. Currently only the trigger extension point passes the element that triggered the
             // event through for the reader root
@@ -139,7 +139,7 @@ const BlockConfiguration: React.FunctionComponent<{
 
           {blockType && blockType !== "renderer" && (
             <>
-              <SchemaField {...ifSchemaProps} />
+              <SchemaField {...ifSchemaProperties} />
 
               <ConnectedFieldTemplate
                 name={configName("window")}

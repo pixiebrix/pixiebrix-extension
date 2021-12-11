@@ -31,8 +31,8 @@ export default {
 
 const Template: ComponentStory<
   React.FunctionComponent<SchemaFieldProps & { defaultValue: unknown }>
-> = (args) => {
-  const fieldName = getFieldNamesFromPathString(args.name)[1];
+> = (arguments_) => {
+  const fieldName = getFieldNamesFromPathString(arguments_.name)[1];
   return (
     <Formik
       initialValues={{
@@ -41,14 +41,14 @@ const Template: ComponentStory<
         topObj: {
           myNum: 2,
           parentObj: {
-            [fieldName]: args.defaultValue,
+            [fieldName]: arguments_.defaultValue,
           },
         },
       }}
       onSubmit={action("onSubmit")}
     >
       <Form>
-        <SchemaField {...args} />
+        <SchemaField {...arguments_} />
         <Button type="submit">Submit</Button>
       </Form>
     </Formik>

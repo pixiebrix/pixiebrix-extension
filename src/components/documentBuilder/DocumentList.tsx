@@ -30,14 +30,14 @@ import { isNullOrBlank } from "@/utils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { whoAmI } from "@/background/messenger/api";
 
-type DocumentListProps = {
+type DocumentListProperties = {
   array: UnknownObject[];
   elementKey?: string;
   config: Args;
   buildDocumentBranch: BuildDocumentBranch;
 };
 
-const DocumentListInternal: React.FC<DocumentListProps> = ({
+const DocumentListInternal: React.FC<DocumentListProperties> = ({
   array,
   elementKey,
   config,
@@ -108,10 +108,10 @@ const DocumentListInternal: React.FC<DocumentListProps> = ({
 
   return (
     <>
-      {rootDefinitions.map(({ documentElement, elementContext }, i) => {
+      {rootDefinitions.map(({ documentElement, elementContext }, index) => {
         const { Component, props } = buildDocumentBranch(documentElement);
         return (
-          <DocumentContext.Provider key={i} value={elementContext}>
+          <DocumentContext.Provider key={index} value={elementContext}>
             <Component {...props} />
           </DocumentContext.Provider>
         );
@@ -120,9 +120,9 @@ const DocumentListInternal: React.FC<DocumentListProps> = ({
   );
 };
 
-const DocumentList: React.FC<DocumentListProps> = (props) => (
+const DocumentList: React.FC<DocumentListProperties> = (properties) => (
   <ErrorBoundary>
-    <DocumentListInternal {...props} />
+    <DocumentListInternal {...properties} />
   </ErrorBoundary>
 );
 

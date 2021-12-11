@@ -231,7 +231,7 @@ const ExtensionGroup: React.FunctionComponent<{
             return;
           }
 
-          setExpanded((prev: boolean) => !prev);
+          setExpanded((previous: boolean) => !previous);
         }}
       >
         <td>

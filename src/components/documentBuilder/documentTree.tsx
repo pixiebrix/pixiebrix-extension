@@ -58,38 +58,38 @@ export function getComponentDefinition(
     case "header_1":
     case "header_2":
     case "header_3": {
-      const { title, ...props } = config;
-      props.children = title;
+      const { title, ...properties } = config;
+      properties.children = title;
 
       return {
         // eslint-disable-next-line security/detect-object-injection -- componentType is header_1, header_2, or header_3
         Component: headerComponents[componentType],
-        props,
+        props: properties,
       };
     }
 
     case "text": {
-      const { text, ...props } = config;
-      props.children = text;
+      const { text, ...properties } = config;
+      properties.children = text;
 
-      return { Component: "p", props };
+      return { Component: "p", props: properties };
     }
 
     case "container":
     case "row":
     case "column": {
-      const props = { ...config };
+      const properties = { ...config };
 
       // eslint-disable-next-line security/detect-object-injection -- componentType is container, row, or column
-      return { Component: gridComponents[componentType], props };
+      return { Component: gridComponents[componentType], props: properties };
     }
 
     case "card": {
       // The bodyPros is for internal use,
       // it allows to set CSS class need in preview to the body
-      const { heading, children, bodyProps, ...cardProps } = config;
+      const { heading, children, bodyProps, ...cardProperties } = config;
       const Component: React.FC = ({ children }) => (
-        <Card {...cardProps}>
+        <Card {...cardProperties}>
           <Card.Header>{heading}</Card.Header>
           <Card.Body {...bodyProps}>{children}</Card.Body>
         </Card>
@@ -115,7 +115,7 @@ export function getComponentDefinition(
     }
 
     case "button": {
-      const { title, onClick, ...props } = config;
+      const { title, onClick, ...properties } = config;
       if (typeof onClick !== "undefined" && !isPipelineExpression(onClick)) {
         throw new Error("Expected pipeline expression for onClick");
       }
@@ -125,13 +125,13 @@ export function getComponentDefinition(
         props: {
           children: title,
           onClick: onClick?.__value__,
-          ...props,
+          ...properties,
         },
       };
     }
 
     case "list": {
-      const props = {
+      const properties = {
         array: config.array,
         elementKey: config.elementKey,
         config: config.element,
@@ -140,7 +140,7 @@ export function getComponentDefinition(
 
       return {
         Component: DocumentList,
-        props,
+        props: properties,
       };
     }
 
@@ -153,7 +153,7 @@ export function getComponentDefinition(
   }
 }
 
-type PreviewComponentProps = {
+type PreviewComponentProperties = {
   className?: string;
   onClick: React.MouseEventHandler<HTMLDivElement>;
   onMouseEnter: React.MouseEventHandler<HTMLDivElement>;
@@ -230,11 +230,11 @@ export function getPreviewComponentDefinition(
       };
 
       const { Component, props } = getComponentDefinition(previewElement);
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
+      const PreviewComponent: React.FC<PreviewComponentProperties> = ({
         children,
-        ...restPreviewProps
+        ...restPreviewProperties
       }) => (
-        <div {...restPreviewProps}>
+        <div {...restPreviewProperties}>
           <Component {...props}>{children}</Component>
         </div>
       );
@@ -244,11 +244,11 @@ export function getPreviewComponentDefinition(
 
     case "block": {
       const pipeline = get(element, "config.pipeline", "");
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
+      const PreviewComponent: React.FC<PreviewComponentProperties> = ({
         className,
-        ...restPreviewProps
+        ...restPreviewProperties
       }) => (
-        <div className={cx(className)} {...restPreviewProps}>
+        <div className={cx(className)} {...restPreviewProperties}>
           <h3>Block</h3>
           <p>{pipeline}</p>
         </div>
@@ -259,16 +259,16 @@ export function getPreviewComponentDefinition(
 
     case "button": {
       const { Component, props } = getComponentDefinition(element);
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
+      const PreviewComponent: React.FC<PreviewComponentProperties> = ({
         className,
-        ...restPreviewProps
+        ...restPreviewProperties
       }) => {
         const notify = useNotifications();
         return (
           <div>
             <div
               className={cx(className, documentTreeStyles.inlineWrapper)}
-              {...restPreviewProps}
+              {...restPreviewProperties}
             >
               <Component
                 {...props}
@@ -288,10 +288,10 @@ export function getPreviewComponentDefinition(
       const arrayValue = isExpression(config.array)
         ? config.array.__value__
         : String(config.array);
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
+      const PreviewComponent: React.FC<PreviewComponentProperties> = ({
         children,
         className,
-        ...restPreviewProps
+        ...restPreviewProperties
       }) => (
         <div
           className={cx(
@@ -299,7 +299,7 @@ export function getPreviewComponentDefinition(
             documentTreeStyles.container,
             documentTreeStyles.listContainer
           )}
-          {...restPreviewProps}
+          {...restPreviewProperties}
         >
           <div className="text-muted">List: {arrayValue}</div>
           <div className="text-muted">
@@ -320,9 +320,9 @@ export function getPreviewComponentDefinition(
 export const buildDocumentBranch: BuildDocumentBranch = (root) => {
   const componentDefinition = getComponentDefinition(root);
   if (root.children?.length > 0) {
-    componentDefinition.props.children = root.children.map((child, i) => {
+    componentDefinition.props.children = root.children.map((child, index) => {
       const { Component, props } = buildDocumentBranch(child);
-      return <Component key={i} {...props} />;
+      return <Component key={index} {...props} />;
     });
   }
 

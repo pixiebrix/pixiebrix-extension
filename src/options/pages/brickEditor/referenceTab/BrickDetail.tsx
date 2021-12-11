@@ -40,13 +40,13 @@ function makeArgumentYaml(schema: Schema): string {
     return result;
   }
 
-  for (const [prop, value] of Object.entries(schema.properties)) {
+  for (const [property, value] of Object.entries(schema.properties)) {
     if (typeof value === "boolean") {
       continue;
     }
 
-    result += `# ${prop}: ${value.type as string} (${
-      schema.required.includes(prop) ? "required" : "optional"
+    result += `# ${property}: ${value.type as string} (${
+      schema.required.includes(property) ? "required" : "optional"
     })\n`;
     if (value.description) {
       for (const line of value.description.split("\n")) {
@@ -61,7 +61,7 @@ function makeArgumentYaml(schema: Schema): string {
       }
     }
 
-    result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
+    result += `# ${property.includes(" ") ? `"${property}"` : property}: \n`;
   }
 
   return result;

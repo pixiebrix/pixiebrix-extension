@@ -107,7 +107,9 @@ function lookupAuthId(
     : authOptions.find((x) => x.value === dependency.config)?.value;
 }
 
-function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
+function selectTopLevelVariables(
+  state: Pick<FormState, "extension">
+): Set<string> {
   const pipeline = castArray(state.extension.blockPipeline ?? []);
   const identifiers = pipeline.flatMap((blockConfig) => {
     const values = Object.values(blockConfig.config).filter(
@@ -126,7 +128,7 @@ function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
 export function produceExcludeUnusedDependencies<
   T extends ServiceSlice = ServiceSlice
 >(state: T): T {
-  const used = selectTopLevelVars(state);
+  const used = selectTopLevelVariables(state);
   return produce(state, (draft) => {
     draft.services = draft.services.filter((x) =>
       used.has(keyToFieldValue(x.outputKey))
@@ -210,14 +212,16 @@ const ServiceField: React.FunctionComponent<
     /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */
     detectDefault?: boolean;
   }
-> = ({ detectDefault = true, ...props }) => {
-  const { schema } = props;
+> = ({ detectDefault = true, ...properties }) => {
+  const { schema } = properties;
   const [authOptions] = useAuthOptions();
   const {
     values: root,
     setValues: setRootValues,
   } = useFormikContext<ServiceSlice>();
-  const [{ value, ...field }, meta, helpers] = useField<ServiceKeyVar>(props);
+  const [{ value, ...field }, meta, helpers] = useField<ServiceKeyVar>(
+    properties
+  );
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);
@@ -284,7 +288,7 @@ const ServiceField: React.FunctionComponent<
   return (
     <FieldTemplate
       name={field.name}
-      label={makeLabelForSchemaField(props)}
+      label={makeLabelForSchemaField(properties)}
       description={
         <span>
           A configured integration.{" "}

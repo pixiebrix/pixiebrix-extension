@@ -81,13 +81,13 @@ function devtoolsMessageListener(response: BackgroundResponse) {
 export async function callBackground(
   port: Runtime.Port,
   type: string,
-  args: unknown[],
+  arguments_: unknown[],
   options: HandlerOptions
 ): Promise<unknown> {
   const nonce = uuidv4();
   const message = {
     type,
-    payload: args,
+    payload: arguments_,
     meta: { nonce, tabId: browser.devtools.inspectedWindow.tabId },
   };
 

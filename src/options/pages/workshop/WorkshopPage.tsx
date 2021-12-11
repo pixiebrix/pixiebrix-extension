@@ -33,7 +33,10 @@ import { Brick } from "@/types/contract";
 import useFetch from "@/hooks/useFetch";
 import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
-import { EnrichedBrick, NavigateProps } from "./workshopTypes";
+import {
+  EnrichedBrick,
+  NavigateProps as NavigateProperties,
+} from "./workshopTypes";
 
 const { actions } = workshopSlice;
 
@@ -103,7 +106,7 @@ function useSearchOptions(bricks: EnrichedBrick[]) {
   };
 }
 
-const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
+const CustomBricksSection: React.FunctionComponent<NavigateProperties> = ({
   navigate,
 }) => {
   const dispatch = useDispatch();
@@ -229,7 +232,9 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
   );
 };
 
-const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
+const WorkshopPage: React.FunctionComponent<NavigateProperties> = ({
+  navigate,
+}) => {
   const { isLoggedIn, flags } = useContext(AuthContext);
 
   return (
@@ -265,6 +270,6 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
   );
 };
 
-const mapDispatchToProps = { navigate: push };
+const mapDispatchToProperties = { navigate: push };
 
-export default connect(undefined, mapDispatchToProps)(WorkshopPage);
+export default connect(undefined, mapDispatchToProperties)(WorkshopPage);

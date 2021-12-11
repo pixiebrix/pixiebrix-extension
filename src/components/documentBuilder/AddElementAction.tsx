@@ -26,14 +26,14 @@ import {
 import styles from "./AddElementAction.module.scss";
 import { createNewElement } from "./createNewElement";
 
-type AddElementActionProps = {
+type AddElementActionProperties = {
   elementsCollectionName: string;
   allowedTypes?: DocumentElementType[];
   className?: string;
   menuBoundary?: Element;
 };
 
-const AddElementAction: React.FC<AddElementActionProps> = ({
+const AddElementAction: React.FC<AddElementActionProperties> = ({
   elementsCollectionName,
   allowedTypes = DOCUMENT_ELEMENT_TYPES,
   className,

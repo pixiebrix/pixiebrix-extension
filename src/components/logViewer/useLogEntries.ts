@@ -56,7 +56,7 @@ export default function useLogEntries({
   perPage,
   refreshInterval,
 }: Options): LogState {
-  const [numNew, setNumNew] = useState(0);
+  const [numberNew, setNumberNew] = useState(0);
   const [initialized, setInitialized] = useState(false);
 
   const { setUnread, setRefresh } = useContext(LogContext);
@@ -76,7 +76,7 @@ export default function useLogEntries({
       }
 
       setLogState({ entries, isLoading: false });
-      setNumNew(0);
+      setNumberNew(0);
       setUnread([]);
       setInitialized(true);
     },
@@ -110,7 +110,7 @@ export default function useLogEntries({
     [entries]
   );
 
-  const [pageEntries, numPages] = useMemo(() => {
+  const [pageEntries, numberPages] = useMemo(() => {
     const start = page * perPage;
     const pageEntries = filteredEntries.slice(start, start + perPage);
     return [pageEntries, Math.ceil(filteredEntries.length / perPage)];
@@ -128,14 +128,16 @@ export default function useLogEntries({
       (x) => LOG_LEVELS[x.level] >= LOG_LEVELS[level]
     );
     setUnread(newEntries.filter((x) => Number(x.timestamp) > lastTimestamp));
-    setNumNew(Math.max(0, filteredNewEntries.length - filteredEntries.length));
+    setNumberNew(
+      Math.max(0, filteredNewEntries.length - filteredEntries.length)
+    );
   }, [
     lastTimestamp,
     setUnread,
     context,
     filteredEntries,
     level,
-    setNumNew,
+    setNumberNew,
     initialized,
   ]);
 
@@ -151,11 +153,11 @@ export default function useLogEntries({
   }, [checkNewEntries, refreshInterval, entries, level]);
 
   return {
-    numNew,
+    numNew: numberNew,
     isLoading,
     pageEntries,
     hasEntries: entries?.length > 0,
-    numPages,
+    numPages: numberPages,
     refresh,
     clear,
   };

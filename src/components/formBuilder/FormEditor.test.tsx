@@ -27,7 +27,9 @@ import {
   fireFormSubmit,
 } from "@/tests/formHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
-import FormEditor, { FormEditorProps } from "./FormEditor";
+import FormEditor, {
+  FormEditorProps as FormEditorProperties,
+} from "./FormEditor";
 import {
   initAddingFieldCases,
   initOneFieldSchemaCase,
@@ -38,7 +40,7 @@ import selectEvent from "react-select-event";
 const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
 describe("FormEditor", () => {
-  const defaultProps: Except<FormEditorProps, "activeField"> = {
+  const defaultProps: Except<FormEditorProperties, "activeField"> = {
     name: RJSF_SCHEMA_PROPERTY_NAME,
     setActiveField: jest.fn(),
   };
@@ -77,15 +79,15 @@ describe("FormEditor", () => {
       };
       const uiSchema: UiSchema = {};
 
-      const props: FormEditorProps = {
+      const properties: FormEditorProperties = {
         ...defaultProps,
         activeField: "firstName",
       };
 
-      const options: ItRendersOptions<FormEditorProps> = {
+      const options: ItRendersOptions<FormEditorProperties> = {
         testName: "simple schema",
         Component: FormEditor,
-        props,
+        props: properties,
         TemplateComponent: createFormikTemplate({
           [RJSF_SCHEMA_PROPERTY_NAME]: {
             schema,

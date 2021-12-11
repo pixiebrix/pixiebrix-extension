@@ -18,7 +18,10 @@
 import { UnknownObject } from "@/types";
 import { Renderer, engineRenderer, RendererOptions } from "./renderers";
 import { isPlainObject, mapValues, pickBy } from "lodash";
-import { getPropByPath, isSimplePath } from "./pathHelpers";
+import {
+  getPropByPath as getPropertyByPath,
+  isSimplePath,
+} from "./pathHelpers";
 import { Expression, ExpressionType, TemplateEngine } from "@/core";
 import { asyncMapValues } from "@/utils";
 import Mustache from "mustache";
@@ -164,14 +167,14 @@ export function renderImplicit(
 
   if (typeof config === "string") {
     if (isSimplePath(config, ctxt)) {
-      const prop = getPropByPath(ctxt, config);
-      if (prop && typeof prop === "object" && "__service" in prop) {
+      const property = getPropertyByPath(ctxt, config);
+      if (property && typeof property === "object" && "__service" in property) {
         // If we're returning the root service context, return the service itself for use with proxyService
         // @ts-expect-error not sure why the "in" check isn't working
-        return prop.__service;
+        return property.__service;
       }
 
-      return prop;
+      return property;
     }
 
     return render(config, ctxt);

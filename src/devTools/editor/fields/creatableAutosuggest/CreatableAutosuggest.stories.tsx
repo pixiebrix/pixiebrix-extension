@@ -33,9 +33,9 @@ export default {
   component: CreatableAutosuggest,
 } as ComponentMeta<typeof CreatableAutosuggest>;
 
-const Story: ComponentStory<typeof CreatableAutosuggest> = (args) => (
+const Story: ComponentStory<typeof CreatableAutosuggest> = (arguments_) => (
   <div style={{ height: 200 }}>
-    <CreatableAutosuggest {...args} />
+    <CreatableAutosuggest {...arguments_} />
   </div>
 );
 
@@ -66,7 +66,7 @@ const renderSuggestion = ({ icon, value }: Suggestion) => render(value, icon);
 
 const renderCreateNew = (value: string) => render(value);
 
-const baseArgs = {
+const baseArguments = {
   isClearable: true,
   isDisabled: false,
   suggestions,
@@ -76,34 +76,34 @@ const baseArgs = {
 
 export const Default = Story.bind({});
 Default.args = {
-  ...baseArgs,
+  ...baseArguments,
   inputPlaceholder: "Choose from Default...",
 };
 
 export const InitialValue = Story.bind({});
 InitialValue.args = {
-  ...baseArgs,
+  ...baseArguments,
   inputValue: suggestions[0].value,
   inputPlaceholder: "Choose after InitialValue cleared...",
 };
 
 export const NotClearable = Story.bind({});
 NotClearable.args = {
-  ...baseArgs,
+  ...baseArguments,
   isClearable: false,
   inputPlaceholder: "Choose with no clearing...",
 };
 
 export const Disabled = Story.bind({});
 Disabled.args = {
-  ...baseArgs,
+  ...baseArguments,
   isDisabled: true,
   inputPlaceholder: "You cannot choose from a disabled autosuggest",
 };
 
 export const Creatable = Story.bind({});
 Creatable.args = {
-  ...baseArgs,
+  ...baseArguments,
   renderCreateNew,
   inputPlaceholder: "Choose an option or create new item...",
 };

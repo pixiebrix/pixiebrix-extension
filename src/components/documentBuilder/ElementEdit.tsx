@@ -38,7 +38,7 @@ import { createNewElement } from "@/components/documentBuilder/createNewElement"
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 
-type ElementEditProps = {
+type ElementEditProperties = {
   elementName: string;
   setActiveElement: (activeElement: string) => void;
 };
@@ -57,7 +57,7 @@ const elementTypeLabels: Record<DocumentElementType, string> = {
   list: "List",
 };
 
-const ElementEdit: React.FC<ElementEditProps> = ({
+const ElementEdit: React.FC<ElementEditProperties> = ({
   elementName,
   setActiveElement,
 }) => {

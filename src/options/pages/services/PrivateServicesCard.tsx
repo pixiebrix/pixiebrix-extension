@@ -37,13 +37,13 @@ import styles from "./PrivateServicesCard.module.scss";
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
 
-type OwnProps = {
+type OwnProperties = {
   services: IService[];
   navigate: (url: string) => void;
   onCreate: (configuration: RawServiceConfiguration) => void;
 };
 
-const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
+const PrivateServicesCard: React.FunctionComponent<OwnProperties> = ({
   services,
   navigate,
   onCreate,

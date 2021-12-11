@@ -21,13 +21,15 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 
-const BooleanField: React.FunctionComponent<SchemaFieldProps> = (props) => {
-  const { name, schema } = props;
+const BooleanField: React.FunctionComponent<SchemaFieldProps> = (
+  properties
+) => {
+  const { name, schema } = properties;
   return (
     <ConnectedFieldTemplate
       name={name}
       as={SwitchButtonWidget}
-      label={makeLabelForSchemaField(props)}
+      label={makeLabelForSchemaField(properties)}
       description={schema.description}
     />
   );

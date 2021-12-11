@@ -23,11 +23,11 @@ import copy from "copy-to-clipboard";
 import useFetch from "@/hooks/useFetch";
 import useNotifications from "@/hooks/useNotifications";
 
-interface OwnProps {
+interface OwnProperties {
   onClose: () => void;
 }
 
-const ZapierModal: React.FunctionComponent<OwnProps> = ({ onClose }) => {
+const ZapierModal: React.FunctionComponent<OwnProperties> = ({ onClose }) => {
   const { data } = useFetch<{ api_key: string }>("/api/webhooks/key/");
   const notify = useNotifications();
 

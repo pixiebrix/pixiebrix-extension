@@ -145,17 +145,20 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       // noinspection ExceptionCaughtLocallyJS
       throw new BusinessError("No renderer brick attached to body");
     } catch (error) {
-      const ref = { extensionId: extension.id, extensionPointId: this.id };
+      const reference = {
+        extensionId: extension.id,
+        extensionPointId: this.id,
+      };
 
       if (error instanceof HeadlessModeError) {
-        upsertPanel(ref, heading, {
+        upsertPanel(reference, heading, {
           blockId: error.blockId,
           key: uuidv4(),
           ctxt: error.ctxt,
           args: error.args,
         });
       } else {
-        upsertPanel(ref, heading, {
+        upsertPanel(reference, heading, {
           key: uuidv4(),
           error: getErrorMessage(error as Error),
         });

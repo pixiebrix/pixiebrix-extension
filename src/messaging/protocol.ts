@@ -32,7 +32,9 @@ export type HandlerOptions = {
   asyncResponse?: boolean;
 };
 
-export type Handler = (...args: unknown[]) => Promise<SerializableResponse>;
+export type Handler = (
+  ...arguments_: unknown[]
+) => Promise<SerializableResponse>;
 
 export type HandlerEntry = {
   handler: Handler;

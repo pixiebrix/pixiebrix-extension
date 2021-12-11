@@ -39,7 +39,7 @@ const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
 const AppServiceField: React.FunctionComponent<SchemaFieldProps> = ({
   schema,
   uiSchema,
-  ...props
+  ...properties
 }) => {
   const {
     values: root,
@@ -50,7 +50,7 @@ const AppServiceField: React.FunctionComponent<SchemaFieldProps> = ({
   //  v3 - Expression<ServiceKeyVar>
   const [{ value }, , helpers] = useField<
     ServiceKeyVar | Expression<ServiceKeyVar>
-  >(props);
+  >(properties);
 
   const isApiAtLeastV3 = useApiVersionAtLeast("v3");
   const keyToFieldValue = isApiAtLeastV3

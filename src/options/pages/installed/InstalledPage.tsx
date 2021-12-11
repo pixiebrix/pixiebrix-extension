@@ -124,14 +124,14 @@ export const InstalledPage: React.FunctionComponent<{
       <Route
         exact
         path="/installed/share/:extensionId"
-        render={(routeProps) => {
+        render={(routeProperties) => {
           // Avoid race condition with load when visiting the URL directly
           if (!allExtensions) {
             return null;
           }
 
           const toShare = allExtensions.find(
-            (x) => x.id === routeProps.match.params.extensionId
+            (x) => x.id === routeProperties.match.params.extensionId
           );
 
           return toShare ? (
@@ -207,11 +207,11 @@ export const InstalledPage: React.FunctionComponent<{
   );
 };
 
-const mapStateToProps = (state: { options: OptionsState }) => ({
+const mapStateToProperties = (state: { options: OptionsState }) => ({
   extensions: selectExtensions(state),
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProperties = (dispatch: Dispatch) => ({
   // IntelliJ doesn't detect use in the props
   push: (path: string) => {
     dispatch(push(path));
@@ -228,4 +228,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(InstalledPage);
+export default connect(
+  mapStateToProperties,
+  mapDispatchToProperties
+)(InstalledPage);

@@ -57,7 +57,10 @@ export class GetAPITransformer extends Transformer {
     ["url"]
   );
 
-  async transform({ service, ...requestProps }: BlockArg): Promise<unknown> {
+  async transform({
+    service,
+    ...requestProperties
+  }: BlockArg): Promise<unknown> {
     if (!isNullOrBlank(service) && typeof service !== "object") {
       throw new PropError(
         "Expected configured service",
@@ -70,7 +73,7 @@ export class GetAPITransformer extends Transformer {
     const { data } = await proxyService(
       isNullOrBlank(service) ? null : service,
       {
-        ...requestProps,
+        ...requestProperties,
         method: "get",
       }
     );

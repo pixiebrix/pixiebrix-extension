@@ -62,7 +62,7 @@ export interface HandlerEntry {
   handler: (
     target: Target,
     port: Runtime.Port
-  ) => (...args: unknown[]) => unknown | Promise<unknown>;
+  ) => (...arguments_: unknown[]) => unknown | Promise<unknown>;
   options: HandlerOptions;
 }
 

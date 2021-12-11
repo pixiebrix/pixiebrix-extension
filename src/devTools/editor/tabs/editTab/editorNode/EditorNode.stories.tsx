@@ -25,8 +25,8 @@ export default {
   component: EditorNode,
 } as ComponentMeta<typeof EditorNode>;
 
-const Story: ComponentStory<typeof EditorNode> = (args) => (
-  <EditorNode {...args} />
+const Story: ComponentStory<typeof EditorNode> = (arguments_) => (
+  <EditorNode {...arguments_} />
 );
 
 export const Reader = Story.bind({});

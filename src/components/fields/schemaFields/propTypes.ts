@@ -21,7 +21,7 @@ import React from "react";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html
 
-export type SchemaFieldComponent = React.FunctionComponent<SchemaFieldProps>;
+export type SchemaFieldComponent = React.FunctionComponent<SchemaFieldProperties>;
 
 export const schemaPropTypes = {
   type: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
@@ -30,7 +30,7 @@ export const schemaPropTypes = {
   enum: PropTypes.array,
 };
 
-export interface SchemaFieldProps {
+export interface SchemaFieldProperties {
   /**
    * The field name; generally used to identify this field in the form state
    */

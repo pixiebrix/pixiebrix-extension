@@ -68,7 +68,7 @@ export type InputModeOption =
   | ObjectOption
   | OmitOption;
 
-type TemplateToggleWidgetProps = SchemaFieldProps & {
+type TemplateToggleWidgetProperties = SchemaFieldProps & {
   name: string;
   inputModeOptions: InputModeOption[];
   overrideWidget?: SchemaFieldComponent;
@@ -91,11 +91,11 @@ export function getOptionForInputMode(
  * @param setFieldDescription Setter to handle changing the field description based on which option is toggled
  * @param props SchemaFieldProps
  */
-const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
+const TemplateToggleWidget: React.FC<TemplateToggleWidgetProperties> = ({
   name,
   inputModeOptions,
   setFieldDescription,
-  ...props
+  ...properties
 }) => {
   const {
     value,
@@ -167,8 +167,8 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
     // Need to add the value prop explicitly here last to override
     //  the "blankValue" default of an empty string that comes
     //  in through props from FieldTemplate.
-    return <Field name={name} as={Widget} {...props} value={value} />;
-  }, [Widget, name, onChangeForTemplate, props, value]);
+    return <Field name={name} as={Widget} {...properties} value={value} />;
+  }, [Widget, name, onChangeForTemplate, properties, value]);
 
   return (
     <div className={styles.root}>

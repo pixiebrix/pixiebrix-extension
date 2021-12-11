@@ -40,25 +40,28 @@ export function isSimplePath(maybePath: string, ctxt: UnknownObject): boolean {
 
 export interface ReadProxy {
   toJS: (value: unknown) => unknown;
-  get: (value: unknown, prop: number | string) => unknown;
+  get: (value: unknown, property: number | string) => unknown;
 }
 
 export const noopProxy: ReadProxy = {
   toJS: identity,
-  get: (value, prop) => {
-    if (isObject(value) && Object.prototype.hasOwnProperty.call(value, prop)) {
+  get: (value, property) => {
+    if (
+      isObject(value) &&
+      Object.prototype.hasOwnProperty.call(value, property)
+    ) {
       // Checking visibility of the property above
       // eslint-disable-next-line security/detect-object-injection
-      return value[prop];
+      return value[property];
     }
   },
 };
 
 export function getPropByPath(
-  obj: Record<string, unknown>,
+  object: Record<string, unknown>,
   path: string,
   {
-    args = {},
+    args: arguments_ = {},
     proxy = noopProxy,
   }: { args?: Record<string, unknown>; proxy?: ReadProxy } | undefined = {}
 ): unknown {
@@ -66,7 +69,7 @@ export function getPropByPath(
 
   const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
 
-  let value: unknown = obj;
+  let value: unknown = object;
   const rawParts = path.trim().split(".");
 
   for (const [index, rawPart] of rawParts.entries()) {
@@ -103,7 +106,7 @@ export function getPropByPath(
 
     if (typeof value === "function") {
       try {
-        value = value.apply(previous, args);
+        value = value.apply(previous, arguments_);
       } catch (error) {
         throw new Error(
           `Error running method ${part}: ${getErrorMessage(error)}`

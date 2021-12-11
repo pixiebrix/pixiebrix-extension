@@ -24,8 +24,8 @@ export default {
   title: "Layout/Page",
 } as ComponentMeta<typeof Page>;
 
-const Template: ComponentStory<typeof Page> = (args) => (
-  <Page {...args}>Hello world!</Page>
+const Template: ComponentStory<typeof Page> = (arguments_) => (
+  <Page {...arguments_}>Hello world!</Page>
 );
 
 export const Default = Template.bind({});

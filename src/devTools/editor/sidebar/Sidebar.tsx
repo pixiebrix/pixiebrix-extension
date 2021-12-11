@@ -72,7 +72,7 @@ const Logo: React.FunctionComponent = () => (
   <img src={logoUrl} alt="PixiBrix logo" className={styles.logo} />
 );
 
-type SidebarProps = {
+type SidebarProperties = {
   isInsertingElement: boolean;
   activeElement: UUID | null;
   readonly elements: FormState[];
@@ -80,7 +80,7 @@ type SidebarProps = {
 };
 
 const SidebarExpanded: React.FunctionComponent<
-  SidebarProps & {
+  SidebarProperties & {
     collapseSidebar: () => void;
   }
 > = ({
@@ -245,7 +245,7 @@ const SidebarCollapsed: React.FunctionComponent<{
   </div>
 );
 
-const transitionProps: CSSTransitionProps = {
+const transitionProperties: CSSTransitionProps = {
   classNames: {
     enter: styles.enter,
     enterActive: styles.enterActive,
@@ -257,23 +257,23 @@ const transitionProps: CSSTransitionProps = {
   mountOnEnter: true,
 };
 
-const Sidebar: React.FunctionComponent<SidebarProps> = (props) => {
+const Sidebar: React.FunctionComponent<SidebarProperties> = (properties) => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   return (
     <>
-      <CSSTransition {...transitionProps} in={collapsed}>
+      <CSSTransition {...transitionProperties} in={collapsed}>
         <SidebarCollapsed
           expandSidebar={() => {
             setCollapsed(false);
           }}
         />
       </CSSTransition>
-      <CSSTransition {...transitionProps} in={!collapsed}>
+      <CSSTransition {...transitionProperties} in={!collapsed}>
         <SidebarExpanded
           collapseSidebar={() => {
             setCollapsed(true);
           }}
-          {...props}
+          {...properties}
         />
       </CSSTransition>
     </>

@@ -91,20 +91,20 @@ const EditorNodeLayout: React.FC<{
   return (
     <div className={styles.root}>
       {nodes.length > 0 &&
-        nodes.map((nodeProps, index) => {
-          const { nodeId } = nodeProps;
+        nodes.map((nodeProperties, index) => {
+          const { nodeId } = nodeProperties;
           // Editor nodes are displayed from top to bottom in array order,
           // so, "up" is lower in the array, and "down" is higher in the array.
           // Also, you cannot move the foundation node, which is always at
           // index 0.
           if (nodeId !== FOUNDATION_NODE_ID) {
-            nodeProps.canMoveUp = index > 1; // Any nodes beyond the first non-foundation node
-            nodeProps.canMoveDown = index > 0 && index + 1 < nodes.length; // Not the first and not the last
-            nodeProps.onClickMoveUp = () => {
+            nodeProperties.canMoveUp = index > 1; // Any nodes beyond the first non-foundation node
+            nodeProperties.canMoveDown = index > 0 && index + 1 < nodes.length; // Not the first and not the last
+            nodeProperties.onClickMoveUp = () => {
               moveBlockUp(nodeId);
             };
 
-            nodeProps.onClickMoveDown = () => {
+            nodeProperties.onClickMoveDown = () => {
               moveBlockDown(nodeId);
             };
           }
@@ -125,7 +125,7 @@ const EditorNodeLayout: React.FC<{
               <EditorNode
                 active={nodeId === activeNodeId}
                 canMoveAnything={canMoveAnything}
-                {...nodeProps}
+                {...nodeProperties}
               />
             </React.Fragment>
           );

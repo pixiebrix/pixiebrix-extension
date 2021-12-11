@@ -22,15 +22,15 @@ import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWid
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 
 const SelectorSelectorField: React.FunctionComponent<SchemaFieldProps> = (
-  props
+  properties
 ) => {
-  const { schema } = props;
+  const { schema } = properties;
   return (
     <ConnectedFieldTemplate
-      label={makeLabelForSchemaField(props)}
+      label={makeLabelForSchemaField(properties)}
       description={schema.description}
       as={SelectorSelectorWidget}
-      {...props}
+      {...properties}
     />
   );
 };

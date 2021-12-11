@@ -120,25 +120,26 @@ async function userSummary() {
   const { os } = await browser.runtime.getPlatformInfo();
   // Getting browser information would require additional permissions
   // const {name: browserName} = await browser.runtime.getBrowserInfo();
-  let numActiveExtensions: number = null;
-  let numActiveExtensionPoints: number = null;
-  let numActiveBlueprints: number = null;
+  let numberActiveExtensions: number = null;
+  let numberActiveExtensionPoints: number = null;
+  let numberActiveBlueprints: number = null;
 
   try {
     const { extensions } = await loadOptions();
-    numActiveExtensions = extensions.length;
-    numActiveBlueprints = uniq(compact(extensions.map((x) => x._recipe?.id)))
+    numberActiveExtensions = extensions.length;
+    numberActiveBlueprints = uniq(compact(extensions.map((x) => x._recipe?.id)))
       .length;
-    numActiveExtensionPoints = uniq(extensions.map((x) => x.extensionPointId))
-      .length;
+    numberActiveExtensionPoints = uniq(
+      extensions.map((x) => x.extensionPointId)
+    ).length;
   } catch (error) {
     console.warn("Cannot get number of extensions", { error });
   }
 
   return {
-    numActiveExtensions,
-    numActiveBlueprints,
-    numActiveExtensionPoints,
+    numActiveExtensions: numberActiveExtensions,
+    numActiveBlueprints: numberActiveBlueprints,
+    numActiveExtensionPoints: numberActiveExtensionPoints,
     $os: os,
   };
 }

@@ -80,10 +80,10 @@ export class IFrameRenderer extends Renderer {
 
     // https://transitory.technology/browser-extensions-and-csp-headers/
     const frameURL = browser.runtime.getURL("frame.html");
-    const src = `${frameURL}?url=${encodeURIComponent(parsedURL.href)}`;
+    const source = `${frameURL}?url=${encodeURIComponent(parsedURL.href)}`;
 
     return assumeSafe(
-      `<iframe src="${src}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`
+      `<iframe src="${source}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`
     );
   }
 }

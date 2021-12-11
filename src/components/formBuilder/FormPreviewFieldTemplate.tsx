@@ -24,16 +24,17 @@ import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 import styles from "./FormPreviewFieldTemplate.module.scss";
 import cx from "classnames";
 
-export interface FormPreviewFieldProps extends FieldProps {
+export interface FormPreviewFieldProperties extends FieldProps {
   setActiveField: SetActiveField;
 }
 
-interface FormPreviewFieldTemplateProps extends FormPreviewFieldProps {
+interface FormPreviewFieldTemplateProperties
+  extends FormPreviewFieldProperties {
   as: Field;
   className?: string;
 }
 
-const FormPreviewFieldTemplate: React.FC<FormPreviewFieldTemplateProps> = ({
+const FormPreviewFieldTemplate: React.FC<FormPreviewFieldTemplateProperties> = ({
   setActiveField,
   as: FieldComponent,
   className,

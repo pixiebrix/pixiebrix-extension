@@ -19,7 +19,7 @@ import { getLocalISOString, ParseDate } from "@/blocks/transformers/parseDate";
 import { register, TimeZone, unregister } from "timezone-mock";
 import { BlockArg } from "@/core";
 
-const refDate = "2021-12-07T06:17:09.258Z";
+const referenceDate = "2021-12-07T06:17:09.258Z";
 
 const cases = [
   ["US/Pacific", "2021-12-06T22:17:09.258-08:00"],
@@ -39,7 +39,7 @@ describe("ParseDate block", () => {
     "getLocalIsoString() for %s",
     (timezone: TimeZone, expected: string) => {
       register(timezone);
-      const input = new Date(refDate);
+      const input = new Date(referenceDate);
       const result = getLocalISOString(input);
       expect(result).toStrictEqual(expected);
       unregister();
@@ -49,11 +49,11 @@ describe("ParseDate block", () => {
   test("Results snapshot - EST input", async () => {
     register("US/Eastern");
     const brick = new ParseDate();
-    const arg = ({
+    const argument = ({
       date: "Thursday, December 9th 2021, 10pm, EST",
     } as unknown) as BlockArg<Record<string, string>>;
     await brick
-      .run(arg, {
+      .run(argument, {
         ctxt: null,
         logger: null,
         root: null,
@@ -79,11 +79,11 @@ describe("ParseDate block", () => {
   test("Results snapshot - GMT input", async () => {
     register("US/Eastern");
     const brick = new ParseDate();
-    const arg = ({
+    const argument = ({
       date: "Thursday, December 9th 2021, 3am, GMT",
     } as unknown) as BlockArg<Record<string, string>>;
     await brick
-      .run(arg, {
+      .run(argument, {
         ctxt: null,
         logger: null,
         root: null,

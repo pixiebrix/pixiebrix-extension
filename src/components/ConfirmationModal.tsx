@@ -23,27 +23,29 @@ import React, {
 } from "react";
 import { Modal, Button } from "react-bootstrap";
 
-type ModalProps = {
+type ModalProperties = {
   title?: string;
   message: string;
   submitCaption?: string;
   cancelCaption?: string;
 };
 
-type ModalContextProps = {
-  showConfirmation: (modalProps: ModalProps) => Promise<boolean>;
+type ModalContextProperties = {
+  showConfirmation: (modalProperties: ModalProperties) => Promise<boolean>;
 };
 
-const initialModalState: ModalContextProps = {
+const initialModalState: ModalContextProperties = {
   showConfirmation: () => {
     throw new Error("showConfirmation not configured");
   },
 };
 
-export const ModalContext = createContext<ModalContextProps>(initialModalState);
+export const ModalContext = createContext<ModalContextProperties>(
+  initialModalState
+);
 
 const ConfirmationModal: React.FunctionComponent<
-  ModalProps & { onCancel: () => void; onSubmit: () => void }
+  ModalProperties & { onCancel: () => void; onSubmit: () => void }
 > = ({ title, message, submitCaption, cancelCaption, onCancel, onSubmit }) => (
   <Modal show onHide={onCancel} backdrop="static" keyboard={false}>
     <Modal.Header closeButton>
@@ -66,7 +68,10 @@ type Callback = (submit: boolean) => void;
 export const ModalProvider: React.FunctionComponent<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [modalProps, setModalProps] = useState<ModalProps | null>();
+  const [
+    modalProperties,
+    setModalProperties,
+  ] = useState<ModalProperties | null>();
   const [callback, setCallback] = useState<Callback | null>();
 
   useEffect(
@@ -80,31 +85,31 @@ export const ModalProvider: React.FunctionComponent<{
   );
 
   const showConfirmation = useCallback(
-    async (modalProps: ModalProps) => {
+    async (modalProperties_: ModalProperties) => {
       if (callback) {
         // Cancel any previous modal that was showing
         callback(false);
       }
 
       return new Promise<boolean>((resolve) => {
-        setModalProps(modalProps);
+        setModalProperties(modalProperties_);
         const newCallback = (submit: boolean) => {
-          setModalProps(null);
+          setModalProperties(null);
           resolve(submit);
           setCallback(null);
         };
 
-        setCallback((_prevState: Callback) => newCallback);
+        setCallback((_previousState: Callback) => newCallback);
       });
     },
-    [callback, setModalProps]
+    [callback, setModalProperties]
   );
 
   return (
     <ModalContext.Provider value={{ showConfirmation }}>
-      {modalProps && (
+      {modalProperties && (
         <ConfirmationModal
-          {...modalProps}
+          {...modalProperties}
           onSubmit={() => {
             callback(true);
           }}
@@ -118,6 +123,6 @@ export const ModalProvider: React.FunctionComponent<{
   );
 };
 
-export function useModals(): ModalContextProps {
+export function useModals(): ModalContextProperties {
   return useContext(ModalContext);
 }

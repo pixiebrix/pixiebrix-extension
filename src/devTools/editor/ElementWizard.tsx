@@ -62,11 +62,11 @@ const WizardNavItem: React.FunctionComponent<{
       ["warning", "warning"],
     ]) {
       // eslint-disable-next-line security/detect-object-injection -- constant levels above
-      const numLevel = levels[level];
-      if (numLevel) {
+      const numberLevel = levels[level];
+      if (numberLevel) {
         return (
           <Badge className="mx-1" variant={variant}>
-            {numLevel.length}
+            {numberLevel.length}
           </Badge>
         );
       }

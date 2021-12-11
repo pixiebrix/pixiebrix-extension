@@ -49,11 +49,11 @@ import { $safeFind } from "@/helpers";
 // Can't use Typescript's assert return type for promises: https://github.com/microsoft/TypeScript/issues/34636
 export async function throwIfInvalidInput(
   block: IBlock,
-  blockArgs: RenderedArgs
+  blockArguments: RenderedArgs
 ): Promise<void> {
   const validationResult = await validateInput(
     castSchema(block.inputSchema),
-    excludeUndefined(blockArgs)
+    excludeUndefined(blockArguments)
   );
   if (!validationResult.valid) {
     // Don't need to check logValues here because this is logging to the console, not the provided logger
@@ -61,13 +61,13 @@ export async function throwIfInvalidInput(
     console.debug("Invalid inputs for block", {
       errors: validationResult.errors,
       schema: block.inputSchema,
-      blockArgs,
+      blockArgs: blockArguments,
     });
 
     throw new InputValidationError(
       "Invalid inputs for block",
       block.inputSchema,
-      blockArgs,
+      blockArguments,
       validationResult.errors
     );
   }

@@ -20,12 +20,14 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import { Form } from "react-bootstrap";
 
-const ExpressionWidget: React.FunctionComponent<SchemaFieldProps> = (props) => {
-  const [field, meta] = useField(props);
+const ExpressionWidget: React.FunctionComponent<SchemaFieldProps> = (
+  properties
+) => {
+  const [field, meta] = useField(properties);
   return (
     <Form.Control
       type="text"
-      {...props}
+      {...properties}
       value={field.value ?? ""}
       isInvalid={meta.error != null}
     />

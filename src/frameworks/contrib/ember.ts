@@ -111,47 +111,47 @@ function isMutableCell(cell: unknown): cell is MutableCell {
 //         content: e.EmbeddedMegaMorphicModel[]
 //
 
-export function getProp(value: any, prop: string | number): unknown {
+export function getProp(value: any, property: string | number): unknown {
   if (isPrimitive(value)) {
     return undefined;
   }
 
   if (Array.isArray(value)) {
-    if (typeof prop !== "number") {
+    if (typeof property !== "number") {
       throw new TypeError("Expected number for prop for array value");
     }
 
-    return value[prop];
+    return value[property];
   }
 
   if (typeof value === "object") {
     if (isMutableCell(value) && "value" in value) {
-      return getProp(value.value, prop);
+      return getProp(value.value, property);
     }
 
     if ("_cache" in value) {
-      return getProp(value._cache, prop);
+      return getProp(value._cache, property);
     }
 
     if (Array.isArray(value.content)) {
-      return getProp(value.content, prop);
+      return getProp(value.content, property);
     }
 
-    if (typeof prop === "string" && isGetter(value, prop)) {
-      return value[prop]();
+    if (typeof property === "string" && isGetter(value, property)) {
+      return value[property]();
     }
 
-    return value[prop];
+    return value[property];
   }
 
   // ignore functions and symbols
   return undefined;
 }
 
-function pickExternalProps(obj: UnknownObject): UnknownObject {
+function pickExternalProperties(object: UnknownObject): UnknownObject {
   // Lodash's pickby was having issues with some getters
   return Object.fromEntries(
-    Object.entries(obj).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key))
+    Object.entries(object).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key))
   );
 }
 
@@ -195,7 +195,7 @@ export function readEmberValueFromCache(
       return value.content.map((x: any) => traverse(x));
     }
 
-    return mapValues(pickExternalProps(value), recurse);
+    return mapValues(pickExternalProperties(value), recurse);
   }
 
   // ignore functions and symbols
@@ -265,17 +265,19 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
   hasData: (instance) => {
     const target = targetForComponent(instance) as UnknownObject;
     return getAllPropertyNames(target).some(
-      (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
+      (property) =>
+        !property.startsWith("_") && !EMBER_INTERNAL_PROPS.has(property)
     );
   },
   getData: (instance) => {
     const target = targetForComponent(instance) as UnknownObject;
-    const props = getAllPropertyNames(target).filter(
-      (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
+    const properties = getAllPropertyNames(target).filter(
+      (property) =>
+        !property.startsWith("_") && !EMBER_INTERNAL_PROPS.has(property)
     );
     // Safe because the prop names are coming from getAllPropertyNames
     // eslint-disable-next-line security/detect-object-injection
-    return Object.fromEntries(props.map((x) => [x, target[x]]));
+    return Object.fromEntries(properties.map((x) => [x, target[x]]));
   },
   proxy: {
     toJS: unary(readEmberValueFromCache),

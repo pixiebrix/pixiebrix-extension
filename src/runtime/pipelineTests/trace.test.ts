@@ -212,10 +212,10 @@ describe("Trace normal execution", () => {
 
     // Can't use toHaveBeenNthCalledWith because we don't want to include the stack trace in the test
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test code
-    const args = (trace.recordTraceExit as any).mock.calls[0][0];
-    expect(args.runId).toBe(meta.runId);
-    expect(args.blockInstanceId).toBe(meta.blockInstanceId);
-    expect(args.error.name).toBe("BusinessError");
-    expect(args.error.message).toBe("hello");
+    const arguments_ = (trace.recordTraceExit as any).mock.calls[0][0];
+    expect(arguments_.runId).toBe(meta.runId);
+    expect(arguments_.blockInstanceId).toBe(meta.blockInstanceId);
+    expect(arguments_.error.name).toBe("BusinessError");
+    expect(arguments_.error.message).toBe("hello");
   });
 });

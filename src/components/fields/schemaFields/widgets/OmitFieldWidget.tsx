@@ -27,7 +27,7 @@ const OmitFieldWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   hideLabel,
   isObjectProperty,
   isArrayItem,
-  ...restProps
-}) => <Form.Control name={name} {...restProps} disabled />;
+  ...restProperties
+}) => <Form.Control name={name} {...restProperties} disabled />;
 
 export default OmitFieldWidget;

@@ -18,17 +18,17 @@
 // https://transitory.technology/browser-extensions-and-csp-headers/
 // Load the passed URL into an another iframe to get around the parent page's CSP headers
 
-const params = new URLSearchParams(window.location.search);
+const parameters = new URLSearchParams(window.location.search);
 
-const rawURL = params.get("url");
+const rawURL = parameters.get("url");
 
 console.debug("Initializing indirect frame", {
   url: rawURL,
-  nonce: params.get("nonce"),
+  nonce: parameters.get("nonce"),
 });
 
 const url = new URL(rawURL);
-const nonce = params.get("nonce");
+const nonce = parameters.get("nonce");
 
 if (nonce) {
   url.searchParams.set("_pb", nonce);

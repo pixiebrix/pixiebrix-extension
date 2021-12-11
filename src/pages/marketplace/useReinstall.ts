@@ -86,10 +86,10 @@ function useReinstall(): Reinstall {
       // of calls that uninstallContextMenu + dispatch occur in. We were having problems with the context menu not
       // unregistered from some of the tabs
       for (const extension of recipeExtensions) {
-        const extensionRef = { extensionId: extension.id };
+        const extensionReference = { extensionId: extension.id };
         // eslint-disable-next-line no-await-in-loop -- see comment above
-        await uninstallContextMenu(extensionRef);
-        dispatch(removeExtension(extensionRef));
+        await uninstallContextMenu(extensionReference);
+        dispatch(removeExtension(extensionReference));
       }
 
       dispatch(

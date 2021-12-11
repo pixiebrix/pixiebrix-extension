@@ -166,9 +166,13 @@ function renderPanelsIfVisible() {
   expectContext("contentScript");
 
   if (isActionPanelVisible()) {
-    const seqNum = renderSequenceNumber;
+    const seqNumber = renderSequenceNumber;
     renderSequenceNumber++;
-    void renderPanels({ tabId: "this", page: "/action.html" }, seqNum, panels);
+    void renderPanels(
+      { tabId: "this", page: "/action.html" },
+      seqNumber,
+      panels
+    );
   } else {
     console.debug(
       "Skipping renderPanels because the action panel is not visible"
@@ -185,9 +189,9 @@ export function showActionPanelForm(entry: FormEntry) {
     );
   }
 
-  const seqNum = renderSequenceNumber;
+  const seqNumber = renderSequenceNumber;
   renderSequenceNumber++;
-  void showForm({ tabId: "this", page: "/action.html" }, seqNum, entry);
+  void showForm({ tabId: "this", page: "/action.html" }, seqNumber, entry);
 }
 
 export function hideActionPanelForm(nonce: UUID) {
@@ -198,9 +202,9 @@ export function hideActionPanelForm(nonce: UUID) {
     return;
   }
 
-  const seqNum = renderSequenceNumber;
+  const seqNumber = renderSequenceNumber;
   renderSequenceNumber++;
-  void hideForm({ tabId: "this", page: "/action.html" }, seqNum, nonce);
+  void hideForm({ tabId: "this", page: "/action.html" }, seqNumber, nonce);
 }
 
 export function removeExtension(extensionId: string): void {
@@ -226,13 +230,13 @@ export function removeExtensionPoint(extensionPointId: string): void {
 /**
  * Create placeholder panels showing loading indicators
  */
-export function reservePanels(refs: ExtensionRef[]): void {
-  if (refs.length === 0) {
+export function reservePanels(references: ExtensionRef[]): void {
+  if (references.length === 0) {
     return;
   }
 
   const current = new Set(panels.map((x) => x.extensionId));
-  for (const { extensionId, extensionPointId } of refs) {
+  for (const { extensionId, extensionPointId } of references) {
     if (!current.has(extensionId)) {
       const entry: PanelEntry = {
         extensionId,

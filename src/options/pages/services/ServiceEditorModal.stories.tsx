@@ -40,11 +40,11 @@ export default {
   component: ServiceEditorModal,
 } as ComponentMeta<typeof ServiceEditorModal>;
 
-const Template: Story<StoryType> = ({ fixture, ...args }) => {
+const Template: Story<StoryType> = ({ fixture, ...arguments_ }) => {
   // eslint-disable-next-line security/detect-object-injection -- type checked from fixture object
   const service = fromJS(loadBrickYaml(FIXTURES[fixture]) as ServiceDefinition);
 
-  return <ServiceEditorModal {...args} service={service} />;
+  return <ServiceEditorModal {...arguments_} service={service} />;
 };
 
 // FIXME: the modals get rendered behind their own overlay so you can't interact with them on the page

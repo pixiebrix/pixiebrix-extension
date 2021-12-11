@@ -154,8 +154,8 @@ export async function userSelectElement(
     }
 
     function addInspectingModeStyles(window: Window) {
-      const doc = window.document;
-      styleElement = doc.createElement("style");
+      const document_ = window.document;
+      styleElement = document_.createElement("style");
       styleElement.innerHTML = `
         html:not(:hover):before {
           content: '';
@@ -172,7 +172,7 @@ export async function userSelectElement(
             border-width: 25px;
           }
         }`;
-      doc.body.append(styleElement);
+      document_.body.append(styleElement);
     }
 
     function removeInspectingModeStyles() {

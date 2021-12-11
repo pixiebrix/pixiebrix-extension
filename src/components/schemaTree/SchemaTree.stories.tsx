@@ -24,8 +24,8 @@ export default {
   component: SchemaTree,
 } as ComponentMeta<typeof SchemaTree>;
 
-const Template: ComponentStory<typeof SchemaTree> = (args) => (
-  <SchemaTree {...args} />
+const Template: ComponentStory<typeof SchemaTree> = (arguments_) => (
+  <SchemaTree {...arguments_} />
 );
 
 export const NoSchema = Template.bind({});

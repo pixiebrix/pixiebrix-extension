@@ -35,13 +35,13 @@ export function liftBackground<
   R extends SerializableResponse
 >(
   type: string,
-  method: (...args: TArguments) => Promise<R>,
+  method: (...arguments_: TArguments) => Promise<R>,
   { asyncResponse = true }: HandlerOptions = {}
-): (...args: TArguments) => Promise<R> {
+): (...arguments_: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
-  return async (...args: TArguments) => {
-    console.debug(`running fake ${fullType}`, { fullType, args });
+  return async (...arguments_: TArguments) => {
+    console.debug(`running fake ${fullType}`, { fullType, args: arguments_ });
 
     if (!asyncResponse) {
       throw new Error("background notifications not implemented");
@@ -53,7 +53,7 @@ export function liftBackground<
       let handlerResult: unknown;
 
       try {
-        handlerResult = await method(...args);
+        handlerResult = await method(...arguments_);
       } catch (error) {
         console.log("Error running method", error);
         handlerResult = toErrorResponse(fullType, error);

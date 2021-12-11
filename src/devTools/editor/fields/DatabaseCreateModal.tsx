@@ -33,7 +33,7 @@ import { Organization, UserRole } from "@/types/contract";
 import { UUID } from "@/core";
 import { validateUUID } from "@/types/helpers";
 
-type DatabaseCreateModalProps = {
+type DatabaseCreateModalProperties = {
   onDatabaseCreated: (databaseId: UUID) => void;
   onClose: () => void;
 };
@@ -75,15 +75,15 @@ function getOrganizationOptions(organizations: Organization[]) {
       value: organization.id,
     }));
 
-  const personalDbOption = {
+  const personalDatabaseOption = {
     label: "Personal",
     value: "",
   };
 
-  return [...organizationOptions, personalDbOption];
+  return [...organizationOptions, personalDatabaseOption];
 }
 
-const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
+const DatabaseCreateModal: React.FC<DatabaseCreateModalProperties> = ({
   onDatabaseCreated,
   onClose,
 }) => {
@@ -110,12 +110,12 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
       return;
     }
 
-    const newDbId = validateUUID(createDatabaseResult.data.id);
+    const newDatabaseId = validateUUID(createDatabaseResult.data.id);
 
     if (groupId) {
       const addToGroupResult = await addDatabaseToGroup({
         groupId,
-        databaseIds: [newDbId],
+        databaseIds: [newDatabaseId],
       });
 
       if ("error" in addToGroupResult) {
@@ -125,7 +125,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
       }
     }
 
-    onDatabaseCreated(newDbId);
+    onDatabaseCreated(newDatabaseId);
   };
 
   const organizationOptions = getOrganizationOptions(organizations);

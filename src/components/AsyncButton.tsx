@@ -27,7 +27,7 @@ const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
   onClick,
   children,
   disabled: manualDisabled = false,
-  ...buttonProps
+  ...buttonProperties
 }) => {
   const mounted = useRef(false);
   const [pending, setPending] = useState(false);
@@ -54,7 +54,7 @@ const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
   return (
     <Button
       disabled={manualDisabled || pending}
-      {...buttonProps}
+      {...buttonProperties}
       onClick={handleClick}
     >
       {children}

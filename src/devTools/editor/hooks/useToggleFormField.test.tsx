@@ -19,15 +19,15 @@ import { removeField } from "@/devTools/editor/hooks/useToggleFormField";
 
 describe("removeField", () => {
   test("remove field from object", () => {
-    const obj = { foo: "foo", bar: "bar" };
-    removeField(obj, "bar");
-    expect(obj).toStrictEqual({ foo: "foo" });
+    const object = { foo: "foo", bar: "bar" };
+    removeField(object, "bar");
+    expect(object).toStrictEqual({ foo: "foo" });
   });
 
   test("remove item from array", () => {
-    const arr = ["foo", "bar", "baz"];
-    removeField(arr, "1");
-    expect(arr).toStrictEqual(["foo", "baz"]);
+    const array = ["foo", "bar", "baz"];
+    removeField(array, "1");
+    expect(array).toStrictEqual(["foo", "baz"]);
   });
 
   test("try to remove field from non-object", () => {

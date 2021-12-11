@@ -48,8 +48,8 @@ interface RawConfig<T extends string = string> extends Config {
   kind: T;
 }
 
-export function makeInternalId(obj: UnknownObject): RegistryId {
-  const hash = objectHash(obj);
+export function makeInternalId(object: UnknownObject): RegistryId {
+  const hash = objectHash(object);
   return `@internal/${hash}` as RegistryId;
 }
 
@@ -58,19 +58,24 @@ async function ensureBlock(
   config: RawConfig<"reader" | "component">
 ) {
   // Don't include outputSchema in because it can't affect functionality. Include it in the item in the future?
-  const obj = pick(config, ["inputSchema", "kind", "pipeline", "definition"]);
-  const registryId = makeInternalId(obj);
+  const object = pick(config, [
+    "inputSchema",
+    "kind",
+    "pipeline",
+    "definition",
+  ]);
+  const registryId = makeInternalId(object);
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (await blockRegistry.exists(registryId)) {
     console.debug(
-      `Internal ${obj.kind} already exists: ${registryId}; using existing block`
+      `Internal ${object.kind} already exists: ${registryId}; using existing block`
     );
     return blockRegistry.lookup(registryId);
   }
 
   const item = blockFactory({
-    ...obj,
+    ...object,
     metadata: {
       id: registryId,
       name: `Anonymous ${config.kind}`,
@@ -141,19 +146,19 @@ async function ensureExtensionPoint(
     config.definition.reader
   );
 
-  const obj = pick(config, ["kind", "definition"]);
-  const registryId = makeInternalId(obj);
+  const object = pick(config, ["kind", "definition"]);
+  const registryId = makeInternalId(object);
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (await extensionPointRegistry.exists(registryId)) {
     console.debug(
-      `Internal ${obj.kind} already exists: ${registryId}; using existing block`
+      `Internal ${object.kind} already exists: ${registryId}; using existing block`
     );
     return extensionPointRegistry.lookup(registryId);
   }
 
   const item = extensionPointFactory({
-    ...obj,
+    ...object,
     metadata: {
       id: registryId,
       name: "Anonymous extensionPoint",

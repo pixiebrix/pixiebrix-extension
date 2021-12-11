@@ -22,9 +22,9 @@ import { ToastProvider } from "react-toast-notifications";
 import { action } from "@storybook/addon-actions";
 
 const promiseAction = (name: string) => {
-  const actionFn = action(name);
-  return async (...args: unknown[]) => {
-    actionFn(...args);
+  const actionFunction = action(name);
+  return async (...arguments_: unknown[]) => {
+    actionFunction(...arguments_);
     return Promise.resolve();
   };
 };
@@ -42,9 +42,9 @@ const componentMeta: ComponentMeta<typeof LogToolbar> = {
   },
 };
 
-const Template: ComponentStory<typeof LogToolbar> = (args) => (
+const Template: ComponentStory<typeof LogToolbar> = (arguments_) => (
   <ToastProvider>
-    <LogToolbar {...args} />
+    <LogToolbar {...arguments_} />
   </ToastProvider>
 );
 

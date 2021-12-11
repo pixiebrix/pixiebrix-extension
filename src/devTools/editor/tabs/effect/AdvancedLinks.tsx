@@ -28,12 +28,15 @@ import { isExpression } from "@/runtime/mapArgs";
 export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";
 export const DEFAULT_WINDOW_VALUE: BlockWindow = "self";
 
-type AdvancedLinksProps = {
+type AdvancedLinksProperties = {
   name: string;
   scrollToRef: MutableRefObject<HTMLElement>;
 };
 
-const AdvancedLinks: React.FC<AdvancedLinksProps> = ({ name, scrollToRef }) => {
+const AdvancedLinks: React.FC<AdvancedLinksProperties> = ({
+  name,
+  scrollToRef,
+}) => {
   const configName = partial(joinName, name);
 
   const [{ value: templateEngineValue }] = useField<TemplateEngine>(

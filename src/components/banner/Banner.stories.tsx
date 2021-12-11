@@ -34,7 +34,9 @@ export default {
   },
 } as ComponentMeta<typeof Banner>;
 
-const Template: ComponentStory<typeof Banner> = (args) => <Banner {...args} />;
+const Template: ComponentStory<typeof Banner> = (arguments_) => (
+  <Banner {...arguments_} />
+);
 
 export const Info = Template.bind({});
 Info.args = {

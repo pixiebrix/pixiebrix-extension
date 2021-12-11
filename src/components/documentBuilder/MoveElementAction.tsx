@@ -22,12 +22,12 @@ import getElementCollectionName from "./getElementCollectionName";
 import { DocumentElement } from "./documentBuilderTypes";
 import LayoutWidget from "@/components/LayoutWidget";
 
-type MoveElementActionProps = {
+type MoveElementActionProperties = {
   elementName: string;
   setActiveElement: (activeElement: string) => void;
 };
 
-const MoveElementAction: React.FC<MoveElementActionProps> = ({
+const MoveElementAction: React.FC<MoveElementActionProperties> = ({
   elementName,
   setActiveElement,
 }) => {

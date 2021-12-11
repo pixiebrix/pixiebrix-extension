@@ -24,7 +24,7 @@ import useLogEntries from "@/components/logViewer/useLogEntries";
 import LogToolbar from "@/components/logViewer/LogToolbar";
 import { RegistryId, UUID } from "@/core";
 
-type OwnProps = {
+type OwnProperties = {
   initialLevel?: MessageLevel;
   extensionPointId: RegistryId;
   extensionId: UUID;
@@ -32,7 +32,7 @@ type OwnProps = {
   refreshInterval?: number;
 };
 
-const RunLogCard: React.FunctionComponent<OwnProps> = ({
+const RunLogCard: React.FunctionComponent<OwnProperties> = ({
   extensionPointId,
   extensionId,
   initialLevel = "info",

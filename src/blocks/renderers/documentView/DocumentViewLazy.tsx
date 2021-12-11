@@ -16,7 +16,7 @@
  */
 
 import React, { Suspense } from "react";
-import { DocumentViewProps } from "./DocumentViewProps";
+import { DocumentViewProps as DocumentViewProperties } from "./DocumentViewProps";
 
 // Dynamic import because documentView has a transitive dependency of react-shadow-root which assumed a proper
 // `window` variable is present on module load. This isn't available on header generation
@@ -28,9 +28,9 @@ const DocumentView = React.lazy(
     )
 );
 
-const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (
+const DocumentViewLazy: React.FC<DocumentViewProperties> = (properties) => (
   <Suspense fallback={<div className="text-muted">Loading...</div>}>
-    <DocumentView {...props} />
+    <DocumentView {...properties} />
   </Suspense>
 );
 
