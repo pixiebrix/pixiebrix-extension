@@ -287,7 +287,7 @@ module.exports = (env, options) =>
       alias: {
         ...mockHeavyDependencies(),
         ...devDependenciesOnly(options, "redux-logger"),
-        "css-selector-generator": path.resolve("src/__mocks__/s"),
+
         // Enables static analysis and removal of dead code
         "webext-detect-page": path.resolve("src/__mocks__/webextDetectPage"),
       },
@@ -346,6 +346,11 @@ module.exports = (env, options) =>
       new webpack.ProvidePlugin({
         $: "jquery",
         jQuery: "jquery",
+      }),
+
+      new webpack.DefinePlugin({
+        window: "globalThis.window",
+        document: "globalThis.document",
       }),
 
       // This will inject the current ENVs into the bundle, if found
