@@ -240,7 +240,6 @@ module.exports = (env, options) =>
 
     output: {
       path: path.resolve("dist"),
-      globalObject: "window",
       chunkFilename: "bundles/[name].bundle.js",
       environment: {
         dynamicImport: true,
