@@ -249,7 +249,6 @@ module.exports = (env, options) =>
       // All of these entries require the `vendors.js` file to be included first
       ...Object.fromEntries(
         [
-          "background",
           "contentScript",
           "devtools",
           "devtoolsPanel",
@@ -276,6 +275,10 @@ module.exports = (env, options) =>
         "css-selector-generator",
         "@fortawesome/free-solid-svg-icons",
       ],
+
+      // The background has (or should have) almost no overlap with vendors
+      background: "./src/background",
+
       // The script that gets injected into the host page should not have a vendor chunk
       script: "./src/script",
     },
@@ -284,7 +287,7 @@ module.exports = (env, options) =>
       alias: {
         ...mockHeavyDependencies(),
         ...devDependenciesOnly(options, "redux-logger"),
-
+        "css-selector-generator": path.resolve("src/__mocks__/s"),
         // Enables static analysis and removal of dead code
         "webext-detect-page": path.resolve("src/__mocks__/webextDetectPage"),
       },

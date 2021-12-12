@@ -19,3 +19,11 @@ import browser from "webextension-polyfill";
 
 // https://webpack.js.org/guides/public-path/#on-the-fly
 __webpack_public_path__ = browser.runtime.getURL("/");
+
+// Required for react-select-virtualized https://github.com/guiyep/react-select-virtualized/issues/283
+import "regenerator-runtime/runtime";
+import axios from "axios";
+import fetchAdapter from "@vespaiach/axios-fetch-adapter";
+
+console.log(fetchAdapter);
+axios.defaults.adapter = fetchAdapter;
