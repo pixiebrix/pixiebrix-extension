@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { merge } from "lodash";
 import { render } from "react-dom";
 import { toast, Toaster } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
@@ -92,23 +91,7 @@ export const DEFAULT_ACTION_RESULTS = {
 
 export interface MessageConfig {
   message: string;
-  detail?: string;
   config: Partial<NotificationOptions>;
-}
-
-export function mergeConfig(
-  custom: MessageConfig | null,
-  defaults: MessageConfig
-): MessageConfig {
-  if (custom == null) {
-    return defaults;
-  }
-
-  return merge({}, defaults, custom);
-}
-
-export interface NotificationCallbacks {
-  hide: () => void;
 }
 
 export function notifyError(message: string): void {
