@@ -17,7 +17,7 @@
 
 import pTimeout from "p-timeout";
 import browser, { Menus, Tabs } from "webextension-polyfill";
-import { isBackgroundPage } from "webext-detect-page";
+import { isBackground } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { noop } from "lodash";
 import {
@@ -242,7 +242,7 @@ export async function ensureContextMenu({
   }
 }
 
-if (isBackgroundPage()) {
+if (isBackground()) {
   browser.contextMenus.onClicked.addListener(menuListener);
   console.debug("Attached context menu listener");
 }
