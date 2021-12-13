@@ -27,49 +27,46 @@ export type TypedBlock = {
   type: BlockType;
 };
 
-class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
-  private readonly blocksMap = new Map<RegistryId, TypedBlock>();
+export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
+  constructor() {
+    super(["block", "component", "effect", "reader"], "blocks", fromJS);
+  }
+
+  private blocksMap = {};
+  private typesPromise: Promise<void> = Promise.resolve();
 
   async allTyped(): Promise<BlocksMap> {
-    // ToDo await for all types to get resolved
-    const blocksMap: BlocksMap = {};
-    const blocks = this.cached();
-    for (const block of blocks) {
-      blocksMap[block.id] = {
-        block,
-        // eslint-disable-next-line no-await-in-loop
-        type: await getType(block),
-      };
-    }
-
-    return blocksMap;
+    await this.typesPromise;
+    return this.blocksMap;
   }
 
   register(...items: IBlock[]): void {
     super.register(...items);
 
-    for (const item of items) {
-      void getType(item).then((itemType) => {
-        this.blocksMap.set(item.id, {
-          block: item,
-          type: itemType,
-        });
-      });
-    }
+    // Generating promise for the new chunk of items
+    const nextTypesPromise: Promise<void> = Promise.all(
+      items.map(async (item) =>
+        getType(item).then((itemType) => {
+          this.blocksMap[item.id] = {
+            block: item,
+            type: itemType,
+          } as TypedBlock;
+        })
+      )
+    ) as any;
+
+    this.typesPromise = this.typesPromise.then(async () => nextTypesPromise);
   }
 
   clear() {
     super.clear();
 
-    this.blocksMap.clear();
+    this.blocksMap = {};
+    this.typesPromise = Promise.resolve();
   }
 }
 
-const registry = new BlocksRegistry(
-  ["block", "component", "effect", "reader"],
-  "blocks",
-  fromJS
-);
+const registry = new BlocksRegistry();
 
 export function registerBlock(block: IBlock): void {
   registry.register(block);
