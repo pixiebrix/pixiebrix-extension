@@ -20,7 +20,7 @@ import { BlockPipeline } from "@/blocks/types";
 import { useAsyncState } from "@/hooks/common";
 import { getErrorMessage } from "@/errors";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
-import { runMapArgs, runRendererPipeline } from "@/contentScript/messenger/api";
+import { runRendererPipeline } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import PanelBody from "@/actionPanel/PanelBody";
@@ -43,34 +43,18 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
     error,
   ] = useAsyncState<RendererPayload>(async () => {
     const me = await whoAmI();
-    const target = { tabId: me.tab.id, frameId: 0 };
-
-    const resolvedPipeline = (await runMapArgs(
-      target,
-      // TODO: pass runtime version via DocumentContext instead of hardcoding it
-      {
-        config: pipeline,
-        context: ctxt,
-        options: apiVersionOptions("v3"),
-      }
-    )) as BlockPipeline;
-
-    console.log({ resolvedPipeline });
 
     // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
+    const target = { tabId: me.tab.id, frameId: 0 };
+
     return runRendererPipeline(target, {
       nonce: uuidv4(),
       context: ctxt,
-      pipeline: resolvedPipeline,
+      pipeline,
+      // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
+      options: apiVersionOptions("v3"),
     });
   }, [pipeline]);
-
-  console.log("BlockElement", {
-    pipeline,
-    ctxt,
-    payload,
-    error,
-  });
 
   if (isLoading) {
     return <PanelBody payload={null} />;

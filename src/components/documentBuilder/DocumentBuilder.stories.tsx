@@ -29,6 +29,7 @@ import {
 import { ToastProvider } from "react-toast-notifications";
 import DocumentEditor from "./edit/DocumentEditor";
 import DocumentPreview from "./preview/DocumentPreview";
+import { action } from "@storybook/addon-actions";
 
 const schemaShape: yup.ObjectSchema = yup.object().shape({
   body: yup.array(yup.object()).required(),
@@ -41,7 +42,7 @@ const DocumentBuilder: React.FC = () => {
     <Formik
       validationSchema={schemaShape}
       initialValues={{ body: [] }}
-      onSubmit={console.log}
+      onSubmit={action("onSubmit")}
     >
       {({ handleSubmit }) => (
         <BootstrapForm noValidate onSubmit={handleSubmit}>

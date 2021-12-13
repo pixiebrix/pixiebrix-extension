@@ -18,7 +18,7 @@
 import React, { useContext } from "react";
 import DocumentContext from "./DocumentContext";
 import { UnknownObject } from "@/types";
-import { Args } from "@/runtime/mapArgs";
+import { Args, isDeferExpression } from "@/runtime/mapArgs";
 import { useAsyncState } from "@/hooks/common";
 import { GridLoader } from "react-spinners";
 import {
@@ -72,15 +72,22 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
           draft.options.ctxt[key] = itemData;
         });
 
-        const documentElement = (await runMapArgs(
-          target,
-          // TODO: pass runtime version via DocumentContext instead of hardcoding it
-          {
-            config,
-            context: elementContext.options.ctxt,
-            options: apiVersionOptions("v3"),
-          }
-        )) as DocumentElement;
+        let documentElement: unknown;
+
+        if (isDeferExpression(config)) {
+          documentElement = (await runMapArgs(
+            target,
+            // TODO: pass runtime version via DocumentContext instead of hard-coding it. This is be wrong for v4+
+            {
+              config: config.__value__,
+              context: elementContext.options.ctxt,
+              options: apiVersionOptions("v3"),
+            }
+          )) as DocumentElement;
+        } else {
+          // Must be a constant at this point. Non-deferred templates would have already been rendered.
+          documentElement = config;
+        }
 
         return {
           documentElement,
@@ -111,10 +118,12 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
 
   return (
     <>
-      {rootDefinitions.map(({ documentElement, elementContext }, i) => {
-        const { Component, props } = buildDocumentBranch(documentElement);
+      {rootDefinitions.map(({ documentElement, elementContext }, index) => {
+        const { Component, props } = buildDocumentBranch(
+          documentElement as DocumentElement
+        );
         return (
-          <DocumentContext.Provider key={i} value={elementContext}>
+          <DocumentContext.Provider key={index} value={elementContext}>
             <Component {...props} />
           </DocumentContext.Provider>
         );

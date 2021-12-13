@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import BlockPipeline from "@/components/documentBuilder/render/BlockElement";
+import BlockElement from "@/components/documentBuilder/render/BlockElement";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
@@ -32,6 +32,7 @@ import useNotifications from "@/hooks/useNotifications";
 import documentTreeStyles from "./documentTree.module.scss";
 import cx from "classnames";
 import ListElement from "@/components/documentBuilder/render/ListElement";
+import { BusinessError } from "@/errors";
 
 const headerComponents = {
   header_1: "h1",
@@ -47,7 +48,9 @@ const gridComponents = {
 
 const UnknownType: React.FC<{ componentType: string }> = ({
   componentType,
-}) => <span>Unknown type: {componentType}</span>;
+}) => (
+  <div className="text-danger">Unknown component type: {componentType}</div>
+);
 
 export function getComponentDefinition(
   element: DocumentElement
@@ -102,10 +105,20 @@ export function getComponentDefinition(
     }
 
     case "pipeline": {
+      const { pipeline } = config;
+
+      if (typeof pipeline !== "undefined" && !isPipelineExpression(pipeline)) {
+        console.debug("Expected pipeline expression for pipeline", {
+          componentType: "pipeline",
+          config,
+        });
+        throw new BusinessError("Expected pipeline expression for pipeline");
+      }
+
       return {
-        Component: BlockPipeline,
+        Component: BlockElement,
         props: {
-          pipeline: config.pipeline,
+          pipeline: pipeline.__value__,
         },
       };
     }
@@ -113,7 +126,11 @@ export function getComponentDefinition(
     case "button": {
       const { title, onClick, ...props } = config;
       if (typeof onClick !== "undefined" && !isPipelineExpression(onClick)) {
-        throw new Error("Expected pipeline expression for onClick");
+        console.debug("Expected pipeline expression for onClick", {
+          componentType: "button",
+          config,
+        });
+        throw new BusinessError("Expected pipeline expression for onClick");
       }
 
       return {
@@ -318,9 +335,9 @@ export function getPreviewComponentDefinition(
 export const buildDocumentBranch: BuildDocumentBranch = (root) => {
   const componentDefinition = getComponentDefinition(root);
   if (root.children?.length > 0) {
-    componentDefinition.props.children = root.children.map((child, i) => {
+    componentDefinition.props.children = root.children.map((child, index) => {
       const { Component, props } = buildDocumentBranch(child);
-      return <Component key={i} {...props} />;
+      return <Component key={index} {...props} />;
     });
   }
 

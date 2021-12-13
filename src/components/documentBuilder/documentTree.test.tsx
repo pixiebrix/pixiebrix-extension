@@ -102,11 +102,11 @@ describe("When rendered in panel", () => {
     };
     const { container } = renderDocument(config);
 
-    const element = container.querySelector("span");
+    const element = container.querySelector("div");
 
     expect(element).not.toBeNull();
     expect(element).toHaveTextContent(
-      "Unknown type: TheTypeForWhichAComponentIsNotDefined"
+      "Unknown component type: TheTypeForWhichAComponentIsNotDefined"
     );
   });
 
