@@ -162,4 +162,4 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   );
 };
 
-export default React.memo(TemplateToggleWidget);
+export default TemplateToggleWidget;

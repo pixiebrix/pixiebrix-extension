@@ -23,6 +23,10 @@ import fitTextarea from "fit-textarea";
 import { TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 
+function isVarValue(value: string): boolean {
+  return value.startsWith("@") && !value.includes(" ");
+}
+
 const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   name,
   schema,
@@ -51,10 +55,24 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   const onChangeForTemplate = useCallback(
     (templateEngine: TemplateEngine) => {
       const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        setValue({
-          __type__: templateEngine,
-          __value__: e.target.value,
-        });
+        const changeVal = e.target.value;
+        // Automatically switch to var if user types "@" in the input
+        if (templateEngine !== "var" && isVarValue(changeVal)) {
+          setValue({
+            __type__: "var",
+            __value__: changeVal,
+          });
+        } else if (templateEngine === "var" && !isVarValue(changeVal)) {
+          setValue({
+            __type__: "mustache",
+            __value__: changeVal,
+          });
+        } else {
+          setValue({
+            __type__: templateEngine,
+            __value__: changeVal,
+          });
+        }
       };
 
       return onChange;
