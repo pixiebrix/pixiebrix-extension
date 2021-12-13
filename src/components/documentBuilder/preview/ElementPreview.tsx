@@ -20,7 +20,7 @@ import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
 import {
   DocumentElement,
-  isListDocument,
+  isListElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { getPreviewComponentDefinition } from "@/components/documentBuilder/documentTree";
 import AddElementAction from "./AddElementAction";
@@ -70,7 +70,7 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
   const isContainer = Array.isArray(documentElement.children);
 
   // Render the item template and the Item Type Selector for the list element
-  const isList = isListDocument(documentElement);
+  const isList = isListElement(documentElement);
 
   const { Component: PreviewComponent, props } = getPreviewComponentDefinition(
     documentElement

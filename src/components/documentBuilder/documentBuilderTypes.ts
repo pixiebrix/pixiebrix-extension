@@ -51,7 +51,7 @@ export type ListDocumentConfig = {
 };
 export type ListDocumentElement = DocumentElement<"list", ListDocumentConfig>;
 
-export function isListDocument(
+export function isListElement(
   element: DocumentElement
 ): element is ListDocumentElement {
   return element.type === "list";
@@ -65,7 +65,7 @@ export type PipelineDocumentElement = DocumentElement<
   PipelineDocumentConfig
 >;
 
-export function isPipelineDocument(
+export function isPipelineElement(
   element: DocumentElement
 ): element is PipelineDocumentElement {
   return element.type === "pipeline";

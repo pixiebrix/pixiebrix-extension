@@ -18,21 +18,90 @@
 import React from "react";
 import { BlockConfig } from "@/blocks/types";
 import useBlockOptions from "@/hooks/useBlockOptions";
+import { Col, Row } from "react-bootstrap";
+import BrickModal from "@/components/brickModal/BrickModal";
+import { useAsyncState } from "@/hooks/common";
+import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
+import blockRegistry from "@/blocks/registry";
+import { defaultBlockConfig, getType } from "@/blocks/util";
+import { IBlock } from "@/core";
+import { uuidv4 } from "@/types/helpers";
+import { produce } from "immer";
+import { PipelineDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 
 type ElementBlockEditProps = {
-  blockConfig: BlockConfig;
-  blockConfigName: string;
+  elementName: string;
+  element: PipelineDocumentElement;
+  setElement: (
+    value: PipelineDocumentElement,
+    shouldValidate?: boolean
+  ) => void;
 };
 
 const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
-  blockConfig,
-  blockConfigName,
+  elementName,
+  element,
+  setElement,
 }) => {
+  // ToDo refactor this and EditTab.tsx
+  const [blocksMap] = useAsyncState<BlocksMap>(
+    async () => {
+      const blocksMap: BlocksMap = {};
+      const blocks = await blockRegistry.all();
+      for (const block of blocks) {
+        blocksMap[block.id] = {
+          block,
+          // eslint-disable-next-line no-await-in-loop
+          type: await getType(block),
+        };
+      }
+
+      return blocksMap;
+    },
+    [],
+    {}
+  );
+
+  const blockConfig = element.config.pipeline.__value__[0];
+  const blockConfigName = `${elementName}.config.pipeline.__value__.0`;
   const blockId = blockConfig.id;
   const [, BlockOptions] = useBlockOptions(blockId);
-  return BlockOptions ? (
-    <BlockOptions name={blockConfigName} configKey={"config"} />
-  ) : null;
+
+  const onPipelineBlockSelected = (block: IBlock) => {
+    const blockConfig: BlockConfig = {
+      id: block.id,
+      instanceId: uuidv4(),
+      config: defaultBlockConfig(block.inputSchema),
+    };
+
+    const nextDocumentElement = produce(
+      element,
+      (draft: PipelineDocumentElement) => {
+        draft.config.pipeline.__value__ = [blockConfig];
+      }
+    );
+
+    setElement(nextDocumentElement);
+  };
+
+  return (
+    <>
+      <Row>
+        <Col>
+          <BrickModal
+            bricks={Object.values(blocksMap)
+              .filter((x) => x.type === "renderer")
+              .map((x) => x.block)}
+            onSelect={onPipelineBlockSelected}
+          />
+        </Col>
+        <Col>{blockId}</Col>
+      </Row>
+      {BlockOptions && (
+        <BlockOptions name={blockConfigName} configKey={"config"} />
+      )}
+    </>
+  );
 };
 
 export default ElementBlockEdit;
