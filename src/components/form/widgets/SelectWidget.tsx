@@ -41,7 +41,7 @@ export type SelectWidgetOnChange<
 > = React.ChangeEventHandler<SelectLike<TOption>>;
 
 // Type of the SelectWidget props
-type SelectWidgetProperties<
+type SelectWidgetProps<
   TOption extends Option<TOption["value"]>
 > = CustomFieldWidgetProps<TOption["value"], SelectLike<TOption>> & {
   isClearable?: boolean;
@@ -65,7 +65,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   onChange,
   name,
   components,
-}: SelectWidgetProperties<TOption>) => {
+}: SelectWidgetProps<TOption>) => {
   if (loadError) {
     return (
       <div className="text-danger">

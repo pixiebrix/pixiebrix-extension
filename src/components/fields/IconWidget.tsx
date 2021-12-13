@@ -35,8 +35,8 @@ type IconValue = {
   size: number;
 };
 
-const IconWidget: CustomFieldWidget = (properties) => {
-  const [field, meta, helpers] = useField<IconValue>(properties);
+const IconWidget: CustomFieldWidget = (props) => {
+  const [field, meta, helpers] = useField<IconValue>(props);
 
   const handleSelect = (option: IconOption | null) => {
     if (option) {

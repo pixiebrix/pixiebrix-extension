@@ -49,7 +49,7 @@ import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget"
 import OmitFieldWidget from "@/components/fields/schemaFields/widgets/OmitFieldWidget";
 import cx from "classnames";
 
-const variableOption: StringOption = {
+const varOption: StringOption = {
   label: "Variable",
   value: "var",
   symbol: "⟮𝑥⟯",
@@ -140,7 +140,7 @@ function getToggleOptions({
           ? fieldSchema.default
           : [],
       },
-      variableOption
+      varOption
     );
   }
 
@@ -164,7 +164,7 @@ function getToggleOptions({
           ? fieldSchema.default
           : {}) as Record<string, unknown>,
       },
-      variableOption
+      varOption
     );
   }
 
@@ -180,7 +180,7 @@ function getToggleOptions({
             ? fieldSchema.default
             : false,
       },
-      variableOption
+      varOption
     );
   }
 
@@ -211,7 +211,7 @@ function getToggleOptions({
     }
 
     pushOptions(
-      variableOption,
+      varOption,
       {
         label: "Mustache template",
         value: "mustache",
@@ -246,7 +246,7 @@ function getToggleOptions({
         defaultValue:
           typeof fieldSchema.default === "number" ? fieldSchema.default : 0,
       },
-      variableOption
+      varOption
     );
   }
 
@@ -260,7 +260,7 @@ function getToggleOptions({
         defaultValue:
           typeof fieldSchema.default === "number" ? fieldSchema.default : 0,
       },
-      variableOption
+      varOption
     );
   }
 
@@ -305,7 +305,7 @@ function getToggleOptions({
   return sortBy(options, (opt: InputModeOption) => opt.value === "omit");
 }
 
-const BasicSchemaField: SchemaFieldComponent = (properties) => {
+const BasicSchemaField: SchemaFieldComponent = (props) => {
   const {
     name,
     schema,
@@ -314,8 +314,8 @@ const BasicSchemaField: SchemaFieldComponent = (properties) => {
     isObjectProperty = false,
     isArrayItem = false,
     hideLabel,
-  } = properties;
-  const fieldLabel = makeLabelForSchemaField(properties);
+  } = props;
+  const fieldLabel = makeLabelForSchemaField(props);
   const defaultDescription = useMemo(() => description ?? schema.description, [
     description,
     schema.description,
@@ -391,7 +391,7 @@ const BasicSchemaField: SchemaFieldComponent = (properties) => {
       as={TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
-      {...properties}
+      {...props}
     />
   );
 };

@@ -24,7 +24,7 @@ type Option = {
   value: unknown;
 };
 
-type MultiSelectWidgetProperties = {
+type MultiSelectWidgetProps = {
   id?: string;
   name: string;
   disabled?: boolean;
@@ -32,13 +32,13 @@ type MultiSelectWidgetProperties = {
   options: Option[];
 };
 
-const MultiSelectWidget: React.FC<MultiSelectWidgetProperties> = ({
+const MultiSelectWidget: React.FC<MultiSelectWidgetProps> = ({
   options,
   isClearable = false,
   disabled,
-  ...properties
+  ...props
 }) => {
-  const [field, , helpers] = useField<unknown[]>(properties);
+  const [field, , helpers] = useField<unknown[]>(props);
   return (
     <Select
       isMulti

@@ -124,13 +124,13 @@ class ExternalBlock extends Block {
     }
   }
 
-  async run(argument: BlockArg, options: BlockOptions): Promise<unknown> {
+  async run(arg: BlockArg, options: BlockOptions): Promise<unknown> {
     options.logger.debug("Running component pipeline", {
-      arg: argument,
+      arg,
     });
 
     const initialValues: InitialValues = {
-      input: argument,
+      input: arg,
       // OptionsArgs are set at the blueprint level. For composite bricks, the options should be passed in
       // as part of the brick inputs
       optionsArgs: undefined,

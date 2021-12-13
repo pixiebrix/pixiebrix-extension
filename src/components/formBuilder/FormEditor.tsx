@@ -89,20 +89,17 @@ const FormEditor: React.FC<FormEditorProps> = ({
   );
 
   const { titleFieldProps, descriptionFieldProps } = useMemo(() => {
-    const titleFieldProperties: SchemaFieldProps = {
+    const titleFieldProps: SchemaFieldProps = {
       name: joinName(name, "schema", "title"),
       schema: { type: "string" },
       label: "Form Title",
     };
-    const descriptionFieldProperties: SchemaFieldProps = {
+    const descriptionFieldProps: SchemaFieldProps = {
       name: joinName(name, "schema", "description"),
       schema: { type: "string" },
       label: "Form Description",
     };
-    return {
-      titleFieldProps: titleFieldProperties,
-      descriptionFieldProps: descriptionFieldProperties,
-    };
+    return { titleFieldProps, descriptionFieldProps };
   }, [name]);
 
   if (!schema || !uiSchema) {

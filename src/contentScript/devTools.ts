@@ -49,7 +49,7 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
   }
 }
 
-type RunBlockArguments = {
+type RunBlockArgs = {
   apiVersion: ApiVersion;
   blockConfig: BlockConfig;
   /**
@@ -67,7 +67,7 @@ export async function runBlock({
   blockConfig,
   context,
   apiVersion,
-}: RunBlockArguments) {
+}: RunBlockArgs) {
   const versionOptions = apiVersionOptions(apiVersion);
 
   if (!versionOptions.explicitDataFlow) {

@@ -151,11 +151,9 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
       })
     );
 
-    const numberErrors = results.filter((x) => x.status === "rejected").length;
-    if (numberErrors > 0) {
-      notifyError(
-        `An error occurred adding ${numberErrors} quick bar items(s)`
-      );
+    const numErrors = results.filter((x) => x.status === "rejected").length;
+    if (numErrors > 0) {
+      notifyError(`An error occurred adding ${numErrors} quick bar items(s)`);
     }
   }
 

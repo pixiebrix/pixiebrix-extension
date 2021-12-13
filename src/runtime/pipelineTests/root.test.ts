@@ -45,7 +45,7 @@ class RootAwareBlock extends Block {
     return true;
   }
 
-  async run(argument: BlockArg, { root }: BlockOptions) {
+  async run(arg: BlockArg, { root }: BlockOptions) {
     return {
       isDocument: root === document,
       tagName: (root as HTMLElement)?.tagName,

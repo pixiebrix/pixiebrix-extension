@@ -25,7 +25,7 @@ import {
 
 // The TS typings (v 4.0.18, the latest available version) do not exactly correspond
 // to the actual implementation of react-select that we use (v4.3.1). Need to adjust.
-type MenuListProperties<
+type MenuListProps<
   OptionType extends OptionTypeBase,
   IsMulti extends boolean,
   GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
@@ -34,11 +34,11 @@ type MenuListProperties<
   innerProps: unknown;
 };
 
-type MenuListWithAddButtonProperties<
+type MenuListWithAddButtonProps<
   OptionType extends OptionTypeBase,
   IsMulti extends boolean,
   GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
-> = MenuListProperties<OptionType, IsMulti, GroupType> & {
+> = MenuListProps<OptionType, IsMulti, GroupType> & {
   onAddClick: () => void;
 };
 
@@ -47,7 +47,7 @@ const MenuListWithAddButton = <
   IsMulti extends boolean,
   GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
 >(
-  properties: MenuListWithAddButtonProperties<OptionType, IsMulti, GroupType>
+  props: MenuListWithAddButtonProps<OptionType, IsMulti, GroupType>
 ) => {
   const {
     children,
@@ -58,11 +58,11 @@ const MenuListWithAddButton = <
     innerRef,
     isMulti,
     onAddClick,
-  } = properties;
+  } = props;
 
   return (
     <div
-      style={getStyles("menuList", properties)}
+      style={getStyles("menuList", props)}
       className={cx(
         {
           "menu-list": true,
@@ -93,14 +93,8 @@ const createMenuListWithAddButton = (onAddClick: () => void) => {
     IsMulti extends boolean,
     GroupType extends GroupTypeBase<OptionType> = GroupTypeBase<OptionType>
   >(
-    menuListProperties: MenuListWithAddButtonProperties<
-      OptionType,
-      IsMulti,
-      GroupType
-    >
-  ) => (
-    <MenuListWithAddButton onAddClick={onAddClick} {...menuListProperties} />
-  );
+    menuListProps: MenuListWithAddButtonProps<OptionType, IsMulti, GroupType>
+  ) => <MenuListWithAddButton onAddClick={onAddClick} {...menuListProps} />;
   return MenuList;
 };
 

@@ -47,12 +47,12 @@ export function defaultFieldFactory(
     throw new Error("Widget is required");
   }
 
-  const Field: React.FunctionComponent<SchemaFieldProps> = (properties) => {
-    const { schema, description } = properties;
+  const Field: React.FunctionComponent<SchemaFieldProps> = (props) => {
+    const { schema, description } = props;
     return (
       <ConnectedFieldTemplate
-        {...properties}
-        label={makeLabelForSchemaField(properties)}
+        {...props}
+        label={makeLabelForSchemaField(props)}
         description={description ?? schema.description}
         as={Widget}
       />
@@ -69,8 +69,8 @@ const ArrayField = defaultFieldFactory(ArrayWidget);
 
 function makeOneOfField(oneOf: Schema): SchemaFieldComponent {
   const Field = getDefaultField(oneOf);
-  const Component = (properties: SchemaFieldProps) => (
-    <Field {...properties} schema={oneOf} />
+  const Component = (props: SchemaFieldProps) => (
+    <Field {...props} schema={oneOf} />
   );
   Component.displayName = Field.displayName;
   return Component;

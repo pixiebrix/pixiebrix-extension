@@ -30,7 +30,7 @@ export type OptionsFactory<T = unknown> = (
   config: SanitizedServiceConfiguration
 ) => Promise<Array<Option<T>>>;
 
-type RemoteSelectWidgetProperties<T = unknown> = CustomFieldWidgetProps<
+type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
   T,
   SelectLike<Option<T>>
 > & {
@@ -64,10 +64,10 @@ export function useOptionsResolver<T>(
 /**
  * Widget for selecting values retrieved from a 3rd party API
  */
-const RemoteSelectWidget: React.FC<RemoteSelectWidgetProperties> = ({
+const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
   config,
   optionsFactory,
-  ...selectProperties
+  ...selectProps
 }) => {
   const [options, isLoading, error] = useOptionsResolver(
     config,
@@ -79,7 +79,7 @@ const RemoteSelectWidget: React.FC<RemoteSelectWidgetProperties> = ({
       options={options}
       isLoading={isLoading}
       loadError={error}
-      {...selectProperties}
+      {...selectProps}
     />
   );
 };

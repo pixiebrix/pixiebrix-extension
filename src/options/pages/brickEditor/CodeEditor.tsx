@@ -66,7 +66,7 @@ const templateOptions: TemplateOption[] = [
   },
 ];
 
-interface OwnProperties {
+interface OwnProps {
   name: string;
   width: number | undefined;
   showTemplates?: boolean;
@@ -74,7 +74,7 @@ interface OwnProperties {
   openEditor?: (id: string) => void;
 }
 
-const CodeEditor: React.FunctionComponent<OwnProperties> = ({
+const CodeEditor: React.FunctionComponent<OwnProps> = ({
   name,
   width,
   showTemplates,
@@ -87,16 +87,16 @@ const CodeEditor: React.FunctionComponent<OwnProperties> = ({
 
   // Have to use useRef because AceEditor only binds on mount
   // https://github.com/securingsincity/react-ace/issues/684
-  const openDefinitionReference = useRef(openDefinition);
+  const openDefinitionRef = useRef(openDefinition);
   useEffect(() => {
-    openDefinitionReference.current = openDefinition;
+    openDefinitionRef.current = openDefinition;
   }, [openDefinition]);
 
   // Have to use useRef because AceEditor only binds on mount
   // https://github.com/securingsincity/react-ace/issues/684
-  const openEditorReference = useRef(openEditor);
+  const openEditorRef = useRef(openEditor);
   useEffect(() => {
-    openEditorReference.current = openEditor;
+    openEditorRef.current = openEditor;
   }, [openEditor]);
 
   return (
@@ -128,7 +128,7 @@ const CodeEditor: React.FunctionComponent<OwnProperties> = ({
                   "'\" \t"
                 );
                 if (!isEmpty(id)) {
-                  openEditorReference.current(id);
+                  openEditorRef.current(id);
                 }
               },
             },
@@ -142,7 +142,7 @@ const CodeEditor: React.FunctionComponent<OwnProperties> = ({
                   "'\" \t"
                 );
                 if (!isEmpty(id)) {
-                  openDefinitionReference.current(id);
+                  openDefinitionRef.current(id);
                 }
               },
             },

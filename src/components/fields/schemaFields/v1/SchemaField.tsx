@@ -27,8 +27,8 @@ import SchemaFieldContext, {
  * @see SchemaFieldContext
  * @see getDefaultField
  */
-const SchemaField: SchemaFieldComponent = (properties) => {
-  const { schema } = properties;
+const SchemaField: SchemaFieldComponent = (props) => {
+  const { schema } = props;
   const { customFields } = useContext(SchemaFieldContext);
 
   const Field = useMemo(() => {
@@ -36,7 +36,7 @@ const SchemaField: SchemaFieldComponent = (properties) => {
     return overrideField ?? getDefaultField(schema);
   }, [customFields, schema]);
 
-  return <Field {...properties} />;
+  return <Field {...props} />;
 };
 
 export default SchemaField;

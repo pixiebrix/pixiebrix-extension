@@ -85,17 +85,14 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   }, [activeField, rjsfSchema]);
 
   const StringField = useCallback(
-    (properties: FieldProps) => (
-      <FormPreviewStringField setActiveField={setActiveField} {...properties} />
+    (props: FieldProps) => (
+      <FormPreviewStringField setActiveField={setActiveField} {...props} />
     ),
     [setActiveField]
   );
   const BooleanField = useCallback(
-    (properties: FieldProps) => (
-      <FormPreviewBooleanField
-        setActiveField={setActiveField}
-        {...properties}
-      />
+    (props: FieldProps) => (
+      <FormPreviewBooleanField setActiveField={setActiveField} {...props} />
     ),
     [setActiveField]
   );

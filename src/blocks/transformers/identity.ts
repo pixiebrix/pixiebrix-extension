@@ -37,7 +37,7 @@ export class IdentityTransformer extends Transformer {
     additionalProperties: true,
   };
 
-  async transform(argument: BlockArg): Promise<BlockArg> {
-    return argument;
+  async transform(arg: BlockArg): Promise<BlockArg> {
+    return arg;
   }
 }

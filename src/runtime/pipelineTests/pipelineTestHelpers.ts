@@ -17,7 +17,7 @@ class ContextBlock extends Block {
 
   inputSchema = propertiesToSchema({});
 
-  async run(argument: BlockArg, { ctxt }: BlockOptions) {
+  async run(arg: BlockArg, { ctxt }: BlockOptions) {
     return ctxt;
   }
 }
@@ -63,8 +63,8 @@ class IdentityBlock extends Block {
     data: {},
   });
 
-  async run(argument: BlockArg) {
-    return argument;
+  async run(arg: BlockArg) {
+    return arg;
   }
 }
 

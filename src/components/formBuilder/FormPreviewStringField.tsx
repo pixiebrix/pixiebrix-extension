@@ -18,19 +18,17 @@
 import { utils } from "@rjsf/core";
 import React from "react";
 import FormPreviewFieldTemplate, {
-  FormPreviewFieldProps as FormPreviewFieldProperties,
+  FormPreviewFieldProps,
 } from "./FormPreviewFieldTemplate";
 import styles from "./FormPreviewBooleanField.module.scss";
 
 const RjsfStringField = utils.getDefaultRegistry().fields.StringField;
 
-const FormPreviewStringField: React.FC<FormPreviewFieldProperties> = (
-  properties
-) => (
+const FormPreviewStringField: React.FC<FormPreviewFieldProps> = (props) => (
   <FormPreviewFieldTemplate
     as={RjsfStringField}
     className={styles.root}
-    {...properties}
+    {...props}
   />
 );
 

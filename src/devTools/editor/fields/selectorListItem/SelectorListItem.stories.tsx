@@ -24,8 +24,8 @@ export default {
   component: SelectorListItem,
 } as ComponentMeta<typeof SelectorListItem>;
 
-const Story: ComponentStory<typeof SelectorListItem> = (arguments_) => (
-  <SelectorListItem {...arguments_} />
+const Story: ComponentStory<typeof SelectorListItem> = (args) => (
+  <SelectorListItem {...args} />
 );
 
 const selector = ".main-content .container .foo.bar";

@@ -50,13 +50,13 @@ function customSingleValue({ data }: { data: IconOption }): JSX.Element {
   );
 }
 
-interface OwnProperties {
+interface OwnProps {
   value: { id: string; library: IconLibrary };
   isClearable?: boolean;
   onChange: (option: IconOption | null) => void;
 }
 
-const IconSelector: React.FunctionComponent<OwnProperties> = ({
+const IconSelector: React.FunctionComponent<OwnProps> = ({
   value,
   isClearable = true,
   onChange,

@@ -82,7 +82,7 @@ const ResultItem = forwardRef(
       active: boolean;
       currentRootActionId: ActionId;
     },
-    reference: React.Ref<HTMLDivElement>
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const ancestors = React.useMemo(() => {
       if (!currentRootActionId) return action.ancestors;
@@ -98,7 +98,7 @@ const ResultItem = forwardRef(
 
     return (
       <div
-        ref={reference}
+        ref={ref}
         style={{
           padding: "12px 16px",
           background: active ? theme.a1 : "transparent",

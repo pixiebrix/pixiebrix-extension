@@ -91,11 +91,11 @@ const BlockConfiguration: React.FunctionComponent<{
 
   const [isRootAware] = useAsyncState(async () => block.isRootAware(), [block]);
 
-  const advancedOptionsReference = useRef<HTMLDivElement>();
+  const advancedOptionsRef = useRef<HTMLDivElement>();
 
   return (
     <>
-      <AdvancedLinks name={name} scrollToRef={advancedOptionsReference} />
+      <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
 
       <Card className={styles.card}>
         <Card.Header className={styles.cardHeader}>Input</Card.Header>
@@ -122,7 +122,7 @@ const BlockConfiguration: React.FunctionComponent<{
         <Card.Header className={styles.cardHeader}>
           Advanced Options
         </Card.Header>
-        <Card.Body ref={advancedOptionsReference}>
+        <Card.Body ref={advancedOptionsRef}>
           <ConnectedFieldTemplate
             name={configName("templateEngine")}
             label="Template engine"

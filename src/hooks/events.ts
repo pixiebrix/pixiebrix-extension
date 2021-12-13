@@ -17,7 +17,7 @@
 
 import { useEffect, useRef } from "react";
 
-type GenericHandler<T = unknown> = (argument: T) => void;
+type GenericHandler<T = unknown> = (arg: T) => void;
 
 interface TabEvent<TValue> {
   addListener(tabId: number, handler: GenericHandler<TValue>): void;

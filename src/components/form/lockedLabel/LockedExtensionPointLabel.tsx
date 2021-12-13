@@ -35,8 +35,8 @@ const LockedExtensionPointLabel: React.FC<{
     </p>
   );
 
-  const renderTooltip = (properties: unknown) => (
-    <Tooltip id={`${uuidv4()}-tooltip`} {...properties}>
+  const renderTooltip = (props: unknown) => (
+    <Tooltip id={`${uuidv4()}-tooltip`} {...props}>
       {message ?? defaultMessage}
     </Tooltip>
   );

@@ -17,14 +17,12 @@
 
 import React from "react";
 import { validateRegistryId } from "@/types/helpers";
-import DatabaseOptions, {
-  DatabaseGetPutOptionsProps as DatabaseGetPutOptionsProperties,
-} from "./DatabaseOptions";
+import DatabaseOptions, { DatabaseGetPutOptionsProps } from "./DatabaseOptions";
 
 export const DATABASE_GET_ID = validateRegistryId("@pixiebrix/data/get");
 
-const DatabaseGetOptions: React.FC<DatabaseGetPutOptionsProperties> = (
-  properties
-) => <DatabaseOptions showValueField={false} {...properties} />;
+const DatabaseGetOptions: React.FC<DatabaseGetPutOptionsProps> = (props) => (
+  <DatabaseOptions showValueField={false} {...props} />
+);
 
 export default DatabaseGetOptions;

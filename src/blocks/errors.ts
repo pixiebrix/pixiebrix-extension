@@ -49,14 +49,14 @@ export class HeadlessModeError extends Error {
 
   constructor(
     blockId: RegistryId,
-    arguments_: unknown, // BlockArg
+    args: unknown, // BlockArg
     ctxt: unknown, // BlockArgsContext
     loggerContext: MessageContext
   ) {
     super(`${blockId} is a renderer`);
     this.name = "HeadlessModeError";
     this.blockId = blockId;
-    this.args = arguments_;
+    this.args = args;
     this.ctxt = ctxt;
     this.loggerContext = loggerContext;
   }

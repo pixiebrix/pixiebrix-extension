@@ -80,8 +80,8 @@ export class UrlParser extends Transformer {
         description: "Public suffix (see https://publicsuffix.org/)",
       },
       ...Object.fromEntries(
-        URL_PROPERTIES.map((property) => [
-          property,
+        URL_PROPERTIES.map((prop) => [
+          prop,
           {
             type: "string",
           },
@@ -108,16 +108,16 @@ export class UrlParser extends Transformer {
       }
     }
 
-    const searchParameters: Record<string, string> = {};
+    const searchParams: Record<string, string> = {};
     for (const [key, value] of parsed.searchParams.entries()) {
       // Fine because value will always be a string
       // eslint-disable-next-line security/detect-object-injection
-      searchParameters[key] = value;
+      searchParams[key] = value;
     }
 
     return {
       ...pick(parsed, URL_PROPERTIES),
-      searchParams: searchParameters,
+      searchParams,
       publicSuffix,
     };
   }

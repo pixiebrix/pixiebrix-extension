@@ -24,7 +24,7 @@ import AddElementAction from "./AddElementAction";
 import { useField } from "formik";
 import { getAllowedChildTypes } from "./allowedElementTypes";
 
-interface ElementPreviewTemplateProperties {
+interface ElementPreviewTemplateProps {
   elementName: string;
   activeElement: string | null;
   setActiveElement: (name: string | null) => void;
@@ -33,7 +33,7 @@ interface ElementPreviewTemplateProperties {
   menuBoundary?: Element;
 }
 
-const ElementPreview: React.FC<ElementPreviewTemplateProperties> = ({
+const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
   elementName,
   activeElement,
   setActiveElement,
@@ -86,10 +86,10 @@ const ElementPreview: React.FC<ElementPreviewTemplateProperties> = ({
     >
       {props?.children}
       {isContainer &&
-        documentElement.children.map((childElement, index) => (
+        documentElement.children.map((childElement, i) => (
           <ElementPreview
-            key={`${elementName}.children.${index}`}
-            elementName={`${elementName}.children.${index}`}
+            key={`${elementName}.children.${i}`}
+            elementName={`${elementName}.children.${i}`}
             activeElement={activeElement}
             setActiveElement={setActiveElement}
             menuBoundary={menuBoundary}

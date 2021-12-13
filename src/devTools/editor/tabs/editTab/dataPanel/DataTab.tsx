@@ -21,17 +21,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import styles from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel.module.scss";
 
-type TabStateProperties = {
+type TabStateProps = {
   isLoading?: boolean;
   isTraceEmpty?: boolean;
   isTraceOptional?: boolean;
 };
 
-const DataTab: React.FC<TabPaneProps & TabStateProperties> = ({
+const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
   isTraceEmpty = false,
   isTraceOptional = false,
   children,
-  ...tabProperties
+  ...tabProps
 }) => {
   let contents;
   if (isTraceEmpty && isTraceOptional) {
@@ -59,7 +59,7 @@ const DataTab: React.FC<TabPaneProps & TabStateProperties> = ({
   }
 
   return (
-    <Tab.Pane {...tabProperties} className={styles.tabPane}>
+    <Tab.Pane {...tabProps} className={styles.tabPane}>
       {contents}
     </Tab.Pane>
   );

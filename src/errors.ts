@@ -132,16 +132,11 @@ export class PropError extends Error {
 
   public readonly value: unknown;
 
-  constructor(
-    message: string,
-    blockId: string,
-    property: string,
-    value: unknown
-  ) {
+  constructor(message: string, blockId: string, prop: string, value: unknown) {
     super(message);
     this.name = "PropError";
     this.blockId = blockId;
-    this.prop = property;
+    this.prop = prop;
     this.value = value;
   }
 }

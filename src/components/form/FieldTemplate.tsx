@@ -62,13 +62,13 @@ export type CustomFieldWidgetProps<
 export type CustomFieldWidget<
   TValue = string | string[] | number,
   TInputElement = WidgetElement,
-  TFieldWidgetProperties extends CustomFieldWidgetProps<
+  TFieldWidgetProps extends CustomFieldWidgetProps<
     TValue,
     TInputElement
   > = CustomFieldWidgetProps<TValue, TInputElement>
-> = React.ComponentType<TFieldWidgetProperties>;
+> = React.ComponentType<TFieldWidgetProps>;
 
-type FieldRenderProperties = Except<FieldProps, "layout">;
+type FieldRenderProps = Except<FieldProps, "layout">;
 
 const RenderedField: React.FC<FieldProps> = ({
   name,
@@ -82,7 +82,7 @@ const RenderedField: React.FC<FieldProps> = ({
   blankValue = "",
   as: AsControl,
   className,
-  ...restFieldProperties
+  ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
 
@@ -119,7 +119,7 @@ const RenderedField: React.FC<FieldProps> = ({
       isInvalid={isInvalid}
       value={nonUndefinedValue}
       as={AsControl}
-      {...restFieldProperties}
+      {...restFieldProps}
     >
       {children}
     </BootstrapForm.Control>
@@ -129,7 +129,7 @@ const RenderedField: React.FC<FieldProps> = ({
       name={name}
       isInvalid={isInvalid}
       value={nonUndefinedValue}
-      {...restFieldProperties}
+      {...restFieldProps}
     >
       {children}
     </AsControl>
@@ -185,7 +185,7 @@ const RenderedField: React.FC<FieldProps> = ({
   );
 };
 
-const RenderedSwitch: React.FC<FieldRenderProperties> = ({
+const RenderedSwitch: React.FC<FieldRenderProps> = ({
   name,
   label,
   onChange,
@@ -201,14 +201,14 @@ const RenderedSwitch: React.FC<FieldRenderProperties> = ({
   </BootstrapForm.Group>
 );
 
-const FieldTemplate: React.FC<FieldProps> = ({ layout, ...restProperties }) => {
+const FieldTemplate: React.FC<FieldProps> = ({ layout, ...restProps }) => {
   const theme = useContext(FormTheme);
 
   switch (layout ?? theme.layout) {
     case "switch":
-      return <RenderedSwitch {...restProperties} />;
+      return <RenderedSwitch {...restProps} />;
     default:
-      return <RenderedField layout={layout} {...restProperties} />;
+      return <RenderedField layout={layout} {...restProps} />;
   }
 };
 

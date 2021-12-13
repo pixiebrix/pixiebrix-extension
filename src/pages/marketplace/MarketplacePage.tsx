@@ -39,13 +39,13 @@ import { useGetOrganizationsQuery } from "@/services/api";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
-export interface MarketplaceProperties {
+export interface MarketplaceProps {
   installedRecipes: Set<string>;
   installRecipe: InstallRecipe;
   recipesPerPage?: number;
 }
 
-interface RecipeProperties {
+interface RecipeProps {
   metadata: Metadata;
   sharing?: Sharing;
   organizations?: Organization[];
@@ -54,12 +54,12 @@ interface RecipeProperties {
 }
 
 const Entry: React.FunctionComponent<
-  RecipeProperties & { buttonProps?: ButtonProps }
+  RecipeProps & { buttonProps?: ButtonProps }
 > = ({
   metadata: { id, name, description },
   sharing,
   organizations,
-  buttonProps: buttonProperties = {},
+  buttonProps = {},
   onInstall,
   installed,
 }) => {
@@ -85,7 +85,7 @@ const Entry: React.FunctionComponent<
           size="sm"
           variant="info"
           className="activate-button"
-          {...buttonProperties}
+          {...buttonProps}
           onClick={onInstall}
         >
           Activate
@@ -98,13 +98,13 @@ const Entry: React.FunctionComponent<
         size="sm"
         variant="info"
         className="activate-button"
-        {...buttonProperties}
+        {...buttonProps}
         disabled
       >
         Activated
       </Button>
     );
-  }, [onInstall, installed, buttonProperties]);
+  }, [onInstall, installed, buttonProps]);
 
   return (
     <ListGroup.Item>
@@ -145,7 +145,7 @@ const Entry: React.FunctionComponent<
 };
 
 export const RecipeList: React.FunctionComponent<
-  MarketplaceProperties & {
+  MarketplaceProps & {
     buttonProps?: ButtonProps;
     recipes: RecipeDefinition[];
     organizations: Organization[];
@@ -171,7 +171,7 @@ export const RecipeList: React.FunctionComponent<
   </ListGroup>
 );
 
-const MarketplacePage: React.FunctionComponent<MarketplaceProperties> = ({
+const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installRecipe,
   installedRecipes,
   recipesPerPage = 10,
@@ -198,10 +198,10 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProperties> = ({
     return sortBy(filtered, (x) => x.metadata.name);
   }, [rawRecipes, query, scope]);
 
-  const numberPages = useMemo(
-    () => Math.ceil(recipes.length / recipesPerPage),
-    [recipes, recipesPerPage]
-  );
+  const numPages = useMemo(() => Math.ceil(recipes.length / recipesPerPage), [
+    recipes,
+    recipesPerPage,
+  ]);
   const pageRecipes = useMemo(
     () => recipes.slice(page * recipesPerPage, (page + 1) * recipesPerPage),
     [recipes, recipesPerPage, page]
@@ -284,11 +284,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProperties> = ({
               blueprints
             </p>
             {recipes.length > recipesPerPage && (
-              <Pagination
-                page={page}
-                setPage={setPage}
-                numPages={numberPages}
-              />
+              <Pagination page={page} setPage={setPage} numPages={numPages} />
             )}
           </Col>
         </Row>

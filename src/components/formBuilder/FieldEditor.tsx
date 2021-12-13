@@ -172,7 +172,7 @@ const FieldEditor: React.FC<{
     descriptionFieldProps,
     defaultFieldProps,
   } = useMemo(() => {
-    const labelFieldProperties: SchemaFieldProps = {
+    const labelFieldProps: SchemaFieldProps = {
       name: getFullFieldName("title"),
       schema: {
         type: "string",
@@ -180,7 +180,7 @@ const FieldEditor: React.FC<{
       },
       label: "Label",
     };
-    const descriptionFieldProperties: SchemaFieldProps = {
+    const descriptionFieldProps: SchemaFieldProps = {
       name: getFullFieldName("description"),
       schema: {
         type: "string",
@@ -188,7 +188,7 @@ const FieldEditor: React.FC<{
       },
       label: "Field Description",
     };
-    const defaultFieldProperties: SchemaFieldProps = {
+    const defaultFieldProps: SchemaFieldProps = {
       name: getFullFieldName("default"),
       schema: {
         type: parseUiType(selectedUiTypeOption.value).propertyType,
@@ -196,9 +196,9 @@ const FieldEditor: React.FC<{
       label: "Default value",
     };
     return {
-      labelFieldProps: labelFieldProperties,
-      descriptionFieldProps: descriptionFieldProperties,
-      defaultFieldProps: defaultFieldProperties,
+      labelFieldProps,
+      descriptionFieldProps,
+      defaultFieldProps,
     };
   }, [getFullFieldName, selectedUiTypeOption.value]);
 

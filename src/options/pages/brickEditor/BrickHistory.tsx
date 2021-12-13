@@ -40,10 +40,10 @@ const CustomSingleValue: React.FunctionComponent<{
 
 const { Option } = components;
 const CustomSingleOption: React.FunctionComponent = (
-  properties: OptionProps<never, never>
+  props: OptionProps<never, never>
 ) => (
-  <Option {...properties}>
-    <CustomSingleValue data={properties.data} />
+  <Option {...props}>
+    <CustomSingleValue data={props.data} />
   </Option>
 );
 

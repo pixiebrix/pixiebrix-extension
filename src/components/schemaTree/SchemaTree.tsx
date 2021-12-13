@@ -137,13 +137,13 @@ const getFormattedData = (schema: Schema): SchemaTreeRow[] => {
 
   return sortBy(Object.entries(schema.properties ?? {}), (x) => x[0])
     .filter(([, definition]) => typeof definition !== "boolean")
-    .map(([property, definition]) => {
+    .map(([prop, definition]) => {
       const schemaDefinition = definition as Schema;
       const { description } = schemaDefinition;
 
       return {
-        name: property,
-        required: schema.required ? schema.required.includes(property) : false,
+        name: prop,
+        required: schema.required ? schema.required.includes(prop) : false,
         type: getFormattedType(schemaDefinition),
         description,
         subRows: getFormattedData(schemaDefinition),
@@ -210,10 +210,10 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
         {headerGroups.map((headerGroup) => {
           const {
             key,
-            ...restHeaderGroupProperties
+            ...restHeaderGroupProps
           } = headerGroup.getHeaderGroupProps();
           return (
-            <tr key={key} {...restHeaderGroupProperties}>
+            <tr key={key} {...restHeaderGroupProps}>
               {headerGroup.headers.map((column) => {
                 const { key, ...restColumn } = column.getHeaderProps();
                 return (
@@ -229,15 +229,15 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
       <tbody {...getTableBodyProps}>
         {rows.map((row) => {
           prepareRow(row);
-          const { key, ...restRowProperties } = row.getRowProps();
+          const { key, ...restRowProps } = row.getRowProps();
           return (
-            <tr key={key} {...restRowProperties}>
+            <tr key={key} {...restRowProps}>
               {row.cells.map((cell) => {
-                const { key, ...restCellProperties } = cell.getCellProps();
+                const { key, ...restCellProps } = cell.getCellProps();
                 return (
                   <td
                     key={key}
-                    {...restCellProperties}
+                    {...restCellProps}
                     className={styles.SchemaTree__table_cell}
                   >
                     {cell.render("Cell")}

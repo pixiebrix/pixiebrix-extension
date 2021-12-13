@@ -29,12 +29,12 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/actionPanel/PanelBody";
 import FormBody from "@/actionPanel/FormBody";
 
-type ActionPanelTabsProperties = ActionPanelStore & {
+type ActionPanelTabsProps = ActionPanelStore & {
   activeKey: string;
   onSelectTab: (eventKey: string) => void;
 };
 
-const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProperties> = ({
+const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
   activeKey,
   panels,
   forms,

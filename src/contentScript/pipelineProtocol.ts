@@ -10,7 +10,7 @@ import { Args, mapArgs, MapOptions } from "@/runtime/mapArgs";
 import { Except } from "type-fest";
 import { UnknownObject } from "@/types";
 
-type RunPipelineParameters = {
+type RunPipelineParams = {
   nonce: UUID;
   pipeline: BlockPipeline;
   context: BlockArgContext;
@@ -28,7 +28,7 @@ export async function runRendererPipeline({
   pipeline,
   context,
   nonce,
-}: RunPipelineParameters): Promise<RendererPayload> {
+}: RunPipelineParams): Promise<RendererPayload> {
   expectContext("contentScript");
 
   try {
@@ -70,7 +70,7 @@ export async function runRendererPipeline({
 export async function runEffectPipeline({
   pipeline,
   context,
-}: RunPipelineParameters): Promise<void> {
+}: RunPipelineParams): Promise<void> {
   expectContext("contentScript");
 
   await reducePipeline(

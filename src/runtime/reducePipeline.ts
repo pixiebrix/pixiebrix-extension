@@ -139,14 +139,12 @@ export type IntermediateState = {
  * All of the data that determine the execution behavior of a block
  * @see IBlock.run
  */
-type BlockProperties<
-  TArguments extends RenderedArgs | BlockArg = RenderedArgs
-> = {
+type BlockProps<TArgs extends RenderedArgs | BlockArg = RenderedArgs> = {
   /**
    * The rendered args for the block, which may or may not have been already validated against the inputSchema depending
    * on the static type.
    */
-  args: TArguments;
+  args: TArgs;
 
   /**
    * The available context (The context used to render the args.)
@@ -201,7 +199,7 @@ type RunBlockOptions = CommonOptions & {
 
 async function execute(
   { config, block }: ResolvedBlockConfig,
-  { args, context, root, previousOutput }: BlockProperties<BlockArg>,
+  { args, context, root, previousOutput }: BlockProps<BlockArg>,
   options: RunBlockOptions
 ): Promise<unknown> {
   const commonOptions = {
@@ -252,7 +250,7 @@ async function execute(
   }
 }
 
-async function renderBlockArgument(
+async function renderBlockArg(
   resolvedConfig: ResolvedBlockConfig,
   state: IntermediateState,
   options: RunBlockOptions
@@ -312,7 +310,7 @@ async function renderBlockArgument(
         { autoescape }
       );
 
-  const blockArguments = (await mapArgs(stageTemplate, ctxt, {
+  const blockArgs = (await mapArgs(stageTemplate, ctxt, {
     implicitRender,
     autoescape,
   })) as RenderedArgs;
@@ -324,7 +322,7 @@ async function renderBlockArgument(
         id: config.id,
         template: stageTemplate,
         templateContext: state.context,
-        renderedArgs: blockArguments,
+        renderedArgs: blockArgs,
       }
     );
   }
@@ -333,11 +331,11 @@ async function renderBlockArgument(
     ...selectTraceRecordMeta(resolvedConfig, options),
     timestamp: new Date().toISOString(),
     templateContext: state.context as JsonObject,
-    renderedArgs: blockArguments,
+    renderedArgs: blockArgs,
     blockConfig: config,
   });
 
-  return blockArguments;
+  return blockArgs;
 }
 
 function selectTraceRecordMeta(
@@ -353,7 +351,7 @@ function selectTraceRecordMeta(
 
 export async function runBlock(
   resolvedConfig: ResolvedBlockConfig,
-  properties: BlockProperties,
+  props: BlockProps,
   options: RunBlockOptions
 ): Promise<unknown> {
   const { validateInput, logger, headless } = options;
@@ -361,7 +359,7 @@ export async function runBlock(
   const { config: stage, block, type } = resolvedConfig;
 
   if (validateInput) {
-    await throwIfInvalidInput(block, properties.args);
+    await throwIfInvalidInput(block, props.args);
   }
 
   let progressCallbacks: NotificationCallbacks;
@@ -376,16 +374,16 @@ export async function runBlock(
   if (type === "renderer" && headless) {
     throw new HeadlessModeError(
       block.id,
-      properties.args,
-      properties.context,
+      props.args,
+      props.context,
       logger.context
     );
   }
 
   try {
     // Inputs validated in throwIfInvalidInput
-    const validatedProperties = (properties as unknown) as BlockProperties<BlockArg>;
-    return await execute(resolvedConfig, validatedProperties, options);
+    const validatedProps = (props as unknown) as BlockProps<BlockArg>;
+    return await execute(resolvedConfig, validatedProps, options);
   } finally {
     if (progressCallbacks) {
       progressCallbacks.hide();
@@ -455,8 +453,8 @@ export async function blockReducer(
   // Adjust the root according to the `root` and `rootMode` props on the blockConfig
   const blockRoot = selectBlockRootElement(blockConfig, root);
 
-  const properties: BlockProperties = {
-    args: await renderBlockArgument(
+  const props: BlockProps = {
+    args: await renderBlockArg(
       resolvedConfig,
       { ...state, root: blockRoot },
       blockOptions
@@ -466,7 +464,7 @@ export async function blockReducer(
     context: contextWithPreviousOutput,
   };
 
-  const output = await runBlock(resolvedConfig, properties, blockOptions);
+  const output = await runBlock(resolvedConfig, props, blockOptions);
 
   if (logValues) {
     console.info(`Output for block #${index + 1}: ${blockConfig.id}`, {

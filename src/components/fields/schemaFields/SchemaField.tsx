@@ -27,13 +27,13 @@ import SchemaFieldV3 from "@/components/fields/schemaFields/v3/SchemaField";
  * @see SchemaFieldContext
  * @see getDefaultField
  */
-const SchemaField: SchemaFieldComponent = (properties) => {
+const SchemaField: SchemaFieldComponent = (props) => {
   const apiAtLeastV3 = useApiVersionAtLeast("v3");
 
   return apiAtLeastV3 ? (
-    <SchemaFieldV3 {...properties} />
+    <SchemaFieldV3 {...props} />
   ) : (
-    <SchemaFieldV1 {...properties} />
+    <SchemaFieldV1 {...props} />
   );
 };
 

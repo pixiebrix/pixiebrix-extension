@@ -22,7 +22,7 @@ import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 import { createFrameSrc } from "@/blocks/transformers/ephemeralForm/formTransformer";
 
-type FormBodyProperties = {
+type FormBodyProps = {
   form: FormEntry;
 };
 
@@ -31,8 +31,8 @@ type FormBodyProperties = {
  * @param form the form definition and extension metadata
  * @constructor
  */
-const FormBody: React.FunctionComponent<FormBodyProperties> = ({ form }) => {
-  const [sourceURL, isLoading, error] = useAsyncState(
+const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
+  const [srcURL, isLoading, error] = useAsyncState(
     async () => createFrameSrc(form.nonce, "panel"),
     [form.nonce]
   );
@@ -58,7 +58,7 @@ const FormBody: React.FunctionComponent<FormBodyProperties> = ({ form }) => {
       title={form.nonce}
       height="100%"
       width="100%"
-      src={sourceURL.toString()}
+      src={srcURL.toString()}
       style={{ border: "none" }}
       allowFullScreen={false}
     />

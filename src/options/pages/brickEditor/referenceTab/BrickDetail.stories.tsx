@@ -29,9 +29,9 @@ export default {
   component: BrickDetail,
 } as ComponentMeta<typeof BrickDetail>;
 
-const Template: ComponentStory<typeof BrickDetail> = (arguments_) => (
+const Template: ComponentStory<typeof BrickDetail> = (args) => (
   <ToastProvider>
-    <BrickDetail {...arguments_} />
+    <BrickDetail {...args} />
   </ToastProvider>
 );
 

@@ -51,11 +51,11 @@ export const LogContextWrapper: React.FunctionComponent = ({ children }) => {
 
   const safeSetUnread = useCallback(
     (newUnread: LogEntry[]) => {
-      setUnread((previousState) => {
-        const previousUUIDs = new Set(previousState.map((x) => x.uuid));
+      setUnread((prevState) => {
+        const prevUUIDs = new Set(prevState.map((x) => x.uuid));
         const newUUIDs = new Set(newUnread.map((x) => x.uuid));
         // Maintain reference equality
-        return isEqual(previousUUIDs, newUUIDs) ? previousState : newUnread;
+        return isEqual(prevUUIDs, newUUIDs) ? prevState : newUnread;
       });
     },
     [setUnread]
@@ -65,7 +65,7 @@ export const LogContextWrapper: React.FunctionComponent = ({ children }) => {
     (refreshHandler: Refresh) => {
       console.debug("Setting log refresh reference");
       // Wrap setRefresh here to take in a method
-      setRefresh((_previousState: Refresh) => refreshHandler);
+      setRefresh((_prevState: Refresh) => refreshHandler);
     },
     [setRefresh]
   );

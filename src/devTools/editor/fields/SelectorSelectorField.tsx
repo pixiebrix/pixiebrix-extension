@@ -25,10 +25,10 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const SelectorSelectorField: React.FunctionComponent<
   SelectorSelectorProps & { name?: string }
-> = (properties) => {
+> = (props) => {
   // Some properties (e.g., the menuItem's container prop) support providing an array of selectors.
   // See awaitElementOnce for for the difference in the semantics vs. nested CSS selectors
-  const [field] = useField<string | string[]>(properties.name);
+  const [field] = useField<string | string[]>(props.name);
 
   const isArray = Array.isArray(field.value);
 
@@ -37,7 +37,7 @@ const SelectorSelectorField: React.FunctionComponent<
     [isArray]
   );
 
-  return <ConnectedFieldTemplate {...properties} as={Widget} />;
+  return <ConnectedFieldTemplate {...props} as={Widget} />;
 };
 
 export default SelectorSelectorField;

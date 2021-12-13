@@ -31,10 +31,10 @@ const PermissionsPopup: React.FC = () => {
   const [error, setError] = useState<string>();
 
   const permissions = useMemo<Permissions.Permissions>(() => {
-    const parameters = new URLSearchParams(location.search);
+    const params = new URLSearchParams(location.search);
     return {
-      origins: parameters.getAll("origin"),
-      permissions: selectOptionalPermissions(parameters.getAll("permission")),
+      origins: params.getAll("origin"),
+      permissions: selectOptionalPermissions(params.getAll("permission")),
     };
   }, []);
 

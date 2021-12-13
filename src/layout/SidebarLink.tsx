@@ -24,14 +24,14 @@ import { Location } from "history";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { closeSidebarOnSmallScreen } from "./toggleSidebar";
 
-interface LinkProperties {
+interface LinkProps {
   isActive?: (match: any, location: Location) => boolean;
   title: string;
   icon: IconProp;
   route: string;
 }
 
-export const SidebarLink: React.FunctionComponent<LinkProperties> = ({
+export const SidebarLink: React.FunctionComponent<LinkProps> = ({
   route,
   title,
   icon,

@@ -21,14 +21,14 @@ import { isServiceField } from "@/components/fields/schemaFields/v1/ServiceField
 import BasicSchemaField from "@/components/fields/schemaFields/v3/BasicSchemaField";
 import ServiceField from "@/components/fields/schemaFields/v3/ServiceField";
 
-const SchemaField: SchemaFieldComponent = (properties) => {
-  const { schema } = properties;
+const SchemaField: SchemaFieldComponent = (props) => {
+  const { schema } = props;
 
   if (isServiceField(schema)) {
-    return <ServiceField {...properties} />;
+    return <ServiceField {...props} />;
   }
 
-  return <BasicSchemaField {...properties} />;
+  return <BasicSchemaField {...props} />;
 };
 
 export default SchemaField;

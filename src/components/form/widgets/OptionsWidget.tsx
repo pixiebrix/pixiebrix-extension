@@ -22,12 +22,12 @@ import React from "react";
 import { Button, ButtonGroup, FormControl } from "react-bootstrap";
 import styles from "./OptionsWidget.module.scss";
 
-type OptionsWidgetProperties = {
+type OptionsWidgetProps = {
   name: string;
   value: string[];
 };
 
-const OptionsWidget: React.FC<OptionsWidgetProperties> = ({ name, value }) => (
+const OptionsWidget: React.FC<OptionsWidgetProps> = ({ name, value }) => (
   <FieldArray
     name={name}
     render={(arrayHelpers) =>

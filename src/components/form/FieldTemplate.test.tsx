@@ -17,23 +17,16 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import FieldTemplate, {
-  CustomFieldWidget,
-  FieldProps as FieldProperties,
-} from "./FieldTemplate";
+import FieldTemplate, { CustomFieldWidget, FieldProps } from "./FieldTemplate";
 import styles from "./FieldTemplate.module.scss";
 import { fireTextInput } from "@/tests/formHelpers";
 
 const testLabel = "Test label";
 const testValue = "Test value";
 
-const renderFieldTemplate = (partialProperties?: Partial<FieldProperties>) =>
+const renderFieldTemplate = (partialProps?: Partial<FieldProps>) =>
   render(
-    <FieldTemplate
-      name={"testName"}
-      onChange={jest.fn()}
-      {...partialProperties}
-    />
+    <FieldTemplate name={"testName"} onChange={jest.fn()} {...partialProps} />
   );
 test("renders horizontal layout by default", () => {
   const { container } = renderFieldTemplate();

@@ -35,7 +35,7 @@ export class ReactivateEffect extends Effect {
   };
 
   async effect(
-    argument: BlockArg<UnknownObject>,
+    arg: BlockArg<UnknownObject>,
     { logger }: BlockOptions
   ): Promise<void> {
     expectContext("contentScript");

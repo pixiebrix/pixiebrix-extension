@@ -29,8 +29,8 @@ interface State {
 }
 
 class ConfigErrorBoundary extends Component<UnknownObject, State> {
-  constructor(properties: UnknownObject) {
-    super(properties);
+  constructor(props: UnknownObject) {
+    super(props);
     this.state = { hasError: false, errorMessage: undefined, stack: undefined };
   }
 

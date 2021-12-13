@@ -50,7 +50,7 @@ function isFontAwesomeIcon(
 
 const EditorNode: React.FC<EditorNodeProps> = ({
   onClick,
-  icon: iconProperty,
+  icon: iconProp,
   title,
   outputKey,
   active,
@@ -64,10 +64,10 @@ const EditorNode: React.FC<EditorNodeProps> = ({
 }) => {
   const outputName = outputKey ? `@${outputKey}` : "";
 
-  const icon = isFontAwesomeIcon(iconProperty) ? (
-    <FontAwesomeIcon icon={iconProperty as IconProp} size="2x" fixedWidth />
+  const icon = isFontAwesomeIcon(iconProp) ? (
+    <FontAwesomeIcon icon={iconProp as IconProp} size="2x" fixedWidth />
   ) : (
-    iconProperty
+    iconProp
   );
 
   const errorBadge =

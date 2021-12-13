@@ -40,7 +40,7 @@ function isNew<T extends SuggestionTypeBase>(
   return suggestion && "isNew" in suggestion;
 }
 
-export interface Properties<SuggestionType extends SuggestionTypeBase> {
+export interface Props<SuggestionType extends SuggestionTypeBase> {
   // Show the X clear button in the input
   isClearable?: boolean;
 
@@ -110,7 +110,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
   onSuggestionSelected = noop,
   onCreateNew,
   onTextChanged = noop,
-}: Properties<SuggestionType>) => {
+}: Props<SuggestionType>) => {
   const [currentValue, setCurrentValue] = useState(inputValue ?? "");
   const [currentSuggestions, setCurrentSuggestions] = useState<
     Array<SuggestionType | CreateNew>
@@ -163,9 +163,9 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
   }, [onSuggestionsClosed]);
 
   const handleChange = useCallback(
-    (event: FormEvent<HTMLElement>, parameters: ChangeEvent) => {
-      onTextChanged(parameters.newValue);
-      setCurrentValue(parameters.newValue);
+    (event: FormEvent<HTMLElement>, params: ChangeEvent) => {
+      onTextChanged(params.newValue);
+      setCurrentValue(params.newValue);
     },
     [onTextChanged, setCurrentValue]
   );
@@ -189,7 +189,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
 
   const value = inputValue ?? currentValue ?? "";
 
-  const inputProperties: InputProps<SuggestionType> = useMemo(
+  const inputProps: InputProps<SuggestionType> = useMemo(
     () => ({
       type: "search",
       value,
@@ -228,7 +228,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
       suggestions={currentSuggestions}
       focusInputOnSuggestionClick
       getSuggestionValue={getSuggestionValue}
-      inputProps={inputProperties}
+      inputProps={inputProps}
       onSuggestionHighlighted={onHighlighted}
       onSuggestionsFetchRequested={getSuggestions}
       onSuggestionsClearRequested={clearSuggestions}

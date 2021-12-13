@@ -81,10 +81,7 @@ export function frameworkReadFactory(
       traverseUp,
       pathSpec: attrs
         ? Object.fromEntries(
-            castArray(attrs).map((attribute) => [
-              attribute,
-              `attrs.${attribute}`,
-            ])
+            castArray(attrs).map((attr) => [attr, `attrs.${attr}`])
           )
         : pathSpec,
     });

@@ -20,12 +20,12 @@ export interface SheetMeta {
   name: string;
 }
 
-export interface Document_ extends SheetMeta {
+export interface Doc extends SheetMeta {
   serviceId: "spread" | string;
   mimeType: "application/vnd.google-apps.spreadsheet" | string;
 }
 
 export interface Data {
   action: string;
-  docs: Document_[];
+  docs: Doc[];
 }

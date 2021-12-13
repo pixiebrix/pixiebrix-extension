@@ -18,7 +18,7 @@
 import { Menus } from "webextension-polyfill";
 import { UUID } from "@/core";
 
-type MenuHandler = (arguments_: Menus.OnClickData) => Promise<void>;
+type MenuHandler = (args: Menus.OnClickData) => Promise<void>;
 
 const handlers = new Map<UUID, MenuHandler>();
 

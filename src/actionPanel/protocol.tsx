@@ -36,20 +36,16 @@ export type StoreListener = {
 
 const listeners: StoreListener[] = [];
 
-export function addListener(function_: StoreListener): void {
-  if (listeners.includes(function_)) {
+export function addListener(fn: StoreListener): void {
+  if (listeners.includes(fn)) {
     console.warn("Listener already registered for action panel");
   } else {
-    listeners.push(function_);
+    listeners.push(fn);
   }
 }
 
-export function removeListener(function_: StoreListener): void {
-  listeners.splice(
-    0,
-    listeners.length,
-    ...listeners.filter((x) => x !== function_)
-  );
+export function removeListener(fn: StoreListener): void {
+  listeners.splice(0, listeners.length, ...listeners.filter((x) => x !== fn));
 }
 
 function runListeners<Method extends keyof StoreListener>(

@@ -93,8 +93,8 @@ export const activeDevToolContextFactory = define<DevtoolsContextType>({
 });
 
 export const extensionFactory: (
-  extensionProperties?: Partial<IExtension>
-) => IExtension = (extensionProperties) => ({
+  extensionProps?: Partial<IExtension>
+) => IExtension = (extensionProps) => ({
   id: uuidv4(),
   apiVersion: "v2" as ApiVersion,
   extensionPointId: validateRegistryId("test/extension-point"),
@@ -133,14 +133,14 @@ export const extensionFactory: (
     ],
   },
   active: true,
-  ...extensionProperties,
+  ...extensionProps,
 });
 
 export const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
 
 export const traceErrorFactory: (
-  traceErrorProperties?: Partial<TraceError>
-) => TraceError = (traceErrorProperties) => ({
+  traceErrorProps?: Partial<TraceError>
+) => TraceError = (traceErrorProps) => ({
   timestamp: "2021-10-07T12:52:16.189Z",
   extensionId: uuidv4(),
   runId: uuidv4(),
@@ -156,12 +156,12 @@ export const traceErrorFactory: (
     id: TEST_BLOCK_ID,
     config: {},
   },
-  ...traceErrorProperties,
+  ...traceErrorProps,
 });
 
 export const blockFactory = define<IBlock>({
-  id: (index: number) => validateRegistryId(`${TEST_BLOCK_ID}_${index}`),
-  name: (index: number) => `${TEST_BLOCK_ID} ${index}`,
+  id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
+  name: (i: number) => `${TEST_BLOCK_ID} ${i}`,
   inputSchema: null as Schema,
   defaultOptions: null,
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -170,10 +170,10 @@ export const blockFactory = define<IBlock>({
 });
 
 export const blocksMapFactory: (
-  blockProperties?: Partial<IBlock>
-) => Promise<BlocksMap> = async (blockProperties) => {
-  const block1 = blockFactory(blockProperties);
-  const block2 = blockFactory(blockProperties);
+  blockProps?: Partial<IBlock>
+) => Promise<BlocksMap> = async (blockProps) => {
+  const block1 = blockFactory(blockProps);
+  const block2 = blockFactory(blockProps);
 
   return {
     [block1.id]: {
@@ -189,15 +189,15 @@ export const blocksMapFactory: (
 
 export const blockConfigFactory = define<BlockConfig>({
   instanceId: () => uuidv4(),
-  id: (index: number) => validateRegistryId(`${TEST_BLOCK_ID}_${index}`),
+  id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
   config: () => ({}),
 });
 
 export const pipelineFactory: (
   blockConfigOverride?: FactoryConfig<BlockConfig>
-) => BlockPipeline = (blockConfigProperties) => {
-  const blockConfig1 = blockConfigFactory(blockConfigProperties);
-  const blockConfig2 = blockConfigFactory(blockConfigProperties);
+) => BlockPipeline = (blockConfigProps) => {
+  const blockConfig1 = blockConfigFactory(blockConfigProps);
+  const blockConfig2 = blockConfigFactory(blockConfigProps);
 
   return [blockConfig1, blockConfig2] as BlockPipeline;
 };
@@ -223,7 +223,7 @@ export const extensionPointFactory = define<ExtensionPointConfig>({
   },
 });
 
-type ExternalExtensionPointParameters = {
+type ExternalExtensionPointParams = {
   extensionPointId?: RegistryId;
 };
 
@@ -233,7 +233,7 @@ type ExternalExtensionPointParameters = {
  */
 export const versionedExtensionPointRecipeFactory = ({
   extensionPointId,
-}: ExternalExtensionPointParameters = {}) =>
+}: ExternalExtensionPointParams = {}) =>
   define<RecipeDefinition>({
     kind: "recipe",
     apiVersion: "v2",
@@ -259,7 +259,7 @@ export const versionedExtensionPointRecipeFactory = ({
     ],
   });
 
-type InnerExtensionPointParameters = {
+type InnerExtensionPointParams = {
   extensionPointRef?: InnerDefinitionRef;
 };
 
@@ -268,8 +268,8 @@ type InnerExtensionPointParameters = {
  * @param extensionPointId
  */
 export const innerExtensionPointRecipeFactory = ({
-  extensionPointRef: extensionPointReference = "extensionPoint" as InnerDefinitionRef,
-}: InnerExtensionPointParameters = {}) =>
+  extensionPointRef = "extensionPoint" as InnerDefinitionRef,
+}: InnerExtensionPointParams = {}) =>
   define<RecipeDefinition>({
     kind: "recipe",
     apiVersion: "v2",
@@ -277,7 +277,7 @@ export const innerExtensionPointRecipeFactory = ({
     sharing: { public: false, organizations: [] },
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
     definitions: {
-      [extensionPointReference]: {
+      [extensionPointRef]: {
         kind: "extensionPoint",
         definition: {
           type: "menuItem",
@@ -293,7 +293,7 @@ export const innerExtensionPointRecipeFactory = ({
     options: undefined,
     extensionPoints: (n: number) => [
       {
-        id: extensionPointReference,
+        id: extensionPointRef,
         label: `Test Extension for Recipe ${n}`,
         config: {
           caption: "Button",
@@ -317,7 +317,7 @@ const internalFormStateFactory = define<FormState>({
   recipe: null,
 
   type: "panel" as ElementType,
-  label: (index: number) => `Element ${index}`,
+  label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   extensionPoint: extensionPointFactory,
 } as any);
@@ -342,7 +342,7 @@ export const triggerFormStateFactory = (
   override: FactoryConfig<TriggerFormState>,
   blockConfigOverride?: FactoryConfig<BlockConfig>
 ) => {
-  const defaultTriggerProperties = trigger.fromNativeElement(
+  const defaultTriggerProps = trigger.fromNativeElement(
     "https://test.com",
     metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
@@ -353,7 +353,7 @@ export const triggerFormStateFactory = (
 
   return formStateFactory(
     {
-      ...defaultTriggerProperties,
+      ...defaultTriggerProps,
       ...override,
     } as any,
     blockConfigOverride
@@ -364,7 +364,7 @@ export const menuItemFormStateFactory = (
   override: FactoryConfig<ActionFormState>,
   blockConfigOverride?: FactoryConfig<BlockConfig>
 ) => {
-  const defaultTriggerProperties = menuItem.fromNativeElement(
+  const defaultTriggerProps = menuItem.fromNativeElement(
     "https://test.com",
     metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
@@ -379,7 +379,7 @@ export const menuItemFormStateFactory = (
 
   return formStateFactory(
     {
-      ...defaultTriggerProperties,
+      ...defaultTriggerProps,
       ...override,
     } as any,
     blockConfigOverride

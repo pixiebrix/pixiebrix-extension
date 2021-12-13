@@ -56,13 +56,9 @@ const initialValues = {
 };
 
 export const WithFormikHorizontalField: ComponentStory<typeof Form> = (
-  arguments_
+  args
 ) => (
-  <Form
-    validationSchema={SchemaShape}
-    initialValues={initialValues}
-    {...arguments_}
-  >
+  <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
     <ConnectedFieldTemplate
       name="title"
       layout="horizontal"
@@ -85,14 +81,8 @@ export const WithFormikHorizontalField: ComponentStory<typeof Form> = (
 );
 WithFormikHorizontalField.storyName = "With Horizontal FormikField";
 
-export const WithFormikVerticalField: ComponentStory<typeof Form> = (
-  arguments_
-) => (
-  <Form
-    validationSchema={SchemaShape}
-    initialValues={initialValues}
-    {...arguments_}
-  >
+export const WithFormikVerticalField: ComponentStory<typeof Form> = (args) => (
+  <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
     <ConnectedFieldTemplate
       name="title"
       layout="vertical"
@@ -114,11 +104,11 @@ export const WithFormikVerticalField: ComponentStory<typeof Form> = (
 );
 WithFormikVerticalField.storyName = "With Vertical FormikField";
 
-export const CustomSubmit: ComponentStory<typeof Form> = (arguments_) => (
+export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
   <Form
     validationSchema={SchemaShape}
     initialValues={initialValues}
-    {...arguments_}
+    {...args}
     renderSubmit={() => <button type="submit">Click to submit</button>}
   >
     <ConnectedFieldTemplate
@@ -147,17 +137,17 @@ const selectOptions: Array<Option<number>> = range(1, 16).map((x: number) => ({
   value: x,
 }));
 
-const BootstrapFormControlWidget: CustomFieldWidget = (properties) => (
+const BootstrapFormControlWidget: CustomFieldWidget = (props) => (
   <div style={{ border: "1px solid black" }}>
-    <BootstrapForm.Control type="password" {...properties} />
+    <BootstrapForm.Control type="password" {...props} />
   </div>
 );
 
-export const AllFields: ComponentStory<typeof Form> = (arguments_) => (
+export const AllFields: ComponentStory<typeof Form> = (args) => (
   <Form
     validationSchema={AllFieldsSchema}
     initialValues={allFieldsInitialValues}
-    {...arguments_}
+    {...args}
   >
     <ConnectedFieldTemplate
       name="name"

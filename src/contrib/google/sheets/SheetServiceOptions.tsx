@@ -27,13 +27,13 @@ export const SERVICE_GOOGLE_SHEET_ID = validateRegistryId("google/sheet");
 const SheetServiceOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
 }) => {
-  const [document_, setDocument] = useState<SheetMeta>(null);
+  const [doc, setDoc] = useState<SheetMeta>(null);
 
   const handleSelect = useCallback(
-    (document__: SheetMeta) => {
-      setDocument(document__);
+    (doc: SheetMeta) => {
+      setDoc(doc);
     },
-    [document_]
+    [doc]
   );
 
   return (
@@ -44,7 +44,7 @@ const SheetServiceOptions: React.FunctionComponent<BlockOptionProps> = ({
         label="Google Sheet"
         as={FileWidget}
         onSelect={handleSelect}
-        doc={document_}
+        doc={doc}
       />
     </div>
   );

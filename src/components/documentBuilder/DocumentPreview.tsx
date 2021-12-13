@@ -26,7 +26,7 @@ import previewStyles from "./ElementPreview.module.scss";
 import documentTreeStyles from "./documentTree.module.scss";
 import styles from "./DocumentPreview.module.scss";
 
-type DocumentPreviewProperties = {
+type DocumentPreviewProps = {
   name: string;
   activeElement: string;
   setActiveElement: (activeElement: string) => void;
@@ -38,7 +38,7 @@ const DocumentPreview = ({
   activeElement,
   setActiveElement,
   menuBoundary,
-}: DocumentPreviewProperties) => {
+}: DocumentPreviewProps) => {
   const [{ value: body }] = useField<DocumentElement[]>(name);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
 
@@ -75,10 +75,10 @@ const DocumentPreview = ({
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
     >
-      {body.map((childElement, index) => (
+      {body.map((childElement, i) => (
         <ElementPreview
-          key={`${name}.${index}`}
-          elementName={`${name}.${index}`}
+          key={`${name}.${i}`}
+          elementName={`${name}.${i}`}
           activeElement={activeElement}
           setActiveElement={setActiveElement}
           menuBoundary={menuBoundary}

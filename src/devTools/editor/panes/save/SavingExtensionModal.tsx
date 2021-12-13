@@ -18,7 +18,7 @@
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
 
-type OwnProperties = {
+type OwnProps = {
   recipeName: string;
   installedRecipeVersion: string;
   latestRecipeVersion: string;
@@ -29,7 +29,7 @@ type OwnProperties = {
   showUpdateRecipeModal: () => void;
 };
 
-const SavingExtensionModal: React.FC<OwnProperties> = ({
+const SavingExtensionModal: React.FC<OwnProps> = ({
   recipeName,
   installedRecipeVersion,
   latestRecipeVersion,

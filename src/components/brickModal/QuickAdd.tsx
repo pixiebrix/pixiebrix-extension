@@ -21,12 +21,12 @@ import { IBrick } from "@/core";
 import { Card } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 
-type OwnProperties<T extends IBrick = IBrick> = {
+type OwnProps<T extends IBrick = IBrick> = {
   onSelect: (block: T) => void;
   recommendations: T[];
 };
 
-const QuickAdd: React.FunctionComponent<OwnProperties> = ({
+const QuickAdd: React.FunctionComponent<OwnProps> = ({
   recommendations = [],
   onSelect,
 }) => (

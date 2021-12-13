@@ -34,22 +34,18 @@ import AsyncButton from "@/components/AsyncButton";
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
 
-type FileWidgetProperties = {
+type FileWidgetProps = {
   id?: string;
   name: string;
   doc: SheetMeta | null;
-  onSelect: (document_: SheetMeta) => void;
+  onSelect: (doc: SheetMeta) => void;
 };
 
-const FileWidget: React.FC<FileWidgetProperties> = ({
-  doc,
-  onSelect,
-  ...properties
-}) => {
+const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
   const { port } = useContext(DevToolsContext);
   const notify = useNotifications();
 
-  const [field, , helpers] = useField<string>(properties);
+  const [field, , helpers] = useField<string>(props);
   const [sheetError, setSheetError] = useState(null);
 
   useEffect(
@@ -131,15 +127,13 @@ const FileWidget: React.FC<FileWidgetProperties> = ({
         .setCallback((data: Data) => {
           console.debug("Google Picker result", data);
           if (data.action === google.picker.Action.PICKED) {
-            const document_ = data.docs[0];
-            if (
-              document_.mimeType !== "application/vnd.google-apps.spreadsheet"
-            ) {
-              throw new Error(`${document_.name} is not a spreadsheet`);
+            const doc = data.docs[0];
+            if (doc.mimeType !== "application/vnd.google-apps.spreadsheet") {
+              throw new Error(`${doc.name} is not a spreadsheet`);
             }
 
             helpers.setValue(data.docs[0].id);
-            onSelect(document_);
+            onSelect(doc);
           }
         })
         .setOrigin(

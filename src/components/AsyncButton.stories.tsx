@@ -40,8 +40,8 @@ export default {
   },
 } as ComponentMeta<typeof AsyncButton>;
 
-const Template: ComponentStory<typeof AsyncButton> = (arguments_) => (
-  <AsyncButton {...arguments_} />
+const Template: ComponentStory<typeof AsyncButton> = (args) => (
+  <AsyncButton {...args} />
 );
 
 export const Primary = Template.bind({});

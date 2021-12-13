@@ -20,10 +20,10 @@ import browser from "webextension-polyfill";
 import "./ChatWidget.scss";
 
 const ChatWidget: React.FunctionComponent = () => {
-  const source = browser.runtime.getURL("/support.html");
+  const src = browser.runtime.getURL("/support.html");
 
   // Iframe dom definition doesn't support csp even though Chrome supports it as an attribute
-  const properties: any = {
+  const props: any = {
     csp:
       "default-src 'self' https://w.chatlio.com; style-src 'self' 'unsafe-inline' https://w.chatlio.com; script-src 'self' https://w.chatlio.com; connect-src 'self' https://api.chatlio.com https://api-cdn.chatlio.com wss://push.chatlio.com wss://ws.pusherapp.com; img-src 'self' data: https://w.chatlio.com https://avatars.slack-edge.com https://files.slack.com https://files-origin.slack.com https://secure.gravatar.com https://uploads-cdn.chatlio.com; object-src 'none';",
   };
@@ -31,10 +31,10 @@ const ChatWidget: React.FunctionComponent = () => {
   return (
     <iframe
       className="ChatWidget"
-      src={source}
+      src={src}
       title="Support Chat"
       sandbox="allow-scripts allow-same-origin"
-      {...properties}
+      {...props}
     />
   );
 };

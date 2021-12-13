@@ -132,18 +132,18 @@ export async function getToken(
   return responseData;
 }
 
-function parseResponseParameters(url: URL): UnknownObject {
-  const hasSearchParameters = [...url.searchParams.keys()].length > 0;
+function parseResponseParams(url: URL): UnknownObject {
+  const hasSearchParams = [...url.searchParams.keys()].length > 0;
 
-  if (hasSearchParameters) {
+  if (hasSearchParams) {
     return Object.fromEntries(url.searchParams.entries());
   }
 
   // Microsoft returns the params as part of the hash
   if (url.hash) {
     // Remove the leading "#"
-    const parameters = new URLSearchParams(url.hash.slice(1));
-    return Object.fromEntries(parameters.entries());
+    const params = new URLSearchParams(url.hash.slice(1));
+    return Object.fromEntries(params.entries());
   }
 
   throw new Error("Unexpected response URL structure");
@@ -155,7 +155,7 @@ async function implicitGrantFlow(
 ): Promise<AuthData> {
   const redirect_uri = browser.identity.getRedirectURL("oauth2");
 
-  const { client_id, authorizeUrl: rawAuthorizeUrl, ...parameters } = oauth2;
+  const { client_id, authorizeUrl: rawAuthorizeUrl, ...params } = oauth2;
 
   const state = getRandomString(16);
 
@@ -167,7 +167,7 @@ async function implicitGrantFlow(
     display: "page",
     client_id,
     state,
-    ...parameters,
+    ...params,
   })) {
     authorizeURL.searchParams.set(key, value);
   }
@@ -187,9 +187,9 @@ async function implicitGrantFlow(
     throw new Error("Authentication cancelled");
   }
 
-  const responseParameters = parseResponseParameters(new URL(responseUrl));
+  const responseParams = parseResponseParams(new URL(responseUrl));
 
-  const { access_token, state: stateResponse, ...rest } = responseParameters;
+  const { access_token, state: stateResponse, ...rest } = responseParams;
 
   if (state !== stateResponse) {
     throw new Error("OAuth2 state mismatch");
@@ -197,7 +197,7 @@ async function implicitGrantFlow(
 
   if (!access_token) {
     console.warn("Error performing implicit grant flow", {
-      responseParams: responseParameters,
+      responseParams,
       responseUrl,
     });
     throw new Error("Error performing implicit grant flow");
@@ -219,7 +219,7 @@ async function codeGrantFlow(
     client_secret,
     authorizeUrl: rawAuthorizeUrl,
     tokenUrl: rawTokenUrl,
-    ...parameters
+    ...params
   } = oauth2;
 
   const authorizeURL = new URL(rawAuthorizeUrl);
@@ -227,7 +227,7 @@ async function codeGrantFlow(
     redirect_uri,
     response_type: "code",
     display: "page",
-    ...parameters,
+    ...params,
   })) {
     authorizeURL.searchParams.set(key, value);
   }
@@ -283,7 +283,7 @@ async function codeGrantFlow(
     redirect_uri,
     grant_type: "authorization_code",
     code: authResponse.searchParams.get("code"),
-    client_id: parameters.client_id,
+    client_id: params.client_id,
   };
 
   if (client_secret) {
@@ -294,15 +294,15 @@ async function codeGrantFlow(
     tokenBody.code_verifier = code_verifier;
   }
 
-  const tokenParameters = new URLSearchParams();
-  for (const [parameter, value] of Object.entries(tokenBody)) {
-    tokenParameters.set(parameter, value.toString());
+  const tokenParams = new URLSearchParams();
+  for (const [param, value] of Object.entries(tokenBody)) {
+    tokenParams.set(param, value.toString());
   }
 
   let tokenResponse: AxiosResponse;
 
   try {
-    tokenResponse = await axios.post(tokenURL.toString(), tokenParameters, {
+    tokenResponse = await axios.post(tokenURL.toString(), tokenParams, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },

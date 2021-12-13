@@ -23,7 +23,7 @@ import {
   SEARCH_WINDOW,
 } from "@/messaging/constants";
 
-type ReadSpec = <T extends Record<string, string>>(argument: {
+type ReadSpec = <T extends Record<string, string>>(arg: {
   pathSpec: T;
   waitMillis?: number;
 }) => Promise<Record<keyof T, unknown>>;

@@ -104,8 +104,8 @@ const initialValue: Context = {
 export const DevToolsContext = React.createContext(initialValue);
 
 class PermissionsError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(msg: string) {
+    super(msg);
     // Set the prototype explicitly.
     Object.setPrototypeOf(this, PermissionsError.prototype);
   }

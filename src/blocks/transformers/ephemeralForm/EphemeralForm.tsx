@@ -41,10 +41,10 @@ const PanelLayout: React.FC = ({ children }) => <div>{children}</div>;
  * @see FormTransformer
  */
 const EphemeralForm: React.FC = () => {
-  const parameters = new URLSearchParams(location.search);
-  const nonce = validateUUID(parameters.get("nonce"));
-  const opener = JSON.parse(parameters.get("opener")) as Target;
-  const mode = parameters.get("mode") ?? "modal";
+  const params = new URLSearchParams(location.search);
+  const nonce = validateUUID(params.get("nonce"));
+  const opener = JSON.parse(params.get("opener")) as Target;
+  const mode = params.get("mode") ?? "modal";
 
   // The opener for a sidebar panel will be the sidebar frame, not the host panel frame. The sidebar only opens in the
   // top-level frame, so hard-code the top-level frameId

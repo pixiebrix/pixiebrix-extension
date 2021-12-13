@@ -20,11 +20,11 @@ import styles from "./Banner.module.scss";
 import cx from "classnames";
 
 export type BannerVariant = "info" | "success" | "warning" | "danger";
-export interface BannerProperties {
+export interface BannerProps {
   variant?: BannerVariant;
 }
 
-const Banner: React.FunctionComponent<BannerProperties> = ({
+const Banner: React.FunctionComponent<BannerProps> = ({
   variant,
   children,
 }) => (

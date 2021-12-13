@@ -18,12 +18,12 @@
 import { Form, InputGroup, FormControlProps } from "react-bootstrap";
 import React from "react";
 
-const KeyNameWidget: React.FC<FormControlProps> = (properties) => (
+const KeyNameWidget: React.FC<FormControlProps> = (props) => (
   <InputGroup>
     <InputGroup.Prepend>
       <InputGroup.Text>@</InputGroup.Text>
     </InputGroup.Prepend>
-    <Form.Control {...properties} />
+    <Form.Control {...props} />
   </InputGroup>
 );
 

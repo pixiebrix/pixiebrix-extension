@@ -24,16 +24,16 @@ export type Snippet = {
   value: string;
 };
 
-type TemplateWidgetProperties = CustomFieldWidgetProps & {
+type TemplateWidgetProps = CustomFieldWidgetProps & {
   disabled?: boolean;
   rows: number;
   snippets?: Snippet[];
 };
 
-const TemplateWidget: React.FC<TemplateWidgetProperties> = ({
+const TemplateWidget: React.FC<TemplateWidgetProps> = ({
   snippets = [],
   rows = 4,
-  ...properties
+  ...props
 }) => {
   const templateInput = useRef<HTMLTextAreaElement | HTMLInputElement>(null);
 
@@ -48,14 +48,14 @@ const TemplateWidget: React.FC<TemplateWidgetProperties> = ({
     current.dispatchEvent(event);
   }, []);
 
-  const controlProperties =
+  const controlProps =
     rows === 1
       ? { as: "input" as React.ElementType, type: "text" }
       : { as: "textarea" as React.ElementType, rows };
 
   return (
     <div>
-      {!properties.disabled && (
+      {!props.disabled && (
         <div className="small">
           <span>Insert at cursor:</span>
           {snippets.map((snippet: Snippet) => (
@@ -74,11 +74,7 @@ const TemplateWidget: React.FC<TemplateWidgetProperties> = ({
           ))}
         </div>
       )}
-      <Form.Control
-        {...controlProperties}
-        {...properties}
-        ref={templateInput}
-      />
+      <Form.Control {...controlProps} {...props} ref={templateInput} />
     </div>
   );
 };

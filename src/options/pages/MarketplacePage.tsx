@@ -26,12 +26,12 @@ import { RegistryId } from "@/core";
 import { OptionsState } from "@/store/extensions";
 import { useTitle } from "@/hooks/title";
 
-interface MarketplaceProperties {
+interface MarketplaceProps {
   installedRecipes: Set<RegistryId>;
   navigate: (url: string) => void;
 }
 
-const MarketplacePage: React.FunctionComponent<MarketplaceProperties> = ({
+const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installedRecipes,
   navigate,
 }) => {

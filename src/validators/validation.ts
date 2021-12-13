@@ -88,8 +88,8 @@ export function configSchemaFactory(
   const wrapRequired = (x: any) => (required ? x.required() : x);
 
   if (isBrickSchema(schema)) {
-    return Yup.lazy((value) => {
-      if (isPlainObject(value)) {
+    return Yup.lazy((val) => {
+      if (isPlainObject(val)) {
         return Yup.lazy(blockSchemaFactory);
       }
 
@@ -99,16 +99,16 @@ export function configSchemaFactory(
 
   switch (schema.type) {
     case "object": {
-      return Yup.lazy((value) => {
-        if (isPlainObject(value)) {
+      return Yup.lazy((val) => {
+        if (isPlainObject(val)) {
           return Yup.object().shape(
-            mapValues(schema.properties, (definition, property) => {
+            mapValues(schema.properties, (definition, prop) => {
               if (typeof definition === "boolean") {
                 return wrapRequired(Yup.string());
               }
 
               return configSchemaFactory(definition, {
-                required: (schema.required ?? []).includes(property),
+                required: (schema.required ?? []).includes(prop),
               });
             })
           );

@@ -23,13 +23,13 @@ import SelectorSelectorWidget, {
 
 const LocationWidget: React.FC<SelectorSelectorProps> = ({
   selectMode = "container",
-  ...properties
+  ...props
 }) => {
   const [containerInfoField] = useField("containerInfo");
 
   return (
     <SelectorSelectorWidget
-      {...properties}
+      {...props}
       initialElement={containerInfoField.value}
       selectMode={selectMode}
     />

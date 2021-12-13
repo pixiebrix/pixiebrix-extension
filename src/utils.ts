@@ -68,28 +68,25 @@ export function mostCommonElement<T>(items: T[]): T {
   return flow(countBy, entries, partialRight(maxBy, last), head)(items) as T;
 }
 
-export function isGetter(
-  object: Record<string, unknown>,
-  property: string
-): boolean {
-  return Boolean(Object.getOwnPropertyDescriptor(object, property)?.get);
+export function isGetter(obj: Record<string, unknown>, prop: string): boolean {
+  return Boolean(Object.getOwnPropertyDescriptor(obj, prop)?.get);
 }
 
 /**
  * Return all property names (including non-enumerable) in the prototype hierarchy.
  */
-export function getAllPropertyNames(object: Record<string, unknown>): string[] {
-  const properties = new Set<string>();
-  let current = object;
+export function getAllPropertyNames(obj: Record<string, unknown>): string[] {
+  const props = new Set<string>();
+  let current = obj;
   while (current) {
     for (const name of Object.getOwnPropertyNames(current)) {
-      properties.add(name);
+      props.add(name);
     }
 
     current = Object.getPrototypeOf(current);
   }
 
-  return [...properties.values()];
+  return [...props.values()];
 }
 
 export async function waitAnimationFrame(): Promise<void> {
@@ -104,12 +101,10 @@ export async function waitAnimationFrame(): Promise<void> {
  * Returns a new object with all the values from the original resolved
  */
 export async function resolveObj<T>(
-  object: Record<string, Promise<T>>
+  obj: Record<string, Promise<T>>
 ): Promise<Record<string, T>> {
   return Object.fromEntries(
-    await Promise.all(
-      Object.entries(object).map(async ([k, v]) => [k, await v])
-    )
+    await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v]))
   );
 }
 
@@ -118,11 +113,11 @@ export async function resolveObj<T>(
  */
 export async function asyncMapValues<T, TResult>(
   mapping: T,
-  function_: ObjectIterator<T, Promise<TResult>>
+  func: ObjectIterator<T, Promise<TResult>>
 ): Promise<{ [K in keyof T]: TResult }> {
   const entries = Object.entries(mapping);
   const values = await Promise.all(
-    entries.map(async ([key, value]) => function_(value, key, mapping))
+    entries.map(async ([key, value]) => func(value, key, mapping))
   );
   return Object.fromEntries(
     zip(entries, values).map(([[key], value]) => [key, value])
@@ -168,12 +163,12 @@ export async function awaitValue<T>(
   throw new TimeoutError(`Value not found after ${waitMillis} milliseconds`);
 }
 
-export function isPrimitive(value: unknown): value is Primitive {
-  if (typeof value === "object") {
-    return value === null;
+export function isPrimitive(val: unknown): val is Primitive {
+  if (typeof val === "object") {
+    return val === null;
   }
 
-  return typeof value !== "function";
+  return typeof val !== "function";
 }
 
 /**
@@ -183,31 +178,31 @@ export function isPrimitive(value: unknown): value is Primitive {
  * @see pickBy
  */
 export function deepPickBy(
-  object: unknown,
+  obj: unknown,
   predicate: (value: unknown) => boolean
 ): unknown {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#typeof_null
   // `typeof null === "object"`, so have to check for it before the "object" check below
-  if (object == null) {
+  if (obj == null) {
     return null;
   }
 
-  if (Array.isArray(object)) {
-    return object.map((item) => deepPickBy(item, predicate));
+  if (Array.isArray(obj)) {
+    return obj.map((item) => deepPickBy(item, predicate));
   }
 
-  if (typeof object === "object") {
+  if (typeof obj === "object") {
     return mapValues(
-      pickBy(object, (value) => predicate(value)),
+      pickBy(obj, (value) => predicate(value)),
       (value) => deepPickBy(value, predicate)
     );
   }
 
-  return object;
+  return obj;
 }
 
-export function removeUndefined(object: unknown): unknown {
-  return deepPickBy(object, (value: unknown) => typeof value !== "undefined");
+export function removeUndefined(obj: unknown): unknown {
+  return deepPickBy(obj, (value: unknown) => typeof value !== "undefined");
 }
 
 export function boolean(value: unknown): boolean {
@@ -236,12 +231,12 @@ export function isObject(value: unknown): value is Record<string, unknown> {
   return value && typeof value === "object";
 }
 
-export function clearObject(object: Record<string, unknown>): void {
-  for (const member in object) {
-    if (Object.prototype.hasOwnProperty.call(object, member)) {
+export function clearObject(obj: Record<string, unknown>): void {
+  for (const member in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, member)) {
       // Checking to ensure own property
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-      delete object[member];
+      delete obj[member];
     }
   }
 }
@@ -310,15 +305,15 @@ export function isNullOrBlank(value: unknown): boolean {
   return typeof value === "string" && value.trim() === "";
 }
 
-export function excludeUndefined(object: unknown): unknown {
-  if (isPlainObject(object) && typeof object === "object") {
+export function excludeUndefined(obj: unknown): unknown {
+  if (isPlainObject(obj) && typeof obj === "object") {
     return mapValues(
-      pickBy(object, (x) => x !== undefined),
+      pickBy(obj, (x) => x !== undefined),
       excludeUndefined
     );
   }
 
-  return object;
+  return obj;
 }
 
 export class PromiseCancelled extends Error {
@@ -363,15 +358,15 @@ export function evaluableFunction(
 /**
  * Lift a unary function to pass through null/undefined.
  */
-export function optional<T extends (argument: unknown) => unknown>(
-  function_: T
-): (argument: null | Parameters<T>[0]) => ReturnType<T> | null {
-  return (argument: Parameters<T>[0]) => {
-    if (argument == null) {
+export function optional<T extends (arg: unknown) => unknown>(
+  func: T
+): (arg: null | Parameters<T>[0]) => ReturnType<T> | null {
+  return (arg: Parameters<T>[0]) => {
+    if (arg == null) {
       return null;
     }
 
-    return function_(argument) as ReturnType<T>;
+    return func(arg) as ReturnType<T>;
   };
 }
 
@@ -386,12 +381,12 @@ export const SPACE_ENCODED_VALUE = "%20";
 
 export function makeURL(
   url: string,
-  parameters: Record<string, string | number | boolean> | undefined = {},
+  params: Record<string, string | number | boolean> | undefined = {},
   spaceEncoding: "plus" | "percent" = "plus"
 ): string {
   // https://javascript.info/url#searchparams
   const result = new URL(url);
-  for (const [name, value] of Object.entries(parameters ?? {})) {
+  for (const [name, value] of Object.entries(params ?? {})) {
     if ((value ?? "") !== "") {
       result.searchParams.append(name, String(value));
     }
@@ -475,17 +470,17 @@ export function isApiVersionAtLeast(
   is: ApiVersion,
   atLeast: ApiVersion
 ): boolean {
-  const isNumber = Number(is.slice(1));
-  const atLeastNumber = Number(atLeast.slice(1));
+  const isNum = Number(is.slice(1));
+  const atLeastNum = Number(atLeast.slice(1));
 
-  return isNumber >= atLeastNumber;
+  return isNum >= atLeastNum;
 }
 
-export function getProperty(object: UnknownObject, property: string) {
-  if (Object.prototype.hasOwnProperty.call(object, property)) {
+export function getProperty(obj: UnknownObject, property: string) {
+  if (Object.prototype.hasOwnProperty.call(obj, property)) {
     // Checking for hasOwnProperty
     // eslint-disable-next-line security/detect-object-injection
-    return object[property];
+    return obj[property];
   }
 }
 

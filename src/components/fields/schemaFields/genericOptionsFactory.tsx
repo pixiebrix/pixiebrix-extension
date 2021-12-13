@@ -50,21 +50,21 @@ function genericOptionsFactory(
 
     return (
       <>
-        {Object.entries(optionSchema).map(([property, fieldSchema]) => {
+        {Object.entries(optionSchema).map(([prop, fieldSchema]) => {
           if (typeof fieldSchema === "boolean") {
             throw new TypeError("Expected schema for input property type");
           }
 
           // Fine because coming from Object.entries for the schema
           // eslint-disable-next-line security/detect-object-injection
-          const propertyUiSchema = uiSchema?.[property];
+          const propUiSchema = uiSchema?.[prop];
           return (
             <SchemaField
-              key={property}
-              name={joinName(name, configKey, property)}
+              key={prop}
+              name={joinName(name, configKey, prop)}
               schema={fieldSchema}
-              isRequired={schema.required?.includes(property)}
-              uiSchema={propertyUiSchema}
+              isRequired={schema.required?.includes(prop)}
+              uiSchema={propUiSchema}
             />
           );
         })}

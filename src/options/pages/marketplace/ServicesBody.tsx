@@ -30,13 +30,11 @@ import { useField } from "formik";
 import { ServiceAuthPair } from "@/core";
 import { useAuthOptions } from "@/hooks/auth";
 
-interface OwnProperties {
+interface OwnProps {
   blueprint: RecipeDefinition;
 }
 
-const ServicesBody: React.FunctionComponent<OwnProperties> = ({
-  blueprint,
-}) => {
+const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const [authOptions, refreshAuthOptions] = useAuthOptions();
 
   const [field] = useField<ServiceAuthPair[]>("services");

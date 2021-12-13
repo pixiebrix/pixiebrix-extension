@@ -79,7 +79,7 @@ const contextMenuReaderShim = {
   read: async () => {
     const { activeElement } = document;
 
-    const linkProperties =
+    const linkProps =
       activeElement?.tagName === "A"
         ? {
             linkText: activeElement.textContent,
@@ -100,7 +100,7 @@ const contextMenuReaderShim = {
       selectionText: document.getSelection()?.toString(),
       srcUrl: activeElement?.getAttribute("src"),
       documentUrl: document.location.href,
-      ...linkProperties,
+      ...linkProps,
     };
   },
 };

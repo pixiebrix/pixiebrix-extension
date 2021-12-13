@@ -56,7 +56,7 @@ function useRemove(element: FormState): () => void {
       return;
     }
 
-    const reference = {
+    const ref = {
       extensionPointId: values.extensionPoint.metadata.id,
       extensionId: values.uuid,
     };
@@ -64,12 +64,12 @@ function useRemove(element: FormState): () => void {
     try {
       // Remove from storage first so it doesn't get re-added by any subsequent steps
       if (values.installed) {
-        dispatch(optionsSlice.actions.removeExtension(reference));
+        dispatch(optionsSlice.actions.removeExtension(ref));
       }
 
       await Promise.allSettled([
-        uninstallContextMenu(reference),
-        removeActionPanel(thisTab, reference.extensionId),
+        uninstallContextMenu(ref),
+        removeActionPanel(thisTab, ref.extensionId),
       ]);
 
       // Remove from page editor

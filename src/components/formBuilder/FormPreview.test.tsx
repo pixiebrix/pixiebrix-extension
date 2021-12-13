@@ -18,12 +18,10 @@
 import { Schema, UiSchema } from "@/core";
 import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
 import { Except } from "type-fest";
-import FormPreview, {
-  FormPreviewProps as FormPreviewProperties,
-} from "./FormPreview";
+import FormPreview, { FormPreviewProps } from "./FormPreview";
 
 describe("FormPreview", () => {
-  const defaultProps: Except<FormPreviewProperties, "activeField"> = {
+  const defaultProps: Except<FormPreviewProps, "activeField"> = {
     rjsfSchema: { schema: {}, uiSchema: {} },
     setActiveField: jest.fn(),
   };
@@ -57,16 +55,16 @@ describe("FormPreview", () => {
     };
     const uiSchema: UiSchema = {};
 
-    const properties: FormPreviewProperties = {
+    const props: FormPreviewProps = {
       rjsfSchema: { schema, uiSchema },
       activeField: "firstName",
       setActiveField: defaultProps.setActiveField,
     };
 
-    const options: ItRendersOptions<FormPreviewProperties> = {
+    const options: ItRendersOptions<FormPreviewProps> = {
       testName: "it renders simple schema",
       Component: FormPreview,
-      props: properties,
+      props,
     };
 
     return options;

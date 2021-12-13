@@ -82,7 +82,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   const basePath = joinName(name, configKey);
 
-  const [document_, setDocument] = useState<SheetMeta>(null);
+  const [doc, setDoc] = useState<SheetMeta>(null);
 
   const [{ value: tabName }] = useField<string>(joinName(basePath, "tabName"));
 
@@ -93,18 +93,18 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         label="Google Sheet"
         description="Select a Google Sheet"
         as={FileWidget}
-        doc={document_}
-        onSelect={setDocument}
+        doc={doc}
+        onSelect={setDoc}
       />
       <TabField
         name={joinName(basePath, "tabName")}
         schema={APPEND_SCHEMA.properties.tabName as Schema}
-        doc={document_}
+        doc={doc}
       />
       <PropertiesField
         name={joinName(basePath, "rowValues")}
         tabName={tabName}
-        doc={document_}
+        doc={doc}
       />
     </div>
   );

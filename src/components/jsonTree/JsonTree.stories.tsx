@@ -25,9 +25,9 @@ export default {
   component: JsonTree,
 } as ComponentMeta<typeof JsonTree>;
 
-const Template: ComponentStory<typeof JsonTree> = (arguments_) => (
+const Template: ComponentStory<typeof JsonTree> = (args) => (
   <ToastProvider>
-    <JsonTree {...arguments_} />
+    <JsonTree {...args} />
   </ToastProvider>
 );
 

@@ -34,13 +34,10 @@ describe("Advanced options", () => {
     });
 
     const ComponentUnderTest = () => {
-      const scrollToReference = useRef<HTMLElement>();
+      const scrollToRef = useRef<HTMLElement>();
       return (
         <FormikTemplate>
-          <AdvancedLinks
-            name={BLOCK_FIELD_NAME}
-            scrollToRef={scrollToReference}
-          />
+          <AdvancedLinks name={BLOCK_FIELD_NAME} scrollToRef={scrollToRef} />
         </FormikTemplate>
       );
     };

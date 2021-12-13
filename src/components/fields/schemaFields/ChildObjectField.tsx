@@ -33,7 +33,7 @@ const FALLBACK_SCHEMA: Schema = {
   additionalProperties: true,
 };
 
-type OwnProperties = {
+type OwnProps = {
   heading: string;
 
   /**
@@ -57,7 +57,7 @@ const ChildContainer: React.FC<{ heading: string }> = ({
   </Card>
 );
 
-const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProperties> = ({
+const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProps> = ({
   name,
   schema,
   schemaLoading,
@@ -91,34 +91,32 @@ const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProperties> = ({
   return (
     <ChildContainer heading={heading}>
       {schema &&
-        Object.entries(inputProperties(schema)).map(
-          ([property, fieldSchema]) => {
-            if (typeof fieldSchema === "boolean") {
-              throw new TypeError("Expected schema for input property type");
-            }
-
-            return (
-              <SchemaField
-                key={property}
-                name={joinName(name, property)}
-                schema={schema}
-              />
-            );
+        Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
+          if (typeof fieldSchema === "boolean") {
+            throw new TypeError("Expected schema for input property type");
           }
-        )}
+
+          return (
+            <SchemaField
+              key={prop}
+              name={joinName(name, prop)}
+              schema={schema}
+            />
+          );
+        })}
     </ChildContainer>
   );
 };
 
-const ChildObjectField: React.FunctionComponent<
-  SchemaFieldProps & OwnProperties
-> = (properties) => (
+const ChildObjectField: React.FunctionComponent<SchemaFieldProps & OwnProps> = (
+  props
+) => (
   <ConnectedFieldTemplate
-    {...properties}
+    {...props}
     description={
-      properties.schemaError
-        ? getErrorMessage(properties.schemaError)
-        : properties.schema?.description
+      props.schemaError
+        ? getErrorMessage(props.schemaError)
+        : props.schema?.description
     }
     as={ChildObjectWidget}
   />

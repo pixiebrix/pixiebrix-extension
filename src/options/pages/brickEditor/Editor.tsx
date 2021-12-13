@@ -67,7 +67,7 @@ export interface EditorValues {
   organizations: string[];
 }
 
-interface OwnProperties {
+interface OwnProps {
   showTemplates?: boolean;
   showLogs?: boolean;
   logContext: MessageContext | null;
@@ -97,7 +97,7 @@ function useOpenEditorTab() {
   );
 }
 
-const Editor: React.FunctionComponent<OwnProperties> = ({
+const Editor: React.FunctionComponent<OwnProps> = ({
   showTemplates,
   showLogs = true,
   logContext,
@@ -137,13 +137,13 @@ const Editor: React.FunctionComponent<OwnProperties> = ({
 
   const openEditorTab = useOpenEditorTab();
 
-  const editorReference = useRef(null);
+  const editorRef = useRef(null);
 
   useEffect(() => {
-    if (editorReference.current) {
-      setEditorWidth(editorReference.current.offsetWidth);
+    if (editorRef.current) {
+      setEditorWidth(editorRef.current.offsetWidth);
     }
-  }, [editorReference]);
+  }, [editorRef]);
 
   return (
     <div>
@@ -164,7 +164,7 @@ const Editor: React.FunctionComponent<OwnProperties> = ({
           </li>
         </ul>
       </div>
-      <Card ref={editorReference}>
+      <Card ref={editorRef}>
         <Tab.Container
           id="editor-container"
           defaultActiveKey={activeTab}

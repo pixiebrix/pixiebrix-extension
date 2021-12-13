@@ -19,19 +19,19 @@ import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
 import React from "react";
 import ReactShadowRoot from "react-shadow-root";
 import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
-import { DocumentViewProps as DocumentViewProperties } from "./DocumentViewProps";
+import { DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/DocumentContext";
 
-const DocumentView: React.FC<DocumentViewProperties> = ({ body, options }) => (
+const DocumentView: React.FC<DocumentViewProps> = ({ body, options }) => (
   // Wrap in a React context provider that passes BlockOptions down to any embedded bricks
   // ReactShadowRoot needs to be inside an HTMLElement so it has something to attach to
   <DocumentContext.Provider value={{ options }}>
     <div className="h-100">
       <ReactShadowRoot>
         <BootstrapStylesheet />
-        {body.map((documentElement, index) => {
+        {body.map((documentElement, i) => {
           const { Component, props } = buildDocumentBranch(documentElement);
-          return <Component key={index} {...props} />;
+          return <Component key={i} {...props} />;
         })}
       </ReactShadowRoot>
     </div>

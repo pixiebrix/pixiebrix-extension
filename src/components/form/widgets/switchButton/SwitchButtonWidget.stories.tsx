@@ -31,8 +31,8 @@ const componentMeta: ComponentMeta<typeof SwitchButtonWidget> = {
 };
 
 const SwitchButtonTemplate: ComponentStory<typeof SwitchButtonWidget> = (
-  arguments_
-) => <SwitchButtonWidget {...arguments_} />;
+  args
+) => <SwitchButtonWidget {...args} />;
 export const Default = SwitchButtonTemplate.bind({});
 Default.args = {
   name: "public",

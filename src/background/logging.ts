@@ -92,11 +92,11 @@ const indexKeys: Array<
 
 async function getDB() {
   return openDB<LogDB>(STORAGE_KEY, DB_VERSION_NUMBER, {
-    upgrade(database) {
+    upgrade(db) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
         // cases for looking at historic local logs
-        database.deleteObjectStore(ENTRY_OBJECT_STORE);
+        db.deleteObjectStore(ENTRY_OBJECT_STORE);
         console.warn(
           "Deleting object store %s for upgrade",
           ENTRY_OBJECT_STORE
@@ -106,7 +106,7 @@ async function getDB() {
       }
 
       // Create a store of objects
-      const store = database.createObjectStore(ENTRY_OBJECT_STORE, {
+      const store = db.createObjectStore(ENTRY_OBJECT_STORE, {
         keyPath: "uuid",
       });
       // Create individual indexes
@@ -127,8 +127,8 @@ async function getDB() {
 }
 
 export async function appendEntry(entry: LogEntry): Promise<void> {
-  const database = await getDB();
-  await database.add(ENTRY_OBJECT_STORE, entry);
+  const db = await getDB();
+  await db.add(ENTRY_OBJECT_STORE, entry);
 }
 
 function makeMatchEntry(
@@ -144,16 +144,16 @@ function makeMatchEntry(
 }
 
 export async function clearLogs(): Promise<void> {
-  const database = await getDB();
+  const db = await getDB();
 
-  const tx = database.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
   await tx.store.clear();
 }
 
 export async function clearLog(context: MessageContext = {}): Promise<void> {
-  const database = await getDB();
+  const db = await getDB();
 
-  const tx = database.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
   if (isEmpty(context)) {
     await tx.store.clear();
@@ -171,8 +171,8 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
 export async function getLog(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
-  const database = await getDB();
-  const tx = database.transaction(ENTRY_OBJECT_STORE, "readonly");
+  const db = await getDB();
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
   const match = makeMatchEntry(context);
 
   const matches = [];
@@ -217,14 +217,14 @@ export const recordError = liftBackground(
         // call here also handles deserialized errors properly.
         // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
         // See https://github.com/sindresorhus/serialize-error/issues/48
-        const errorObject = deserializeError(error);
+        const errorObj = deserializeError(error);
 
         if (hasCancelRootCause(error)) {
           // NOP - no reason to send to Rollbar
         } else if (hasBusinessRootCause(error)) {
-          rollbar.debug(message, errorObject);
+          rollbar.debug(message, errorObj);
         } else {
-          rollbar.error(message, errorObject);
+          rollbar.error(message, errorObj);
         }
       }
 

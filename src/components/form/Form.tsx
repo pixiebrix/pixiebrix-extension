@@ -39,7 +39,7 @@ export type RenderSubmit = (state: {
   values: FormikValues;
 }) => ReactElement;
 
-type FormProperties = {
+type FormProps = {
   initialValues: FormikValues;
   validationSchema: yup.ObjectSchema;
   validateOnMount?: boolean;
@@ -54,7 +54,7 @@ const defaultRenderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
   </Button>
 );
 
-const Form: React.FC<FormProperties> = ({
+const Form: React.FC<FormProps> = ({
   initialValues,
   validationSchema,
   validateOnMount,
