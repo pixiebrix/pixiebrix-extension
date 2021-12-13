@@ -29,7 +29,7 @@
       "run_at": "document_idle"
     }
   ],
-  "optional_permissions": ["clipboardWrite", "*://*/*"],
+  "optional_permissions": ["clipboardWrite"],
   "permissions": [
     "activeTab",
     "storage",
@@ -38,7 +38,7 @@
     "webNavigation",
     "contextMenus"
   ],
-  "host_permissions": ["https://*.pixiebrix.com/*"],
+  "host_permissions": ["https://*.pixiebrix.com/*", "*://*/*"],
   "devtools_page": "devtools.html",
   "externally_connectable": {
     "matches": ["https://app.pixiebrix.com/*"]
