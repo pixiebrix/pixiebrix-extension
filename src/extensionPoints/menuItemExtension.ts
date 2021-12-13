@@ -18,7 +18,7 @@
 import { uuidv4 } from "@/types/helpers";
 import { ExtensionPoint } from "@/types";
 import { checkAvailable } from "@/blocks/available";
-import { castArray, once, debounce, cloneDeep } from "lodash";
+import { castArray, once, debounce, cloneDeep, merge } from "lodash";
 import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { reportError } from "@/telemetry/logging";
 import {
@@ -50,7 +50,6 @@ import {
 } from "@/errors";
 import {
   DEFAULT_ACTION_RESULTS,
-  mergeConfig,
   MessageConfig,
   notifyError,
   notifyResult,
@@ -551,19 +550,19 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
         notifyResult(
           extension.id,
-          mergeConfig(onSuccess, DEFAULT_ACTION_RESULTS.success)
+          merge({}, onSuccess, DEFAULT_ACTION_RESULTS.success)
         );
       } catch (error) {
         if (hasCancelRootCause(error)) {
           notifyResult(
             extension.id,
-            mergeConfig(onCancel, DEFAULT_ACTION_RESULTS.cancel)
+            merge({}, onCancel, DEFAULT_ACTION_RESULTS.cancel)
           );
         } else {
           extensionLogger.error(error);
           notifyResult(
             extension.id,
-            mergeConfig(onError, DEFAULT_ACTION_RESULTS.error)
+            merge({}, onError, DEFAULT_ACTION_RESULTS.error)
           );
         }
       }

@@ -17,6 +17,7 @@
  */
 
 import { FORWARD_FRAME_DATA, REQUEST_FRAME_DATA } from "@/messaging/constants";
+
 type MessageSender = chrome.runtime.MessageSender;
 
 const frameHTML = new Map<string, string>();

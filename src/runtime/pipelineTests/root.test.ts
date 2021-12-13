@@ -29,6 +29,7 @@ import {
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
+
 jest.mock("@/background/trace");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,

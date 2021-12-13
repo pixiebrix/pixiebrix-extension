@@ -39,6 +39,7 @@ import { pixieServiceFactory } from "@/services/locator";
 import * as logging from "@/background/logging";
 import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
+
 jest.mock("@/background/trace");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
