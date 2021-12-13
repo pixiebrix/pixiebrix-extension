@@ -32,7 +32,7 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     super(["block", "component", "effect", "reader"], "blocks", fromJS);
   }
 
-  private blocksMap = {};
+  private blocksMap: BlocksMap = {};
   private typesPromise: Promise<void> = Promise.resolve();
 
   async allTyped(): Promise<BlocksMap> {
