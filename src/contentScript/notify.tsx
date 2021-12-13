@@ -19,6 +19,7 @@ import React from "react";
 import { render } from "react-dom";
 import { toast, Toaster } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
+import { DefaultToastOptions } from "react-hot-toast/dist/core/types";
 
 type NotificationType = "info" | "success" | "error" | "loading";
 interface Notification {
@@ -33,13 +34,27 @@ const containerStyle: React.CSSProperties = {
   fontFamily: "sans-serif",
 };
 
+const toastOptions: DefaultToastOptions = {
+  // These colors match react-hot-toast’s status icons
+  success: {
+    style: {
+      border: "solid 2px #61d345",
+    },
+  },
+  error: {
+    style: {
+      border: "solid 2px #ff4b4b",
+    },
+  },
+};
+
 export function initToaster(): void {
   const root = document.createElement("div");
   // This style cannot be on containerStyle because it overrides some of its props there
   root.setAttribute("style", "all: initial");
 
   document.body.append(root);
-  render(<Toaster containerStyle={containerStyle} />, root);
+  render(<Toaster {...{ containerStyle, toastOptions }} />, root);
 }
 
 export function showNotification({
