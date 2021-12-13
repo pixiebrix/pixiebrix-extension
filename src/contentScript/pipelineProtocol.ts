@@ -9,11 +9,13 @@ import { RendererPayload } from "@/runtime/runtimeTypes";
 import { Args, mapArgs, MapOptions } from "@/runtime/mapArgs";
 import { Except } from "type-fest";
 import { UnknownObject } from "@/types";
+import { ApiVersionOptions } from "@/runtime/apiVersionOptions";
 
 type RunPipelineParams = {
   nonce: UUID;
   pipeline: BlockPipeline;
   context: BlockArgContext;
+  options: ApiVersionOptions;
 };
 
 /**
@@ -23,11 +25,13 @@ type RunPipelineParams = {
  * @param nonce a nonce to help the caller correlate requests/responses. (This shouldn't be necessary in practice though
  *  because the messaging framework takes care of the correlation. In this case we're just using it as a key on
  *  RendererPayload
+ * @param options pipeline options to pass to reducePipeline
  */
 export async function runRendererPipeline({
   pipeline,
   context,
   nonce,
+  options,
 }: RunPipelineParams): Promise<RendererPayload> {
   expectContext("contentScript");
 
@@ -49,6 +53,7 @@ export async function runRendererPipeline({
       {
         logger: new ConsoleLogger(),
         headless: true,
+        ...options,
       }
     );
   } catch (error) {
@@ -70,6 +75,7 @@ export async function runRendererPipeline({
 export async function runEffectPipeline({
   pipeline,
   context,
+  options,
 }: RunPipelineParams): Promise<void> {
   expectContext("contentScript");
 
@@ -88,6 +94,7 @@ export async function runEffectPipeline({
       serviceContext: context as ServiceContext,
     },
     {
+      ...options,
       logger: new ConsoleLogger(),
       headless: true,
     }

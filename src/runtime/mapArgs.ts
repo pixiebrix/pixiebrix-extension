@@ -55,10 +55,18 @@ export function isExpression(value: unknown): value is Expression<unknown> {
   return false;
 }
 
+export type PipelineExpression = Expression<BlockPipeline, "pipeline">;
+
 export function isPipelineExpression(
   value: unknown
-): value is Expression<BlockPipeline, "pipeline"> {
+): value is PipelineExpression {
   return isExpression(value) && value.__type__ === "pipeline";
+}
+
+export type DeferExpression = Expression<UnknownObject, "defer">;
+
+export function isDeferExpression(value: unknown): value is DeferExpression {
+  return isExpression(value) && value.__type__ === "defer";
 }
 
 /**
@@ -89,8 +97,9 @@ export async function renderExplicit(
   }
 
   if (isExpression(config) && ["pipeline", "defer"].includes(config.__type__)) {
-    // Pipelines are passed through directly
-    return config.__value__;
+    // Pipeline and defer are not rendered. The brick that consumes the configuration is responsible for rendering
+    // the value. We keep the expression type so that the brick has enough information to determine the expression type
+    return config;
   }
 
   // Array.isArray must come before the object check because arrays are objects

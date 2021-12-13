@@ -23,6 +23,7 @@ import { runEffectPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { Except } from "type-fest";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
   onClick: BlockPipeline;
@@ -43,6 +44,8 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
         nonce: uuidv4(),
         context: context.options.ctxt,
         pipeline: onClick,
+        // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
+        options: apiVersionOptions("v3"),
       }
     );
   }, [onClick, context]);
