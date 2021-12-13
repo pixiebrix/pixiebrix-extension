@@ -22,6 +22,7 @@ import { Form, FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
 import { TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
+import { trim } from "lodash";
 
 function isVarValue(value: string): boolean {
   return value.startsWith("@") && !value.includes(" ");
@@ -63,9 +64,13 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
             __value__: changeVal,
           });
         } else if (templateEngine === "var" && !isVarValue(changeVal)) {
+          const trimmed = trim(changeVal);
+          const mustacheVal = isVarValue(trimmed)
+            ? changeVal.replace(trimmed, `{{${trimmed}}}`)
+            : changeVal;
           setValue({
             __type__: "mustache",
-            __value__: changeVal,
+            __value__: mustacheVal,
           });
         } else {
           setValue({
