@@ -74,13 +74,17 @@ const FormEditor: React.FC<FormEditorProps> = ({
   useEffect(
     () => {
       const firstInOrder = uiSchema?.[UI_ORDER]?.[0];
-      if (firstInOrder && firstInOrder !== "*") {
+      if (
+        firstInOrder &&
+        firstInOrder !== "*" &&
+        firstInOrder !== activeField
+      ) {
         setActiveField(firstInOrder);
         return;
       }
 
       const firstInProperties = Object.keys(schema?.properties || {})[0];
-      if (firstInProperties) {
+      if (firstInProperties && firstInProperties !== activeField) {
         setActiveField(firstInProperties);
       }
     },
