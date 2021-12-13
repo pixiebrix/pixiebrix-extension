@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render, fireEvent, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Formik } from "formik";
 import { ApiVersion, Expression, Schema, TemplateEngine } from "@/core";
@@ -25,15 +25,17 @@ import { waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { uniq } from "lodash";
 
-function expectToggleOptions(container: HTMLElement, expected: string[]): void {
+async function expectToggleOptions(container: HTMLElement, expected: string[]) {
   // React Bootstrap dropdown does not render children items unless toggled
-  fireEvent.click(container.querySelector("button"));
+  userEvent.click(container.querySelector("button"));
   const actual = new Set(
     [...container.querySelectorAll("a")].map((x) =>
       x.getAttribute("data-testid")
     )
   );
-  expect(actual).toEqual(new Set(expected));
+  await waitFor(() => {
+    expect(actual).toEqual(new Set(expected));
+  });
 }
 
 interface SchemaTestCase {
@@ -206,7 +208,7 @@ describe("SchemaField", () => {
     }
   );
 
-  test("string field options", () => {
+  test("string field options", async () => {
     const { container } = render(
       <Formik
         onSubmit={() => {}}
@@ -226,10 +228,10 @@ describe("SchemaField", () => {
     // Renders text entry HTML element
     expect(container.querySelector("textarea")).not.toBeNull();
 
-    expectToggleOptions(container, ["string", "var", "omit"]);
+    await expectToggleOptions(container, ["string", "var", "omit"]);
   });
 
-  test("integer field options", () => {
+  test("integer field options", async () => {
     const { container } = render(
       <Formik
         onSubmit={() => {}}
@@ -248,7 +250,7 @@ describe("SchemaField", () => {
 
     // Renders number entry HTML element
     expect(container.querySelector("input[type='number']")).not.toBeNull();
-    expectToggleOptions(container, ["number", "var", "omit"]);
+    await expectToggleOptions(container, ["number", "var", "omit"]);
   });
 
   test.each`
@@ -302,7 +304,7 @@ describe("SchemaField", () => {
     }
   );
 
-  test("string/integer field options", () => {
+  test("string/integer field options", async () => {
     const { container } = render(
       <Formik
         onSubmit={() => {}}
@@ -321,7 +323,7 @@ describe("SchemaField", () => {
 
     // Renders number entry HTML element because current value is a number
     expect(container.querySelector("input[type='number']")).not.toBeNull();
-    expectToggleOptions(container, ["string", "number", "var", "omit"]);
+    await expectToggleOptions(container, ["string", "number", "var", "omit"]);
   });
 
   test("v2 field oneOf type priority shows text", () => {
