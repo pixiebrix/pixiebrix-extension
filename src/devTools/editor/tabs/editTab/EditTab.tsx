@@ -191,11 +191,11 @@ const EditTab: React.FC<{
       const index = draft.extension.blockPipeline.findIndex(
         (block) => block.instanceId === nodeIdToRemove
       );
-      if (index === 0) {
-        prevNodeId = FOUNDATION_NODE_ID;
-      } else {
-        prevNodeId = draft.extension.blockPipeline[index - 1].instanceId;
-      }
+
+      prevNodeId =
+        index === 0
+          ? FOUNDATION_NODE_ID
+          : draft.extension.blockPipeline[index - 1].instanceId;
 
       draft.extension.blockPipeline.splice(index, 1);
     });

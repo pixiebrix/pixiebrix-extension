@@ -16,6 +16,7 @@
  */
 
 import "./internal";
+
 export { navigationEvent } from "./external";
 export * from "./protocol";
 export * from "@/background/permissionPrompt";

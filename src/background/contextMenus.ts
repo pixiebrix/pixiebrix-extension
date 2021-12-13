@@ -94,20 +94,19 @@ async function dispatchMenu(
     });
     void showNotification(target, {
       message: "Ran content menu item action",
-      className: "success",
+      type: "success",
     });
   } catch (error) {
     if (hasCancelRootCause(error)) {
       void showNotification(target, {
         message: "The action was cancelled",
-        className: "info",
       });
     } else {
       const message = `Error handling context menu action: ${getErrorMessage(
         error
       )}`;
       reportError(new Error(message));
-      void showNotification(target, { message, className: "error" });
+      void showNotification(target, { message, type: "error" });
     }
   }
 }
