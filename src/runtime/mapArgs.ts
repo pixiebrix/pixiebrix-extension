@@ -96,7 +96,7 @@ export async function renderExplicit(
     return render(config.__value__, ctxt);
   }
 
-  if (isExpression(config) && ["pipeline", "defer"].includes(config.__type__)) {
+  if (isPipelineExpression(config) || isDeferExpression(config)) {
     // Pipeline and defer are not rendered. The brick that consumes the configuration is responsible for rendering
     // the value. We keep the expression type so that the brick has enough information to determine the expression type
     return config;

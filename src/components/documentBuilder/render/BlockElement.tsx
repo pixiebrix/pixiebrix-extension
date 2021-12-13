@@ -56,13 +56,6 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
     });
   }, [pipeline]);
 
-  console.log("BlockElement", {
-    pipeline,
-    ctxt,
-    payload,
-    error,
-  });
-
   if (isLoading) {
     return <PanelBody payload={null} />;
   }

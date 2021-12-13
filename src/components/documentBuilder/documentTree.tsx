@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import BlockPipeline from "@/components/documentBuilder/render/BlockElement";
+import BlockElement from "@/components/documentBuilder/render/BlockElement";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
@@ -116,7 +116,7 @@ export function getComponentDefinition(
       }
 
       return {
-        Component: BlockPipeline,
+        Component: BlockElement,
         props: {
           pipeline: pipeline.__value__,
         },
