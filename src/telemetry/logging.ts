@@ -19,7 +19,7 @@ import { recordError } from "@/background/logging";
 import { rollbar, toLogArgument } from "@/telemetry/rollbar";
 import { MessageContext } from "@/core";
 import { serializeError } from "serialize-error";
-import { isBackgroundPage, isExtensionContext } from "webext-detect-page";
+import { isBackground, isExtensionContext } from "webext-detect-page";
 import { selectError } from "@/errors";
 
 /**
@@ -48,7 +48,7 @@ async function _reportError(
     return;
   }
 
-  if (!isBackgroundPage()) {
+  if (!isBackground()) {
     // Also log the error in the context it occurred in, so the developer
     // doesn't have to open the background page to see it
     console.error(error);

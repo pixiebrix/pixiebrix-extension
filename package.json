@@ -142,7 +142,7 @@
     "uuid": "^8.3.2",
     "webext-additional-permissions": "^2.1.0",
     "webext-content-scripts": "^0.11.0",
-    "webext-detect-page": "^3.0.2",
+    "webext-detect-page": "^4.0.0",
     "webext-dynamic-content-scripts": "^8.0.1",
     "webext-messenger": "^0.15.0-5",
     "webext-patterns": "^1.1.1",
