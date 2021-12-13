@@ -61,13 +61,8 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   }
 }
 
-<<<<<<< HEAD
 if (isBackground()) {
-  browser.browserAction.onClicked.addListener(handleBrowserAction);
-=======
-if (isBackgroundPage()) {
   const action = browser.browserAction ?? browser.action;
   action.onClicked.addListener(handleBrowserAction);
->>>>>>> 1a6499b1ce52f2e959e223c220142ca28e757324
   console.debug("Installed browserAction click listener");
 }
