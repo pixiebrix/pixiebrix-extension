@@ -172,11 +172,11 @@ const schemaTestCases: ReadonlyArray<
 
 function expressionValue<T extends TemplateEngine>(
   type: T,
-  value?: string
+  value = ""
 ): Expression<string, T> {
   return {
     __type__: type,
-    __value__: value ?? "",
+    __value__: value,
   };
 }
 
@@ -226,13 +226,7 @@ describe("SchemaField", () => {
     // Renders text entry HTML element
     expect(container.querySelector("textarea")).not.toBeNull();
 
-    expectToggleOptions(container, [
-      "string",
-      "var",
-      "mustache",
-      "nunjucks",
-      "omit",
-    ]);
+    expectToggleOptions(container, ["string", "var", "omit"]);
   });
 
   test("integer field options", () => {
@@ -261,8 +255,8 @@ describe("SchemaField", () => {
     startValue                            | inputMode     | toggleOption  | expectedEndValue
     ${{ foo: "bar" }}                     | ${"Object"}   | ${"Variable"} | ${expressionValue("var")}
     ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Object"}   | ${{}}
-    ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Mustache"} | ${expressionValue("mustache", "")}
-    ${expressionValue("mustache", "def")} | ${"Mustache"} | ${"Array"}    | ${[]}
+    ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Text"}     | ${expressionValue("mustache")}
+    ${expressionValue("mustache", "def")} | ${"Text"}     | ${"Array"}    | ${[]}
   `(
     "Test field toggle transition from $inputMode to $toggleOption",
     async ({ startValue, toggleOption, expectedEndValue }) => {
@@ -327,14 +321,7 @@ describe("SchemaField", () => {
 
     // Renders number entry HTML element because current value is a number
     expect(container.querySelector("input[type='number']")).not.toBeNull();
-    expectToggleOptions(container, [
-      "string",
-      "number",
-      "var",
-      "mustache",
-      "nunjucks",
-      "omit",
-    ]);
+    expectToggleOptions(container, ["string", "number", "var", "omit"]);
   });
 
   test("v2 field oneOf type priority shows text", () => {
