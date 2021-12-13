@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getIn, useField, useFormikContext } from "formik";
+import { getIn, useFormikContext } from "formik";
 import { UnknownObject } from "@/types";
 import { produce } from "immer";
 import { useCallback, useMemo } from "react";
@@ -44,11 +44,9 @@ export function removeField(parent: unknown, fieldName: string): void {
   }
 }
 
-function useToggleFormField<T>(
+function useToggleFormField(
   name: string
 ): {
-  value: T;
-  setValue: (value: T) => void;
   inputMode: FieldInputMode;
   onOmitField: () => void;
 } {
@@ -85,11 +83,7 @@ function useToggleFormField<T>(
     setFormState(newFormState);
   }, [fieldName, formState, name, parentFieldName, setFormState]);
 
-  const [{ value }, , { setValue }] = useField<T>(name);
-
   return {
-    value,
-    setValue,
     inputMode,
     onOmitField,
   };
