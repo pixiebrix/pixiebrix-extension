@@ -5,6 +5,18 @@
     "pixiebrix"
   ],
   "rules": {
+    "unicorn/prevent-abbreviations": [
+      "error",
+      {
+        "allowList": {
+          "Prop": true,
+          "Props": true,
+          "Ref": true,
+          "Refs": true,
+          "Ver": true
+        }
+      }
+    ],
     // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
     "import/no-named-as-default-member": "off",
 
