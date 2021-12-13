@@ -24,5 +24,5 @@ for (const [size, path] of Object.entries(icons)) {
   inactiveIcons[size] = path.replace("icons", "icons/inactive");
 }
 
-chrome.browserAction.setIcon({ path: inactiveIcons });
+(chrome.browserAction ?? chrome.action).setIcon({ path: inactiveIcons });
 /* `activateBrowserActionIcon()` will later fix the icon if the file runs */
