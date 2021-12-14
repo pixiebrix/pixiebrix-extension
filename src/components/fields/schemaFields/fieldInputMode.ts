@@ -15,24 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TemplateEngine } from "@/core";
 import { UnknownObject } from "@/types";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 
 export type FieldInputMode =
   | "string"
+  | "var"
   | "number"
   | "boolean"
   | "array"
   | "object"
-  | "omit" // An input option to remove a property
-  | TemplateEngine;
-
-export function isTemplateEngine(
-  inputMode: FieldInputMode
-): inputMode is TemplateEngine {
-  return ["mustache", "nunjucks", "handlebars", "var"].includes(inputMode);
-}
+  | "omit"; // An input option to remove a property
 
 export function inferInputMode(
   fieldConfig: UnknownObject,
@@ -51,7 +44,11 @@ export function inferInputMode(
   }
 
   if (isTemplateExpression(value)) {
-    return value.__type__;
+    if (value.__type__ === "var") {
+      return "var";
+    }
+
+    return "string";
   }
 
   // Array check must come before object check, arrays will report typeof === "object"

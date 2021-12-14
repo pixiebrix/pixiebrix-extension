@@ -36,7 +36,7 @@ import TemplateToggleWidget, {
   InputModeOption,
   StringOption,
 } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
-import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
+import TextWidget from "@/components/fields/schemaFields/widgets/v3/TextWidget";
 import { Schema } from "@/core";
 import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
@@ -48,6 +48,9 @@ import IntegerWidget from "@/components/fields/schemaFields/widgets/IntegerWidge
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
 import OmitFieldWidget from "@/components/fields/schemaFields/widgets/OmitFieldWidget";
 import cx from "classnames";
+import SchemaSelectWidget, {
+  isSelectField,
+} from "@/components/fields/schemaFields/widgets/v3/SchemaSelectWidget";
 
 const varOption: StringOption = {
   label: "Variable",
@@ -184,54 +187,42 @@ function getToggleOptions({
     );
   }
 
-  if (fieldSchema.type === "string" || anyType) {
-    const values = fieldSchema.examples ?? fieldSchema.enum;
-    if (Array.isArray(values) && values.length > 0) {
-      pushOptions({
+  if (isSelectField(fieldSchema)) {
+    pushOptions(
+      {
         label: "Select...",
         value: "string",
         symbol: "a|b|c",
-        Widget: TextWidget,
+        Widget: SchemaSelectWidget,
         defaultValue:
           typeof fieldSchema.default === "string"
             ? String(fieldSchema.default)
             : null,
-      });
-    } else {
-      pushOptions({
-        label: "Plain text",
+      },
+      varOption
+    );
+  }
+  // Using "else" here because we don't want to have both select and plain text
+  // options at the same time. If something has suggestions and allows typing
+  // custom values as well, that will be covered by "creatable" within the
+  // SchemaSelectWidget.
+  else if (fieldSchema.type === "string" || anyType) {
+    const stringVal =
+      typeof fieldSchema.default === "string"
+        ? String(fieldSchema.default)
+        : "";
+    pushOptions(
+      {
+        label: "Text",
         value: "string",
         symbol: "Abc",
         Widget: TextWidget,
-        defaultValue:
-          typeof fieldSchema.default === "string"
-            ? String(fieldSchema.default)
-            : "",
-      });
-    }
-
-    pushOptions(
-      varOption,
-      {
-        label: "Mustache template",
-        value: "mustache",
-        symbol: "{{  }}",
-        Widget: TextWidget,
-        defaultValue: {
-          __type__: "mustache",
-          __value__: "",
-        },
-      },
-      {
-        label: "Nunjucks template",
-        value: "nunjucks",
-        symbol: "{%%}",
-        Widget: TextWidget,
         defaultValue: {
           __type__: "nunjucks",
-          __value__: "",
+          __value__: stringVal,
         },
-      }
+      },
+      varOption
     );
   }
 
