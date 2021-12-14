@@ -21,9 +21,8 @@ import useBlockOptions from "@/hooks/useBlockOptions";
 import { Col, Row } from "react-bootstrap";
 import BrickModal from "@/components/brickModal/BrickModal";
 import { useAsyncState } from "@/hooks/common";
-import { BlocksMap } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import blockRegistry from "@/blocks/registry";
-import { defaultBlockConfig, getType } from "@/blocks/util";
+import { defaultBlockConfig } from "@/blocks/util";
 import { IBlock } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { produce } from "immer";
@@ -43,23 +42,15 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
   element,
   setElement,
 }) => {
-  // ToDo refactor this and EditTab.tsx
-  const [blocksMap] = useAsyncState<BlocksMap>(
+  const [renderBlocks] = useAsyncState<IBlock[]>(
     async () => {
-      const blocksMap: BlocksMap = {};
-      const blocks = await blockRegistry.all();
-      for (const block of blocks) {
-        blocksMap[block.id] = {
-          block,
-          // eslint-disable-next-line no-await-in-loop
-          type: await getType(block),
-        };
-      }
-
-      return blocksMap;
+      const allBlocks = await blockRegistry.allTyped();
+      return [...allBlocks.values()]
+        .filter((x) => x.type === "renderer")
+        .map((x) => x.block);
     },
     [],
-    {}
+    []
   );
 
   const blockConfig = element.config.pipeline.__value__[0];
@@ -89,9 +80,7 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
       <Row>
         <Col>
           <BrickModal
-            bricks={Object.values(blocksMap)
-              .filter((x) => x.type === "renderer")
-              .map((x) => x.block)}
+            bricks={renderBlocks}
             onSelect={onPipelineBlockSelected}
           />
         </Col>
