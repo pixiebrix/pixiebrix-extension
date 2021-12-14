@@ -32,27 +32,27 @@ interface InputModeOptionBase<
   As extends React.ElementType = React.ElementType
 > {
   label: string;
+  value: TValue;
   symbol: React.ReactNode;
   Widget: As;
   description?: React.ReactNode;
-  defaultValue?: unknown;
-  value: TValue;
+  interpretValue?: (oldValue: unknown) => unknown;
 }
 
 export type StringOption = InputModeOptionBase<"string" | "var"> & {
-  defaultValue: string | Expression;
+  interpretValue: (oldValue: unknown) => string | Expression;
 };
 export type NumberOption = InputModeOptionBase<"number"> & {
-  defaultValue: number;
+  interpretValue: (oldValue: unknown) => number;
 };
 export type BooleanOption = InputModeOptionBase<"boolean"> & {
-  defaultValue: boolean;
+  interpretValue: (oldValue: unknown) => boolean;
 };
 export type ArrayOption = InputModeOptionBase<"array"> & {
-  defaultValue: JSONSchema7Array;
+  interpretValue: (oldValue: unknown) => JSONSchema7Array;
 };
 export type ObjectOption = InputModeOptionBase<"object"> & {
-  defaultValue: UnknownObject;
+  interpretValue: (oldValue: unknown) => UnknownObject;
 };
 export type OmitOption = InputModeOptionBase<"omit">;
 
@@ -88,7 +88,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   setFieldDescription,
   ...schemaFieldProps
 }) => {
-  const { setValue } = useField(schemaFieldProps.name)[2];
+  const [{ value }, , { setValue }] = useField(schemaFieldProps.name);
   const { inputMode, onOmitField } = useToggleFormField(schemaFieldProps.name);
   const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
@@ -111,19 +111,15 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
         return;
       }
 
-      const { defaultValue } = getOptionForInputMode(
+      const { interpretValue } = getOptionForInputMode(
         inputModeOptions,
         newInputMode
       );
 
-      // Already handled "omit" and returned above.
-      // Also, defaultValues for template-expression options have
-      // the object structure for expression values, so we can
-      // set the value directly here for both literals and
-      // template-expression input modes.
-      setValue(defaultValue);
+      // Already handled "omit" and returned above
+      setValue(interpretValue(value));
     },
-    [inputMode, inputModeOptions, setValue, onOmitField]
+    [inputMode, inputModeOptions, setValue, value, onOmitField]
   );
 
   return (
