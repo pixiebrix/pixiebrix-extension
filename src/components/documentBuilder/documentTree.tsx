@@ -34,6 +34,7 @@ import documentTreeStyles from "./documentTree.module.scss";
 import cx from "classnames";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors";
+import { Expression } from "@/core";
 
 const headerComponents = {
   header_1: "h1",
@@ -174,6 +175,12 @@ type PreviewComponentProps = {
   onMouseLeave: React.MouseEventHandler<HTMLDivElement>;
 };
 
+function getFieldValue<TValue extends string = string>(
+  configValue: TValue | Expression<TValue>
+): TValue {
+  return isExpression(configValue) ? configValue.__value__ : configValue;
+}
+
 export function getPreviewComponentDefinition(
   element: DocumentElement
 ): DocumentComponent {
@@ -281,17 +288,10 @@ export function getPreviewComponentDefinition(
         const notify = useNotifications();
         const {
           title,
-          onClick,
-          className: sourceButtonClassName,
-          ...props
+          className: buttonClassName,
+          size,
+          variant,
         } = config as ButtonDocumentConfig;
-        const displayTitle = isExpression(title)
-          ? String(title.__value__)
-          : title;
-
-        const buttonClassName = isExpression(sourceButtonClassName)
-          ? sourceButtonClassName.__value__
-          : sourceButtonClassName;
 
         return (
           <div>
@@ -300,13 +300,14 @@ export function getPreviewComponentDefinition(
               {...restPreviewProps}
             >
               <Button
-                className={buttonClassName}
-                {...props}
+                className={getFieldValue(buttonClassName)}
+                size={getFieldValue(size)}
+                variant={getFieldValue(variant)}
                 onClick={() => {
                   notify.info("Action button clicked.");
                 }}
               >
-                {displayTitle}
+                {getFieldValue(title)}
               </Button>
             </div>
           </div>

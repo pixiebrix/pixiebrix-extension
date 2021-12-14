@@ -18,6 +18,7 @@
 import { UnknownObject } from "@/types";
 import { Expression } from "@/core";
 import { DeferExpression, PipelineExpression } from "@/runtime/mapArgs";
+import { ElementType } from "react";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header_1",
@@ -73,6 +74,10 @@ export function isPipelineElement(
 
 export type ButtonDocumentConfig = {
   title: string | Expression;
+  variant?: string | Expression;
+  // Default size type coming from Bootstrap Button
+  size?: "sm" | "lg" | Expression<"sm" | "lg">;
+  className?: string | Expression;
   onClick: PipelineExpression;
 };
 export type ButtonDocumentElement = DocumentElement<
@@ -87,7 +92,7 @@ export function isButtonElement(
 }
 
 export type DocumentComponent = {
-  Component: React.ElementType;
+  Component: ElementType;
   props?: UnknownObject | undefined;
 };
 
