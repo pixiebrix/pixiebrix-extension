@@ -23,6 +23,7 @@ import fitTextarea from "fit-textarea";
 import { TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
+import { schemaSupportsTemplates } from "@/components/fields/schemaFields/v3/BasicSchemaField";
 
 function isVarValue(value: string): boolean {
   return value.startsWith("@") && !value.includes(" ");
@@ -53,6 +54,10 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     }
   }, []);
 
+  const supportsTemplates = useMemo(() => schemaSupportsTemplates(schema), [
+    schema,
+  ]);
+
   const onChangeForTemplate = useCallback(
     (templateEngine: TemplateEngine) => {
       const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -63,7 +68,11 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
             __type__: "var",
             __value__: changeVal,
           });
-        } else if (templateEngine === "var" && !isVarValue(changeVal)) {
+        } else if (
+          templateEngine === "var" &&
+          supportsTemplates &&
+          !isVarValue(changeVal)
+        ) {
           const trimmed = trim(changeVal);
           const templateVal = isVarValue(trimmed)
             ? changeVal.replace(trimmed, `{{${trimmed}}}`)

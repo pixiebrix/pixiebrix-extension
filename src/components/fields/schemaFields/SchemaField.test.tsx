@@ -364,17 +364,23 @@ describe("SchemaField", () => {
   test.each(schemaTestCases)(
     "v3 field toggle doesn't show duplicate options - %s",
     async (_, schema) => {
+      const fieldName = "aTestField";
       const FormikTemplate = createFormikTemplate({ apiVersion: "v3" });
       const { container } = render(
         <FormikTemplate>
-          <SchemaField name="aTestField" schema={schema} />
+          <SchemaField name={fieldName} schema={schema} />
         </FormikTemplate>
       );
 
       await waitForEffect();
 
+      const widgetLoadingIndicator = screen.queryByTestId(
+        `${fieldName}-widget-loading`
+      );
+      expect(widgetLoadingIndicator).toBeNull();
+
       const toggle = screen
-        .getByTestId("toggle-aTestField")
+        .queryByTestId(`toggle-${fieldName}`)
         .querySelector("button");
       expect(toggle).not.toBeNull();
 
