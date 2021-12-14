@@ -32,7 +32,6 @@ function renderActions(
   { isFinal }: { isFinal?: boolean } = {}
 ) {
   return (
-    // Don't use bootstrap styling
     <>
       <div
         className={cx(styles.actions, {
@@ -89,7 +88,7 @@ const EditorNodeLayout: React.FC<{
   const canMoveAnything = nodes.length > 2;
 
   return (
-    <div className={styles.root}>
+    <>
       {nodes.length > 0 &&
         nodes.map((nodeProps, index) => {
           const { nodeId } = nodeProps;
@@ -139,7 +138,7 @@ const EditorNodeLayout: React.FC<{
           onSelect={addBlock}
         />
       )}
-    </div>
+    </>
   );
 };
 
