@@ -45,8 +45,7 @@ function validateOutputKey(
     return;
   }
 
-  // eslint-disable-next-line unicorn/no-for-loop -- want the blockIndex for setOutputKeyError
-  for (let blockIndex = 0; blockIndex < pipeline.length; ++blockIndex) {
+  for (let blockIndex = 0; blockIndex !== pipeline.length; ++blockIndex) {
     let errorMessage: string;
     // eslint-disable-next-line security/detect-object-injection
     const pipelineBlock = pipeline[blockIndex];

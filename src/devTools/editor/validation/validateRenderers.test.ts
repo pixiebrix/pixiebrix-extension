@@ -28,14 +28,14 @@ import validateRenderers, {
 } from "./validateRenderers";
 import { validateRegistryId } from "@/types/helpers";
 
-const elementTypesToSkipVaidation: ElementType[] = [
+const elementTypesToSkipValidation: ElementType[] = [
   "menuItem",
   "trigger",
   "contextMenu",
 ];
 const elementTypesToValidate: ElementType[] = ["panel", "actionPanel"];
 
-test.each(elementTypesToSkipVaidation)(
+test.each(elementTypesToSkipValidation)(
   "skips validation for %s",
   async (elementType) => {
     const pipelineErrors: FormikErrorTree = {};
@@ -58,7 +58,7 @@ test.each(elementTypesToValidate)(
     const pipelineErrors: FormikErrorTree = {};
 
     const allBlocks = await blocksMapFactory();
-    (Object.values(allBlocks)[1] as any).render = jest.fn();
+    ([...allBlocks.values()][1] as any).render = jest.fn();
 
     validateRenderers(
       pipelineErrors,
