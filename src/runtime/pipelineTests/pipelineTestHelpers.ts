@@ -186,6 +186,7 @@ class DeferBlock extends Block {
 
         if (isDeferExpression(element)) {
           return mapArgs(element.__value__, elementContext, {
+            implicitRender: null,
             ...apiVersionOptions("v3"),
           });
         }

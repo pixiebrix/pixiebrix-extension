@@ -189,21 +189,18 @@ export function renderImplicit(
   return config;
 }
 
+// We're intentionally forcing all properties to be provided to eliminate mistakes where a call site is not updated
+// when we introduce a new option
 export type MapOptions = {
   /**
    * Render method for v1-v2 implicit runtime behavior
    */
-  implicitRender?: Renderer | null;
+  implicitRender: Renderer | null;
 
   /**
    * True to auto-escape the values.
    */
-  autoescape?: boolean | null;
-};
-
-const defaultMapOptions: MapOptions = {
-  implicitRender: null,
-  autoescape: true,
+  autoescape: boolean | null;
 };
 
 /**
@@ -212,9 +209,10 @@ const defaultMapOptions: MapOptions = {
 export async function mapArgs(
   config: Args,
   ctxt: UnknownObject,
-  options?: MapOptions
+  // We're intentionally forcing callers to provide options here because the options should always depend on the
+  // `apiVersion` of the block/extensionPoint/blueprint that mapArgs is being called from
+  { implicitRender, autoescape }: MapOptions
 ): Promise<unknown> {
-  const { implicitRender, autoescape } = { ...defaultMapOptions, ...options };
   if (implicitRender) {
     return renderImplicit(config, ctxt, implicitRender);
   }
