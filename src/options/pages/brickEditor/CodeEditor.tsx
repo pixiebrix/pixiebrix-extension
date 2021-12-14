@@ -16,55 +16,11 @@
  */
 
 import { castArray, trim, noop, isEmpty } from "lodash";
-import { Card, ListGroup } from "react-bootstrap";
-import Select from "react-select";
-import React, { useState, useRef, Suspense, useEffect } from "react";
+import { ListGroup } from "react-bootstrap";
+import React, { useRef, Suspense, useEffect } from "react";
 import { useField, useFormikContext } from "formik";
 
-import serviceTemplate from "@contrib/templates/service.txt";
-import emberjsTemplate from "@contrib/templates/reader-emberjs.txt";
-import jqueryTemplate from "@contrib/templates/reader-jquery.txt";
-import reactTemplate from "@contrib/templates/reader-react.txt";
-import menuTemplate from "@contrib/templates/foundation-menu-item.txt";
-import panelTemplate from "@contrib/templates/foundation-panel.txt";
-import blueprintTemplate from "@contrib/templates/blueprint-menu.txt";
 import AceEditor from "@/vendors/AceEditor";
-
-interface TemplateOption {
-  value: string;
-  label: string;
-  template: unknown;
-}
-
-const templateOptions: TemplateOption[] = [
-  {
-    value: "foundation-menu-item",
-    label: "Foundation - Menu Item",
-    template: menuTemplate,
-  },
-  {
-    value: "foundation-panel",
-    label: "Foundation - Panel",
-    template: panelTemplate,
-  },
-  { value: "service", label: "Service", template: serviceTemplate },
-  {
-    value: "reader-emberjs",
-    label: "Reader - Ember.js",
-    template: emberjsTemplate,
-  },
-  {
-    value: "reader-jquery",
-    label: "Reader - JQuery",
-    template: jqueryTemplate,
-  },
-  { value: "reader-react", label: "Reader - React", template: reactTemplate },
-  {
-    value: "blueprint-menu",
-    label: "Blueprint - Menu Item",
-    template: blueprintTemplate,
-  },
-];
 
 interface OwnProps {
   name: string;
@@ -77,11 +33,9 @@ interface OwnProps {
 const CodeEditor: React.FunctionComponent<OwnProps> = ({
   name,
   width,
-  showTemplates,
   openDefinition = noop,
   openEditor = noop,
 }) => {
-  const [template, setTemplate] = useState<TemplateOption>();
   const [field, meta, { setValue }] = useField<string>(name);
   const { submitForm } = useFormikContext();
 
@@ -150,34 +104,17 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
         />
         {meta.error && (
           <ListGroup>
-            {castArray(meta.error).map((x) => (
+            {castArray(meta.error).map((error) => (
               <ListGroup.Item
-                key={x}
+                key={error}
                 className="text-danger"
                 style={{ borderRadius: 0 }}
               >
-                {x}
+                {error}
               </ListGroup.Item>
             ))}
           </ListGroup>
         )}
-        <Card.Footer>
-          {showTemplates && (
-            <div className="d-flex align-items-center">
-              <div style={{ width: 300 }}>
-                <Select
-                  options={templateOptions}
-                  value={template}
-                  onChange={(x: any) => {
-                    setValue(x.template);
-                    setTemplate(x);
-                  }}
-                  placeholder="Load a template"
-                />
-              </div>
-            </div>
-          )}
-        </Card.Footer>
       </Suspense>
     </>
   );
