@@ -20,9 +20,10 @@ import BlockElement from "@/components/documentBuilder/render/BlockElement";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import {
   BuildDocumentBranch,
+  ButtonDocumentConfig,
   DocumentComponent,
   DocumentElement,
   PipelineDocumentConfig,
@@ -137,7 +138,7 @@ export function getComponentDefinition(
         Component: ButtonElement,
         props: {
           children: title,
-          onClick: onClick?.__value__,
+          onClick: onClick.__value__,
           ...props,
         },
       };
@@ -273,24 +274,30 @@ export function getPreviewComponentDefinition(
     }
 
     case "button": {
-      const { Component, props } = getComponentDefinition(element);
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         className,
         ...restPreviewProps
       }) => {
         const notify = useNotifications();
+        const { title, onClick, ...props } = config as ButtonDocumentConfig;
+        const displayTitle = isExpression(title)
+          ? String(title.__value__)
+          : title;
+
         return (
           <div>
             <div
               className={cx(className, documentTreeStyles.inlineWrapper)}
               {...restPreviewProps}
             >
-              <Component
+              <Button
                 {...props}
                 onClick={() => {
                   notify.info("Action button clicked.");
                 }}
-              />
+              >
+                {displayTitle}
+              </Button>
             </div>
           </div>
         );

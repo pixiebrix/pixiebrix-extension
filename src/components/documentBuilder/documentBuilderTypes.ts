@@ -17,7 +17,7 @@
 
 import { UnknownObject } from "@/types";
 import { Expression } from "@/core";
-import { BlockPipeline } from "@/blocks/types";
+import { DeferExpression, PipelineExpression } from "@/runtime/mapArgs";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header_1",
@@ -47,7 +47,7 @@ export type DocumentElement<
 export type ListDocumentConfig = {
   array: Expression;
   elementKey?: string;
-  element: Expression<DocumentElement, "defer">;
+  element: DeferExpression;
 };
 export type ListDocumentElement = DocumentElement<"list", ListDocumentConfig>;
 
@@ -58,7 +58,7 @@ export function isListElement(
 }
 
 export type PipelineDocumentConfig = {
-  pipeline: Expression<BlockPipeline, "pipeline">;
+  pipeline: PipelineExpression;
 };
 export type PipelineDocumentElement = DocumentElement<
   "pipeline",
@@ -69,6 +69,21 @@ export function isPipelineElement(
   element: DocumentElement
 ): element is PipelineDocumentElement {
   return element.type === "pipeline";
+}
+
+export type ButtonDocumentConfig = {
+  title: string | Expression;
+  onClick: PipelineExpression;
+};
+export type ButtonDocumentElement = DocumentElement<
+  "button",
+  ButtonDocumentConfig
+>;
+
+export function isButtonElement(
+  element: DocumentElement
+): element is ButtonDocumentElement {
+  return element.type === "button";
 }
 
 export type DocumentComponent = {

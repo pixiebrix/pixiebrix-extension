@@ -16,11 +16,15 @@
  */
 
 import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
-import { Expression } from "@/core";
-import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { BlockConfig } from "@/blocks/types";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 import { uuidv4 } from "@/types/helpers";
 import { defaultBlockConfig } from "@/blocks/util";
+import { ConfettiEffect } from "@/blocks/effects/confetti";
+import { DeferExpression, PipelineExpression } from "@/runtime/mapArgs";
+
+const markdownBlock = new MarkdownRenderer();
+const congettiBlock = new ConfettiEffect();
 
 export function createNewElement(elementType: DocumentElementType) {
   const element: DocumentElement = {
@@ -57,7 +61,6 @@ export function createNewElement(elementType: DocumentElementType) {
       break;
 
     case "pipeline": {
-      const markdownBlock = new MarkdownRenderer();
       const markdownConfig: BlockConfig = {
         id: markdownBlock.id,
         instanceId: uuidv4(),
@@ -66,19 +69,31 @@ export function createNewElement(elementType: DocumentElementType) {
       element.config.pipeline = {
         __type__: "pipeline",
         __value__: [markdownConfig],
-      } as Expression<BlockPipeline, "pipeline">;
+      } as PipelineExpression;
       break;
     }
 
-    case "button":
-      element.config.title = "Click me";
+    case "button": {
+      element.config.title = "Confetti";
+
+      const confettiConfig: BlockConfig = {
+        id: congettiBlock.id,
+        instanceId: uuidv4(),
+        config: defaultBlockConfig(congettiBlock.inputSchema),
+      };
+      element.config.onClick = {
+        __type__: "pipeline",
+        __value__: [confettiConfig],
+      } as PipelineExpression;
+
       break;
+    }
 
     case "list":
       element.config.element = {
         __type__: "defer",
         __value__: createNewElement("text"),
-      } as Expression<DocumentElement, "defer">;
+      } as DeferExpression;
       break;
 
     default:
