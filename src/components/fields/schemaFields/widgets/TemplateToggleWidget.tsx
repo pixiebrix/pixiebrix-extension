@@ -129,12 +129,6 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   return (
     <div className={styles.root}>
       <div className={styles.field}>
-        {/*
-            Need to add the value prop explicitly here last to override
-            the "blankValue" default of an empty string that comes
-            in through props from FieldTemplate.
-            <Widget {...schemaFieldProps} value={value} />
-        */}
         <Widget {...schemaFieldProps} />
       </div>
       <DropdownButton
@@ -162,4 +156,4 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   );
 };
 
-export default TemplateToggleWidget;
+export default React.memo(TemplateToggleWidget);
