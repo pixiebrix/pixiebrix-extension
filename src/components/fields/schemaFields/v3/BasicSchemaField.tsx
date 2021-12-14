@@ -218,7 +218,7 @@ function getToggleOptions({
         symbol: "Abc",
         Widget: TextWidget,
         defaultValue: {
-          __type__: "mustache",
+          __type__: "nunjucks",
           __value__: stringVal,
         },
       },

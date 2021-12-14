@@ -257,8 +257,8 @@ describe("SchemaField", () => {
     startValue                            | inputMode     | toggleOption  | expectedEndValue
     ${{ foo: "bar" }}                     | ${"Object"}   | ${"Variable"} | ${expressionValue("var")}
     ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Object"}   | ${{}}
-    ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Text"}     | ${expressionValue("mustache")}
-    ${expressionValue("mustache", "def")} | ${"Text"}     | ${"Array"}    | ${[]}
+    ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Text"}     | ${expressionValue("nunjucks")}
+    ${expressionValue("nunjucks", "def")} | ${"Text"}     | ${"Array"}    | ${[]}
   `(
     "Test field toggle transition from $inputMode to $toggleOption",
     async ({ startValue, toggleOption, expectedEndValue }) => {

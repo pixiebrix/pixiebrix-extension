@@ -65,12 +65,12 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
           });
         } else if (templateEngine === "var" && !isVarValue(changeVal)) {
           const trimmed = trim(changeVal);
-          const mustacheVal = isVarValue(trimmed)
+          const templateVal = isVarValue(trimmed)
             ? changeVal.replace(trimmed, `{{${trimmed}}}`)
             : changeVal;
           setValue({
-            __type__: "mustache",
-            __value__: mustacheVal,
+            __type__: "nunjucks",
+            __value__: templateVal,
           });
         } else {
           setValue({
@@ -91,7 +91,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     }
 
     const fieldValue = typeof value === "string" ? value : "";
-    return [fieldValue, onChangeForTemplate("mustache")];
+    return [fieldValue, onChangeForTemplate("nunjucks")];
   }, [onChangeForTemplate, value]);
 
   if (
