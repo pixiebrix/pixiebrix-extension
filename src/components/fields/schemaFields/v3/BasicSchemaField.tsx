@@ -250,23 +250,6 @@ function getToggleOptions({
     );
   }
 
-  const interpretNumberValue = (oldValue: unknown) => {
-    let float = Number.NaN;
-    if (typeof oldValue === "string") {
-      float = Number.parseFloat(oldValue);
-    }
-
-    if (isTemplateExpression(oldValue)) {
-      float = Number.parseFloat(oldValue.__value__);
-    }
-
-    if (!Number.isNaN(float)) {
-      return float;
-    }
-
-    return typeof fieldSchema.default === "number" ? fieldSchema.default : 0;
-  };
-
   // Don't include integer for "anyType", only include number, which can also accept integers
   if (fieldSchema.type === "integer") {
     pushOptions(
@@ -275,8 +258,24 @@ function getToggleOptions({
         value: "number",
         symbol: "123",
         Widget: IntegerWidget,
-        interpretValue: (oldValue: unknown) =>
-          Math.trunc(interpretNumberValue(oldValue)),
+        interpretValue: (oldValue: unknown) => {
+          let int = Number.NaN;
+          if (typeof oldValue === "string") {
+            int = Number.parseInt(oldValue, 10);
+          }
+
+          if (isTemplateExpression(oldValue)) {
+            int = Number.parseInt(oldValue.__value__, 10);
+          }
+
+          if (!Number.isNaN(int)) {
+            return int;
+          }
+
+          return typeof fieldSchema.default === "number"
+            ? fieldSchema.default
+            : 0;
+        },
       },
       varOption
     );
@@ -289,7 +288,24 @@ function getToggleOptions({
         value: "number",
         symbol: "1.23",
         Widget: NumberWidget,
-        interpretValue: interpretNumberValue,
+        interpretValue: (oldValue: unknown) => {
+          let float = Number.NaN;
+          if (typeof oldValue === "string") {
+            float = Number.parseFloat(oldValue);
+          }
+
+          if (isTemplateExpression(oldValue)) {
+            float = Number.parseFloat(oldValue.__value__);
+          }
+
+          if (!Number.isNaN(float)) {
+            return float;
+          }
+
+          return typeof fieldSchema.default === "number"
+            ? fieldSchema.default
+            : 0;
+        },
       },
       varOption
     );
