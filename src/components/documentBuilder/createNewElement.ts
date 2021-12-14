@@ -17,6 +17,10 @@
 
 import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
 import { Expression } from "@/core";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { MarkdownRenderer } from "@/blocks/renderers/markdown";
+import { uuidv4 } from "@/types/helpers";
+import { defaultBlockConfig } from "@/blocks/util";
 
 export function createNewElement(elementType: DocumentElementType) {
   const element: DocumentElement = {
@@ -52,9 +56,19 @@ export function createNewElement(elementType: DocumentElementType) {
       element.children = [];
       break;
 
-    case "block":
-      element.config.pipeline = "!pipeline";
+    case "pipeline": {
+      const markdownBlock = new MarkdownRenderer();
+      const markdownConfig: BlockConfig = {
+        id: markdownBlock.id,
+        instanceId: uuidv4(),
+        config: defaultBlockConfig(markdownBlock.inputSchema),
+      };
+      element.config.pipeline = {
+        __type__: "pipeline",
+        __value__: [markdownConfig],
+      } as Expression<BlockPipeline, "pipeline">;
       break;
+    }
 
     case "button":
       element.config.title = "Click me";

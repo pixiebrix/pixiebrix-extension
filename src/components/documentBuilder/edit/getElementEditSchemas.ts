@@ -1,6 +1,23 @@
-import { DocumentElement } from "./documentBuilderTypes";
+/*
+ * Copyright (C) 2021 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { joinName } from "@/utils";
+import { DocumentElementType } from "@/components/documentBuilder/documentBuilderTypes";
 
 function getClassNameEdit(elementName: string): SchemaFieldProps {
   return {
@@ -10,11 +27,11 @@ function getClassNameEdit(elementName: string): SchemaFieldProps {
   };
 }
 
-export function getElementEditSchemas(
-  element: DocumentElement,
+function getElementEditSchemas(
+  elementType: DocumentElementType,
   elementName: string
 ): SchemaFieldProps[] {
-  switch (element.type) {
+  switch (elementType) {
     case "header_1":
     case "header_2":
     case "header_3": {
@@ -44,15 +61,8 @@ export function getElementEditSchemas(
       return [headingEdit, getClassNameEdit(elementName)];
     }
 
-    case "block": {
-      const pipelineEdit: SchemaFieldProps = {
-        name: joinName(elementName, "config", "pipeline"),
-        schema: { type: "string" },
-        label: "pipeline",
-      };
-
-      return [pipelineEdit];
-    }
+    case "pipeline":
+      throw new Error("Use custom Options for pipeline element.");
 
     case "button": {
       const titleEdit: SchemaFieldProps = {
@@ -95,17 +105,12 @@ export function getElementEditSchemas(
       return [titleEdit, variantEdit, sizeEdit, getClassNameEdit(elementName)];
     }
 
-    case "list": {
-      const arraySourceEdit: SchemaFieldProps = {
-        name: joinName(elementName, "config", "array"),
-        schema: { type: "array" },
-        label: "Array",
-      };
-
-      return [arraySourceEdit];
-    }
+    case "list":
+      throw new Error("Use custom Options for list element.");
 
     default:
       return [getClassNameEdit(elementName)];
   }
 }
+
+export default getElementEditSchemas;

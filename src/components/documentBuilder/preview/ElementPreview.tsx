@@ -18,11 +18,14 @@
 import React, { MouseEventHandler } from "react";
 import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
-import { DocumentElement, isListDocument } from "./documentBuilderTypes";
-import { getPreviewComponentDefinition } from "./documentTree";
+import {
+  DocumentElement,
+  isListElement,
+} from "@/components/documentBuilder/documentBuilderTypes";
+import { getPreviewComponentDefinition } from "@/components/documentBuilder/documentTree";
 import AddElementAction from "./AddElementAction";
 import { useField } from "formik";
-import { getAllowedChildTypes } from "./allowedElementTypes";
+import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 
 interface ElementPreviewTemplateProps {
   elementName: string;
@@ -67,7 +70,7 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
   const isContainer = Array.isArray(documentElement.children);
 
   // Render the item template and the Item Type Selector for the list element
-  const isList = isListDocument(documentElement);
+  const isList = isListElement(documentElement);
 
   const { Component: PreviewComponent, props } = getPreviewComponentDefinition(
     documentElement

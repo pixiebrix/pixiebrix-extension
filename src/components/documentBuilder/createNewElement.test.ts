@@ -20,6 +20,8 @@ import {
   DocumentElementType,
   DOCUMENT_ELEMENT_TYPES,
 } from "./documentBuilderTypes";
+import { defaultBlockConfig } from "@/blocks/util";
+import { MarkdownRenderer } from "@/blocks/renderers/markdown";
 
 test.each(DOCUMENT_ELEMENT_TYPES)(
   "sets correct element type for %s",
@@ -75,8 +77,22 @@ test("sets default config and children for card", () => {
 });
 
 test("sets default config for block", () => {
-  const actual = createNewElement("block");
-  expect(actual.config).toEqual({ pipeline: "!pipeline" });
+  const markdownBlock = new MarkdownRenderer();
+  const expectedConfig = {
+    pipeline: {
+      __type__: "pipeline",
+      __value__: [
+        {
+          id: markdownBlock.id,
+          instanceId: expect.any(String),
+          config: defaultBlockConfig(markdownBlock.inputSchema),
+        },
+      ],
+    },
+  };
+  const actual = createNewElement("pipeline");
+
+  expect(actual.config).toEqual(expectedConfig);
 });
 
 test("sets default config for button", () => {

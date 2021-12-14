@@ -22,9 +22,10 @@ import {
   DocumentElement,
   DocumentElementType,
   DOCUMENT_ELEMENT_TYPES,
-} from "./documentBuilderTypes";
+} from "@/components/documentBuilder/documentBuilderTypes";
 import styles from "./AddElementAction.module.scss";
-import { createNewElement } from "./createNewElement";
+import { createNewElement } from "@/components/documentBuilder/createNewElement";
+import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
 
 type AddElementActionProps = {
   elementsCollectionName: string;
@@ -53,7 +54,7 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
       className={className}
       toggleClassName={styles.toggle}
       items={allowedTypes.map((elementType) => ({
-        title: elementType,
+        title: elementTypeLabels[elementType],
         action: () => {
           addElement(elementType);
         },

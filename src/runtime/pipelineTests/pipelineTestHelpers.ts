@@ -1,12 +1,15 @@
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { Block, UnknownObject } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { ApiVersion, BlockArg, BlockOptions } from "@/core";
+import { ApiVersion, BlockArg, BlockOptions, Schema } from "@/core";
 import { InitialValues } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors";
-import { BlockPipeline } from "@/blocks/types";
-import { mapArgs } from "@/runtime/mapArgs";
+import {
+  isDeferExpression,
+  mapArgs,
+  PipelineExpression,
+} from "@/runtime/mapArgs";
 
 const logger = new ConsoleLogger();
 
@@ -96,14 +99,15 @@ class ArrayBlock extends Block {
   }
 }
 
-class PipelineBlock extends Block {
-  constructor() {
-    super("test/pipeline", "Pipeline Block");
-  }
-
-  inputSchema = propertiesToSchema({
-    // TODO: write a schema in schemas directory. The one in component.json is incomplete
-    pipeline: {
+// TODO: write a schema in schemas directory. The one in component.json is incomplete
+const pipelineSchema: Schema = {
+  type: "object",
+  properties: {
+    __type__: {
+      type: "string",
+      const: "pipeline",
+    },
+    __value__: {
       type: "array",
       items: {
         properties: {
@@ -117,11 +121,21 @@ class PipelineBlock extends Block {
         required: ["id"],
       },
     },
+  },
+};
+
+class PipelineBlock extends Block {
+  constructor() {
+    super("test/pipeline", "Pipeline Block");
+  }
+
+  inputSchema = propertiesToSchema({
+    pipeline: pipelineSchema,
   });
 
-  async run({ pipeline }: BlockArg<{ pipeline: BlockPipeline }>) {
+  async run({ pipeline }: BlockArg<{ pipeline: PipelineExpression }>) {
     return {
-      length: pipeline.length,
+      length: pipeline.__value__.length,
     };
   }
 }
@@ -169,10 +183,15 @@ class DeferBlock extends Block {
           ...ctxt,
           [`@${elementKey}`]: data,
         };
-        return mapArgs(element, elementContext, {
-          implicitRender: null,
-          ...apiVersionOptions("v3"),
-        });
+
+        if (isDeferExpression(element)) {
+          return mapArgs(element.__value__, elementContext, {
+            implicitRender: null,
+            ...apiVersionOptions("v3"),
+          });
+        }
+
+        return element;
       })
     );
   }
