@@ -18,7 +18,7 @@
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import { IBlock, RegistryId } from "@/core";
-import { BlockType, getType } from "@/blocks/util";
+import type { BlockType } from "@/blocks/util";
 
 /**
  * A block along with inferred/calculated information
@@ -38,18 +38,22 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
   // Write as single promise vs. promise + cache to avoid race conditions in invalidation logic
   private typeCachePromise: Promise<TypedBlockMap> = null;
 
-  private async cacheTypes(): Promise<TypedBlockMap> {
-    const typeCache: TypedBlockMap = new Map<RegistryId, TypedBlock>();
+  private async inferAllTypes(): Promise<TypedBlockMap> {
+    // Import here to avoid circular dependency between getType and the block registry
+    const { getType } = await import("@/blocks/util");
+    const typeCache: TypedBlockMap = new Map();
     const items = await this.all();
+
+    console.debug("Computing block types for %d block(s)", items.length);
+
     await Promise.all(
       items.map(async (item) => {
         // XXX: will we run into problems with circular dependency between getType and the registry exported from
         //  this module? getType references the blockRegistry in order to calculate the type for composite bricks
         //  that are defined as a pipeline of other blocks.
-        const itemType = await getType(item);
         typeCache.set(item.id, {
           block: item,
-          type: itemType,
+          type: await getType(item),
         });
       })
     );
@@ -63,7 +67,7 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
    */
   async allTyped(): Promise<TypedBlockMap> {
     if (this.typeCachePromise == null) {
-      const promise = this.cacheTypes();
+      const promise = this.inferAllTypes();
       this.typeCachePromise = promise;
       return promise;
     }

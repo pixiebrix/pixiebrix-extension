@@ -45,11 +45,12 @@ function validateOutputKey(
     return;
   }
 
-  for (let blockIndex = 0; blockIndex !== pipeline.length; ++blockIndex) {
+  // eslint-disable-next-line unicorn/no-for-loop -- want the blockIndex for setOutputKeyError
+  for (let blockIndex = 0; blockIndex < pipeline.length; ++blockIndex) {
     let errorMessage: string;
     // eslint-disable-next-line security/detect-object-injection
     const pipelineBlock = pipeline[blockIndex];
-    const blockType = allBlocks[pipelineBlock.id]?.type;
+    const blockType = allBlocks.get(pipelineBlock.id)?.type;
 
     if (blockTypesWithEmptyOutputKey.includes(blockType)) {
       if (!pipelineBlock.outputKey) {

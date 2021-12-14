@@ -26,9 +26,9 @@ import { BlockConfig } from "@/blocks/types";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { BlockType, defaultBlockConfig } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
-import blockRegistry, { TypedBlock, TypedBlockMap } from "@/blocks/registry";
+import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 import { compact } from "lodash";
-import { IBlock, OutputKey, RegistryId, UUID } from "@/core";
+import { IBlock, OutputKey, UUID } from "@/core";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
@@ -88,7 +88,7 @@ const EditTab: React.FC<{
   const [allBlocks] = useAsyncState<TypedBlockMap>(
     async () => blockRegistry.allTyped(),
     [],
-    new Map<RegistryId, TypedBlock>()
+    new Map()
   );
 
   const {
@@ -327,7 +327,7 @@ const EditTab: React.FC<{
         ? "effect"
         : "renderer";
 
-      return Object.values(allBlocks)
+      return [...allBlocks.values()]
         .filter(({ type }) => type != null && type !== excludeType)
         .map(({ block }) => block);
     },

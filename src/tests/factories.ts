@@ -52,7 +52,7 @@ import {
   Context as DevtoolsContextType,
   FrameConnectionState,
 } from "@/devTools/context";
-import { TypedBlockMap } from "@/blocks/registry";
+import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
 
 export const metadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
@@ -175,16 +175,17 @@ export const blocksMapFactory: (
   const block1 = blockFactory(blockProps);
   const block2 = blockFactory(blockProps);
 
-  return {
-    [block1.id]: {
-      block: block1,
-      type: await getType(block1),
-    },
-    [block2.id]: {
-      block: block2,
-      type: await getType(block2),
-    },
-  };
+  const map = new Map<RegistryId, TypedBlock>();
+
+  for (const block of [block1, block2]) {
+    map.set(block.id, {
+      block,
+      // eslint-disable-next-line no-await-in-loop -- test code, no performance considerations
+      type: await getType(block),
+    });
+  }
+
+  return map;
 };
 
 export const blockConfigFactory = define<BlockConfig>({

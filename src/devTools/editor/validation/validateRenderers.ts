@@ -21,7 +21,7 @@ function validateRenderers(
   for (let blockIndex = pipeline.length - 1; blockIndex >= 0; --blockIndex) {
     // eslint-disable-next-line security/detect-object-injection
     const pipelineBlock = pipeline[blockIndex];
-    const blockType = allBlocks[pipelineBlock.id]?.type;
+    const blockType = allBlocks.get(pipelineBlock.id)?.type;
     const blockErrors = [];
 
     if (blockType !== "renderer") {
