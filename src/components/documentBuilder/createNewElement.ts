@@ -24,7 +24,7 @@ import { ConfettiEffect } from "@/blocks/effects/confetti";
 import { DeferExpression, PipelineExpression } from "@/runtime/mapArgs";
 
 const markdownBlock = new MarkdownRenderer();
-const congettiBlock = new ConfettiEffect();
+const confettiEffect = new ConfettiEffect();
 
 export function createNewElement(elementType: DocumentElementType) {
   const element: DocumentElement = {
@@ -77,9 +77,9 @@ export function createNewElement(elementType: DocumentElementType) {
       element.config.title = "Confetti";
 
       const confettiConfig: BlockConfig = {
-        id: congettiBlock.id,
+        id: confettiEffect.id,
         instanceId: uuidv4(),
-        config: defaultBlockConfig(congettiBlock.inputSchema),
+        config: defaultBlockConfig(confettiEffect.inputSchema),
       };
       element.config.onClick = {
         __type__: "pipeline",
