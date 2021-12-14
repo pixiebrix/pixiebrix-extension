@@ -254,11 +254,16 @@ describe("SchemaField", () => {
   });
 
   test.each`
-    startValue                            | inputMode     | toggleOption  | expectedEndValue
-    ${{ foo: "bar" }}                     | ${"Object"}   | ${"Variable"} | ${expressionValue("var")}
-    ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Object"}   | ${{}}
-    ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Text"}     | ${expressionValue("nunjucks")}
-    ${expressionValue("nunjucks", "def")} | ${"Text"}     | ${"Array"}    | ${[]}
+    startValue                             | inputMode     | toggleOption  | expectedEndValue
+    ${{ foo: "bar" }}                      | ${"Object"}   | ${"Variable"} | ${expressionValue("var")}
+    ${1.23}                                | ${"Number"}   | ${"Text"}     | ${expressionValue("nunjucks", "1.23")}
+    ${1.23}                                | ${"Number"}   | ${"Variable"} | ${expressionValue("var", "1.23")}
+    ${expressionValue("var", "abc")}       | ${"Variable"} | ${"Text"}     | ${expressionValue("nunjucks", "abc")}
+    ${expressionValue("nunjucks", "abc")}  | ${"Text"}     | ${"Variable"} | ${expressionValue("var", "abc")}
+    ${expressionValue("nunjucks", "1.23")} | ${"Text"}     | ${"Number"}   | ${1.23}
+    ${expressionValue("var", "1.23")}      | ${"Variable"} | ${"Number"}   | ${1.23}
+    ${expressionValue("nunjucks", "def")}  | ${"Text"}     | ${"Array"}    | ${[]}
+    ${expressionValue("var", "abc")}       | ${"Variable"} | ${"Object"}   | ${{}}
   `(
     "Test field toggle transition from $inputMode to $toggleOption",
     async ({ startValue, toggleOption, expectedEndValue }) => {
