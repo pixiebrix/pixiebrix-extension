@@ -393,8 +393,8 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
   const [{ value }, { error, touched }, { setValue }] = useField(name);
 
   useEffect(() => {
-    // Initialize any undefined/empty required fields to prevent inferring an "omit" input
-    if (!value && isRequired && !isEmpty(inputModeOptions)) {
+    // Initialize any undefined required fields to prevent inferring an "omit" input
+    if (value === undefined && isRequired && !isEmpty(inputModeOptions)) {
       setValue(inputModeOptions[0].interpretValue(value));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
