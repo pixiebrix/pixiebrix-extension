@@ -279,10 +279,19 @@ export function getPreviewComponentDefinition(
         ...restPreviewProps
       }) => {
         const notify = useNotifications();
-        const { title, onClick, ...props } = config as ButtonDocumentConfig;
+        const {
+          title,
+          onClick,
+          className: sourceButtonClassName,
+          ...props
+        } = config as ButtonDocumentConfig;
         const displayTitle = isExpression(title)
           ? String(title.__value__)
           : title;
+
+        const buttonClassName = isExpression(sourceButtonClassName)
+          ? sourceButtonClassName.__value__
+          : sourceButtonClassName;
 
         return (
           <div>
@@ -291,6 +300,7 @@ export function getPreviewComponentDefinition(
               {...restPreviewProps}
             >
               <Button
+                className={buttonClassName}
                 {...props}
                 onClick={() => {
                   notify.info("Action button clicked.");
