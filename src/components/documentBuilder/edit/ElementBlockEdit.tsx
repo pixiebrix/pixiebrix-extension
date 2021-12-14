@@ -45,7 +45,7 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
   const [renderBlocks] = useAsyncState<IBlock[]>(
     async () => {
       const allBlocks = await blockRegistry.allTyped();
-      return Object.values(allBlocks)
+      return [...allBlocks.values()]
         .filter((x) => x.type === "renderer")
         .map((x) => x.block);
     },

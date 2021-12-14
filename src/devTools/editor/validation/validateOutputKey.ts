@@ -20,7 +20,7 @@ import { BlockType } from "@/blocks/util";
 import { joinName } from "@/utils";
 import { isEmpty, set } from "lodash";
 import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
-import { BlocksMap } from "@/blocks/registry";
+import { TypedBlockMap } from "@/blocks/registry";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 
@@ -38,7 +38,7 @@ function setOutputKeyError(
 function validateOutputKey(
   pipelineErrors: FormikErrorTree,
   pipeline: BlockPipeline,
-  allBlocks: BlocksMap
+  allBlocks: TypedBlockMap
 ) {
   // No blocks, no validation
   if (pipeline.length === 0 || isEmpty(allBlocks)) {

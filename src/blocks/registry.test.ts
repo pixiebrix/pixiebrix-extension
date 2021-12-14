@@ -30,10 +30,12 @@ describe("blocksMap", () => {
   test("can add and reed a block", async () => {
     const block = createReaderBlock();
     registry.register(block);
-    const actualBlocks = await registry.allTyped();
+    const enrichedBlocks = await registry.allTyped();
 
-    expect(actualBlocks[block.id].type).toBe("reader");
-    expect(actualBlocks[block.id].block).toBe(block);
+    const enrichedBlock = enrichedBlocks.get(block.id);
+
+    expect(enrichedBlock.type).toBe("reader");
+    expect(enrichedBlock.block).toBe(block);
   });
 
   test("returns blocks of multiple registrations", async () => {
@@ -42,12 +44,12 @@ describe("blocksMap", () => {
 
     registry.register(block1);
     registry.register(block2);
-    const actualBlocks = await registry.allTyped();
+    const enrichedBlocks = await registry.allTyped();
 
-    expect(actualBlocks[block1.id].type).toBe("reader");
-    expect(actualBlocks[block1.id].block).toBe(block1);
+    expect(enrichedBlocks.get(block1.id).type).toBe("reader");
+    expect(enrichedBlocks.get(block1.id).block).toBe(block1);
 
-    expect(actualBlocks[block2.id].type).toBe("reader");
-    expect(actualBlocks[block2.id].block).toBe(block2);
+    expect(enrichedBlocks.get(block2.id).type).toBe("reader");
+    expect(enrichedBlocks.get(block2.id).block).toBe(block2);
   });
 });

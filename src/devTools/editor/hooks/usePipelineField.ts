@@ -31,12 +31,12 @@ import {
   FormikErrorTree,
 } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
-import { BlocksMap } from "@/blocks/registry";
+import { TypedBlockMap } from "@/blocks/registry";
 
 export const PIPELINE_BLOCKS_FIELD_NAME = "extension.blockPipeline";
 
 function usePipelineField(
-  allBlocks: BlocksMap,
+  allBlocks: TypedBlockMap,
   elementType: ElementType
 ): {
   blockPipeline: BlockPipeline;

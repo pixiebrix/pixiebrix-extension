@@ -52,7 +52,7 @@ import {
   Context as DevtoolsContextType,
   FrameConnectionState,
 } from "@/devTools/context";
-import { BlocksMap } from "@/blocks/registry";
+import { TypedBlockMap } from "@/blocks/registry";
 
 export const metadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
@@ -171,7 +171,7 @@ export const blockFactory = define<IBlock>({
 
 export const blocksMapFactory: (
   blockProps?: Partial<IBlock>
-) => Promise<BlocksMap> = async (blockProps) => {
+) => Promise<TypedBlockMap> = async (blockProps) => {
   const block1 = blockFactory(blockProps);
   const block2 = blockFactory(blockProps);
 

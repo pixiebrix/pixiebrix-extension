@@ -20,49 +20,65 @@ import { fromJS } from "@/blocks/transformers/blockFactory";
 import { IBlock, RegistryId } from "@/core";
 import { BlockType, getType } from "@/blocks/util";
 
-export type BlocksMap = Record<RegistryId, TypedBlock>;
-
+/**
+ * A block along with inferred/calculated information
+ */
 export type TypedBlock = {
   block: IBlock;
   type: BlockType;
 };
+
+export type TypedBlockMap = Map<RegistryId, TypedBlock>;
 
 export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
   constructor() {
     super(["block", "component", "effect", "reader"], "blocks", fromJS);
   }
 
-  private blocksMap: BlocksMap = {};
-  private typesPromise: Promise<void> = Promise.resolve();
+  // Write as single promise vs. promise + cache to avoid race conditions in invalidation logic
+  private typeCachePromise: Promise<TypedBlockMap> = null;
 
-  async allTyped(): Promise<BlocksMap> {
-    await this.typesPromise;
-    return this.blocksMap;
+  private async cacheTypes(): Promise<TypedBlockMap> {
+    const typeCache: TypedBlockMap = new Map<RegistryId, TypedBlock>();
+    const items = await this.all();
+    await Promise.all(
+      items.map(async (item) => {
+        // XXX: will we run into problems with circular dependency between getType and the registry exported from
+        //  this module? getType references the blockRegistry in order to calculate the type for composite bricks
+        //  that are defined as a pipeline of other blocks.
+        const itemType = await getType(item);
+        typeCache.set(item.id, {
+          block: item,
+          type: itemType,
+        });
+      })
+    );
+
+    return typeCache;
+  }
+
+  /**
+   * Return Map for block by RegistryId with computed/inferred metadata.
+   * @see all
+   */
+  async allTyped(): Promise<TypedBlockMap> {
+    if (this.typeCachePromise == null) {
+      const promise = this.cacheTypes();
+      this.typeCachePromise = promise;
+      return promise;
+    }
+
+    return this.typeCachePromise;
   }
 
   register(...items: IBlock[]): void {
     super.register(...items);
-
-    // Generating promise for the new chunk of items
-    const nextTypesPromise: Promise<void> = Promise.all(
-      items.map(async (item) =>
-        getType(item).then((itemType) => {
-          this.blocksMap[item.id] = {
-            block: item,
-            type: itemType,
-          } as TypedBlock;
-        })
-      )
-    ) as any;
-
-    this.typesPromise = this.typesPromise.then(async () => nextTypesPromise);
+    this.typeCachePromise = null;
   }
 
   clear() {
     super.clear();
-
-    this.blocksMap = {};
-    this.typesPromise = Promise.resolve();
+    this.typeCachePromise = null;
   }
 }
 
