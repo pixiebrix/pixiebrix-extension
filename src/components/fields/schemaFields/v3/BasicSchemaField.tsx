@@ -51,15 +51,28 @@ import cx from "classnames";
 import SchemaSelectWidget, {
   isSelectField,
 } from "@/components/fields/schemaFields/widgets/v3/SchemaSelectWidget";
+import { isTemplateExpression } from "@/runtime/mapArgs";
+import { UnknownObject } from "@/types";
 
 const varOption: StringOption = {
   label: "Variable",
   value: "var",
   symbol: "⟮𝑥⟯",
   Widget: TextWidget,
-  defaultValue: {
-    __type__: "var",
-    __value__: "",
+  interpretValue: (oldValue: unknown) => {
+    let newValue = "";
+    if (typeof oldValue === "string") {
+      newValue = oldValue;
+    } else if (typeof oldValue === "number" && oldValue > 0) {
+      newValue = String(oldValue);
+    } else if (isTemplateExpression(oldValue)) {
+      newValue = oldValue.__value__;
+    }
+
+    return {
+      __type__: "var",
+      __value__: newValue,
+    };
   },
 };
 
@@ -139,9 +152,8 @@ function getToggleOptions({
         value: "array",
         symbol: "[...]",
         Widget,
-        defaultValue: Array.isArray(fieldSchema.default)
-          ? fieldSchema.default
-          : [],
+        interpretValue: () =>
+          Array.isArray(fieldSchema.default) ? fieldSchema.default : [],
       },
       varOption
     );
@@ -163,9 +175,10 @@ function getToggleOptions({
         value: "object",
         symbol: "{...}",
         Widget,
-        defaultValue: (typeof fieldSchema.default === "object"
-          ? fieldSchema.default
-          : {}) as Record<string, unknown>,
+        interpretValue: () =>
+          (typeof fieldSchema.default === "object"
+            ? fieldSchema.default
+            : {}) as UnknownObject,
       },
       varOption
     );
@@ -178,7 +191,7 @@ function getToggleOptions({
         value: "boolean",
         symbol: <FontAwesomeIcon icon={faToggleOff} />,
         Widget: SwitchButtonWidget,
-        defaultValue:
+        interpretValue: () =>
           typeof fieldSchema.default === "boolean"
             ? fieldSchema.default
             : false,
@@ -194,7 +207,7 @@ function getToggleOptions({
         value: "string",
         symbol: "a|b|c",
         Widget: SchemaSelectWidget,
-        defaultValue:
+        interpretValue: () =>
           typeof fieldSchema.default === "string"
             ? String(fieldSchema.default)
             : null,
@@ -207,19 +220,30 @@ function getToggleOptions({
   // custom values as well, that will be covered by "creatable" within the
   // SchemaSelectWidget.
   else if (fieldSchema.type === "string" || anyType) {
-    const stringVal =
-      typeof fieldSchema.default === "string"
-        ? String(fieldSchema.default)
-        : "";
     pushOptions(
       {
         label: "Text",
         value: "string",
         symbol: "Abc",
         Widget: TextWidget,
-        defaultValue: {
-          __type__: "nunjucks",
-          __value__: stringVal,
+        interpretValue: (oldValue: unknown) => {
+          let newValue =
+            typeof fieldSchema.default === "string" ? fieldSchema.default : "";
+          if (typeof oldValue === "string" && oldValue.length > 0) {
+            newValue = oldValue;
+          } else if (typeof oldValue === "number" && oldValue > 0) {
+            newValue = String(oldValue);
+          } else if (
+            isTemplateExpression(oldValue) &&
+            oldValue.__value__.length > 0
+          ) {
+            newValue = oldValue.__value__;
+          }
+
+          return {
+            __type__: "nunjucks",
+            __value__: newValue,
+          };
         },
       },
       varOption
@@ -234,8 +258,24 @@ function getToggleOptions({
         value: "number",
         symbol: "123",
         Widget: IntegerWidget,
-        defaultValue:
-          typeof fieldSchema.default === "number" ? fieldSchema.default : 0,
+        interpretValue: (oldValue: unknown) => {
+          let int = Number.NaN;
+          if (typeof oldValue === "string") {
+            int = Number.parseInt(oldValue, 10);
+          }
+
+          if (isTemplateExpression(oldValue)) {
+            int = Number.parseInt(oldValue.__value__, 10);
+          }
+
+          if (!Number.isNaN(int)) {
+            return int;
+          }
+
+          return typeof fieldSchema.default === "number"
+            ? fieldSchema.default
+            : 0;
+        },
       },
       varOption
     );
@@ -248,8 +288,24 @@ function getToggleOptions({
         value: "number",
         symbol: "1.23",
         Widget: NumberWidget,
-        defaultValue:
-          typeof fieldSchema.default === "number" ? fieldSchema.default : 0,
+        interpretValue: (oldValue: unknown) => {
+          let float = Number.NaN;
+          if (typeof oldValue === "string") {
+            float = Number.parseFloat(oldValue);
+          }
+
+          if (isTemplateExpression(oldValue)) {
+            float = Number.parseFloat(oldValue.__value__);
+          }
+
+          if (!Number.isNaN(float)) {
+            return float;
+          }
+
+          return typeof fieldSchema.default === "number"
+            ? fieldSchema.default
+            : 0;
+        },
       },
       varOption
     );
@@ -353,9 +409,9 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
   const [{ value }, { error, touched }, { setValue }] = useField(name);
 
   useEffect(() => {
-    // Initialize any undefined/empty required fields to prevent inferring an "omit" input
-    if (!value && isRequired && !isEmpty(inputModeOptions)) {
-      setValue(inputModeOptions[0].defaultValue);
+    // Initialize any undefined required fields to prevent inferring an "omit" input
+    if (value === undefined && isRequired && !isEmpty(inputModeOptions)) {
+      setValue(inputModeOptions[0].interpretValue(value));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   }, []);
