@@ -17,7 +17,7 @@
 
 import React from "react";
 import { screen, render } from "@testing-library/react";
-import { InstalledPage } from "./InstalledPage";
+import { _InstalledPage } from "./InstalledPage";
 import { StaticRouter } from "react-router-dom";
 import AuthContext from "@/auth/AuthContext";
 import { Organization } from "@/types/contract";
@@ -58,7 +58,7 @@ describe("InstalledPage", () => {
     mockOnboarding();
     const { container } = render(
       <StaticRouter>
-        <InstalledPage extensions={[]} push={jest.fn()} onRemove={jest.fn()} />
+        <_InstalledPage extensions={[]} push={jest.fn()} onRemove={jest.fn()} />
       </StaticRouter>
     );
     expect(container.querySelector(".ActiveBricksCard")).toBeNull();

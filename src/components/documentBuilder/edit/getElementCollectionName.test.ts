@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import getElementCollectionName from "@/components/documentBuilder/getElementCollectionName";
+import getElementCollectionName from "@/components/documentBuilder/edit/getElementCollectionName";
 
 test("returns collection name for an element", () => {
   const elementName = "body.0.children.3";

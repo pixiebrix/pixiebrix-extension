@@ -22,13 +22,13 @@ import {
   getNotifier,
 } from "webext-messenger";
 import browser from "webextension-polyfill";
-import { isBackgroundPage } from "webext-detect-page";
+import { isBackground } from "webext-detect-page";
 import type { SanitizedServiceConfiguration } from "@/core";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/background/requests";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
-if (isBackgroundPage() && process.env.DEBUG) {
+if (isBackground() && process.env.DEBUG) {
   console.warn(
     "This should not have been imported in the background page. Use the API directly instead."
   );
