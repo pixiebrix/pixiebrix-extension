@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEventHandler } from "react";
+import React, { MouseEventHandler, useMemo } from "react";
 import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
 import {
@@ -72,8 +72,9 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
   // Render the item template and the Item Type Selector for the list element
   const isList = isListElement(documentElement);
 
-  const { Component: PreviewComponent, props } = getPreviewComponentDefinition(
-    documentElement
+  const { Component: PreviewComponent, props } = useMemo(
+    () => getPreviewComponentDefinition(documentElement),
+    [documentElement]
   );
 
   return (
