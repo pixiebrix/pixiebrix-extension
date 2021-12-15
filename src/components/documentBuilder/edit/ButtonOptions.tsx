@@ -15,27 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { PipelineDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import React, { useMemo } from "react";
+import { ButtonDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { Col, Row } from "react-bootstrap";
 import ElementBlockEdit from "@/components/documentBuilder/edit/ElementBlockEdit";
 import { useField } from "formik";
 import { BlockConfig } from "@/blocks/types";
 import { produce } from "immer";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import getElementEditSchemas from "@/components/documentBuilder/edit/getElementEditSchemas";
 
-type PipelineOptionsProps = {
+type ButtonOptionsProps = {
   elementName: string;
 };
 
-const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => {
+const ButtonOptions: React.FC<ButtonOptionsProps> = ({ elementName }) => {
   const [
     { value: documentElement },
     ,
     { setValue: setDocumentElement },
-  ] = useField<PipelineDocumentElement>(elementName);
+  ] = useField<ButtonDocumentElement>(elementName);
 
-  const pipelineValue = documentElement.config.pipeline.__value__;
-  if (pipelineValue.length > 1) {
+  const schemaFields = useMemo(
+    () =>
+      getElementEditSchemas(documentElement.type, elementName).map((schema) => (
+        <SchemaField key={schema.name} {...schema} />
+      )),
+    [elementName]
+  );
+
+  const onClickValue = documentElement.config.onClick.__value__;
+
+  if (onClickValue.length > 1) {
     return (
       <Row>
         <Col>Use Workshop to edit a pipeline made of multiple bricks.</Col>
@@ -43,14 +54,14 @@ const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => {
     );
   }
 
-  const pipelineConfigName = `${elementName}.config.pipeline.__value__.0`;
-  const pipelineConfig = pipelineValue[0];
+  const buttonConfigName = `${elementName}.config.onClick.__value__.0`;
+  const buttonConfig = onClickValue[0];
 
-  const onPipelineBlockSelected = (blockConfig: BlockConfig) => {
+  const onButtonBlockSelected = (blockConfig: BlockConfig) => {
     const nextDocumentElement = produce(
       documentElement,
-      (draft: PipelineDocumentElement) => {
-        draft.config.pipeline.__value__ = [blockConfig];
+      (draft: ButtonDocumentElement) => {
+        draft.config.onClick.__value__ = [blockConfig];
       }
     );
 
@@ -58,13 +69,16 @@ const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => {
   };
 
   return (
-    <ElementBlockEdit
-      blocksType="renderer"
-      blockConfigName={pipelineConfigName}
-      blockConfig={pipelineConfig}
-      onBlockSelected={onPipelineBlockSelected}
-    />
+    <>
+      {schemaFields}
+      <ElementBlockEdit
+        blocksType="effect"
+        blockConfigName={buttonConfigName}
+        blockConfig={buttonConfig}
+        onBlockSelected={onButtonBlockSelected}
+      />
+    </>
   );
 };
 
-export default PipelineOptions;
+export default ButtonOptions;
