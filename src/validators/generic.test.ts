@@ -16,14 +16,17 @@
  */
 
 import { validateKind } from "@/validators/generic";
-
-import serviceTemplate from "@contrib/templates/service.txt";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { UnknownObject } from "@/types";
 
-test("can validate service", async () => {
-  const json = loadBrickYaml(serviceTemplate) as UnknownObject;
-  const result = await validateKind(json, "service");
-  console.log(result.errors);
-  expect(result.valid).toBeTruthy();
+// Having problems getting ?loadAsText to work in jest.config.json
+import serviceText from "@contrib/raw/hunter.txt";
+
+describe("validateKind", () => {
+  test("can validate service", async () => {
+    const json = loadBrickYaml(serviceText) as UnknownObject;
+    const result = await validateKind(json, "service");
+    expect(result.errors).toHaveLength(0);
+    expect(result.valid).toBe(true);
+  });
 });
