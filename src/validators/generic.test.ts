@@ -26,7 +26,7 @@ describe("validateKind", () => {
   test("can validate service", async () => {
     const json = loadBrickYaml(serviceText) as UnknownObject;
     const result = await validateKind(json, "service");
-    console.log(result.errors);
+    expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
   });
 });
