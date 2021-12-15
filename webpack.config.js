@@ -256,7 +256,6 @@ module.exports = (env, options) =>
           "frame",
           "ephemeralForm",
           "options",
-          "support",
           "action",
           "permissionsPopup",
         ].map((name) => [
