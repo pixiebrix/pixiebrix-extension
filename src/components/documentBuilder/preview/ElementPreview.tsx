@@ -27,16 +27,16 @@ import AddElementAction from "./AddElementAction";
 import { useField } from "formik";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 
-interface ElementPreviewTemplateProps {
+export type ElementPreviewProps = {
   elementName: string;
   activeElement: string | null;
   setActiveElement: (name: string | null) => void;
   hoveredElement: string | null;
   setHoveredElement: (name: string | null) => void;
   menuBoundary?: Element;
-}
+};
 
-const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
+const ElementPreview: React.FC<ElementPreviewProps> = ({
   elementName,
   activeElement,
   setActiveElement,

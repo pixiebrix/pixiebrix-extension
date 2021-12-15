@@ -18,7 +18,7 @@
 import React, { useState } from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
 import { Formik } from "formik";
 import { act } from "react-dom/test-utils";
