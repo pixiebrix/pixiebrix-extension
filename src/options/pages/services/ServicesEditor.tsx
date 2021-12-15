@@ -28,7 +28,6 @@ import SharedServicesCard from "./SharedServicesCard";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import useServiceDefinitions from "./useServiceDefinitions";
 import { persistor, RootState } from "@/options/store";
-import { RawServiceConfiguration } from "@/core";
 import { SanitizedAuth } from "@/types/contract";
 import { services } from "@/background/messenger/api";
 import GridLoader from "react-spinners/GridLoader";
@@ -37,6 +36,8 @@ import AuthContext from "@/auth/AuthContext";
 import { useTitle } from "@/hooks/title";
 import useFetch from "@/hooks/useFetch";
 import useNotifications from "@/hooks/useNotifications";
+import { useParams } from "react-router";
+import { IService, RawServiceConfiguration } from "@/core";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -65,9 +66,17 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     selectConfiguredServices
   );
 
+  const [newService, setNewService] = useState<IService>(null);
+  const [
+    newConfiguration,
+    setNewConfiguration,
+  ] = useState<RawServiceConfiguration>(null);
+
   const [activeTab, setTab] = useState("private");
 
   const notify = useNotifications();
+
+  const { id: configurationId } = useParams<{ id: string }>();
 
   const {
     activeConfiguration,
@@ -161,10 +170,10 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
           }}
         />
       )}
-      {activeConfiguration && activeService && (
+      {configurationId && (
         <ServiceEditorModal
-          configuration={activeConfiguration}
-          service={activeService}
+          configuration={activeConfiguration ?? newConfiguration}
+          service={activeService ?? newService}
           onDelete={handleDelete}
           onClose={() => {
             navigate("/services");
@@ -213,8 +222,10 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
               <PrivateServicesCard
                 navigate={navigate}
                 services={serviceDefinitions}
+                // TODO: rename onCreate to onSelect
                 onCreate={(config) => {
-                  updateServiceConfig(config);
+                  //updateServiceConfig(config);
+                  setNewConfiguration(config);
                   navigate(`/services/${encodeURIComponent(config.id)}`);
                 }}
               />
