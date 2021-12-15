@@ -35,9 +35,9 @@
     "storage",
     "identity",
     "tabs",
-    "scripting",
     "webNavigation",
-    "contextMenus"
+    "contextMenus",
+    "scripting"
   ],
   "host_permissions": ["https://*.pixiebrix.com/*", "*://*/*"],
   "devtools_page": "devtools.html",
