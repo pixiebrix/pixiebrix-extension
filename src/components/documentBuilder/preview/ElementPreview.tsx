@@ -57,7 +57,9 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
 
   const onMouseOver: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
-    setHoveredElement(elementName);
+    if (hoveredElement !== elementName) {
+      setHoveredElement(elementName);
+    }
   };
 
   const onMouseLeave: MouseEventHandler<HTMLDivElement> = () => {

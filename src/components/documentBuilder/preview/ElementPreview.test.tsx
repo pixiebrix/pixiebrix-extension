@@ -26,7 +26,7 @@ import { Formik } from "formik";
 import ElementPreview, {
   ElementPreviewProps,
 } from "@/components/documentBuilder/preview/ElementPreview";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 
 const renderElementPreview = (
@@ -54,7 +54,7 @@ const renderElementPreview = (
   );
 };
 
-test("activates element on click", async () => {
+test("calls setActiveElement callback on click", async () => {
   const setActiveElementMock = jest.fn();
   const element = createNewElement("text");
   const { container } = renderElementPreview(element, {
@@ -74,6 +74,43 @@ test("adds a CSS class to an active element", async () => {
   });
 
   expect(container.querySelector("p")).toHaveClass("active");
+});
+
+test("calls setHoveredElement callback on hover", async () => {
+  const setHoveredElementMock = jest.fn();
+  const element = createNewElement("text");
+  const { container } = renderElementPreview(element, {
+    setHoveredElement: setHoveredElementMock,
+  });
+
+  await act(async () => {
+    fireEvent.mouseOver(container.querySelector("p"));
+  });
+  expect(setHoveredElementMock).toHaveBeenCalledWith("element");
+  setHoveredElementMock.mockClear();
+});
+
+test("calls setHoveredElement callback when mouse leaves", async () => {
+  const setHoveredElementMock = jest.fn();
+  const element = createNewElement("text");
+  const { container } = renderElementPreview(element, {
+    hoveredElement: "element",
+    setHoveredElement: setHoveredElementMock,
+  });
+
+  await act(async () => {
+    fireEvent.mouseLeave(container.querySelector("p"));
+  });
+  expect(setHoveredElementMock).toHaveBeenCalledWith(null);
+});
+
+test("adds a CSS class to a hovered element", async () => {
+  const element = createNewElement("text");
+  const { container } = renderElementPreview(element, {
+    hoveredElement: "element",
+  });
+
+  expect(container.querySelector("p")).toHaveClass("hovered");
 });
 
 test.each(DOCUMENT_ELEMENT_TYPES)(
