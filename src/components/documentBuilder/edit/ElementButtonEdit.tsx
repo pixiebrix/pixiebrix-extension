@@ -22,34 +22,39 @@ import { Col, Row } from "react-bootstrap";
 import BrickModal from "@/components/brickModal/BrickModal";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { BlockType, defaultBlockConfig } from "@/blocks/util";
+import { defaultBlockConfig } from "@/blocks/util";
 import { IBlock } from "@/core";
 import { uuidv4 } from "@/types/helpers";
+import { produce } from "immer";
+import { PipelineDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 
-type ElementBlockEditProps = {
-  blocksType: BlockType;
-  blockConfigName: string;
-  blockConfig: BlockConfig;
-  onBlockSelected: (blockConfig: BlockConfig) => void;
+type ElementButtonEditProps = {
+  elementName: string;
+  element: PipelineDocumentElement;
+  setElement: (
+    value: PipelineDocumentElement,
+    shouldValidate?: boolean
+  ) => void;
 };
 
-const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
-  blocksType,
-  blockConfigName,
-  blockConfig,
-  onBlockSelected,
+const ElementButtonEdit: React.FC<ElementButtonEditProps> = ({
+  elementName,
+  element,
+  setElement,
 }) => {
   const [renderBlocks] = useAsyncState<IBlock[]>(
     async () => {
       const allBlocks = await blockRegistry.allTyped();
-      return [...allBlocks.values()]
-        .filter((x) => x.type === blocksType)
+      return Object.values(allBlocks)
+        .filter((x) => x.type === "renderer")
         .map((x) => x.block);
     },
     [],
     []
   );
 
+  const blockConfig = element.config.pipeline.__value__[0];
+  const blockConfigName = `${elementName}.config.pipeline.__value__.0`;
   const blockId = blockConfig.id;
   const [, BlockOptions] = useBlockOptions(blockId);
 
@@ -60,7 +65,14 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
       config: defaultBlockConfig(block.inputSchema),
     };
 
-    onBlockSelected(blockConfig);
+    const nextDocumentElement = produce(
+      element,
+      (draft: PipelineDocumentElement) => {
+        draft.config.pipeline.__value__ = [blockConfig];
+      }
+    );
+
+    setElement(nextDocumentElement);
   };
 
   return (
@@ -81,4 +93,4 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
   );
 };
 
-export default ElementBlockEdit;
+export default ElementButtonEdit;

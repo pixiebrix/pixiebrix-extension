@@ -20,9 +20,10 @@ import BlockElement from "@/components/documentBuilder/render/BlockElement";
 import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import {
   BuildDocumentBranch,
+  ButtonDocumentConfig,
   DocumentComponent,
   DocumentElement,
   PipelineDocumentConfig,
@@ -33,6 +34,7 @@ import documentTreeStyles from "./documentTree.module.scss";
 import cx from "classnames";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors";
+import { Expression } from "@/core";
 
 const headerComponents = {
   header_1: "h1",
@@ -137,7 +139,7 @@ export function getComponentDefinition(
         Component: ButtonElement,
         props: {
           children: title,
-          onClick: onClick?.__value__,
+          onClick: onClick.__value__,
           ...props,
         },
       };
@@ -172,6 +174,12 @@ type PreviewComponentProps = {
   onMouseEnter: React.MouseEventHandler<HTMLDivElement>;
   onMouseLeave: React.MouseEventHandler<HTMLDivElement>;
 };
+
+function getFieldValue<TValue extends string = string>(
+  configValue: TValue | Expression<TValue>
+): TValue {
+  return isExpression(configValue) ? configValue.__value__ : configValue;
+}
 
 export function getPreviewComponentDefinition(
   element: DocumentElement
@@ -273,24 +281,34 @@ export function getPreviewComponentDefinition(
     }
 
     case "button": {
-      const { Component, props } = getComponentDefinition(element);
       const PreviewComponent: React.FC<PreviewComponentProps> = ({
         className,
         ...restPreviewProps
       }) => {
         const notify = useNotifications();
+        const {
+          title,
+          className: buttonClassName,
+          size,
+          variant,
+        } = config as ButtonDocumentConfig;
+
         return (
           <div>
             <div
               className={cx(className, documentTreeStyles.inlineWrapper)}
               {...restPreviewProps}
             >
-              <Component
-                {...props}
+              <Button
+                className={getFieldValue(buttonClassName)}
+                size={getFieldValue(size)}
+                variant={getFieldValue(variant)}
                 onClick={() => {
                   notify.info("Action button clicked.");
                 }}
-              />
+              >
+                {getFieldValue(title)}
+              </Button>
             </div>
           </div>
         );
