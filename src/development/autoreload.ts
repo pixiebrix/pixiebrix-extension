@@ -22,7 +22,7 @@ import { isChrome } from "webext-detect-page";
 if (
   process.env.ENVIRONMENT === "development" &&
   isChrome() &&
-  "localStorage" in globalThis
+  "localStorage" in globalThis // MV3 doesn't support localStorage
 ) {
   const { version_name } = chrome.runtime.getManifest();
 

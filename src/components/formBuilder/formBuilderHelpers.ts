@@ -25,7 +25,7 @@ import {
 import { RJSFSchema, SelectStringOption } from "./formBuilderTypes";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
-import produce from "immer";
+import { produce } from "immer";
 
 export const MINIMAL_SCHEMA: Schema = {
   type: "object",

@@ -43,14 +43,6 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
   return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
 }
 
-// https://github.com/fregante/webext-content-scripts/issues/4
-export async function checkTargetPermissions(target: Target): Promise<boolean> {
-  return executeFunction(target, () => true).then(
-    () => true,
-    () => false
-  );
-}
-
 interface TargetState {
   url: string;
   installed: boolean;

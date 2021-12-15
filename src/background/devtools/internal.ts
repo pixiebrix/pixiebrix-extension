@@ -35,7 +35,7 @@ import {
 } from "@/background/devtools/contract";
 import type { Target } from "@/types";
 import { reportError } from "@/telemetry/logging";
-import { isBackgroundPage } from "webext-detect-page";
+import { isBackground } from "webext-detect-page";
 import { uuidv4 } from "@/types/helpers";
 import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
@@ -163,7 +163,7 @@ export function liftBackground<
 ): (port: Runtime.Port, ...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
-  if (isBackgroundPage()) {
+  if (isBackground()) {
     if (backgroundHandlers.has(fullType)) {
       console.warn(`Handler already registered for ${fullType}`);
     } else {
@@ -314,7 +314,7 @@ export function emitDevtools(
   }
 }
 
-if (isBackgroundPage()) {
+if (isBackground()) {
   console.debug("Adding devtools connection listener");
   browser.runtime.onConnect.addListener(connectDevtools);
 

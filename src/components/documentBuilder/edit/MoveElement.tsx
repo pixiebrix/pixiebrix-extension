@@ -19,15 +19,15 @@ import { useField } from "formik";
 import React from "react";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import getElementCollectionName from "./getElementCollectionName";
-import { DocumentElement } from "./documentBuilderTypes";
+import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import LayoutWidget from "@/components/LayoutWidget";
 
-type MoveElementActionProps = {
+type MoveElementProps = {
   elementName: string;
   setActiveElement: (activeElement: string) => void;
 };
 
-const MoveElementAction: React.FC<MoveElementActionProps> = ({
+const MoveElement: React.FC<MoveElementProps> = ({
   elementName,
   setActiveElement,
 }) => {
@@ -72,4 +72,4 @@ const MoveElementAction: React.FC<MoveElementActionProps> = ({
   );
 };
 
-export default MoveElementAction;
+export default MoveElement;

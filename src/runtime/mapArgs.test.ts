@@ -114,7 +114,10 @@ describe("defer", () => {
     );
 
     expect(rendered).toEqual({
-      foo: config,
+      foo: {
+        __type__: "defer",
+        __value__: config,
+      },
       bar: { foo: 42 },
     });
   });
@@ -122,19 +125,21 @@ describe("defer", () => {
 
 describe("pipeline", () => {
   test("render !pipeline", async () => {
+    const expression = {
+      __type__: "pipeline",
+      __value__: [{ id: "@pixiebrix/confetti" }],
+    };
+
     const rendered = await renderExplicit(
       {
-        foo: {
-          __type__: "pipeline",
-          __value__: [{ id: "@pixiebrix/confetti" }],
-        },
+        foo: expression,
       },
       { array: ["bar"] },
       { autoescape: false }
     );
 
     expect(rendered).toEqual({
-      foo: [{ id: "@pixiebrix/confetti" }],
+      foo: expression,
     });
   });
 
@@ -164,7 +169,10 @@ describe("pipeline", () => {
     );
 
     expect(rendered).toEqual({
-      foo: [{ id: "@pixiebrix/confetti", config }],
+      foo: {
+        __type__: "pipeline",
+        __value__: [{ id: "@pixiebrix/confetti", config }],
+      },
       bar: { foo: 42 },
     });
   });

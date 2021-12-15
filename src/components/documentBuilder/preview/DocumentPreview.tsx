@@ -17,13 +17,13 @@
 
 import { useField } from "formik";
 import React, { MouseEventHandler, useState } from "react";
-import { DocumentElement } from "./documentBuilderTypes";
+import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import AddElementAction from "./AddElementAction";
 import ElementPreview from "./ElementPreview";
-import { ROOT_ELEMENT_TYPES } from "./allowedElementTypes";
+import { ROOT_ELEMENT_TYPES } from "@/components/documentBuilder/allowedElementTypes";
 import cx from "classnames";
 import previewStyles from "./ElementPreview.module.scss";
-import documentTreeStyles from "./documentTree.module.scss";
+import documentTreeStyles from "@/components/documentBuilder/documentTree.module.scss";
 import styles from "./DocumentPreview.module.scss";
 
 type DocumentPreviewProps = {

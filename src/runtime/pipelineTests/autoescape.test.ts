@@ -23,6 +23,7 @@ import { echoBlock, simpleInput, testOptions } from "./pipelineTestHelpers";
 // them with `void` instead of awaiting them in the reducePipeline methods
 import * as logging from "@/background/logging";
 import { ApiVersion } from "@/core";
+
 jest.mock("@/background/trace");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
