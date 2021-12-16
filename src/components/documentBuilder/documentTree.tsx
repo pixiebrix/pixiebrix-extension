@@ -29,7 +29,6 @@ import {
   PipelineDocumentConfig,
 } from "./documentBuilderTypes";
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
-import useNotifications from "@/hooks/useNotifications";
 import documentTreeStyles from "./documentTree.module.scss";
 import cx from "classnames";
 import ListElement from "@/components/documentBuilder/render/ListElement";
@@ -285,7 +284,6 @@ export function getPreviewComponentDefinition(
         className,
         ...restPreviewProps
       }) => {
-        const notify = useNotifications();
         const {
           title,
           className: buttonClassName,
@@ -303,9 +301,7 @@ export function getPreviewComponentDefinition(
                 className={getFieldValue(buttonClassName)}
                 size={getFieldValue(size)}
                 variant={getFieldValue(variant)}
-                onClick={() => {
-                  notify.info("Action button clicked.");
-                }}
+                onClick={() => {}}
               >
                 {getFieldValue(title)}
               </Button>

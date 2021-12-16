@@ -31,7 +31,7 @@ import {
 } from "./documentTree";
 import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
 
-// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
+// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandled rejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/background/messenger/api");

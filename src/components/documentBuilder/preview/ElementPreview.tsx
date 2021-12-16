@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEventHandler } from "react";
+import React, { MouseEventHandler, useMemo } from "react";
 import styles from "./ElementPreview.module.scss";
 import cx from "classnames";
 import {
@@ -27,16 +27,16 @@ import AddElementAction from "./AddElementAction";
 import { useField } from "formik";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
 
-interface ElementPreviewTemplateProps {
+export type ElementPreviewProps = {
   elementName: string;
   activeElement: string | null;
   setActiveElement: (name: string | null) => void;
   hoveredElement: string | null;
   setHoveredElement: (name: string | null) => void;
   menuBoundary?: Element;
-}
+};
 
-const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
+const ElementPreview: React.FC<ElementPreviewProps> = ({
   elementName,
   activeElement,
   setActiveElement,
@@ -57,7 +57,9 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
 
   const onMouseOver: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
-    setHoveredElement(elementName);
+    if (hoveredElement !== elementName) {
+      setHoveredElement(elementName);
+    }
   };
 
   const onMouseLeave: MouseEventHandler<HTMLDivElement> = () => {
@@ -72,8 +74,9 @@ const ElementPreview: React.FC<ElementPreviewTemplateProps> = ({
   // Render the item template and the Item Type Selector for the list element
   const isList = isListElement(documentElement);
 
-  const { Component: PreviewComponent, props } = getPreviewComponentDefinition(
-    documentElement
+  const { Component: PreviewComponent, props } = useMemo(
+    () => getPreviewComponentDefinition(documentElement),
+    [documentElement]
   );
 
   return (
