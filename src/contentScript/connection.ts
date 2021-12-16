@@ -15,37 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { NotificationCallbacks } from "@/contentScript/notify";
+import { hideNotification, showNotification } from "@/contentScript/notify";
 
-let _hooks: NotificationCallbacks = null;
+const id = "connection-lost";
 
 export function showConnectionLost(): void {
-  if (_hooks) {
-    // Don't show connection notification if it's already being displayed
-    return null;
-  }
-
-  const element = $.notify(
-    "Connection to PixieBrix lost. Please reload the page",
-    {
-      autoHide: false,
-      clickToHide: false,
-      className: "error",
-    }
-  );
-
-  const $element = $(element);
-
-  _hooks = {
-    hide: () => {
-      $element.trigger("notify-hide");
-    },
-  };
+  showNotification({
+    id,
+    message: "Connection to PixieBrix lost. Please reload the page",
+    type: "error",
+    duration: Number.POSITIVE_INFINITY,
+  });
 }
 
 export function hideConnectionLost(): void {
-  if (_hooks) {
-    _hooks.hide();
-    _hooks = null;
-  }
+  hideNotification(id);
 }

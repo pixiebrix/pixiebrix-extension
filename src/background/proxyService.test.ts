@@ -23,7 +23,7 @@ import {
 import serviceRegistry from "@/services/registry";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { isBackgroundPage } from "webext-detect-page";
+import { isBackground } from "webext-detect-page";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { proxyService } from "./requests";
 import { ContextError } from "@/errors";
@@ -33,10 +33,10 @@ import { RemoteServiceError } from "@/services/errors";
 import { validateRegistryId } from "@/types/helpers";
 
 const axiosMock = new MockAdapter(axios);
-const mockIsBackgroundPage = isBackgroundPage as jest.MockedFunction<
-  typeof isBackgroundPage
+const mockisBackground = isBackground as jest.MockedFunction<
+  typeof isBackground
 >;
-mockIsBackgroundPage.mockImplementation(() => true);
+mockisBackground.mockImplementation(() => true);
 
 jest.mock("@/background/protocol");
 jest.mock("@/auth/token");

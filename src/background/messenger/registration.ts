@@ -38,7 +38,7 @@ import {
   requestRunInFrameNonce,
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
-import { checkTargetPermissions, ensureContentScript } from "@/background/util";
+import { ensureContentScript } from "@/background/util";
 import serviceRegistry from "@/services/registry";
 import { deleteCachedAuthData } from "@/background/auth";
 import { doCleanAxiosRequest, proxyService } from "@/background/requests";
@@ -48,6 +48,7 @@ import { preloadContextMenus } from "@/background/initContextMenus";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
+import { canAccessTab } from "webext-tools";
 
 expectContext("background");
 
@@ -63,7 +64,7 @@ declare global {
 
     GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     INJECT_SCRIPT: typeof ensureContentScript;
-    CHECK_TARGET_PERMISSIONS: typeof checkTargetPermissions;
+    CHECK_TARGET_PERMISSIONS: typeof canAccessTab;
     CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
@@ -110,7 +111,7 @@ registerMethods({
 
   GET_AVAILABLE_VERSION: getAvailableVersion,
   INJECT_SCRIPT: ensureContentScript,
-  CHECK_TARGET_PERMISSIONS: checkTargetPermissions,
+  CHECK_TARGET_PERMISSIONS: canAccessTab,
   CONTAINS_PERMISSIONS: browser.permissions.contains,
 
   PRELOAD_CONTEXT_MENUS: preloadContextMenus,

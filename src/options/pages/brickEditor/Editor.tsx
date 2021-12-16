@@ -98,7 +98,6 @@ function useOpenEditorTab() {
 }
 
 const Editor: React.FunctionComponent<OwnProps> = ({
-  showTemplates,
   showLogs = true,
   logContext,
 }) => {
@@ -204,7 +203,6 @@ const Editor: React.FunctionComponent<OwnProps> = ({
               <CodeEditor
                 name="config"
                 width={editorWidth}
-                showTemplates={showTemplates}
                 openDefinition={openReference}
                 openEditor={openEditorTab}
               />

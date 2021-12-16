@@ -17,6 +17,8 @@
 
 import React from "react";
 
-const WidgetLoadingIndicator: React.FC = () => <div>Loading...</div>;
+const WidgetLoadingIndicator: React.FC<{ name: string }> = ({ name }) => (
+  <div data-testid={`${name}-widget-loading`}>Loading...</div>
+);
 
 export default WidgetLoadingIndicator;
