@@ -16,7 +16,6 @@
  */
 
 import {
-  ButtonDocumentConfig,
   DocumentComponent,
   DocumentElement,
   PipelineDocumentConfig,
@@ -29,7 +28,6 @@ import documentTreeStyles from "./documentTree.module.scss";
 import React from "react";
 import { Button } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
-import { Expression } from "@/core";
 
 type PreviewComponentProps = {
   className?: string;
@@ -37,12 +35,6 @@ type PreviewComponentProps = {
   onMouseEnter: React.MouseEventHandler<HTMLDivElement>;
   onMouseLeave: React.MouseEventHandler<HTMLDivElement>;
 };
-
-function getFieldValue<TValue extends string = string>(
-  configValue: TValue | Expression<TValue>
-): TValue {
-  return isExpression(configValue) ? configValue.__value__ : configValue;
-}
 
 function getPreviewComponentDefinition(
   element: DocumentElement
@@ -53,35 +45,8 @@ function getPreviewComponentDefinition(
   switch (componentType) {
     case "header_1":
     case "header_2":
-    case "header_3": {
-      const { title } = config;
-      if (isExpression(title)) {
-        const previewElement = {
-          ...element,
-          config: {
-            ...config,
-            title: title.__value__,
-          },
-        };
-        return getComponentDefinition(previewElement);
-      }
-
-      return getComponentDefinition(element);
-    }
-
+    case "header_3":
     case "text": {
-      const { text } = config;
-      if (isExpression(text)) {
-        const previewElement = {
-          ...element,
-          config: {
-            ...config,
-            text: text.__value__,
-          },
-        };
-        return getComponentDefinition(previewElement);
-      }
-
       return getComponentDefinition(element);
     }
 
@@ -99,10 +64,7 @@ function getPreviewComponentDefinition(
     }
 
     case "card": {
-      let { heading } = config;
-      if (isExpression(heading)) {
-        heading = heading.__value__;
-      }
+      const { heading } = config;
 
       const previewElement = {
         ...element,
@@ -148,12 +110,7 @@ function getPreviewComponentDefinition(
         className,
         ...restPreviewProps
       }) => {
-        const {
-          title,
-          className: buttonClassName,
-          size,
-          variant,
-        } = config as ButtonDocumentConfig;
+        const { title, onClick, ...buttonProps } = config;
 
         return (
           <div>
@@ -161,13 +118,8 @@ function getPreviewComponentDefinition(
               className={cx(className, documentTreeStyles.inlineWrapper)}
               {...restPreviewProps}
             >
-              <Button
-                className={getFieldValue(buttonClassName)}
-                size={getFieldValue(size)}
-                variant={getFieldValue(variant)}
-                onClick={() => {}}
-              >
-                {getFieldValue(title)}
+              <Button onClick={() => {}} {...buttonProps}>
+                {title}
               </Button>
             </div>
           </div>

@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import React, { MouseEventHandler, useState } from "react";
+import React, { MouseEventHandler, useMemo, useState } from "react";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import AddElementAction from "./AddElementAction";
 import ElementPreview from "./ElementPreview";
@@ -25,6 +25,7 @@ import cx from "classnames";
 import previewStyles from "./ElementPreview.module.scss";
 import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 import styles from "./DocumentPreview.module.scss";
+import { getPreviewValues } from "@/components/fields/fieldUtils";
 
 type DocumentPreviewProps = {
   name: string;
@@ -40,6 +41,8 @@ const DocumentPreview = ({
   menuBoundary,
 }: DocumentPreviewProps) => {
   const [{ value: body }] = useField<DocumentElement[]>(name);
+  const bodyPreview = useMemo(() => getPreviewValues(body), [body]);
+
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
 
   const isHovered = hoveredElement === "body";
@@ -75,10 +78,11 @@ const DocumentPreview = ({
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
     >
-      {body.map((childElement, i) => (
+      {bodyPreview.map((childElement, i) => (
         <ElementPreview
           key={`${name}.${i}`}
           elementName={`${name}.${i}`}
+          previewElement={childElement}
           activeElement={activeElement}
           setActiveElement={setActiveElement}
           menuBoundary={menuBoundary}
