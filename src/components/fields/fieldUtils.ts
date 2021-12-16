@@ -16,6 +16,7 @@
  */
 
 import { Schema, SchemaDefinition } from "@/core";
+import { isExpression } from "@/runtime/mapArgs";
 
 export function fieldLabel(name: string): string {
   const parts = name.split(".");
@@ -47,4 +48,19 @@ export function createTypePredicate(predicate: TypePredicate): TypePredicate {
 
     return false;
   };
+}
+
+export function getPreviewValues<TObj = any>(obj: TObj): TObj {
+  const newObj = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (isExpression(value)) {
+      newObj[key] = value.__value__;
+    } else if (!Array.isArray(value) && typeof value === "object") {
+      newObj[key] = getPreviewValues(value);
+    } else {
+      newObj[key] = value;
+    }
+  }
+
+  return newObj;
 }
