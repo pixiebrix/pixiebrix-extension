@@ -54,7 +54,8 @@ import SchemaSelectWidget, {
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 
-const variableOption: StringOption = {
+// eslint-disable-next-line unicorn/prevent-abbreviations -- It refers to the `var` value
+const varOption: StringOption = {
   label: "Variable",
   value: "var",
   symbol: "⟮𝑥⟯",
@@ -155,7 +156,7 @@ function getToggleOptions({
         interpretValue: () =>
           Array.isArray(fieldSchema.default) ? fieldSchema.default : [],
       },
-      variableOption
+      varOption
     );
   }
 
@@ -180,7 +181,7 @@ function getToggleOptions({
             ? fieldSchema.default
             : {}) as UnknownObject,
       },
-      variableOption
+      varOption
     );
   }
 
@@ -196,7 +197,7 @@ function getToggleOptions({
             ? fieldSchema.default
             : false,
       },
-      variableOption
+      varOption
     );
   }
 
@@ -212,7 +213,7 @@ function getToggleOptions({
             ? String(fieldSchema.default)
             : null,
       },
-      variableOption
+      varOption
     );
   }
   // Using "else" here because we don't want to have both select and plain text
@@ -246,7 +247,7 @@ function getToggleOptions({
           };
         },
       },
-      variableOption
+      varOption
     );
   }
 
@@ -277,7 +278,7 @@ function getToggleOptions({
             : 0;
         },
       },
-      variableOption
+      varOption
     );
   }
 
@@ -307,7 +308,7 @@ function getToggleOptions({
             : 0;
         },
       },
-      variableOption
+      varOption
     );
   }
 
