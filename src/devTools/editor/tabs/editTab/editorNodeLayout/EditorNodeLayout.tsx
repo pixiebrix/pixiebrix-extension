@@ -130,7 +130,7 @@ const EditorNodeLayout: React.FC<{
                     onClick={() => {
                       duplicateBlock(nodeId);
                     }}
-                    tooltipText={`Duplicate node ${title}`}
+                    tooltipText={`Duplicate block "${title}"`}
                   />
                 )}
                 {pasteBlock && (
