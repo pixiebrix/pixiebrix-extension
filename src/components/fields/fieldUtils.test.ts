@@ -32,7 +32,7 @@ test("returns value for an expression", () => {
   expect(description).toBe(expectedValue);
 });
 
-test("do not change arrays", () => {
+test("respects the arrays", () => {
   const items = ["a", "b", "c"];
   const config = {
     array: items,
@@ -41,6 +41,7 @@ test("do not change arrays", () => {
   const { array } = getPreviewValues(config);
 
   expect(array).toEqual(items);
+  expect(Array.isArray(array)).toBeTruthy();
 });
 
 test("converts nested expressions", () => {
@@ -59,4 +60,34 @@ test("converts nested expressions", () => {
   } = getPreviewValues(config);
 
   expect(header).toBe(expectedValue);
+});
+
+test("ignores strings", () => {
+  const expectedValue = "plain string";
+  const actualValue = getPreviewValues(expectedValue);
+  expect(actualValue).toBe(expectedValue);
+});
+
+test("converts elements of an array", () => {
+  const expectedVar = "@data";
+  const expectedTemplate = "nunjucks {{@data}}";
+  const items = [
+    {
+      __type__: "var",
+      __value__: expectedVar,
+    } as Expression,
+    {
+      __type__: "nunjucks",
+      __value__: expectedTemplate,
+    } as Expression,
+  ];
+  const config = {
+    array: items,
+  };
+
+  const { array } = getPreviewValues(config);
+
+  expect(array).toHaveLength(2);
+  expect(array[0]).toEqual(expectedVar);
+  expect(array[1]).toEqual(expectedTemplate);
 });

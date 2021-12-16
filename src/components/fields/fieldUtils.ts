@@ -18,6 +18,7 @@
 import { Schema, SchemaDefinition } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
+import { Draft, produce } from "immer";
 
 export function fieldLabel(name: string): string {
   const parts = name.split(".");
@@ -52,16 +53,21 @@ export function createTypePredicate(predicate: TypePredicate): TypePredicate {
 }
 
 export function getPreviewValues<TObj = UnknownObject>(obj: TObj): TObj {
-  const newObj: TObj = {} as any;
-  for (const [key, value] of Object.entries(obj)) {
-    if (isTemplateExpression(value)) {
-      newObj[key] = value.__value__;
-    } else if (!Array.isArray(value) && typeof value === "object") {
-      newObj[key] = getPreviewValues(value);
-    } else {
-      newObj[key] = value;
+  return produce(obj, (draft) => {
+    unwrapTemplateExpressions(draft);
+  });
+
+  function unwrapTemplateExpressions(mutableObj: Draft<any>) {
+    if (typeof mutableObj !== "object") {
+      return;
+    }
+
+    for (const [key, value] of Object.entries(mutableObj)) {
+      if (isTemplateExpression(value)) {
+        mutableObj[key] = value.__value__;
+      } else if (typeof value === "object") {
+        unwrapTemplateExpressions(value);
+      }
     }
   }
-
-  return newObj;
 }
