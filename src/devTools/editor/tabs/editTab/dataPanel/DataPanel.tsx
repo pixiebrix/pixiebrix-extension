@@ -135,7 +135,7 @@ const DataPanel: React.FC<{
 
   const documentBodyName = `extension.blockPipeline.${blockIndex}.config.body`;
 
-  const outputObj: JsonObject =
+  const outputObject: JsonObject =
     record !== undefined && "output" in record
       ? // eslint-disable-next-line unicorn/no-nested-ternary -- prettier disagrees
         "outputKey" in record
@@ -266,7 +266,7 @@ const DataPanel: React.FC<{
             isTraceEmpty={!record}
             isTraceOptional={previewInfo?.traceOptional}
           >
-            {outputObj && (
+            {outputObject && (
               <>
                 {isCurrentStale && (
                   <Alert variant="warning">
@@ -275,7 +275,7 @@ const DataPanel: React.FC<{
                   </Alert>
                 )}
                 <JsonTree
-                  data={outputObj}
+                  data={outputObject}
                   copyable
                   searchable
                   initialSearchQuery={outputQuery}

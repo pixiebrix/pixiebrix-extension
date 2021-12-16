@@ -8,15 +8,30 @@
     "unicorn/prevent-abbreviations": [
       "error",
       {
-        "allowList": {
-          "Prop": true,
-          "Props": true,
-          "Ref": true,
-          "Refs": true,
-          "Ver": true
-        }
+        "replacements": {
+          "arg": false,
+          "db": false,
+          "doc": false,
+          "args": false,
+          "dev": false,
+          "env": false,
+          "fn": false,
+          "func": {
+            "fn": true,
+            "function": false
+          },
+          "num": false,
+          "param": false,
+          "params": false,
+          "prop": false,
+          "props": false,
+          "ref": false,
+          "refs": false
+        },
+        "ignore": ["semVer", "SemVer", "KeyVar"]
       }
     ],
+
     // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
     "import/no-named-as-default-member": "off",
 

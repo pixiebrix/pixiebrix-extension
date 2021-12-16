@@ -92,10 +92,10 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
     >
       {props?.children}
       {isContainer &&
-        documentElement.children.map((childElement, i) => (
+        documentElement.children.map((childElement, index) => (
           <ElementPreview
-            key={`${elementName}.children.${i}`}
-            elementName={`${elementName}.children.${i}`}
+            key={`${elementName}.children.${index}`}
+            elementName={`${elementName}.children.${index}`}
             activeElement={activeElement}
             setActiveElement={setActiveElement}
             menuBoundary={menuBoundary}

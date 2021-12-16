@@ -21,11 +21,11 @@ type ComponentData = Record<string, unknown>;
 
 export function traverse<T = unknown>(
   next: (current: T) => T | null,
-  src: T,
+  source: T,
   count: number
 ): T | null {
-  let current = src;
-  for (let i = 0; i < count && current; i++) {
+  let current = source;
+  for (let index = 0; index < count && current; index++) {
     current = next(current);
   }
 
@@ -35,12 +35,12 @@ export function traverse<T = unknown>(
 // Object required for WeakSet
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function traverseUntil<T extends object>(
-  src: T,
+  source: T,
   match: (element: T) => boolean,
   next: (current: T) => T | null,
   maxTraverse: number = Number.POSITIVE_INFINITY
 ): T | null {
-  let current = src;
+  let current = source;
   // Detect cycles
   const visited = new WeakSet<T>();
   let cnt = 0;

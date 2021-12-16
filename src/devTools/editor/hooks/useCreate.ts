@@ -31,7 +31,7 @@ import { extensionPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";
 import { getErrorMessage, isAxiosError } from "@/errors";
 import { getLinkedApiClient } from "@/services/apiClient";
-import { objToYaml } from "@/utils/objToYaml";
+import { objectToYaml } from "@/utils/objectToYaml";
 import {
   extensionWithInnerDefinitions,
   isInnerExtensionPoint,
@@ -49,7 +49,7 @@ async function upsertConfig(
 ): Promise<void> {
   const client = await getLinkedApiClient();
 
-  const data = { config: objToYaml(config as UnknownObject), kind };
+  const data = { config: objectToYaml(config as UnknownObject), kind };
 
   if (packageUUID) {
     await client.put(`api/bricks/${packageUUID}/`, data);

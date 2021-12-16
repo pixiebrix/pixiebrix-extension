@@ -21,7 +21,7 @@ import blockRegistry from "@/blocks/registry";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { isPlainObject, mapValues } from "lodash";
 import CompositeReader from "@/blocks/readers/CompositeReader";
-import { resolveObj } from "@/utils";
+import { resolveObject } from "@/utils";
 import { BusinessError } from "@/errors";
 
 export function selectReaderIds(config: ReaderConfig): RegistryId[] {
@@ -56,7 +56,7 @@ export async function mergeReaders(
 
   if (isPlainObject(readerConfig)) {
     return new CompositeReader(
-      await resolveObj(mapValues(readerConfig, mergeReaders))
+      await resolveObject(mapValues(readerConfig, mergeReaders))
     );
   }
 

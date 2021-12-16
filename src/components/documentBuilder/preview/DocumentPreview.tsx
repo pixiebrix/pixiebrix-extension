@@ -75,10 +75,10 @@ const DocumentPreview = ({
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
     >
-      {body.map((childElement, i) => (
+      {body.map((childElement, index) => (
         <ElementPreview
-          key={`${name}.${i}`}
-          elementName={`${name}.${i}`}
+          key={`${name}.${index}`}
+          elementName={`${name}.${index}`}
           activeElement={activeElement}
           setActiveElement={setActiveElement}
           menuBoundary={menuBoundary}

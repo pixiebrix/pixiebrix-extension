@@ -55,7 +55,7 @@ export const noopProxy: ReadProxy = {
 };
 
 export function getPropByPath(
-  obj: Record<string, unknown>,
+  object: Record<string, unknown>,
   path: string,
   {
     args = {},
@@ -66,7 +66,7 @@ export function getPropByPath(
 
   const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
 
-  let value: unknown = obj;
+  let value: unknown = object;
   const rawParts = path.trim().split(".");
 
   for (const [index, rawPart] of rawParts.entries()) {

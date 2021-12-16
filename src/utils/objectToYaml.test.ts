@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { brickToYaml } from "./objToYaml";
+import { brickToYaml } from "./objectToYaml";
 
 describe("brickToYaml", () => {
   test("serializes arbitrary object", () => {

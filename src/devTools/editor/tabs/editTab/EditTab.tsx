@@ -172,13 +172,13 @@ const EditTab: React.FC<{
   );
 
   const removeBlock = (nodeIdToRemove: NodeId) => {
-    let prevNodeId: NodeId;
+    let previousNodeId: NodeId;
     let nextState = produce(values, (draft) => {
       const index = draft.extension.blockPipeline.findIndex(
         (block) => block.instanceId === nodeIdToRemove
       );
 
-      prevNodeId =
+      previousNodeId =
         index === 0
           ? FOUNDATION_NODE_ID
           : draft.extension.blockPipeline[index - 1].instanceId;
@@ -193,7 +193,7 @@ const EditTab: React.FC<{
     dispatch(
       actions.removeElementNodeUIState({
         nodeIdToRemove,
-        newActiveNodeId: prevNodeId,
+        newActiveNodeId: previousNodeId,
       })
     );
     setFormValues(nextState);

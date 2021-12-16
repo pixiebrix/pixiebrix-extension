@@ -31,7 +31,7 @@ import AuthContext from "@/auth/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import slugify from "slugify";
 import { getLinkedApiClient } from "@/services/apiClient";
-import { objToYaml } from "@/utils/objToYaml";
+import { objectToYaml } from "@/utils/objectToYaml";
 import { makeBlueprint } from "@/options/pages/installed/exportBlueprint";
 import { useDispatch } from "react-redux";
 import { optionsSlice } from "@/options/slices";
@@ -88,7 +88,7 @@ async function convertAndShare(
   });
 
   const { data } = await client.post<PackageUpsertResponse>("api/bricks/", {
-    config: objToYaml(blueprint),
+    config: objectToYaml(blueprint),
     kind: "recipe",
     public: form.public,
     organizations: form.organizations,

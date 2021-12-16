@@ -108,9 +108,9 @@ const EditorNode: React.FC<EditorNodeProps> = ({
             <>
               <button
                 type="button"
-                onClick={(e) => {
+                onClick={(event) => {
                   onClickMoveUp();
-                  e.stopPropagation();
+                  event.stopPropagation();
                 }}
                 title="Move brick higher"
                 disabled={!canMoveUp}
@@ -120,9 +120,9 @@ const EditorNode: React.FC<EditorNodeProps> = ({
               </button>
               <button
                 type="button"
-                onClick={(e) => {
+                onClick={(event) => {
                   onClickMoveDown();
-                  e.stopPropagation();
+                  event.stopPropagation();
                 }}
                 title="Move brick lower"
                 disabled={!canMoveDown}

@@ -125,15 +125,15 @@ export const replaceStringInArray = (
   stringToBeReplaced: string,
   ...items: string[]
 ) => {
-  const arr = [...array];
-  const index = arr.indexOf(stringToBeReplaced);
+  const array_ = [...array];
+  const index = array_.indexOf(stringToBeReplaced);
   if (index === -1) {
-    return arr;
+    return array_;
   }
 
-  arr.splice(index, 1, ...items);
+  array_.splice(index, 1, ...items);
 
-  return arr;
+  return array_;
 };
 
 export const generateNewPropertyName = (existingProperties: string[]) =>
@@ -146,12 +146,12 @@ export const moveStringInArray = (
   stringToBeMoved: string,
   direction: "up" | "down"
 ) => {
-  const arr = [...array];
-  const fromIndex = arr.indexOf(stringToBeMoved);
+  const array_ = [...array];
+  const fromIndex = array_.indexOf(stringToBeMoved);
   const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
   // eslint-disable-next-line security/detect-object-injection
-  [arr[fromIndex], arr[toIndex]] = [arr[toIndex], arr[fromIndex]];
-  return arr;
+  [array_[fromIndex], array_[toIndex]] = [array_[toIndex], array_[fromIndex]];
+  return array_;
 };
 
 export const validateNextPropertyName = (

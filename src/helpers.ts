@@ -22,20 +22,20 @@ import { Schema, SchemaProperties } from "@/core";
  */
 export function missingProperties(
   schema: Schema,
-  obj: Record<string, any>
+  object: Record<string, any>
 ): string[] {
-  const acc = [];
+  const accumulator = [];
   for (const propertyKey of schema.required ?? []) {
     const property = schema.properties[propertyKey];
     if (typeof property === "object" && property?.type === "string") {
-      const value = obj[propertyKey];
+      const value = object[propertyKey];
       if ((value ?? "").trim().length === 0) {
-        acc.push(propertyKey);
+        accumulator.push(propertyKey);
       }
     }
   }
 
-  return acc;
+  return accumulator;
 }
 
 export function inputProperties(inputSchema: Schema): SchemaProperties {

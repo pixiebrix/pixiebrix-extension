@@ -20,23 +20,23 @@ import { removeUndefined } from "@/utils";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- don't need/want index signature
-export const objToYaml = (obj: object) =>
-  dumpBrickYaml(removeUndefined(obj), {
+export const objectToYaml = (object: object) =>
+  dumpBrickYaml(removeUndefined(object), {
     quotingType: '"',
   });
 
 function orderKeys<T extends Record<string, unknown>>(
-  obj: T,
+  object: T,
   keys: Array<keyof T>
 ): T {
   const lookup = new Map(keys.map((key, index) => [key, index]));
   return Object.fromEntries(
-    sortBy(Object.entries(obj), ([key]) => lookup.get(key) ?? keys.length)
+    sortBy(Object.entries(object), ([key]) => lookup.get(key) ?? keys.length)
   ) as T;
 }
 
 export const brickToYaml = (brickConfig: Record<string, unknown>) =>
-  objToYaml(
+  objectToYaml(
     orderKeys(brickConfig, [
       "apiVersion",
       "kind",

@@ -94,7 +94,7 @@ export const ModalProvider: React.FunctionComponent<{
           setCallback(null);
         };
 
-        setCallback((_prevState: Callback) => newCallback);
+        setCallback((_previousState: Callback) => newCallback);
       });
     },
     [callback, setModalProps]

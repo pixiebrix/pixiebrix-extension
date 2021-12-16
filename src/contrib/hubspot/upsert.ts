@@ -22,10 +22,10 @@ import { partial } from "lodash";
 import { BusinessError } from "@/errors";
 
 function makeProperties(
-  obj: Record<string, unknown>,
+  object: Record<string, unknown>,
   propertyKey = "property"
 ) {
-  return Object.entries(obj)
+  return Object.entries(object)
     .filter(([, value]) => Boolean(value))
     .map(([property, value]) => ({
       [propertyKey]: property,

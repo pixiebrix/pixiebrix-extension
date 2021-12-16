@@ -17,7 +17,7 @@
 
 import { isEmpty } from "lodash";
 import { IExtension, Metadata, RegistryId, Schema, UserOptions } from "@/core";
-import { objToYaml } from "@/utils/objToYaml";
+import { objectToYaml } from "@/utils/objectToYaml";
 import { saveAs } from "file-saver";
 import {
   OptionsDefinition,
@@ -91,7 +91,7 @@ export function exportBlueprint(extension: IExtension) {
     version: "1.0.0",
   });
 
-  const blueprintYAML = objToYaml(blueprint);
+  const blueprintYAML = objectToYaml(blueprint);
   const blob = new Blob([blueprintYAML], { type: "text/plain;charset=utf-8" });
   saveAs(blob, "blueprint.yaml");
 }

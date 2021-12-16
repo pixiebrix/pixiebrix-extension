@@ -22,7 +22,7 @@ import { TableRenderer } from "@/blocks/renderers/table";
 import { ToastProvider } from "react-toast-notifications";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import amazonSearch from "@contrib/blocks/amazon-search.yaml";
-import { brickToYaml } from "@/utils/objToYaml";
+import { brickToYaml } from "@/utils/objectToYaml";
 
 export default {
   title: "Components/BrickDetail",

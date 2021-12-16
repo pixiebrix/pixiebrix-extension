@@ -68,16 +68,19 @@ export function mostCommonElement<T>(items: T[]): T {
   return flow(countBy, entries, partialRight(maxBy, last), head)(items) as T;
 }
 
-export function isGetter(obj: Record<string, unknown>, prop: string): boolean {
-  return Boolean(Object.getOwnPropertyDescriptor(obj, prop)?.get);
+export function isGetter(
+  object: Record<string, unknown>,
+  prop: string
+): boolean {
+  return Boolean(Object.getOwnPropertyDescriptor(object, prop)?.get);
 }
 
 /**
  * Return all property names (including non-enumerable) in the prototype hierarchy.
  */
-export function getAllPropertyNames(obj: Record<string, unknown>): string[] {
+export function getAllPropertyNames(object: Record<string, unknown>): string[] {
   const props = new Set<string>();
-  let current = obj;
+  let current = object;
   while (current) {
     for (const name of Object.getOwnPropertyNames(current)) {
       props.add(name);
@@ -100,11 +103,13 @@ export async function waitAnimationFrame(): Promise<void> {
 /**
  * Returns a new object with all the values from the original resolved
  */
-export async function resolveObj<T>(
-  obj: Record<string, Promise<T>>
+export async function resolveObject<T>(
+  object: Record<string, Promise<T>>
 ): Promise<Record<string, T>> {
   return Object.fromEntries(
-    await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v]))
+    await Promise.all(
+      Object.entries(object).map(async ([k, v]) => [k, await v])
+    )
   );
 }
 
@@ -113,11 +118,11 @@ export async function resolveObj<T>(
  */
 export async function asyncMapValues<T, TResult>(
   mapping: T,
-  func: ObjectIterator<T, Promise<TResult>>
+  fn: ObjectIterator<T, Promise<TResult>>
 ): Promise<{ [K in keyof T]: TResult }> {
   const entries = Object.entries(mapping);
   const values = await Promise.all(
-    entries.map(async ([key, value]) => func(value, key, mapping))
+    entries.map(async ([key, value]) => fn(value, key, mapping))
   );
   return Object.fromEntries(
     zip(entries, values).map(([[key], value]) => [key, value])
@@ -163,12 +168,12 @@ export async function awaitValue<T>(
   throw new TimeoutError(`Value not found after ${waitMillis} milliseconds`);
 }
 
-export function isPrimitive(val: unknown): val is Primitive {
-  if (typeof val === "object") {
-    return val === null;
+export function isPrimitive(value: unknown): value is Primitive {
+  if (typeof value === "object") {
+    return value === null;
   }
 
-  return typeof val !== "function";
+  return typeof value !== "function";
 }
 
 /**
@@ -178,31 +183,31 @@ export function isPrimitive(val: unknown): val is Primitive {
  * @see pickBy
  */
 export function deepPickBy(
-  obj: unknown,
+  object: unknown,
   predicate: (value: unknown) => boolean
 ): unknown {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#typeof_null
   // `typeof null === "object"`, so have to check for it before the "object" check below
-  if (obj == null) {
+  if (object == null) {
     return null;
   }
 
-  if (Array.isArray(obj)) {
-    return obj.map((item) => deepPickBy(item, predicate));
+  if (Array.isArray(object)) {
+    return object.map((item) => deepPickBy(item, predicate));
   }
 
-  if (typeof obj === "object") {
+  if (typeof object === "object") {
     return mapValues(
-      pickBy(obj, (value) => predicate(value)),
+      pickBy(object, (value) => predicate(value)),
       (value) => deepPickBy(value, predicate)
     );
   }
 
-  return obj;
+  return object;
 }
 
-export function removeUndefined(obj: unknown): unknown {
-  return deepPickBy(obj, (value: unknown) => typeof value !== "undefined");
+export function removeUndefined(object: unknown): unknown {
+  return deepPickBy(object, (value: unknown) => typeof value !== "undefined");
 }
 
 export function boolean(value: unknown): boolean {
@@ -231,12 +236,12 @@ export function isObject(value: unknown): value is Record<string, unknown> {
   return value && typeof value === "object";
 }
 
-export function clearObject(obj: Record<string, unknown>): void {
-  for (const member in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, member)) {
+export function clearObject(object: Record<string, unknown>): void {
+  for (const member in object) {
+    if (Object.prototype.hasOwnProperty.call(object, member)) {
       // Checking to ensure own property
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-      delete obj[member];
+      delete object[member];
     }
   }
 }
@@ -305,15 +310,15 @@ export function isNullOrBlank(value: unknown): boolean {
   return typeof value === "string" && value.trim() === "";
 }
 
-export function excludeUndefined(obj: unknown): unknown {
-  if (isPlainObject(obj) && typeof obj === "object") {
+export function excludeUndefined(object: unknown): unknown {
+  if (isPlainObject(object) && typeof object === "object") {
     return mapValues(
-      pickBy(obj, (x) => x !== undefined),
+      pickBy(object, (x) => x !== undefined),
       excludeUndefined
     );
   }
 
-  return obj;
+  return object;
 }
 
 export class PromiseCancelled extends Error {
@@ -359,14 +364,14 @@ export function evaluableFunction(
  * Lift a unary function to pass through null/undefined.
  */
 export function optional<T extends (arg: unknown) => unknown>(
-  func: T
+  fn: T
 ): (arg: null | Parameters<T>[0]) => ReturnType<T> | null {
   return (arg: Parameters<T>[0]) => {
     if (arg == null) {
       return null;
     }
 
-    return func(arg) as ReturnType<T>;
+    return fn(arg) as ReturnType<T>;
   };
 }
 
@@ -476,11 +481,11 @@ export function isApiVersionAtLeast(
   return isNum >= atLeastNum;
 }
 
-export function getProperty(obj: UnknownObject, property: string) {
-  if (Object.prototype.hasOwnProperty.call(obj, property)) {
+export function getProperty(object: UnknownObject, property: string) {
+  if (Object.prototype.hasOwnProperty.call(object, property)) {
     // Checking for hasOwnProperty
     // eslint-disable-next-line security/detect-object-injection
-    return obj[property];
+    return object[property];
   }
 }
 

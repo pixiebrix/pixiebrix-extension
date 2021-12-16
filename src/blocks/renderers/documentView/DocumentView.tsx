@@ -29,9 +29,9 @@ const DocumentView: React.FC<DocumentViewProps> = ({ body, options }) => (
     <div className="h-100">
       <ReactShadowRoot>
         <BootstrapStylesheet />
-        {body.map((documentElement, i) => {
+        {body.map((documentElement, index) => {
           const { Component, props } = buildDocumentBranch(documentElement);
-          return <Component key={i} {...props} />;
+          return <Component key={index} {...props} />;
         })}
       </ReactShadowRoot>
     </div>

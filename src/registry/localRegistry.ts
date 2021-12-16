@@ -68,8 +68,13 @@ interface LogDB extends DBSchema {
   };
 }
 
-function getKey(obj: Package): [string, number, number, number] {
-  return [obj.id, obj.version.major, obj.version.minor, obj.version.patch];
+function getKey(object: Package): [string, number, number, number] {
+  return [
+    object.id,
+    object.version.major,
+    object.version.minor,
+    object.version.patch,
+  ];
 }
 
 async function getBrickDB() {
@@ -117,9 +122,9 @@ export async function getLocal() {
 
 // `getLocal` is for supporting local bricks that aren't synced with the server. This feature is not implemented yet,
 // but there's some parts of it floating around. See https://github.com/pixiebrix/pixiebrix-extension/issues/14
-export async function add(obj: Package) {
+export async function add(object: Package) {
   const db = await getBrickDB();
-  await db.put(BRICK_STORE, obj);
+  await db.put(BRICK_STORE, object);
 }
 
 export async function syncRemote(kind: Kind, objs: Package[]) {
@@ -129,15 +134,15 @@ export async function syncRemote(kind: Kind, objs: Package[]) {
   const current = await tx.store.getAll();
 
   let deleteCnt = 0;
-  for (const obj of current) {
-    if (obj.kind === kind && obj.scope !== LOCAL_SCOPE) {
-      void tx.store.delete(getKey(obj));
+  for (const object of current) {
+    if (object.kind === kind && object.scope !== LOCAL_SCOPE) {
+      void tx.store.delete(getKey(object));
       deleteCnt++;
     }
   }
 
-  for (const obj of objs) {
-    void tx.store.put(obj);
+  for (const object of objs) {
+    void tx.store.put(object);
   }
 
   await tx.done;

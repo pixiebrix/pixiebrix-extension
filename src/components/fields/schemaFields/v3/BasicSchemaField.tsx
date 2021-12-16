@@ -54,7 +54,7 @@ import SchemaSelectWidget, {
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 
-const varOption: StringOption = {
+const variableOption: StringOption = {
   label: "Variable",
   value: "var",
   symbol: "⟮𝑥⟯",
@@ -155,7 +155,7 @@ function getToggleOptions({
         interpretValue: () =>
           Array.isArray(fieldSchema.default) ? fieldSchema.default : [],
       },
-      varOption
+      variableOption
     );
   }
 
@@ -180,7 +180,7 @@ function getToggleOptions({
             ? fieldSchema.default
             : {}) as UnknownObject,
       },
-      varOption
+      variableOption
     );
   }
 
@@ -196,7 +196,7 @@ function getToggleOptions({
             ? fieldSchema.default
             : false,
       },
-      varOption
+      variableOption
     );
   }
 
@@ -212,7 +212,7 @@ function getToggleOptions({
             ? String(fieldSchema.default)
             : null,
       },
-      varOption
+      variableOption
     );
   }
   // Using "else" here because we don't want to have both select and plain text
@@ -246,7 +246,7 @@ function getToggleOptions({
           };
         },
       },
-      varOption
+      variableOption
     );
   }
 
@@ -277,7 +277,7 @@ function getToggleOptions({
             : 0;
         },
       },
-      varOption
+      variableOption
     );
   }
 
@@ -307,7 +307,7 @@ function getToggleOptions({
             : 0;
         },
       },
-      varOption
+      variableOption
     );
   }
 
