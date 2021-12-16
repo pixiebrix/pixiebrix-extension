@@ -50,8 +50,9 @@ const EditorNodeConfigPanel: React.FC<{
   blockFieldName: string;
   blockId: RegistryId;
   blockError: string;
+  copyBlock: () => void;
   onRemoveNode: () => void;
-}> = ({ blockFieldName, blockId, blockError, onRemoveNode }) => {
+}> = ({ blockFieldName, blockId, blockError, copyBlock, onRemoveNode }) => {
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
@@ -112,7 +113,11 @@ const EditorNodeConfigPanel: React.FC<{
         </Col>
       </Row>
 
-      <VersionedBlockConfiguration name={blockFieldName} blockId={blockId} />
+      <VersionedBlockConfiguration
+        name={blockFieldName}
+        blockId={blockId}
+        copyBlock={copyBlock}
+      />
     </Col>
   );
 };

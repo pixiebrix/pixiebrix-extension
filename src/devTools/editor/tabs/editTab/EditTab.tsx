@@ -57,6 +57,7 @@ import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
 import AuthContext from "@/auth/AuthContext";
 import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
+import { RootState } from "@/devTools/store";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -155,10 +156,7 @@ const EditTab: React.FC<{
   );
 
   const addBlock = useCallback(
-    async (block: IBlock, beforeInstanceId?: UUID) => {
-      const insertIndex = beforeInstanceId
-        ? blockPipeline.findIndex((x) => x.instanceId === beforeInstanceId)
-        : blockPipeline.length;
+    async (block: IBlock, pipelineIndex: number) => {
       const outputKey = await generateFreshOutputKey(
         block,
         compact([
@@ -177,7 +175,7 @@ const EditTab: React.FC<{
       }
 
       const nextState = produce(values, (draft) => {
-        draft.extension.blockPipeline.splice(insertIndex, 0, newBlock);
+        draft.extension.blockPipeline.splice(pipelineIndex, 0, newBlock);
       });
       setFormValues(nextState);
       setActiveNodeId(newBlock.instanceId);
@@ -262,6 +260,63 @@ const EditTab: React.FC<{
     },
     [blockPipeline, setFormValues, values]
   );
+
+  const duplicateBlock = useCallback(
+    (instanceId: UUID) => {
+      const index = blockPipeline.findIndex(
+        (block) => block.instanceId === instanceId
+      );
+
+      const nextState = produce(values, (draft) => {
+        const pipeline = draft.extension.blockPipeline;
+        // Duplicate the block and give it a new instanceId
+        const duplicate: BlockConfig = {
+          // eslint-disable-next-line security/detect-object-injection -- from findIndex()
+          ...pipeline[index],
+          instanceId: uuidv4(),
+        };
+        // Insert the duplicate block at the next index
+        pipeline.splice(index + 1, 0, duplicate);
+      });
+      setFormValues(nextState);
+    },
+    [blockPipeline, setFormValues, values]
+  );
+
+  const copyBlock = useCallback(
+    (instanceId: UUID) => {
+      const blockToCopy = blockPipeline.find(
+        (block) => block.instanceId === instanceId
+      );
+      if (blockToCopy) {
+        dispatch(actions.copyBlockConfig(blockToCopy));
+      }
+    },
+    [blockPipeline, dispatch]
+  );
+
+  const copiedBlock = useSelector(
+    (state: RootState) => state.editor.copiedBlock
+  );
+  const pasteBlock = useMemo(() => {
+    if (copiedBlock === undefined) {
+      return;
+    }
+
+    return (pipelineIndex: number) => {
+      const nextState = produce(values, (draft) => {
+        const pipeline = draft.extension.blockPipeline;
+        // Give the block a new instanceId
+        const pastedBlock: BlockConfig = {
+          ...copiedBlock,
+          instanceId: uuidv4(),
+        };
+        // Insert the block
+        pipeline.splice(pipelineIndex, 0, pastedBlock);
+      });
+      setFormValues(nextState);
+    };
+  }, [copiedBlock, setFormValues, values]);
 
   const nodes = useMemo<EditorNodeProps[]>(() => {
     const blockNodes: EditorNodeProps[] = blockPipeline.map(
@@ -371,6 +426,8 @@ const EditTab: React.FC<{
             showAppend={showAppendNode}
             moveBlockUp={moveBlockUp}
             moveBlockDown={moveBlockDown}
+            duplicateBlock={duplicateBlock}
+            pasteBlock={pasteBlock}
           />
         </div>
         <div className={styles.configPanel}>
@@ -398,6 +455,9 @@ const EditTab: React.FC<{
                   blockError={blockError}
                   onRemoveNode={() => {
                     removeBlock(activeNodeId);
+                  }}
+                  copyBlock={() => {
+                    copyBlock(activeNodeId);
                   }}
                 />
               )}

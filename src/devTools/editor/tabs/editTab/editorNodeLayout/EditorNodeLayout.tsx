@@ -21,40 +21,17 @@ import EditorNode, {
   EditorNodeProps,
 } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPaste,
+  faPlus,
+  faPlusCircle,
+  faRecycle,
+} from "@fortawesome/free-solid-svg-icons";
 import { IBlock, RegistryId, UUID } from "@/core";
 import BlockModal from "@/components/brickModal/BrickModal";
 import useBrickRecommendations from "@/devTools/editor/tabs/editTab/useBrickRecommendations";
 import cx from "classnames";
-
-function renderActions(
-  onClick: () => void,
-  { isFinal }: { isFinal?: boolean } = {}
-) {
-  return (
-    <>
-      <div
-        className={cx(styles.actions, {
-          [styles.finalActions]: isFinal,
-        })}
-      >
-        <button type="button" onClick={onClick}>
-          {/* Don't replace this with `faPlus` because exact  centering of the
-          plus in a circle is only possible at certain pre-set sizes */}
-          <FontAwesomeIcon icon={faPlusCircle} />
-        </button>
-      </div>
-
-      {isFinal && (
-        <p className={styles.appendInfo}>
-          <small className="text-muted">
-            Add more bricks with the plus button
-          </small>
-        </p>
-      )}
-    </>
-  );
-}
+import TooltipIconButton from "@/components/TooltipIconButton";
 
 const addBrickCaption = (
   <span>
@@ -70,10 +47,12 @@ const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];
   activeNodeId: NodeId;
   relevantBlocksToAdd: IBlock[];
-  addBlock: (block: IBlock, beforeInstanceId?: UUID) => void;
+  addBlock: (block: IBlock, pipelineIndex: number) => void;
   showAppend: boolean;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
+  duplicateBlock: (instanceId: UUID) => void;
+  pasteBlock?: (pipelineIndex: number) => void;
 }> = ({
   nodes,
   activeNodeId,
@@ -82,23 +61,26 @@ const EditorNodeLayout: React.FC<{
   showAppend,
   moveBlockUp,
   moveBlockDown,
+  duplicateBlock,
+  pasteBlock,
 }) => {
   const recommendations: RegistryId[] = useBrickRecommendations();
 
   const canMoveAnything = nodes.length > 2;
+  const finalIndex = nodes.length - 1;
 
   return (
     <>
       {nodes.length > 0 &&
         nodes.map((nodeProps, index) => {
-          const { nodeId } = nodeProps;
+          const { nodeId, title } = nodeProps;
           // Editor nodes are displayed from top to bottom in array order,
           // so, "up" is lower in the array, and "down" is higher in the array.
           // Also, you cannot move the foundation node, which is always at
           // index 0.
           if (nodeId !== FOUNDATION_NODE_ID) {
             nodeProps.canMoveUp = index > 1; // Any nodes beyond the first non-foundation node
-            nodeProps.canMoveDown = index > 0 && index + 1 < nodes.length; // Not the first and not the last
+            nodeProps.canMoveDown = index > 0 && index < finalIndex; // Not the first and not the last
             nodeProps.onClickMoveUp = () => {
               moveBlockUp(nodeId);
             };
@@ -108,36 +90,63 @@ const EditorNodeLayout: React.FC<{
             };
           }
 
+          const showAddBlock = index < finalIndex || showAppend;
+          const showDuplicate = showAddBlock && index > 0;
+
           return (
-            <React.Fragment key={index}>
-              {nodeId !== FOUNDATION_NODE_ID && (
-                <BlockModal
-                  bricks={relevantBlocksToAdd}
-                  renderButton={(onClick) => renderActions(onClick)}
-                  recommendations={recommendations}
-                  selectCaption={addBrickCaption}
-                  onSelect={(block) => {
-                    addBlock(block, nodeId);
-                  }}
-                />
-              )}
+            <React.Fragment key={nodeId}>
               <EditorNode
                 active={nodeId === activeNodeId}
                 canMoveAnything={canMoveAnything}
                 {...nodeProps}
               />
+              <div
+                className={cx(styles.actions, {
+                  [styles.finalActions]: index === finalIndex,
+                })}
+              >
+                {showAddBlock && (
+                  <BlockModal
+                    bricks={relevantBlocksToAdd}
+                    renderButton={(onClick) => (
+                      <TooltipIconButton
+                        name={`add-node-${index}`}
+                        icon={faPlusCircle}
+                        onClick={onClick}
+                        tooltipText="Add a brick"
+                      />
+                    )}
+                    recommendations={recommendations}
+                    selectCaption={addBrickCaption}
+                    onSelect={(block) => {
+                      addBlock(block, index);
+                    }}
+                  />
+                )}
+                {showDuplicate && (
+                  <TooltipIconButton
+                    name={`duplicate-node-${index}`}
+                    icon={faRecycle}
+                    onClick={() => {
+                      duplicateBlock(nodeId);
+                    }}
+                    tooltipText={`Duplicate node ${title}`}
+                  />
+                )}
+                {pasteBlock && (
+                  <TooltipIconButton
+                    name={`paste-brick-${index}`}
+                    icon={faPaste}
+                    onClick={() => {
+                      pasteBlock(index);
+                    }}
+                    tooltipText="Paste copied brick"
+                  />
+                )}
+              </div>
             </React.Fragment>
           );
         })}
-      {showAppend && (
-        <BlockModal
-          bricks={relevantBlocksToAdd}
-          renderButton={(onClick) => renderActions(onClick, { isFinal: true })}
-          recommendations={recommendations}
-          selectCaption={addBrickCaption}
-          onSelect={addBlock}
-        />
-      )}
     </>
   );
 };
