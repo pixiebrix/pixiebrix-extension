@@ -92,6 +92,9 @@ const EditorNodeLayout: React.FC<{
 
           const showAddBlock = index < finalIndex || showAppend;
           const showDuplicate = showAddBlock && index > 0;
+          const isFinal = index === finalIndex;
+          const showAddMessage =
+            showAddBlock && isFinal && !showDuplicate && !pasteBlock;
 
           return (
             <React.Fragment key={nodeId}>
@@ -102,7 +105,7 @@ const EditorNodeLayout: React.FC<{
               />
               <div
                 className={cx(styles.actions, {
-                  [styles.finalActions]: index === finalIndex,
+                  [styles.finalActions]: isFinal,
                 })}
               >
                 {showAddBlock && (
@@ -144,6 +147,13 @@ const EditorNodeLayout: React.FC<{
                   />
                 )}
               </div>
+              {showAddMessage && (
+                <p className={styles.appendInfo}>
+                  <small className="text-muted">
+                    Add more bricks with the plus button
+                  </small>
+                </p>
+              )}
             </React.Fragment>
           );
         })}
