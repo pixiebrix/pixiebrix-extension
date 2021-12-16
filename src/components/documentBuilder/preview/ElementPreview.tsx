@@ -22,10 +22,10 @@ import {
   DocumentElement,
   isListElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
-import { getPreviewComponentDefinition } from "@/components/documentBuilder/documentTree";
 import AddElementAction from "./AddElementAction";
 import { useField } from "formik";
 import { getAllowedChildTypes } from "@/components/documentBuilder/allowedElementTypes";
+import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
 
 export type ElementPreviewProps = {
   elementName: string;

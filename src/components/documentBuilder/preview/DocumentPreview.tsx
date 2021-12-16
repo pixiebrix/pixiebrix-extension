@@ -23,7 +23,7 @@ import ElementPreview from "./ElementPreview";
 import { ROOT_ELEMENT_TYPES } from "@/components/documentBuilder/allowedElementTypes";
 import cx from "classnames";
 import previewStyles from "./ElementPreview.module.scss";
-import documentTreeStyles from "@/components/documentBuilder/documentTree.module.scss";
+import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
 import styles from "./DocumentPreview.module.scss";
 
 type DocumentPreviewProps = {
