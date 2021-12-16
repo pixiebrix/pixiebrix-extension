@@ -25,7 +25,6 @@ import {
   faPaste,
   faPlus,
   faPlusCircle,
-  faRecycle,
 } from "@fortawesome/free-solid-svg-icons";
 import { IBlock, RegistryId, UUID } from "@/core";
 import BlockModal from "@/components/brickModal/BrickModal";
@@ -51,7 +50,6 @@ const EditorNodeLayout: React.FC<{
   showAppend: boolean;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
-  duplicateBlock: (instanceId: UUID) => void;
   pasteBlock?: (pipelineIndex: number) => void;
 }> = ({
   nodes,
@@ -61,7 +59,6 @@ const EditorNodeLayout: React.FC<{
   showAppend,
   moveBlockUp,
   moveBlockDown,
-  duplicateBlock,
   pasteBlock,
 }) => {
   const recommendations: RegistryId[] = useBrickRecommendations();
@@ -73,7 +70,7 @@ const EditorNodeLayout: React.FC<{
     <>
       {nodes.length > 0 &&
         nodes.map((nodeProps, index) => {
-          const { nodeId, title } = nodeProps;
+          const { nodeId } = nodeProps;
           // Editor nodes are displayed from top to bottom in array order,
           // so, "up" is lower in the array, and "down" is higher in the array.
           // Also, you cannot move the foundation node, which is always at
@@ -91,10 +88,8 @@ const EditorNodeLayout: React.FC<{
           }
 
           const showAddBlock = index < finalIndex || showAppend;
-          const showDuplicate = showAddBlock && index > 0;
           const isFinal = index === finalIndex;
-          const showAddMessage =
-            showAddBlock && isFinal && !showDuplicate && !pasteBlock;
+          const showAddMessage = showAddBlock && isFinal && !pasteBlock;
 
           return (
             <React.Fragment key={nodeId}>
@@ -124,16 +119,6 @@ const EditorNodeLayout: React.FC<{
                     onSelect={(block) => {
                       addBlock(block, index);
                     }}
-                  />
-                )}
-                {showDuplicate && (
-                  <TooltipIconButton
-                    name={`duplicate-node-${index}`}
-                    icon={faRecycle}
-                    onClick={() => {
-                      duplicateBlock(nodeId);
-                    }}
-                    tooltipText={`Duplicate brick "${title}"`}
                   />
                 )}
                 {pasteBlock && (

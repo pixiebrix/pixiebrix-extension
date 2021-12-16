@@ -261,28 +261,6 @@ const EditTab: React.FC<{
     [blockPipeline, setFormValues, values]
   );
 
-  const duplicateBlock = useCallback(
-    (instanceId: UUID) => {
-      const index = blockPipeline.findIndex(
-        (block) => block.instanceId === instanceId
-      );
-
-      const nextState = produce(values, (draft) => {
-        const pipeline = draft.extension.blockPipeline;
-        // Duplicate the block and give it a new instanceId
-        const duplicate: BlockConfig = {
-          // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-          ...pipeline[index],
-          instanceId: uuidv4(),
-        };
-        // Insert the duplicate block at the next index
-        pipeline.splice(index + 1, 0, duplicate);
-      });
-      setFormValues(nextState);
-    },
-    [blockPipeline, setFormValues, values]
-  );
-
   const copyBlock = useCallback(
     (instanceId: UUID) => {
       const blockToCopy = blockPipeline.find(
@@ -426,7 +404,6 @@ const EditTab: React.FC<{
             showAppend={showAppendNode}
             moveBlockUp={moveBlockUp}
             moveBlockDown={moveBlockDown}
-            duplicateBlock={duplicateBlock}
             pasteBlock={pasteBlock}
           />
         </div>
