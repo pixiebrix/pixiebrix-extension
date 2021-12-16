@@ -160,8 +160,8 @@ export const traceErrorFactory: (
 });
 
 export const blockFactory = define<IBlock>({
-  id: (index: number) => validateRegistryId(`${TEST_BLOCK_ID}_${index}`),
-  name: (index: number) => `${TEST_BLOCK_ID} ${index}`,
+  id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
+  name: (i: number) => `${TEST_BLOCK_ID} ${i}`,
   inputSchema: null as Schema,
   defaultOptions: null,
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -190,7 +190,7 @@ export const blocksMapFactory: (
 
 export const blockConfigFactory = define<BlockConfig>({
   instanceId: () => uuidv4(),
-  id: (index: number) => validateRegistryId(`${TEST_BLOCK_ID}_${index}`),
+  id: (i: number) => validateRegistryId(`${TEST_BLOCK_ID}_${i}`),
   config: () => ({}),
 });
 
@@ -318,7 +318,7 @@ const internalFormStateFactory = define<FormState>({
   recipe: null,
 
   type: "panel" as ElementType,
-  label: (index: number) => `Element ${index}`,
+  label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   extensionPoint: extensionPointFactory,
 } as any);

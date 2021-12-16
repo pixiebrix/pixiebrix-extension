@@ -153,7 +153,7 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({
           </tr>
         </thead>
         <tbody>
-          {blueprint.extensionPoints.map((x, index) => {
+          {blueprint.extensionPoints.map((x, i) => {
             // Unless user is reinstalling, bricks should be toggled ON by default
             const shouldBeOn =
               !reinstall ||
@@ -163,9 +163,9 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({
               );
             return (
               <ConfigureRow
-                key={index}
+                key={i}
                 definition={x}
-                name={`extensions.${index}`}
+                name={`extensions.${i}`}
                 initialValue={shouldBeOn}
               />
             );

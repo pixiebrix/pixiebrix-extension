@@ -148,10 +148,10 @@ export function getProp(value: any, prop: string | number): unknown {
   return undefined;
 }
 
-function pickExternalProps(object: UnknownObject): UnknownObject {
+function pickExternalProps(obj: UnknownObject): UnknownObject {
   // Lodash's pickby was having issues with some getters
   return Object.fromEntries(
-    Object.entries(object).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key))
+    Object.entries(obj).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key))
   );
 }
 

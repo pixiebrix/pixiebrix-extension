@@ -170,7 +170,7 @@ function mutationSelector(
   const promise = new Promise<JQuery>((resolve) => {
     observer = initialize(
       selector,
-      (index: number, element: HTMLElement) => {
+      (i: number, element: HTMLElement) => {
         resolve($(element));
       },
       { target: target ?? document }

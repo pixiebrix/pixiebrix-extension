@@ -25,7 +25,7 @@ export function traverse<T = unknown>(
   count: number
 ): T | null {
   let current = source;
-  for (let index = 0; index < count && current; index++) {
+  for (let i = 0; i < count && current; i++) {
     current = next(current);
   }
 

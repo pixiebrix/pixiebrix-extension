@@ -30,7 +30,7 @@ const Effect: React.FunctionComponent<{
   onChange: (values: FormikValues) => void;
   delayMillis: number;
 }> = ({ values, onChange, delayMillis }) => {
-  const [previous, setPrevious] = useState(values);
+  const [prev, setPrev] = useState(values);
 
   const [debounced] = useDebounce(values, delayMillis, {
     leading: true,
@@ -40,13 +40,13 @@ const Effect: React.FunctionComponent<{
   useEffect(
     () => {
       // Formik changing the reference, so can't use reference equality here
-      if (!isEqual(previous, debounced)) {
+      if (!isEqual(prev, debounced)) {
         onChange(debounced);
-        setPrevious(debounced);
+        setPrev(debounced);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- leave off prev so it doesn't double-trigger the effect
-    [setPrevious, debounced, onChange]
+    [setPrev, debounced, onChange]
   );
 
   // Don't render a react node

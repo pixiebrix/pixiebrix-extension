@@ -217,14 +217,14 @@ export const recordError = liftBackground(
         // call here also handles deserialized errors properly.
         // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
         // See https://github.com/sindresorhus/serialize-error/issues/48
-        const errorObject = deserializeError(error);
+        const errorObj = deserializeError(error);
 
         if (hasCancelRootCause(error)) {
           // NOP - no reason to send to Rollbar
         } else if (hasBusinessRootCause(error)) {
-          rollbar.debug(message, errorObject);
+          rollbar.debug(message, errorObj);
         } else {
-          rollbar.error(message, errorObject);
+          rollbar.error(message, errorObj);
         }
       }
 

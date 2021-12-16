@@ -31,8 +31,8 @@ export function walk(node: Node | Element, visitor: Visitor): void {
   // Could alternatively use TreeWalker similar to https://github.com/johnmichel/Library-Detector-for-Chrome/
 
   if (node.childNodes) {
-    for (let index = 0, l = node.childNodes.length; index < l; index++) {
-      const child = node.childNodes[index];
+    for (let i = 0, l = node.childNodes.length; i < l; i++) {
+      const child = node.childNodes[i];
       const stop = visitor.visit(child);
       if (!stop) {
         walk(child, visitor);

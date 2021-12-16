@@ -68,19 +68,16 @@ export function mostCommonElement<T>(items: T[]): T {
   return flow(countBy, entries, partialRight(maxBy, last), head)(items) as T;
 }
 
-export function isGetter(
-  object: Record<string, unknown>,
-  prop: string
-): boolean {
-  return Boolean(Object.getOwnPropertyDescriptor(object, prop)?.get);
+export function isGetter(obj: Record<string, unknown>, prop: string): boolean {
+  return Boolean(Object.getOwnPropertyDescriptor(obj, prop)?.get);
 }
 
 /**
  * Return all property names (including non-enumerable) in the prototype hierarchy.
  */
-export function getAllPropertyNames(object: Record<string, unknown>): string[] {
+export function getAllPropertyNames(obj: Record<string, unknown>): string[] {
   const props = new Set<string>();
-  let current = object;
+  let current = obj;
   while (current) {
     for (const name of Object.getOwnPropertyNames(current)) {
       props.add(name);
@@ -103,13 +100,11 @@ export async function waitAnimationFrame(): Promise<void> {
 /**
  * Returns a new object with all the values from the original resolved
  */
-export async function resolveObject<T>(
-  object: Record<string, Promise<T>>
+export async function resolveObj<T>(
+  obj: Record<string, Promise<T>>
 ): Promise<Record<string, T>> {
   return Object.fromEntries(
-    await Promise.all(
-      Object.entries(object).map(async ([k, v]) => [k, await v])
-    )
+    await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v]))
   );
 }
 
@@ -183,31 +178,31 @@ export function isPrimitive(value: unknown): value is Primitive {
  * @see pickBy
  */
 export function deepPickBy(
-  object: unknown,
+  obj: unknown,
   predicate: (value: unknown) => boolean
 ): unknown {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#typeof_null
   // `typeof null === "object"`, so have to check for it before the "object" check below
-  if (object == null) {
+  if (obj == null) {
     return null;
   }
 
-  if (Array.isArray(object)) {
-    return object.map((item) => deepPickBy(item, predicate));
+  if (Array.isArray(obj)) {
+    return obj.map((item) => deepPickBy(item, predicate));
   }
 
-  if (typeof object === "object") {
+  if (typeof obj === "object") {
     return mapValues(
-      pickBy(object, (value) => predicate(value)),
+      pickBy(obj, (value) => predicate(value)),
       (value) => deepPickBy(value, predicate)
     );
   }
 
-  return object;
+  return obj;
 }
 
-export function removeUndefined(object: unknown): unknown {
-  return deepPickBy(object, (value: unknown) => typeof value !== "undefined");
+export function removeUndefined(obj: unknown): unknown {
+  return deepPickBy(obj, (value: unknown) => typeof value !== "undefined");
 }
 
 export function boolean(value: unknown): boolean {
@@ -236,12 +231,12 @@ export function isObject(value: unknown): value is Record<string, unknown> {
   return value && typeof value === "object";
 }
 
-export function clearObject(object: Record<string, unknown>): void {
-  for (const member in object) {
-    if (Object.prototype.hasOwnProperty.call(object, member)) {
+export function clearObject(obj: Record<string, unknown>): void {
+  for (const member in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, member)) {
       // Checking to ensure own property
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
-      delete object[member];
+      delete obj[member];
     }
   }
 }
@@ -310,15 +305,15 @@ export function isNullOrBlank(value: unknown): boolean {
   return typeof value === "string" && value.trim() === "";
 }
 
-export function excludeUndefined(object: unknown): unknown {
-  if (isPlainObject(object) && typeof object === "object") {
+export function excludeUndefined(obj: unknown): unknown {
+  if (isPlainObject(obj) && typeof obj === "object") {
     return mapValues(
-      pickBy(object, (x) => x !== undefined),
+      pickBy(obj, (x) => x !== undefined),
       excludeUndefined
     );
   }
 
-  return object;
+  return obj;
 }
 
 export class PromiseCancelled extends Error {
@@ -481,11 +476,11 @@ export function isApiVersionAtLeast(
   return isNum >= atLeastNum;
 }
 
-export function getProperty(object: UnknownObject, property: string) {
-  if (Object.prototype.hasOwnProperty.call(object, property)) {
+export function getProperty(obj: UnknownObject, property: string) {
+  if (Object.prototype.hasOwnProperty.call(obj, property)) {
     // Checking for hasOwnProperty
     // eslint-disable-next-line security/detect-object-injection
-    return object[property];
+    return obj[property];
   }
 }
 

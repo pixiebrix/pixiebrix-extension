@@ -115,9 +115,7 @@ function lookupAuthId(
     : authOptions.find((x) => x.value === dependency.config)?.value;
 }
 
-function selectTopLevelVariables(
-  state: Pick<FormState, "extension">
-): Set<string> {
+function selectTopLevelVars(state: Pick<FormState, "extension">): Set<string> {
   const pipeline = castArray(state.extension.blockPipeline ?? []);
   const identifiers = pipeline.flatMap((blockConfig) => {
     const expressions = Object.values(blockConfig.config).filter(
@@ -137,7 +135,7 @@ function selectTopLevelVariables(
 export function produceExcludeUnusedDependencies<
   T extends ServiceSlice = ServiceSlice
 >(state: T): T {
-  const used = selectTopLevelVariables(state);
+  const used = selectTopLevelVars(state);
   return produce(state, (draft) => {
     draft.services = draft.services.filter((x) =>
       used.has(keyToFieldValue(x.outputKey).__value__)

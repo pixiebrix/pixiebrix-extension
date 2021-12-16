@@ -89,40 +89,36 @@ attachListener(DETECT_FRAMEWORK_VERSIONS, async () => detectLibraries());
 
 function readPathSpec(
   // eslint-disable-next-line @typescript-eslint/ban-types -- object because we need to pass in window
-  object: object,
+  obj: object,
   pathSpec?: PathSpec,
   proxy: ReadProxy = noopProxy
 ) {
   const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
 
   if (!pathSpec) {
-    return toJS(object);
+    return toJS(obj);
   }
 
   if (Array.isArray(pathSpec) || typeof pathSpec === "string") {
     return Object.fromEntries(
-      castArray(pathSpec).map((prop) => [prop, toJS(get(object, prop))])
+      castArray(pathSpec).map((prop) => [prop, toJS(get(obj, prop))])
     );
   }
 
   const values: Record<string, unknown> = {};
-  for (const [key, pathOrObject] of Object.entries(pathSpec)) {
-    if (typeof pathOrObject === "object") {
-      const { path, args } = pathOrObject;
+  for (const [key, pathOrObj] of Object.entries(pathSpec)) {
+    if (typeof pathOrObj === "object") {
+      const { path, args } = pathOrObj;
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(object as UnknownObject, path, {
+      values[key] = getPropByPath(obj as UnknownObject, path, {
         args: args as UnknownObject,
         proxy,
       });
     } else {
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(
-        object as Record<string, unknown>,
-        pathOrObject,
-        {
-          proxy,
-        }
-      );
+      values[key] = getPropByPath(obj as Record<string, unknown>, pathOrObj, {
+        proxy,
+      });
     }
   }
 

@@ -32,7 +32,7 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { fromJS as blockFactory } from "@/blocks/transformers/blockFactory";
-import { resolveObject } from "@/utils";
+import { resolveObj } from "@/utils";
 import {
   ExtensionPointConfig as ExtensionDefinition,
   RecipeDefinition,
@@ -48,8 +48,8 @@ interface RawConfig<T extends string = string> extends Config {
   kind: T;
 }
 
-export function makeInternalId(object: UnknownObject): RegistryId {
-  const hash = objectHash(object);
+export function makeInternalId(obj: UnknownObject): RegistryId {
+  const hash = objectHash(obj);
   return `@internal/${hash}` as RegistryId;
 }
 
@@ -58,24 +58,19 @@ async function ensureBlock(
   config: RawConfig<"reader" | "component">
 ) {
   // Don't include outputSchema in because it can't affect functionality. Include it in the item in the future?
-  const object = pick(config, [
-    "inputSchema",
-    "kind",
-    "pipeline",
-    "definition",
-  ]);
-  const registryId = makeInternalId(object);
+  const obj = pick(config, ["inputSchema", "kind", "pipeline", "definition"]);
+  const registryId = makeInternalId(obj);
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (await blockRegistry.exists(registryId)) {
     console.debug(
-      `Internal ${object.kind} already exists: ${registryId}; using existing block`
+      `Internal ${obj.kind} already exists: ${registryId}; using existing block`
     );
     return blockRegistry.lookup(registryId);
   }
 
   const item = blockFactory({
-    ...object,
+    ...obj,
     metadata: {
       id: registryId,
       name: `Anonymous ${config.kind}`,
@@ -118,7 +113,7 @@ async function ensureReaders(
   }
 
   if (isPlainObject(reader)) {
-    return resolveObject(
+    return resolveObj(
       mapValues(reader as Record<string, unknown>, async (x) =>
         ensureReaders(definitions, x)
       )
@@ -146,19 +141,19 @@ async function ensureExtensionPoint(
     config.definition.reader
   );
 
-  const object = pick(config, ["kind", "definition"]);
-  const registryId = makeInternalId(object);
+  const obj = pick(config, ["kind", "definition"]);
+  const registryId = makeInternalId(obj);
 
   // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (await extensionPointRegistry.exists(registryId)) {
     console.debug(
-      `Internal ${object.kind} already exists: ${registryId}; using existing block`
+      `Internal ${obj.kind} already exists: ${registryId}; using existing block`
     );
     return extensionPointRegistry.lookup(registryId);
   }
 
   const item = extensionPointFactory({
-    ...object,
+    ...obj,
     metadata: {
       id: registryId,
       name: "Anonymous extensionPoint",
@@ -211,7 +206,7 @@ export async function resolveDefinitions<T extends Config = EmptyConfig>(
   });
 
   return produce(extension, async (draft) => {
-    const ensured = await resolveObject(
+    const ensured = await resolveObj(
       mapValues(draft.definitions, async (config) =>
         ensureInner(draft.definitions, config)
       )
@@ -237,7 +232,7 @@ export async function resolveRecipe(
     return selected as ResolvedExtensionPointConfig[];
   }
 
-  const ensured = await resolveObject(
+  const ensured = await resolveObj(
     mapValues(recipe.definitions, async (config) =>
       ensureInner(recipe.definitions, config)
     )

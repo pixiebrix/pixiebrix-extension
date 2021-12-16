@@ -54,7 +54,6 @@ import SchemaSelectWidget, {
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 
-// eslint-disable-next-line unicorn/prevent-abbreviations -- It refers to the `var` value
 const varOption: StringOption = {
   label: "Variable",
   value: "var",

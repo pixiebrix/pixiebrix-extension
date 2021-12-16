@@ -19,8 +19,8 @@ import { withReadWindow } from "@/common";
 import { ReaderOutput } from "@/core";
 import { registerFactory } from "@/blocks/readers/factory";
 
-type PathSpecObject = Record<string, string>;
-export type PathSpec = string | PathSpecObject;
+type PathSpecObj = Record<string, string>;
+export type PathSpec = string | PathSpecObj;
 
 export interface WindowConfig {
   type: "window";
@@ -30,11 +30,11 @@ export interface WindowConfig {
 
 async function handleFlatten(
   pathSpec: PathSpec,
-  factory: (arg: PathSpecObject) => Promise<any>
+  factory: (arg: PathSpecObj) => Promise<any>
 ): Promise<any> {
-  const pathSpecObject: PathSpecObject =
+  const pathSpecObj: PathSpecObj =
     typeof pathSpec === "string" ? { value: pathSpec } : pathSpec;
-  const values = await factory(pathSpecObject);
+  const values = await factory(pathSpecObj);
   return typeof values === "object" ? values.value : values;
 }
 

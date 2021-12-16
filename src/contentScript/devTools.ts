@@ -28,7 +28,7 @@ import {
 } from "@/runtime/reducePipeline";
 import { ApiVersion, BlockArgContext, IReader, RegistryId } from "@/core";
 import { selectedElement } from "@/devTools/getSelectedElement";
-import { isNullOrBlank, resolveObject } from "@/utils";
+import { isNullOrBlank, resolveObj } from "@/utils";
 import { BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/tests/ConsoleLogger";
@@ -172,7 +172,7 @@ export async function readSelected() {
       htmlData: $(selectedElement).data(),
     };
 
-    const frameworkData = await resolveObject(
+    const frameworkData = await resolveObj(
       Object.fromEntries(
         [...FRAMEWORK_ADAPTERS.keys()].map((framework) => [
           framework,

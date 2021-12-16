@@ -68,9 +68,9 @@ function outerHTML($element: JQuery<HTMLElement | Text>): string {
   return $("<div>").append($element.clone()).html();
 }
 
-function escapeDoubleQuotes(string: string): string {
+function escapeDoubleQuotes(str: string): string {
   // https://gist.github.com/getify/3667624
-  return string.replace(/\\([\S\s])|(")/g, "\\$1$2");
+  return str.replace(/\\([\S\s])|(")/g, "\\$1$2");
 }
 
 /**
@@ -292,19 +292,19 @@ function commonPanelStructure(
   setCommonAttributes($common, $items);
 
   // Heuristic that assumes tag matches from the beginning
-  for (let index = 0; index < proto.children.length; index++) {
-    const protoChild = proto.children.item(index) as HTMLElement;
+  for (let i = 0; i < proto.children.length; i++) {
+    const protoChild = proto.children.item(i) as HTMLElement;
     const $protoChild = $(protoChild);
 
     if (
-      $items.toArray().every((x) => index < x.children.length) &&
-      uniq($items.toArray().map((x) => x.children.item(index).tagName))
-        .length === 1 &&
+      $items.toArray().every((x) => i < x.children.length) &&
+      uniq($items.toArray().map((x) => x.children.item(i).tagName)).length ===
+        1 &&
       (!headingInserted ||
-        LAYOUT_TAGS.includes(proto.children.item(index).tagName.toLowerCase()))
+        LAYOUT_TAGS.includes(proto.children.item(i).tagName.toLowerCase()))
     ) {
       const $children = $items.map(function () {
-        return this.children.item(index) as HTMLElement;
+        return this.children.item(i) as HTMLElement;
       });
       const [inner, innerState] = commonPanelStructure($children, {
         bodyInserted,
@@ -324,7 +324,7 @@ function commonPanelStructure(
     } else if (
       !inHeader &&
       !bodyInserted &&
-      !LAYOUT_TAGS.includes(proto.children.item(index).tagName.toLowerCase())
+      !LAYOUT_TAGS.includes(proto.children.item(i).tagName.toLowerCase())
     ) {
       $common.append(document.createTextNode("{{{ body }}}"));
       bodyInserted = true;
@@ -346,8 +346,8 @@ function buildHeader(proto: HTMLElement): [JQuery, boolean] {
 
   let inserted = false;
 
-  for (let index = 0; index < proto.children.length; index++) {
-    const child = proto.children.item(index) as HTMLElement;
+  for (let i = 0; i < proto.children.length; i++) {
+    const child = proto.children.item(i) as HTMLElement;
 
     // Recurse structurally
     const [childHeader, childInserted] = buildHeader(child);
@@ -375,8 +375,8 @@ function buildBody(proto: HTMLElement): [JQuery<HTMLElement | Text>, boolean] {
   const $inferred = $(`<${proto.tagName.toLowerCase()}>`);
   setCommonAttributes($inferred, $(proto));
 
-  for (let index = 0; index < proto.children.length; index++) {
-    const child = proto.children.item(index) as HTMLElement;
+  for (let i = 0; i < proto.children.length; i++) {
+    const child = proto.children.item(i) as HTMLElement;
     const childTag = child.tagName.toLowerCase();
 
     if (LAYOUT_TAGS.includes(childTag)) {
@@ -401,8 +401,8 @@ export function buildSinglePanelElement(
   const $inferred = $(`<${proto.tagName.toLowerCase()}>`);
   setCommonAttributes($inferred, $(proto));
 
-  for (let index = 0; index < proto.children.length; index++) {
-    const child = proto.children.item(index) as HTMLElement;
+  for (let i = 0; i < proto.children.length; i++) {
+    const child = proto.children.item(i) as HTMLElement;
     const $child = $(child);
 
     if (!headingInserted && HEADER_TAGS.some((tag) => $child.has(tag))) {

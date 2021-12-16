@@ -25,7 +25,7 @@ import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
 import { schemaSupportsTemplates } from "@/components/fields/schemaFields/v3/BasicSchemaField";
 
-function isVariableValue(value: string): boolean {
+function isVarValue(value: string): boolean {
   return value.startsWith("@") && !value.includes(" ");
 }
 
@@ -65,7 +65,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
       }) => {
         const changeValue = target.value;
         // Automatically switch to var if user types "@" in the input
-        if (templateEngine !== "var" && isVariableValue(changeValue)) {
+        if (templateEngine !== "var" && isVarValue(changeValue)) {
           setValue({
             __type__: "var",
             __value__: changeValue,
@@ -73,10 +73,10 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
         } else if (
           templateEngine === "var" &&
           supportsTemplates &&
-          !isVariableValue(changeValue)
+          !isVarValue(changeValue)
         ) {
           const trimmed = trim(changeValue);
-          const templateValue = isVariableValue(trimmed)
+          const templateValue = isVarValue(trimmed)
             ? changeValue.replace(trimmed, `{{${trimmed}}}`)
             : changeValue;
           setValue({

@@ -18,7 +18,7 @@
 import { RegistryId, Schema, ServiceContext, ServiceDependency } from "@/core";
 import { services } from "@/background/messenger/api";
 import { pickBy } from "lodash";
-import { resolveObject } from "@/utils";
+import { resolveObj } from "@/utils";
 
 export const SERVICE_FIELD_REFS = [
   "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",
@@ -62,7 +62,7 @@ export async function makeServiceContext(
     };
   };
 
-  return resolveObject(
+  return resolveObj(
     Object.fromEntries(
       dependencies.map((dependency) => [
         `@${dependency.outputKey}`,

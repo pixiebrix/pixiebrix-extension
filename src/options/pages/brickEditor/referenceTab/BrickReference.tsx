@@ -35,7 +35,7 @@ import BlockResult from "./BlockResult";
 import { isOfficial } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import { find } from "@/registry/localRegistry";
-import { brickToYaml } from "@/utils/objectToYaml";
+import { brickToYaml } from "@/utils/objToYaml";
 import { useGetOrganizationsQuery } from "@/services/api";
 
 const BrickReference: React.FunctionComponent<{
