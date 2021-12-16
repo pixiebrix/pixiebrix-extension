@@ -33,6 +33,8 @@ import { deleteCachedAuthData } from "@/background/messenger/api";
 import { ServicesState } from "@/options/slices";
 import useNotifications from "@/hooks/useNotifications";
 import styles from "./PrivateServicesCard.module.scss";
+import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
+import { faEdit } from "@fortawesome/free-regular-svg-icons";
 
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
@@ -90,7 +92,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           servers or shared with your team
         </p>
       </Card.Body>
-      <Table responsive>
+      <Table>
         <thead>
           <tr>
             <th>Label</th>
@@ -101,7 +103,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         <tbody>
           {isLoggedIn && (
             <tr>
-              <td>
+              <td className="text-wrap">
                 Zapier <i>&ndash; use to connect to PixieBrix from Zapier</i>
               </td>
               <td className="text-muted small">N/A</td>
@@ -148,32 +150,33 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                   </div>
                 </td>
                 <td>
-                  <Button
-                    style={{ width: 100 }}
-                    variant="info"
-                    size="sm"
-                    onClick={() => {
-                      navigate(
-                        `/services/${encodeURIComponent(configuredService.id)}`
-                      );
-                    }}
-                  >
-                    Configure
-                  </Button>
-
-                  {service.isOAuth2 || service.isToken ? (
-                    <Button
-                      size="sm"
-                      variant="dark"
-                      onClick={async () => resetAuth(configuredService.id)}
-                    >
-                      <FontAwesomeIcon icon={faSignOutAlt} /> Reset Token
-                    </Button>
-                  ) : (
-                    <Button size="sm" variant="outline-dark" disabled>
-                      <FontAwesomeIcon icon={faSignOutAlt} /> Reset Token
-                    </Button>
-                  )}
+                  <EllipsisMenu
+                    items={[
+                      {
+                        title: (
+                          <>
+                            <FontAwesomeIcon icon={faEdit} /> Configure
+                          </>
+                        ),
+                        action: () => {
+                          navigate(
+                            `/services/${encodeURIComponent(
+                              configuredService.id
+                            )}`
+                          );
+                        },
+                      },
+                      {
+                        title: (
+                          <>
+                            <FontAwesomeIcon icon={faSignOutAlt} /> Reset Token
+                          </>
+                        ),
+                        action: async () => resetAuth(configuredService.id),
+                        hide: !service.isOAuth2 && !service.isToken,
+                      },
+                    ]}
+                  />
                 </td>
               </tr>
             );
