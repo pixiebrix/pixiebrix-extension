@@ -28,7 +28,7 @@ import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
 
 export type ElementPreviewProps = {
   elementName: string;
-  // An element config haging all expressions unwrapped, different from what is stored in Formik
+  // An element config having all expressions unwrapped, different from what is stored in Formik
   previewElement: DocumentElement;
   activeElement: string | null;
   setActiveElement: (name: string | null) => void;

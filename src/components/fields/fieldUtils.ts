@@ -16,7 +16,7 @@
  */
 
 import { Schema, SchemaDefinition } from "@/core";
-import { isDeferExpression, isTemplateExpression } from "@/runtime/mapArgs";
+import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { Draft, produce } from "immer";
 
