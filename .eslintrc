@@ -43,7 +43,7 @@
           "var": false,
           "vars": false
         },
-        "ignore": ["semVer", "SemVer", "KeyVar"]
+        "ignore": ["semVer", "SemVer"]
       }
     ],
 
