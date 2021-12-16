@@ -37,6 +37,7 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
 import styles from "./Editor.module.scss";
+import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -57,11 +58,7 @@ const Editor: React.FunctionComponent = () => {
     beta,
   } = useSelector(selectEditor);
 
-  const selectedElement = useMemo(
-    () =>
-      activeElement ? elements.find((x) => x.uuid === activeElement) : null,
-    [elements, activeElement]
-  );
+  const selectedElement = useSelector(selectActiveElement);
 
   const cancelInsert = useCallback(async () => {
     dispatch(actions.toggleInsert(null));
