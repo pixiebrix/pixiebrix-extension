@@ -23,6 +23,9 @@ import {
   SEARCH_WINDOW,
 } from "@/messaging/constants";
 
+export const NOFICATIONS_Z_INDEX = 2_147_483_647;
+export const MAX_Z_INDEX = NOFICATIONS_Z_INDEX - 1; // Let notifications always be higher
+
 type ReadSpec = <T extends Record<string, string>>(arg: {
   pathSpec: T;
   waitMillis?: number;
