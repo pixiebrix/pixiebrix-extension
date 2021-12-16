@@ -62,7 +62,7 @@ export function frameworkReadFactory(
       waitMillis,
       traverseUp,
       optional,
-      attrs,
+      attrs: attributes,
       pathSpec,
     } = reader;
 
@@ -79,9 +79,9 @@ export function frameworkReadFactory(
       waitMillis,
       optional,
       traverseUp,
-      pathSpec: attrs
+      pathSpec: attributes
         ? Object.fromEntries(
-            castArray(attrs).map((attribute) => [
+            castArray(attributes).map((attribute) => [
               attribute,
               `attrs.${attribute}`,
             ])
