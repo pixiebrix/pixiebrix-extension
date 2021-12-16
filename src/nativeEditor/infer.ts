@@ -68,9 +68,9 @@ function outerHTML($element: JQuery<HTMLElement | Text>): string {
   return $("<div>").append($element.clone()).html();
 }
 
-function escapeDoubleQuotes(string_: string): string {
+function escapeDoubleQuotes(string: string): string {
   // https://gist.github.com/getify/3667624
-  return string_.replace(/\\([\S\s])|(")/g, "\\$1$2");
+  return string.replace(/\\([\S\s])|(")/g, "\\$1$2");
 }
 
 /**
