@@ -37,7 +37,7 @@ import { useTitle } from "@/hooks/title";
 import useFetch from "@/hooks/useFetch";
 import useNotifications from "@/hooks/useNotifications";
 import { useParams } from "react-router";
-import { IService, RawServiceConfiguration } from "@/core";
+import { IService, RawServiceConfiguration, UUID } from "@/core";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -66,6 +66,8 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     selectConfiguredServices
   );
 
+  const { id: configurationId } = useParams<{ id: UUID }>();
+
   const [newService, setNewService] = useState<IService>(null);
   const [
     newConfiguration,
@@ -75,8 +77,6 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const [activeTab, setTab] = useState("private");
 
   const notify = useNotifications();
-
-  const { id: configurationId } = useParams<{ id: string }>();
 
   const {
     activeConfiguration,
@@ -90,8 +90,13 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     async (config) => {
       updateServiceConfig(config);
       notify.success(
-        `Updated your private configuration for ${activeService.name}`
+        `${newService ? "Created" : "Updated"} private configuration for ${
+          (activeService ?? newService)?.name
+        }.`
       );
+
+      setNewConfiguration(null);
+      setNewService(null);
 
       await persistor.flush();
 
@@ -108,13 +113,12 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
       navigate("/services");
     },
-    [updateServiceConfig, activeService, notify, navigate]
+    [updateServiceConfig, notify, activeService, newService, navigate]
   );
 
   const handleDelete = useCallback(
     async (id) => {
       deleteServiceConfig({ id });
-
       notify.success(`Deleted private configuration for ${activeService.name}`);
 
       await persistor.flush();
@@ -170,17 +174,19 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
           }}
         />
       )}
-      {configurationId && (
-        <ServiceEditorModal
-          configuration={activeConfiguration ?? newConfiguration}
-          service={activeService ?? newService}
-          onDelete={handleDelete}
-          onClose={() => {
-            navigate("/services");
-          }}
-          onSave={handleSave}
-        />
-      )}
+      {configurationId &&
+        ((newService && newConfiguration) ||
+          (activeService && activeConfiguration)) && (
+          <ServiceEditorModal
+            configuration={activeConfiguration ?? newConfiguration}
+            service={activeService ?? newService}
+            onDelete={activeConfiguration && handleDelete}
+            onClose={() => {
+              navigate("/services");
+            }}
+            onSave={handleSave}
+          />
+        )}
       <Row>
         <Col>
           <ConnectExtensionCard />
@@ -224,8 +230,11 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
                 services={serviceDefinitions}
                 // TODO: rename onCreate to onSelect
                 onCreate={(config) => {
-                  //updateServiceConfig(config);
                   setNewConfiguration(config);
+                  const baseService = (serviceDefinitions ?? []).find(
+                    (x) => x.id === config.serviceId
+                  );
+                  setNewService(baseService);
                   navigate(`/services/${encodeURIComponent(config.id)}`);
                 }}
               />

@@ -90,6 +90,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
           },
           label: {
             type: "string",
+            required: true,
           },
           // $RefParse mutates the schema
           config: cloneDeep(service.schema),

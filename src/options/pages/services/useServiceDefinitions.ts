@@ -17,7 +17,7 @@
 
 import { useSelector } from "react-redux";
 import { RootState } from "@/options/store";
-import { IService, RawServiceConfiguration } from "@/core";
+import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { useParams } from "react-router";
 import { useMemo } from "react";
 import { sortBy } from "lodash";
@@ -43,7 +43,7 @@ function useServiceDefinitions(): ServiceDefinitions {
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
     selectConfiguredServices
   );
-  const { id: configurationId } = useParams<{ id: string }>();
+  const { id: configurationId } = useParams<{ id: UUID }>();
 
   const showZapier = configurationId === ZAPIER_SLUG;
 
