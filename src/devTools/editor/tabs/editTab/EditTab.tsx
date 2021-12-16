@@ -285,16 +285,18 @@ const EditTab: React.FC<{
       const nextState = produce(values, (draft) => {
         const pipeline = draft.extension.blockPipeline;
         // Give the block a new instanceId
+        const newInstanceId = uuidv4();
         const pastedBlock: BlockConfig = {
           ...copiedBlock,
-          instanceId: uuidv4(),
+          instanceId: newInstanceId,
         };
         // Insert the block
         pipeline.splice(pipelineIndex, 0, pastedBlock);
+        dispatch(actions.setElementActiveNodeId(newInstanceId));
       });
       setFormValues(nextState);
     };
-  }, [copiedBlock, setFormValues, values]);
+  }, [copiedBlock, dispatch, setFormValues, values]);
 
   const nodes = useMemo<EditorNodeProps[]>(() => {
     const blockNodes: EditorNodeProps[] = blockPipeline.map(
