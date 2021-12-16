@@ -16,7 +16,7 @@
  */
 
 import {
-  isBackgroundPage,
+  isBackground,
   isContentScript,
   isExtensionContext,
 } from "webext-detect-page";
@@ -45,9 +45,8 @@ function createError(
 const contexts = ["extension", "background", "contentScript"] as const;
 const contextMap = new Map<typeof contexts[number], () => boolean>([
   ["extension", isExtensionContext],
-  ["background", isBackgroundPage],
+  ["background", isBackground],
   ["contentScript", isContentScript],
-  ["extension", isExtensionContext],
 ]);
 
 /**

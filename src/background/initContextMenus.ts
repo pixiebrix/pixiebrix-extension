@@ -54,7 +54,7 @@ async function preloadAllContextMenus(): Promise<void> {
   await preloadContextMenus(resolved);
 }
 
-export default (): void => {
+export default function initContextMenus(): void {
   expectContext("background");
   void preloadAllContextMenus();
-};
+}

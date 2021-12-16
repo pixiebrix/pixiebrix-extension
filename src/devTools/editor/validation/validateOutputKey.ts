@@ -19,10 +19,8 @@ import { BlockPipeline } from "@/blocks/types";
 import { BlockType } from "@/blocks/util";
 import { joinName } from "@/utils";
 import { isEmpty, set } from "lodash";
-import {
-  BlocksMap,
-  FormikErrorTree,
-} from "@/devTools/editor/tabs/editTab/editTabTypes";
+import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
+import { TypedBlockMap } from "@/blocks/registry";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 
@@ -40,7 +38,7 @@ function setOutputKeyError(
 function validateOutputKey(
   pipelineErrors: FormikErrorTree,
   pipeline: BlockPipeline,
-  allBlocks: BlocksMap
+  allBlocks: TypedBlockMap
 ) {
   // No blocks, no validation
   if (pipeline.length === 0 || isEmpty(allBlocks)) {
@@ -51,7 +49,7 @@ function validateOutputKey(
     let errorMessage: string;
     // eslint-disable-next-line security/detect-object-injection
     const pipelineBlock = pipeline[blockIndex];
-    const blockType = allBlocks[pipelineBlock.id]?.type;
+    const blockType = allBlocks.get(pipelineBlock.id)?.type;
 
     if (blockTypesWithEmptyOutputKey.includes(blockType)) {
       if (!pipelineBlock.outputKey) {

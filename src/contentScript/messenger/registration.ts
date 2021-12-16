@@ -59,6 +59,7 @@ import { cancelSelect, selectElement } from "@/nativeEditor/selector";
 import { runExtensionPointReader } from "@/nativeEditor/dynamic";
 import {
   runEffectPipeline,
+  runMapArgs,
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol";
 
@@ -107,6 +108,7 @@ declare global {
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_EFFECT_PIPELINE: typeof runEffectPipeline;
+    RUN_MAP_ARGS: typeof runMapArgs;
   }
 }
 
@@ -153,4 +155,5 @@ registerMethods({
 
   RUN_RENDERER_PIPELINE: runRendererPipeline,
   RUN_EFFECT_PIPELINE: runEffectPipeline,
+  RUN_MAP_ARGS: runMapArgs,
 });

@@ -24,9 +24,9 @@ import EditorNodeLayout, {
 import { useFormikContext } from "formik";
 import { BlockConfig } from "@/blocks/types";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
+import { BlockType, defaultBlockConfig } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
-import blockRegistry from "@/blocks/registry";
+import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 import { compact } from "lodash";
 import { IBlock, OutputKey, UUID } from "@/core";
 import { produce } from "immer";
@@ -50,7 +50,6 @@ import { produceExcludeUnusedDependencies as produceExcludeUnusedDependenciesV3 
 import usePipelineField, {
   PIPELINE_BLOCKS_FIELD_NAME,
 } from "@/devTools/editor/hooks/usePipelineField";
-import { BlocksMap } from "./editTabTypes";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
@@ -86,23 +85,10 @@ const EditTab: React.FC<{
     ? produceExcludeUnusedDependenciesV3
     : produceExcludeUnusedDependenciesV1;
 
-  // Load once
-  const [allBlocks] = useAsyncState<BlocksMap>(
-    async () => {
-      const blocksMap: BlocksMap = {};
-      const blocks = await blockRegistry.all();
-      for (const block of blocks) {
-        blocksMap[block.id] = {
-          block,
-          // eslint-disable-next-line no-await-in-loop
-          type: await getType(block),
-        };
-      }
-
-      return blocksMap;
-    },
+  const [allBlocks] = useAsyncState<TypedBlockMap>(
+    async () => blockRegistry.allTyped(),
     [],
-    {}
+    new Map()
   );
 
   const {
@@ -134,8 +120,8 @@ const EditTab: React.FC<{
 
   const lastBlockPipelineId = blockPipeline[blockPipeline.length - 1]?.id;
   const lastBlock = useMemo(
-    // eslint-disable-next-line security/detect-object-injection -- record obj
-    () => (lastBlockPipelineId ? allBlocks[lastBlockPipelineId] : undefined),
+    () =>
+      lastBlockPipelineId ? allBlocks.get(lastBlockPipelineId) : undefined,
     [allBlocks, lastBlockPipelineId]
   );
   const [showAppendNode] = useAsyncState(
@@ -191,11 +177,11 @@ const EditTab: React.FC<{
       const index = draft.extension.blockPipeline.findIndex(
         (block) => block.instanceId === nodeIdToRemove
       );
-      if (index === 0) {
-        prevNodeId = FOUNDATION_NODE_ID;
-      } else {
-        prevNodeId = draft.extension.blockPipeline[index - 1].instanceId;
-      }
+
+      prevNodeId =
+        index === 0
+          ? FOUNDATION_NODE_ID
+          : draft.extension.blockPipeline[index - 1].instanceId;
 
       draft.extension.blockPipeline.splice(index, 1);
     });
@@ -266,7 +252,7 @@ const EditTab: React.FC<{
   const nodes = useMemo<EditorNodeProps[]>(() => {
     const blockNodes: EditorNodeProps[] = blockPipeline.map(
       (blockConfig, index) => {
-        const block = allBlocks[blockConfig.id]?.block;
+        const block = allBlocks.get(blockConfig.id)?.block;
         const nodeId = blockConfig.instanceId;
 
         if (!block) {
@@ -341,7 +327,7 @@ const EditTab: React.FC<{
         ? "effect"
         : "renderer";
 
-      return Object.values(allBlocks)
+      return [...allBlocks.values()]
         .filter(({ type }) => type != null && type !== excludeType)
         .map(({ block }) => block);
     },

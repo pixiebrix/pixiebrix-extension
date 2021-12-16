@@ -46,6 +46,7 @@ import {
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
+import AuthContext from "@/auth/AuthContext";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -90,6 +91,10 @@ const SidebarExpanded: React.FunctionComponent<
   collapseSidebar,
 }) => {
   const context = useContext(DevToolsContext);
+
+  const { flags } = useContext(AuthContext);
+  const showBetaExtensionPoints = flags.includes("page-editor-beta");
+
   const {
     port,
     tabState: { hasPermissions },
@@ -157,8 +162,9 @@ const SidebarExpanded: React.FunctionComponent<
               id="add-extension-point"
               className="mr-2"
             >
-              {sortBy([...ADAPTERS.values()], (x) => x.displayOrder).map(
-                (element) => (
+              {sortBy([...ADAPTERS.values()], (x) => x.displayOrder)
+                .filter((element) => showBetaExtensionPoints || !element.beta)
+                .map((element) => (
                   <DropdownEntry
                     key={element.elementType}
                     caption={element.label}
@@ -168,8 +174,7 @@ const SidebarExpanded: React.FunctionComponent<
                       addElement(element);
                     }}
                   />
-                )
-              )}
+                ))}
             </DropdownButton>
           </div>
           <button

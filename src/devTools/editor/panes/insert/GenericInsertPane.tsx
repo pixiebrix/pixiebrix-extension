@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { DevToolsContext } from "@/devTools/context";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import Centered from "@/devTools/editor/components/Centered";
 import { Button, Row } from "react-bootstrap";
@@ -45,7 +44,6 @@ const GenericInsertPane: React.FunctionComponent<{
 }> = ({ cancel, config }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
-  const { port } = useContext(DevToolsContext);
 
   const start = useCallback(
     async (state: FormState) => {
@@ -65,6 +63,7 @@ const GenericInsertPane: React.FunctionComponent<{
           void showActionPanel(thisTab);
         }
       } catch (error) {
+        // If you're looking for the error message, it's in the logs for the page editor, not the host page
         reportError(error);
         addToast("Error adding element", {
           autoDismiss: true,
@@ -72,7 +71,7 @@ const GenericInsertPane: React.FunctionComponent<{
         });
       }
     },
-    [config, port, dispatch, addToast]
+    [config, dispatch, addToast]
   );
 
   const addExisting = useCallback(

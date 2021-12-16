@@ -87,6 +87,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
 
   return (
     <Select
+      menuPlacement="auto"
       inputId={id}
       name={name}
       isDisabled={disabled}

@@ -20,15 +20,16 @@ import { useAsyncEffect } from "use-async-effect";
 import { IconLibrary } from "@/core";
 import getSvgIcon from "@/icons/getSvgIcon";
 
-const Icon: React.FunctionComponent<{ icon: string; library: IconLibrary }> = ({
-  icon,
-  library,
-}) => {
+const Icon: React.FunctionComponent<{
+  icon: string;
+  library: IconLibrary;
+  size?: number;
+}> = ({ icon, library, size = 16 }) => {
   const [svg, setSvg] = useState("");
 
   useAsyncEffect(
     async (isMounted) => {
-      const svg = await getSvgIcon({ id: icon, library, size: 16 });
+      const svg = await getSvgIcon({ id: icon, library, size });
       if (!isMounted()) {
         return;
       }

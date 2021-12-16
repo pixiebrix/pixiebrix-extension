@@ -6,6 +6,7 @@
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
-# Prettier plugin
+# Custom IDE settings
 /prettier.xml
 /watcherTasks.xml
+/jsLinters/

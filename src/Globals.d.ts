@@ -31,6 +31,7 @@ declare module "react-select-virtualized" {
 
 declare module "generate-schema" {
   import { UnknownObject } from "@/types";
+
   const json: (title: string, obj: unknown) => UnknownObject;
 }
 

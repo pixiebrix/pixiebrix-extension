@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { proxyService } from "@/background/requests";
+import { proxyService } from "@/background/messenger/api";
 import { Transformer } from "@/types";
 import {
   BlockArg,
