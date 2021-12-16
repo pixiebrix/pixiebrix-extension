@@ -162,9 +162,6 @@ function customizeManifest(manifest, isProduction) {
   const policy = new Policy(manifest.content_security_policy);
 
   policy.add("connect-src", process.env.SERVICE_URL);
-  if (!isProduction) {
-    policy.add("connect-src", "ws://localhost:9090/ http://127.0.0.1:8000");
-  }
 
   if (!isProduction) {
     // React Dev Tools app. See https://github.com/pixiebrix/pixiebrix-extension/wiki/Development-commands#react-dev-tools
