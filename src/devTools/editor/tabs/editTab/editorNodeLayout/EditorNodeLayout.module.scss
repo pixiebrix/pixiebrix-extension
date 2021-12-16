@@ -25,7 +25,7 @@
   position: relative;
   z-index: 1;
 
-  --size: 20px;
+  --size: 22px;
   button {
     display: block;
     border: none;
@@ -40,7 +40,7 @@
     font-size: var(--size);
     color: gray;
     background-color: white;
-    border: solid 2px white;
+    border: solid 3px white;
     border-radius: 50%;
     &:focus,
     &:hover {
