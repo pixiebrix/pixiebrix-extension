@@ -63,9 +63,14 @@ export function isPipelineExpression(
   return isExpression(value) && value.__type__ === "pipeline";
 }
 
-export type DeferExpression<TValue = string> = Expression<TValue, "defer">;
+export type DeferExpression<TValue = UnknownObject> = Expression<
+  TValue,
+  "defer"
+>;
 
-export function isDeferExpression(value: unknown): value is DeferExpression {
+export function isDeferExpression<TValue = UnknownObject>(
+  value: unknown
+): value is DeferExpression<TValue> {
   return isExpression(value) && value.__type__ === "defer";
 }
 

@@ -52,22 +52,22 @@ export function createTypePredicate(predicate: TypePredicate): TypePredicate {
   };
 }
 
+function unwrapTemplateExpressions(mutableObj: Draft<any>) {
+  if (mutableObj === null || typeof mutableObj !== "object") {
+    return;
+  }
+
+  for (const [key, value] of Object.entries(mutableObj)) {
+    if (isTemplateExpression(value)) {
+      mutableObj[key] = value.__value__;
+    } else if (typeof value === "object") {
+      unwrapTemplateExpressions(value);
+    }
+  }
+}
+
 export function getPreviewValues<TObj = UnknownObject>(obj: TObj): TObj {
   return produce(obj, (draft) => {
     unwrapTemplateExpressions(draft);
   });
-
-  function unwrapTemplateExpressions(mutableObj: Draft<any>) {
-    if (typeof mutableObj !== "object") {
-      return;
-    }
-
-    for (const [key, value] of Object.entries(mutableObj)) {
-      if (isTemplateExpression(value)) {
-        mutableObj[key] = value.__value__;
-      } else if (typeof value === "object") {
-        unwrapTemplateExpressions(value);
-      }
-    }
-  }
 }
