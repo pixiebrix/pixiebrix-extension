@@ -263,7 +263,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   }
 
   private async runExtension(
-    readerContext: ReaderOutput,
+    readerOutput: ReaderOutput,
     extension: ResolvedExtension<PanelConfig>
   ) {
     if (this.uninstalled) {
@@ -306,7 +306,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
 
     const serviceContext = await makeServiceContext(extension.services);
-    const extensionContext = { ...readerContext, ...serviceContext };
+    const extensionContext = { ...readerOutput, ...serviceContext };
 
     const $panel = $(
       Mustache.render(this.getTemplate(), {
@@ -375,7 +375,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         isBodyInstalled = true;
 
         const initialValues: InitialValues = {
-          input: extension.optionsArgs,
+          input: readerOutput,
           optionsArgs: extension.optionsArgs,
           serviceContext,
           root: document,
