@@ -19,7 +19,7 @@ import React, { useMemo, useRef } from "react";
 import { RegistryId } from "@/core";
 import { getIn, useFormikContext } from "formik";
 import { useBlockOptions } from "@/hooks/useBlockOptions";
-import { Button, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverrides";
 import GridLoader from "react-spinners/GridLoader";
@@ -37,8 +37,6 @@ import AdvancedLinks, {
 } from "@/devTools/editor/tabs/effect/AdvancedLinks";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const rootModeOptions = [
   { label: "Inherit", value: "inherit" },
@@ -56,8 +54,7 @@ const targetOptions: Array<Option<BlockWindow>> = [
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
   blockId: RegistryId;
-  copyBlock: () => void;
-}> = ({ name, blockId, copyBlock }) => {
+}> = ({ name, blockId }) => {
   const configName = partial(joinName, name);
 
   const context = useFormikContext<FormState>();
@@ -124,17 +121,6 @@ const BlockConfiguration: React.FunctionComponent<{
           Advanced Options
         </Card.Header>
         <Card.Body ref={advancedOptionsRef}>
-          <Button
-            type="button"
-            variant="primary"
-            className="mb-4"
-            onClick={copyBlock}
-          >
-            <span>
-              <FontAwesomeIcon icon={faCopy} /> Copy Block
-            </span>
-          </Button>
-
           {
             // Only show if necessary. Currently only the trigger extension point passes the element that triggered the
             // event through for the reader root

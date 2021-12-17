@@ -15,17 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import React, { MouseEventHandler } from "react";
+import { IconProp, SizeProp } from "@fortawesome/fontawesome-svg-core";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const TooltipIconButton: React.FC<{
   name: string;
   icon: IconProp;
-  onClick: () => void;
+  size?: SizeProp;
+  onClick: MouseEventHandler<HTMLButtonElement>;
   tooltipText: string;
-}> = ({ name, icon, onClick, tooltipText }) => {
+}> = ({ name, icon, size = "1x", onClick, tooltipText }) => {
   const renderTooltip = (props: unknown) => (
     <Tooltip id={`${name}-tooltip`} {...props}>
       {tooltipText}
@@ -38,13 +39,14 @@ const TooltipIconButton: React.FC<{
   return (
     <OverlayTrigger
       placement="auto"
+      trigger="hover"
       delay={{ show: 150, hide: 100 }}
       overlay={renderTooltip}
       rootClose
     >
       {({ ref, ...rest }) => (
         <button type="button" onClick={onClick} {...rest}>
-          <FontAwesomeIcon forwardedRef={ref} icon={icon} />
+          <FontAwesomeIcon forwardedRef={ref} icon={icon} size={size} />
         </button>
       )}
     </OverlayTrigger>

@@ -75,7 +75,6 @@ const targetOptions: Array<Option<BlockWindow>> = [
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
   blockId: RegistryId;
-  copyBlock: () => void;
 }> = ({ name, blockId }) => {
   const configName = partial(joinName, name);
 

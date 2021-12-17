@@ -49,7 +49,6 @@ test("renders", async () => {
       <BlockConfiguration
         name="extension.blockPipeline[0]"
         blockId={block.id}
-        copyBlock={jest.fn()}
       />
     </FormikTemplate>
   );
@@ -72,7 +71,6 @@ test("shows root mode for trigger", async () => {
       <BlockConfiguration
         name="extension.blockPipeline[0]"
         blockId={block.id}
-        copyBlock={jest.fn()}
       />
     </FormikTemplate>
   );
@@ -113,7 +111,6 @@ test.each`
         <BlockConfiguration
           name="extension.blockPipeline[0]"
           blockId={block.id}
-          copyBlock={jest.fn()}
         />
       </FormikTemplate>
     );

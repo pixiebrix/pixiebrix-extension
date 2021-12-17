@@ -26,7 +26,7 @@ import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
 import { showOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./EditorNodeConfigPanel.module.scss";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
@@ -86,14 +86,14 @@ const EditorNodeConfigPanel: React.FC<{
         </Row>
       )}
       <Row className={styles.topRow}>
-        <Col xl>
+        <Col lg>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.label`}
             label="Step Name"
             placeholder={blockInfo?.block.name}
           />
         </Col>
-        <Col xl>
+        <Col lg>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.outputKey`}
             label={outputKeyLabel}
@@ -101,23 +101,25 @@ const EditorNodeConfigPanel: React.FC<{
             as={KeyNameWidget}
           />
         </Col>
+      </Row>
+      <Row className={styles.buttonRow}>
         <Col sm="auto">
-          <Button
-            variant="danger"
-            onClick={onRemoveNode}
-            className={styles.removeButton}
-          >
-            <FontAwesomeIcon icon={faTrash} />{" "}
-            <span className={styles.removeText}>Remove</span>
+          <Button type="button" variant="primary" onClick={copyBlock}>
+            <span>
+              <FontAwesomeIcon icon={faCopy} /> Copy Brick
+            </span>
+          </Button>
+        </Col>
+        <Col sm="auto">
+          <Button type="button" variant="danger" onClick={onRemoveNode}>
+            <span>
+              <FontAwesomeIcon icon={faTrash} /> Remove Brick
+            </span>
           </Button>
         </Col>
       </Row>
 
-      <VersionedBlockConfiguration
-        name={blockFieldName}
-        blockId={blockId}
-        copyBlock={copyBlock}
-      />
+      <VersionedBlockConfiguration name={blockFieldName} blockId={blockId} />
     </Col>
   );
 };
