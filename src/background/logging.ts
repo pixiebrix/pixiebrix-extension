@@ -25,11 +25,7 @@ import { DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy, isEmpty } from "lodash";
 import { _getDNT } from "@/background/telemetry";
 import { isContentScript } from "webext-detect-page";
-import {
-  ManualStorageKey,
-  readStorageWithMigration,
-  setStorage,
-} from "@/chrome";
+import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   hasBusinessRootCause,
   hasCancelRootCause,
@@ -332,7 +328,7 @@ export async function _getLoggingConfig(): Promise<LoggingConfig> {
     return _config;
   }
 
-  return readStorageWithMigration(LOG_CONFIG_STORAGE_KEY, {
+  return readStorage(LOG_CONFIG_STORAGE_KEY, {
     logValues: false,
   });
 }
