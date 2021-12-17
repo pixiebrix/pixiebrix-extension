@@ -357,6 +357,9 @@ export const editorSlice = createSlice({
       delete copy.instanceId;
       state.copiedBlock = copy;
     },
+    clearCopiedBlockConfig: (state) => {
+      delete state.copiedBlock;
+    },
   },
 });
 /* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */

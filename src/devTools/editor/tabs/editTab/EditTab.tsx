@@ -295,6 +295,7 @@ const EditTab: React.FC<{
         dispatch(actions.setElementActiveNodeId(newInstanceId));
       });
       setFormValues(nextState);
+      dispatch(actions.clearCopiedBlockConfig());
     };
   }, [copiedBlock, dispatch, setFormValues, values]);
 
