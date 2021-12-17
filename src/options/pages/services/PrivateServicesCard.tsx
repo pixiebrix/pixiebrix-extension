@@ -35,6 +35,7 @@ import useNotifications from "@/hooks/useNotifications";
 import styles from "./PrivateServicesCard.module.scss";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
+import BrickIcon from "@/components/BrickIcon";
 
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
@@ -92,7 +93,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           servers or shared with your team
         </p>
       </Card.Body>
-      <Table>
+      <Table className={styles.integrationsTable}>
         <thead>
           <tr>
             <th>Label</th>
@@ -103,6 +104,9 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         <tbody>
           {isLoggedIn && (
             <tr>
+              {/* Text-wrap because ellipsis menu popover will get hidden if `Table responsive`
+              solution is used for mobile-friendly table
+              https://stackoverflow.com/questions/6421966/css-overflow-x-visible-and-overflow-y-hidden-causing-scrollbar-issue */}
               <td className="text-wrap">
                 Zapier <i>&ndash; use to connect to PixieBrix from Zapier</i>
               </td>
@@ -141,12 +145,15 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                     <span className="text-muted">No label provided</span>
                   )}
                 </td>
-                <td>
-                  <div>{service.name}</div>
-                  <div>
-                    <code className="p-0" style={{ fontSize: "0.7rem" }}>
-                      {service.id}
-                    </code>
+                <td className="d-flex align-items-center">
+                  <BrickIcon brick={service} size="1x" />
+                  <div className="ml-2">
+                    <div className="text-wrap">{service.name}</div>
+                    <div className="text-wrap">
+                      <code className="p-0" style={{ fontSize: "0.7rem" }}>
+                        {service.id}
+                      </code>
+                    </div>
                   </div>
                 </td>
                 <td>
