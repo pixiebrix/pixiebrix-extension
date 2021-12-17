@@ -165,7 +165,7 @@ const EditTab: React.FC<{
       const nextState = produce(values, (draft) => {
         draft.extension.blockPipeline.splice(insertIndex, 0, newBlock);
       });
-      setFormValues(nextState);
+      setFormValues(nextState, true);
       setActiveNodeId(newBlock.instanceId);
     },
     [blockPipeline, values, setFormValues, setActiveNodeId]
@@ -196,7 +196,7 @@ const EditTab: React.FC<{
         newActiveNodeId: prevNodeId,
       })
     );
-    setFormValues(nextState);
+    setFormValues(nextState, true);
   };
 
   const moveBlockUp = useCallback(
@@ -219,7 +219,7 @@ const EditTab: React.FC<{
           pipeline[index - 1],
         ];
       });
-      setFormValues(nextState);
+      setFormValues(nextState, true);
     },
     [blockPipeline, setFormValues, values]
   );
@@ -244,7 +244,7 @@ const EditTab: React.FC<{
           pipeline[index],
         ];
       });
-      setFormValues(nextState);
+      setFormValues(nextState, true);
     },
     [blockPipeline, setFormValues, values]
   );
