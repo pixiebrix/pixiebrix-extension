@@ -228,7 +228,6 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
               <PrivateServicesCard
                 navigate={navigate}
                 services={serviceDefinitions}
-                // TODO: rename onCreate to onSelect
                 onCreate={(config) => {
                   setNewConfiguration(config);
                   const baseService = (serviceDefinitions ?? []).find(

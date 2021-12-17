@@ -89,6 +89,7 @@ export function getDefaultBrickIcon(
 }
 
 const SIZE_REGEX = /^(?<size>\d)x$/i;
+const darkLavender = "#6662aa";
 
 /**
  * WARNING: avoid rendering a lot of brick icons (20+) icons on a page at once. Each one waits for the marketplace
@@ -151,7 +152,7 @@ const BrickIcon: React.FunctionComponent<{
   ) : (
     <FontAwesomeIcon
       icon={listingFaIcon ?? getDefaultBrickIcon(brick, type)}
-      color={listing?.icon_color}
+      color={listing?.icon_color ?? darkLavender}
       className={faIconClass}
       size={size}
       fixedWidth

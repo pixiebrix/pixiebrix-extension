@@ -17,7 +17,7 @@
 
 import { useSelector } from "react-redux";
 import { Button, Card, Table } from "react-bootstrap";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { RootState } from "@/options/store";
 import { uuidv4 } from "@/types/helpers";
@@ -36,6 +36,7 @@ import styles from "./PrivateServicesCard.module.scss";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import BrickIcon from "@/components/BrickIcon";
+import Pagination from "@/components/pagination/Pagination";
 
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
@@ -46,6 +47,8 @@ type OwnProps = {
   onCreate: (configuration: RawServiceConfiguration) => void;
 };
 
+const SERVICES_PER_PAGE = 10;
+
 const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   services,
   navigate,
@@ -53,6 +56,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
 }) => {
   const notify = useNotifications();
   const { isLoggedIn } = useContext(AuthContext);
+  const [page, setPage] = useState(0);
 
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
     selectConfiguredServices
@@ -82,6 +86,20 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
       } as RawServiceConfiguration);
     },
     [onCreate]
+  );
+
+  const numPages = useMemo(
+    () => Math.ceil(configuredServices.length / SERVICES_PER_PAGE),
+    [configuredServices, SERVICES_PER_PAGE]
+  );
+
+  const pageServices = useMemo(
+    () =>
+      configuredServices.slice(
+        page * SERVICES_PER_PAGE,
+        (page + 1) * SERVICES_PER_PAGE
+      ),
+    [configuredServices, page]
   );
 
   return (
@@ -126,7 +144,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
             </tr>
           )}
 
-          {configuredServices.map((configuredService) => {
+          {pageServices.map((configuredService) => {
             const service = services.find(
               (x) => x.id === configuredService.serviceId
             );
@@ -146,7 +164,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                   )}
                 </td>
                 <td className="d-flex align-items-center">
-                  <BrickIcon brick={service} size="1x" />
+                  <BrickIcon brick={service} />
                   <div className="ml-2">
                     <div className="text-wrap">{service.name}</div>
                     <div className="text-wrap">
@@ -180,7 +198,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                           </>
                         ),
                         action: async () => resetAuth(configuredService.id),
-                        hide: !service.isOAuth2 && !service.isToken,
+                        disabled: !service.isOAuth2 && !service.isToken,
                       },
                     ]}
                   />
@@ -190,7 +208,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           })}
         </tbody>
       </Table>
-      <Card.Footer>
+      <Card.Footer className="d-flex align-items-center justify-content-between">
         <BrickModal
           onSelect={onSelect}
           bricks={services}
@@ -202,6 +220,14 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           }
           caption="Add Private Integration"
         />
+        <span className="text-muted">
+          Showing {page * SERVICES_PER_PAGE + 1} to{" "}
+          {SERVICES_PER_PAGE * page + pageServices.length} of{" "}
+          {configuredServices.length} integrations
+        </span>
+        {configuredServices.length > SERVICES_PER_PAGE && (
+          <Pagination page={page} setPage={setPage} numPages={numPages} />
+        )}
       </Card.Footer>
     </>
   );

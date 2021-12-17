@@ -27,6 +27,7 @@ type Item = {
   hide?: boolean;
   action: () => void;
   className?: string;
+  disabled?: boolean;
 };
 
 const EllipsisMenu: React.FunctionComponent<{
@@ -99,6 +100,7 @@ const EllipsisMenu: React.FunctionComponent<{
                 item.action();
               }}
               className={item.className}
+              disabled={item.disabled}
             >
               {item.title}
             </Dropdown.Item>
