@@ -135,8 +135,8 @@ const useSavingWizard = () => {
 
   /**
    * 1. Creates new recipe,
-   * 2. updates all extensions of the old recipe to point to the new one, and
-   * 3. saves the changes of the element.
+   * 2. Updates all extensions of the old recipe to point to the new one, and
+   * 3. Saves the changes of the element.
    */
   const saveElementAndCreateNewRecipe = async (
     recipeMeta: RecipeConfiguration
@@ -188,7 +188,7 @@ const useSavingWizard = () => {
       return;
     }
 
-    void updateExtensionRecipeLinks(
+    updateExtensionRecipeLinks(
       recipe.metadata.id,
       selectRecipeMetadata(newRecipe, createRecipeResponse.data),
       // Unlink the installed extensions from the deployment
@@ -199,9 +199,9 @@ const useSavingWizard = () => {
   };
 
   /**
-   * Updates new recipe,
-   * updates all extensions of the recipe with the new metadata,
-   * and saves the changes of the element.
+   * 1. Updates new recipe,
+   * 2. Updates all extensions of the recipe with the new metadata, and
+   * 3. Saves the changes of the element
    */
   const saveElementAndUpdateRecipe = async (
     recipeMeta: RecipeConfiguration
@@ -244,7 +244,7 @@ const useSavingWizard = () => {
       return;
     }
 
-    void updateExtensionRecipeLinks(
+    updateExtensionRecipeLinks(
       recipe.metadata.id,
       selectRecipeMetadata(newRecipe, updateRecipeResponse.data)
     );
@@ -252,7 +252,7 @@ const useSavingWizard = () => {
     closeWizard(error);
   };
 
-  const updateExtensionRecipeLinks = async (
+  const updateExtensionRecipeLinks = (
     recipeId: RegistryId,
     recipeMetadata: RecipeMetadata,
     extraUpdate: Partial<PersistedExtension> = {}
