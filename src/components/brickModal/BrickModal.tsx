@@ -246,8 +246,8 @@ function ActualModal<T extends IBrick>({
                         ref={searchInput}
                         placeholder="Start typing to find results"
                         value={query}
-                        onChange={(e) => {
-                          setQuery(e.target.value);
+                        onChange={({ target }) => {
+                          setQuery(target.value);
                         }}
                       />
                     </InputGroup>

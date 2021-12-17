@@ -30,6 +30,7 @@ import {
 } from "@/actionPanel/actionPanelTypes";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import { renderPanels, hideForm, showForm } from "@/actionPanel/messenger/api";
+import { MAX_Z_INDEX } from "@/common";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-extension";
@@ -90,22 +91,25 @@ function restoreDocumentStyle(): void {
 
 function insertActionPanel(): string {
   const nonce = uuidv4();
-
   const actionURL = browser.runtime.getURL("action.html");
 
-  const $panelContainer = $(
-    `<div id="${PANEL_CONTAINER_ID}" data-nonce="${nonce}" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border-left: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
-  );
-
-  // CSS approach not well supported? https://stackoverflow.com/questions/15494568/html-iframe-disable-scroll
-  // noinspection HtmlDeprecatedAttribute
-  const $frame = $(
-    `<iframe id="pixiebrix-frame" src="${actionURL}?nonce=${nonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" ></iframe>`
-  );
-
-  $panelContainer.append($frame);
-
-  $("body").append($panelContainer);
+  $("<iframe>")
+    .attr({
+      id: PANEL_CONTAINER_ID,
+      src: `${actionURL}?nonce=${nonce}`,
+    })
+    .css({
+      position: "fixed",
+      top: 0,
+      right: 0,
+      zIndex: MAX_Z_INDEX,
+      width: SIDEBAR_WIDTH_PX,
+      height: "100%",
+      border: 0,
+      borderLeft: "1px solid lightgray",
+      background: "#f2edf3",
+    })
+    .appendTo("body");
 
   return nonce;
 }

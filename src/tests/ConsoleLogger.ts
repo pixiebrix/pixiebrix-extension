@@ -30,28 +30,28 @@ class ConsoleLogger implements Logger {
     return new ConsoleLogger({ ...this.context, ...context });
   }
 
-  trace(msg: string, data?: UnknownObject): void {
-    console.debug(msg, data);
+  trace(message: string, data?: UnknownObject): void {
+    console.debug(message, data);
   }
 
-  debug(msg: string, data: UnknownObject): void {
-    console.debug(msg, data);
+  debug(message: string, data: UnknownObject): void {
+    console.debug(message, data);
   }
 
   error(error: unknown, data: UnknownObject): void {
     console.debug(getErrorMessage(error), { error, data });
   }
 
-  info(msg: string, data: UnknownObject): void {
-    console.debug(msg, data);
+  info(message: string, data: UnknownObject): void {
+    console.debug(message, data);
   }
 
-  log(msg: string, data: UnknownObject): void {
-    console.debug(msg, data);
+  log(message: string, data: UnknownObject): void {
+    console.debug(message, data);
   }
 
-  warn(msg: string, data: UnknownObject): void {
-    console.debug(msg, data);
+  warn(message: string, data: UnknownObject): void {
+    console.debug(message, data);
   }
 }
 

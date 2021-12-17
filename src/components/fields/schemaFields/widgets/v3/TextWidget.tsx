@@ -60,31 +60,33 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
 
   const onChangeForTemplate = useCallback(
     (templateEngine: TemplateEngine) => {
-      const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        const changeVal = e.target.value;
+      const onChange: React.ChangeEventHandler<HTMLInputElement> = ({
+        target,
+      }) => {
+        const changeValue = target.value;
         // Automatically switch to var if user types "@" in the input
-        if (templateEngine !== "var" && isVarValue(changeVal)) {
+        if (templateEngine !== "var" && isVarValue(changeValue)) {
           setValue({
             __type__: "var",
-            __value__: changeVal,
+            __value__: changeValue,
           });
         } else if (
           templateEngine === "var" &&
           supportsTemplates &&
-          !isVarValue(changeVal)
+          !isVarValue(changeValue)
         ) {
-          const trimmed = trim(changeVal);
-          const templateVal = isVarValue(trimmed)
-            ? changeVal.replace(trimmed, `{{${trimmed}}}`)
-            : changeVal;
+          const trimmed = trim(changeValue);
+          const templateValue = isVarValue(trimmed)
+            ? changeValue.replace(trimmed, `{{${trimmed}}}`)
+            : changeValue;
           setValue({
             __type__: "nunjucks",
-            __value__: templateVal,
+            __value__: templateValue,
           });
         } else {
           setValue({
             __type__: templateEngine,
-            __value__: changeVal,
+            __value__: changeValue,
           });
         }
       };

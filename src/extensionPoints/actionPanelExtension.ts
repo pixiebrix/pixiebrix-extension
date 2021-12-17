@@ -44,7 +44,6 @@ import {
   upsertPanel,
 } from "@/actionPanel/native";
 import Mustache from "mustache";
-import { reportError } from "@/telemetry/logging";
 import { uuidv4 } from "@/types/helpers";
 import { BusinessError, getErrorMessage } from "@/errors";
 import { HeadlessModeError } from "@/blocks/errors";
@@ -155,12 +154,11 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
           args: error.args,
         });
       } else {
+        extensionLogger.error(error);
         upsertPanel(ref, heading, {
           key: uuidv4(),
           error: getErrorMessage(error as Error),
         });
-        reportError(error);
-        throw error;
       }
     }
   }

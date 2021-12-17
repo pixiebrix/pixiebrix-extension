@@ -48,17 +48,17 @@ const NumberWidget: React.FC<
   const [value, setValue] = useState<string>(String(formValue));
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
-    (e) => {
-      setValue(e.target.value);
+    ({ target }) => {
+      setValue(target.value);
     },
     []
   );
 
   const onBlur: FocusEventHandler<HTMLInputElement> = useCallback(() => {
-    const numberVal = Number(value);
-    const newVal = step ? round(numberVal / step) * step : numberVal;
-    setFormValue(newVal);
-    setValue(String(newVal));
+    const numberValue = Number(value);
+    const newValue = step ? round(numberValue / step) * step : numberValue;
+    setFormValue(newValue);
+    setValue(String(newValue));
   }, [setFormValue, step, value]);
 
   return (

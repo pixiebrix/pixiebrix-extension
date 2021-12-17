@@ -64,9 +64,9 @@ const TemplateWidget: React.FC<TemplateWidgetProps> = ({
               href="#"
               className="mx-2"
               role="button"
-              onClick={(e) => {
+              onClick={(event) => {
                 insertSnippet(snippet.value);
-                e.preventDefault();
+                event.preventDefault();
               }}
             >
               {snippet.label}

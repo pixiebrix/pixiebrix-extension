@@ -27,8 +27,8 @@ function getBase64Image(img: HTMLImageElement) {
   canvas.height = img.height;
 
   // Copy the image contents to the canvas
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0);
+  const context = canvas.getContext("2d");
+  context.drawImage(img, 0, 0);
 
   // Get the data-URL formatted image
   // Firefox supports PNG and JPEG. You could check img.src to
