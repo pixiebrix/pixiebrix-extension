@@ -35,14 +35,14 @@ const TriggerConfiguration: React.FC<{
   const { setFieldValue } = useFormikContext<TriggerFormState>();
 
   const onTriggerChange = useCallback(
-    (e: React.FormEvent<HTMLSelectElement>) => {
-      if (e.currentTarget.value) {
+    ({ currentTarget }: React.FormEvent<HTMLSelectElement>) => {
+      if (currentTarget.value) {
         setFieldValue("extensionPoint.definition.rootSelector", null);
         setFieldValue("extensionPoint.definition.attachMode", null);
         setFieldValue("extensionPoint.definition.targetMode", null);
       }
 
-      setFieldValue("extensionPoint.definition.trigger", e.currentTarget.value);
+      setFieldValue("extensionPoint.definition.trigger", currentTarget.value);
     },
     [setFieldValue]
   );

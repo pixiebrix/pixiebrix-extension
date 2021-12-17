@@ -113,11 +113,11 @@ export async function resolveObj<T>(
  */
 export async function asyncMapValues<T, TResult>(
   mapping: T,
-  func: ObjectIterator<T, Promise<TResult>>
+  fn: ObjectIterator<T, Promise<TResult>>
 ): Promise<{ [K in keyof T]: TResult }> {
   const entries = Object.entries(mapping);
   const values = await Promise.all(
-    entries.map(async ([key, value]) => func(value, key, mapping))
+    entries.map(async ([key, value]) => fn(value, key, mapping))
   );
   return Object.fromEntries(
     zip(entries, values).map(([[key], value]) => [key, value])
@@ -163,12 +163,12 @@ export async function awaitValue<T>(
   throw new TimeoutError(`Value not found after ${waitMillis} milliseconds`);
 }
 
-export function isPrimitive(val: unknown): val is Primitive {
-  if (typeof val === "object") {
-    return val === null;
+export function isPrimitive(value: unknown): value is Primitive {
+  if (typeof value === "object") {
+    return value === null;
   }
 
-  return typeof val !== "function";
+  return typeof value !== "function";
 }
 
 /**
@@ -359,14 +359,14 @@ export function evaluableFunction(
  * Lift a unary function to pass through null/undefined.
  */
 export function optional<T extends (arg: unknown) => unknown>(
-  func: T
+  fn: T
 ): (arg: null | Parameters<T>[0]) => ReturnType<T> | null {
   return (arg: Parameters<T>[0]) => {
     if (arg == null) {
       return null;
     }
 
-    return func(arg) as ReturnType<T>;
+    return fn(arg) as ReturnType<T>;
   };
 }
 

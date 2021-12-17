@@ -81,8 +81,8 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   const [field] = useField(props);
 
   const updateName = useCallback(
-    (e: React.FocusEvent<HTMLInputElement>) => {
-      onRename?.(e.target.value);
+    ({ target }: React.FocusEvent<HTMLInputElement>) => {
+      onRename?.(target.value);
     },
     [onRename]
   );

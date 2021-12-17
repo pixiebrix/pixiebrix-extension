@@ -105,8 +105,8 @@ const Navbar: React.FunctionComponent = () => {
                 <Dropdown.Menu className="navbar-dropdown">
                   <Dropdown.Item
                     href="#"
-                    onClick={async (e) => {
-                      e.preventDefault();
+                    onClick={async (event) => {
+                      event.preventDefault();
                       // Posting to the Django view, not the API
                       await axios.post("/logout/");
                       location.href = "/";

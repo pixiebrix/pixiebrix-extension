@@ -136,12 +136,12 @@ export function isManaged(
 }
 
 // https://github.com/vuejs/vue-devtools/blob/ccf6808e78a25ecaef2577d25b1d3643f524b240/packages/app-backend/src/utils.js
-export function findRelatedComponent(el: HTMLElement): Instance | null {
-  while (!isManaged(el) && el.parentElement) {
-    el = el.parentElement;
+export function findRelatedComponent(element: HTMLElement): Instance | null {
+  while (!isManaged(element) && element.parentElement) {
+    element = element.parentElement;
   }
 
-  return isManaged(el) ? el.__vue__ : null;
+  return isManaged(element) ? element.__vue__ : null;
 }
 
 function readVueData(instance: Instance): Record<string, unknown> {
