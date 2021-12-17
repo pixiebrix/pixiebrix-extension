@@ -88,6 +88,11 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     isPending: servicesPending,
   } = useServiceDefinitions();
 
+  const isConfiguring =
+    configurationId &&
+    ((newService && newConfiguration) ||
+      (activeService && activeConfiguration));
+
   const handleSave = useCallback(
     async (config) => {
       updateServiceConfig(config);
@@ -176,19 +181,17 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
           }}
         />
       )}
-      {configurationId &&
-        ((newService && newConfiguration) ||
-          (activeService && activeConfiguration)) && (
-          <ServiceEditorModal
-            configuration={activeConfiguration ?? newConfiguration}
-            service={activeService ?? newService}
-            onDelete={activeConfiguration && handleDelete}
-            onClose={() => {
-              navigate("/services");
-            }}
-            onSave={handleSave}
-          />
-        )}
+      {isConfiguring && (
+        <ServiceEditorModal
+          configuration={activeConfiguration ?? newConfiguration}
+          service={activeService ?? newService}
+          onDelete={activeConfiguration && handleDelete}
+          onClose={() => {
+            navigate("/services");
+          }}
+          onSave={handleSave}
+        />
+      )}
       <Row>
         <Col>
           <ConnectExtensionCard />
