@@ -45,7 +45,9 @@ const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
 
 type OwnProps = {
+  // @ts-expect-error -- not sure how to resolve private name usage here
   updateServiceConfig: typeof updateServiceConfig;
+  // @ts-expect-error -- not sure how to resolve private name usage here
   deleteServiceConfig: typeof deleteServiceConfig;
   navigate: typeof push;
 };
