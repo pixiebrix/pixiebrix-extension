@@ -93,7 +93,7 @@ export function createNewElement(elementType: DocumentElementType) {
       element.config.element = {
         __type__: "defer",
         __value__: createNewElement("text"),
-      } as DeferExpression;
+      } as DeferExpression<DocumentElement>;
       break;
 
     default:

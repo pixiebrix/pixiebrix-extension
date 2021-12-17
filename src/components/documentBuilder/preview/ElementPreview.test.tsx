@@ -35,6 +35,7 @@ const renderElementPreview = (
 ) => {
   const props: ElementPreviewProps = {
     elementName: "element",
+    previewElement: element,
     activeElement: null,
     setActiveElement: jest.fn(),
     hoveredElement: null,
