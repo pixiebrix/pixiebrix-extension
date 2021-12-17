@@ -89,7 +89,7 @@ const EditorNodeLayout: React.FC<{
 
           const showAddBlock = index < finalIndex || showAppend;
           const isFinal = index === finalIndex;
-          const showAddMessage = showAddBlock && isFinal && !pasteBlock;
+          const showAddMessage = showAddBlock && isFinal;
 
           return (
             <React.Fragment key={nodeId}>
