@@ -75,6 +75,10 @@ export function getChromeExtensionId(): string {
   );
 }
 
+export async function getExtensionVersion() {
+  return browser.runtime.getManifest().version;
+}
+
 /**
  * Connect to the background page and throw real errors if the connection fails.
  * NOTE: To determine whether the connection was successful, the background page
