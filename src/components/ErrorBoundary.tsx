@@ -70,6 +70,7 @@ class ErrorBoundary extends Component<Props, State> {
                 if (event.altKey) {
                   chrome.runtime.reload();
                 }
+
                 location.reload();
               }}
             >
