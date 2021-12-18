@@ -15,30 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-html {
-  font-size: 16px;
-  max-height: 100vh;
-  height: 100vh;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  max-height: 100vh;
-  overflow-y: hidden;
-}
-
 #container {
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+}
 
-  .action-sidebar-loader {
-    width: 100%;
-    margin-top: 60px;
-    display: flex;
-    justify-content: center;
-  }
+.tab-content {
+  border: none;
+}
+
+.action-sidebar-loader {
+  width: 100%;
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
 }
 
 .action-panel-button {
@@ -48,4 +37,27 @@ body {
     color: #4d4b8b;
     background-color: #d1c2d7;
   }
+}
+
+.center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.full-height {
+  display: flex;
+  flex-direction: column;
+  & > :last-child {
+    flex-grow: 1;
+  }
+
+  .scrollable-area {
+    height: 0;
+    overflow-y: auto;
+  }
+}
+
+.tab-content > .active.full-height {
+  display: flex; /* Overrides Bootstrap’s "block"*/
 }
