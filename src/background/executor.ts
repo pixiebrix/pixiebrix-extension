@@ -18,7 +18,6 @@
 
 import { RunBlock } from "@/contentScript/executor";
 import browser, { Runtime, Tabs } from "webextension-polyfill";
-import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
@@ -232,7 +231,6 @@ export async function markTabAsReady(this: MessengerMeta) {
   }
 
   tabReady[tabId][frameId] = true;
-  emitDevtools("ContentScriptReady", { tabId, frameId });
 }
 
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {

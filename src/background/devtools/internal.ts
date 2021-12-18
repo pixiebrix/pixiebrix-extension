@@ -317,13 +317,7 @@ export function emitDevtools(
 if (isBackground()) {
   console.debug("Adding devtools connection listener");
   browser.runtime.onConnect.addListener(connectDevtools);
-
-  browser.webNavigation.onHistoryStateUpdated.addListener((details) => {
-    emitDevtools("HistoryStateUpdate", details);
-  });
-
   browser.webNavigation.onDOMContentLoaded.addListener((details) => {
-    emitDevtools("DOMContentLoaded", details);
     void attemptTemporaryAccess(details);
   });
 }

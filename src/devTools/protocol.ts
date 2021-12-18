@@ -18,7 +18,10 @@
 import browser, { Runtime } from "webextension-polyfill";
 import { registerPort } from "@/background/devtools";
 import { PORT_NAME } from "@/background/devtools/contract";
-import { installPortListeners } from "@/background/devtools/external";
+import {
+  installPortListeners,
+  navigationEvent,
+} from "@/background/devtools/external";
 import { runtimeConnect } from "@/chrome";
 
 let _cachedPort: Runtime.Port | null = null;
@@ -57,4 +60,13 @@ export async function connectDevtools(): Promise<Runtime.Port> {
 
   _cachedPort = port;
   return port;
+}
+
+function onNavigation(): void {
+  navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
+}
+
+export function watchNavigation(): void {
+  browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
+  browser.webNavigation.onDOMContentLoaded.addListener(onNavigation);
 }
