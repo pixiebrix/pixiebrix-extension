@@ -66,7 +66,10 @@ class ErrorBoundary extends Component<Props, State> {
           </div>
           <div>
             <Button
-              onClick={() => {
+              onClick={(event) => {
+                if (event.altKey) {
+                  chrome.runtime.reload();
+                }
                 location.reload();
               }}
             >
