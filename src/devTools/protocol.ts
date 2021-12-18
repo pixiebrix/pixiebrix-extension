@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser, { Runtime } from "webextension-polyfill";
+import browser, { Runtime, WebNavigation } from "webextension-polyfill";
 import { registerPort } from "@/background/devtools";
 import { PORT_NAME } from "@/background/devtools/contract";
 import {
@@ -62,8 +62,14 @@ export async function connectDevtools(): Promise<Runtime.Port> {
   return port;
 }
 
-function onNavigation(): void {
-  navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
+function onNavigation(
+  details:
+    | WebNavigation.OnHistoryStateUpdatedDetailsType
+    | WebNavigation.OnDOMContentLoadedDetailsType
+): void {
+  if (details.tabId === browser.devtools.inspectedWindow.tabId) {
+    navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
+  }
 }
 
 export function watchNavigation(): void {
