@@ -22,7 +22,7 @@ import { Except, JsonObject } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy, isEmpty } from "lodash";
-import { _getDNT } from "@/background/telemetry";
+import { allowsTrack } from "@/telemetry/dnt";
 import { isContentScript } from "webext-detect-page";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
@@ -204,7 +204,7 @@ export async function recordError(
   try {
     const message = getErrorMessage(error);
 
-    if (!(await _getDNT())) {
+    if (!(await allowsTrack())) {
       // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the object is the custom
       // payload data. WARNING: the prototype chain is lost during deserialization, so make sure any predicate you
       // call here also handles deserialized errors properly.

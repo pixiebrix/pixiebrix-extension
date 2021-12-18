@@ -19,7 +19,7 @@ import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { PropError } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
-import { getDNT } from "@/background/telemetry";
+import { getDNT } from "@/telemetry/dnt";
 
 export class TelemetryEffect extends Effect {
   constructor() {
