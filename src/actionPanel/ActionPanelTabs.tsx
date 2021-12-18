@@ -96,7 +96,7 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
           <Tab.Content className="p-0 full-height">
             {panels.map((panel: PanelEntry) => (
               <Tab.Pane
-                className="full-height"
+                className="full-height flex-grow"
                 key={panel.extensionId}
                 eventKey={mapTabEventKey("panel", panel)}
               >
@@ -107,7 +107,7 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
             ))}
             {forms.map((form) => (
               <Tab.Pane
-                className="full-height"
+                className="full-height flex-grow"
                 key={form.nonce}
                 eventKey={mapTabEventKey("form", form)}
               >
