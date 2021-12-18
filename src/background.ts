@@ -32,11 +32,9 @@ import "@/development/autoreload";
 import "@/background/installer";
 import "@/messaging/external";
 import "@/background/locator";
-import "@/background/logging";
 import "@/background/contextMenus";
 import "@/background/devtools";
 import "@/background/browserAction";
-import "@/background/trace";
 
 import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";

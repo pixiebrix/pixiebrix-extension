@@ -27,16 +27,18 @@ import {
 } from "@/core";
 import { castArray, isPlainObject } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
-import { requestRun } from "@/background/messenger/api";
-import { getLoggingConfig } from "@/background/logging";
+import {
+  getLoggingConfig,
+  requestRun,
+  sendDeploymentAlert,
+  traces,
+} from "@/background/messenger/api";
 import { hideNotification, showNotification } from "@/contentScript/notify";
-import { sendDeploymentAlert } from "@/background/telemetry";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
-import { recordTraceEntry, recordTraceExit } from "@/background/trace";
 import { uuidv4 } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
@@ -327,7 +329,7 @@ async function renderBlockArg(
     );
   }
 
-  void recordTraceEntry({
+  traces.addEntry({
     ...selectTraceRecordMeta(resolvedConfig, options),
     timestamp: new Date().toISOString(),
     templateContext: state.context as JsonObject,
@@ -478,7 +480,7 @@ export async function blockReducer(
     });
   }
 
-  void recordTraceExit({
+  traces.addExit({
     runId,
     extensionId: logger.context.extensionId,
     blockId: blockConfig.id,
@@ -540,7 +542,7 @@ async function throwBlockError(
     throw error;
   }
 
-  void recordTraceExit({
+  traces.addExit({
     runId,
     extensionId: logger.context.extensionId,
     blockId: blockConfig.id,
@@ -552,7 +554,7 @@ async function throwBlockError(
     // An affordance to send emails to allow for manual process recovery if a step fails (e.g., an API call to a
     // transaction queue fails)
     if (logger.context.deploymentId) {
-      void sendDeploymentAlert({
+      sendDeploymentAlert({
         deploymentId: logger.context.deploymentId,
         data: {
           id: blockConfig.id,

@@ -74,8 +74,7 @@ function useUserAction<T extends (...args: never[]) => unknown>(
   const notify = useNotifications();
   const { event, successMessage, errorMessage = "An error occurred" } = options;
 
-  // @ts-expect-error -- need to figure out how to correct the types on this
-  const enhancedCallback: T = async (...args) => {
+  const enhancedCallback = (async (...args) => {
     try {
       const rv = await callback(...args);
 
@@ -98,11 +97,10 @@ function useUserAction<T extends (...args: never[]) => unknown>(
         error,
       });
     }
-  };
+  }) as T;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally leaving callback out of deps
   return useCallback<T>(enhancedCallback, [
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps is a `DependencyList`
     ...deps,
     notify,
     options,

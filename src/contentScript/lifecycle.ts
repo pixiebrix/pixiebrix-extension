@@ -27,7 +27,7 @@ import { reportError } from "@/telemetry/logging";
 import browser from "webextension-polyfill";
 import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
-import { clearExtensionTraces } from "@/background/trace";
+import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/options/deploymentUtils";
 import { $safeFind } from "@/helpers";
 
@@ -149,12 +149,12 @@ export function clearDynamic(
     }
 
     if (clearTrace) {
-      void clearExtensionTraces(extensionId);
+      traces.clear(extensionId);
     }
   } else {
     for (const [extensionId, extensionPoint] of _dynamic.entries()) {
       if (clearTrace) {
-        void clearExtensionTraces(extensionId);
+        traces.clear(extensionId);
       }
 
       try {

@@ -21,7 +21,7 @@ import { Deployment } from "@/types/contract";
 import browser from "webextension-polyfill";
 import { partition, uniqBy } from "lodash";
 import { reportError } from "@/telemetry/logging";
-import { getExtensionVersion, getUID } from "@/background/telemetry";
+import { getUID, getExtensionVersion } from "@/background/telemetry";
 import { isLinked } from "@/auth/token";
 import { optionsSlice } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";

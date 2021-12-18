@@ -21,7 +21,6 @@ import { render } from "@testing-library/react";
 import React from "react";
 import blockRegistry from "@/blocks/registry";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
-import * as logging from "@/background/logging";
 import * as backgroundAPI from "@/background/messenger/api";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
@@ -32,8 +31,7 @@ import { DocumentElementType } from "./documentBuilderTypes";
 // them with `void` instead of awaiting them in the reducePipeline methods
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/background/messenger/api");
-jest.mock("@/background/trace");
-(logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
+(backgroundAPI.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
 });
 
