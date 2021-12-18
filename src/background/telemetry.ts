@@ -23,12 +23,12 @@ import browser from "webextension-polyfill";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
 import { Data, UUID } from "@/core";
-import { boolean } from "@/utils";
 import { loadOptions } from "@/options/loader";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
 } from "@/services/apiClient";
+import { getDNT } from "@/telemetry/dnt";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -40,11 +40,9 @@ interface UserEvent {
   data: JsonObject;
 }
 
-export const DNT_STORAGE_KEY = "DNT" as ManualStorageKey;
 const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 
 let _uid: UUID = null;
-let _dnt: boolean;
 const buffer: UserEvent[] = [];
 
 /**
@@ -69,23 +67,6 @@ async function uid(): Promise<UUID> {
   return _uid;
 }
 
-export async function _toggleDNT(enable: boolean): Promise<boolean> {
-  _dnt = enable;
-  await setStorage(DNT_STORAGE_KEY, enable);
-  return enable;
-}
-
-export async function _getDNT(): Promise<boolean> {
-  if (_dnt != null) {
-    return _dnt;
-  }
-
-  _dnt = boolean(
-    (await readStorage<boolean | string>(DNT_STORAGE_KEY)) ?? process.env.DEBUG
-  );
-  return _dnt;
-}
-
 async function flush(): Promise<void> {
   if (buffer.length > 0) {
     const client = await maybeGetLinkedApiClient();
@@ -102,19 +83,7 @@ const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
   maxWait: EVENT_BUFFER_MAX_MS,
 });
 
-export const getDNT = liftBackground("GET_DNT", async () => _getDNT());
-
 export const getUID = liftBackground("GET_UID", async () => uid());
-
-export const getExtensionVersion = liftBackground(
-  "GET_EXTENSION_VERSION",
-  async () => browser.runtime.getManifest().version
-);
-
-export const toggleDNT = liftBackground(
-  "TOGGLE_DNT",
-  async (enabled: boolean) => _toggleDNT(enabled)
-);
 
 async function userSummary() {
   const { os } = await browser.runtime.getPlatformInfo();
@@ -161,7 +130,7 @@ const throttledInit = throttle(_init, 30 * 60 * 1000, {
 export const initUID = liftBackground(
   "INIT_UID",
   async (): Promise<void> => {
-    if (!(await _getDNT())) {
+    if (!(await getDNT())) {
       void throttledInit();
     }
   },
@@ -177,7 +146,7 @@ export const recordEvent = liftBackground(
     event: string;
     data: JsonObject | undefined;
   }): Promise<void> => {
-    if (!(await _getDNT())) {
+    if (!(await getDNT())) {
       buffer.push({
         uid: await uid(),
         event,

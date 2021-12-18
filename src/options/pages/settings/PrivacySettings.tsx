@@ -15,33 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import { useAsyncEffect } from "use-async-effect";
-import { getDNT, toggleDNT } from "@/background/telemetry";
-
-function useDNT(): [boolean, (enabled: boolean) => Promise<void>] {
-  const [enabled, setEnabled] = useState<boolean>(true);
-
-  useAsyncEffect(async () => {
-    setEnabled(await getDNT());
-  }, [setEnabled]);
-
-  const toggle = useCallback(
-    async (enabled: boolean) => {
-      setEnabled(await toggleDNT(enabled));
-    },
-    [setEnabled]
-  );
-
-  return [enabled, toggle];
-}
+import { useDNT } from "@/telemetry/dnt";
 
 const PrivacySettings: React.FunctionComponent = () => {
-  const [dnt, toggleDNT] = useDNT();
+  const [dnt, setDNT] = useDNT();
 
   return (
     <Card>
@@ -74,7 +56,7 @@ const PrivacySettings: React.FunctionComponent = () => {
               onlabel=" "
               offlabel=" "
               checked={!(dnt ?? false)}
-              onChange={async (value) => toggleDNT(!value)}
+              onChange={async (value) => setDNT(!value)}
             />
           </Form.Group>
         </Form>
