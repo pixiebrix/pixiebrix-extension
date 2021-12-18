@@ -114,7 +114,8 @@ async function userSummary() {
 
 async function init(): Promise<void> {
   if ((await isLinked()) && (await allowsTrack())) {
-    await (await getLinkedApiClient()).post("/api/identify/", {
+    const client = await getLinkedApiClient();
+    await client.post("/api/identify/", {
       uid: await uid(),
       data: await userSummary(),
     });
