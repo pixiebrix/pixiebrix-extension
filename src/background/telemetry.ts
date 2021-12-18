@@ -28,7 +28,7 @@ import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
 } from "@/services/apiClient";
-import { getDNT } from "@/telemetry/dnt";
+import { allowsTrack } from "@/telemetry/dnt";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -130,7 +130,7 @@ const throttledInit = throttle(_init, 30 * 60 * 1000, {
 export const initUID = liftBackground(
   "INIT_UID",
   async (): Promise<void> => {
-    if (!(await getDNT())) {
+    if (await allowsTrack()) {
       void throttledInit();
     }
   },
@@ -146,7 +146,7 @@ export const recordEvent = liftBackground(
     event: string;
     data: JsonObject | undefined;
   }): Promise<void> => {
-    if (!(await getDNT())) {
+    if (await allowsTrack()) {
       buffer.push({
         uid: await uid(),
         event,

@@ -32,6 +32,10 @@ export async function getDNT(): Promise<boolean> {
   );
 }
 
+export async function allowsTrack(): Promise<boolean> {
+  return !(await getDNT());
+}
+
 export function useDNT(): [boolean, (enabled: boolean) => Promise<void>] {
   const [enabled, setEnabled] = useState<boolean>(true);
 
