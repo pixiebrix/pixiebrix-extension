@@ -324,6 +324,6 @@ config:
       `[data-block-id="${blockId}"]`
     );
     expect(blockContainer).not.toBeNull();
-    expect(blockContainer).toHaveClass("h-100");
+    expect(blockContainer).toHaveClass("full-height");
   }
 });
