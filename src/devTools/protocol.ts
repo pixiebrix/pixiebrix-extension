@@ -24,6 +24,8 @@ import {
 } from "@/background/devtools/external";
 import { runtimeConnect } from "@/chrome";
 
+const TOP_LEVEL_FRAME_ID = 0;
+
 let _cachedPort: Runtime.Port | null = null;
 
 export async function connectDevtools(): Promise<Runtime.Port> {
@@ -67,7 +69,10 @@ function onNavigation(
     | WebNavigation.OnHistoryStateUpdatedDetailsType
     | WebNavigation.OnDOMContentLoadedDetailsType
 ): void {
-  if (details.tabId === browser.devtools.inspectedWindow.tabId) {
+  if (
+    details.frameId === TOP_LEVEL_FRAME_ID &&
+    details.tabId === browser.devtools.inspectedWindow.tabId
+  ) {
     navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
   }
 }
