@@ -204,7 +204,7 @@ export async function recordError(
   try {
     const message = getErrorMessage(error);
 
-    if (!(await allowsTrack())) {
+    if (await allowsTrack()) {
       // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the object is the custom
       // payload data. WARNING: the prototype chain is lost during deserialization, so make sure any predicate you
       // call here also handles deserialized errors properly.

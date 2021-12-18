@@ -28,7 +28,7 @@ import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
 } from "@/services/apiClient";
-import { allowsTrack, getDNT } from "@/telemetry/dnt";
+import { allowsTrack } from "@/telemetry/dnt";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -134,17 +134,15 @@ export async function recordEvent({
   event: string;
   data: JsonObject | undefined;
 }): Promise<void> {
-  if (await getDNT()) {
-    return;
+  if (await allowsTrack()) {
+    buffer.push({
+      uid: await uid(),
+      event,
+      timestamp: Date.now(),
+      data,
+    });
+    void debouncedFlush();
   }
-
-  buffer.push({
-    uid: await uid(),
-    event,
-    timestamp: Date.now(),
-    data,
-  });
-  void debouncedFlush();
 }
 
 export async function sendDeploymentAlert({
