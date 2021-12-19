@@ -247,23 +247,27 @@ export function clearObject(obj: Record<string, unknown>): void {
  */
 export function cleanValue(
   value: unknown[],
-  maxDepth?: number,
+  maxDepth?: number | undefined,
   depth?: number
 ): unknown[];
 export function cleanValue(
   value: Record<string, unknown>,
-  maxDepth?: number,
+  maxDepth?: number | undefined,
   depth?: number
 ): Record<string, unknown>;
 export function cleanValue(
   value: unknown,
-  maxDepth?: number,
+  maxDepth?: number | undefined,
   depth?: number
 ): unknown;
-export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
+export function cleanValue(
+  value: unknown,
+  maxDepth: number | undefined,
+  depth = 0
+): unknown {
   const recurse = partial(cleanValue, partial.placeholder, maxDepth, depth + 1);
 
-  if (depth > maxDepth) {
+  if (maxDepth != null && depth > maxDepth) {
     return undefined;
   }
 
