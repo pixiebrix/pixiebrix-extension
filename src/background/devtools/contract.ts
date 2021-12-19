@@ -30,27 +30,13 @@ export type PromiseHandler = [
   (value: unknown) => void
 ];
 
-export type BackgroundEventType =
-  | "HistoryStateUpdate"
-  | "DOMContentLoaded"
-  | "ContentScriptReady";
+export type BackgroundEventType = "HistoryStateUpdate";
 
-export type BackgroundEvent =
-  | {
-      type: "HistoryStateUpdate";
-      meta: Meta;
-      payload: WebNavigation.OnHistoryStateUpdatedDetailsType;
-    }
-  | {
-      type: "DOMContentLoaded";
-      meta: Meta;
-      payload: WebNavigation.OnDOMContentLoadedDetailsType;
-    }
-  | {
-      type: "ContentScriptReady";
-      meta: Meta;
-      payload: { frameId: number; tabId: TabId };
-    };
+export type BackgroundEvent = {
+  type: "HistoryStateUpdate";
+  meta: Meta;
+  payload: WebNavigation.OnHistoryStateUpdatedDetailsType;
+};
 
 export interface BackgroundResponse {
   type: string;

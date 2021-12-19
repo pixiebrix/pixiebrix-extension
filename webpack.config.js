@@ -248,7 +248,6 @@ module.exports = (env, options) =>
         [
           "background",
           "contentScript",
-          "devtools",
           "devtoolsPanel",
           "frame",
           "ephemeralForm",
@@ -272,6 +271,10 @@ module.exports = (env, options) =>
         "css-selector-generator",
         "@fortawesome/free-solid-svg-icons",
       ],
+
+      // This is a one-line file without imports
+      devtools: "./src/devtools",
+
       // The script that gets injected into the host page should not have a vendor chunk
       script: "./src/script",
     },
