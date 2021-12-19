@@ -15,26 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://developer.chrome.com/extensions/devtools
-
-import "@/telemetry/reportUncaughtErrors";
+// This context does not import rollbar because it only creates the devtool tab.
+// If it ends up becoming more complex, import "@/telemetry/reportUncaughtErrors"
 import browser from "webextension-polyfill";
-import { connectDevtools } from "@/devTools/protocol";
 import { updateSelectedElement } from "@/devTools/getSelectedElement";
 import { once } from "lodash";
 import { serializeError } from "serialize-error";
 import { readSelected } from "@/contentScript/messenger/api";
-import { thisTab } from "@/devTools/utils";
 
 const { onSelectionChanged } = browser.devtools.panels.elements;
 
 async function updateElementProperties(): Promise<void> {
   // This call is instant because sidebar and port has connected earlier
-  const { sidebar } = await connectSidebarPane();
+  const sidebar = await connectSidebarPane();
   void sidebar.setObject({ state: "loading..." });
   try {
     await updateSelectedElement();
-    await sidebar.setObject(await readSelected(thisTab));
+    await sidebar.setObject(
+      await readSelected({ tabId: browser.devtools.inspectedWindow.tabId })
+    );
   } catch (error) {
     await sidebar.setObject({ error: serializeError(error) });
   }
@@ -51,20 +50,23 @@ function onSidebarHide() {
 
 // This only ever needs to run once per devtools load. Sidebar and port will be constant throughout
 const connectSidebarPane = once(async () => {
-  const [sidebar, port] = await Promise.all([
-    browser.devtools.panels.elements.createSidebarPane("PixieBrix Data Viewer"),
-    connectDevtools(),
-  ]);
+  const sidebar = await browser.devtools.panels.elements.createSidebarPane(
+    "PixieBrix Data Viewer"
+  );
 
   sidebar.onShown.addListener(onSidebarShow);
   sidebar.onHidden.addListener(onSidebarHide);
 
   console.debug("DevTools sidebar ready");
-  return { sidebar, port };
+  return sidebar;
 });
 
 if (browser.devtools.inspectedWindow.tabId) {
   // Add panel and sidebar as early as possible so they appear quickly
-  void browser.devtools.panels.create("PixieBrix", "", "devtoolsPanel.html");
+  void browser.devtools.panels.create(
+    "PixieBrix",
+    "",
+    `devtoolsPanel.html?tabId=${browser.devtools.inspectedWindow.tabId}`
+  );
   void connectSidebarPane();
 }
