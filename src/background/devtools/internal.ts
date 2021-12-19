@@ -25,7 +25,6 @@ import {
 import browser, { Runtime, WebNavigation } from "webextension-polyfill";
 import { allowBackgroundSender } from "@/background/protocol";
 import {
-  BackgroundEventType,
   HandlerEntry,
   MESSAGE_PREFIX,
   PORT_NAME,
@@ -36,7 +35,6 @@ import {
 import type { Target } from "@/types";
 import { reportError } from "@/telemetry/logging";
 import { isBackground } from "webext-detect-page";
-import { uuidv4 } from "@/types/helpers";
 import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
 import { reactivateEveryTab } from "@/background/messenger/api";
@@ -296,21 +294,6 @@ async function attemptTemporaryAccess({
     }
 
     throw error;
-  }
-}
-
-export function emitDevtools(
-  type: BackgroundEventType,
-  details: { tabId: TabId; frameId: number }
-): void {
-  if (details.frameId === 0 && connections.has(details.tabId)) {
-    console.debug(`emitDevtools: ${type}`, details);
-    const port = connections.get(details.tabId);
-    port.postMessage({
-      type,
-      meta: { tabId: details.tabId, frameId: details.frameId, nonce: uuidv4() },
-      payload: details,
-    });
   }
 }
 

@@ -65,6 +65,10 @@ const connectSidebarPane = once(async () => {
 
 if (browser.devtools.inspectedWindow.tabId) {
   // Add panel and sidebar as early as possible so they appear quickly
-  void browser.devtools.panels.create("PixieBrix", "", "devtoolsPanel.html");
+  void browser.devtools.panels.create(
+    "PixieBrix",
+    "",
+    `devtoolsPanel.html?tabId=${browser.devtools.inspectedWindow.tabId}`
+  );
   void connectSidebarPane();
 }

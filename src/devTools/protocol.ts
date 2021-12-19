@@ -64,6 +64,10 @@ export async function connectDevtools(): Promise<Runtime.Port> {
   return port;
 }
 
+export function updateDevTools() {
+  navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
+}
+
 function onNavigation(
   details:
     | WebNavigation.OnHistoryStateUpdatedDetailsType
@@ -73,7 +77,7 @@ function onNavigation(
     details.frameId === TOP_LEVEL_FRAME_ID &&
     details.tabId === browser.devtools.inspectedWindow.tabId
   ) {
-    navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
+    updateDevTools();
   }
 }
 

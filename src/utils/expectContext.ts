@@ -42,11 +42,17 @@ function createError(
   return new error(defaultMessage);
 }
 
-const contexts = ["extension", "background", "contentScript"] as const;
+const contexts = [
+  "extension",
+  "background",
+  "contentScript",
+  "devTools",
+] as const;
 const contextMap = new Map<typeof contexts[number], () => boolean>([
   ["extension", isExtensionContext],
   ["background", isBackground],
   ["contentScript", isContentScript],
+  ["devTools", () => "devtools" in chrome],
 ]);
 
 /**

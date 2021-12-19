@@ -22,7 +22,6 @@ import {
 } from "@/messaging/protocol";
 import { deserializeError } from "serialize-error";
 import {
-  BackgroundEvent,
   BackgroundResponse,
   Nonce,
   PromiseHandler,
@@ -38,13 +37,6 @@ const devtoolsHandlers = new Map<Nonce, PromiseHandler>();
 type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;
 
 export const navigationEvent = new SimpleEvent<NavigationDetails>();
-
-function devtoolsEventListener(event: BackgroundEvent) {
-  console.debug(`devtools port message: ${event.type}`, event);
-  if (event.type === "HistoryStateUpdate") {
-    navigationEvent.emit(event.payload.tabId);
-  }
-}
 
 function devtoolsMessageListener(response: BackgroundResponse) {
   const {
@@ -116,5 +108,4 @@ export function installPortListeners(port: Runtime.Port): void {
   );
 
   port.onMessage.addListener(devtoolsMessageListener);
-  port.onMessage.addListener(devtoolsEventListener);
 }

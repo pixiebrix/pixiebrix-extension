@@ -15,22 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ReactDOM from "react-dom";
-import React from "react";
+/* Do not use `registerMethod` in this file */
+import { isDevToolsPage } from "webext-detect-page";
+import { getNotifier } from "webext-messenger";
 
-import Panel from "@/devTools/Panel";
+if (isDevToolsPage()) {
+  throw new Error(
+    "This should not have been imported in the dev tools. Use the API directly instead."
+  );
+}
 
-import "@/development/darkMode";
-import "@/telemetry/reportUncaughtErrors";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/vendors/overrides.scss";
-import "@/devTools/Panel.scss";
-
-import "@/devTools/messenger/registration";
-import { watchNavigation } from "@/devTools/protocol";
-import initGoogle from "@/contrib/google/initGoogle";
-
-initGoogle();
-watchNavigation();
-
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+export const updateDevTools = getNotifier("UPDATE_DEV_TOOLS");

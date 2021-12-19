@@ -15,22 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ReactDOM from "react-dom";
-import React from "react";
+/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
+import { expectContext } from "@/utils/expectContext";
+import { registerMethods } from "webext-messenger";
+import { updateDevTools } from "@/devTools/protocol";
 
-import Panel from "@/devTools/Panel";
+expectContext("devTools");
 
-import "@/development/darkMode";
-import "@/telemetry/reportUncaughtErrors";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/vendors/overrides.scss";
-import "@/devTools/Panel.scss";
+declare global {
+  interface MessengerMethods {
+    UPDATE_DEV_TOOLS: typeof updateDevTools;
+  }
+}
 
-import "@/devTools/messenger/registration";
-import { watchNavigation } from "@/devTools/protocol";
-import initGoogle from "@/contrib/google/initGoogle";
-
-initGoogle();
-watchNavigation();
-
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+registerMethods({
+  UPDATE_DEV_TOOLS: updateDevTools,
+});
