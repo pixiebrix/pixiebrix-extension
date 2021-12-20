@@ -18,26 +18,52 @@
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { showNotification } from "@/contentScript/notify";
 
 export class AlertEffect extends Effect {
   constructor() {
     super(
       "@pixiebrix/browser/alert",
       "Window Alert",
-      "Show an alert in the window",
-      "faSearch"
+      "Show an alert in the window"
     );
   }
 
-  inputSchema: Schema = propertiesToSchema({
-    message: {
-      type: ["string", "number", "boolean"],
-      description: "A string you want to display in the alert dialog",
+  inputSchema: Schema = propertiesToSchema(
+    {
+      message: {
+        type: ["string", "number", "boolean"],
+        description: "A string you want to display in the alert",
+      },
+      type: {
+        type: "string",
+        description:
+          "The alert type/style. Browser uses the browser's native alert dialog, which requires the user to dismiss the dialog",
+        enum: ["browser", "info", "success", "error"],
+        default: "info",
+      },
+      duration: {
+        type: "number",
+        description:
+          "Duration to show the alert, in milliseconds. Ignored for browser alerts",
+        default: 2500,
+      },
     },
-  });
+    ["message"]
+  );
 
-  async effect({ message }: BlockArg): Promise<void> {
-    // eslint-disable-next-line no-alert
-    window.alert(String(message));
+  async effect({
+    message,
+    type = "browser",
+    duration = Number.POSITIVE_INFINITY,
+  }: BlockArg): Promise<void> {
+    const messageString = String(message);
+
+    if (type === "browser") {
+      // eslint-disable-next-line no-alert
+      window.alert(messageString);
+    } else {
+      showNotification({ message: messageString, type, duration });
+    }
   }
 }
