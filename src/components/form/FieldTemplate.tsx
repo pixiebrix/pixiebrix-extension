@@ -173,7 +173,7 @@ const RenderedField: React.FC<FieldProps> = ({
       <Col lg={label ? "9" : "12"}>
         {formControl}
         {description && (
-          <BootstrapForm.Text className="text-muted text-wrap">
+          <BootstrapForm.Text className="text-muted">
             {description}
           </BootstrapForm.Text>
         )}
