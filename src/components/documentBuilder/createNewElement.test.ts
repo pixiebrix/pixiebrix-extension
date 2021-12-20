@@ -22,6 +22,7 @@ import {
 } from "./documentBuilderTypes";
 import { defaultBlockConfig } from "@/blocks/util";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
+import { ConfettiEffect } from "@/blocks/effects/confetti";
 
 test.each(DOCUMENT_ELEMENT_TYPES)(
   "sets correct element type for %s",
@@ -96,8 +97,23 @@ test("sets default config for block", () => {
 });
 
 test("sets default config for button", () => {
+  const confettiEffect = new ConfettiEffect();
+  const expectedConfig = {
+    title: "Confetti",
+    onClick: {
+      __type__: "pipeline",
+      __value__: [
+        {
+          id: confettiEffect.id,
+          instanceId: expect.any(String),
+          config: defaultBlockConfig(confettiEffect.inputSchema),
+        },
+      ],
+    },
+  };
+
   const actual = createNewElement("button");
-  expect(actual.config).toEqual({ title: "Click me" });
+  expect(actual.config).toEqual(expectedConfig);
 });
 
 test("throws on unknown elements", () => {

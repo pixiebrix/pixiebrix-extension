@@ -23,13 +23,9 @@ import { Except, JsonObject } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy, isEmpty } from "lodash";
-import { _getDNT } from "@/background/telemetry";
+import { allowsTrack } from "@/telemetry/dnt";
 import { isContentScript } from "webext-detect-page";
-import {
-  ManualStorageKey,
-  readStorageWithMigration,
-  setStorage,
-} from "@/chrome";
+import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   hasBusinessRootCause,
   hasCancelRootCause,
@@ -211,7 +207,7 @@ export const recordError = liftBackground(
     try {
       const message = getErrorMessage(error);
 
-      if (!(await _getDNT())) {
+      if (await allowsTrack()) {
         // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the object is the custom
         // payload data. WARNING: the prototype chain is lost during deserialization, so make sure any predicate you
         // call here also handles deserialized errors properly.
@@ -332,7 +328,7 @@ export async function _getLoggingConfig(): Promise<LoggingConfig> {
     return _config;
   }
 
-  return readStorageWithMigration(LOG_CONFIG_STORAGE_KEY, {
+  return readStorage(LOG_CONFIG_STORAGE_KEY, {
     logValues: false,
   });
 }

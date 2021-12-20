@@ -26,7 +26,6 @@ import {
   BackgroundResponse,
   Nonce,
   PromiseHandler,
-  TabId,
 } from "@/background/devtools/contract";
 import browser, { Runtime, WebNavigation } from "webextension-polyfill";
 import { uuidv4 } from "@/types/helpers";
@@ -36,24 +35,14 @@ import { getErrorMessage } from "@/errors";
 
 const devtoolsHandlers = new Map<Nonce, PromiseHandler>();
 
-type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType &
-  WebNavigation.OnDOMContentLoadedDetailsType;
+type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;
 
 export const navigationEvent = new SimpleEvent<NavigationDetails>();
-export const contentScriptReady = new SimpleEvent<{
-  tabId: TabId;
-  frameId: number;
-}>();
 
 function devtoolsEventListener(event: BackgroundEvent) {
   console.debug(`devtools port message: ${event.type}`, event);
-  if (
-    event.type === "DOMContentLoaded" ||
-    event.type === "HistoryStateUpdate"
-  ) {
-    navigationEvent.emit(event.payload.tabId, event.payload);
-  } else if (event.type === "ContentScriptReady") {
-    contentScriptReady.emit(event.payload.tabId, event.payload);
+  if (event.type === "HistoryStateUpdate") {
+    navigationEvent.emit(event.payload.tabId);
   }
 }
 

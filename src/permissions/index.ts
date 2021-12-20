@@ -190,19 +190,16 @@ export async function extensionPermissions(
   extension: IExtension,
   options: PermissionOptions = {}
 ): Promise<Permissions.Permissions> {
-  const opts = {
-    includeExtensionPoint: true,
-    includeServices: true,
-    ...options,
-  };
+  const { includeExtensionPoint = true, includeServices = true } = options;
   const resolved = await resolveDefinitions(extension);
+
   const extensionPoint =
-    opts.extensionPoint ??
+    options.extensionPoint ??
     (await extensionPointRegistry.lookup(resolved.extensionPointId));
 
   let servicePermissions: Permissions.Permissions[] = [];
 
-  if (opts.includeServices) {
+  if (includeServices) {
     servicePermissions = await Promise.all(
       (resolved.services ?? [])
         .filter((x) => x.config)
@@ -217,7 +214,7 @@ export async function extensionPermissions(
 
   return mergePermissions(
     compact([
-      opts.includeExtensionPoint ? extensionPoint.permissions : null,
+      includeExtensionPoint ? extensionPoint.permissions : null,
       ...servicePermissions,
       ...blockPermissions,
     ])

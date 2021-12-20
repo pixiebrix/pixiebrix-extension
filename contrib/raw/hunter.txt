@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: hunter/api
+  version: 1.0.0
+  name: Hunter API
+  description: Hunter lets you find email addresses in seconds and connect with the people that matter for your business.
+isAvailable:
+  matchPatterns: https://api.hunter.io/*
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    apiKey:
+      $ref: "https://app.pixiebrix.com/schemas/key#"
+      description: Your Hunter secret key
+  required:
+    - apiKey
+authentication:
+  params:
+    api_key: "{{&apiKey}}"

@@ -74,7 +74,7 @@ function useSearch<T extends IBrick>(
 
   const { fuse, brickOptions } = useMemo(() => {
     const brickOptions = sortBy(
-      // We should never show @internal bricks to users. However they'll sometimes find their way in from the registry
+      // We should never show @internal bricks to users. However, they'll sometimes find their way in from the registry
       (bricks ?? [])
         .filter((x) => !x.id.startsWith("@internal/"))
         .map((x) => makeBlockOption(x)),
@@ -119,7 +119,7 @@ type ItemType = {
   activeBrick: IBrick | null;
 };
 
-// The item renderer must be it's own separate component to react-window from re-mounting the results
+// The item renderer must be its own separate component to react-window from re-mounting the results
 // https://github.com/bvaughn/react-window/issues/420#issuecomment-585813335
 const ItemRenderer = ({
   index,
@@ -246,8 +246,8 @@ function ActualModal<T extends IBrick>({
                         ref={searchInput}
                         placeholder="Start typing to find results"
                         value={query}
-                        onChange={(e) => {
-                          setQuery(e.target.value);
+                        onChange={({ target }) => {
+                          setQuery(target.value);
                         }}
                       />
                     </InputGroup>

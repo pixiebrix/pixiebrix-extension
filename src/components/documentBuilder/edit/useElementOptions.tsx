@@ -17,6 +17,7 @@
 
 import {
   DocumentElement,
+  isButtonElement,
   isListElement,
   isPipelineElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
@@ -25,6 +26,7 @@ import ListOptions from "@/components/documentBuilder/edit/ListOptions";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getElementEditSchemas from "@/components/documentBuilder/edit/getElementEditSchemas";
 import PipelineOptions from "@/components/documentBuilder/edit/PipelineOptions";
+import ButtonOptions from "@/components/documentBuilder/edit/ButtonOptions";
 
 const useElementOptions = (
   element: DocumentElement,
@@ -43,6 +45,14 @@ const useElementOptions = (
         <PipelineOptions elementName={elementName} />
       );
       return PipelineOptionsFields;
+    }
+
+    if (isButtonElement(element)) {
+      const ButtonOptionsFields = () => (
+        <ButtonOptions elementName={elementName} />
+      );
+
+      return ButtonOptionsFields;
     }
 
     const editSchemas = getElementEditSchemas(elementType, elementName);

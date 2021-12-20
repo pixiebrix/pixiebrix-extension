@@ -17,7 +17,7 @@
 
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { waitForEffect } from "@/tests/testHelpers";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import React from "react";
 import blockRegistry from "@/blocks/registry";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
@@ -25,13 +25,10 @@ import * as logging from "@/background/logging";
 import * as backgroundAPI from "@/background/messenger/api";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import {
-  buildDocumentBranch,
-  getPreviewComponentDefinition,
-} from "./documentTree";
-import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
+import { buildDocumentBranch } from "./documentTree";
+import { DocumentElementType } from "./documentBuilderTypes";
 
-// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
+// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandled rejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/background/messenger/api");
@@ -329,45 +326,4 @@ config:
     expect(blockContainer).not.toBeNull();
     expect(blockContainer).toHaveClass("h-100");
   }
-});
-
-describe("when rendered in preview", () => {
-  test.each(["container", "row", "column"])(
-    "shows name of an empty %s",
-    (elementType: DocumentElementType) => {
-      const element: DocumentElement = {
-        type: elementType,
-        config: {},
-        children: [],
-      };
-
-      const actual = getPreviewComponentDefinition(element);
-
-      render(actual.props.children as any);
-      expect(screen.getByText(elementType)).not.toBeNull();
-    }
-  );
-
-  test.each(["container", "row", "column"])(
-    "doesn't show name of %s with children",
-    (elementType: DocumentElementType) => {
-      const element: DocumentElement = {
-        type: elementType,
-        config: {},
-        children: [
-          {
-            type: "text",
-            config: {
-              text: "child element",
-            },
-          },
-        ],
-      };
-
-      const actual = getPreviewComponentDefinition(element);
-
-      render(actual.props.children as any);
-      expect(screen.queryByText(elementType)).toBeNull();
-    }
-  );
 });

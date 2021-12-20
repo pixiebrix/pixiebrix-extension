@@ -5,6 +5,48 @@
     "pixiebrix"
   ],
   "rules": {
+    "unicorn/prevent-abbreviations": [
+      "error",
+      {
+        "replacements": {
+          "acc": false,
+          "arg": false,
+          "args": false,
+          "db": false,
+          "dev": false,
+          "doc": false,
+          "docs": false,
+          "env": false,
+          "err": false,
+          "ev": false,
+          "evt": false,
+          "ext": false,
+          "exts": false,
+          "fn": false,
+          "func": {
+            "fn": true,
+            "function": false
+          },
+          "i": false,
+          "j": false,
+          "num": false,
+          "obj": false,
+          "param": false,
+          "params": false,
+          "prev": false,
+          "prod": false,
+          "prop": false,
+          "props": false,
+          "ref": false,
+          "refs": false,
+          "str": false,
+          "var": false,
+          "vars": false
+        },
+        "ignore": ["semVer", "SemVer"]
+      }
+    ],
+
     // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
     "import/no-named-as-default-member": "off",
 
@@ -38,7 +80,6 @@
     "src/vendors",
     "src/types/swagger.ts",
     "src/nativeEditor/Overlay.tsx",
-    "src/support.js",
     "selenium"
   ],
   "overrides": [

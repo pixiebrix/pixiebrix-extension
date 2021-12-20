@@ -297,6 +297,9 @@ export const editorSlice = createSlice({
         ...state.elements[index],
         ...elementUpdate,
       };
+
+      // Force reload of Formik state
+      state.selectionSeq++;
     },
     removeElement: (state, action: PayloadAction<UUID>) => {
       const uuid = action.payload;

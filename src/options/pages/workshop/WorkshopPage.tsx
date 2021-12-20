@@ -151,8 +151,8 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
                 id="query"
                 placeholder="Start typing to find results"
                 value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
+                onChange={({ target }) => {
+                  setQuery(target.value);
                 }}
               />
             </InputGroup>

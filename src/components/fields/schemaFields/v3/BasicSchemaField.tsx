@@ -352,6 +352,17 @@ function getToggleOptions({
   return sortBy(options, (opt: InputModeOption) => opt.value === "omit");
 }
 
+export function schemaSupportsTemplates(schema: Schema): boolean {
+  const options = getToggleOptions({
+    fieldSchema: schema,
+    isRequired: false,
+    customToggleModes: [],
+    isObjectProperty: false,
+    isArrayItem: false,
+  });
+  return options.some((option) => option.value === "string");
+}
+
 const BasicSchemaField: SchemaFieldComponent = (props) => {
   const {
     name,
