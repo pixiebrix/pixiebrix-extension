@@ -17,19 +17,28 @@
 
 import React from "react";
 import { useLoggingConfig } from "@/hooks/logging";
-import { useToasts } from "react-toast-notifications";
-import { Button, Card, Form } from "react-bootstrap";
+import { Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import GridLoader from "react-spinners/GridLoader";
 import { clearLogs } from "@/background/logging";
-import { reportError } from "@/telemetry/logging";
-import { getErrorMessage } from "@/errors";
+import AsyncButton from "@/components/AsyncButton";
+import useUserAction from "@/hooks/useUserAction";
 
 const LoggingSettings: React.FunctionComponent = () => {
   const [config, setConfig] = useLoggingConfig();
-  const { addToast } = useToasts();
+
+  const clearAction = useUserAction(
+    async () => {
+      await clearLogs();
+    },
+    {
+      successMessage: "Cleared local logs",
+      errorMessage: "Error clearing local logs",
+    },
+    []
+  );
 
   return (
     <Card>
@@ -67,26 +76,9 @@ const LoggingSettings: React.FunctionComponent = () => {
         )}
       </Card.Body>
       <Card.Footer>
-        <Button
-          variant="info"
-          onClick={async () => {
-            try {
-              await clearLogs();
-              addToast("Cleared local logs", {
-                appearance: "success",
-                autoDismiss: true,
-              });
-            } catch (error) {
-              reportError(error);
-              addToast(`Error clearing local logs: ${getErrorMessage(error)}`, {
-                appearance: "error",
-                autoDismiss: true,
-              });
-            }
-          }}
-        >
-          Clear Local Logs
-        </Button>
+        <AsyncButton variant="info" onClick={clearAction}>
+          <FontAwesomeIcon icon={faTrash} /> Clear Local Logs
+        </AsyncButton>
       </Card.Footer>
     </Card>
   );
