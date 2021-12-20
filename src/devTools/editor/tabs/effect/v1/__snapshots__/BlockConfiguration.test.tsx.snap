@@ -138,7 +138,7 @@ exports[`renders 1`] = `
               />
             </div>
             <small
-              class="text-muted form-text"
+              class="text-muted text-wrap form-text"
             >
               <p>
                 The template engine controls how PixieBrix fills in 

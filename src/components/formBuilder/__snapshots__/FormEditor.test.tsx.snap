@@ -251,7 +251,7 @@ exports[`FormEditor renders simple schema 1`] = `
             value="firstName"
           />
           <small
-            class="text-muted form-text"
+            class="text-muted text-wrap form-text"
           >
             Enter a name to refer to this value in the output later
           </small>
@@ -278,7 +278,7 @@ exports[`FormEditor renders simple schema 1`] = `
             First name
           </textarea>
           <small
-            class="text-muted form-text"
+            class="text-muted text-wrap form-text"
           >
             The user-visible label for this field
           </small>
@@ -303,7 +303,7 @@ exports[`FormEditor renders simple schema 1`] = `
             rows="1"
           />
           <small
-            class="text-muted form-text"
+            class="text-muted text-wrap form-text"
           >
             Explain to the user what this field is used for
           </small>
