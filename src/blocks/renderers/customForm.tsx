@@ -33,7 +33,7 @@ const CustomFormComponent: React.FunctionComponent<{
   formData: JsonObject;
   onSubmit: (values: JsonObject) => Promise<void>;
 }> = ({ schema, uiSchema, formData, onSubmit }) => (
-  <div className="CustomForm">
+  <div className="CustomForm p-3">
     <BootstrapStylesheet />
     <link rel="stylesheet" href={custom} />
     <JsonSchemaForm
