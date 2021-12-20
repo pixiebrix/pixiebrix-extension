@@ -28,8 +28,11 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import "@/messaging/external";
 import { markReady, updateTabInfo } from "@/contentScript/context";
-import { initTelemetry } from "@/telemetry/events";
-import { markTabAsReady, whoAmI } from "@/background/messenger/api";
+import {
+  markTabAsReady,
+  whoAmI,
+  initTelemetry,
+} from "@/background/messenger/api";
 import { showConnectionLost } from "@/contentScript/connection";
 import { isConnectionError } from "@/errors";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
