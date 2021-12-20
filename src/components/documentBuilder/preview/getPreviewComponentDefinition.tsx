@@ -110,7 +110,9 @@ function getPreviewComponentDefinition(
         className,
         ...restPreviewProps
       }) => {
-        const { title, onClick, ...buttonProps } = config;
+        // Destructure disabled from button props. If the button is disabled in the preview the user can't select it
+        // to configure the button
+        const { title, onClick, disabled, ...buttonProps } = config;
 
         return (
           <div>
