@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { IBlock, OutputKey, UUID } from "@/core";
 import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 import { compact } from "lodash";
@@ -32,9 +32,19 @@ import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { produceExcludeUnusedDependencies as produceExcludeUnusedDependenciesV3 } from "@/components/fields/schemaFields/v3/ServiceField";
 import { produceExcludeUnusedDependencies as produceExcludeUnusedDependenciesV1 } from "@/components/fields/schemaFields/v1/ServiceField";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/devTools/store";
 
-function useBlockActions(
+type BlockPipelineActions = {
+  addBlock: (block: IBlock, pipelineIndex: number) => void;
+  removeBlock: (nodeIdToRemove: NodeId) => void;
+  moveBlockUp: (instanceId: UUID) => void;
+  moveBlockDown: (instanceId: UUID) => void;
+  copyBlock: (instanceId: UUID) => void;
+  pasteBlock?: (pipelineIndex: number) => void;
+};
+
+function useBlockPipelineActions(
   blockPipeline: BlockPipeline,
   values: FormState,
   setFormValues: (
@@ -42,7 +52,7 @@ function useBlockActions(
     shouldValidate?: boolean
   ) => void,
   setActiveNodeId: (nodeId: NodeId) => void
-) {
+): BlockPipelineActions {
   const isApiAtLeastV3 = useApiVersionAtLeast("v3");
   const produceExcludeUnusedDependencies = isApiAtLeastV3
     ? produceExcludeUnusedDependenciesV3
@@ -51,10 +61,7 @@ function useBlockActions(
   const dispatch = useDispatch();
 
   const addBlock = useCallback(
-    async (block: IBlock, beforeInstanceId?: UUID) => {
-      const insertIndex = beforeInstanceId
-        ? blockPipeline.findIndex((x) => x.instanceId === beforeInstanceId)
-        : blockPipeline.length;
+    async (block: IBlock, pipelineIndex: number) => {
       const outputKey = await generateFreshOutputKey(
         block,
         compact([
@@ -73,7 +80,7 @@ function useBlockActions(
       }
 
       const nextState = produce(values, (draft) => {
-        draft.extension.blockPipeline.splice(insertIndex, 0, newBlock);
+        draft.extension.blockPipeline.splice(pipelineIndex, 0, newBlock);
       });
       setFormValues(nextState, true);
       setActiveNodeId(newBlock.instanceId);
@@ -159,12 +166,53 @@ function useBlockActions(
     [blockPipeline, setFormValues, values]
   );
 
+  const copyBlock = useCallback(
+    (instanceId: UUID) => {
+      const blockToCopy = blockPipeline.find(
+        (block) => block.instanceId === instanceId
+      );
+      if (blockToCopy) {
+        dispatch(actions.copyBlockConfig(blockToCopy));
+      }
+    },
+    [blockPipeline, dispatch]
+  );
+
+  const copiedBlock = useSelector(
+    (state: RootState) => state.editor.copiedBlock
+  );
+
+  const pasteBlock = useMemo(() => {
+    if (copiedBlock === undefined) {
+      return;
+    }
+
+    return (pipelineIndex: number) => {
+      const nextState = produce(values, (draft) => {
+        const pipeline = draft.extension.blockPipeline;
+        // Give the block a new instanceId
+        const newInstanceId = uuidv4();
+        const pastedBlock: BlockConfig = {
+          ...copiedBlock,
+          instanceId: newInstanceId,
+        };
+        // Insert the block
+        pipeline.splice(pipelineIndex, 0, pastedBlock);
+        dispatch(actions.setElementActiveNodeId(newInstanceId));
+      });
+      setFormValues(nextState);
+      dispatch(actions.clearCopiedBlockConfig());
+    };
+  }, [copiedBlock, dispatch, setFormValues, values]);
+
   return {
     addBlock,
     removeBlock,
     moveBlockUp,
     moveBlockDown,
+    copyBlock,
+    pasteBlock,
   };
 }
 
-export default useBlockActions;
+export default useBlockPipelineActions;

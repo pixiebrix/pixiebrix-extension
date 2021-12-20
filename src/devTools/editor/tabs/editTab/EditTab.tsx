@@ -46,7 +46,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
 import AuthContext from "@/auth/AuthContext";
 import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
-import useBlockActions from "@/devTools/editor/tabs/editTab/useBlockActions";
+import useBlockPipelineActions from "@/devTools/editor/tabs/editTab/useBlockPipelineActions";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -126,50 +126,19 @@ const EditTab: React.FC<{
     false
   );
 
-  const { addBlock, removeBlock, moveBlockUp, moveBlockDown } = useBlockActions(
+  const {
+    addBlock,
+    removeBlock,
+    moveBlockUp,
+    moveBlockDown,
+    copyBlock,
+    pasteBlock,
+  } = useBlockPipelineActions(
     blockPipeline,
     values,
     setFormValues,
     setActiveNodeId
   );
-
-  const copyBlock = useCallback(
-    (instanceId: UUID) => {
-      const blockToCopy = blockPipeline.find(
-        (block) => block.instanceId === instanceId
-      );
-      if (blockToCopy) {
-        dispatch(actions.copyBlockConfig(blockToCopy));
-      }
-    },
-    [blockPipeline, dispatch]
-  );
-
-  const copiedBlock = useSelector(
-    (state: RootState) => state.editor.copiedBlock
-  );
-  const pasteBlock = useMemo(() => {
-    if (copiedBlock === undefined) {
-      return;
-    }
-
-    return (pipelineIndex: number) => {
-      const nextState = produce(values, (draft) => {
-        const pipeline = draft.extension.blockPipeline;
-        // Give the block a new instanceId
-        const newInstanceId = uuidv4();
-        const pastedBlock: BlockConfig = {
-          ...copiedBlock,
-          instanceId: newInstanceId,
-        };
-        // Insert the block
-        pipeline.splice(pipelineIndex, 0, pastedBlock);
-        dispatch(actions.setElementActiveNodeId(newInstanceId));
-      });
-      setFormValues(nextState);
-      dispatch(actions.clearCopiedBlockConfig());
-    };
-  }, [copiedBlock, dispatch, setFormValues, values]);
 
   const nodes = useMemo<EditorNodeProps[]>(() => {
     const blockNodes: EditorNodeProps[] = blockPipeline.map(
