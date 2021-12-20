@@ -15,6 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.verticalFormGroup,
+.horizontalFormGroup {
+  // Prevents long urls in Field descriptions overflowing modal container
+  // https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
+  overflow-wrap: break-word;
+
+  word-break: break-word;
+
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
 .verticalFormGroup {
   padding-left: 0;
   padding-right: 0;
