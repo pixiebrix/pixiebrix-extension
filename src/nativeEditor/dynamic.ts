@@ -40,6 +40,7 @@ import {
 } from "@/extensionPoints/contextMenu";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { $safeFind } from "@/helpers";
+import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
@@ -167,6 +168,19 @@ export async function updateDynamicElement({
   expectContext("contentScript");
 
   const extensionPoint = extensionPointFactory(extensionPointConfig);
+
+  // HACK: hack so that when using the Page Editor the interval trigger only runs when you manually trigger it
+  //  Otherwise it's hard to work with the interval trigger because you keep losing the trace from the previous run
+  if (
+    extensionPoint instanceof TriggerExtensionPoint &&
+    extensionPoint.trigger === "interval"
+  ) {
+    Object.defineProperty(extensionPoint, "trigger", {
+      get() {
+        return "load";
+      },
+    });
+  }
 
   _temporaryExtensions.set(extensionConfig.id, extensionPoint);
 

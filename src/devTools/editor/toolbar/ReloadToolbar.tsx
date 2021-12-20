@@ -31,8 +31,12 @@ function isPanelElement(element: FormState | null): boolean {
   return ["panel", "actionPanel"].includes(element?.type);
 }
 
+/**
+ * Return true if the trigger runs automatically (not in response to a user action).
+ * @param element
+ */
 function isAutomaticTrigger(element: FormState): boolean {
-  const automatic = ["load", "appear"];
+  const automatic = ["load", "appear", "interval"];
   return (
     element?.type === "trigger" &&
     automatic.includes(element?.extensionPoint.definition.trigger)
