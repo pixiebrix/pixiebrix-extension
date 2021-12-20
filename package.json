@@ -129,7 +129,7 @@
     "redux-persist-webextension-storage": "^1.0.2",
     "reselect": "^4.0.0",
     "rollbar": "^2.24.0",
-    "schema-to-yup": "1.10.0",
+    "schema-to-yup": "1.11.2",
     "semver": "^7.3.5",
     "serialize-error": "^9.0.0",
     "simple-icons": "^5.8.0",
