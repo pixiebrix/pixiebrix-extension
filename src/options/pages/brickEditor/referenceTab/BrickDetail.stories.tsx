@@ -23,6 +23,8 @@ import { ToastProvider } from "react-toast-notifications";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import amazonSearch from "@contrib/blocks/amazon-search.yaml";
 import { brickToYaml } from "@/utils/objToYaml";
+import { Provider } from "react-redux";
+import store from "@/options/store";
 
 export default {
   title: "Components/BrickDetail",
@@ -30,9 +32,11 @@ export default {
 } as ComponentMeta<typeof BrickDetail>;
 
 const Template: ComponentStory<typeof BrickDetail> = (args) => (
-  <ToastProvider>
-    <BrickDetail {...args} />
-  </ToastProvider>
+  <Provider store={store}>
+    <ToastProvider>
+      <BrickDetail {...args} />
+    </ToastProvider>
+  </Provider>
 );
 
 export const BuiltIn = Template.bind({});
