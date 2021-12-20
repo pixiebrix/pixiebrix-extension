@@ -45,9 +45,7 @@ const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
 
 type OwnProps = {
-  // @ts-expect-error -- not sure how to resolve private name usage here
   updateServiceConfig: typeof updateServiceConfig;
-  // @ts-expect-error -- not sure how to resolve private name usage here
   deleteServiceConfig: typeof deleteServiceConfig;
   navigate: typeof push;
 };
@@ -70,7 +68,10 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
   const { id: configurationId } = useParams<{ id: UUID }>();
 
-  const [newService, setNewService] = useState<IService>(null);
+  const [
+    newConfigurationService,
+    setNewConfigurationService,
+  ] = useState<IService>(null);
   const [
     newConfiguration,
     setNewConfiguration,
@@ -90,20 +91,22 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
   const isConfiguring =
     configurationId &&
-    ((newService && newConfiguration) ||
+    ((newConfigurationService && newConfiguration) ||
       (activeService && activeConfiguration));
 
   const handleSave = useCallback(
     async (config) => {
       updateServiceConfig(config);
       notify.success(
-        `${newService ? "Created" : "Updated"} private configuration for ${
-          (activeService ?? newService)?.name
+        `${
+          newConfigurationService ? "Created" : "Updated"
+        } private configuration for ${
+          (activeService ?? newConfigurationService)?.name
         }.`
       );
 
       setNewConfiguration(null);
-      setNewService(null);
+      setNewConfigurationService(null);
 
       await persistor.flush();
 
@@ -120,7 +123,13 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
       navigate("/services");
     },
-    [updateServiceConfig, notify, activeService, newService, navigate]
+    [
+      updateServiceConfig,
+      notify,
+      activeService,
+      newConfigurationService,
+      navigate,
+    ]
   );
 
   const handleDelete = useCallback(
@@ -184,7 +193,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       {isConfiguring && (
         <ServiceEditorModal
           configuration={activeConfiguration ?? newConfiguration}
-          service={activeService ?? newService}
+          service={activeService ?? newConfigurationService}
           onDelete={activeConfiguration && handleDelete}
           onClose={() => {
             navigate("/services");
@@ -235,10 +244,11 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
                 services={serviceDefinitions}
                 onCreate={(config) => {
                   setNewConfiguration(config);
-                  const baseService = (serviceDefinitions ?? []).find(
-                    (x) => x.id === config.serviceId
+                  setNewConfigurationService(
+                    (serviceDefinitions ?? []).find(
+                      (x) => x.id === config.serviceId
+                    )
                   );
-                  setNewService(baseService);
                   navigate(`/services/${encodeURIComponent(config.id)}`);
                 }}
               />
