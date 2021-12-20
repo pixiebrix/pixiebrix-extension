@@ -26,16 +26,13 @@ import {
 import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";
 import {
-  PANEL_HIDING_EVENT,
-  registerShowCallback,
-  removeShowCallback,
-  showActionPanel,
-  showActionPanelForm,
+  ensureActionPanel,
   hideActionPanelForm,
+  PANEL_HIDING_EVENT,
+  showActionPanelForm,
 } from "@/actionPanel/native";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 import { reportError } from "@/telemetry/logging";
-import pDefer from "p-defer";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
@@ -118,10 +115,10 @@ export class FormTransformer extends Transformer {
     // Future improvements:
     // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?
 
-    const nonce = uuidv4();
-    const frameSource = await createFrameSource(nonce, location);
+    const frameNonce = uuidv4();
+    const frameSource = await createFrameSource(frameNonce, location);
 
-    const definition = {
+    const formDefinition = {
       schema,
       uiSchema,
       cancelable,
@@ -132,16 +129,13 @@ export class FormTransformer extends Transformer {
 
     if (location === "sidebar") {
       // Show sidebar (which may also be showing native panels)
-      const show = pDefer();
-      registerShowCallback(show.resolve);
-      showActionPanel();
-      await show.promise;
-      removeShowCallback(show.resolve);
+
+      await ensureActionPanel();
 
       showActionPanelForm({
         extensionId: logger.context.extensionId,
-        nonce,
-        form: definition,
+        nonce: frameNonce,
+        form: formDefinition,
       });
 
       // Two-way binding between sidebar and form. Listen for the user (or an action) closing the sidebar
@@ -161,15 +155,15 @@ export class FormTransformer extends Transformer {
         // NOTE: we're not hiding the side panel here to avoid closing the sidebar if the user already had it open.
         // In the future we might creating/sending a closeIfEmpty message to the sidebar, so that it would close
         // if this form was the only entry in the panel
-        hideActionPanelForm(nonce);
-        void cancelForm(nonce).catch(reportError);
+        hideActionPanelForm(frameNonce);
+        void cancelForm(frameNonce).catch(reportError);
       });
     } else {
       showModal(frameSource, controller.signal);
     }
 
     try {
-      return await registerForm(nonce, definition);
+      return await registerForm(frameNonce, formDefinition);
     } finally {
       controller.abort();
     }
