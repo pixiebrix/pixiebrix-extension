@@ -34,6 +34,7 @@ import { CancelEffect } from "./cancel";
 import { ErrorEffect } from "./error";
 import { ShowEffect } from "./show";
 import { TelemetryEffect } from "./telemetry";
+import { SoundEffect } from "./sound";
 import { ConfettiEffect } from "./confetti";
 import { TourEffect } from "./tour";
 import { AttachAutocomplete } from "./attachAutocomplete";
@@ -64,6 +65,7 @@ function registerEffects(): void {
   registerBlock(new ErrorEffect());
   registerBlock(new ShowEffect());
   registerBlock(new TelemetryEffect());
+  registerBlock(new SoundEffect());
   registerBlock(new ConfettiEffect());
   registerBlock(new TourEffect());
   registerBlock(new AttachAutocomplete());
