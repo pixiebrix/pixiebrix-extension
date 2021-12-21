@@ -31,10 +31,11 @@ import {
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import { renderPanels, hideForm, showForm } from "@/actionPanel/messenger/api";
 import { MAX_Z_INDEX } from "@/common";
+import pDefer from "p-defer";
 
 const SIDEBAR_WIDTH_PX = 400;
-const PANEL_CONTAINER_ID = "pixiebrix-extension";
-const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
+const PANEL_FRAME_ID = "pixiebrix-extension";
+const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
 export const PANEL_HIDING_EVENT = "pixiebrix:hideActionPanel";
 
 let renderSequenceNumber = 0;
@@ -95,7 +96,7 @@ function insertActionPanel(): string {
 
   $("<iframe>")
     .attr({
-      id: PANEL_CONTAINER_ID,
+      id: PANEL_FRAME_ID,
       src: `${actionURL}?nonce=${nonce}`,
     })
     .css({
@@ -114,19 +115,27 @@ function insertActionPanel(): string {
   return nonce;
 }
 
+/**
+ * Add the action panel to the page if it's not already on the page
+ * @param callbacks callbacks to refresh the panels, leave blank to refresh all extension panels
+ */
 export function showActionPanel(callbacks = extensionCallbacks): string {
   reportEvent("SidePanelShow");
-
-  adjustDocumentStyle();
 
   const container: HTMLElement = document.querySelector(
     PANEL_CONTAINER_SELECTOR
   );
 
-  const nonce = container?.dataset?.nonce ?? insertActionPanel();
+  let nonce = container?.dataset?.nonce;
+
+  if (!nonce) {
+    console.debug("SidePanel is not on the page, attaching side panel");
+    adjustDocumentStyle();
+    nonce = insertActionPanel();
+  }
 
   // Run the extension points available on the page. If the action panel is already in the page, running
-  // all the callbacks ensures the content is up to date
+  // all the callbacks ensures the content is up-to-date
   for (const callback of callbacks) {
     try {
       callback();
@@ -137,8 +146,26 @@ export function showActionPanel(callbacks = extensionCallbacks): string {
     }
   }
 
-  // TODO: Drop `nonce` if not used anywhere
+  // TODO: Drop `nonce` if not used by the caller
   return nonce;
+}
+
+/**
+ * Awaitable version of showActionPanel which does not reload existing panels if the action panel is already visible
+ * @see showActionPanel
+ */
+export async function ensureActionPanel(): Promise<void> {
+  const show = pDefer();
+
+  if (!isActionPanelVisible()) {
+    registerShowCallback(show.resolve);
+    try {
+      showActionPanel();
+      await show.promise;
+    } finally {
+      removeShowCallback(show.resolve);
+    }
+  }
 }
 
 export function hideActionPanel(): void {
