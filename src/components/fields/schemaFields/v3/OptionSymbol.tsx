@@ -24,6 +24,7 @@ import SelectSymbol from "./optionSymbols/select.svg?loadAsComponent";
 import TextSymbol from "./optionSymbols/text.svg?loadAsComponent";
 import NumberSymbol from "./optionSymbols/number.svg?loadAsComponent";
 import ExcludeSymbol from "./optionSymbols/exclude.svg?loadAsComponent";
+import QuerySelector from "./optionSymbols/querySelector.svg?loadAsComponent";
 import styles from "./OptionSymbol.module.scss";
 
 const components = {
@@ -35,6 +36,7 @@ const components = {
   text: TextSymbol,
   number: NumberSymbol,
   exclude: ExcludeSymbol,
+  querySelector: QuerySelector,
 };
 
 type OptionSymbolProps = {
