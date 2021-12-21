@@ -25,7 +25,7 @@ export class AlertEffect extends Effect {
     super(
       "@pixiebrix/browser/alert",
       "Window Alert",
-      "Show an alert in the window"
+      "Show an alert/notification in the browser window"
     );
   }
 
@@ -33,19 +33,19 @@ export class AlertEffect extends Effect {
     {
       message: {
         type: ["string", "number", "boolean"],
-        description: "A string you want to display in the alert",
+        description: "The text/value you want to display in the alert",
       },
       type: {
         type: "string",
         description:
-          "The alert type/style. Browser uses the browser's native alert dialog, which requires the user to dismiss the dialog",
-        enum: ["browser", "info", "success", "error"],
+          "The alert type/style. 'window' uses the browser's native window alert dialog, which the user must dismiss",
+        enum: ["window", "info", "success", "error"],
         default: "info",
       },
       duration: {
         type: "number",
         description:
-          "Duration to show the alert, in milliseconds. Ignored for browser alerts",
+          "Duration to show the alert, in milliseconds. Ignored for 'window' alerts",
         default: 2500,
       },
     },
@@ -54,12 +54,12 @@ export class AlertEffect extends Effect {
 
   async effect({
     message,
-    type = "browser",
+    type = "window",
     duration = Number.POSITIVE_INFINITY,
   }: BlockArg): Promise<void> {
     const messageString = String(message);
 
-    if (type === "browser") {
+    if (type === "window") {
       // eslint-disable-next-line no-alert
       window.alert(messageString);
     } else {
