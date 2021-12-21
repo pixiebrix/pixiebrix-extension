@@ -27,10 +27,9 @@ import {
 
 // Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
-import * as logging from "@/background/logging";
+import * as logging from "@/background/messenger/api";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 
-jest.mock("@/background/trace");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
 });
@@ -40,31 +39,59 @@ beforeEach(() => {
   blockRegistry.register(echoBlock, contextBlock);
 });
 
-describe("component block", () => {
-  test("component block uses own declared runtime within the brick", async () => {
-    const componentBlock = fromJS({
-      apiVersion: "v1",
-      kind: "component",
-      metadata: {
-        id: "test/component",
-        name: "Component Block",
-        version: "1.0.0",
-        description: "Component block using v1 runtime",
-      },
-      inputSchema: {
-        message: {
-          type: "string",
-        },
-      },
-      pipeline: [
-        {
-          id: echoBlock.id,
-          // Implicit application of mustache template referencing input without @input
-          config: { message: "{{message}}" },
-        },
-      ],
-    });
+const componentBlock = fromJS({
+  apiVersion: "v1",
+  kind: "component",
+  metadata: {
+    id: "test/component",
+    name: "Component Block",
+    version: "1.0.0",
+    description: "Component block using v1 runtime",
+  },
+  inputSchema: {
+    message: {
+      type: "string",
+    },
+  },
+  pipeline: [
+    {
+      id: echoBlock.id,
+      // Implicit application of mustache template referencing input without @input
+      config: { message: "{{message}}" },
+    },
+  ],
+});
 
+describe("component block v1", () => {
+  test("v2 pipeline calling v1 block", async () => {
+    blockRegistry.register(componentBlock);
+
+    const pipeline = [
+      {
+        id: "test/component",
+        outputKey: "first",
+        config: {
+          message: "@input.inputArg",
+        },
+      },
+      {
+        id: echoBlock.id,
+        config: {
+          message: "{{@first.message}}",
+        },
+      },
+    ] as BlockPipeline;
+
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({ inputArg: "hello" }),
+      testOptions("v2")
+    );
+
+    expect(result).toStrictEqual({ message: "hello" });
+  });
+
+  test("v3 pipeline calling v1 block", async () => {
     blockRegistry.register(componentBlock);
 
     const pipeline = [

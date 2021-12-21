@@ -39,9 +39,9 @@ export function useLabelRenderer() {
           role="button"
           className={styles.copyPath}
           aria-label="copy path"
-          onClick={(e) => {
+          onClick={(event) => {
             copy([key, ...rest].reverse().join("."));
-            e.stopPropagation();
+            event.stopPropagation();
             addToast("Copied property path to the clipboard", {
               appearance: "info",
               autoDismiss: true,

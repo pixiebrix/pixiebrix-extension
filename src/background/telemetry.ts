@@ -23,12 +23,12 @@ import browser from "webextension-polyfill";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
 import { Data, UUID } from "@/core";
-import { boolean } from "@/utils";
 import { loadOptions } from "@/options/loader";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
 } from "@/services/apiClient";
+import { allowsTrack } from "@/telemetry/dnt";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -40,11 +40,9 @@ interface UserEvent {
   data: JsonObject;
 }
 
-export const DNT_STORAGE_KEY = "DNT" as ManualStorageKey;
 const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 
 let _uid: UUID = null;
-let _dnt: boolean;
 const buffer: UserEvent[] = [];
 
 /**
@@ -69,23 +67,6 @@ async function uid(): Promise<UUID> {
   return _uid;
 }
 
-export async function _toggleDNT(enable: boolean): Promise<boolean> {
-  _dnt = enable;
-  await setStorage(DNT_STORAGE_KEY, enable);
-  return enable;
-}
-
-export async function _getDNT(): Promise<boolean> {
-  if (_dnt != null) {
-    return _dnt;
-  }
-
-  _dnt = boolean(
-    (await readStorage<boolean | string>(DNT_STORAGE_KEY)) ?? process.env.DEBUG
-  );
-  return _dnt;
-}
-
 async function flush(): Promise<void> {
   if (buffer.length > 0) {
     const client = await maybeGetLinkedApiClient();
@@ -102,19 +83,7 @@ const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
   maxWait: EVENT_BUFFER_MAX_MS,
 });
 
-export const getDNT = liftBackground("GET_DNT", async () => _getDNT());
-
 export const getUID = liftBackground("GET_UID", async () => uid());
-
-export const getExtensionVersion = liftBackground(
-  "GET_EXTENSION_VERSION",
-  async () => browser.runtime.getManifest().version
-);
-
-export const toggleDNT = liftBackground(
-  "TOGGLE_DNT",
-  async (enabled: boolean) => _toggleDNT(enabled)
-);
 
 async function userSummary() {
   const { os } = await browser.runtime.getPlatformInfo();
@@ -143,9 +112,10 @@ async function userSummary() {
   };
 }
 
-async function _init(): Promise<void> {
-  if (await isLinked()) {
-    await (await getLinkedApiClient()).post("/api/identify/", {
+async function init(): Promise<void> {
+  if ((await isLinked()) && (await allowsTrack())) {
+    const client = await getLinkedApiClient();
+    await client.post("/api/identify/", {
       uid: await uid(),
       data: await userSummary(),
     });
@@ -153,47 +123,36 @@ async function _init(): Promise<void> {
 }
 
 // Up to every 30 min
-const throttledInit = throttle(_init, 30 * 60 * 1000, {
+export const initTelemetry = throttle(init, 30 * 60 * 1000, {
   leading: true,
   trailing: true,
 });
 
-export const initUID = liftBackground(
-  "INIT_UID",
-  async (): Promise<void> => {
-    if (!(await _getDNT())) {
-      void throttledInit();
-    }
-  },
-  { asyncResponse: false }
-);
-
-export const recordEvent = liftBackground(
-  "RECORD_EVENT",
-  async ({
-    event,
-    data = {},
-  }: {
-    event: string;
-    data: JsonObject | undefined;
-  }): Promise<void> => {
-    if (!(await _getDNT())) {
-      buffer.push({
-        uid: await uid(),
-        event,
-        timestamp: Date.now(),
-        data,
-      });
-      void debouncedFlush();
-    }
-  },
-  { asyncResponse: false }
-);
-
-export const sendDeploymentAlert = liftBackground(
-  "SEND_DEPLOYMENT_ALERT",
-  async ({ deploymentId, data }: { deploymentId: string; data: Data }) => {
-    const url = `/api/deployments/${deploymentId}/alerts/`;
-    await (await getLinkedApiClient()).post(url, data);
+export async function recordEvent({
+  event,
+  data = {},
+}: {
+  event: string;
+  data: JsonObject | undefined;
+}): Promise<void> {
+  if (await allowsTrack()) {
+    buffer.push({
+      uid: await uid(),
+      event,
+      timestamp: Date.now(),
+      data,
+    });
+    void debouncedFlush();
   }
-);
+}
+
+export async function sendDeploymentAlert({
+  deploymentId,
+  data,
+}: {
+  deploymentId: string;
+  data: Data;
+}) {
+  const client = await getLinkedApiClient();
+  await client.post(`/api/deployments/${deploymentId}/alerts/`, data);
+}

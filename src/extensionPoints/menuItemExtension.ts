@@ -522,9 +522,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const $menuItem = this.makeItem(html, extension);
 
-    $menuItem.on("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    $menuItem.on("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
 
       console.debug("Run menu item", this.logger.context);
 

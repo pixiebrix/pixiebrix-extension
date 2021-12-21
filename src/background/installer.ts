@@ -16,8 +16,9 @@
  */
 
 import browser, { Runtime } from "webextension-polyfill";
-import { reportEvent, initTelemetry } from "@/telemetry/events";
-import { DNT_STORAGE_KEY, getDNT, getUID } from "@/background/telemetry";
+import { reportEvent } from "@/telemetry/events";
+import { getUID, initTelemetry } from "@/background/telemetry";
+import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
 
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
@@ -49,15 +50,13 @@ export function getAvailableVersion(): typeof _availableVersion {
 }
 
 async function setUninstallURL(): Promise<void> {
-  if (await getDNT()) {
-    // We still want to show the uninstall page so the user can optionally fill out the uninstall form. Also,
-    // Chrome reports an error if no argument is passed in
-    await browser.runtime.setUninstallURL(UNINSTALL_URL);
-  } else {
-    const url = new URL(UNINSTALL_URL);
+  const url = new URL(UNINSTALL_URL);
+  if (await allowsTrack()) {
     url.searchParams.set("uid", await getUID());
-    await browser.runtime.setUninstallURL(url.toString());
   }
+
+  // We always want to show the uninstall page so the user can optionally fill out the uninstall form
+  await browser.runtime.setUninstallURL(url.href);
 }
 
 browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);

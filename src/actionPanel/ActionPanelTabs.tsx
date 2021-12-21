@@ -71,7 +71,7 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
       defaultActiveKey={activeKey}
       activeKey={activeKey}
     >
-      <Card className="h-100">
+      <Card>
         <Card.Header>
           <Nav variant="tabs" onSelect={onSelect}>
             {panels.map((panel) => (
@@ -92,14 +92,13 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
             ))}
           </Nav>
         </Card.Header>
-        <Card.Body className="p-0 flex-grow-1" style={{ overflowY: "auto" }}>
-          <Tab.Content className="p-0 h-100">
+        <Card.Body className="p-0 scrollable-area full-height">
+          <Tab.Content className="p-0 full-height">
             {panels.map((panel: PanelEntry) => (
               <Tab.Pane
-                className="h-100"
+                className="full-height flex-grow"
                 key={panel.extensionId}
                 eventKey={mapTabEventKey("panel", panel)}
-                style={{ minHeight: "1px" }}
               >
                 <ErrorBoundary>
                   <PanelBody payload={panel.payload} />
@@ -108,10 +107,9 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
             ))}
             {forms.map((form) => (
               <Tab.Pane
-                className="h-100"
+                className="full-height flex-grow"
                 key={form.nonce}
                 eventKey={mapTabEventKey("form", form)}
-                style={{ minHeight: "1px" }}
               >
                 <ErrorBoundary>
                   <FormBody form={form} />

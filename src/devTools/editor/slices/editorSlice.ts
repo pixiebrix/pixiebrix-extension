@@ -23,7 +23,7 @@ import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
 import { PanelFormState } from "@/devTools/editor/extensionPoints/panel";
 import { ContextMenuFormState } from "@/devTools/editor/extensionPoints/contextMenu";
 import { getErrorMessage } from "@/errors";
-import { clearExtensionTraces } from "@/background/trace";
+import { clearExtensionTraces } from "@/telemetry/trace";
 import { RegistryId, UUID } from "@/core";
 import {
   ElementUIState,
@@ -291,6 +291,9 @@ export const editorSlice = createSlice({
         ...state.elements[index],
         ...elementUpdate,
       };
+
+      // Force reload of Formik state
+      state.selectionSeq++;
     },
     removeElement: (state, action: PayloadAction<UUID>) => {
       const uuid = action.payload;

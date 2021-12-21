@@ -162,9 +162,6 @@ function customizeManifest(manifest, isProduction) {
   const policy = new Policy(manifest.content_security_policy);
 
   policy.add("connect-src", process.env.SERVICE_URL);
-  if (!isProduction) {
-    policy.add("connect-src", "ws://localhost:9090/ http://127.0.0.1:8000");
-  }
 
   if (!isProduction) {
     // React Dev Tools app. See https://github.com/pixiebrix/pixiebrix-extension/wiki/Development-commands#react-dev-tools
@@ -251,12 +248,10 @@ module.exports = (env, options) =>
         [
           "background",
           "contentScript",
-          "devtools",
           "devtoolsPanel",
           "frame",
           "ephemeralForm",
           "options",
-          "support",
           "action",
           "permissionsPopup",
         ].map((name) => [
@@ -276,6 +271,10 @@ module.exports = (env, options) =>
         "css-selector-generator",
         "@fortawesome/free-solid-svg-icons",
       ],
+
+      // This is a one-line file without imports
+      devtools: "./src/devtools",
+
       // The script that gets injected into the host page should not have a vendor chunk
       script: "./src/script",
     },

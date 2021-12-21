@@ -17,24 +17,18 @@
 
 import React from "react";
 import BlockElement from "@/components/documentBuilder/render/BlockElement";
-import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
+import { isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
-import { Button, Card, Col, Container, Row } from "react-bootstrap";
+import { Card, Col, Container, Row } from "react-bootstrap";
 import {
   BuildDocumentBranch,
-  ButtonDocumentConfig,
   DocumentComponent,
   DocumentElement,
-  PipelineDocumentConfig,
 } from "./documentBuilderTypes";
 import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
-import useNotifications from "@/hooks/useNotifications";
-import documentTreeStyles from "./documentTree.module.scss";
-import cx from "classnames";
 import ListElement from "@/components/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors";
-import { Expression } from "@/core";
 
 const headerComponents = {
   header_1: "h1",
@@ -165,188 +159,6 @@ export function getComponentDefinition(
         props: { componentType: componentType ?? "No Type Provided" },
       };
     }
-  }
-}
-
-type PreviewComponentProps = {
-  className?: string;
-  onClick: React.MouseEventHandler<HTMLDivElement>;
-  onMouseEnter: React.MouseEventHandler<HTMLDivElement>;
-  onMouseLeave: React.MouseEventHandler<HTMLDivElement>;
-};
-
-function getFieldValue<TValue extends string = string>(
-  configValue: TValue | Expression<TValue>
-): TValue {
-  return isExpression(configValue) ? configValue.__value__ : configValue;
-}
-
-export function getPreviewComponentDefinition(
-  element: DocumentElement
-): DocumentComponent {
-  const componentType = String(element.type);
-  const config = get(element, "config", {} as UnknownObject);
-
-  switch (componentType) {
-    case "header_1":
-    case "header_2":
-    case "header_3": {
-      const { title } = config;
-      if (isExpression(title)) {
-        const previewElement = {
-          ...element,
-          config: {
-            ...config,
-            title: title.__value__,
-          },
-        };
-        return getComponentDefinition(previewElement);
-      }
-
-      return getComponentDefinition(element);
-    }
-
-    case "text": {
-      const { text } = config;
-      if (isExpression(text)) {
-        const previewElement = {
-          ...element,
-          config: {
-            ...config,
-            text: text.__value__,
-          },
-        };
-        return getComponentDefinition(previewElement);
-      }
-
-      return getComponentDefinition(element);
-    }
-
-    case "container":
-    case "row":
-    case "column": {
-      const { Component, props } = getComponentDefinition(element);
-      props.className = cx(props.className, documentTreeStyles.container);
-
-      if (!element.children?.length) {
-        props.children = <span className="text-muted">{componentType}</span>;
-      }
-
-      return { Component, props };
-    }
-
-    case "card": {
-      let { heading } = config;
-      if (isExpression(heading)) {
-        heading = heading.__value__;
-      }
-
-      const previewElement = {
-        ...element,
-        config: {
-          ...config,
-          heading,
-          bodyProps: { className: documentTreeStyles.container },
-        },
-      };
-
-      const { Component, props } = getComponentDefinition(previewElement);
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        children,
-        ...restPreviewProps
-      }) => (
-        <div {...restPreviewProps}>
-          <Component {...props}>{children}</Component>
-        </div>
-      );
-
-      return { Component: PreviewComponent };
-    }
-
-    case "pipeline": {
-      const { pipeline } = config as PipelineDocumentConfig;
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        className,
-        ...restPreviewProps
-      }) => (
-        <div className={cx(className)} {...restPreviewProps}>
-          <h3>Block</h3>
-          {pipeline.__value__.map(({ id }) => (
-            <p key={id}>{id}</p>
-          ))}
-        </div>
-      );
-
-      return { Component: PreviewComponent };
-    }
-
-    case "button": {
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        className,
-        ...restPreviewProps
-      }) => {
-        const notify = useNotifications();
-        const {
-          title,
-          className: buttonClassName,
-          size,
-          variant,
-        } = config as ButtonDocumentConfig;
-
-        return (
-          <div>
-            <div
-              className={cx(className, documentTreeStyles.inlineWrapper)}
-              {...restPreviewProps}
-            >
-              <Button
-                className={getFieldValue(buttonClassName)}
-                size={getFieldValue(size)}
-                variant={getFieldValue(variant)}
-                onClick={() => {
-                  notify.info("Action button clicked.");
-                }}
-              >
-                {getFieldValue(title)}
-              </Button>
-            </div>
-          </div>
-        );
-      };
-
-      return { Component: PreviewComponent };
-    }
-
-    case "list": {
-      const arrayValue = isExpression(config.array)
-        ? config.array.__value__
-        : String(config.array);
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        children,
-        className,
-        ...restPreviewProps
-      }) => (
-        <div
-          className={cx(
-            className,
-            documentTreeStyles.container,
-            documentTreeStyles.listContainer
-          )}
-          {...restPreviewProps}
-        >
-          <div className="text-muted">List: {arrayValue}</div>
-          <div className="text-muted">
-            Element key: @{config.elementKey || "element"}
-          </div>
-          {children}
-        </div>
-      );
-
-      return { Component: PreviewComponent };
-    }
-
-    default:
-      return getComponentDefinition(element);
   }
 }
 

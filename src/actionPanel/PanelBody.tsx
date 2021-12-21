@@ -43,7 +43,6 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
 
     // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
     const { blockId, ctxt, args } = payload;
-    console.debug("Render panel body", payload);
     const block = await blockRegistry.lookup(blockId);
     const body = await block.run(args as BlockArg, {
       ctxt,
@@ -52,7 +51,7 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
       logger: new ConsoleLogger({ blockId }),
     });
     return (
-      <div className="h-100" data-block-id={blockId}>
+      <div className="full-height" data-block-id={blockId}>
         <ReactShadowRoot>
           <RendererComponent body={body as RendererOutput} />
         </ReactShadowRoot>

@@ -33,6 +33,7 @@ import {
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
+import { MAX_Z_INDEX } from "@/common";
 
 const theme = {
   background: "rgb(252, 252, 252)",
@@ -61,7 +62,7 @@ const animatorStyle = {
   borderRadius: "8px",
   overflow: "hidden",
   boxShadow: theme.shadow,
-  zIndex: "10000000",
+  zIndex: MAX_Z_INDEX,
 };
 
 const groupNameStyle = {

@@ -16,14 +16,15 @@
  */
 
 /* eslint-disable security/detect-object-injection */
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { FieldProps, IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import FormPreviewStringField from "./FormPreviewStringField";
-import { UI_ORDER, UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
+import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
+import { getPreviewValues } from "@/components/fields/fieldUtils";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -47,25 +48,11 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     rjsfSchema
   );
 
+  const previewSchema = useMemo(() => getPreviewValues(schema), [schema]);
+
   useEffect(() => {
     setData(null);
   }, [rjsfSchema]);
-
-  useEffect(() => {
-    const { schema, uiSchema } = rjsfSchema;
-    const firstInOrder =
-      uiSchema?.[UI_ORDER]?.length > 1 ? uiSchema[UI_ORDER][0] : undefined;
-    if (firstInOrder && firstInOrder !== "*") {
-      setActiveField(firstInOrder);
-      return;
-    }
-
-    const firstInProperties = Object.keys(schema?.properties || {})[0];
-    if (firstInProperties) {
-      setActiveField(firstInProperties);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- resetting activeField only on new name
-  }, [name]);
 
   // Setting local schema
   useEffect(() => {
@@ -111,7 +98,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
       tagName="div"
       formData={data}
       fields={fields}
-      schema={schema}
+      schema={previewSchema}
       uiSchema={uiSchema}
       onChange={onDataChanged}
     >

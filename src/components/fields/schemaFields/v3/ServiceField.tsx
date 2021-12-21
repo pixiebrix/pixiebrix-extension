@@ -84,10 +84,10 @@ function defaultOutputKey(
 }
 
 export function keyToFieldValue(key: OutputKey): Expression<ServiceKeyVar> {
-  const val = key == null ? null : (`@${key}` as ServiceKeyVar);
+  const value = key == null ? null : (`@${key}` as ServiceKeyVar);
   return {
     __type__: "var",
-    __value__: val,
+    __value__: value,
   };
 }
 

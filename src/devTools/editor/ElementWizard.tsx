@@ -136,8 +136,8 @@ const ElementWizard: React.FunctionComponent<{
       <BootstrapForm
         autoComplete="off"
         noValidate
-        onSubmit={(e) => {
-          e.preventDefault();
+        onSubmit={(event) => {
+          event.preventDefault();
         }}
         onReset={handleReset}
         className={styles.form}

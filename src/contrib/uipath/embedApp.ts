@@ -79,11 +79,11 @@ export class UiPathAppRenderer extends Renderer {
     { logger }: BlockOptions
   ): Promise<SafeHTML> {
     // https://transitory.technology/browser-extensions-and-csp-headers/
-    const frameSrc = browser.runtime.getURL("frame.html");
+    const frameSource = browser.runtime.getURL("frame.html");
 
     const nonce = uuidv4();
 
-    const frameURL = new URL(frameSrc);
+    const frameURL = new URL(frameSource);
     frameURL.searchParams.set("url", url);
     frameURL.searchParams.set("nonce", nonce);
 

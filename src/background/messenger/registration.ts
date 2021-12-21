@@ -49,6 +49,22 @@ import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
 import { canAccessTab } from "webext-tools";
+import {
+  getLoggingConfig,
+  recordError,
+  recordLog,
+  setLoggingConfig,
+} from "@/background/logging";
+import {
+  addTraceEntry,
+  addTraceExit,
+  clearExtensionTraces,
+} from "@/telemetry/trace";
+import {
+  initTelemetry,
+  recordEvent,
+  sendDeploymentAlert,
+} from "@/background/telemetry";
 
 expectContext("background");
 
@@ -97,6 +113,19 @@ declare global {
 
     GET_DATA_STORE: typeof getRecord;
     SET_DATA_STORE: typeof setRecord;
+
+    RECORD_LOG: typeof recordLog;
+    RECORD_ERROR: typeof recordError;
+    RECORD_EVENT: typeof recordEvent;
+    GET_LOGGING_CONFIG: typeof getLoggingConfig;
+    SET_LOGGING_CONFIG: typeof setLoggingConfig;
+
+    ADD_TRACE_ENTRY: typeof addTraceEntry;
+    ADD_TRACE_EXIT: typeof addTraceExit;
+    CLEAR_TRACES: typeof clearExtensionTraces;
+
+    INIT_TELEMETRY: typeof initTelemetry;
+    SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
   }
 }
 
@@ -145,4 +174,17 @@ registerMethods({
 
   GET_DATA_STORE: getRecord,
   SET_DATA_STORE: setRecord,
+
+  RECORD_LOG: recordLog,
+  RECORD_ERROR: recordError,
+  RECORD_EVENT: recordEvent,
+  GET_LOGGING_CONFIG: getLoggingConfig,
+  SET_LOGGING_CONFIG: setLoggingConfig,
+
+  ADD_TRACE_ENTRY: addTraceEntry,
+  ADD_TRACE_EXIT: addTraceExit,
+  CLEAR_TRACES: clearExtensionTraces,
+
+  INIT_TELEMETRY: initTelemetry,
+  SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
 });

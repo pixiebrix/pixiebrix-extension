@@ -18,7 +18,6 @@
 
 import { RunBlock } from "@/contentScript/executor";
 import browser, { Runtime, Tabs } from "webextension-polyfill";
-import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
@@ -34,8 +33,6 @@ import {
 import { Target } from "@/types";
 import { TabId } from "@/background/devtools/contract";
 import { RemoteExecutionError } from "@/blocks/errors";
-
-const TOP_LEVEL_FRAME = 0;
 
 const tabToOpener = new Map<number, number>();
 const tabToTarget = new Map<number, number>();
@@ -136,22 +133,21 @@ export async function requestRunInBroadcast(
   const fulfilled = new Map<TabId, unknown>();
   const rejected = new Map<TabId, unknown>();
 
-  await asyncLoop(
-    Object.entries(tabReady),
-    async ([tab, { [TOP_LEVEL_FRAME]: isReady }]): Promise<void> => {
-      const tabId = Number(tab);
-      if (tabId === sourceTabId || !isReady) {
-        return;
-      }
+  const { origins } = await browser.permissions.getAll();
+  const tabs = await browser.tabs.query({ url: origins });
 
-      try {
-        const response = runBrick({ tabId }, subRequest);
-        fulfilled.set(tabId, await response);
-      } catch (error) {
-        rejected.set(tabId, error);
-      }
+  await asyncLoop(tabs, async (tab) => {
+    if (tab.id === sourceTabId) {
+      return;
     }
-  );
+
+    try {
+      const response = runBrick({ tabId: tab.id }, subRequest);
+      fulfilled.set(tab.id, await response);
+    } catch (error) {
+      rejected.set(tab.id, error);
+    }
+  });
 
   if (rejected.size > 0) {
     console.warn(`Broadcast rejected for ${rejected.size} tabs`, { rejected });
@@ -232,7 +228,6 @@ export async function markTabAsReady(this: MessengerMeta) {
   }
 
   tabReady[tabId][frameId] = true;
-  emitDevtools("ContentScriptReady", { tabId, frameId });
 }
 
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {

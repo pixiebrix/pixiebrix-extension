@@ -215,11 +215,11 @@ export interface Logger {
    * Return a new child logger with additional message context
    */
   childLogger: (additionalContext: MessageContext) => Logger;
-  trace: (msg: string, data?: Data) => void;
-  warn: (msg: string, data?: Data) => void;
-  debug: (msg: string, data?: Data) => void;
-  log: (msg: string, data?: Data) => void;
-  info: (msg: string, data?: Data) => void;
+  trace: (message: string, data?: Data) => void;
+  warn: (message: string, data?: Data) => void;
+  debug: (message: string, data?: Data) => void;
+  log: (message: string, data?: Data) => void;
+  info: (message: string, data?: Data) => void;
   error: (error: unknown, data?: Data) => void;
 }
 

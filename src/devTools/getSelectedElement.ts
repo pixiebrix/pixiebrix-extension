@@ -25,8 +25,8 @@ const GET_SELECTED_DEV_TOOLS_ELEMENT = "@@pixiebrix/devtools/get-selected";
 
 export function addListenerForUpdateSelectedElement(): void {
   expectContext("contentScript");
-  window.addEventListener(GET_SELECTED_DEV_TOOLS_ELEMENT, (el) => {
-    selectedElement = el.target as HTMLElement;
+  window.addEventListener(GET_SELECTED_DEV_TOOLS_ELEMENT, (element) => {
+    selectedElement = element.target as HTMLElement;
   });
 }
 
