@@ -112,9 +112,10 @@ async function userSummary() {
   };
 }
 
-async function _init(): Promise<void> {
-  if (await isLinked()) {
-    await (await getLinkedApiClient()).post("/api/identify/", {
+async function init(): Promise<void> {
+  if ((await isLinked()) && (await allowsTrack())) {
+    const client = await getLinkedApiClient();
+    await client.post("/api/identify/", {
       uid: await uid(),
       data: await userSummary(),
     });
@@ -122,47 +123,36 @@ async function _init(): Promise<void> {
 }
 
 // Up to every 30 min
-const throttledInit = throttle(_init, 30 * 60 * 1000, {
+export const initTelemetry = throttle(init, 30 * 60 * 1000, {
   leading: true,
   trailing: true,
 });
 
-export const initUID = liftBackground(
-  "INIT_UID",
-  async (): Promise<void> => {
-    if (await allowsTrack()) {
-      void throttledInit();
-    }
-  },
-  { asyncResponse: false }
-);
-
-export const recordEvent = liftBackground(
-  "RECORD_EVENT",
-  async ({
-    event,
-    data = {},
-  }: {
-    event: string;
-    data: JsonObject | undefined;
-  }): Promise<void> => {
-    if (await allowsTrack()) {
-      buffer.push({
-        uid: await uid(),
-        event,
-        timestamp: Date.now(),
-        data,
-      });
-      void debouncedFlush();
-    }
-  },
-  { asyncResponse: false }
-);
-
-export const sendDeploymentAlert = liftBackground(
-  "SEND_DEPLOYMENT_ALERT",
-  async ({ deploymentId, data }: { deploymentId: string; data: Data }) => {
-    const url = `/api/deployments/${deploymentId}/alerts/`;
-    await (await getLinkedApiClient()).post(url, data);
+export async function recordEvent({
+  event,
+  data = {},
+}: {
+  event: string;
+  data: JsonObject | undefined;
+}): Promise<void> {
+  if (await allowsTrack()) {
+    buffer.push({
+      uid: await uid(),
+      event,
+      timestamp: Date.now(),
+      data,
+    });
+    void debouncedFlush();
   }
-);
+}
+
+export async function sendDeploymentAlert({
+  deploymentId,
+  data,
+}: {
+  deploymentId: string;
+  data: Data;
+}) {
+  const client = await getLinkedApiClient();
+  await client.post(`/api/deployments/${deploymentId}/alerts/`, data);
+}

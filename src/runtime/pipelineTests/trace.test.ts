@@ -29,8 +29,8 @@ import { uuidv4 } from "@/types/helpers";
 
 // Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
-import * as logging from "@/background/logging";
-import * as trace from "@/background/trace";
+import * as logging from "@/background/messenger/api";
+import { traces } from "@/background/messenger/api";
 import {
   TraceEntryData,
   TraceExitData,
@@ -40,7 +40,7 @@ import ConsoleLogger from "@/tests/ConsoleLogger";
 import MockDate from "mockdate";
 import { BlockPipeline } from "@/blocks/types";
 
-jest.mock("@/background/trace");
+jest.mock("@/background/messenger/api");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
 });
@@ -48,8 +48,8 @@ jest.mock("@/background/trace");
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register(echoBlock, contextBlock, throwBlock);
-  (trace.recordTraceEntry as any).mockReset();
-  (trace.recordTraceExit as any).mockReset();
+  (traces.addEntry as any).mockReset();
+  (traces.addExit as any).mockReset();
 });
 
 describe("Trace exceptional exit", () => {
@@ -113,11 +113,11 @@ describe("Trace normal execution", () => {
       output: { message: "hello" },
     };
 
-    expect(trace.recordTraceEntry).toHaveBeenCalledTimes(1);
-    expect(trace.recordTraceEntry).toHaveBeenCalledWith(expectedEntry);
+    expect(traces.addEntry).toHaveBeenCalledTimes(1);
+    expect(traces.addEntry).toHaveBeenCalledWith(expectedEntry);
 
-    expect(trace.recordTraceExit).toHaveBeenCalledTimes(1);
-    expect(trace.recordTraceExit).toHaveBeenCalledWith(expectedExit);
+    expect(traces.addExit).toHaveBeenCalledTimes(1);
+    expect(traces.addExit).toHaveBeenCalledWith(expectedExit);
   });
 
   test("trace output key exit", async () => {
@@ -164,8 +164,8 @@ describe("Trace normal execution", () => {
       output: { message: "hello" },
     };
 
-    expect(trace.recordTraceExit).toHaveBeenCalledTimes(2);
-    expect(trace.recordTraceExit).toHaveBeenNthCalledWith(1, expectedExit);
+    expect(traces.addExit).toHaveBeenCalledTimes(2);
+    expect(traces.addExit).toHaveBeenNthCalledWith(1, expectedExit);
   });
 
   test("trace exceptional exit", async () => {
@@ -208,11 +208,11 @@ describe("Trace normal execution", () => {
       blockId: throwBlock.id,
     };
 
-    expect(trace.recordTraceExit).toHaveBeenCalledTimes(1);
+    expect(traces.addExit).toHaveBeenCalledTimes(1);
 
     // Can't use toHaveBeenNthCalledWith because we don't want to include the stack trace in the test
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test code
-    const args = (trace.recordTraceExit as any).mock.calls[0][0];
+    const args = (traces.addExit as any).mock.calls[0][0];
     expect(args.runId).toBe(meta.runId);
     expect(args.blockInstanceId).toBe(meta.blockInstanceId);
     expect(args.error.name).toBe("BusinessError");

@@ -16,8 +16,8 @@
  */
 
 import browser, { Runtime } from "webextension-polyfill";
-import { reportEvent, initTelemetry } from "@/telemetry/events";
-import { getUID } from "@/background/telemetry";
+import { reportEvent } from "@/telemetry/events";
+import { getUID, initTelemetry } from "@/background/telemetry";
 import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";
 
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";

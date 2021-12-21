@@ -78,8 +78,8 @@ const ActionPanelApp: React.FunctionComponent = () => {
     <Provider store={store}>
       <PersistGate loading={<GridLoader />} persistor={persistor}>
         <ToastProvider>
-          <div className="d-flex flex-column" style={{ height: "100vh" }}>
-            <div className="d-flex flex-row mb-2 p-2 justify-content-between align-content-center">
+          <div className="full-height">
+            <div className="d-flex p-2 justify-content-between align-content-center">
               <Button
                 className="action-panel-button"
                 onClick={async () => {
@@ -112,7 +112,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
               </Button>
             </div>
 
-            <div className="mt-2" style={{ minHeight: 1, flex: "1 1 auto" }}>
+            <div className="full-height">
               {state.panels?.length || state.forms?.length ? (
                 <ActionPanelTabs
                   {...state}
