@@ -90,6 +90,9 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
           },
           label: {
             type: "string",
+            // @ts-expect-error -- expects JSONSchema7 type `required: string[]`
+            // (one level up), but only works with JSONSchema4 `required: boolean`
+            required: true,
           },
           // $RefParse mutates the schema
           config: cloneDeep(service.schema),

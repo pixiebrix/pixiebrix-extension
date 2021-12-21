@@ -156,7 +156,7 @@ const BrickIcon: React.FunctionComponent<{
   ) : (
     <FontAwesomeIcon
       icon={listingFaIcon ?? getDefaultBrickIcon(brick, type)}
-      color={listing?.icon_color}
+      color={listing?.icon_color ?? "darkGrey"}
       className={faIconClass}
       size={size}
       fixedWidth
