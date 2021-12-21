@@ -29,11 +29,10 @@
 }
 
 .integrationsTable {
-  :global {
-    td img {
-      border-radius: 0 !important;
-      width: 1.2rem !important;
-      height: 1.2rem !important;
-    }
+  // Override bootstrap table styling
+  td img {
+    border-radius: 0 !important;
+    width: 1em !important;
+    height: 1em !important;
   }
 }

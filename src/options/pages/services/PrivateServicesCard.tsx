@@ -164,7 +164,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                   )}
                 </td>
                 <td className="d-flex align-items-center">
-                  <BrickIcon brick={service} />
+                  <BrickIcon brick={service} size="1x" />
                   <div className="ml-2">
                     <div className="text-wrap">{service.name}</div>
                     <div className="text-wrap">
