@@ -20,10 +20,6 @@
   // Prevents long urls in Field descriptions from overflowing containing element
   // https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
   overflow-wrap: break-word;
-
-  word-break: break-word;
-
-  -moz-hyphens: auto;
   -webkit-hyphens: auto;
   hyphens: auto;
 }
