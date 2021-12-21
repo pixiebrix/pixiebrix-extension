@@ -51,12 +51,12 @@ import SchemaSelectWidget, {
 } from "@/components/fields/schemaFields/widgets/v3/SchemaSelectWidget";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
-import OptionSymbol from "./OptionSymbol";
+import OptionIcon from "./OptionIcon";
 
 const varOption: StringOption = {
   label: "Variable",
   value: "var",
-  symbol: <OptionSymbol symbol="variable" />,
+  symbol: <OptionIcon icon="variable" />,
   Widget: TextWidget,
   interpretValue: (oldValue: unknown) => {
     let newValue = "";
@@ -149,7 +149,7 @@ function getToggleOptions({
       {
         label: "Array items",
         value: "array",
-        symbol: <OptionSymbol symbol="array" />,
+        symbol: <OptionIcon icon="array" />,
         Widget,
         interpretValue: () =>
           Array.isArray(fieldSchema.default) ? fieldSchema.default : [],
@@ -172,7 +172,7 @@ function getToggleOptions({
       {
         label: "Object properties",
         value: "object",
-        symbol: <OptionSymbol symbol="object" />,
+        symbol: <OptionIcon icon="object" />,
         Widget,
         interpretValue: () =>
           (typeof fieldSchema.default === "object"
@@ -188,7 +188,7 @@ function getToggleOptions({
       {
         label: "Toggle",
         value: "boolean",
-        symbol: <OptionSymbol symbol="toggle" />,
+        symbol: <OptionIcon icon="toggle" />,
         Widget: SwitchButtonWidget,
         interpretValue: () =>
           typeof fieldSchema.default === "boolean"
@@ -204,7 +204,7 @@ function getToggleOptions({
       {
         label: "Select...",
         value: "string",
-        symbol: <OptionSymbol symbol="select" />,
+        symbol: <OptionIcon icon="select" />,
         Widget: SchemaSelectWidget,
         interpretValue: () =>
           typeof fieldSchema.default === "string"
@@ -223,7 +223,7 @@ function getToggleOptions({
       {
         label: "Text",
         value: "string",
-        symbol: <OptionSymbol symbol="text" />,
+        symbol: <OptionIcon icon="text" />,
         Widget: TextWidget,
         interpretValue: (oldValue: unknown) => {
           let newValue =
@@ -255,7 +255,7 @@ function getToggleOptions({
       {
         label: "Whole number",
         value: "number",
-        symbol: <OptionSymbol symbol="number" />,
+        symbol: <OptionIcon icon="number" />,
         Widget: IntegerWidget,
         interpretValue: (oldValue: unknown) => {
           let int = Number.NaN;
@@ -285,7 +285,7 @@ function getToggleOptions({
       {
         label: "Number",
         value: "number",
-        symbol: <OptionSymbol symbol="number" />,
+        symbol: <OptionIcon icon="number" />,
         Widget: NumberWidget,
         interpretValue: (oldValue: unknown) => {
           let float = Number.NaN;
@@ -335,14 +335,14 @@ function getToggleOptions({
       pushOptions({
         label: "Remove",
         value: "omit",
-        symbol: <OptionSymbol symbol="exclude" />,
+        symbol: <OptionIcon icon="exclude" />,
         Widget: OmitFieldWidget,
       });
     } else {
       pushOptions({
         label: "Exclude",
         value: "omit",
-        symbol: <OptionSymbol symbol="exclude" />,
+        symbol: <OptionIcon icon="exclude" />,
         Widget: OmitFieldWidget,
       });
     }
