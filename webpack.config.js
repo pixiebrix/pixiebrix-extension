@@ -406,7 +406,15 @@ module.exports = (env, options) =>
         {
           test: /\.svg$/,
           resourceQuery: /loadAsComponent/,
-          use: ["@svgr/webpack"],
+          use: [
+            {
+              loader: "@svgr/webpack",
+              options: {
+                typescript: true,
+                ext: "tsx",
+              },
+            },
+          ],
         },
       ],
     },

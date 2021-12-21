@@ -41,8 +41,6 @@ import { Schema } from "@/core";
 import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faToggleOff } from "@fortawesome/free-solid-svg-icons";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import IntegerWidget from "@/components/fields/schemaFields/widgets/IntegerWidget";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
@@ -53,12 +51,12 @@ import SchemaSelectWidget, {
 } from "@/components/fields/schemaFields/widgets/v3/SchemaSelectWidget";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
-import VariableSymbol from "./optionSymbols/var.svg?loadAsComponent";
+import OptionSymbol from "./OptionSymbol";
 
 const varOption: StringOption = {
   label: "Variable",
   value: "var",
-  symbol: <VariableSymbol />,
+  symbol: <OptionSymbol symbol="variable" />,
   Widget: TextWidget,
   interpretValue: (oldValue: unknown) => {
     let newValue = "";
@@ -151,7 +149,7 @@ function getToggleOptions({
       {
         label: "Array items",
         value: "array",
-        symbol: "[...]",
+        symbol: <OptionSymbol symbol="array" />,
         Widget,
         interpretValue: () =>
           Array.isArray(fieldSchema.default) ? fieldSchema.default : [],
@@ -174,7 +172,7 @@ function getToggleOptions({
       {
         label: "Object properties",
         value: "object",
-        symbol: "{...}",
+        symbol: <OptionSymbol symbol="object" />,
         Widget,
         interpretValue: () =>
           (typeof fieldSchema.default === "object"
@@ -190,7 +188,7 @@ function getToggleOptions({
       {
         label: "Toggle",
         value: "boolean",
-        symbol: <FontAwesomeIcon icon={faToggleOff} />,
+        symbol: <OptionSymbol symbol="toggle" />,
         Widget: SwitchButtonWidget,
         interpretValue: () =>
           typeof fieldSchema.default === "boolean"
@@ -206,7 +204,7 @@ function getToggleOptions({
       {
         label: "Select...",
         value: "string",
-        symbol: "a|b|c",
+        symbol: <OptionSymbol symbol="select" />,
         Widget: SchemaSelectWidget,
         interpretValue: () =>
           typeof fieldSchema.default === "string"
@@ -225,7 +223,7 @@ function getToggleOptions({
       {
         label: "Text",
         value: "string",
-        symbol: "Abc",
+        symbol: <OptionSymbol symbol="text" />,
         Widget: TextWidget,
         interpretValue: (oldValue: unknown) => {
           let newValue =
@@ -257,7 +255,7 @@ function getToggleOptions({
       {
         label: "Whole number",
         value: "number",
-        symbol: "123",
+        symbol: <OptionSymbol symbol="number" />,
         Widget: IntegerWidget,
         interpretValue: (oldValue: unknown) => {
           let int = Number.NaN;
@@ -287,7 +285,7 @@ function getToggleOptions({
       {
         label: "Number",
         value: "number",
-        symbol: "1.23",
+        symbol: <OptionSymbol symbol="number" />,
         Widget: NumberWidget,
         interpretValue: (oldValue: unknown) => {
           let float = Number.NaN;
@@ -337,14 +335,14 @@ function getToggleOptions({
       pushOptions({
         label: "Remove",
         value: "omit",
-        symbol: "❌",
+        symbol: <OptionSymbol symbol="exclude" />,
         Widget: OmitFieldWidget,
       });
     } else {
       pushOptions({
         label: "Exclude",
         value: "omit",
-        symbol: "∅",
+        symbol: <OptionSymbol symbol="exclude" />,
         Widget: OmitFieldWidget,
       });
     }
