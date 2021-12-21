@@ -62,6 +62,7 @@ const shared = {
       },
       {
         test: /\.(svg|png|jpe?g|gif)?$/,
+        resourceQuery: { not: [/loadAsComponent/] },
         exclude: /(bootstrap-icons|simple-icons|custom-icons)/,
         type: "asset/resource",
         generator: {

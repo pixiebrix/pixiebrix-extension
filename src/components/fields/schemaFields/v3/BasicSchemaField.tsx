@@ -53,11 +53,12 @@ import SchemaSelectWidget, {
 } from "@/components/fields/schemaFields/widgets/v3/SchemaSelectWidget";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
+import VariableSymbol from "./optionSymbols/var.svg?loadAsComponent";
 
 const varOption: StringOption = {
   label: "Variable",
   value: "var",
-  symbol: "⟮𝑥⟯",
+  symbol: <VariableSymbol />,
   Widget: TextWidget,
   interpretValue: (oldValue: unknown) => {
     let newValue = "";

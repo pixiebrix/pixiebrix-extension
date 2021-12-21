@@ -403,6 +403,11 @@ module.exports = (env, options) =>
             },
           ],
         },
+        {
+          test: /\.svg$/,
+          resourceQuery: /loadAsComponent/,
+          use: ["@svgr/webpack"],
+        },
       ],
     },
   });
