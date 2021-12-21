@@ -45,9 +45,16 @@ const LoggingSettings: React.FunctionComponent = () => {
       <Card.Header>Developer Settings</Card.Header>
       <Card.Body>
         <Card.Text className="text-info">
-          <FontAwesomeIcon icon={faInfoCircle} /> Enable value logging to
-          include brick inputs/outputs in the brick logs. Brick logs are never
-          transmitted from your browser
+          <p>
+            <FontAwesomeIcon icon={faInfoCircle} /> Enable value logging to
+            include brick inputs/outputs in the brick logs. You can access the
+            logs from the Active Bricks screen, the Workshop, or the Page
+            Editor.
+          </p>
+
+          <p>
+            <i>Brick logs are never transmitted from your browser.</i>
+          </p>
         </Card.Text>
 
         {config ? (
