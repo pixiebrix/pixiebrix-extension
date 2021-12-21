@@ -106,3 +106,18 @@ export const proxyService = getMethod("PROXY", bg) as <TData>(
   serviceConfig: SanitizedServiceConfiguration | null,
   requestConfig: AxiosRequestConfig
 ) => Promise<RemoteResponse<TData>>;
+
+export const recordLog = getNotifier("RECORD_LOG", bg);
+export const recordError = getNotifier("RECORD_ERROR", bg);
+export const recordEvent = getNotifier("RECORD_EVENT", bg);
+export const getLoggingConfig = getMethod("GET_LOGGING_CONFIG", bg);
+export const setLoggingConfig = getMethod("SET_LOGGING_CONFIG", bg);
+
+export const traces = {
+  addEntry: getNotifier("ADD_TRACE_ENTRY", bg),
+  addExit: getNotifier("ADD_TRACE_EXIT", bg),
+  clear: getNotifier("CLEAR_TRACES", bg),
+};
+
+export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
+export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);

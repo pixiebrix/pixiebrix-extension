@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { recordError } from "@/background/logging";
+import { recordError } from "@/background/messenger/api";
 import { rollbar, toLogArgument } from "@/telemetry/rollbar";
 import { MessageContext } from "@/core";
 import { serializeError } from "serialize-error";
@@ -54,5 +54,5 @@ async function _reportError(
     console.error(error);
   }
 
-  await recordError(serializeError(selectError(error)), context, null);
+  recordError(serializeError(selectError(error)), context, null);
 }

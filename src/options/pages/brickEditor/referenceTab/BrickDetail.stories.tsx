@@ -23,16 +23,30 @@ import { ToastProvider } from "react-toast-notifications";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import amazonSearch from "@contrib/blocks/amazon-search.yaml";
 import { brickToYaml } from "@/utils/objToYaml";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import { appApi } from "@/services/api";
 
 export default {
   title: "Components/BrickDetail",
   component: BrickDetail,
 } as ComponentMeta<typeof BrickDetail>;
 
+function optionsStore(initialState?: any) {
+  return configureStore({
+    reducer: {
+      [appApi.reducerPath]: appApi.reducer,
+    },
+    preloadedState: initialState,
+  });
+}
+
 const Template: ComponentStory<typeof BrickDetail> = (args) => (
-  <ToastProvider>
-    <BrickDetail {...args} />
-  </ToastProvider>
+  <Provider store={optionsStore()}>
+    <ToastProvider>
+      <BrickDetail {...args} />
+    </ToastProvider>
+  </Provider>
 );
 
 export const BuiltIn = Template.bind({});
