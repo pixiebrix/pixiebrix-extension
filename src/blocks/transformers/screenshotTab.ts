@@ -20,12 +20,12 @@ import { Schema } from "@/core";
 import { captureTab } from "@/background/messenger/api";
 import { BusinessError, getErrorMessage } from "@/errors";
 
-export class CaptureTab extends Transformer {
+export class ScreenshotTab extends Transformer {
   constructor() {
     super(
-      "@pixiebrix/browser/capture-tab",
-      "Capture Tab",
-      "Capture the visible area of the current tab"
+      "@pixiebrix/browser/screenshot",
+      "Screenshot Tab",
+      "Take a screenshot/capture the visible area of the active tab"
     );
   }
 
@@ -34,9 +34,21 @@ export class CaptureTab extends Transformer {
     properties: {},
   };
 
-  async transform(): Promise<string> {
+  outputSchema: Schema = {
+    type: "object",
+    properties: {
+      data: {
+        type: "string",
+        description: "The PNG screenshot as a data URI",
+      },
+    },
+  };
+
+  async transform(): Promise<unknown> {
     try {
-      return await captureTab();
+      return {
+        data: await captureTab(),
+      };
     } catch (error) {
       if (getErrorMessage(error).includes("activeTab")) {
         // Event if PixieBrix has access to a host, PixieBrix needs activeTab. So the user must have done one of the
@@ -46,7 +58,7 @@ export class CaptureTab extends Transformer {
         // - Executing a context menu item
         // - Executing a keyboard shortcut from the commands API
         throw new BusinessError(
-          "The capture tab brick can only be triggered from the context menu or sidebar"
+          "The Screenshot Tab brick can only be run from the context menu or sidebar of the active tab"
         );
       }
 
