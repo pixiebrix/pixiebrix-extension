@@ -117,6 +117,10 @@ export const FIELD_TYPES_WITHOUT_DEFAULT = [
     propertyType: "string",
     propertyFormat: "data-url",
   }),
+  stringifyUiType({
+    propertyType: "string",
+    uiWidget: "imageCrop",
+  }),
 ];
 
 /**

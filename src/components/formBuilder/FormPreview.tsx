@@ -25,7 +25,7 @@ import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
-import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
+import ImageCropWidgetPreview from "@/components/formBuilder/ImageCropWidgetPreview";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -95,7 +95,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   };
 
   const widgets = {
-    imageCrop: ImageCropWidget,
+    imageCrop: ImageCropWidgetPreview,
   };
 
   return (
