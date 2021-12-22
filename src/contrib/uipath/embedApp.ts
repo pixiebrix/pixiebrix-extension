@@ -21,7 +21,43 @@ import { BlockArg, BlockOptions, RegistryId, SafeHTML, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import browser, { Permissions } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { requestRun } from "@/background/messenger/api";
+import { waitForTargetByUrl } from "@/background/messenger/api";
+import { runBrick } from "@/contentScript/messenger/api";
+
+interface RunDetails {
+  blockId: RegistryId;
+  inputs: unknown;
+  url: URL;
+}
+
+async function runInFrame({
+  blockId,
+  inputs,
+  url,
+}: RunDetails): Promise<unknown> {
+  const target = await waitForTargetByUrl(url.href);
+
+  return runBrick(target, {
+    blockId: "@pixiebrix/forms/set" as RegistryId,
+    blockArgs: unsafeAssumeValidArg({
+      inputs: Object.entries(inputs).map(([key, value]) => ({
+        selector: `[placeholder="in:${key}"]`,
+        value,
+      })),
+    }),
+    options: {
+      isAvailable: {
+        // UiPath apps lazy load the inputs, so make sure they've been rendered before trying
+        // to set the values
+        selectors: [".root-container input"],
+      },
+      ctxt: {},
+      messageContext: {
+        blockId,
+      },
+    },
+  });
+}
 
 export class UiPathAppRenderer extends Renderer {
   constructor() {
@@ -78,45 +114,22 @@ export class UiPathAppRenderer extends Renderer {
     }: BlockArg,
     { logger }: BlockOptions
   ): Promise<SafeHTML> {
+    // Use extension iframe to get around the host’s CSP limitations
     // https://transitory.technology/browser-extensions-and-csp-headers/
-    const frameSource = browser.runtime.getURL("frame.html");
-
-    const nonce = uuidv4();
-
-    const frameURL = new URL(frameSource);
+    const frameURL = new URL(browser.runtime.getURL("frame.html"));
     frameURL.searchParams.set("url", url);
-    frameURL.searchParams.set("nonce", nonce);
+    frameURL.searchParams.set("nonce", uuidv4());
 
     const inputs = rawInputs as UnknownObject;
 
     if (!isEmpty(inputs)) {
-      requestRun
-        .inFrame({
-          nonce,
-          blockId: "@pixiebrix/forms/set" as RegistryId,
-          blockArgs: unsafeAssumeValidArg({
-            inputs: Object.entries(inputs).map(([key, value]) => ({
-              selector: `[placeholder="in:${key}"]`,
-              value,
-            })),
-          }),
-          options: {
-            isAvailable: {
-              // UiPath apps lazy load the inputs, so make sure they've been rendered before trying
-              // to set the values
-              selectors: [
-                isEmpty(inputs) ? ".root-container" : ".root-container input",
-              ],
-            },
-            ctxt: {},
-            messageContext: {
-              blockId: this.id,
-            },
-          },
-        })
-        .catch((error) => {
-          logger.error(error);
-        });
+      void runInFrame({
+        blockId: this.id,
+        url: frameURL,
+        inputs,
+      }).catch((error) => {
+        logger.error(error);
+      });
     }
 
     return `<iframe src="${frameURL.toString()}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>` as SafeHTML;

@@ -18,92 +18,58 @@
 
 import { RunBlock } from "@/contentScript/executor";
 import browser, { Runtime, Tabs } from "webextension-polyfill";
-import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
-import { asyncLoop, sleep } from "@/utils";
+import { asyncLoop } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
-import { MessengerMeta } from "webext-messenger";
-import {
-  checkAvailable,
-  linkChildTab,
-  runBrick,
-} from "@/contentScript/messenger/api";
+import { MessengerMeta, Sender } from "webext-messenger";
+import { linkChildTab, runBrick } from "@/contentScript/messenger/api";
 import { Target } from "@/types";
 import { TabId } from "@/background/devtools/contract";
 import { RemoteExecutionError } from "@/blocks/errors";
+import pDefer from "p-defer";
 
 const tabToOpener = new Map<number, number>();
 const tabToTarget = new Map<number, number>();
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
 
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
-const tabReady: { [tabId: string]: { [frameId: string]: boolean } } = {};
-const nonceToTarget = new Map<string, Target>();
-
-interface WaitOptions {
-  maxWaitMillis?: number;
-  isAvailable?: Availability;
+export const eventManager = new EventTarget();
+interface MessengerEvent {
+  sender: Sender;
+  eventName: string;
+  args: unknown[];
+}
+export async function triggerBackgroundEvent(
+  this: MessengerMeta,
+  eventName: string,
+  ...args: unknown[]
+): Promise<void> {
+  const sender = this.trace[0];
+  const event: MessengerEvent = { sender, eventName, args };
+  eventManager.dispatchEvent(
+    new CustomEvent(eventName, {
+      detail: event,
+    })
+  );
 }
 
-async function waitNonceReady(
-  nonce: string,
-  { maxWaitMillis = 10_000, isAvailable }: WaitOptions = {}
-) {
-  console.debug(`Waiting for frame with nonce ${nonce} to be ready`);
-  const startTime = Date.now();
-
-  const isReady = async () => {
-    const target = nonceToTarget.get(nonce);
-    if (target == null) {
-      return false;
+export async function waitForTargetByUrl(url: string): Promise<Target> {
+  const { promise, resolve } = pDefer<Target>();
+  browser.webNavigation.onCommitted.addListener(
+    function wait({ tabId, frameId }): void {
+      resolve({ tabId, frameId });
+      browser.webNavigation.onCommitted.removeListener(wait);
+    },
+    {
+      url: [
+        {
+          urlMatches: url,
+        },
+      ],
     }
-
-    const frameReady = tabReady[target.tabId]?.[target.frameId] != null;
-    if (!frameReady) {
-      return false;
-    }
-
-    if (isAvailable) {
-      return checkAvailable(target, isAvailable);
-    }
-
-    return true;
-  };
-
-  // eslint-disable-next-line no-await-in-loop -- retry loop
-  while (!(await isReady())) {
-    if (Date.now() - startTime > maxWaitMillis) {
-      throw new BusinessError(
-        `Nonce ${nonce} was not ready after ${maxWaitMillis}ms`
-      );
-    }
-
-    // eslint-disable-next-line no-await-in-loop -- retry loop
-    await sleep(50);
-  }
-
-  return true;
-}
-
-async function waitReady(
-  { tabId, frameId }: Target,
-  { maxWaitMillis = 10_000 }: WaitOptions = {}
-): Promise<boolean> {
-  const startTime = Date.now();
-  while (tabReady[tabId]?.[frameId] == null) {
-    if (Date.now() - startTime > maxWaitMillis) {
-      throw new BusinessError(
-        `Tab ${tabId} was not ready after ${maxWaitMillis}ms`
-      );
-    }
-
-    // eslint-disable-next-line no-await-in-loop -- retry loop
-    await sleep(50);
-  }
-
-  return true;
+  );
+  return promise;
 }
 
 export async function requestRunInOpener(
@@ -156,21 +122,6 @@ export async function requestRunInBroadcast(
   return [...fulfilled].map(([, value]) => value);
 }
 
-export async function requestRunInFrameNonce(
-  this: MessengerMeta,
-  { nonce, ...request }: RunBlock
-): Promise<unknown> {
-  const sourceTabId = this.trace[0].tab.id;
-
-  await waitNonceReady(nonce, {
-    isAvailable: request.options.isAvailable,
-  });
-
-  const target = nonceToTarget.get(nonce);
-  const subRequest = { ...request, sourceTabId };
-  return runBrick(target, subRequest);
-}
-
 export async function requestRunInTarget(
   this: MessengerMeta,
   request: RunBlock
@@ -181,10 +132,6 @@ export async function requestRunInTarget(
   if (!target) {
     throw new BusinessError("Sender tab has no target");
   }
-
-  // For now, only support top-level frame as target
-  console.debug(`Waiting for target tab ${target} to be ready`);
-  await waitReady({ tabId: target, frameId: 0 });
 
   const subRequest = { ...request, sourceTabId };
   return runBrick({ tabId: target }, subRequest);
@@ -201,33 +148,6 @@ export async function openTab(
   // FIXME: include frame information here
   tabToTarget.set(openerTabId, tab.id);
   tabToOpener.set(tab.id, openerTabId);
-}
-
-export async function markTabAsReady(this: MessengerMeta) {
-  const sender = this.trace[0];
-  const tabId = sender.tab.id;
-  const { frameId } = sender;
-  console.debug(`Marked tab ${tabId} (frame: ${frameId}) as ready`, {
-    sender,
-  });
-
-  const url = new URL(sender.url);
-  const nonce = url.searchParams.get("_pb");
-
-  if (nonce) {
-    console.debug(`Marking nonce as ready: ${nonce}`, {
-      nonce,
-      tabId,
-      frameId,
-    });
-    nonceToTarget.set(nonce, { tabId, frameId });
-  }
-
-  if (!tabReady[tabId]) {
-    tabReady[tabId] = {};
-  }
-
-  tabReady[tabId][frameId] = true;
 }
 
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {

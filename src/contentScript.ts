@@ -29,9 +29,9 @@ import { handleNavigate } from "@/contentScript/lifecycle";
 import "@/messaging/external";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import {
-  markTabAsReady,
   whoAmI,
   initTelemetry,
+  triggerBackgroundEvent,
 } from "@/background/messenger/api";
 import { showConnectionLost } from "@/contentScript/connection";
 import { isConnectionError } from "@/errors";
@@ -82,20 +82,19 @@ async function init(): Promise<void> {
     throw error;
   }
 
-  try {
-    // Notify the background script know we're ready to execute remote actions
-    markReady();
+  // Inform the external website
+  markReady();
 
-    // Inform `ensureContentScript` that the content script has loaded, if it's listening
-    void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
+  // Inform the background page (and any content scripts listening)
+  triggerBackgroundEvent(
+    "registration",
+    new URLSearchParams(location.search).get("_pb")
+  );
 
-    // Informs the standard background listener to track this tab
-    await markTabAsReady();
-    console.info(`contentScript ready in ${Date.now() - start}ms`);
-  } catch (error) {
-    console.error("Error pinging the background script", error);
-    throw error;
-  }
+  // Inform `ensureContentScript`
+  void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
+
+  console.info(`contentScript ready in ${Date.now() - start}ms`);
 }
 
 // Make sure we don't install the content script multiple times

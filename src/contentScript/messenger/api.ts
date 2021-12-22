@@ -17,14 +17,6 @@
 
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
-import { isContentScript } from "webext-detect-page";
-
-// TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
-if (isContentScript() && process.env.DEBUG) {
-  console.warn(
-    "This should not have been imported in the content script. Use the API directly instead."
-  );
-}
 
 export const getFormDefinition = getMethod("FORM_GET_DEFINITION");
 export const resolveForm = getMethod("FORM_RESOLVE");
