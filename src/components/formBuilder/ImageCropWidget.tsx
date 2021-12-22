@@ -79,7 +79,7 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
       crop.height * scaleY
     );
 
-    return canvas.toDataURL("image/jpeg");
+    return canvas.toDataURL("image/png");
   };
 
   const source: string | null =
