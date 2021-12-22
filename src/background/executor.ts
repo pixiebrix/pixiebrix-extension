@@ -44,7 +44,8 @@ export async function waitForTargetByUrl(url: string): Promise<Target> {
     {
       url: [
         {
-          urlMatches: url,
+          // This uses RE2, which is a regex-like syntax
+          urlMatches: url.replaceAll("?", "\\?"),
         },
       ],
     }
