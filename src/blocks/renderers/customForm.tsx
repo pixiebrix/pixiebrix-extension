@@ -26,6 +26,11 @@ import { notifyResult } from "@/contentScript/notify";
 
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import BootstrapStylesheet from "./BootstrapStylesheet";
+import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
+
+const uiWidgets = {
+  imageCrop: ImageCropWidget,
+};
 
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;
@@ -40,6 +45,7 @@ const CustomFormComponent: React.FunctionComponent<{
       schema={schema}
       uiSchema={uiSchema}
       formData={formData}
+      widgets={uiWidgets}
       onSubmit={async ({ formData }) => {
         await onSubmit(formData);
       }}

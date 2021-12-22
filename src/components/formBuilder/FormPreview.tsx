@@ -25,6 +25,7 @@ import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
+import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -93,11 +94,16 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     BooleanField,
   };
 
+  const widgets = {
+    imageCrop: ImageCropWidget,
+  };
+
   return (
     <JsonSchemaForm
       tagName="div"
       formData={data}
       fields={fields}
+      widgets={widgets}
       schema={previewSchema}
       uiSchema={uiSchema}
       onChange={onDataChanged}

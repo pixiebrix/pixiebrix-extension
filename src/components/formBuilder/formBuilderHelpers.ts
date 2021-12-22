@@ -103,6 +103,13 @@ export const FIELD_TYPE_OPTIONS: SelectStringOption[] = [
     label: "Checkbox",
     value: stringifyUiType({ propertyType: "boolean" }),
   },
+  {
+    label: "Image crop",
+    value: stringifyUiType({
+      propertyType: "string",
+      uiWidget: "imageCrop",
+    }),
+  },
 ];
 
 export const FIELD_TYPES_WITHOUT_DEFAULT = [
