@@ -27,6 +27,7 @@ import { notifyResult } from "@/contentScript/notify";
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import BootstrapStylesheet from "./BootstrapStylesheet";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
+import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
 
 const uiWidgets = {
   imageCrop: ImageCropWidget,
@@ -40,6 +41,7 @@ const CustomFormComponent: React.FunctionComponent<{
 }> = ({ schema, uiSchema, formData, onSubmit }) => (
   <div className="CustomForm p-3">
     <BootstrapStylesheet />
+    <ImageCropStylesheet />
     <link rel="stylesheet" href={custom} />
     <JsonSchemaForm
       schema={schema}

@@ -20,7 +20,6 @@ import ReactCrop, { Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { FormGroup, FormLabel } from "react-bootstrap";
 import { WidgetProps } from "@rjsf/core";
-import styles from "./ImageCropWidget.module.scss";
 
 const ImageCropWidget: React.VFC<WidgetProps> = ({
   schema,
@@ -102,11 +101,7 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
       {croppedImageUrl && (
         <>
           <div className="text-muted form-text">Preview</div>
-          <img
-            alt="Crop preview"
-            className={styles.preview}
-            src={croppedImageUrl}
-          />
+          <img alt="Crop preview" className="mw-100" src={croppedImageUrl} />
         </>
       )}
     </FormGroup>

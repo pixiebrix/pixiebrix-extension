@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.preview {
-  max-width: 100%;
-}
+import React from "react";
+import styles from "react-image-crop/dist/ReactCrop.css?loadAsUrl";
+
+const ImageCropStylesheet: React.FC = () => (
+  <link rel="stylesheet" href={styles} />
+);
+
+export default ImageCropStylesheet;
