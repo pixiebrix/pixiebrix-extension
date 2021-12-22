@@ -93,6 +93,13 @@ async function interval(
     const start = Date.now();
 
     try {
+      // Request an animation frame so that animation effects (e.g., confetti) don't pile up while the user is not
+      // using the tab/frame running the interval.
+      // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
+      await new Promise((resolve) => {
+        window.requestAnimationFrame(resolve);
+      });
+
       // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
       await effectGenerator();
     } catch {

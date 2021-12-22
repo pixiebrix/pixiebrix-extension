@@ -40,7 +40,7 @@ import {
 } from "@/extensionPoints/contextMenu";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { $safeFind } from "@/helpers";
-import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
+import { TriggerDefinition } from "@/extensionPoints/triggerExtension";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
@@ -167,26 +167,23 @@ export async function updateDynamicElement({
 }: DynamicDefinition): Promise<void> {
   expectContext("contentScript");
 
-  const extensionPoint = extensionPointFactory(extensionPointConfig);
-
   // HACK: hack so that when using the Page Editor the interval trigger only runs when you manually trigger it
   //  Otherwise it's hard to work with the interval trigger because you keep losing the trace from the previous run
-  if (
-    extensionPoint instanceof TriggerExtensionPoint &&
-    extensionPoint.trigger === "interval"
-  ) {
-    Object.defineProperty(extensionPoint, "trigger", {
-      get() {
-        return "load";
-      },
-    });
+  if (extensionPointConfig.definition.type === "trigger") {
+    const triggerDefinition = extensionPointConfig.definition as TriggerDefinition;
+    if (triggerDefinition.trigger === "interval") {
+      // OK to assign directly since the object comes from the messenger (so we have a fresh object)
+      triggerDefinition.trigger = "load";
+    }
   }
+
+  const extensionPoint = extensionPointFactory(extensionPointConfig);
 
   _temporaryExtensions.set(extensionConfig.id, extensionPoint);
 
   clearDynamic(extensionConfig.id, { clearTrace: false });
 
-  // In practice, should be a no-op because the page editor handles the extensionPoint
+  // In practice, should be a no-op because the Page Editor handles the extensionPoint
   const resolved = await resolveDefinitions(extensionConfig);
 
   extensionPoint.addExtension(resolved);
