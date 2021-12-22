@@ -65,6 +65,7 @@ import {
   recordEvent,
   sendDeploymentAlert,
 } from "@/background/telemetry";
+import { captureTab } from "@/background/capture";
 
 expectContext("background");
 
@@ -126,6 +127,8 @@ declare global {
 
     INIT_TELEMETRY: typeof initTelemetry;
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
+
+    CAPTURE_TAB: typeof captureTab;
   }
 }
 
@@ -187,4 +190,6 @@ registerMethods({
 
   INIT_TELEMETRY: initTelemetry,
   SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
+
+  CAPTURE_TAB: captureTab,
 });

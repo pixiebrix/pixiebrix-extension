@@ -37,6 +37,7 @@ import { JQueryReader } from "./jquery/JQueryReader";
 import { ParseCsv } from "./parseCsv";
 import { ParseDataUrl } from "./parseDataUrl";
 import { ParseDate } from "@/blocks/transformers/parseDate";
+import { CaptureTab } from "@/blocks/transformers/captureTab";
 
 function registerTransformers() {
   registerBlock(new JQTransformer());
@@ -60,6 +61,7 @@ function registerTransformers() {
   registerBlock(new ParseCsv());
   registerBlock(new ParseDataUrl());
   registerBlock(new ParseDate());
+  registerBlock(new CaptureTab());
 }
 
 export default registerTransformers;
