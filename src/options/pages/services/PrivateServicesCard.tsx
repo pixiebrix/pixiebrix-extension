@@ -26,6 +26,7 @@ import {
   faEyeSlash,
   faPlus,
   faSignOutAlt,
+  faEdit,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
@@ -34,7 +35,6 @@ import { ServicesState } from "@/options/slices";
 import useNotifications from "@/hooks/useNotifications";
 import styles from "./PrivateServicesCard.module.scss";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
-import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import BrickIcon from "@/components/BrickIcon";
 import Pagination from "@/components/pagination/Pagination";
 
@@ -180,7 +180,8 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                       {
                         title: (
                           <>
-                            <FontAwesomeIcon icon={faEdit} /> Configure
+                            <FontAwesomeIcon fixedWidth icon={faEdit} />{" "}
+                            Configure
                           </>
                         ),
                         action: () => {
@@ -194,11 +195,12 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                       {
                         title: (
                           <>
-                            <FontAwesomeIcon icon={faSignOutAlt} /> Reset Token
+                            <FontAwesomeIcon fixedWidth icon={faSignOutAlt} />{" "}
+                            Reset Token
                           </>
                         ),
                         action: async () => resetAuth(configuredService.id),
-                        disabled: !service.isOAuth2 && !service.isToken,
+                        hide: !service.isOAuth2 && !service.isToken,
                       },
                     ]}
                   />
