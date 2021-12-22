@@ -79,7 +79,7 @@ const store = configureStore({
     ...getDefaultMiddleware({
       // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
       serializableCheck: {
-        ignoredActions: ["persist/PERSIST"],
+        ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
       },
     }),
     appApi.middleware,

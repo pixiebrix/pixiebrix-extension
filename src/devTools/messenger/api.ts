@@ -15,22 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftBackground } from "@/background/protocol";
-import * as native from "@/telemetry/trace";
-import { TraceEntryData, TraceExitData } from "@/telemetry/trace";
-import { UUID } from "@/core";
+/* Do not use `registerMethod` in this file */
+import { isDevToolsPage } from "webext-detect-page";
+import { getNotifier } from "webext-messenger";
 
-export const recordTraceEntry = liftBackground(
-  "RECORD_TRACE_ENTRY",
-  async (record: TraceEntryData) => native.addTraceEntry(record)
-);
+if (isDevToolsPage()) {
+  throw new Error(
+    "This should not have been imported in the dev tools. Use the API directly instead."
+  );
+}
 
-export const recordTraceExit = liftBackground(
-  "RECORD_TRACE_EXIT",
-  async (record: TraceExitData) => native.addTraceExit(record)
-);
-
-export const clearExtensionTraces = liftBackground(
-  "CLEAR_EXTENSION_TRACES",
-  async (extensionId: UUID) => native.clearExtensionTraces(extensionId)
-);
+export const updateDevTools = getNotifier("UPDATE_DEV_TOOLS");

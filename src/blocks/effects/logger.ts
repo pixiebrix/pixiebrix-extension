@@ -19,6 +19,15 @@ import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
+type Level = "debug" | "info" | "warn" | "error";
+
+const LEVEL_MAP = new Map<Level, typeof console.debug>([
+  ["debug", console.debug],
+  ["warn", console.warn],
+  ["info", console.info],
+  ["error", console.error],
+]);
+
 export class LogEffect extends Effect {
   constructor() {
     super(
@@ -29,14 +38,35 @@ export class LogEffect extends Effect {
     );
   }
 
-  inputSchema: Schema = propertiesToSchema({
-    message: {
-      type: "string",
-      description: "The message to log",
+  inputSchema: Schema = propertiesToSchema(
+    {
+      message: {
+        type: "string",
+        description: "The message to log",
+      },
+      level: {
+        type: "string",
+        description: "The log level",
+        enum: ["debug", "info", "warn", "error"],
+        default: "info",
+      },
+      data: {
+        description:
+          "Data to log with the message, or omit to log the current context",
+      },
     },
-  });
+    ["message"]
+  );
 
-  async effect({ message }: BlockArg, { ctxt }: BlockOptions): Promise<void> {
-    console.log(message, ctxt);
+  async effect(
+    {
+      message,
+      level = "info",
+      data,
+    }: BlockArg<{ message: string; level: Level; data: unknown }>,
+    { ctxt }: BlockOptions
+  ): Promise<void> {
+    const logMethod = LEVEL_MAP.get(level) ?? console.info;
+    logMethod(message, data ?? ctxt);
   }
 }

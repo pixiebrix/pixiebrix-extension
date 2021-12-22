@@ -16,7 +16,7 @@
  */
 
 import { Card, Table } from "react-bootstrap";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import urljoin from "url-join";
@@ -24,15 +24,33 @@ import GridLoader from "react-spinners/GridLoader";
 import { SanitizedAuth } from "@/types/contract";
 import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Pagination from "@/components/pagination/Pagination";
 
 interface OwnProps {
   remoteAuths: SanitizedAuth[];
 }
 
+const SERVICES_PER_PAGE = 10;
+
 const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
   remoteAuths,
 }) => {
   const [serviceUrl] = useAsyncState(getBaseURL);
+  const [page, setPage] = useState(0);
+
+  const numPages = useMemo(
+    () => Math.ceil(remoteAuths.length / SERVICES_PER_PAGE),
+    [remoteAuths, SERVICES_PER_PAGE]
+  );
+
+  const pageServices = useMemo(
+    () =>
+      remoteAuths.slice(
+        page * SERVICES_PER_PAGE,
+        (page + 1) * SERVICES_PER_PAGE
+      ),
+    [remoteAuths, page]
+  );
 
   return (
     <>
@@ -43,7 +61,7 @@ const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
         </p>
       </Card.Body>
       {remoteAuths ? (
-        <Table>
+        <Table responsive>
           <thead>
             <tr>
               <th>Team</th>
@@ -52,7 +70,7 @@ const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
             </tr>
           </thead>
           <tbody>
-            {remoteAuths.map((remoteAuth) => (
+            {pageServices.map((remoteAuth) => (
               <tr key={remoteAuth.id}>
                 <td>{remoteAuth.organization?.name ?? "✨ Built-in"}</td>
                 <td>{remoteAuth.label}</td>
@@ -73,7 +91,7 @@ const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
           <GridLoader />
         </Card.Body>
       )}
-      <Card.Footer>
+      <Card.Footer className="d-flex justify-content-between align-items-center">
         {serviceUrl ? (
           <span className="py-3">
             To configure shared services, open the{" "}
@@ -92,6 +110,14 @@ const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
               create a PixieBrix account
             </a>
           </span>
+        )}
+        <span className="text-muted">
+          Showing {page * SERVICES_PER_PAGE + 1} to{" "}
+          {SERVICES_PER_PAGE * page + pageServices.length} of{" "}
+          {remoteAuths.length} integrations
+        </span>
+        {remoteAuths.length > SERVICES_PER_PAGE && (
+          <Pagination page={page} setPage={setPage} numPages={numPages} />
         )}
       </Card.Footer>
     </>

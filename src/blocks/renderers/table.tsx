@@ -111,41 +111,5 @@ export class TableRenderer extends Renderer {
     );
 
     return table(data);
-
-    // Const makeLinkTemplate = ({
-    //   property,
-    //   href,
-    // }: {
-    //   property: string;
-    //   href: string;
-    // }) => (rowData: Record<string, unknown>) => {
-    //   const anchorHref = mapArgs(href, { ...rowData, "@block": blockArgs });
-    //   return !isNullOrBlank(anchorHref) ? (
-    //     <a href={anchorHref} target="_blank" rel="noopener noreferrer">
-    //       {rowData[property]}
-    //     </a>
-    //   ) : (
-    //     property?.toString()
-    //   );
-    // };
-    //
-    // const DataTable = (
-    //   await import(
-    //     /* webpackChunkName: "widgets" */
-    //     "./DataTableComponent"
-    //   )
-    // ).default;
-    //
-    // return {
-    //   Component: DataTable,
-    //   props: {
-    //     rows: ctxt,
-    //     columns: columns.map((column: ColumnDefinition) => ({
-    //       header: column.label,
-    //       field: column.property,
-    //       body: column.href ? makeLinkTemplate(column) : undefined,
-    //     })),
-    //   },
-    // } as any;
   }
 }

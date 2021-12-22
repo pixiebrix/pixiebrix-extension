@@ -16,5 +16,9 @@
  */
 
 if (chrome.devtools.inspectedWindow.tabId) {
-  chrome.devtools.panels.create("PixieBrix", "", "devtoolsPanel.html");
+  chrome.devtools.panels.create(
+    "PixieBrix",
+    "",
+    `devtoolsPanel.html?tabId=${chrome.devtools.inspectedWindow.tabId}`
+  );
 }

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Runtime, WebNavigation } from "webextension-polyfill";
+import { Runtime } from "webextension-polyfill";
 import { HandlerOptions } from "@/messaging/protocol";
 import type { Target } from "@/types";
 
@@ -29,14 +29,6 @@ export type PromiseHandler = [
   (value: unknown) => void,
   (value: unknown) => void
 ];
-
-export type BackgroundEventType = "HistoryStateUpdate";
-
-export type BackgroundEvent = {
-  type: "HistoryStateUpdate";
-  meta: Meta;
-  payload: WebNavigation.OnHistoryStateUpdatedDetailsType;
-};
 
 export interface BackgroundResponse {
   type: string;

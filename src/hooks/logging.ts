@@ -17,11 +17,8 @@
 
 import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
-import {
-  getLoggingConfig,
-  LoggingConfig,
-  setLoggingConfig,
-} from "@/background/logging";
+import { getLoggingConfig, setLoggingConfig } from "@/background/messenger/api";
+import type { LoggingConfig } from "@/background/logging";
 
 export function useLoggingConfig(): [
   LoggingConfig,
