@@ -18,6 +18,7 @@
 import { Transformer } from "@/types";
 import { Schema } from "@/core";
 import { captureTab } from "@/background/messenger/api";
+import { BusinessError, getErrorMessage } from "@/errors";
 
 export class CaptureTab extends Transformer {
   constructor() {
@@ -34,6 +35,22 @@ export class CaptureTab extends Transformer {
   };
 
   async transform(): Promise<string> {
-    return captureTab();
+    try {
+      return await captureTab();
+    } catch (error) {
+      if (getErrorMessage(error).includes("activeTab")) {
+        // Event if PixieBrix has access to a host, PixieBrix needs activeTab. So the user must have done one of the
+        // following. https://developer.chrome.com/docs/extensions/mv3/manifest/activeTab/#invoking-activeTab. We'll
+        // give an error message that ensures one of these must have been true:
+        // - Executing a action
+        // - Executing a context menu item
+        // - Executing a keyboard shortcut from the commands API
+        throw new BusinessError(
+          "The capture tab brick can only be triggered from the context menu or sidebar"
+        );
+      }
+
+      throw error;
+    }
   }
 }
