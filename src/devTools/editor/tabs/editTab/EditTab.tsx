@@ -46,7 +46,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
 import AuthContext from "@/auth/AuthContext";
 import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
-import useBlockActions from "@/devTools/editor/tabs/editTab/useBlockActions";
+import useBlockPipelineActions from "@/devTools/editor/tabs/editTab/useBlockPipelineActions";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -126,7 +126,14 @@ const EditTab: React.FC<{
     false
   );
 
-  const { addBlock, removeBlock, moveBlockUp, moveBlockDown } = useBlockActions(
+  const {
+    addBlock,
+    removeBlock,
+    moveBlockUp,
+    moveBlockDown,
+    copyBlock,
+    pasteBlock,
+  } = useBlockPipelineActions(
     blockPipeline,
     values,
     setFormValues,
@@ -241,6 +248,7 @@ const EditTab: React.FC<{
             showAppend={showAppendNode}
             moveBlockUp={moveBlockUp}
             moveBlockDown={moveBlockDown}
+            pasteBlock={pasteBlock}
           />
         </div>
         <div className={styles.configPanel}>
@@ -268,6 +276,9 @@ const EditTab: React.FC<{
                   blockError={blockError}
                   onRemoveNode={() => {
                     removeBlock(activeNodeId);
+                  }}
+                  copyBlock={() => {
+                    copyBlock(activeNodeId);
                   }}
                 />
               )}

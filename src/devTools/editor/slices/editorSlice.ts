@@ -35,6 +35,7 @@ import {
   NodeId,
 } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { WritableDraft } from "immer/dist/types/types-external";
+import { BlockConfig } from "@/blocks/types";
 
 export type FormState =
   | ActionFormState
@@ -89,6 +90,11 @@ export interface EditorState {
    * The current UI state of each element, indexed by element Id
    */
   elementUIStates: Record<UUID, ElementUIState>;
+
+  /**
+   * A clipboard-style-copy of a block ready to paste into an extension
+   */
+  copiedBlock?: BlockConfig;
 }
 
 export const initialState: EditorState = {
@@ -348,6 +354,14 @@ export const editorSlice = createSlice({
       const nodeUIState =
         elementUIState.nodeUIStates[elementUIState.activeNodeId];
       nodeUIState.dataPanel.tabQueries[tabKey] = query;
+    },
+    copyBlockConfig: (state, action: PayloadAction<BlockConfig>) => {
+      const copy = { ...action.payload };
+      delete copy.instanceId;
+      state.copiedBlock = copy;
+    },
+    clearCopiedBlockConfig: (state) => {
+      delete state.copiedBlock;
     },
   },
 });
