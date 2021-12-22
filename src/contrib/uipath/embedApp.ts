@@ -114,24 +114,27 @@ export class UiPathAppRenderer extends Renderer {
     }: BlockArg,
     { logger }: BlockOptions
   ): Promise<SafeHTML> {
+    const nonce = uuidv4();
+
     // Use extension iframe to get around the host’s CSP limitations
     // https://transitory.technology/browser-extensions-and-csp-headers/
-    const frameURL = new URL(browser.runtime.getURL("frame.html"));
-    frameURL.searchParams.set("url", url);
-    frameURL.searchParams.set("nonce", uuidv4());
+    const subframeUrl = new URL(url);
+    subframeUrl.searchParams.set("_pb", nonce);
+
+    const localFrame = new URL(browser.runtime.getURL("frame.html"));
+    localFrame.searchParams.set("url", subframeUrl.href);
 
     const inputs = rawInputs as UnknownObject;
-
     if (!isEmpty(inputs)) {
       void runInFrame({
         blockId: this.id,
-        url: frameURL,
+        url: subframeUrl,
         inputs,
       }).catch((error) => {
         logger.error(error);
       });
     }
 
-    return `<iframe src="${frameURL.toString()}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>` as SafeHTML;
+    return `<iframe src="${localFrame.href}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>` as SafeHTML;
   }
 }

@@ -249,7 +249,6 @@ module.exports = (env, options) =>
           "background",
           "contentScript",
           "devtoolsPanel",
-          "frame",
           "ephemeralForm",
           "options",
           "action",
@@ -272,7 +271,8 @@ module.exports = (env, options) =>
         "@fortawesome/free-solid-svg-icons",
       ],
 
-      // This is a one-line file without imports
+      // Tiny files without imports, no vendors needed
+      frame: "./src/frame",
       devtools: "./src/devtools",
 
       // The script that gets injected into the host page should not have a vendor chunk

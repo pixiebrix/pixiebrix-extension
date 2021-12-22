@@ -28,7 +28,6 @@ import { openPopupPrompt } from "@/background/permissionPrompt";
 import {
   activateTab,
   closeTab,
-  triggerBackgroundEvent,
   whoAmI,
   openTab,
   requestRunOnServer,
@@ -89,7 +88,6 @@ declare global {
 
     ECHO_SENDER: typeof whoAmI;
     WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
-    TRIGGER_BACKGROUND_EVENT: typeof triggerBackgroundEvent;
 
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
@@ -151,7 +149,6 @@ registerMethods({
 
   ECHO_SENDER: whoAmI,
   WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
-  TRIGGER_BACKGROUND_EVENT: triggerBackgroundEvent,
 
   ACTIVATE_TAB: activateTab,
   REACTIVATE_EVERY_TAB: reactivateEveryTab,

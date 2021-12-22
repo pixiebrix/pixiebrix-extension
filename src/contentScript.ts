@@ -28,11 +28,7 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import "@/messaging/external";
 import { markReady, updateTabInfo } from "@/contentScript/context";
-import {
-  whoAmI,
-  initTelemetry,
-  triggerBackgroundEvent,
-} from "@/background/messenger/api";
+import { whoAmI, initTelemetry } from "@/background/messenger/api";
 import { showConnectionLost } from "@/contentScript/connection";
 import { isConnectionError } from "@/errors";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
@@ -84,12 +80,6 @@ async function init(): Promise<void> {
 
   // Inform the external website
   markReady();
-
-  // Inform the background page (and any content scripts listening)
-  triggerBackgroundEvent(
-    "registration",
-    new URLSearchParams(location.search).get("_pb")
-  );
 
   // Inform `ensureContentScript`
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });

@@ -23,7 +23,7 @@ import { expectContext } from "@/utils/expectContext";
 import { asyncLoop } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
-import { MessengerMeta, Sender } from "webext-messenger";
+import { MessengerMeta } from "webext-messenger";
 import { linkChildTab, runBrick } from "@/contentScript/messenger/api";
 import { Target } from "@/types";
 import { TabId } from "@/background/devtools/contract";
@@ -33,26 +33,6 @@ import pDefer from "p-defer";
 const tabToOpener = new Map<number, number>();
 const tabToTarget = new Map<number, number>();
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
-
-export const eventManager = new EventTarget();
-interface MessengerEvent {
-  sender: Sender;
-  eventName: string;
-  args: unknown[];
-}
-export async function triggerBackgroundEvent(
-  this: MessengerMeta,
-  eventName: string,
-  ...args: unknown[]
-): Promise<void> {
-  const sender = this.trace[0];
-  const event: MessengerEvent = { sender, eventName, args };
-  eventManager.dispatchEvent(
-    new CustomEvent(eventName, {
-      detail: event,
-    })
-  );
-}
 
 export async function waitForTargetByUrl(url: string): Promise<Target> {
   const { promise, resolve } = pDefer<Target>();
