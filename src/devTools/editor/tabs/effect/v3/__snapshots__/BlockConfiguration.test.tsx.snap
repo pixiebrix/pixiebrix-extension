@@ -54,7 +54,9 @@ exports[`renders 1`] = `
                   <span
                     class="symbol"
                   >
-                    Abc
+                    <svg
+                      class="root"
+                    />
                   </span>
                 </button>
               </div>

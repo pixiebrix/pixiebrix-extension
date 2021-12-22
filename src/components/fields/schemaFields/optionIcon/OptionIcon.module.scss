@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,35 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
-declare module "*.svg" {
-  const CONTENT: string;
-  export default CONTENT;
-}
-
-declare module "*?loadAsUrl" {
-  const CONTENT: string;
-  export default CONTENT;
-}
-
-declare module "*?loadAsText" {
-  const CONTENT: string;
-  export default CONTENT;
-}
-
-// Loading svg as React component using @svgr
-declare module "*.svg?loadAsComponent" {
-  import React from "react";
-  const SVG: React.VFC<React.SVGProps<SVGSVGElement>>;
-  export default SVG;
-}
-
-declare module "*.txt" {
-  const CONTENT: string;
-  export default CONTENT;
-}
-
-declare module "*.yaml" {
-  const CONTENT: Record<string, unknown>;
-  export default CONTENT;
+.root {
+  height: 1.2rem;
+  vertical-align: text-bottom;
+  margin-top: 2px;
 }

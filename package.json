@@ -162,6 +162,7 @@
     "@storybook/builder-webpack5": "^6.3.6",
     "@storybook/manager-webpack5": "^6.3.6",
     "@storybook/react": "^6.3.12",
+    "@svgr/webpack": "^6.1.2",
     "@swc/core": "^1.2.113",
     "@swc/jest": "^0.2.10",
     "@testing-library/jest-dom": "^5.14.1",
