@@ -49,7 +49,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
-import { PromiseCancelled } from "@/utils";
+import { PromiseCancelled, sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 
@@ -83,6 +83,33 @@ export type Trigger =
   | "dblclick"
   | "mouseover"
   | "change";
+
+async function interval(
+  intervalMillis: number,
+  effectGenerator: () => Promise<void>,
+  signal: AbortSignal
+) {
+  while (!signal.aborted) {
+    const start = Date.now();
+
+    try {
+      // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
+      await effectGenerator();
+    } catch {
+      // NOP
+    }
+
+    const sleepDuration = Math.max(0, intervalMillis - (Date.now() - start));
+
+    if (sleepDuration > 0) {
+      // Would also be OK to pass 0 to sleep duration
+      // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
+      await sleep(sleepDuration);
+    }
+  }
+
+  console.debug("interval:completed");
+}
 
 export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig> {
   abstract get trigger(): Trigger;
@@ -128,10 +155,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private readonly boundEventHandler: JQuery.EventHandler<unknown>;
 
   /**
-   * https://developer.mozilla.org/en-US/docs/Web/API/setInterval#return_value
+   * Controller to abort/cancel the currently running interval loop
    * @private
    */
-  private intervalId: number | null;
+  private intervalController: AbortController | null;
 
   protected constructor(
     id: string,
@@ -325,12 +352,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   private clearInterval() {
-    if (this.intervalId) {
-      console.debug("triggerExtension:clearInterval");
-
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
+    console.debug("triggerExtension:clearInterval");
+    this.intervalController?.abort();
+    this.intervalController = null;
   }
 
   private attachInterval() {
@@ -340,15 +364,20 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       this.logger.debug("Attaching interval trigger");
 
       // Cast setInterval return value to number. For some reason Typescript is using the Node types for setInterval
-      this.intervalId = (setInterval(async () => {
+      const controller = new AbortController();
+
+      const intervalEffect = async () => {
         const $root = await this.getRoot();
         await Promise.allSettled(
           $root.toArray().flatMap(async (root) => this.runTrigger(root))
         );
-      }, this.intervalMillis) as unknown) as number;
+      };
+
+      void interval(this.intervalMillis, intervalEffect, controller.signal);
+
+      this.intervalController = controller;
 
       console.debug("triggerExtension:attachInterval", {
-        intervalId: this.intervalId,
         intervalMillis: this.intervalMillis,
       });
     } else {
