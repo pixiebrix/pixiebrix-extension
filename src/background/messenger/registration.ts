@@ -28,14 +28,13 @@ import { openPopupPrompt } from "@/background/permissionPrompt";
 import {
   activateTab,
   closeTab,
-  markTabAsReady,
   whoAmI,
   openTab,
   requestRunOnServer,
   requestRunInOpener,
   requestRunInTarget,
   requestRunInBroadcast,
-  requestRunInFrameNonce,
+  waitForTargetByUrl,
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
 import { ensureContentScript } from "@/background/util";
@@ -89,10 +88,11 @@ declare global {
     OPEN_POPUP_PROMPT: typeof openPopupPrompt;
 
     ECHO_SENDER: typeof whoAmI;
+    WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
+
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
     CLOSE_TAB: typeof closeTab;
-    MARK_TAB_AS_READY: typeof markTabAsReady;
     OPEN_TAB: typeof openTab;
     REGISTRY_GET_KIND: typeof registry.getKind;
     REGISTRY_SYNC: typeof registry.syncRemote;
@@ -104,7 +104,6 @@ declare global {
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
     REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
     REQUEST_RUN_IN_ALL: typeof requestRunInBroadcast;
-    REQUEST_RUN_IN_FRAME_NONCE: typeof requestRunInFrameNonce;
 
     HTTP_REQUEST: typeof doCleanAxiosRequest;
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
@@ -152,10 +151,11 @@ registerMethods({
   OPEN_POPUP_PROMPT: openPopupPrompt,
 
   ECHO_SENDER: whoAmI,
+  WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
+
   ACTIVATE_TAB: activateTab,
   REACTIVATE_EVERY_TAB: reactivateEveryTab,
   CLOSE_TAB: closeTab,
-  MARK_TAB_AS_READY: markTabAsReady,
   OPEN_TAB: openTab,
   REGISTRY_GET_KIND: registry.getKind,
   REGISTRY_SYNC: registry.syncRemote,
@@ -167,7 +167,6 @@ registerMethods({
   REQUEST_RUN_IN_OPENER: requestRunInOpener,
   REQUEST_RUN_IN_TARGET: requestRunInTarget,
   REQUEST_RUN_IN_ALL: requestRunInBroadcast,
-  REQUEST_RUN_IN_FRAME_NONCE: requestRunInFrameNonce,
 
   HTTP_REQUEST: doCleanAxiosRequest,
   DELETE_CACHED_AUTH: deleteCachedAuthData,

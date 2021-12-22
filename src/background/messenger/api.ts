@@ -44,12 +44,12 @@ export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const checkTargetPermissions = getMethod("CHECK_TARGET_PERMISSIONS", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
 export const whoAmI = getMethod("ECHO_SENDER", bg);
+export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
 
 export const closeTab = getMethod("CLOSE_TAB", bg);
-export const markTabAsReady = getMethod("MARK_TAB_AS_READY", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 export const readGoogleBigQuery = getMethod("GOOGLE_BIGQUERY_READ", bg);
@@ -86,7 +86,6 @@ export const requestRun = {
   onServer: getMethod("REQUEST_RUN_ON_SERVER", bg),
   inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
   inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),
-  inFrame: getMethod("REQUEST_RUN_IN_FRAME_NONCE", bg),
   inAll: getMethod("REQUEST_RUN_IN_ALL", bg),
 };
 
