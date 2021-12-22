@@ -17,7 +17,6 @@
 
 import React, { useRef, useState } from "react";
 import ReactCrop, { Crop } from "react-image-crop";
-import "react-image-crop/dist/ReactCrop.css";
 import { FormGroup, FormLabel } from "react-bootstrap";
 import { WidgetProps } from "@rjsf/core";
 

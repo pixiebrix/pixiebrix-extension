@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import "react-image-crop/dist/ReactCrop.css";
 import { FormGroup, FormLabel } from "react-bootstrap";
 import { WidgetProps } from "@rjsf/core";
 
