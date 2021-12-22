@@ -36,20 +36,17 @@ const tabToTarget = new Map<number, number>();
 
 export async function waitForTargetByUrl(url: string): Promise<Target> {
   const { promise, resolve } = pDefer<Target>();
-  browser.webNavigation.onCommitted.addListener(
-    function wait({ tabId, frameId }): void {
-      resolve({ tabId, frameId });
-      browser.webNavigation.onCommitted.removeListener(wait);
-    },
-    {
-      url: [
-        {
-          // This uses RE2, which is a regex-like syntax
-          urlMatches: url.replaceAll("?", "\\?"),
-        },
-      ],
-    }
-  );
+
+  // This uses RE2, which is a regex-like syntax
+  const urlMatches = url.replaceAll("?", "\\?");
+  function wait({ tabId, frameId }: Target): void {
+    resolve({ tabId, frameId });
+    browser.webNavigation.onCommitted.removeListener(wait);
+  }
+
+  browser.webNavigation.onCommitted.addListener(wait, {
+    url: [{ urlMatches }],
+  });
   return promise;
 }
 

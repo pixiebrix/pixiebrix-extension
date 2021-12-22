@@ -23,6 +23,7 @@ import browser, { Permissions } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { waitForTargetByUrl } from "@/background/messenger/api";
 import { runBrick } from "@/contentScript/messenger/api";
+import pTimeout from "p-timeout";
 
 interface RunDetails {
   blockId: RegistryId;
@@ -35,7 +36,14 @@ async function runInFrame({
   inputs,
   url,
 }: RunDetails): Promise<unknown> {
-  const target = await waitForTargetByUrl(url.href);
+  const target = await pTimeout(
+    waitForTargetByUrl(url.href),
+    2000,
+    // `waitForTargetByUrl` is expected to respond quickly because
+    // it listens to the target creation event before its content even starts loading.
+    // With the nested iframe creation overhead this should be between 100 and 500ms
+    "The expected frame was not created within 2 seconds"
+  );
 
   return runBrick(target, {
     blockId: "@pixiebrix/forms/set" as RegistryId,
