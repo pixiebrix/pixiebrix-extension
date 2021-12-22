@@ -47,7 +47,8 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
-  description: "The source image.",
+  description:
+    "The source image data URI: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs",
 };
 
 const FieldEditor: React.FC<{
