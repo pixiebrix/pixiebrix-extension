@@ -41,7 +41,6 @@ import { Schema } from "@/core";
 import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import IntegerWidget from "@/components/fields/schemaFields/widgets/IntegerWidget";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
 import OmitFieldWidget from "@/components/fields/schemaFields/widgets/OmitFieldWidget";
@@ -52,6 +51,7 @@ import SchemaSelectWidget, {
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 
 const varOption: StringOption = {
   label: "Variable",
@@ -189,7 +189,7 @@ function getToggleOptions({
         label: "Toggle",
         value: "boolean",
         symbol: <OptionIcon icon="toggle" />,
-        Widget: SwitchButtonWidget,
+        Widget: BooleanWidget,
         interpretValue: () =>
           typeof fieldSchema.default === "boolean"
             ? fieldSchema.default
