@@ -22,7 +22,7 @@ import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWid
 import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { Schema } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
-import OptionIcon from "@/components/fields/schemaFields/v3/OptionIcon";
+import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
 
 export const ClearableSelectorWidget: React.FunctionComponent<{
   name: string;

@@ -16,15 +16,15 @@
  */
 
 import React from "react";
-import VariableIcon from "./optionIcons/var.svg?loadAsComponent";
-import ArrayIcon from "./optionIcons/array.svg?loadAsComponent";
-import ObjectIcon from "./optionIcons/object.svg?loadAsComponent";
-import ToggleIcon from "./optionIcons/toggle.svg?loadAsComponent";
-import SelectIcon from "./optionIcons/select.svg?loadAsComponent";
-import TextIcon from "./optionIcons/text.svg?loadAsComponent";
-import NumberIcon from "./optionIcons/number.svg?loadAsComponent";
-import ExcludeIcon from "./optionIcons/exclude.svg?loadAsComponent";
-import QuerySelector from "./optionIcons/querySelector.svg?loadAsComponent";
+import VariableIcon from "./icons/var.svg?loadAsComponent";
+import ArrayIcon from "./icons/array.svg?loadAsComponent";
+import ObjectIcon from "./icons/object.svg?loadAsComponent";
+import ToggleIcon from "./icons/toggle.svg?loadAsComponent";
+import SelectIcon from "./icons/select.svg?loadAsComponent";
+import TextIcon from "./icons/text.svg?loadAsComponent";
+import NumberIcon from "./icons/number.svg?loadAsComponent";
+import ExcludeIcon from "./icons/exclude.svg?loadAsComponent";
+import QuerySelector from "./icons/querySelector.svg?loadAsComponent";
 import styles from "./OptionIcon.module.scss";
 
 const components = {

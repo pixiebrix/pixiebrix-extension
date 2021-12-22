@@ -51,7 +51,7 @@ import SchemaSelectWidget, {
 } from "@/components/fields/schemaFields/widgets/v3/SchemaSelectWidget";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
-import OptionIcon from "./OptionIcon";
+import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
 
 const varOption: StringOption = {
   label: "Variable",
