@@ -39,13 +39,19 @@ const TooltipIconButton: React.FC<{
   return (
     <OverlayTrigger
       placement="auto"
-      trigger="hover"
       delay={{ show: 150, hide: 100 }}
       overlay={renderTooltip}
       rootClose
     >
       {({ ref, ...rest }) => (
-        <button type="button" onClick={onClick} {...rest}>
+        <button
+          type="button"
+          onClick={(event) => {
+            event.currentTarget.blur();
+            onClick(event);
+          }}
+          {...rest}
+        >
           <FontAwesomeIcon forwardedRef={ref} icon={icon} size={size} />
         </button>
       )}
