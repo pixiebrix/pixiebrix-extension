@@ -39,7 +39,6 @@ const TooltipIconButton: React.FC<{
   return (
     <OverlayTrigger
       placement="auto"
-      trigger="hover"
       delay={{ show: 150, hide: 100 }}
       overlay={renderTooltip}
       rootClose

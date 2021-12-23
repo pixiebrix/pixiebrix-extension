@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
@@ -62,6 +62,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   onClickMoveUp,
   onClickMoveDown,
 }) => {
+  const nodeRef = useRef<HTMLDivElement>(null);
   const outputName = outputKey ? `@${outputKey}` : "";
 
   const icon = isFontAwesomeIcon(iconProp) ? (
@@ -84,9 +85,16 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       </span>
     ) : null;
 
+  useEffect(() => {
+    if (active) {
+      nodeRef.current?.focus();
+    }
+  }, [active]);
+
   return (
     // Use our own custom style here, not bootstrap
     <div
+      ref={nodeRef}
       tabIndex={0}
       role="button"
       onClick={onClick}
