@@ -44,14 +44,7 @@ const TooltipIconButton: React.FC<{
       rootClose
     >
       {({ ref, ...rest }) => (
-        <button
-          type="button"
-          onClick={(event) => {
-            event.currentTarget.blur();
-            onClick(event);
-          }}
-          {...rest}
-        >
+        <button type="button" onClick={onClick} {...rest}>
           <FontAwesomeIcon forwardedRef={ref} icon={icon} size={size} />
         </button>
       )}
