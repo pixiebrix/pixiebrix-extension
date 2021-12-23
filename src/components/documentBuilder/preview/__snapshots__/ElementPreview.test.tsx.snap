@@ -10,7 +10,7 @@ exports[`can preview default button 1`] = `
         class="btn btn-primary"
         type="button"
       >
-        Confetti
+        Action
       </button>
     </div>
   </div>

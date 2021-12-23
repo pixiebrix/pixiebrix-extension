@@ -74,7 +74,7 @@ export function createNewElement(elementType: DocumentElementType) {
     }
 
     case "button": {
-      element.config.title = "Confetti";
+      element.config.title = "Action";
 
       const confettiConfig: BlockConfig = {
         id: confettiEffect.id,
