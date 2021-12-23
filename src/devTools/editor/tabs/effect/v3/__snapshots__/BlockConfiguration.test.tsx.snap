@@ -43,6 +43,7 @@ exports[`renders 1`] = `
               </div>
               <div
                 class="dropdown dropdown"
+                data-test-selected="Text"
                 data-testid="toggle-extension.blockPipeline[0].config.message"
               >
                 <button

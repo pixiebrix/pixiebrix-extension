@@ -359,7 +359,9 @@ export function schemaSupportsTemplates(schema: Schema): boolean {
     isObjectProperty: false,
     isArrayItem: false,
   });
-  return options.some((option) => option.value === "string");
+  return options.some(
+    (option) => option.value === "string" && option.label === "Text"
+  );
 }
 
 const BasicSchemaField: SchemaFieldComponent = (props) => {
