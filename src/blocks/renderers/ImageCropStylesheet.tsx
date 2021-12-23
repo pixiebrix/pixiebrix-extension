@@ -15,17 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/extensionContext";
-
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
-
 import React from "react";
-import { render } from "react-dom";
-import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
+import styles from "react-image-crop/dist/ReactCrop.css?loadAsUrl";
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "react-image-crop/dist/ReactCrop.css";
-import "@/ephemeralForm.scss";
+const ImageCropStylesheet: React.FC = () => (
+  <link rel="stylesheet" href={styles} />
+);
 
-render(<EphemeralForm />, document.querySelector("#container"));
+export default ImageCropStylesheet;
