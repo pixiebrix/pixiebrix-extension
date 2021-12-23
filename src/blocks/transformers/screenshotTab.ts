@@ -44,6 +44,8 @@ export class ScreenshotTab extends Transformer {
     },
   };
 
+  defaultOutputKey = "screenshot";
+
   async transform(): Promise<unknown> {
     try {
       return {
@@ -54,7 +56,7 @@ export class ScreenshotTab extends Transformer {
         // Event if PixieBrix has access to a host, PixieBrix needs activeTab. So the user must have done one of the
         // following. https://developer.chrome.com/docs/extensions/mv3/manifest/activeTab/#invoking-activeTab. We'll
         // give an error message that ensures one of these must have been true:
-        // - Executing a action
+        // - Executing an action
         // - Executing a context menu item
         // - Executing a keyboard shortcut from the commands API
         throw new BusinessError(
