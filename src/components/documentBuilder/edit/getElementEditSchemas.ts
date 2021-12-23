@@ -61,8 +61,9 @@ function getElementEditSchemas(
       return [headingEdit, getClassNameEdit(elementName)];
     }
 
-    case "pipeline":
+    case "pipeline": {
       throw new Error("Use custom Options for pipeline element.");
+    }
 
     case "button": {
       const titleEdit: SchemaFieldProps = {
@@ -102,14 +103,27 @@ function getElementEditSchemas(
         schema: { type: "string", enum: ["lg", "md", "sm"] },
         label: "Size",
       };
-      return [titleEdit, variantEdit, sizeEdit, getClassNameEdit(elementName)];
+      const disabledEdit: SchemaFieldProps = {
+        name: joinName(elementName, "config", "disabled"),
+        schema: { type: "boolean" },
+        label: "Disabled",
+      };
+      return [
+        titleEdit,
+        variantEdit,
+        sizeEdit,
+        disabledEdit,
+        getClassNameEdit(elementName),
+      ];
     }
 
-    case "list":
+    case "list": {
       throw new Error("Use custom Options for list element.");
+    }
 
-    default:
+    default: {
       return [getClassNameEdit(elementName)];
+    }
   }
 }
 

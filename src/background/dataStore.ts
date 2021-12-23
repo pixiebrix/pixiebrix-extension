@@ -15,21 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  ManualStorageKey,
-  readStorageWithMigration,
-  setStorage,
-} from "@/chrome";
+import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { JsonObject } from "type-fest";
 
 export const LOCAL_DATA_STORE = "LOCAL_DATA_STORE" as ManualStorageKey;
 export const KEY_PREFIX = "@@";
 
 export async function getRecord(primaryKey: string): Promise<unknown> {
-  const data = await readStorageWithMigration<Record<string, unknown>>(
-    LOCAL_DATA_STORE,
-    {}
-  );
+  const data = await readStorage<Record<string, unknown>>(LOCAL_DATA_STORE, {});
   return data[`${KEY_PREFIX}${primaryKey}`] ?? {};
 }
 
@@ -37,10 +30,7 @@ export async function setRecord(
   primaryKey: string,
   value: JsonObject
 ): Promise<void> {
-  const data = await readStorageWithMigration<Record<string, unknown>>(
-    LOCAL_DATA_STORE,
-    {}
-  );
+  const data = await readStorage<Record<string, unknown>>(LOCAL_DATA_STORE, {});
   data[`${KEY_PREFIX}${primaryKey}`] = value;
   await setStorage(LOCAL_DATA_STORE, data);
 }

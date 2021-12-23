@@ -16,6 +16,7 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
           <svg
             aria-hidden="true"
             class="svg-inline--fa fa-window-maximize fa-w-16 fa-fw fa-1x "
+            color="darkGrey"
             data-icon="window-maximize"
             data-prefix="fas"
             focusable="false"
@@ -288,6 +289,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
           <svg
             aria-hidden="true"
             class="svg-inline--fa fa-window-maximize fa-w-16 fa-fw fa-1x "
+            color="darkGrey"
             data-icon="window-maximize"
             data-prefix="fas"
             focusable="false"
@@ -560,6 +562,7 @@ exports[`renders empty brick in loading state 1`] = `
           <svg
             aria-hidden="true"
             class="svg-inline--fa fa-cube fa-w-16 fa-fw fa-1x "
+            color="darkGrey"
             data-icon="cube"
             data-prefix="fas"
             focusable="false"

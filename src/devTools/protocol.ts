@@ -15,11 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser, { Runtime } from "webextension-polyfill";
+import browser, { Runtime, WebNavigation } from "webextension-polyfill";
 import { registerPort } from "@/background/devtools";
 import { PORT_NAME } from "@/background/devtools/contract";
-import { installPortListeners } from "@/background/devtools/external";
+import {
+  installPortListeners,
+  navigationEvent,
+} from "@/background/devtools/external";
 import { runtimeConnect } from "@/chrome";
+
+const TOP_LEVEL_FRAME_ID = 0;
 
 let _cachedPort: Runtime.Port | null = null;
 
@@ -57,4 +62,35 @@ export async function connectDevtools(): Promise<Runtime.Port> {
 
   _cachedPort = port;
   return port;
+}
+
+export function updateDevTools() {
+  navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
+}
+
+function onNavigation(
+  details:
+    | WebNavigation.OnHistoryStateUpdatedDetailsType
+    | WebNavigation.OnDOMContentLoadedDetailsType
+): void {
+  if (
+    details.frameId === TOP_LEVEL_FRAME_ID &&
+    details.tabId === browser.devtools.inspectedWindow.tabId
+  ) {
+    updateDevTools();
+  }
+}
+
+export function watchNavigation(): void {
+  browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
+  browser.webNavigation.onDOMContentLoaded.addListener(onNavigation);
+
+  if (process.env.DEBUG)
+    browser.webNavigation.onTabReplaced.addListener(
+      ({ replacedTabId, tabId }) => {
+        console.warn(
+          `The tab ID was updated by the browser from ${replacedTabId} to ${tabId}. Did this cause any issues? https://stackoverflow.com/q/17756258/288906`
+        );
+      }
+    );
 }

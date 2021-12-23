@@ -27,3 +27,12 @@
     padding-right: 0;
   }
 }
+
+.integrationsTable {
+  // Override bootstrap table styling
+  td img {
+    border-radius: 0 !important;
+    width: 1em !important;
+    height: 1em !important;
+  }
+}

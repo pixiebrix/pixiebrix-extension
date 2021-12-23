@@ -48,7 +48,7 @@ export type DocumentElement<
 export type ListDocumentConfig = {
   array: Expression;
   elementKey?: string;
-  element: DeferExpression;
+  element: DeferExpression<DocumentElement>;
 };
 export type ListDocumentElement = DocumentElement<"list", ListDocumentConfig>;
 

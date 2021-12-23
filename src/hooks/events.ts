@@ -45,7 +45,7 @@ export class SimpleEvent<TValue> implements TabEvent<TValue> {
     }
   }
 
-  emit(tabId: number, value: TValue): void {
+  emit(tabId: number, value?: TValue): void {
     for (const listener of this.listeners.get(tabId) ?? []) {
       listener(value);
     }

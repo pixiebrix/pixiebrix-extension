@@ -92,6 +92,53 @@ describe("handlebars", () => {
   });
 });
 
+describe("identity - deep clone", () => {
+  const config = {
+    filter: {
+      operator: "and",
+      operands: [
+        {
+          operator: "or",
+          operands: [
+            {
+              operator: "substring",
+              field: "process",
+              value: "Email Proof of Funds",
+            },
+          ],
+        },
+      ],
+    },
+    sort: {
+      field: "id",
+      direction: "desc",
+    },
+    page: {
+      offset: 0,
+      length: 80,
+    },
+  };
+
+  test("deep clone object/arrays", async () => {
+    const rendered = await renderExplicit(config, {}, apiVersionOptions("v3"));
+
+    expect(rendered).toEqual(config);
+  });
+
+  test("deep clone complex var", async () => {
+    const rendered = await renderExplicit(
+      {
+        __type__: "var",
+        __value__: "@payload",
+      },
+      { "@payload": config },
+      apiVersionOptions("v3")
+    );
+
+    expect(rendered).toEqual(config);
+  });
+});
+
 describe("defer", () => {
   test("render !defer stops at defer", async () => {
     const config = {

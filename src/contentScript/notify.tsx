@@ -20,6 +20,7 @@ import { render } from "react-dom";
 import { toast, Toaster } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
 import { DefaultToastOptions } from "react-hot-toast/dist/core/types";
+import { NOFICATIONS_Z_INDEX } from "@/common";
 
 type NotificationType = "info" | "success" | "error" | "loading";
 interface Notification {
@@ -30,7 +31,7 @@ interface Notification {
 }
 
 const containerStyle: React.CSSProperties = {
-  zIndex: 9_999_999,
+  zIndex: NOFICATIONS_Z_INDEX,
   fontFamily: "sans-serif",
 };
 

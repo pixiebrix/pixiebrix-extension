@@ -248,9 +248,7 @@ module.exports = (env, options) =>
         [
           "background",
           "contentScript",
-          "devtools",
           "devtoolsPanel",
-          "frame",
           "ephemeralForm",
           "options",
           "action",
@@ -272,6 +270,11 @@ module.exports = (env, options) =>
         "css-selector-generator",
         "@fortawesome/free-solid-svg-icons",
       ],
+
+      // Tiny files without imports, no vendors needed
+      frame: "./src/frame",
+      devtools: "./src/devtools",
+
       // The script that gets injected into the host page should not have a vendor chunk
       script: "./src/script",
     },
@@ -396,6 +399,19 @@ module.exports = (env, options) =>
               options: {
                 // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
                 implementation: require("node-sass"),
+              },
+            },
+          ],
+        },
+        {
+          test: /\.svg$/,
+          resourceQuery: /loadAsComponent/,
+          use: [
+            {
+              loader: "@svgr/webpack",
+              options: {
+                typescript: true,
+                ext: "tsx",
               },
             },
           ],

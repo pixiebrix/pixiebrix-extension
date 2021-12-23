@@ -21,7 +21,51 @@ import { BlockArg, BlockOptions, RegistryId, SafeHTML, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import browser, { Permissions } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { requestRun } from "@/background/messenger/api";
+import { waitForTargetByUrl } from "@/background/messenger/api";
+import { runBrick } from "@/contentScript/messenger/api";
+import pTimeout from "p-timeout";
+
+interface RunDetails {
+  blockId: RegistryId;
+  inputs: unknown;
+  url: URL;
+}
+
+async function runInFrame({
+  blockId,
+  inputs,
+  url,
+}: RunDetails): Promise<unknown> {
+  const target = await pTimeout(
+    waitForTargetByUrl(url.href),
+    2000,
+    // `waitForTargetByUrl` is expected to respond quickly because
+    // it listens to the target creation event before its content even starts loading.
+    // With the nested iframe creation overhead this should be between 100 and 500ms
+    "The expected frame was not created within 2 seconds"
+  );
+
+  return runBrick(target, {
+    blockId: "@pixiebrix/forms/set" as RegistryId,
+    blockArgs: unsafeAssumeValidArg({
+      inputs: Object.entries(inputs).map(([key, value]) => ({
+        selector: `[placeholder="in:${key}"]`,
+        value,
+      })),
+    }),
+    options: {
+      isAvailable: {
+        // UiPath apps lazy load the inputs, so make sure they've been rendered before trying
+        // to set the values
+        selectors: [".root-container input"],
+      },
+      ctxt: {},
+      messageContext: {
+        blockId,
+      },
+    },
+  });
+}
 
 export class UiPathAppRenderer extends Renderer {
   constructor() {
@@ -78,47 +122,27 @@ export class UiPathAppRenderer extends Renderer {
     }: BlockArg,
     { logger }: BlockOptions
   ): Promise<SafeHTML> {
-    // https://transitory.technology/browser-extensions-and-csp-headers/
-    const frameSrc = browser.runtime.getURL("frame.html");
-
     const nonce = uuidv4();
 
-    const frameURL = new URL(frameSrc);
-    frameURL.searchParams.set("url", url);
-    frameURL.searchParams.set("nonce", nonce);
+    // Use extension iframe to get around the host’s CSP limitations
+    // https://transitory.technology/browser-extensions-and-csp-headers/
+    const subframeUrl = new URL(url);
+    subframeUrl.searchParams.set("_pb", nonce);
+
+    const localFrame = new URL(browser.runtime.getURL("frame.html"));
+    localFrame.searchParams.set("url", subframeUrl.href);
 
     const inputs = rawInputs as UnknownObject;
-
     if (!isEmpty(inputs)) {
-      requestRun
-        .inFrame({
-          nonce,
-          blockId: "@pixiebrix/forms/set" as RegistryId,
-          blockArgs: unsafeAssumeValidArg({
-            inputs: Object.entries(inputs).map(([key, value]) => ({
-              selector: `[placeholder="in:${key}"]`,
-              value,
-            })),
-          }),
-          options: {
-            isAvailable: {
-              // UiPath apps lazy load the inputs, so make sure they've been rendered before trying
-              // to set the values
-              selectors: [
-                isEmpty(inputs) ? ".root-container" : ".root-container input",
-              ],
-            },
-            ctxt: {},
-            messageContext: {
-              blockId: this.id,
-            },
-          },
-        })
-        .catch((error) => {
-          logger.error(error);
-        });
+      void runInFrame({
+        blockId: this.id,
+        url: subframeUrl,
+        inputs,
+      }).catch((error) => {
+        logger.error(error);
+      });
     }
 
-    return `<iframe src="${frameURL.toString()}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>` as SafeHTML;
+    return `<iframe src="${localFrame.href}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>` as SafeHTML;
   }
 }

@@ -23,17 +23,7 @@
   align-items: center;
 }
 
-.removeButton {
-  margin-bottom: 16px;
-  margin-left: auto;
-}
-
-.removeText {
-  @media (max-width: 1460px) {
-    display: none;
-
-    @media (max-width: 1200px) {
-      display: inline;
-    }
-  }
+.buttonRow {
+  align-items: center;
+  margin-bottom: 1em;
 }

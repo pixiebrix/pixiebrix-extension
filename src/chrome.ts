@@ -75,6 +75,10 @@ export function getChromeExtensionId(): string {
   );
 }
 
+export async function getExtensionVersion() {
+  return browser.runtime.getManifest().version;
+}
+
 /**
  * Connect to the background page and throw real errors if the connection fails.
  * NOTE: To determine whether the connection was successful, the background page
@@ -117,38 +121,6 @@ export class RuntimeNotFoundError extends Error {
     super(message);
     this.name = "RuntimeNotFoundError";
   }
-}
-
-/**
- * Read from `browser.storage.local`, updating the value to be stored as an object instead of a JSON-stringified value
- *
- * WARNING: this method will convert string numbers, e.g., "42" to the the corresponding number. So this method is
- * not safe to use with storage holding primitive user-defined data.
- *
- * @deprecated Use `readStorage` instead
- * @see readStorage
- */
-export async function readStorageWithMigration<T = unknown>(
-  storageKey: ManualStorageKey,
-  defaultValue: T
-): Promise<T | undefined> {
-  const storedValue = await readStorage<T>(storageKey, defaultValue);
-  if (typeof storedValue !== "string") {
-    // No migration necessary
-    return storedValue;
-  }
-
-  let parsedValue: T;
-
-  try {
-    parsedValue = JSON.parse(storedValue) as T;
-    await browser.storage.local.set({ [storageKey]: parsedValue });
-  } catch {
-    // If it's not a valid JSON-string we must be working with a value that's already been migrated
-    parsedValue = storedValue;
-  }
-
-  return parsedValue;
 }
 
 export async function readStorage<T = unknown>(

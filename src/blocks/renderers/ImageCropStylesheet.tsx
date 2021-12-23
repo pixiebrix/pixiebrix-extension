@@ -15,26 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DataTable as RawDataTable } from "primereact/datatable";
-import { Column, ColumnProps } from "primereact/column";
 import React from "react";
+import styles from "react-image-crop/dist/ReactCrop.css?loadAsUrl";
 
-import theme from "primereact/resources/themes/saga-blue/theme.css?loadAsUrl";
-import primereact from "primereact/resources/primereact.min.css?loadAsUrl";
-
-const DataTableComponent: React.FunctionComponent<{
-  columns: ColumnProps[];
-  rows: Array<Record<string, unknown>>;
-}> = ({ columns, rows }) => (
-  <React.Fragment>
-    <link rel="stylesheet" href={theme} />
-    <link rel="stylesheet" href={primereact} />
-    <RawDataTable value={rows}>
-      {columns.map((column) => (
-        <Column key={column.field} {...column} />
-      ))}
-    </RawDataTable>
-  </React.Fragment>
+const ImageCropStylesheet: React.FC = () => (
+  <link rel="stylesheet" href={styles} />
 );
 
-export default DataTableComponent;
+export default ImageCropStylesheet;

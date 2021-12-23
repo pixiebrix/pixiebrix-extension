@@ -28,14 +28,13 @@ import { openPopupPrompt } from "@/background/permissionPrompt";
 import {
   activateTab,
   closeTab,
-  markTabAsReady,
   whoAmI,
   openTab,
   requestRunOnServer,
   requestRunInOpener,
   requestRunInTarget,
   requestRunInBroadcast,
-  requestRunInFrameNonce,
+  waitForTargetByUrl,
 } from "@/background/executor";
 import * as registry from "@/registry/localRegistry";
 import { ensureContentScript } from "@/background/util";
@@ -49,6 +48,23 @@ import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
 import { canAccessTab } from "webext-tools";
+import {
+  getLoggingConfig,
+  recordError,
+  recordLog,
+  setLoggingConfig,
+} from "@/background/logging";
+import {
+  addTraceEntry,
+  addTraceExit,
+  clearExtensionTraces,
+} from "@/telemetry/trace";
+import {
+  initTelemetry,
+  recordEvent,
+  sendDeploymentAlert,
+} from "@/background/telemetry";
+import { captureTab } from "@/background/capture";
 
 expectContext("background");
 
@@ -72,10 +88,11 @@ declare global {
     OPEN_POPUP_PROMPT: typeof openPopupPrompt;
 
     ECHO_SENDER: typeof whoAmI;
+    WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
+
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
     CLOSE_TAB: typeof closeTab;
-    MARK_TAB_AS_READY: typeof markTabAsReady;
     OPEN_TAB: typeof openTab;
     REGISTRY_GET_KIND: typeof registry.getKind;
     REGISTRY_SYNC: typeof registry.syncRemote;
@@ -87,7 +104,6 @@ declare global {
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
     REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
     REQUEST_RUN_IN_ALL: typeof requestRunInBroadcast;
-    REQUEST_RUN_IN_FRAME_NONCE: typeof requestRunInFrameNonce;
 
     HTTP_REQUEST: typeof doCleanAxiosRequest;
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
@@ -97,6 +113,21 @@ declare global {
 
     GET_DATA_STORE: typeof getRecord;
     SET_DATA_STORE: typeof setRecord;
+
+    RECORD_LOG: typeof recordLog;
+    RECORD_ERROR: typeof recordError;
+    RECORD_EVENT: typeof recordEvent;
+    GET_LOGGING_CONFIG: typeof getLoggingConfig;
+    SET_LOGGING_CONFIG: typeof setLoggingConfig;
+
+    ADD_TRACE_ENTRY: typeof addTraceEntry;
+    ADD_TRACE_EXIT: typeof addTraceExit;
+    CLEAR_TRACES: typeof clearExtensionTraces;
+
+    INIT_TELEMETRY: typeof initTelemetry;
+    SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
+
+    CAPTURE_TAB: typeof captureTab;
   }
 }
 
@@ -120,10 +151,11 @@ registerMethods({
   OPEN_POPUP_PROMPT: openPopupPrompt,
 
   ECHO_SENDER: whoAmI,
+  WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
+
   ACTIVATE_TAB: activateTab,
   REACTIVATE_EVERY_TAB: reactivateEveryTab,
   CLOSE_TAB: closeTab,
-  MARK_TAB_AS_READY: markTabAsReady,
   OPEN_TAB: openTab,
   REGISTRY_GET_KIND: registry.getKind,
   REGISTRY_SYNC: registry.syncRemote,
@@ -135,7 +167,6 @@ registerMethods({
   REQUEST_RUN_IN_OPENER: requestRunInOpener,
   REQUEST_RUN_IN_TARGET: requestRunInTarget,
   REQUEST_RUN_IN_ALL: requestRunInBroadcast,
-  REQUEST_RUN_IN_FRAME_NONCE: requestRunInFrameNonce,
 
   HTTP_REQUEST: doCleanAxiosRequest,
   DELETE_CACHED_AUTH: deleteCachedAuthData,
@@ -145,4 +176,19 @@ registerMethods({
 
   GET_DATA_STORE: getRecord,
   SET_DATA_STORE: setRecord,
+
+  RECORD_LOG: recordLog,
+  RECORD_ERROR: recordError,
+  RECORD_EVENT: recordEvent,
+  GET_LOGGING_CONFIG: getLoggingConfig,
+  SET_LOGGING_CONFIG: setLoggingConfig,
+
+  ADD_TRACE_ENTRY: addTraceEntry,
+  ADD_TRACE_EXIT: addTraceExit,
+  CLEAR_TRACES: clearExtensionTraces,
+
+  INIT_TELEMETRY: initTelemetry,
+  SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
+
+  CAPTURE_TAB: captureTab,
 });

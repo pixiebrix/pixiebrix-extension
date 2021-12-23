@@ -26,8 +26,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@/vendors/overrides.scss";
 import "@/devTools/Panel.scss";
 
+import "@/devTools/messenger/registration";
+import { watchNavigation } from "@/devTools/protocol";
 import initGoogle from "@/contrib/google/initGoogle";
 
 initGoogle();
+watchNavigation();
 
 ReactDOM.render(<Panel />, document.querySelector("#container"));

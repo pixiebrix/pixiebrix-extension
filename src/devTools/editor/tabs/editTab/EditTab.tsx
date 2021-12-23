@@ -22,19 +22,13 @@ import EditorNodeLayout, {
   NodeId,
 } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useFormikContext } from "formik";
-import { BlockConfig } from "@/blocks/types";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import { BlockType, defaultBlockConfig } from "@/blocks/util";
+import { BlockType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
-import { compact } from "lodash";
-import { IBlock, OutputKey, UUID } from "@/core";
-import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
-import { uuidv4 } from "@/types/helpers";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
-import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BrickIcon from "@/components/BrickIcon";
@@ -42,11 +36,8 @@ import { isNullOrBlank } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
 import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
-import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlockConfigs";
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
-import { produceExcludeUnusedDependencies as produceExcludeUnusedDependenciesV1 } from "@/components/fields/schemaFields/v1/ServiceField";
-import { produceExcludeUnusedDependencies as produceExcludeUnusedDependenciesV3 } from "@/components/fields/schemaFields/v3/ServiceField";
 import usePipelineField, {
   PIPELINE_BLOCKS_FIELD_NAME,
 } from "@/devTools/editor/hooks/usePipelineField";
@@ -55,7 +46,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
 import AuthContext from "@/auth/AuthContext";
 import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
-import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
+import useBlockPipelineActions from "@/devTools/editor/tabs/editTab/useBlockPipelineActions";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -79,11 +70,6 @@ const EditTab: React.FC<{
     () => ADAPTERS.get(elementType),
     [elementType]
   );
-
-  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
-  const produceExcludeUnusedDependencies = isApiAtLeastV3
-    ? produceExcludeUnusedDependenciesV3
-    : produceExcludeUnusedDependenciesV1;
 
   const [allBlocks] = useAsyncState<TypedBlockMap>(
     async () => blockRegistry.allTyped(),
@@ -140,113 +126,18 @@ const EditTab: React.FC<{
     false
   );
 
-  const addBlock = useCallback(
-    async (block: IBlock, beforeInstanceId?: UUID) => {
-      const insertIndex = beforeInstanceId
-        ? blockPipeline.findIndex((x) => x.instanceId === beforeInstanceId)
-        : blockPipeline.length;
-      const outputKey = await generateFreshOutputKey(
-        block,
-        compact([
-          "input" as OutputKey,
-          ...blockPipeline.map((x) => x.outputKey),
-        ])
-      );
-      const newBlock: BlockConfig = {
-        id: block.id,
-        instanceId: uuidv4(),
-        config:
-          getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
-      };
-      if (outputKey) {
-        newBlock.outputKey = outputKey;
-      }
-
-      const nextState = produce(values, (draft) => {
-        draft.extension.blockPipeline.splice(insertIndex, 0, newBlock);
-      });
-      setFormValues(nextState);
-      setActiveNodeId(newBlock.instanceId);
-    },
-    [blockPipeline, values, setFormValues, setActiveNodeId]
-  );
-
-  const removeBlock = (nodeIdToRemove: NodeId) => {
-    let prevNodeId: NodeId;
-    let nextState = produce(values, (draft) => {
-      const index = draft.extension.blockPipeline.findIndex(
-        (block) => block.instanceId === nodeIdToRemove
-      );
-
-      prevNodeId =
-        index === 0
-          ? FOUNDATION_NODE_ID
-          : draft.extension.blockPipeline[index - 1].instanceId;
-
-      draft.extension.blockPipeline.splice(index, 1);
-    });
-
-    nextState = produceExcludeUnusedDependencies(nextState);
-
-    // Set the active node before setting the form values, otherwise there's a race condition based on the React state
-    // causing a re-render vs. the Formik state causing a re-render
-    dispatch(
-      actions.removeElementNodeUIState({
-        nodeIdToRemove,
-        newActiveNodeId: prevNodeId,
-      })
-    );
-    setFormValues(nextState);
-  };
-
-  const moveBlockUp = useCallback(
-    (instanceId: UUID) => {
-      const index = blockPipeline.findIndex(
-        (block) => block.instanceId === instanceId
-      );
-      if (index < 1 || index + 1 > blockPipeline.length) {
-        return;
-      }
-
-      const nextState = produce(values, (draft) => {
-        const pipeline = draft.extension.blockPipeline;
-        // Swap the prev and current index values in the pipeline array, "up" in
-        //  the UI means a lower index in the array
-        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-        [pipeline[index - 1], pipeline[index]] = [
-          // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-          pipeline[index],
-          pipeline[index - 1],
-        ];
-      });
-      setFormValues(nextState);
-    },
-    [blockPipeline, setFormValues, values]
-  );
-
-  const moveBlockDown = useCallback(
-    (instanceId: UUID) => {
-      const index = blockPipeline.findIndex(
-        (block) => block.instanceId === instanceId
-      );
-      if (index + 1 === blockPipeline.length) {
-        return;
-      }
-
-      const nextState = produce(values, (draft) => {
-        const pipeline = draft.extension.blockPipeline;
-        // Swap the current and next index values in the pipeline array, "down"
-        //  in the UI means a higher index in the array
-        // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-        [pipeline[index], pipeline[index + 1]] = [
-          pipeline[index + 1],
-          // eslint-disable-next-line security/detect-object-injection -- from findIndex()
-          pipeline[index],
-        ];
-      });
-      setFormValues(nextState);
-    },
-    [blockPipeline, setFormValues, values]
+  const {
+    addBlock,
+    removeBlock,
+    moveBlockUp,
+    moveBlockDown,
+    copyBlock,
+    pasteBlock,
+  } = useBlockPipelineActions(
+    blockPipeline,
+    values,
+    setFormValues,
+    setActiveNodeId
   );
 
   const nodes = useMemo<EditorNodeProps[]>(() => {
@@ -357,6 +248,7 @@ const EditTab: React.FC<{
             showAppend={showAppendNode}
             moveBlockUp={moveBlockUp}
             moveBlockDown={moveBlockDown}
+            pasteBlock={pasteBlock}
           />
         </div>
         <div className={styles.configPanel}>
@@ -384,6 +276,9 @@ const EditTab: React.FC<{
                   blockError={blockError}
                   onRemoveNode={() => {
                     removeBlock(activeNodeId);
+                  }}
+                  copyBlock={() => {
+                    copyBlock(activeNodeId);
                   }}
                 />
               )}
