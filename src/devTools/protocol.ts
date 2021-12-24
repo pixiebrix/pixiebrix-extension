@@ -16,7 +16,7 @@
  */
 
 import browser, { Runtime, WebNavigation } from "webextension-polyfill";
-import { registerPort } from "@/background/devtools";
+import { registerPort } from "@/background/devtools/protocol";
 import { PORT_NAME } from "@/background/devtools/contract";
 import {
   installPortListeners,
