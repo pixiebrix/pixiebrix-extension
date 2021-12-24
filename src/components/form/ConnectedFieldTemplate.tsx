@@ -18,7 +18,7 @@
 import React from "react";
 import { connect, getIn } from "formik";
 import FieldTemplate, { FieldProps } from "@/components/form/FieldTemplate";
-import { FormikContextType } from "formik/dist/types";
+import type { FormikContextType } from "formik/dist/types";
 
 export type ConnectedFieldProps<Values> = FieldProps & {
   formik: FormikContextType<Values>;

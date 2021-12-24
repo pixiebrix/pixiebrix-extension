@@ -20,7 +20,7 @@ import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { AutocompleteItem } from "autocompleter";
 
-import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
+const autocompleterStyleUrl = new URL("autocompleter/autocomplete.css").href;
 import { attachStylesheet } from "@/blocks/util";
 import { $safeFind } from "@/helpers";
 

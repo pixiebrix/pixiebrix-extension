@@ -19,7 +19,7 @@ import { uniq, compact, sortBy, unary, intersection } from "lodash";
 import { getCssSelector } from "css-selector-generator";
 import { isNullOrBlank, mostCommonElement } from "@/utils";
 import { BusinessError } from "@/errors";
-import { CssSelectorType } from "css-selector-generator/types/types";
+import type { CssSelectorType } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];

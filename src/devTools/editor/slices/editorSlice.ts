@@ -34,7 +34,7 @@ import {
   FOUNDATION_NODE_ID,
   NodeId,
 } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
-import { WritableDraft } from "immer/dist/types/types-external";
+import type { WritableDraft } from "immer/dist/types/types-external";
 import { BlockConfig } from "@/blocks/types";
 
 export type FormState =

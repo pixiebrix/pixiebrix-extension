@@ -19,13 +19,13 @@ import { TreeTable } from "primereact/treetable";
 import { Column } from "primereact/column";
 import React from "react";
 
-import theme from "primereact/resources/themes/saga-blue/theme.css?loadAsUrl";
-import primereact from "primereact/resources/primereact.min.css?loadAsUrl";
+const theme = new URL("primereact/resources/themes/saga-blue/theme.css").href;
+const primereact = new URL("primereact/resources/primereact.min.css").href;
 
 // FIXME: figure out how to load the fonts, since the font URL in the file doesn't
 //  work with Chrome extensions. Likely webpack needs to use css-loader to properly
 //  parse all the url() inside it.
-import primeicons from "primeicons/primeicons.css?loadAsUrl";
+const primeicons = new URL("primeicons/primeicons.css").href;
 
 const PropertyTree: React.FunctionComponent<{ value: any }> = ({ value }) => (
   <React.Fragment>

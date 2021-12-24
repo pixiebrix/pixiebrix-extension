@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import theme from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+const theme = new URL("bootstrap/dist/css/bootstrap.min.css").href;
 
 const BootstrapStylesheet: React.FC = () => (
   <link rel="stylesheet" href={theme} />

@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "isarray": "2.0.5"
+  },
+  "lock": {
+    "isarray#2.0.5": "isarray@v2.0.5-AeaSaQ4v2xmRRWk7FLu0"
+  }
+}

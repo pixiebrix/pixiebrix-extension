@@ -21,7 +21,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError, CancelError } from "@/errors";
 import { attachStylesheet } from "@/blocks/util";
 // Can't get introjs.scss directly with loadAsUrl because the browser doesn't understand sass/scss
-import stylesheetUrl from "@/vendors/intro.js/introjs.css?loadAsUrl";
+const stylesheetUrl = new URL("@/vendors/intro.js/introjs.css").href;
 import { $safeFind } from "@/helpers";
 
 type Step = {

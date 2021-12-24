@@ -24,7 +24,7 @@ import { dataStore } from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
 import { notifyResult } from "@/contentScript/notify";
 
-import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
+const custom = new URL("@/blocks/renderers/customForm.css").href;
 import BootstrapStylesheet from "./BootstrapStylesheet";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import styles from "react-image-crop/dist/ReactCrop.css?loadAsUrl";
+const styles = new URL("react-image-crop/dist/ReactCrop.css").href;
 
 const ImageCropStylesheet: React.FC = () => (
   <link rel="stylesheet" href={styles} />
