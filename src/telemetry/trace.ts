@@ -205,14 +205,11 @@ export async function getLatestRunByExtensionId(
   extensionId: UUID
 ): Promise<TraceRecord[]> {
   const db = await getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
-
-  const matches = [];
-  for await (const cursor of tx.store) {
-    if (cursor.value.extensionId === extensionId) {
-      matches.push(cursor.value);
-    }
-  }
+  const matches = await db
+    .transaction(ENTRY_OBJECT_STORE, "readonly")
+    .objectStore(ENTRY_OBJECT_STORE)
+    .index("extensionId")
+    .getAll(extensionId);
 
   // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
   const sorted = sortBy(
@@ -226,26 +223,4 @@ export async function getLatestRunByExtensionId(
   }
 
   return [];
-}
-
-export async function getByInstanceId(
-  blockInstanceId: UUID
-): Promise<TraceRecord[]> {
-  const db = await getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
-
-  const matches = [];
-  for await (const cursor of tx.store) {
-    if (cursor.value.blockInstanceId === blockInstanceId) {
-      matches.push(cursor.value);
-    }
-  }
-
-  // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
-  return sortBy(matches.reverse(), (x) => -new Date(x.timestamp).getTime());
-
-  // TODO: figure out how to write an indexed query
-  // return tx.store
-  //   .index("blockInstanceId")
-  //   .getAll(IDBKeyRange.only(blockInstanceId));
 }
