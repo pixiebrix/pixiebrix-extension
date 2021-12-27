@@ -1,3 +1,25 @@
+const contexts = [
+  "background",
+  "contentScript",
+  "devTools",
+  "options",
+  "actionPanel",
+  "pageScript",
+];
+
+const restrictedZones = [];
+for (const exporter of contexts) {
+  for (const importer of contexts) {
+    if (exporter !== importer) {
+      restrictedZones.push({
+        target: `./src/${importer}/**/*`,
+        from: `./src/${exporter}`,
+        except: [`../${exporter}/messenger/api.ts`],
+      });
+    }
+  }
+}
+
 module.exports = {
   root: true,
   extends: [
@@ -44,6 +66,12 @@ module.exports = {
           vars: false,
         },
         ignore: ["semVer", "SemVer"],
+      },
+    ],
+    "import/no-restricted-paths": [
+      "error",
+      {
+        zones: restrictedZones,
       },
     ],
 
