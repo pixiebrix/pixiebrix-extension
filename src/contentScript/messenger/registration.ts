@@ -36,14 +36,15 @@ import {
   toggleActionPanel,
   removeExtension,
 } from "@/actionPanel/native";
+import { insertPanel } from "@/nativeEditor/insertPanel";
+import { insertButton } from "@/nativeEditor/insertButton";
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
-  insertButton,
-  insertPanel,
+  runExtensionPointReader,
   updateDynamicElement,
-} from "@/nativeEditor";
+} from "@/nativeEditor/dynamic";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
 import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
 import {
@@ -56,7 +57,6 @@ import { checkAvailable } from "@/blocks/available";
 import { showNotification } from "@/contentScript/notify";
 import { linkChildTab, runBrick } from "@/contentScript/executor";
 import { cancelSelect, selectElement } from "@/nativeEditor/selector";
-import { runExtensionPointReader } from "@/nativeEditor/dynamic";
 import {
   runEffectPipeline,
   runMapArgs,

@@ -19,7 +19,7 @@ import React, { useCallback, useState } from "react";
 import pTimeout from "p-timeout";
 import browser, { Runtime } from "webextension-polyfill";
 import { connectDevtools } from "@/devTools/protocol";
-import { navigationEvent } from "@/background/devtools/index";
+import { navigationEvent } from "@/background/devtools/external";
 import { useAsyncEffect } from "use-async-effect";
 import { useAsyncState } from "@/hooks/common";
 import { FrameworkMeta } from "@/messaging/constants";
