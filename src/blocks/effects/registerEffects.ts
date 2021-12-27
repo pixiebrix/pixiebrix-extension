@@ -38,6 +38,7 @@ import { ConfettiEffect } from "./confetti";
 import { TourEffect } from "./tour";
 import { AttachAutocomplete } from "./attachAutocomplete";
 import { ReactivateEffect } from "@/blocks/effects/reactivate";
+import { SoundEffect } from "@/blocks/effects/sound";
 
 function registerEffects(): void {
   registerBlock(new LogEffect());
@@ -68,6 +69,7 @@ function registerEffects(): void {
   registerBlock(new TourEffect());
   registerBlock(new AttachAutocomplete());
   registerBlock(new ReactivateEffect());
+  registerBlock(new SoundEffect());
 }
 
 export default registerEffects;
