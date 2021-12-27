@@ -99,7 +99,7 @@ test("sets default config for block", () => {
 test("sets default config for button", () => {
   const confettiEffect = new ConfettiEffect();
   const expectedConfig = {
-    title: "Confetti",
+    title: "Action",
     onClick: {
       __type__: "pipeline",
       __value__: [

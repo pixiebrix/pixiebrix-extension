@@ -136,6 +136,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
         onSelect={onModeChange}
         className={styles.dropdown}
         data-testid={`toggle-${schemaFieldProps.name}`}
+        data-test-selected={selectedOption?.label ?? ""}
       >
         {inputModeOptions.map((option) => (
           <Dropdown.Item
