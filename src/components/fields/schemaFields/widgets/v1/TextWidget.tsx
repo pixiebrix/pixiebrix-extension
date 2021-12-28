@@ -24,7 +24,7 @@ import React, {
 } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
-import Select, { OptionsType } from "react-select";
+import Select, { Options } from "react-select";
 import { sortBy, uniq } from "lodash";
 import Creatable from "react-select/creatable";
 import { Form, FormControlProps } from "react-bootstrap";
@@ -33,7 +33,7 @@ import fitTextarea from "fit-textarea";
 type StringOption = {
   value: string;
 };
-type StringOptionsType = OptionsType<StringOption>;
+type StringOptionsType = Options<StringOption>;
 
 const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   name,

@@ -24,8 +24,9 @@ declare module "*.module.scss" {
   export default classes;
 }
 
+// Package has no types: https://github.com/guiyep/react-select-virtualized/issues/293
 declare module "react-select-virtualized" {
-  export { default } from "react-virtualized-select";
+  export { default } from "react-select";
 }
 
 declare module "generate-schema" {

@@ -73,7 +73,6 @@ const IconSelector: React.FunctionComponent<OwnProps> = ({
 
   return (
     <Select
-      // @ts-expect-error `isClearable` type missing from "react-select-virtualized"
       isClearable={isClearable}
       value={selectedOption}
       options={iconOptions}

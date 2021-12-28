@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
-import Select, { OptionsType } from "react-select";
+import Select, { Options } from "react-select";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty, sortBy, uniq } from "lodash";
 import { useField } from "formik";
@@ -31,7 +31,7 @@ export function isSelectField(schema: Schema): boolean {
 type StringOption = {
   value: string;
 };
-type StringOptionsType = OptionsType<StringOption>;
+type StringOptionsType = Options<StringOption>;
 
 const SchemaSelectWidget: React.FC<SchemaFieldProps> = ({ name, schema }) => {
   const [created, setCreated] = useState([]);
