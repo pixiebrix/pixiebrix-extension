@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { FocusEventHandler, useCallback, useState } from "react";
+import React, {
+  FocusEventHandler,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Form, FormControlProps } from "react-bootstrap";
 import { useField } from "formik";
 import { round } from "lodash";
@@ -39,6 +45,8 @@ const NumberWidget: React.FC<
   hideLabel,
   isObjectProperty,
   isArrayItem,
+  onClick,
+  focusInput,
   step,
   ...restProps
 }) => {
@@ -46,6 +54,14 @@ const NumberWidget: React.FC<
     name
   );
   const [value, setValue] = useState<string>(String(formValue));
+
+  const inputRef = useRef<HTMLInputElement>();
+
+  useEffect(() => {
+    if (focusInput) {
+      inputRef.current?.focus();
+    }
+  }, [focusInput]);
 
   const onChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     ({ target }) => {
@@ -70,6 +86,7 @@ const NumberWidget: React.FC<
       onChange={onChange}
       onBlur={onBlur}
       step={step ? String(step) : ""}
+      ref={inputRef}
     />
   );
 };

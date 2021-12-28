@@ -39,6 +39,8 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   hideLabel,
   isObjectProperty,
   isArrayItem,
+  onClick,
+  focusInput,
   ...formControlProps
 }) => {
   const [{ value, ...restInputProps }, { error }, { setValue }] = useField(
@@ -53,6 +55,17 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
       fitTextarea.watch(textAreaRef.current);
     }
   }, []);
+
+  useEffect(() => {
+    const { current } = textAreaRef;
+    if (focusInput && current) {
+      setTimeout(() => {
+        current.focus();
+        current.selectionStart = current.textLength;
+        current.selectionEnd = current.textLength;
+      }, 150);
+    }
+  }, [focusInput]);
 
   const supportsTemplates = useMemo(() => schemaSupportsTemplates(schema), [
     schema,
@@ -93,7 +106,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
 
       return onChange;
     },
-    [setValue]
+    [setValue, supportsTemplates]
   );
 
   const [fieldInputValue, fieldOnChange] = useMemo(() => {

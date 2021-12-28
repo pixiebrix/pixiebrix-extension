@@ -43,6 +43,8 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   hideLabel,
   isObjectProperty,
   isArrayItem,
+  onClick,
+  focusInput,
   ...restProps
 }) => {
   const [created, setCreated] = useState([]);

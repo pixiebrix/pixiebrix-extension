@@ -27,7 +27,23 @@ const OmitFieldWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   hideLabel,
   isObjectProperty,
   isArrayItem,
+  onClick,
+  focusInput,
   ...restProps
-}) => <Form.Control name={name} {...restProps} disabled />;
+}) => (
+  <div
+    onClick={onClick}
+    role="button"
+    tabIndex={0}
+    onKeyUp={(event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        onClick();
+      }
+    }}
+  >
+    <Form.Control name={name} {...restProps} disabled />
+  </div>
+);
 
 export default OmitFieldWidget;
