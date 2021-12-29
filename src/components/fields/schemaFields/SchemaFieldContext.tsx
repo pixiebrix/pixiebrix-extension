@@ -37,6 +37,9 @@ import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import { InputModeOption } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
+import AppServiceField, {
+  isAppServiceField,
+} from "@/components/fields/schemaFields/AppServiceField";
 
 export function defaultFieldFactory(
   Widget: React.FC<SchemaFieldProps>
@@ -77,6 +80,10 @@ function makeOneOfField(oneOf: Schema): SchemaFieldComponent {
 }
 
 export function getDefaultField(fieldSchema: Schema): SchemaFieldComponent {
+  if (isAppServiceField(fieldSchema)) {
+    return AppServiceField;
+  }
+
   if (isServiceField(fieldSchema)) {
     return ServiceField;
   }
