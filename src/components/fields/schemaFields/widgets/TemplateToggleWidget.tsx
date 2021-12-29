@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { Expression } from "@/core";
 import { Dropdown, DropdownButton } from "react-bootstrap";
@@ -92,8 +92,10 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   const { inputMode, onOmitField } = useToggleFormField(schemaFieldProps.name);
   const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
+  const [focusInput, setFocusInput] = useState(false);
 
   useEffect(() => {
+    setFocusInput(false);
     const option = getOptionForInputMode(inputModeOptions, inputMode);
     setFieldDescription(option?.description);
   }, [inputMode, inputModeOptions, setFieldDescription]);
@@ -118,14 +120,27 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
 
       // Already handled "omit" and returned above
       setValue(interpretValue(value));
+      setFocusInput(true);
     },
     [inputMode, inputModeOptions, setValue, value, onOmitField]
   );
 
+  const widgetProps = useMemo<SchemaFieldProps>(() => {
+    schemaFieldProps.focusInput = focusInput;
+    return inputMode === "omit"
+      ? {
+          ...schemaFieldProps,
+          onClick: () => {
+            onModeChange("var");
+          },
+        }
+      : schemaFieldProps;
+  }, [focusInput, inputMode, onModeChange, schemaFieldProps]);
+
   return (
     <div className={styles.root}>
       <div className={styles.field}>
-        <Widget {...schemaFieldProps} />
+        <Widget {...widgetProps} />
       </div>
       <DropdownButton
         title={

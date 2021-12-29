@@ -80,4 +80,14 @@ export interface SchemaFieldProps {
    * Is this field an item in an array? Used to prevent arrays nested in arrays.
    */
   isArrayItem?: boolean;
+
+  /**
+   * Click handler for this field
+   */
+  onClick?: () => void;
+
+  /**
+   * Set this input to be focused
+   */
+  focusInput?: boolean;
 }
