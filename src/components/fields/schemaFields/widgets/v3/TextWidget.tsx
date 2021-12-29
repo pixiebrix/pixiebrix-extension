@@ -70,6 +70,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
       // "on select option" handlers (and thus, after this field is rendered),
       // so we need to wait a bit to make sure we can focus the input after
       // this happens.
+      // See: https://github.com/react-bootstrap/react-bootstrap/issues/2553
       setTimeout(() => {
         current.focus();
         current.selectionStart = current.textLength;
