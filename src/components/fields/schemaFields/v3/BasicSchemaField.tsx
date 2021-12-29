@@ -425,8 +425,11 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     if (value === undefined && isRequired && !isEmpty(inputModeOptions)) {
       setValue(inputModeOptions[0].interpretValue(value));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
-  }, []);
+    // We only want to run this on mount, but also for some reason, sometimes the formik
+    // helpers reference (setValue) changes, so we need to account for that in the dependencies
+    // See: https://github.com/pixiebrix/pixiebrix-extension/issues/2269
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setValue]);
 
   if (isEmpty(inputModeOptions)) {
     return (

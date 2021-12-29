@@ -16,7 +16,6 @@
  */
 
 import { getIn, useFormikContext } from "formik";
-import { UnknownObject } from "@/types";
 import { produce } from "immer";
 import { useCallback, useMemo } from "react";
 import {
@@ -25,6 +24,7 @@ import {
 } from "@/components/fields/schemaFields/fieldInputMode";
 import { isObject } from "@/utils";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 
 export function removeField(parent: unknown, fieldName: string): void {
   if (Array.isArray(parent)) {
@@ -54,7 +54,7 @@ function useToggleFormField(
   const {
     values: formState,
     setValues: setFormState,
-  } = useFormikContext<UnknownObject>();
+  } = useFormikContext<FormState>();
   const parentValues = getIn(formState, parentFieldName) ?? formState;
 
   const inputMode = useMemo(() => inferInputMode(parentValues, fieldName), [
