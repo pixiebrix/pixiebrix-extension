@@ -27,8 +27,14 @@ import {
 import { keyToFieldValue as keyToFieldValueV3 } from "@/components/fields/schemaFields/v3/ServiceField";
 import { produce } from "immer";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
+import { createTypePredicate } from "@/components/fields/fieldUtils";
+import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
+
+export const isAppServiceField = createTypePredicate(
+  (schema) => schema.$ref === `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`
+);
 
 /**
  * Schema-based field for the PixieBrix API (@pixiebrix/api).
