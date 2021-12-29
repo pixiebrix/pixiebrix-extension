@@ -28,6 +28,7 @@ import DatabaseCreateModal from "./DatabaseCreateModal";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { useField } from "formik";
+import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 
 const keySchema: Schema = {
   type: "string",
@@ -41,7 +42,7 @@ const valueSchema: Schema = {
 };
 
 const serviceSchema: Schema = {
-  $ref: `https://app.pixiebrix.com/schemas/services/${PIXIEBRIX_SERVICE_ID}`,
+  $ref: `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`,
 };
 
 export type DatabaseGetPutOptionsProps = {
