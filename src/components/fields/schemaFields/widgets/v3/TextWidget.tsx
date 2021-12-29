@@ -59,6 +59,17 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   useEffect(() => {
     const { current } = textAreaRef;
     if (focusInput && current) {
+      // We need to use a setTimeout here in order to override the default
+      // behavior of Bootstrap DropdownButton in the field type toggle.
+      // The standard w3c behavior of a dropdown/select is that the button
+      // is re-focused after making an option selection. Since our dropdown
+      // is tightly coupled with the field input itself, we want to focus the
+      // input on selection instead, so that users do not need to click into
+      // the field every time after making a toggle selection. Unfortunately,
+      // the DropdownButton grabs focus back after it runs all the
+      // "on select option" handlers (and thus, after this field is rendered),
+      // so we need to wait a bit to make sure we can focus the input after
+      // this happens.
       setTimeout(() => {
         current.focus();
         current.selectionStart = current.textLength;

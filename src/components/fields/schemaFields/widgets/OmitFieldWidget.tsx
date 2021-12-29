@@ -33,8 +33,13 @@ const OmitFieldWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
 }) => (
   <div
     onClick={onClick}
+    // Divs with click handlers should have a button role for accessibility reasons
     role="button"
+    // Also for accessibility, we make this "tab-able" by adding a tab index here
     tabIndex={0}
+    // Finally, since the field can be tabbed over to, we add a handler for
+    // enter-key so that this field can be switched to 'var' input and
+    // focused, using the keyboard, just like a mouse click
     onKeyUp={(event) => {
       if (event.key === "Enter") {
         event.preventDefault();
