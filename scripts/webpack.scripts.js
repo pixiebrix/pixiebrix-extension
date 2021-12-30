@@ -56,17 +56,10 @@ module.exports = mergeWithShared({
       NPM_PACKAGE_VERSION: process.env.npm_package_version,
     }),
     new webpack.DefinePlugin({
-      // Patch browser variable selectively to avoid environment misdetection in React
-      window: webpack.DefinePlugin.runtimeValue((ctx) =>
-        ctx.module.resource.includes("css-selector-generator")
-          ? "global"
-          : "window"
-      ),
-      self: webpack.DefinePlugin.runtimeValue((ctx) =>
-        ctx.module.resource.includes("css-selector-generator")
-          ? "global"
-          : "self"
-      ),
+      "window.CSSStyleSheet": "{}",
+      window: "globalThis.window",
+      document: "globalThis.document",
+      self: "globalThis.document",
     }),
     // Don't fail on import of styles.
     // Using an identity object instead of actual style sheet because styles are not needed for headers generations
