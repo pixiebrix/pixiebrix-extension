@@ -22,15 +22,17 @@ import {
   ActionId,
   ActionImpl,
   KBarAnimator,
-  KBarPortal,
   KBarPositioner,
   KBarProvider,
   KBarResults,
   KBarSearch,
   useKBar,
   useMatches,
+  VisualState,
 } from "kbar";
+import ReactShadowRoot from "react-shadow-root";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
 import { NOFICATIONS_Z_INDEX } from "@/common";
@@ -195,6 +197,19 @@ const RenderResults: React.FC = () => {
   );
 };
 
+// Modeled around KBarPortal https://github.com/timc1/kbar/blob/a232f3d8976a61eeeb844152dea25a23a76ad368/src/KBarPortal.tsx
+const KBarToggle: React.FC = (props) => {
+  const { showing } = useKBar((state) => ({
+    showing: state.visualState !== VisualState.hidden,
+  }));
+
+  if (!showing) {
+    return null;
+  }
+
+  return <>{props.children}</>;
+};
+
 function useActions(): void {
   const { query } = useKBar();
 
@@ -223,11 +238,16 @@ const KBarComponent: React.FC = () => {
 };
 
 const QuickBarApp: React.FC = () => (
-  <KBarProvider actions={quickBarRegistry.actions}>
-    <KBarPortal>
-      <KBarComponent />
-    </KBarPortal>
-  </KBarProvider>
+  <div>
+    <ReactShadowRoot>
+      <KBarProvider actions={quickBarRegistry.actions}>
+        <KBarToggle>
+          <link rel="stylesheet" href={faStyleSheet} />
+          <KBarComponent />
+        </KBarToggle>
+      </KBarProvider>
+    </ReactShadowRoot>
+  </div>
 );
 
 export const initQuickBarApp = once(() => {
