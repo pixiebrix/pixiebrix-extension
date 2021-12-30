@@ -15,16 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createContext } from "react";
+import React from "react";
+import { FieldProps } from "@/components/form/FieldTemplate";
+import { Col, Form as BootstrapForm, Row } from "react-bootstrap";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
-export type ThemeProps = {
-  layout: "horizontal" | "vertical";
-};
+const SwitchField: React.FC<FieldProps> = ({
+  name,
+  label,
+  onChange,
+  value,
+}) => (
+  <BootstrapForm.Group as={Row} controlId={name}>
+    <Col sm="3">
+      <SwitchButtonWidget name={name} onChange={onChange} value={value} />
+    </Col>
+    <Col sm="9" as="label" htmlFor={name}>
+      {label}
+    </Col>
+  </BootstrapForm.Group>
+);
 
-const defaultTheme: ThemeProps = {
-  layout: "horizontal",
-};
-
-const FormTheme = createContext(defaultTheme);
-
-export default FormTheme;
+export default SwitchField;

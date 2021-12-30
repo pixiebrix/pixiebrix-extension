@@ -29,7 +29,6 @@ import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
-import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BrickIcon from "@/components/BrickIcon";
 import { isNullOrBlank } from "@/utils";
@@ -47,10 +46,6 @@ import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
 import AuthContext from "@/auth/AuthContext";
 import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/devTools/editor/tabs/editTab/useBlockPipelineActions";
-
-const blockConfigTheme: ThemeProps = {
-  layout: "horizontal",
-};
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -259,30 +254,28 @@ const EditTab: React.FC<{
               activeNodeId
             }
           >
-            <FormTheme.Provider value={blockConfigTheme}>
-              {activeNodeId === FOUNDATION_NODE_ID ? (
-                <Col>
-                  <ConnectedFieldTemplate name="label" label="Extension Name" />
-                  {showVersionField && <ApiVersionField />}
-                  <FoundationNode isLocked={isLocked} />
-                </Col>
-              ) : (
-                <EditorNodeConfigPanel
-                  key={activeNodeId}
-                  blockFieldName={blockFieldName}
-                  blockId={
-                    blockPipeline.find((x) => x.instanceId === activeNodeId)?.id
-                  }
-                  blockError={blockError}
-                  onRemoveNode={() => {
-                    removeBlock(activeNodeId);
-                  }}
-                  copyBlock={() => {
-                    copyBlock(activeNodeId);
-                  }}
-                />
-              )}
-            </FormTheme.Provider>
+            {activeNodeId === FOUNDATION_NODE_ID ? (
+              <Col>
+                <ConnectedFieldTemplate name="label" label="Extension Name" />
+                {showVersionField && <ApiVersionField />}
+                <FoundationNode isLocked={isLocked} />
+              </Col>
+            ) : (
+              <EditorNodeConfigPanel
+                key={activeNodeId}
+                blockFieldName={blockFieldName}
+                blockId={
+                  blockPipeline.find((x) => x.instanceId === activeNodeId)?.id
+                }
+                blockError={blockError}
+                onRemoveNode={() => {
+                  removeBlock(activeNodeId);
+                }}
+                copyBlock={() => {
+                  copyBlock(activeNodeId);
+                }}
+              />
+            )}
           </ErrorBoundary>
         </div>
         <div className={styles.dataPanel}>
