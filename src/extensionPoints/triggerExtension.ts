@@ -41,7 +41,7 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import { notifyError } from "@/contentScript/notify";
-// @ts-expect-error using for the EventHandler type below
+// @ts-expect-error using jquery for the JQuery.EventHandler type below
 import JQuery from "jquery";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
@@ -49,7 +49,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
-import { PromiseCancelled } from "@/utils";
+import { PromiseCancelled, sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 
@@ -74,6 +74,8 @@ export type TargetMode =
 export type Trigger =
   // `load` is page load
   | "load"
+  // `interval` is a fixed interval
+  | "interval"
   // `appear` is triggered when an element enters the user's viewport
   | "appear"
   | "click"
@@ -82,10 +84,46 @@ export type Trigger =
   | "mouseover"
   | "change";
 
+async function interval(
+  intervalMillis: number,
+  effectGenerator: () => Promise<void>,
+  signal: AbortSignal
+) {
+  while (!signal.aborted) {
+    const start = Date.now();
+
+    try {
+      // Request an animation frame so that animation effects (e.g., confetti) don't pile up while the user is not
+      // using the tab/frame running the interval.
+      // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
+      await new Promise((resolve) => {
+        window.requestAnimationFrame(resolve);
+      });
+
+      // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
+      await effectGenerator();
+    } catch {
+      // NOP
+    }
+
+    const sleepDuration = Math.max(0, intervalMillis - (Date.now() - start));
+
+    if (sleepDuration > 0) {
+      // Would also be OK to pass 0 to sleep duration
+      // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
+      await sleep(sleepDuration);
+    }
+  }
+
+  console.debug("interval:completed");
+}
+
 export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig> {
   abstract get trigger(): Trigger;
 
   abstract get attachMode(): AttachMode;
+
+  abstract get intervalMillis(): number;
 
   abstract get targetMode(): TargetMode;
 
@@ -98,7 +136,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private cancelInitialWaitElements: (() => void) | null;
 
   /**
-   * Cancel the initialize observer in "watch" attachMode.
+   * Cancel the initialization observer in "watch" attachMode.
    * @private
    */
   private cancelWatchNewElements: (() => void) | null;
@@ -122,6 +160,12 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    * @private
    */
   private readonly boundEventHandler: JQuery.EventHandler<unknown>;
+
+  /**
+   * Controller to abort/cancel the currently running interval loop
+   * @private
+   */
+  private intervalController: AbortController | null;
 
   protected constructor(
     id: string,
@@ -159,7 +203,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     this.cancelInitialWaitElements = null;
     this.cancelWatchNewElements = null;
 
-    // Find latest set of DOM elements and uninstall handlers
+    this.clearInterval();
+
+    // Find the latest set of DOM elements and uninstall handlers
     if (this.triggerSelector) {
       const $currentElements = $safeFind(this.triggerSelector);
 
@@ -312,6 +358,42 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     return $root;
   }
 
+  private clearInterval() {
+    console.debug("triggerExtension:clearInterval");
+    this.intervalController?.abort();
+    this.intervalController = null;
+  }
+
+  private attachInterval() {
+    this.clearInterval();
+
+    if (this.intervalMillis > 0) {
+      this.logger.debug("Attaching interval trigger");
+
+      // Cast setInterval return value to number. For some reason Typescript is using the Node types for setInterval
+      const controller = new AbortController();
+
+      const intervalEffect = async () => {
+        const $root = await this.getRoot();
+        await Promise.allSettled(
+          $root.toArray().flatMap(async (root) => this.runTrigger(root))
+        );
+      };
+
+      void interval(this.intervalMillis, intervalEffect, controller.signal);
+
+      this.intervalController = controller;
+
+      console.debug("triggerExtension:attachInterval", {
+        intervalMillis: this.intervalMillis,
+      });
+    } else {
+      this.logger.warn(
+        "Skipping interval trigger because interval is not greater than zero"
+      );
+    }
+  }
+
   private attachAppearTrigger($element: JQuery): void {
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 
@@ -434,19 +516,34 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     const $root = await this.getRoot();
 
-    if (this.trigger === "load") {
-      const promises = await Promise.allSettled(
-        $root.toArray().flatMap(async (root) => this.runTrigger(root))
-      );
-      TriggerExtensionPoint.notifyErrors(promises);
-    } else if (this.trigger === "appear") {
-      this.assertElement($root);
-      this.attachAppearTrigger($root);
-    } else if (this.trigger) {
-      this.assertElement($root);
-      this.attachDOMTrigger($root, { watch: this.attachMode === "watch" });
-    } else {
-      throw new Error("No trigger event configured for extension point");
+    switch (this.trigger) {
+      case "load": {
+        const promises = await Promise.allSettled(
+          $root.toArray().flatMap(async (root) => this.runTrigger(root))
+        );
+        TriggerExtensionPoint.notifyErrors(promises);
+        break;
+      }
+
+      case "interval": {
+        this.attachInterval();
+        break;
+      }
+
+      case "appear": {
+        this.assertElement($root);
+        this.attachAppearTrigger($root);
+        break;
+      }
+
+      default: {
+        if (this.trigger) {
+          this.assertElement($root);
+          this.attachDOMTrigger($root, { watch: this.attachMode === "watch" });
+        } else {
+          throw new Error("No trigger event configured for extension point");
+        }
+      }
     }
   }
 }
@@ -457,7 +554,7 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
   defaultOptions?: TriggerDefinitionOptions;
 
   /**
-   * The selector for the element to watch for for the trigger.
+   * The selector for the element to watch for the trigger.
    *
    * Ignored for the page `load` trigger.
    */
@@ -479,6 +576,11 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
    * The trigger event
    */
   trigger?: Trigger;
+
+  /**
+   * For `interval` trigger, the interval in milliseconds.
+   */
+  intervalMillis?: number;
 }
 
 class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
@@ -516,6 +618,10 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
 
   get attachMode(): AttachMode {
     return this._definition.attachMode ?? "once";
+  }
+
+  get intervalMillis(): number {
+    return this._definition.intervalMillis ?? 0;
   }
 
   get triggerSelector(): string | null {
