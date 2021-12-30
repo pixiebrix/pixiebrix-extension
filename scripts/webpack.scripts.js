@@ -59,7 +59,7 @@ module.exports = mergeWithShared({
       "window.CSSStyleSheet": "{}",
       window: "globalThis.window",
       document: "globalThis.document",
-      self: "globalThis.document",
+      self: "globalThis.self",
     }),
     // Don't fail on import of styles.
     // Using an identity object instead of actual style sheet because styles are not needed for headers generations
