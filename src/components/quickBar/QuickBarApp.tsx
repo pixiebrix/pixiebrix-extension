@@ -240,9 +240,9 @@ const KBarComponent: React.FC = () => {
 const QuickBarApp: React.FC = () => (
   <div>
     <ReactShadowRoot>
+      <link rel="stylesheet" href={faStyleSheet} />
       <KBarProvider actions={quickBarRegistry.actions}>
         <KBarToggle>
-          <link rel="stylesheet" href={faStyleSheet} />
           <KBarComponent />
         </KBarToggle>
       </KBarProvider>
