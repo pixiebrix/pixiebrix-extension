@@ -25,6 +25,7 @@ import {
   KBarPortal,
   KBarPositioner,
   KBarProvider,
+  KBarQuery,
   KBarResults,
   KBarSearch,
   useKBar,
@@ -34,6 +35,8 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
 import { NOFICATIONS_Z_INDEX } from "@/common";
+
+let instanceQuery: KBarQuery;
 
 const theme = {
   background: "rgb(252, 252, 252)",
@@ -197,6 +200,7 @@ const RenderResults: React.FC = () => {
 
 function useActions(): void {
   const { query } = useKBar();
+  instanceQuery = query;
 
   useEffect(() => {
     const handler = (actions: Action[]) => {
@@ -229,6 +233,15 @@ const QuickBarApp: React.FC = () => (
     </KBarPortal>
   </KBarProvider>
 );
+
+export const toggleQuickBar = () => {
+  initQuickBarApp();
+  if (instanceQuery) {
+    instanceQuery.toggle();
+  } else {
+    console.warn("Quick bar not ready");
+  }
+};
 
 export const initQuickBarApp = once(() => {
   expectContext("contentScript");

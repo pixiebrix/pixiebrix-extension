@@ -64,6 +64,12 @@
       "128": "icons/inactive/logo128.png"
     }
   },
+  "commands": {
+    "toggle-quick-bar": {
+      "description": "Toggle quick bar",
+      "global": true
+    }
+  },
   "background": {
     "scripts": ["grayIconWhileLoading.js", "vendors.js", "background.js"]
   },
