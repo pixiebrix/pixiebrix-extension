@@ -40,6 +40,7 @@ const TriggerConfiguration: React.FC<{
         setFieldValue("extensionPoint.definition.rootSelector", null);
         setFieldValue("extensionPoint.definition.attachMode", null);
         setFieldValue("extensionPoint.definition.targetMode", null);
+        setFieldValue("extensionPoint.definition.intervalMillis", null);
       }
 
       setFieldValue("extensionPoint.definition.trigger", currentTarget.value);
@@ -58,12 +59,23 @@ const TriggerConfiguration: React.FC<{
           {...makeLockableFieldProps("Trigger", isLocked)}
         >
           <option value="load">Page Load</option>
+          <option value="interval">Interval</option>
           <option value="appear">Appear</option>
           <option value="click">Click</option>
           <option value="dblclick">Double Click</option>
           <option value="blur">Blur</option>
           <option value="mouseover">Mouseover</option>
         </ConnectedFieldTemplate>
+
+        {trigger === "interval" && (
+          <ConnectedFieldTemplate
+            name="extensionPoint.definition.intervalMillis"
+            title="Interval (ms)"
+            type="number"
+            description="Interval to run the trigger in milliseconds"
+            {...makeLockableFieldProps("Interval", isLocked)}
+          />
+        )}
 
         {trigger !== "load" && (
           <ConnectedFieldTemplate

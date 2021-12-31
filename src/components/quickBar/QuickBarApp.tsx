@@ -35,7 +35,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
-import { MAX_Z_INDEX } from "@/common";
+import { NOFICATIONS_Z_INDEX } from "@/common";
 
 const theme = {
   background: "rgb(252, 252, 252)",
@@ -64,7 +64,6 @@ const animatorStyle = {
   borderRadius: "8px",
   overflow: "hidden",
   boxShadow: theme.shadow,
-  zIndex: MAX_Z_INDEX,
 };
 
 const groupNameStyle = {
@@ -228,7 +227,8 @@ const KBarComponent: React.FC = () => {
   useActions();
 
   return (
-    <KBarPositioner>
+    // Like notifications, this is temporary UI that must appear above everything
+    <KBarPositioner style={{ zIndex: NOFICATIONS_Z_INDEX }}>
       <KBarAnimator style={animatorStyle}>
         <KBarSearch style={searchStyle} />
         <RenderResults />
