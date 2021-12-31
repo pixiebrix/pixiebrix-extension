@@ -238,16 +238,14 @@ const KBarComponent: React.FC = () => {
 };
 
 const QuickBarApp: React.FC = () => (
-  <div>
-    <ReactShadowRoot>
-      <link rel="stylesheet" href={faStyleSheet} />
-      <KBarProvider actions={quickBarRegistry.actions}>
-        <KBarToggle>
-          <KBarComponent />
-        </KBarToggle>
-      </KBarProvider>
-    </ReactShadowRoot>
-  </div>
+  <ReactShadowRoot>
+    <link rel="stylesheet" href={faStyleSheet} />
+    <KBarProvider actions={quickBarRegistry.actions}>
+      <KBarToggle>
+        <KBarComponent />
+      </KBarToggle>
+    </KBarProvider>
+  </ReactShadowRoot>
 );
 
 export const initQuickBarApp = once(() => {
