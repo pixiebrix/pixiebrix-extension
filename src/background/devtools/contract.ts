@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Runtime } from "webextension-polyfill";
 import { HandlerOptions } from "@/messaging/protocol";
 import type { Target } from "@/types";
 
@@ -38,8 +37,7 @@ export interface BackgroundResponse {
 
 export interface HandlerEntry {
   handler: (
-    target: Target,
-    port: Runtime.Port
+    target: Target
   ) => (...args: unknown[]) => unknown | Promise<unknown>;
   options: HandlerOptions;
 }

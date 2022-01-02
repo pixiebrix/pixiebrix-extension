@@ -96,7 +96,6 @@ const SidebarExpanded: React.FunctionComponent<
   const showBetaExtensionPoints = flags.includes("page-editor-beta");
 
   const {
-    port,
     tabState: { hasPermissions },
   } = context;
 
@@ -215,7 +214,6 @@ const SidebarExpanded: React.FunctionComponent<
               <DynamicEntry
                 key={`dynamic-${entry.uuid}`}
                 item={entry}
-                port={port}
                 available={
                   !availableDynamicIds || availableDynamicIds.has(entry.uuid)
                 }

@@ -52,6 +52,7 @@ import {
   runReaderBlock,
   runReader,
   readSelected,
+  resetTab,
 } from "@/contentScript/devTools";
 import { checkAvailable } from "@/blocks/available";
 import { showNotification } from "@/contentScript/notify";
@@ -73,6 +74,7 @@ declare global {
 
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
+    RESET_TAB: typeof resetTab;
 
     HANDLE_MENU_ACTION: typeof handleMenuAction;
     TOGGLE_ACTION_PANEL: typeof toggleActionPanel;
@@ -119,6 +121,7 @@ registerMethods({
 
   QUEUE_REACTIVATE_TAB: queueReactivateTab,
   REACTIVATE_TAB: reactivateTab,
+  RESET_TAB: resetTab,
 
   HANDLE_MENU_ACTION: handleMenuAction,
   TOGGLE_ACTION_PANEL: toggleActionPanel,

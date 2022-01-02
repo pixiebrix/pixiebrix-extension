@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES as REMOTE_UIPATH_PROPERTIES } from "@/contrib/uipath/process";
 import { Schema } from "@/core";
 import { useAsyncEffect } from "use-async-effect";
-import { DevToolsContext } from "@/devTools/context";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
@@ -32,13 +31,12 @@ import { thisTab } from "@/devTools/utils";
 import { getProcesses, initRobot } from "@/contentScript/messenger/api";
 
 function useLocalRobot() {
-  const { port } = useContext(DevToolsContext);
   const [robotAvailable, setRobotAvailable] = useState(false);
   const [consentCode, setConsentCode] = useState(null);
   const [initError, setInitError] = useState(null);
 
   useAsyncEffect(async () => {
-    if (!port) {
+    if (!chrome.devtools) {
       setInitError(
         new Error("UiPath Assistant can only be configured from a page context")
       );
@@ -52,7 +50,7 @@ function useLocalRobot() {
     } catch (error) {
       setInitError(error);
     }
-  }, [port, setConsentCode, setRobotAvailable, setInitError]);
+  }, [setConsentCode, setRobotAvailable, setInitError]);
 
   return {
     robotAvailable,

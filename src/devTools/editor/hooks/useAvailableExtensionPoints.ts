@@ -17,8 +17,6 @@
 
 import { IExtensionPoint } from "@/core";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { useContext } from "react";
-import { DevToolsContext } from "@/devTools/context";
 import { useAsyncState } from "@/hooks/common";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { zip } from "lodash";
@@ -30,8 +28,6 @@ function useAvailableExtensionPoints<
   // We want Function to pass in the CTOR
   // eslint-disable-next-line @typescript-eslint/ban-types
 >(ctor: Function): TConfig[] | null {
-  const { port } = useContext(DevToolsContext);
-
   const [availableExtensionPoints, , error] = useAsyncState(async () => {
     const all = await extensionPointRegistry.all();
 
@@ -65,7 +61,7 @@ function useAvailableExtensionPoints<
           availability.status === "fulfilled" && availability.value
       )
       .map(([extensionPoint]) => extensionPoint);
-  }, [port]);
+  }, []);
 
   if (error) {
     console.error("useAvailableExtensionPoints", { error });
