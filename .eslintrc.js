@@ -28,7 +28,7 @@ module.exports = {
   ],
   rules: {
     "unicorn/prevent-abbreviations": [
-      "warn",
+      "error",
       {
         replacements: {
           acc: false,
@@ -69,7 +69,7 @@ module.exports = {
       },
     ],
     "import/no-restricted-paths": [
-      "error",
+      "warn",
       {
         zones: restrictedZones,
       },
