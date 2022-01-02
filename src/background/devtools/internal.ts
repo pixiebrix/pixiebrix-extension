@@ -22,7 +22,7 @@ import {
   SerializableResponse,
   toErrorResponse,
 } from "@/messaging/protocol";
-import browser, { Runtime, WebNavigation } from "webextension-polyfill";
+import browser, { Runtime } from "webextension-polyfill";
 import { allowBackgroundSender } from "@/background/protocol";
 import {
   HandlerEntry,
@@ -36,7 +36,6 @@ import type { Target } from "@/types";
 import { reportError } from "@/telemetry/logging";
 import { isBackground } from "webext-detect-page";
 import { callBackground } from "@/background/devtools/external";
-import { ensureContentScript } from "@/background/util";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { getErrorMessage, isPrivatePageError } from "@/errors";
@@ -260,47 +259,7 @@ export function registerPort(tabId: TabId, port: Runtime.Port): void {
   connections.set(tabId, port);
 }
 
-/**
- * Listener to inject contentScript on tabs that user has granted temporary access to and that the devtools
- * are open. If the user has granted permanent access, the content script will be injected based on the
- * dynamic content script permissions via `webext-dynamic-content-scripts`
- */
-async function attemptTemporaryAccess({
-  tabId,
-  frameId,
-  url,
-}: WebNavigation.OnDOMContentLoadedDetailsType): Promise<void> {
-  if (!connections.has(tabId)) {
-    return;
-  }
-
-  console.debug("attemptTemporaryAccess:", { tabId, frameId, url });
-
-  try {
-    await ensureContentScript({ tabId, frameId });
-  } catch (error) {
-    if (isPrivatePageError(error)) {
-      return;
-    }
-
-    // Side note: Cross-origin iframes lose the `activeTab` after navigation
-    // https://github.com/pixiebrix/pixiebrix-extension/pull/661#discussion_r661590847
-    if (/Cannot access|missing host permission/.test(getErrorMessage(error))) {
-      console.debug(
-        "Skipping attemptTemporaryAccess because no activeTab permissions",
-        { tabId, frameId, url }
-      );
-      return;
-    }
-
-    throw error;
-  }
-}
-
 if (isBackground()) {
   console.debug("Adding devtools connection listener");
   browser.runtime.onConnect.addListener(connectDevtools);
-  browser.webNavigation.onDOMContentLoaded.addListener((details) => {
-    void attemptTemporaryAccess(details);
-  });
 }
