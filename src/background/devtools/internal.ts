@@ -38,7 +38,6 @@ import { isBackground } from "webext-detect-page";
 import { callBackground } from "@/background/devtools/external";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { expectContext, forbidContext } from "@/utils/expectContext";
-import { getErrorMessage, isPrivatePageError } from "@/errors";
 import { clearDynamicElements } from "@/contentScript/messenger/api";
 
 const TOP_LEVEL_FRAME_ID = 0;
