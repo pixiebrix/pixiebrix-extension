@@ -28,7 +28,7 @@ module.exports = {
   ],
   rules: {
     "unicorn/prevent-abbreviations": [
-      "error",
+      "warn",
       {
         replacements: {
           acc: false,
