@@ -35,8 +35,8 @@ export class PageSemanticReader extends Reader {
 
   async read(): Promise<ReaderOutput> {
     const [{ Handler }, { Parser }] = await Promise.all([
-      import(/* webpackChunkName: "htmlmetaparser" */ "htmlmetaparser"),
-      import(/* webpackChunkName: "htmlparser2" */ "htmlparser2"),
+      import(/* webpackChunkName: "htmlparsers" */ "htmlmetaparser"),
+      import(/* webpackChunkName: "htmlparsers" */ "htmlparser2"),
     ]);
 
     return new Promise((resolve, reject) => {
