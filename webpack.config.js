@@ -268,6 +268,7 @@ module.exports = (env, options) =>
         "lodash-es",
         "js-beautify",
         "css-selector-generator",
+        "@rjsf/bootstrap-4",
         "@fortawesome/free-solid-svg-icons",
       ],
 
