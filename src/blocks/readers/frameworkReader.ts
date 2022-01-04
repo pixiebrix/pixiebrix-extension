@@ -35,7 +35,9 @@ export function isHTMLElement(root: ReaderRoot): root is HTMLElement {
 async function asyncFastCssSelector(element: HTMLElement): Promise<string> {
   // Load async because css-selector-generator references the window variable which fails when
   // generating headers
-  const getCssSelector = (await import("css-selector-generator")).default;
+  const { default: getCssSelector } = await import(
+    /* webpackChunkName: "css-selector-generator" */ "css-selector-generator"
+  );
   return getCssSelector(element, {
     // Prefer speed over robust/readable selectors
     combineWithinSelector: false,

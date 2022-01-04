@@ -35,6 +35,33 @@ declare module "generate-schema" {
   const json: (title: string, obj: unknown) => UnknownObject;
 }
 
+// From https://github.com/mozilla/page-metadata-parser/issues/116#issuecomment-614882830
+declare module "page-metadata-parser" {
+  export interface IPageMetadata {
+    [k: string]: string | string[];
+    description?: string;
+    icon: string;
+    image?: string;
+    keywords?: string[];
+    title?: string;
+    language?: string;
+    type?: string;
+    url: string;
+    provider: string;
+  }
+
+  export type PageMetadataRule = [
+    string,
+    (element: HTMLElement) => string | null
+  ];
+
+  export function getMetadata(
+    doc: Document | HTMLElement,
+    url: string,
+    customRuleSets?: Record<string, PageMetadataRule>
+  ): IPageMetadata;
+}
+
 declare module "@/vendors/initialize" {
   /** Attach a MutationObserver specifically for a selector */
   const initialize: (
