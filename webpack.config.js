@@ -286,7 +286,9 @@ module.exports = (env, options) =>
         ...devDependenciesOnly(options, "redux-logger"),
 
         // Enables static analysis and removal of dead code
-        "webext-detect-page": path.resolve("src/__mocks__/webextDetectPage"),
+        "webext-detect-page": path.resolve(
+          "src/vendors/webextDetectPage.static.js"
+        ),
       },
     },
 
