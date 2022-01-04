@@ -31,6 +31,7 @@ import BlockModal from "@/components/brickModal/BrickModal";
 import useBrickRecommendations from "@/devTools/editor/tabs/editTab/useBrickRecommendations";
 import cx from "classnames";
 import TooltipIconButton from "@/components/TooltipIconButton";
+import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 
 const addBrickCaption = (
   <span>
@@ -62,6 +63,7 @@ const EditorNodeLayout: React.FC<{
   pasteBlock,
 }) => {
   const recommendations: RegistryId[] = useBrickRecommendations();
+  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
   const canMoveAnything = nodes.length > 2;
   const finalIndex = nodes.length - 1;
@@ -87,9 +89,11 @@ const EditorNodeLayout: React.FC<{
             };
           }
 
-          const showAddBlock = index < finalIndex || showAppend;
+          const showAddBlock =
+            isApiAtLeastV2 && (index < finalIndex || showAppend);
           const isFinal = index === finalIndex;
           const showAddMessage = showAddBlock && isFinal;
+          const showPaste = pasteBlock && isApiAtLeastV2;
 
           return (
             <React.Fragment key={nodeId}>
@@ -121,7 +125,7 @@ const EditorNodeLayout: React.FC<{
                     }}
                   />
                 )}
-                {pasteBlock && (
+                {showPaste && (
                   <TooltipIconButton
                     name={`paste-brick-${index}`}
                     icon={faPaste}
