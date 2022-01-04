@@ -22,7 +22,7 @@ import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 const UnsupportedApiVersionV1: React.FC = () => (
   <Card>
-    <Card.Header>Unsupported API Version</Card.Header>
+    <Card.Header>Unsupported Extension Runtime Version</Card.Header>
     <Card.Body>
       <Alert variant="warning">
         <FontAwesomeIcon icon={faExclamationTriangle} />
