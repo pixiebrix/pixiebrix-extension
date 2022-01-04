@@ -37,18 +37,7 @@ declare module "generate-schema" {
 
 // From https://github.com/mozilla/page-metadata-parser/issues/116#issuecomment-614882830
 declare module "page-metadata-parser" {
-  export interface IPageMetadata {
-    [k: string]: string | string[];
-    description?: string;
-    icon: string;
-    image?: string;
-    keywords?: string[];
-    title?: string;
-    language?: string;
-    type?: string;
-    url: string;
-    provider: string;
-  }
+  export type IPageMetadata = Record<string, string | string[]>;
 
   export type PageMetadataRule = [
     string,
