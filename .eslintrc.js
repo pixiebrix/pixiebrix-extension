@@ -5,6 +5,12 @@ module.exports = {
     "pixiebrix",
   ],
   rules: {
+    "import/dynamic-import-chunkname": [
+      "error",
+      {
+        webpackChunknameFormat: "[a-zA-Z0-57-9-/_\\[\\].]+",
+      },
+    ],
     "unicorn/prevent-abbreviations": [
       "error",
       {

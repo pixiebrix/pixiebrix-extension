@@ -46,7 +46,9 @@ export class JSONPathTransformer extends Transformer {
     { path }: BlockArg,
     { ctxt }: BlockOptions
   ): Promise<unknown> {
-    const { JSONPath } = await import("jsonpath-plus");
+    const { JSONPath } = await import(
+      /* webpackChunkName: "jsonpath-plus" */ "jsonpath-plus"
+    );
 
     // eslint-disable-next-line new-cap -- export from a library
     return JSONPath({ preventEval: true, path, json: ctxt });

@@ -67,7 +67,9 @@ export class ImageExifReader extends Reader {
   }
 
   async read(elementOrDocument: HTMLElement | Document) {
-    const ExifReader = await import("exifreader");
+    const ExifReader = await import(
+      /* webpackChunkName: "exifreader" */ "exifreader"
+    );
 
     const element = elementOrDocument as HTMLImageElement;
 
