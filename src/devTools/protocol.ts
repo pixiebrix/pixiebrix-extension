@@ -23,6 +23,8 @@ import {
   navigationEvent,
 } from "@/background/devtools/external";
 import { runtimeConnect } from "@/chrome";
+import { resetTab } from "@/contentScript/messenger/api";
+import { thisTab } from "./utils";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
@@ -81,9 +83,14 @@ function onNavigation(
   }
 }
 
+function onEditorClose(): void {
+  resetTab(thisTab);
+}
+
 export function watchNavigation(): void {
   browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
   browser.webNavigation.onDOMContentLoaded.addListener(onNavigation);
+  window.addEventListener("beforeunload", onEditorClose);
 
   if (process.env.DEBUG)
     browser.webNavigation.onTabReplaced.addListener(

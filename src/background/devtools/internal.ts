@@ -33,14 +33,9 @@ import {
   Meta,
 } from "@/background/devtools/contract";
 import type { Target } from "@/types";
-import { reportError } from "@/telemetry/logging";
 import { isBackground } from "webext-detect-page";
 import { callBackground } from "@/background/devtools/external";
-import { reactivateEveryTab } from "@/background/messenger/api";
 import { expectContext, forbidContext } from "@/utils/expectContext";
-import { clearDynamicElements } from "@/contentScript/messenger/api";
-
-const TOP_LEVEL_FRAME_ID = 0;
 
 let numOpenConnections = 0;
 
@@ -178,31 +173,11 @@ export function liftBackground<
   };
 }
 
-async function resetTab(tabId: number): Promise<void> {
-  try {
-    await clearDynamicElements({ tabId, frameId: TOP_LEVEL_FRAME_ID }, {});
-  } catch (error) {
-    console.warn("Error clearing dynamic elements for tab: %d", tabId, {
-      error,
-    });
-    reportError(error);
-  }
-
-  console.info("Removed dynamic elements for tab: %d", tabId);
-
-  // Re-activate the content script so any saved extensions are added to the page as "permanent" extensions
-  reactivateEveryTab();
-
-  console.info("Re-activated extensions for tab: %d", tabId);
-}
-
 function deleteStaleConnections(port: Runtime.Port) {
   // Theoretically each port should only correspond to a single tab, but iterate over all tabIds just to be safe
   for (const tabId of connections.keys()) {
     if (connections.get(tabId) === port) {
       connections.delete(tabId);
-
-      void resetTab(tabId);
 
       if (permissionsListeners.has(tabId)) {
         const listeners = permissionsListeners.get(tabId);
