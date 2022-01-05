@@ -36,6 +36,9 @@ import { SerializableResponse } from "@/messaging/protocol";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
+import { clearDynamicElements } from "@/nativeEditor/dynamic";
+import { reactivateTab } from "./lifecycle";
+import { reportError } from "@/telemetry/logging";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
@@ -187,4 +190,9 @@ export async function readSelected() {
   return {
     error: "No element selected",
   };
+}
+
+export async function resetTab(): Promise<void> {
+  await clearDynamicElements({});
+  await reactivateTab();
 }

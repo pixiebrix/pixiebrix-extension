@@ -23,6 +23,8 @@ export const resolveForm = getMethod("FORM_RESOLVE");
 export const cancelForm = getMethod("FORM_CANCEL");
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");
+export const resetTab = getNotifier("RESET_TAB");
+
 export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
 export const toggleActionPanel = getMethod("TOGGLE_ACTION_PANEL");
 export const showActionPanel = getMethod("SHOW_ACTION_PANEL");
