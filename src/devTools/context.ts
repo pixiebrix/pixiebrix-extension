@@ -78,18 +78,12 @@ export interface Context {
    */
   connecting: boolean;
 
-  /**
-   * Error message when connecting to the background page.
-   */
-  portError?: string;
-
   tabState: FrameConnectionState;
 }
 
 const initialValue: Context = {
   connect: async () => {},
   connecting: false,
-  portError: undefined,
   tabState: { ...initialFrameState, frameId: 0 },
 };
 
