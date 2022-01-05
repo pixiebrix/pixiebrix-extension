@@ -38,7 +38,6 @@ import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/nativeEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
-import { reportError } from "@/telemetry/logging";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
