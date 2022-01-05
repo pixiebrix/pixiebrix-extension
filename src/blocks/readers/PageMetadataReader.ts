@@ -39,8 +39,7 @@ export class PageMetadataReader extends Reader {
 
   async read() {
     const { getMetadata } = await import(
-      // @ts-expect-error no type definitions available
-      "page-metadata-parser"
+      /* webpackChunkName: "page-metadata-parser" */ "page-metadata-parser"
     );
     return getMetadata(document, location.href);
   }

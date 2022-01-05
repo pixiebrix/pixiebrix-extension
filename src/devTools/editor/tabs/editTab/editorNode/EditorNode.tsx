@@ -108,7 +108,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       </div>
       <div className={styles.text}>
         <div>{title}</div>
-        <div className={styles.outputKey}>{outputName}</div>
+        {outputName && <div className={styles.outputKey}>{outputName}</div>}
       </div>
       {canMoveAnything && (
         <div className={styles.moveButtons}>

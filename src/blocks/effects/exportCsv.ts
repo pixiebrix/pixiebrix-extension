@@ -58,7 +58,9 @@ export class ExportCsv extends Effect {
     { filename = "exported", useBOM = false, data }: BlockArg,
     { ctxt }: BlockOptions
   ): Promise<void> {
-    const { ExportToCsv } = await import("export-to-csv");
+    const { ExportToCsv } = await import(
+      /* webpackChunkName: "export-to-csv" */ "export-to-csv"
+    );
 
     const csvExporter = new ExportToCsv({
       useKeysAsHeaders: true,

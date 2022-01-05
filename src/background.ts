@@ -33,7 +33,6 @@ import "@/background/installer";
 import "@/messaging/external";
 import "@/background/locator";
 import "@/background/contextMenus";
-import "@/background/devtools/internal";
 import "@/background/browserAction";
 
 import initGoogle from "@/contrib/google/initGoogle";
