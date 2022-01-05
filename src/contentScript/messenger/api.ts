@@ -25,6 +25,7 @@ export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");
 export const resetTab = getNotifier("RESET_TAB");
 
+export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
 export const toggleActionPanel = getMethod("TOGGLE_ACTION_PANEL");
 export const showActionPanel = getMethod("SHOW_ACTION_PANEL");

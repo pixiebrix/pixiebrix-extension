@@ -63,6 +63,7 @@ import {
   runMapArgs,
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol";
+import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 
 expectContext("contentScript");
 
@@ -76,6 +77,7 @@ declare global {
     REACTIVATE_TAB: typeof reactivateTab;
     RESET_TAB: typeof resetTab;
 
+    TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
     TOGGLE_ACTION_PANEL: typeof toggleActionPanel;
     SHOW_ACTION_PANEL: typeof showActionPanel;
@@ -123,6 +125,7 @@ registerMethods({
   REACTIVATE_TAB: reactivateTab,
   RESET_TAB: resetTab,
 
+  TOGGLE_QUICK_BAR: toggleQuickBar,
   HANDLE_MENU_ACTION: handleMenuAction,
   TOGGLE_ACTION_PANEL: toggleActionPanel,
   SHOW_ACTION_PANEL: showActionPanel,

@@ -242,7 +242,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
     );
 
     console.debug(
-      "Register quick back action handler for: %s (%s)",
+      "Register quick bar action handler for: %s (%s)",
       extension.id,
       extension.label ?? "No Label",
       {
