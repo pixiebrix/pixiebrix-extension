@@ -112,7 +112,9 @@ export class ParseDate extends Transformer {
   };
 
   async transform({ date }: BlockArg): Promise<unknown> {
-    const { parseDate } = await import("chrono-node");
+    const { parseDate } = await import(
+      /* webpackChunkName: "chrono-node" */ "chrono-node"
+    );
 
     const parsed = parseDate(date);
     const millisPerMinute = 60 * 1000;

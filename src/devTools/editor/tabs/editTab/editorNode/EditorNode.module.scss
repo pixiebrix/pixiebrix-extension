@@ -43,8 +43,9 @@
 
   // External icon
   img {
-    width: 1.2em;
-    height: 1.2em;
+    // !important is to override the inline CSS
+    width: 1.2em !important;
+    height: 1.2em !important;
   }
   svg {
     font-size: inherit;

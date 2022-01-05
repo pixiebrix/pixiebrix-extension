@@ -47,6 +47,8 @@ import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
 import AuthContext from "@/auth/AuthContext";
 import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/devTools/editor/tabs/editTab/useBlockPipelineActions";
+import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
+import UnsupportedApiVersionV1 from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/UnsupportedApiVersionV1";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -66,10 +68,13 @@ const EditTab: React.FC<{
     [extensionPoint.metadata.id]
   );
 
-  const { label, icon, EditorNode: FoundationNode } = useMemo(
-    () => ADAPTERS.get(elementType),
-    [elementType]
-  );
+  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
+
+  const { label, icon, EditorNode } = useMemo(() => ADAPTERS.get(elementType), [
+    elementType,
+  ]);
+
+  const FoundationNode = isApiAtLeastV2 ? EditorNode : UnsupportedApiVersionV1;
 
   const [allBlocks] = useAsyncState<TypedBlockMap>(
     async () => blockRegistry.allTyped(),
@@ -266,7 +271,7 @@ const EditTab: React.FC<{
                   {showVersionField && <ApiVersionField />}
                   <FoundationNode isLocked={isLocked} />
                 </Col>
-              ) : (
+              ) : isApiAtLeastV2 ? (
                 <EditorNodeConfigPanel
                   key={activeNodeId}
                   blockFieldName={blockFieldName}
@@ -281,6 +286,8 @@ const EditTab: React.FC<{
                     copyBlock(activeNodeId);
                   }}
                 />
+              ) : (
+                <UnsupportedApiVersionV1 />
               )}
             </FormTheme.Provider>
           </ErrorBoundary>
