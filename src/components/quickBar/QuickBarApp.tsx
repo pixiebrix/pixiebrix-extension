@@ -68,7 +68,7 @@ const searchStyle = {
   color: theme.foreground,
 };
 
-const animatorStyle = {
+const animatorStyle: React.CSSProperties = {
   all: "initial",
   fontFamily: "sans-serif",
   maxWidth: "600px",
