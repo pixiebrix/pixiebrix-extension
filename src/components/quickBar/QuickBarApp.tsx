@@ -69,6 +69,8 @@ const searchStyle = {
 };
 
 const animatorStyle = {
+  all: "initial",
+  fontFamily: "sans-serif",
   maxWidth: "600px",
   width: "100%",
   background: theme.background,
@@ -272,7 +274,7 @@ const KBarComponent: React.FC = () => {
 };
 
 const QuickBarApp: React.FC = () => (
-  <ReactShadowRoot>
+  <ReactShadowRoot mode="closed">
     <link rel="stylesheet" href={faStyleSheet} />
     <KBarProvider actions={quickBarRegistry.actions}>
       <AutoShow />
