@@ -39,12 +39,14 @@ function onNavigation(
   }
 }
 
+function onEditorClose(): void {
+  resetTab(thisTab);
+}
+
 export function watchNavigation(): void {
   browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
   browser.webNavigation.onDOMContentLoaded.addListener(onNavigation);
-  window.onbeforeunload = () => {
-    resetTab(thisTab);
-  };
+  window.addEventListener("beforeunload", onEditorClose);
 
   if (process.env.DEBUG)
     browser.webNavigation.onTabReplaced.addListener(

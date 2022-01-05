@@ -38,7 +38,6 @@ import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/nativeEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
-import { reportError } from "@/telemetry/logging";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
@@ -193,13 +192,6 @@ export async function readSelected() {
 }
 
 export async function resetTab(): Promise<void> {
-  try {
-    await clearDynamicElements({});
-    await reactivateTab();
-  } catch (error) {
-    console.warn("Error reactivating tab", {
-      error,
-    });
-    reportError(error);
-  }
+  await clearDynamicElements({});
+  await reactivateTab();
 }
