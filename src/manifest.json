@@ -67,6 +67,9 @@
   "commands": {
     "toggle-quick-bar": {
       "description": "Toggle quick bar",
+      "suggested_key": {
+        "default": "Ctrl+K"
+      },
       "global": true
     }
   },

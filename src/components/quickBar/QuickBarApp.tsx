@@ -24,7 +24,6 @@ import {
   KBarAnimator,
   KBarPositioner,
   KBarProvider,
-  KBarQuery,
   KBarResults,
   KBarSearch,
   useKBar,
@@ -37,8 +36,18 @@ import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
 import { NOFICATIONS_Z_INDEX } from "@/common";
+import { useEventListener } from "@/hooks/useEventListener";
 
-let instanceQuery: KBarQuery;
+/**
+ * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
+ * shortcut giving the page activeTab).
+ */
+let autoShow = false;
+
+/**
+ * Window event name to programmatically trigger quickbar
+ */
+const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 
 const theme = {
   background: "rgb(252, 252, 252)",
@@ -215,7 +224,6 @@ const KBarToggle: React.FC = (props) => {
 
 function useActions(): void {
   const { query } = useKBar();
-  instanceQuery = query;
 
   useEffect(() => {
     const handler = (actions: Action[]) => {
@@ -226,6 +234,28 @@ function useActions(): void {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount; query will be defined on initial mount
   }, []);
 }
+
+function useAutoShow(): void {
+  const { query } = useKBar();
+
+  useEventListener(QUICKBAR_EVENT_NAME, () => {
+    query.toggle();
+  });
+
+  useEffect(() => {
+    if (autoShow) {
+      query.toggle();
+      autoShow = false;
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount; query will be defined on initial mount
+  }, []);
+}
+
+const AutoShow: React.FC = () => {
+  useAutoShow();
+  return null;
+};
 
 const KBarComponent: React.FC = () => {
   useActions();
@@ -245,6 +275,7 @@ const QuickBarApp: React.FC = () => (
   <ReactShadowRoot>
     <link rel="stylesheet" href={faStyleSheet} />
     <KBarProvider actions={quickBarRegistry.actions}>
+      <AutoShow />
       <KBarToggle>
         <KBarComponent />
       </KBarToggle>
@@ -253,12 +284,13 @@ const QuickBarApp: React.FC = () => (
 );
 
 export const toggleQuickBar = () => {
+  // There's a race between when this method will run and when initQuickBarApp will be run from the quickbar
+  // extension point. So, use autoShow to handle case where we call initQuickBarApp first, and dispatchEvent
+  // for the case where QuickBarApp is already on the page
+  autoShow = true;
   initQuickBarApp();
-  if (instanceQuery) {
-    instanceQuery.toggle();
-  } else {
-    console.warn("Quick bar not ready");
-  }
+
+  window.dispatchEvent(new Event(QUICKBAR_EVENT_NAME));
 };
 
 export const initQuickBarApp = once(() => {
@@ -267,5 +299,6 @@ export const initQuickBarApp = once(() => {
   const container = document.createElement("div");
   document.body.prepend(container);
   ReactDOM.render(<QuickBarApp />, container);
+
   console.debug("Initialized quick bar");
 });
