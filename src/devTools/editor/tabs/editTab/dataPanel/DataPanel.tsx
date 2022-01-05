@@ -137,8 +137,7 @@ const DataPanel: React.FC<{
 
   const outputObj: JsonObject =
     record !== undefined && "output" in record
-      ? // eslint-disable-next-line unicorn/no-nested-ternary -- prettier disagrees
-        "outputKey" in record
+      ? "outputKey" in record
         ? { [`@${record.outputKey}`]: record.output }
         : record.output
       : null;
@@ -319,8 +318,7 @@ const DataPanel: React.FC<{
                   />
                 )}
               </ErrorBoundary>
-            ) : // eslint-disable-next-line unicorn/no-nested-ternary -- the style rule conflicts with prettier
-            showBlockPreview ? (
+            ) : showBlockPreview ? (
               <ErrorBoundary>
                 <BlockPreview traceRecord={record} blockConfig={block} />
               </ErrorBoundary>

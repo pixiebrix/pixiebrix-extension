@@ -56,6 +56,9 @@ module.exports = {
     // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
     "import/no-named-as-default-member": "off",
 
+    // Sometimes it conflicts with Prettier
+    "unicorn/no-nested-ternary": "off",
+
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/restrict-template-expressions": "warn",
@@ -65,7 +68,6 @@ module.exports = {
     "no-await-in-loop": "warn",
 
     "unicorn/no-useless-undefined": "warn", // Buggy with React
-    "unicorn/no-nested-ternary": "warn", // Sometimes it conflicts with Prettier
     "unicorn/consistent-function-scoping": "warn", // Complains about some of the lifted functions
     "unicorn/no-await-expression-member": "warn", // Annoying sometimes, let's try it
 
