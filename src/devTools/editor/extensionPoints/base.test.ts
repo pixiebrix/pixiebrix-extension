@@ -36,3 +36,7 @@ test("can remove empty nested values", () => {
     },
   });
 });
+
+describe("upgradePipelineToV3 tests", () => {
+  test("convert string to var");
+});

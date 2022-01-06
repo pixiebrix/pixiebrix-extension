@@ -23,6 +23,7 @@ import {
   Metadata,
   RegistryId,
   SafeString,
+  SchemaDefinition,
   UUID,
 } from "@/core";
 import { castArray, cloneDeep, isEmpty, omit } from "lodash";
@@ -43,12 +44,15 @@ import {
 import { Except } from "type-fest";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import {
+  BlockConfig,
   BlockPipeline,
   NormalizedAvailability,
   ReaderConfig,
 } from "@/blocks/types";
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { UnknownObject } from "@/types";
+import blockRegistry from "@/blocks/registry";
+import { inputProperties } from "@/helpers";
 
 export interface WizardStep {
   step: string;
@@ -165,6 +169,7 @@ export function makeInitialBaseState(
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+    showV3UpgradeMessage: false,
     services: [],
     optionsArgs: {},
     extension: {
@@ -384,7 +389,7 @@ export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
  * @param pipelineProp the name of the pipeline prop, currently either "action" or "body"
  * @param defaults
  */
-export function normalizePipeline<
+export function extensionWithNormalizedPipeline<
   T extends UnknownObject,
   Prop extends keyof T
 >(
@@ -398,4 +403,65 @@ export function normalizePipeline<
     ...defaults,
     ...rest,
   };
+}
+
+async function upgradeBlock(blockConfig: BlockConfig) {
+  const { inputSchema } = await blockRegistry.lookup(blockConfig.id);
+  const inputProps = inputProperties(inputSchema);
+  const promises = [];
+
+  for (const [name] of Object.entries(blockConfig.config)) {
+    // eslint-disable-next-line security/detect-object-injection
+    promises.push(upgradeValue(blockConfig.config, name, inputProps[name]));
+  }
+
+  await Promise.all(promises);
+}
+
+async function upgradeValue(
+  config: UnknownObject,
+  fieldName: string,
+  fieldSchema: SchemaDefinition
+) {
+  if (typeof fieldSchema === "boolean") {
+    return;
+  }
+
+  // eslint-disable-next-line security/detect-object-injection
+  const value = config[fieldName];
+  if (typeof value === "object") {
+    if (fieldSchema.type === "object" || fieldSchema.type === "array") {
+      const subProps = inputProperties(fieldSchema);
+      const promises = [];
+
+      for (const [name] of Object.entries(value)) {
+        promises.push(upgradeValue(value as UnknownObject, name, subProps));
+      }
+
+      await Promise.all(promises);
+    }
+  } else if (
+    typeof value === "string" &&
+    !(fieldSchema.type === "string" && fieldSchema.format === "selector")
+  ) {
+    const type = /^@\S+$/g.test(value) ? "var" : "nunjucks";
+    // eslint-disable-next-line security/detect-object-injection
+    config[fieldName] = {
+      __type__: type,
+      __value__: value,
+    };
+  }
+}
+
+/**
+ * Attempt to upgrade the blocks in a pipeline from api v2 to v3
+ */
+export async function upgradePipelineToV3(blockPipeline: BlockPipeline) {
+  const promises = [];
+
+  for (const block of blockPipeline) {
+    promises.push(upgradeBlock(block));
+  }
+
+  await Promise.all(promises);
 }
