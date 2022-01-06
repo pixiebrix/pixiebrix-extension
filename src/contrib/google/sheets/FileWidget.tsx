@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Data, SheetMeta } from "@/contrib/google/sheets/types";
-import { DevToolsContext } from "@/devTools/context";
 import { useField } from "formik";
 import { useAsyncEffect } from "use-async-effect";
 import { isNullOrBlank } from "@/utils";
@@ -42,7 +41,6 @@ type FileWidgetProps = {
 };
 
 const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
-  const { port } = useContext(DevToolsContext);
   const notify = useNotifications();
 
   const [field, , helpers] = useField<string>(props);
@@ -88,7 +86,7 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
         });
       }
     },
-    [doc?.id, field.value, onSelect, port, setSheetError]
+    [doc?.id, field.value, onSelect, setSheetError]
   );
 
   const showPicker = useCallback(async () => {

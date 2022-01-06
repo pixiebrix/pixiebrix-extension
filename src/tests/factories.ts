@@ -33,7 +33,7 @@ import {
 } from "@/core";
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
-import { Permissions, Runtime } from "webextension-polyfill";
+import { Permissions } from "webextension-polyfill";
 import {
   BaseExtensionState,
   ElementType,
@@ -70,14 +70,6 @@ export const installedRecipeMetadataFactory = define<RecipeMetadata>({
   sharing: { public: false, organizations: [] },
 });
 
-const activePortFactory = define<Runtime.Port>({
-  name: "Test Port",
-  postMessage: jest.fn(),
-  disconnect: jest.fn(),
-  onDisconnect: jest.fn(),
-  onMessage: jest.fn(),
-});
-
 const tabStateFactory = define<FrameConnectionState>({
   frameId: 0,
   hasPermissions: true,
@@ -88,7 +80,6 @@ const tabStateFactory = define<FrameConnectionState>({
 export const activeDevToolContextFactory = define<DevtoolsContextType>({
   connect: jest.fn(),
   connecting: false,
-  port: activePortFactory,
   tabState: tabStateFactory,
 });
 

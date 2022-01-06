@@ -34,6 +34,12 @@ import * as dependencyHooks from "@/services/useDependency";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { Service } from "@/types";
 
+jest.mock("webext-detect-page", () => ({
+  isDevToolsPage: () => true,
+  isBackground: () => false,
+  isExtensionContext: () => false,
+}));
+
 jest.mock("@/services/useDependency", () =>
   jest.fn().mockReturnValue({
     // Pass minimal arguments

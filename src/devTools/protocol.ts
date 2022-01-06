@@ -15,56 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser, { Runtime, WebNavigation } from "webextension-polyfill";
-import { registerPort } from "@/background/devtools/protocol";
-import { PORT_NAME } from "@/background/devtools/contract";
-import {
-  installPortListeners,
-  navigationEvent,
-} from "@/background/devtools/external";
-import { runtimeConnect } from "@/chrome";
+import browser, { WebNavigation } from "webextension-polyfill";
+import { navigationEvent } from "@/background/devtools/external";
 import { resetTab } from "@/contentScript/messenger/api";
 import { thisTab } from "./utils";
 
 const TOP_LEVEL_FRAME_ID = 0;
-
-let _cachedPort: Runtime.Port | null = null;
-
-export async function connectDevtools(): Promise<Runtime.Port> {
-  const { tabId } = browser.devtools.inspectedWindow;
-
-  if (_cachedPort) {
-    console.debug("Devtools already connected to the background page");
-    return _cachedPort;
-  }
-
-  console.debug(`Connecting devtools to background page for tab: ${tabId}`);
-
-  // Create a connection to the background page
-  let port: Runtime.Port;
-  try {
-    port = await runtimeConnect(PORT_NAME);
-  } catch (error) {
-    // Not helpful to use recordError here because it can't connect to the background page to send
-    // the error telemetry
-    console.error("Devtools cannot connect to the background page", {
-      error,
-    });
-    throw error;
-  }
-
-  port.onDisconnect.addListener(() => {
-    if (_cachedPort === port) {
-      _cachedPort = null;
-    }
-  });
-
-  installPortListeners(port);
-  await registerPort(port);
-
-  _cachedPort = port;
-  return port;
-}
 
 export function updateDevTools() {
   navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
