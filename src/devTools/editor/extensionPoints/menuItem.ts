@@ -35,7 +35,6 @@ import {
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-  upgradePipelineToV3,
 } from "@/devTools/editor/extensionPoints/base";
 import {
   MenuDefinition,
@@ -59,6 +58,7 @@ import { NormalizedAvailability } from "@/blocks/types";
 import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfiguration";
 import { insertButton } from "@/contentScript/messenger/api";
 import { Except } from "type-fest";
+import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 
 type Extension = BaseExtensionState & Except<MenuItemExtensionConfig, "action">;
 
@@ -213,7 +213,9 @@ export async function fromExtension(
   let { apiVersion } = base;
 
   if (apiVersion === "v2") {
-    await upgradePipelineToV3(extension.blockPipeline);
+    extension.blockPipeline = await upgradePipelineToV3(
+      extension.blockPipeline
+    );
     showV3UpgradeMessage = true;
     apiVersion = "v3";
   }

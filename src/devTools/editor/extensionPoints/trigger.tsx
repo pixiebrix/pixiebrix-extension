@@ -31,7 +31,6 @@ import {
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-  upgradePipelineToV3,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -55,6 +54,7 @@ import {
 import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
+import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 
 export interface TriggerFormState extends BaseFormState {
   type: "trigger";
@@ -228,7 +228,9 @@ async function fromExtension(
   let { apiVersion } = base;
 
   if (apiVersion === "v2") {
-    await upgradePipelineToV3(extension.blockPipeline);
+    extension.blockPipeline = await upgradePipelineToV3(
+      extension.blockPipeline
+    );
     showV3UpgradeMessage = true;
     apiVersion = "v3";
   }

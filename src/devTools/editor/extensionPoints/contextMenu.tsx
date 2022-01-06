@@ -31,7 +31,6 @@ import {
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
   selectIsAvailable,
-  upgradePipelineToV3,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
@@ -56,6 +55,7 @@ import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
 import { Except } from "type-fest";
+import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 
 type Extension = BaseExtensionState & Except<ContextMenuConfig, "action">;
 
@@ -172,7 +172,9 @@ async function fromExtension(
   let { apiVersion } = base;
 
   if (apiVersion === "v2") {
-    await upgradePipelineToV3(extension.blockPipeline);
+    extension.blockPipeline = await upgradePipelineToV3(
+      extension.blockPipeline
+    );
     showV3UpgradeMessage = true;
     apiVersion = "v3";
   }

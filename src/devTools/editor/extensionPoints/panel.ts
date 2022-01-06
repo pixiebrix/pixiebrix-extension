@@ -31,7 +31,6 @@ import {
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-  upgradePipelineToV3,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import {
@@ -57,6 +56,7 @@ import { NormalizedAvailability } from "@/blocks/types";
 import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration";
 import { insertPanel } from "@/contentScript/messenger/api";
 import { Except } from "type-fest";
+import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 
 export type PanelTraits = {
   style: {
@@ -230,7 +230,9 @@ async function fromExtension(
   let { apiVersion } = base;
 
   if (apiVersion === "v2") {
-    await upgradePipelineToV3(extension.blockPipeline);
+    extension.blockPipeline = await upgradePipelineToV3(
+      extension.blockPipeline
+    );
     showV3UpgradeMessage = true;
     apiVersion = "v3";
   }
