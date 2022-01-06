@@ -76,9 +76,59 @@ async function upgradeValue(
 
   // eslint-disable-next-line security/detect-object-injection -- caller iterates over keys
   const value = config[fieldName];
-  if (typeof value === "object") {
-    if (fieldSchema.type === "object" || fieldSchema.type === "array") {
-      const subProps = fieldSchema.properties ?? {};
+  if (typeof value === "object" && fieldSchema) {
+    if (
+      Array.isArray(value) &&
+      fieldSchema.type === "array" &&
+      typeof fieldSchema.items !== "boolean"
+    ) {
+      const items: SchemaDefinition[] = [];
+      const { additionalItems } = fieldSchema;
+      const additionalItemsByType: Record<string, SchemaDefinition> = {};
+
+      if (Array.isArray(fieldSchema.items)) {
+        items.push(...fieldSchema.items);
+      } else if (fieldSchema.items) {
+        items.push(fieldSchema.items);
+        if (typeof fieldSchema.items.type === "string") {
+          additionalItemsByType[fieldSchema.items.type] = fieldSchema.items;
+        }
+      }
+
+      if (typeof additionalItems !== "boolean" && additionalItems) {
+        if (typeof additionalItems.type === "string") {
+          additionalItemsByType[additionalItems.type] = additionalItems;
+        }
+
+        if (additionalItems.oneOf) {
+          for (const prop of additionalItems.oneOf) {
+            if (typeof prop !== "boolean" && typeof prop.type === "string") {
+              additionalItemsByType[prop.type] = prop;
+            }
+          }
+        }
+      }
+
+      for (const [index, element] of value.entries()) {
+        if (index >= items.length) {
+          // eslint-disable-next-line security/detect-object-injection
+          items[index] = additionalItemsByType[typeof element];
+        }
+      }
+
+      await Promise.all(
+        value.map(async (element, index) => {
+          await upgradeValue(
+            (value as unknown) as UnknownObject,
+            index.toString(),
+            // eslint-disable-next-line security/detect-object-injection
+            items[index],
+            templateEngine
+          );
+        })
+      );
+    } else if (fieldSchema.type === "object") {
+      const properties = fieldSchema.properties ?? {};
 
       if (
         typeof fieldSchema.additionalProperties !== "boolean" &&
@@ -99,12 +149,12 @@ async function upgradeValue(
         }
 
         for (const name of Object.keys(value).filter(
-          (key) => !(key in subProps)
+          (key) => !(key in properties)
         )) {
           // eslint-disable-next-line security/detect-object-injection
           const subValue = (value as UnknownObject)[name];
           // eslint-disable-next-line security/detect-object-injection
-          subProps[name] = additionalPropsByType[typeof subValue];
+          properties[name] = additionalPropsByType[typeof subValue];
         }
       }
 
@@ -114,15 +164,15 @@ async function upgradeValue(
             value as UnknownObject,
             name,
             // eslint-disable-next-line security/detect-object-injection
-            subProps[name],
+            properties[name],
             templateEngine
           );
         })
       );
     }
   } else if (
-    fieldSchema.type === "string" &&
-    fieldSchema.format === "selector"
+    fieldSchema?.type === "string" &&
+    fieldSchema?.format === "selector"
   ) {
     // NOP: the Page Editor doesn't support templated selectors
   } else if (typeof value === "string") {
