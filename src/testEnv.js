@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { TextEncoder, TextDecoder } from "util";
+
 process.env.SERVICE_URL = "https://app.pixiebrix.com";
 
-const { TextEncoder, TextDecoder } = require("util");
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
