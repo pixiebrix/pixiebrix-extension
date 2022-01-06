@@ -228,6 +228,184 @@ describe("upgradePipelineToV3 tests", () => {
     ]);
   });
 
+  test("test nested object with additionalProperties", async () => {
+    const id = defineBlock({
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      type: "object",
+      properties: {
+        parent: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+          },
+        },
+      },
+    });
+
+    const upgraded = await upgradePipelineToV3([
+      {
+        id,
+        config: {
+          parent: {
+            childString: "{{ @input.foo }}",
+          },
+        },
+      },
+    ]);
+
+    expect(upgraded).toStrictEqual([
+      {
+        id,
+        config: {
+          parent: {
+            childString: {
+              __type__: "mustache",
+              __value__: "{{ @input.foo }}",
+            },
+          },
+        },
+      },
+    ]);
+  });
+
+  test("test nested object with additionalProperties ignores selector", async () => {
+    const id = defineBlock({
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      type: "object",
+      properties: {
+        parent: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+            format: "selector",
+          },
+        },
+      },
+    });
+
+    const pipeline = [
+      {
+        id,
+        config: {
+          parent: {
+            name: "h1.name",
+          },
+        },
+      },
+    ];
+
+    const upgraded = await upgradePipelineToV3(pipeline);
+
+    expect(upgraded).toStrictEqual(pipeline);
+  });
+
+  test("test nested object with additionalProperties and oneOf", async () => {
+    const id = defineBlock({
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      type: "object",
+      properties: {
+        parent: {
+          type: "object",
+          additionalProperties: {
+            oneOf: [
+              {
+                type: "string",
+              },
+              {
+                type: "object",
+                properties: {
+                  foo: {
+                    type: "string",
+                  },
+                  bar: {
+                    type: "number",
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    });
+
+    const upgraded = await upgradePipelineToV3([
+      {
+        id,
+        config: {
+          parent: {
+            childString: "{{ @input.foo }}",
+            childObject: {
+              foo: "{{ @input.bar }}",
+              bar: 42,
+            },
+          },
+        },
+      },
+    ]);
+
+    expect(upgraded).toStrictEqual([
+      {
+        id,
+        config: {
+          parent: {
+            childString: {
+              __type__: "mustache",
+              __value__: "{{ @input.foo }}",
+            },
+            childObject: {
+              foo: {
+                __type__: "mustache",
+                __value__: "{{ @input.bar }}",
+              },
+              bar: 42,
+            },
+          },
+        },
+      },
+    ]);
+  });
+
+  test("test nested object with additionalProperties and oneOf ignores selector", async () => {
+    const id = defineBlock({
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      type: "object",
+      additionalProperties: {
+        oneOf: [
+          {
+            type: "string",
+            format: "selector",
+          },
+          {
+            type: "object",
+            properties: {
+              foo: {
+                type: "string",
+              },
+              bar: {
+                type: "number",
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    const pipeline = [
+      {
+        id,
+        config: {
+          parent: {
+            name: "h1.name",
+          },
+        },
+      },
+    ];
+
+    const upgraded = await upgradePipelineToV3(pipeline);
+
+    expect(upgraded).toStrictEqual(pipeline);
+  });
+
   test("test nested array", async () => {
     const id = defineBlock(
       propertiesToSchema({
@@ -264,6 +442,174 @@ describe("upgradePipelineToV3 tests", () => {
                 __type__: "mustache",
                 __value__: "{{ @input.foo }}",
               },
+            },
+          ],
+        },
+      },
+    ]);
+  });
+
+  test("test nested array with items array", async () => {
+    const id = defineBlock(
+      propertiesToSchema({
+        parent: {
+          type: "array",
+          items: [
+            {
+              type: "string",
+            },
+            {
+              type: "object",
+              properties: {
+                itemString: {
+                  type: "string",
+                },
+              },
+            },
+          ],
+        },
+      })
+    );
+
+    const upgraded = await upgradePipelineToV3([
+      {
+        id,
+        config: {
+          parent: [
+            "myInputString",
+            {
+              itemString: "{{ @input.foo }}",
+            },
+          ],
+        },
+      },
+    ]);
+
+    expect(upgraded).toStrictEqual([
+      {
+        id,
+        config: {
+          parent: [
+            {
+              __type__: "mustache",
+              __value__: "myInputString",
+            },
+            {
+              itemString: {
+                __type__: "mustache",
+                __value__: "{{ @input.foo }}",
+              },
+            },
+          ],
+        },
+      },
+    ]);
+  });
+
+  test("test nested array with items array and additionalItems", async () => {
+    const id = defineBlock(
+      propertiesToSchema({
+        parent: {
+          type: "array",
+          items: [
+            {
+              type: "object",
+              properties: {
+                itemString: {
+                  type: "string",
+                },
+              },
+            },
+          ],
+          additionalItems: {
+            type: "string",
+          },
+        },
+      })
+    );
+
+    const upgraded = await upgradePipelineToV3([
+      {
+        id,
+        config: {
+          parent: [
+            {
+              itemString: "{{ @input.foo }}",
+            },
+            "foo",
+            "bar",
+          ],
+        },
+      },
+    ]);
+
+    expect(upgraded).toStrictEqual([
+      {
+        id,
+        config: {
+          parent: [
+            {
+              itemString: {
+                __type__: "mustache",
+                __value__: "{{ @input.foo }}",
+              },
+            },
+            {
+              __type__: "mustache",
+              __value__: "foo",
+            },
+            {
+              __type__: "mustache",
+              __value__: "bar",
+            },
+          ],
+        },
+      },
+    ]);
+  });
+
+  test("test nested array with additionalItems and oneOf", async () => {
+    const id = defineBlock(
+      propertiesToSchema({
+        parent: {
+          type: "array",
+          additionalItems: {
+            oneOf: [
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+            ],
+          },
+        },
+      })
+    );
+
+    const upgraded = await upgradePipelineToV3([
+      {
+        id,
+        config: {
+          parent: [1, "two", 3, "four"],
+        },
+      },
+    ]);
+
+    expect(upgraded).toStrictEqual([
+      {
+        id,
+        config: {
+          parent: [
+            1,
+            {
+              __type__: "mustache",
+              __value__: "two",
+            },
+            3,
+            {
+              __type__: "mustache",
+              __value__: "four",
             },
           ],
         },
