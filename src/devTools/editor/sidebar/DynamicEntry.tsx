@@ -55,12 +55,12 @@ const DynamicEntry: React.FunctionComponent<{
 
   return (
     <ListGroup.Item
+      action
       active={item.uuid === activeElement}
       key={`dynamic-${item.uuid}`}
       onMouseEnter={async () => showOverlay(item.uuid)}
       onMouseLeave={async () => hideOverlay()}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
-      style={{ cursor: "pointer" }}
     >
       <ExtensionIcon type={item.type} /> {getLabel(item)}
       {!available && (
