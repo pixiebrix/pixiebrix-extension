@@ -29,6 +29,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import { thisTab } from "@/devTools/utils";
 import { getProcesses, initRobot } from "@/contentScript/messenger/api";
+import { isDevToolsPage } from "webext-detect-page";
 
 function useLocalRobot() {
   const [robotAvailable, setRobotAvailable] = useState(false);
@@ -36,7 +37,7 @@ function useLocalRobot() {
   const [initError, setInitError] = useState(null);
 
   useAsyncEffect(async () => {
-    if (!chrome.devtools) {
+    if (!isDevToolsPage()) {
       setInitError(
         new Error("UiPath Assistant can only be configured from a page context")
       );
