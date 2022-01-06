@@ -23,6 +23,7 @@ const base64Ending = /; *base64$/; // Step 11, 11.4, 11.5
 // Vocabulary from https://www.npmjs.com/package/whatwg-mimetype
 interface ParsedDataURL {
   body: string;
+  encodedBody: string;
   mimeType: string;
   mimeTypeEssence: string;
   charset: string;
@@ -45,7 +46,7 @@ export default function parseDataUrl(url: string): ParsedDataURL | void {
   const isBase64 = base64Ending.test(mimeType); // Step 11
   if (isBase64) {
     // Must double-trim to follow the steps exactly, without changing the regex
-    mimeType.trim().replace(base64Ending, "").trim(); // Step 11.4, 11.5, 11.6
+    mimeType = mimeType.trim().replace(base64Ending, "").trim(); // Step 11.4, 11.5, 11.6
   } else if (mimeType === "") {
     mimeType = "text/plain"; // Step 12
   }
@@ -64,6 +65,7 @@ export default function parseDataUrl(url: string): ParsedDataURL | void {
 
   return {
     body,
+    encodedBody,
     mimeType: String(parsedMimeType),
     mimeTypeEssence: parsedMimeType.essence,
     charset: parsedMimeType.parameters.get("charset") ?? "US-ASCII", // Step 14
