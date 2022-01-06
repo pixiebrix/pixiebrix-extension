@@ -46,10 +46,10 @@ async function upgradeBlock(blockConfig: BlockConfig): Promise<void> {
 
   await Promise.all(
     Object.keys(blockConfig.config).map(async (name) => {
-      // eslint-disable-next-line security/detect-object-injection
       await upgradeValue(
         blockConfig.config,
         name,
+        // eslint-disable-next-line security/detect-object-injection -- name comes from config keys
         inputProps[name],
         templateEngine
       );
@@ -97,6 +97,7 @@ async function upgradeValue(
   ) {
     // NOP: the Page Editor doesn't support templated selectors
   } else if (typeof value === "string") {
+    // eslint-disable-next-line security/detect-object-injection -- caller iterates over keys
     config[fieldName] = stringToExpression(value, templateEngine);
   }
 }
