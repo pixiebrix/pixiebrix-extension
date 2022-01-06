@@ -49,6 +49,7 @@ import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/devTools/editor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 import UnsupportedApiV1 from "@/devTools/editor/tabs/editTab/UnsupportedApiV1";
+import UpgradedToApiV3 from "@/devTools/editor/tabs/editTab/UpgradedToApiV3";
 
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
@@ -269,6 +270,7 @@ const EditTab: React.FC<{
                 <Col>
                   <ConnectedFieldTemplate name="label" label="Extension Name" />
                   {showVersionField && <ApiVersionField />}
+                  <UpgradedToApiV3 />
                   <FoundationNode isLocked={isLocked} />
                 </Col>
               ) : isApiAtLeastV2 ? (
