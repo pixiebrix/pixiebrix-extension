@@ -78,14 +78,43 @@ async function upgradeValue(
   const value = config[fieldName];
   if (typeof value === "object") {
     if (fieldSchema.type === "object" || fieldSchema.type === "array") {
-      const subProps = inputProperties(fieldSchema);
+      const subProps = fieldSchema.properties ?? {};
+
+      if (
+        typeof fieldSchema.additionalProperties !== "boolean" &&
+        fieldSchema.additionalProperties
+      ) {
+        const additionalPropsByType: Record<string, SchemaDefinition> = {};
+        if (typeof fieldSchema.additionalProperties.type === "string") {
+          additionalPropsByType[fieldSchema.additionalProperties.type] =
+            fieldSchema.additionalProperties;
+        }
+
+        if (fieldSchema.additionalProperties.oneOf) {
+          for (const prop of fieldSchema.additionalProperties.oneOf) {
+            if (typeof prop !== "boolean" && typeof prop.type === "string") {
+              additionalPropsByType[prop.type] = prop;
+            }
+          }
+        }
+
+        for (const name of Object.keys(value).filter(
+          (key) => !(key in subProps)
+        )) {
+          // eslint-disable-next-line security/detect-object-injection
+          const subValue = (value as UnknownObject)[name];
+          // eslint-disable-next-line security/detect-object-injection
+          subProps[name] = additionalPropsByType[typeof subValue];
+        }
+      }
 
       await Promise.all(
         Object.keys(value).map(async (name) => {
           await upgradeValue(
             value as UnknownObject,
             name,
-            subProps,
+            // eslint-disable-next-line security/detect-object-injection
+            subProps[name],
             templateEngine
           );
         })
