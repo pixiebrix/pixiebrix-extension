@@ -18,3 +18,20 @@
 span.page-title-icon {
   line-height: 36px;
 }
+
+/** Use as <Button bsPrefix="btn-reset"> */
+.btn-reset {
+  all: inherit;
+  cursor: pointer;
+}
+
+/** Use as <Button bsPrefix="btn-reset" variant="link"> */
+.btn-reset-link {
+  color: #007bff;
+  text-decoration: none;
+  background-color: transparent;
+  &:hover {
+    color: #0056b3;
+    text-decoration: underline;
+  }
+}

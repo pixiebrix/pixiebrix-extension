@@ -21,6 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
 import styles from "./JsonTree.module.scss";
+import { Button } from "react-bootstrap";
 
 export function useLabelRenderer() {
   const { addToast } = useToasts();
@@ -35,9 +36,9 @@ export function useLabelRenderer() {
       <div>
         <span>{key}</span>
         {!expanded && ": "}
-        <span
-          role="button"
-          className={styles.copyPath}
+        <Button
+          variant="text"
+          className={[styles.copyPath, "p-0"].join(" ")}
           aria-label="copy path"
           onClick={(event) => {
             copy([key, ...rest].reverse().join("."));
@@ -49,7 +50,7 @@ export function useLabelRenderer() {
           }}
         >
           <FontAwesomeIcon icon={faCopy} aria-hidden />
-        </span>
+        </Button>
       </div>
     ),
     [addToast]

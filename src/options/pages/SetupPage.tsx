@@ -129,9 +129,13 @@ const SetupPage: React.FunctionComponent = () => {
               <div className="mt-2">
                 <span className="text-muted">
                   Alternatively, you can use the extension in{" "}
-                  <a href="#" onClick={setLocal}>
+                  <Button
+                    bsPrefix="btn-reset"
+                    variant="link"
+                    onClick={setLocal}
+                  >
                     local-only mode
-                  </a>
+                  </Button>
                 </span>
               </div>
             </Step>
