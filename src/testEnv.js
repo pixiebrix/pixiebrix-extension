@@ -16,3 +16,7 @@
  */
 
 process.env.SERVICE_URL = "https://app.pixiebrix.com";
+
+const { TextEncoder, TextDecoder } = require("util");
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
