@@ -24,7 +24,8 @@ const Icon: React.FunctionComponent<{
   icon: string;
   library: IconLibrary;
   size?: number;
-}> = ({ icon, library, size = 16 }) => {
+  className?: string;
+}> = ({ icon, library, size = 16, className }) => {
   const [svg, setSvg] = useState("");
 
   useAsyncEffect(
@@ -41,6 +42,7 @@ const Icon: React.FunctionComponent<{
 
   return (
     <span
+      className={className}
       dangerouslySetInnerHTML={{
         __html: svg,
       }}
