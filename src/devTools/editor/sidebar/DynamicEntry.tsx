@@ -17,7 +17,6 @@
 
 import React, { useCallback } from "react";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
-import { Runtime } from "webextension-polyfill";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
 import { ListGroup } from "react-bootstrap";
@@ -37,7 +36,6 @@ import { thisTab } from "@/devTools/utils";
  */
 const DynamicEntry: React.FunctionComponent<{
   item: FormState;
-  port: Runtime.Port;
   available: boolean;
   activeElement: string | null;
 }> = ({ item, available, activeElement }) => {

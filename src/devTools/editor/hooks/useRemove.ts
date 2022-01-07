@@ -16,8 +16,7 @@
  */
 
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
-import { useCallback, useContext } from "react";
-import { DevToolsContext } from "@/devTools/context";
+import { useCallback } from "react";
 import { useToasts } from "react-toast-notifications";
 import { useFormikContext } from "formik";
 import { useDispatch } from "react-redux";
@@ -37,7 +36,6 @@ import {
  * @param element the current Page Editor state
  */
 function useRemove(element: FormState): () => void {
-  const { port } = useContext(DevToolsContext);
   const { addToast } = useToasts();
   const { values } = useFormikContext<FormState>();
   const dispatch = useDispatch();
@@ -91,7 +89,7 @@ function useRemove(element: FormState): () => void {
         autoDismiss: true,
       });
     }
-  }, [showConfirmation, values, addToast, port, element, dispatch]);
+  }, [showConfirmation, values, addToast, element, dispatch]);
 }
 
 export default useRemove;
