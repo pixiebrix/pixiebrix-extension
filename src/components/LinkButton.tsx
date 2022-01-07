@@ -14,20 +14,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import "@/options.scss";
-import "@/vendors/overrides.scss";
-import "@/extensionContext";
-import "@/development/darkMode";
-
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
-
-import { render } from "react-dom";
+import styles from "./LinkButton.module.scss";
 import React from "react";
-import App from "@/options/App";
-import initGoogle from "@/contrib/google/initGoogle";
+import { Button, ButtonProps } from "react-bootstrap";
+import cx from "classnames";
+import { Except } from "type-fest";
 
-initGoogle();
+type PropType = Except<ButtonProps, "variant" | "size" | "href" | "target">;
 
-render(<App />, document.querySelector("#container"));
+/** A button that looks like plain text. The right alternative to fake links like `<a href="#">` */
+export const LinkButton: React.FC<PropType> = (props: PropType) => {
+  const { className, ...otherProps } = props;
+  return (
+    <Button
+      variant="link"
+      className={cx(styles.root, className)}
+      {...otherProps}
+    />
+  );
+};

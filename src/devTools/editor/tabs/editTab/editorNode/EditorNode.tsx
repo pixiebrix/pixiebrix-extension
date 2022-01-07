@@ -93,6 +93,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
 
   return (
     // Use our own custom style here, not bootstrap
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events -- TODO
     <div
       ref={nodeRef}
       tabIndex={0}
