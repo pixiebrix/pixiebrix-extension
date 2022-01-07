@@ -29,6 +29,7 @@ import GridLoader from "react-spinners/GridLoader";
 
 import "./SetupPage.scss";
 import { useTitle } from "@/hooks/title";
+import { LinkButton } from "@/components/LinkButton";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;
@@ -129,13 +130,7 @@ const SetupPage: React.FunctionComponent = () => {
               <div className="mt-2">
                 <span className="text-muted">
                   Alternatively, you can use the extension in{" "}
-                  <Button
-                    bsPrefix="btn-reset"
-                    variant="link"
-                    onClick={setLocal}
-                  >
-                    local-only mode
-                  </Button>
+                  <LinkButton onClick={setLocal}>local-only mode</LinkButton>
                 </span>
               </div>
             </Step>
