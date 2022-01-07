@@ -22,6 +22,7 @@ import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
 import styles from "./JsonTree.module.scss";
 import { Button } from "react-bootstrap";
+import cx from "classnames";
 
 export function useLabelRenderer() {
   const { addToast } = useToasts();
@@ -38,7 +39,7 @@ export function useLabelRenderer() {
         {!expanded && ": "}
         <Button
           variant="text"
-          className={[styles.copyPath, "p-0"].join(" ")}
+          className={cx(styles.copyPath, "p-0")}
           aria-label="copy path"
           onClick={(event) => {
             copy([key, ...rest].reverse().join("."));
