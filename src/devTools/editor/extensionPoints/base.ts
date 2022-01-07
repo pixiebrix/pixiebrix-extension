@@ -63,8 +63,7 @@ export interface WizardStep {
  * Brick definition API controlling how the PixieBrix runtime interprets brick configurations
  * @see ApiVersion
  */
-// Keep at v2 until the Page Editor supports v3 expressions
-export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v2";
+export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v3";
 
 /**
  * Default definition entry for the inner definition of the extensionPoint for the extension
@@ -165,6 +164,7 @@ export function makeInitialBaseState(
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+    showV3UpgradeMessage: false,
     services: [],
     optionsArgs: {},
     extension: {
@@ -384,7 +384,7 @@ export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
  * @param pipelineProp the name of the pipeline prop, currently either "action" or "body"
  * @param defaults
  */
-export function normalizePipeline<
+export function extensionWithNormalizedPipeline<
   T extends UnknownObject,
   Prop extends keyof T
 >(

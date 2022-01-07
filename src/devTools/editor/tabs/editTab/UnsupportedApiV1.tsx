@@ -20,7 +20,7 @@ import React from "react";
 import { Alert, Card } from "react-bootstrap";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-const UnsupportedApiVersionV1: React.FC = () => (
+const UnsupportedApiV1: React.FC = () => (
   <Card>
     <Card.Header>Unsupported Extension Runtime Version</Card.Header>
     <Card.Body>
@@ -43,4 +43,4 @@ const UnsupportedApiVersionV1: React.FC = () => (
   </Card>
 );
 
-export default UnsupportedApiVersionV1;
+export default UnsupportedApiV1;
