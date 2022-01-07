@@ -25,13 +25,13 @@ interface ParsedDataURL {
   /**
    * The content of the URL after URL-decoding and base64-decoding, if any; it may be binary data
    * @example "Hello world"
-   * @example "GIF89aÿÿÿ!ù,D;"
+   * @example "GIF89aÿÿÿ!ù,D;"
    */
   body: string;
 
   /**
-   * The content of the URL after URL-decoding but before base64-decoding, if any
-   * @example "Hello world"
+   * The content of the URL before URL-decoding and base64-decoding, if any
+   * @example "Hello%20world"
    * @example "R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
    */
   encodedBody: string;
@@ -46,8 +46,9 @@ interface ParsedDataURL {
   mimeTypeEssence: string;
 
   /**
-   * For base64 data, it will always be windows-1252, the spec’s name for ASCII
+   * The original text encoding of the body in the string. If unspecified (like for base64 data), it's "windows-1252", the spec’s name for ASCII
    * @example "utf-8"
+   * @default "windows-1252"
    */
   charset: string;
 }
