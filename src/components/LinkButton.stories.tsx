@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-}
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+
+import { LinkButton } from "@/components/LinkButton";
+
+export default {
+  title: "Common/LinkButton",
+  component: LinkButton,
+  argTypes: {
+    onClick: { action: "clicked" },
+  },
+} as ComponentMeta<typeof LinkButton>;
+
+const Template: ComponentStory<typeof LinkButton> = (args) => (
+  <LinkButton {...args} />
+);
+
+export const Link = Template.bind({});
+Link.args = {
+  children: "Button that looks like a link",
+};

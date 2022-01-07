@@ -23,13 +23,17 @@ import { truncate } from "lodash";
 import { getEncodingName } from "@/vendors/encodings";
 import parseDataUrl from "@/utils/parseDataUrl";
 
+/**
+ * Length to trim URLs to in error messages.
+ */
+const ERROR_MAX_URL_LENGTH = 50;
+
 export class ParseDataUrl extends Transformer {
   constructor() {
     super(
       "@pixiebrix/data-url",
       "Parse Data URL",
-      "Parse a data: URL, e.g., from a file upload",
-      "faCode"
+      "Parse and decode a data: URL, e.g., from a file upload or screenshot"
     );
   }
 
@@ -44,6 +48,11 @@ export class ParseDataUrl extends Transformer {
         format: "data-url",
         description:
           "https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs",
+      },
+      decodeText: {
+        type: "boolean",
+        default: "false",
+        description: "Decode the body into text",
       },
     },
     ["url"]
@@ -60,36 +69,50 @@ export class ParseDataUrl extends Transformer {
     },
     body: {
       type: "string",
-      description: "The decoded body",
+      description: "The body, decoded if decode flag was set",
     },
   });
 
-  async transform({ url }: BlockArg): Promise<unknown> {
+  // Pass true for decodeText to maintain backward compatability
+  async transform({
+    url,
+    decodeText = true,
+  }: BlockArg<{
+    url: string;
+    decodeText: boolean;
+  }>): Promise<unknown> {
     const dataURL = parseDataUrl(url);
     if (!dataURL) {
-      const maxLength = 50;
       throw new PropError(
         "Invalid data URL",
         this.id,
         "url",
         truncate(url, {
-          length: maxLength,
-          omission: `[${url.length - maxLength} characters clipped]`,
+          length: ERROR_MAX_URL_LENGTH,
+          omission: `[${url.length - ERROR_MAX_URL_LENGTH} characters clipped]`,
         })
       );
     }
 
-    const { charset, mimeTypeEssence, body } = dataURL;
+    const {
+      charset,
+      mimeTypeEssence,
+      body: decodedBody,
+      encodedBody,
+    } = dataURL;
 
-    const decoder = new TextDecoder(charset);
+    let body = encodedBody;
 
-    // https://github.com/ashtuchkin/iconv-lite/blob/4a7086f81a3793d8184ce0835008e4f8c7b3ef41/lib/index.js#L35
-    const decodedBody = decoder.decode(
-      Buffer.from(decodeURIComponent(body), "binary")
-    );
+    if (decodeText) {
+      const decoder = new TextDecoder(charset);
+      // https://github.com/ashtuchkin/iconv-lite/blob/4a7086f81a3793d8184ce0835008e4f8c7b3ef41/lib/index.js#L35
+      body = decoder.decode(
+        Buffer.from(decodeURIComponent(decodedBody), "binary")
+      );
+    }
 
     return {
-      body: decodedBody,
+      body,
       mimeType: mimeTypeEssence,
       encoding: getEncodingName(charset),
     };

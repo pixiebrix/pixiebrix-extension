@@ -72,12 +72,6 @@ module.exports = {
     "unicorn/no-await-expression-member": "warn", // Annoying sometimes, let's try it
 
     "@typescript-eslint/consistent-type-assertions": "warn",
-
-    "jsx-a11y/click-events-have-key-events": "warn",
-    "jsx-a11y/no-static-element-interactions": "warn",
-    "jsx-a11y/anchor-is-valid": "warn",
-    "jsx-a11y/interactive-supports-focus": "warn",
-    "jsx-a11y/iframe-has-title": "warn",
   },
   ignorePatterns: [
     "node_modules",
