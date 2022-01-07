@@ -17,7 +17,7 @@
 
 import React from "react";
 import { useField } from "formik";
-import { Alert, Card } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
