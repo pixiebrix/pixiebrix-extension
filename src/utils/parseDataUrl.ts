@@ -22,10 +22,33 @@ const base64Ending = /; *base64$/; // Step 11, 11.4, 11.5
 
 // Vocabulary from https://www.npmjs.com/package/whatwg-mimetype
 interface ParsedDataURL {
+  /**
+   * The content of the URL after URL-decoding and base64-decoding, if any; it may be binary data
+   * @example "Hello world"
+   * @example "GIF89aÿÿÿ!ù,D;"
+   */
   body: string;
+
+  /**
+   * The content of the URL after URL-decoding but before base64-decoding, if any
+   * @example "Hello world"
+   * @example "R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+   */
   encodedBody: string;
+
+  /**
+   * The full MIME type string
+   * @example "text/html;charset=utf-8"
+   */
   mimeType: string;
+
+  /** @example text/html */
   mimeTypeEssence: string;
+
+  /**
+   * For base64 data, it will always be windows-1252, the spec’s name for ASCII
+   * @example "utf-8"
+   */
   charset: string;
 }
 
