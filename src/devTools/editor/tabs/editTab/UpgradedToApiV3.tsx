@@ -34,38 +34,34 @@ const UpgradedToApiV3: React.FC = () => {
 
   return (
     showMessage && (
-      <Card>
-        <Card.Body>
-          <Alert variant="info" className={styles.alert}>
-            <FontAwesomeIcon
-              icon={faExclamationCircle}
-              size="lg"
-              className="mt-1"
-            />
-            <p>
-              The Page Editor no longer supports editing bricks created for
-              runtime API v2. We&apos;ve attempted to automatically convert this
-              extension to runtime API v3.{" "}
-              <a
-                href="https://docs.pixiebrix.com/runtime"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Read more about this change here.
-              </a>
-            </p>
-            <button
-              type="button"
-              className={styles.close}
-              onClick={() => {
-                setShowMessage(false);
-              }}
-            >
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-          </Alert>
-        </Card.Body>
-      </Card>
+      <Alert variant="info" className={styles.alert}>
+        <FontAwesomeIcon
+          icon={faExclamationCircle}
+          size="lg"
+          className="mt-1"
+        />
+        <p>
+          The Page Editor no longer supports editing bricks created for runtime
+          API v2. We&apos;ve attempted to automatically convert this extension
+          to runtime API v3.{" "}
+          <a
+            href="https://docs.pixiebrix.com/runtime"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Read more about this change here.
+          </a>
+        </p>
+        <button
+          type="button"
+          className={styles.close}
+          onClick={() => {
+            setShowMessage(false);
+          }}
+        >
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+      </Alert>
     )
   );
 };
