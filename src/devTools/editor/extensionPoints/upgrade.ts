@@ -82,53 +82,94 @@ async function upgradeValue(
       fieldSchema.type === "array" &&
       typeof fieldSchema.items !== "boolean"
     ) {
-      const items: SchemaDefinition[] = [];
-      const { additionalItems } = fieldSchema;
-      const additionalItemsByType: Record<string, SchemaDefinition> = {};
+      // For json-schema arrays, each item in the value array gets a schema in the same
+      // position in the itemSchemas array
+      const itemSchemas: SchemaDefinition[] = [];
+      const { additionalItems, items } = fieldSchema;
 
-      if (Array.isArray(fieldSchema.items)) {
-        items.push(...fieldSchema.items);
-      } else if (fieldSchema.items) {
-        items.push(fieldSchema.items);
-        if (typeof fieldSchema.items.type === "string") {
-          additionalItemsByType[fieldSchema.items.type] = fieldSchema.items;
+      // The items field of the array json schema, if defined, is either a single schema
+      // definition, or an array of schema definitions. In the cases where the items field
+      // is either a single schema, or an array that has fewer schema definitions than
+      // the value array, we need to infer the schema for each remaining item by its type.
+      // The value array is assumed to be valid according to the given schema, so we're
+      // going to roughly match the remaining items by typeof, which overlaps with
+      // JSONSchema7TypeName for most things (e.g. "string", "number", "boolean", etc).
+      const additionalItemSchemasByType: Record<string, SchemaDefinition> = {};
+
+      if (Array.isArray(items)) {
+        // If the items field is an array, then those schemas are assumed to match with the
+        // item in the value array at the same position.
+        itemSchemas.push(...items);
+      } else if (typeof items !== "boolean" && items) {
+        // If the items field is a single schema definition, then we start with this one.
+        itemSchemas.push(items);
+        // If the single items schema definition also has a single string value for its
+        // type field, then we add this to our additionalItemSchemasByType dictionary.
+        // This can then be used to match any remaining items in the value array of the
+        // same typeof value.
+        if (typeof items.type === "string") {
+          additionalItemSchemasByType[items.type] = items;
         }
       }
 
+      // The additionalItems field, if defined, is either a single schema definition, or
+      // an array of schemas. It will be used to match any extra items in the value array
+      // beyond those with matching position values in the itemSchemas array.
       if (typeof additionalItems !== "boolean" && additionalItems) {
         if (typeof additionalItems.type === "string") {
-          additionalItemsByType[additionalItems.type] = additionalItems;
+          // If additionalItems is a single schema, and that schema has a single, string
+          // type value, then we add this to our dictionary to match extra items in the
+          // value array.
+          additionalItemSchemasByType[additionalItems.type] = additionalItems;
         }
 
+        // If the oneOf array is populated on the additionalItems field of the schema,
+        // then we iterate through its items (schemas), adding each to our dictionary
+        // if it has a string type value.
         if (additionalItems.oneOf) {
           for (const prop of additionalItems.oneOf) {
-            if (typeof prop !== "boolean" && typeof prop.type === "string") {
-              additionalItemsByType[prop.type] = prop;
+            if (typeof prop !== "boolean" && typeof prop?.type === "string") {
+              additionalItemSchemasByType[prop.type] = prop;
             }
           }
         }
       }
 
+      // Now, we iterate through our value array, and use the dictionary we've built
+      // to assign each extra item a schema in our itemSchemas array.
       for (const [index, element] of value.entries()) {
-        if (index >= items.length) {
+        if (index >= itemSchemas.length) {
           // eslint-disable-next-line security/detect-object-injection
-          items[index] = additionalItemsByType[typeof element];
+          itemSchemas[index] = additionalItemSchemasByType[typeof element];
         }
       }
 
+      // Finally, since we should now have an item schema for each item in the value
+      // array, we can recursively call this function again with each item and its
+      // schema from the itemSchemas array, with the current value as the parent.
       await Promise.all(
         value.map(async (element, index) => {
           await upgradeValue(
+            // We have to do a kind of nasty cast here in order for the function to
+            // work with an array and index values, but thanks to javascript under
+            // the hood, this works fine. Looking up array items by array["<index>"]
+            // is valid javascript.
             (value as unknown) as UnknownObject,
             index.toString(),
             // eslint-disable-next-line security/detect-object-injection
-            items[index],
+            itemSchemas[index],
             templateEngine
           );
         })
       );
     } else if (fieldSchema.type === "object") {
-      const properties = fieldSchema.properties ?? {};
+      // This section handling object values works fundamentally the same way as
+      // the array section above (detailed comments there). Property schemas are
+      // matched up based on the object property name rather than array position.
+      // We look at the properties and additionalProperties fields of the schema,
+      // as opposed to the items and additionalItems fields for arrays.
+
+      const propertySchemas = fieldSchema.properties ?? {};
 
       if (
         typeof fieldSchema.additionalProperties !== "boolean" &&
@@ -142,19 +183,19 @@ async function upgradeValue(
 
         if (fieldSchema.additionalProperties.oneOf) {
           for (const prop of fieldSchema.additionalProperties.oneOf) {
-            if (typeof prop !== "boolean" && typeof prop.type === "string") {
+            if (typeof prop !== "boolean" && typeof prop?.type === "string") {
               additionalPropsByType[prop.type] = prop;
             }
           }
         }
 
         for (const name of Object.keys(value).filter(
-          (key) => !(key in properties)
+          (key) => !(key in propertySchemas)
         )) {
           // eslint-disable-next-line security/detect-object-injection
           const subValue = (value as UnknownObject)[name];
           // eslint-disable-next-line security/detect-object-injection
-          properties[name] = additionalPropsByType[typeof subValue];
+          propertySchemas[name] = additionalPropsByType[typeof subValue];
         }
       }
 
@@ -164,7 +205,7 @@ async function upgradeValue(
             value as UnknownObject,
             name,
             // eslint-disable-next-line security/detect-object-injection
-            properties[name],
+            propertySchemas[name],
             templateEngine
           );
         })
