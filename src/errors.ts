@@ -259,7 +259,7 @@ export function isAxiosError(error: unknown): error is AxiosError {
 }
 
 /**
- * Return true if the proximate cause of event is an messaging or port error.
+ * Return true if the proximate cause of event is an messaging error.
  *
  * NOTE: does not recursively identify the root cause of the error.
  */

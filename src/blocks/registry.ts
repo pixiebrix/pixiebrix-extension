@@ -40,7 +40,9 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
 
   private async inferAllTypes(): Promise<TypedBlockMap> {
     // Import here to avoid circular dependency between getType and the block registry
-    const { getType } = await import("@/blocks/util");
+    const { getType } = await import(
+      /* webpackChunkName: "blocks/util" */ "@/blocks/util"
+    );
     const typeCache: TypedBlockMap = new Map();
     const items = await this.all();
 

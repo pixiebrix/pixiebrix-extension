@@ -64,6 +64,15 @@
       "128": "icons/inactive/logo128.png"
     }
   },
+  "commands": {
+    "toggle-quick-bar": {
+      "description": "Toggle quick bar",
+      "suggested_key": {
+        "default": "Ctrl+K"
+      },
+      "global": true
+    }
+  },
   "background": {
     "scripts": ["grayIconWhileLoading.js", "vendors.js", "background.js"]
   },

@@ -26,12 +26,13 @@ import { JsonObject } from "type-fest";
 import { MessengerMeta } from "webext-messenger";
 import { linkChildTab, runBrick } from "@/contentScript/messenger/api";
 import { Target } from "@/types";
-import { TabId } from "@/background/devtools/contract";
 import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
 
-const tabToOpener = new Map<number, number>();
-const tabToTarget = new Map<number, number>();
+type TabId = number;
+
+const tabToOpener = new Map<TabId, TabId>();
+const tabToTarget = new Map<TabId, TabId>();
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
 
 export async function waitForTargetByUrl(url: string): Promise<Target> {

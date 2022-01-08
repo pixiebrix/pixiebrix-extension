@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,16 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Runtime } from "webextension-polyfill";
-import {
-  liftBackground,
-  registerPort as internalRegisterPort,
-} from "@/background/devtools/internal";
-import type { Target } from "@/types";
+.alert {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
 
-export const registerPort = liftBackground(
-  "REGISTER_PORT",
-  (target: Target, port: Runtime.Port) => async () => {
-    internalRegisterPort(target.tabId, port);
-  }
-);
+.close {
+  border: none;
+  background: transparent;
+}

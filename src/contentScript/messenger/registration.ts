@@ -52,6 +52,7 @@ import {
   runReaderBlock,
   runReader,
   readSelected,
+  resetTab,
 } from "@/contentScript/devTools";
 import { checkAvailable } from "@/blocks/available";
 import { showNotification } from "@/contentScript/notify";
@@ -62,6 +63,7 @@ import {
   runMapArgs,
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol";
+import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 
 expectContext("contentScript");
 
@@ -73,7 +75,9 @@ declare global {
 
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
+    RESET_TAB: typeof resetTab;
 
+    TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
     TOGGLE_ACTION_PANEL: typeof toggleActionPanel;
     SHOW_ACTION_PANEL: typeof showActionPanel;
@@ -119,7 +123,9 @@ registerMethods({
 
   QUEUE_REACTIVATE_TAB: queueReactivateTab,
   REACTIVATE_TAB: reactivateTab,
+  RESET_TAB: resetTab,
 
+  TOGGLE_QUICK_BAR: toggleQuickBar,
   HANDLE_MENU_ACTION: handleMenuAction,
   TOGGLE_ACTION_PANEL: toggleActionPanel,
   SHOW_ACTION_PANEL: showActionPanel,

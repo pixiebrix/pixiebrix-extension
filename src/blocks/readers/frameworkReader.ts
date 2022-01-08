@@ -18,6 +18,7 @@
 import { Read } from "@/blocks/readers/factory";
 import { Framework } from "@/messaging/constants";
 import { ReaderOutput, ReaderRoot } from "@/core";
+import { getCssSelector } from "css-selector-generator";
 import { castArray, compact } from "lodash";
 import { getComponentData, ReadPayload } from "@/pageScript/protocol";
 
@@ -33,9 +34,6 @@ export function isHTMLElement(root: ReaderRoot): root is HTMLElement {
 }
 
 async function asyncFastCssSelector(element: HTMLElement): Promise<string> {
-  // Load async because css-selector-generator references the window variable which fails when
-  // generating headers
-  const getCssSelector = (await import("css-selector-generator")).default;
   return getCssSelector(element, {
     // Prefer speed over robust/readable selectors
     combineWithinSelector: false,

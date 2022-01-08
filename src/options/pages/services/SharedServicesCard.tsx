@@ -92,25 +92,16 @@ const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
         </Card.Body>
       )}
       <Card.Footer className="d-flex justify-content-between align-items-center">
-        {serviceUrl ? (
-          <span className="py-3">
-            To configure shared services, open the{" "}
-            <a
-              href={urljoin(serviceUrl, "services")}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              PixieBrix website
-            </a>
-          </span>
-        ) : (
-          <span className="py-3">
-            To configure shared services,
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              create a PixieBrix account
-            </a>
-          </span>
-        )}
+        <span className="py-3">
+          To configure shared services, open the{" "}
+          <a
+            href={urljoin(serviceUrl, "services")}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            PixieBrix website
+          </a>
+        </span>
         <span className="text-muted">
           Showing {page * SERVICES_PER_PAGE + 1} to{" "}
           {SERVICES_PER_PAGE * page + pageServices.length} of{" "}

@@ -17,7 +17,6 @@
 
 import React, { useCallback } from "react";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
-import { Runtime } from "webextension-polyfill";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
 import { ListGroup } from "react-bootstrap";
@@ -37,7 +36,6 @@ import { thisTab } from "@/devTools/utils";
  */
 const DynamicEntry: React.FunctionComponent<{
   item: FormState;
-  port: Runtime.Port;
   available: boolean;
   activeElement: string | null;
 }> = ({ item, available, activeElement }) => {
@@ -57,12 +55,12 @@ const DynamicEntry: React.FunctionComponent<{
 
   return (
     <ListGroup.Item
+      action
       active={item.uuid === activeElement}
       key={`dynamic-${item.uuid}`}
       onMouseEnter={async () => showOverlay(item.uuid)}
       onMouseLeave={async () => hideOverlay()}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
-      style={{ cursor: "pointer" }}
     >
       <ExtensionIcon type={item.type} /> {getLabel(item)}
       {!available && (

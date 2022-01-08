@@ -19,7 +19,7 @@ import React, { useEffect, useRef } from "react";
 import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import cx from "classnames";
+import { ListGroup } from "react-bootstrap";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { NodeId } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 
@@ -62,7 +62,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   onClickMoveUp,
   onClickMoveDown,
 }) => {
-  const nodeRef = useRef<HTMLDivElement>(null);
+  const nodeRef = useRef<HTMLAnchorElement>(null);
   const outputName = outputKey ? `@${outputKey}` : "";
 
   const icon = isFontAwesomeIcon(iconProp) ? (
@@ -90,17 +90,13 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       nodeRef.current?.focus();
     }
   }, [active]);
-
   return (
-    // Use our own custom style here, not bootstrap
-    <div
+    <ListGroup.Item
       ref={nodeRef}
-      tabIndex={0}
-      role="button"
+      action
       onClick={onClick}
-      className={cx(styles.root, {
-        [styles.activeNode]: active,
-      })}
+      active={active}
+      className={styles.root}
     >
       <div className={styles.icon}>
         {icon}
@@ -108,7 +104,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       </div>
       <div className={styles.text}>
         <div>{title}</div>
-        <div className={styles.outputKey}>{outputName}</div>
+        {outputName && <div className={styles.outputKey}>{outputName}</div>}
       </div>
       {canMoveAnything && (
         <div className={styles.moveButtons}>
@@ -142,7 +138,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
           )}
         </div>
       )}
-    </div>
+    </ListGroup.Item>
   );
 };
 

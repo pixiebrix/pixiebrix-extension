@@ -63,7 +63,9 @@ export class AttachAutocomplete extends Effect {
 
     const inputs = $elt.toArray().filter((x) => x.tagName === "INPUT");
 
-    const { default: autocompleter } = await import("autocompleter");
+    const { default: autocompleter } = await import(
+      /* webpackChunkName: "autocompleter" */ "autocompleter"
+    );
     // TODO: adjust style to hard-code font color so it works on dark themes that have a light font color by default
     await attachStylesheet(autocompleterStyleUrl);
 
