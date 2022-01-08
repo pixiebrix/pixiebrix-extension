@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Icon.module.scss";
 import React, { useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { IconLibrary } from "@/core";
 import getSvgIcon from "@/icons/getSvgIcon";
+import cx from "classnames";
 
 const Icon: React.FunctionComponent<{
   icon: string;
@@ -42,7 +44,7 @@ const Icon: React.FunctionComponent<{
 
   return (
     <span
-      className={className}
+      className={cx(className, styles.root)}
       dangerouslySetInnerHTML={{
         __html: svg,
       }}
