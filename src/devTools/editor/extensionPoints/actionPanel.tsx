@@ -25,7 +25,7 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  normalizePipeline,
+  extensionWithNormalizedPipeline,
   omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
@@ -50,6 +50,7 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
 import { Except } from "type-fest";
+import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 
 type Extension = BaseExtensionState & Except<ActionPanelConfig, "body">;
 
@@ -138,6 +139,7 @@ export async function fromExtensionPoint(
   return {
     uuid: uuidv4(),
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+    showV3UpgradeMessage: false,
     installed: true,
     type: extensionPoint.definition.type,
     label: heading,
@@ -172,10 +174,26 @@ async function fromExtension(
     "actionPanel"
   >(config, "actionPanel");
 
-  return {
-    ...baseFromExtension(config, extensionPoint.definition.type),
+  const base = baseFromExtension(config, extensionPoint.definition.type);
+  const extension = extensionWithNormalizedPipeline(config.config, "body");
+  let showV3UpgradeMessage = false;
+  let { apiVersion } = base;
 
-    extension: normalizePipeline(config.config, "body"),
+  if (apiVersion === "v2") {
+    extension.blockPipeline = await upgradePipelineToV3(
+      extension.blockPipeline
+    );
+    showV3UpgradeMessage = true;
+    apiVersion = "v3";
+  }
+
+  return {
+    ...base,
+
+    apiVersion,
+    showV3UpgradeMessage,
+
+    extension,
 
     extensionPoint: {
       metadata: extensionPoint.metadata,

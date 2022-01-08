@@ -24,17 +24,17 @@ import {
   SITES_PATTERN,
 } from "@/permissions/patterns";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
-import { Button, Form } from "react-bootstrap";
-import styles from "./UrlMatchPatternWidget.module.scss";
+import { Form } from "react-bootstrap";
 import { useField } from "formik";
+import { LinkButton } from "@/components/LinkButton";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;
   onClick: () => void;
 }> = ({ caption, onClick }) => (
-  <Button variant="link" size="sm" className={styles.root} onClick={onClick}>
+  <LinkButton className="ml-2" onClick={onClick}>
     {caption}
-  </Button>
+  </LinkButton>
 );
 
 export type Shortcut = {

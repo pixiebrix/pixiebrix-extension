@@ -98,6 +98,7 @@ function insertActionPanel(): string {
     .attr({
       id: PANEL_FRAME_ID,
       src: `${actionURL}?nonce=${nonce}`,
+      "data-nonce": nonce, // Don't use jQuery.data because we need the attribute
     })
     .css({
       position: "fixed",

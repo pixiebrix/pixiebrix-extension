@@ -15,19 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/options.scss";
-import "@/vendors/overrides.scss";
-import "@/extensionContext";
-import "@/development/darkMode";
-
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
-
-import { render } from "react-dom";
 import React from "react";
-import App from "@/options/App";
-import initGoogle from "@/contrib/google/initGoogle";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-initGoogle();
+import { LinkButton } from "@/components/LinkButton";
 
-render(<App />, document.querySelector("#container"));
+export default {
+  title: "Common/LinkButton",
+  component: LinkButton,
+  argTypes: {
+    onClick: { action: "clicked" },
+  },
+} as ComponentMeta<typeof LinkButton>;
+
+const Template: ComponentStory<typeof LinkButton> = (args) => (
+  <LinkButton {...args} />
+);
+
+export const Link = Template.bind({});
+Link.args = {
+  children: "Button that looks like a link",
+};

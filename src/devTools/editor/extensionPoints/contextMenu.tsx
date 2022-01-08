@@ -26,7 +26,7 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  normalizePipeline,
+  extensionWithNormalizedPipeline,
   omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
@@ -55,6 +55,7 @@ import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
 import { Except } from "type-fest";
+import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 
 type Extension = BaseExtensionState & Except<ContextMenuConfig, "action">;
 
@@ -157,8 +158,6 @@ async function fromExtension(
     ContextMenuConfig,
     "contextMenu"
   >(config, "contextMenu");
-  const extensionConfig = config.config;
-
   const {
     documentUrlPatterns,
     defaultOptions,
@@ -167,10 +166,26 @@ async function fromExtension(
     reader,
   } = extensionPoint.definition;
 
-  return {
-    ...baseFromExtension(config, extensionPoint.definition.type),
+  const base = baseFromExtension(config, extensionPoint.definition.type);
+  const extension = extensionWithNormalizedPipeline(config.config, "action");
+  let showV3UpgradeMessage = false;
+  let { apiVersion } = base;
 
-    extension: normalizePipeline(extensionConfig, "action"),
+  if (apiVersion === "v2") {
+    extension.blockPipeline = await upgradePipelineToV3(
+      extension.blockPipeline
+    );
+    showV3UpgradeMessage = true;
+    apiVersion = "v3";
+  }
+
+  return {
+    ...base,
+
+    apiVersion,
+    showV3UpgradeMessage,
+
+    extension,
 
     extensionPoint: {
       metadata: extensionPoint.metadata,
@@ -206,6 +221,7 @@ async function fromExtensionPoint(
   return {
     uuid: uuidv4(),
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+    showV3UpgradeMessage: false,
     installed: true,
     type,
     label: `My ${getDomain(url)} context menu`,
