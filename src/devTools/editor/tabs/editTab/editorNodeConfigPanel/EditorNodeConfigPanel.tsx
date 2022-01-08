@@ -16,10 +16,9 @@
  */
 
 import React, { useMemo } from "react";
-import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { CustomFieldWidget, FieldProps } from "@/components/form/FieldTemplate";
 import BlockConfigurationV1 from "@/devTools/editor/tabs/effect/v1/BlockConfiguration";
 import BlockConfigurationV3 from "@/devTools/editor/tabs/effect/v3/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
@@ -27,19 +26,11 @@ import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
 import { showOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./EditorNodeConfigPanel.module.scss";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
-
-const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
-  <InputGroup>
-    <InputGroup.Prepend>
-      <InputGroup.Text>@</InputGroup.Text>
-    </InputGroup.Prepend>
-    <Form.Control {...props} />
-  </InputGroup>
-);
+import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 
 const PopoverOutputLabel: React.FC<{
   description: string;
@@ -59,8 +50,9 @@ const EditorNodeConfigPanel: React.FC<{
   blockFieldName: string;
   blockId: RegistryId;
   blockError: string;
+  copyBlock: () => void;
   onRemoveNode: () => void;
-}> = ({ blockFieldName, blockId, blockError, onRemoveNode }) => {
+}> = ({ blockFieldName, blockId, blockError, copyBlock, onRemoveNode }) => {
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
@@ -87,42 +79,48 @@ const EditorNodeConfigPanel: React.FC<{
     : BlockConfigurationV1;
 
   return (
-    <>
+    <Col>
       {blockError && (
         <Row>
           <Col className={styles.errorMessage}>{blockError}</Col>
         </Row>
       )}
       <Row className={styles.topRow}>
-        <Col xl>
+        <Col lg>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.label`}
             label="Step Name"
             placeholder={blockInfo?.block.name}
           />
         </Col>
-        <Col xl>
+        <Col lg>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.outputKey`}
             label={outputKeyLabel}
             disabled={isOutputDisabled}
-            as={OutputKeyWidget}
+            as={KeyNameWidget}
           />
         </Col>
+      </Row>
+      <Row className={styles.buttonRow}>
         <Col sm="auto">
-          <Button
-            variant="danger"
-            onClick={onRemoveNode}
-            className={styles.removeButton}
-          >
-            <FontAwesomeIcon icon={faTrash} />{" "}
-            <span className={styles.removeText}>Remove</span>
+          <Button type="button" variant="primary" onClick={copyBlock}>
+            <span>
+              <FontAwesomeIcon icon={faCopy} /> Copy Brick
+            </span>
+          </Button>
+        </Col>
+        <Col sm="auto">
+          <Button type="button" variant="danger" onClick={onRemoveNode}>
+            <span>
+              <FontAwesomeIcon icon={faTrash} /> Remove Brick
+            </span>
           </Button>
         </Col>
       </Row>
 
       <VersionedBlockConfiguration name={blockFieldName} blockId={blockId} />
-    </>
+    </Col>
   );
 };
 

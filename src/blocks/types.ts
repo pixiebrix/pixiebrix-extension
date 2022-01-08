@@ -23,18 +23,50 @@ import {
   UUID,
 } from "@/core";
 import { UnknownObject } from "@/types";
+import { URLPatternInit } from "urlpattern-polyfill/dist/url-pattern.interfaces";
 
+/**
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
+ * @since 1.4.10
+ */
+export type URLPattern = string | URLPatternInit;
+
+/**
+ * An availability rule. For a rule to match, there must be match from each of the provided entries.
+ *
+ * An empty value (null, empty array, etc.) matches any site.
+ *
+ * @see checkAvailable
+ */
 export type Availability = {
+  /**
+   * Used to request permissions from the browser
+   */
   matchPatterns?: string | string[];
+  /**
+   * NOTE: the urlPatterns must be a subset of matchPatterns (i.e., more restrictive). If not, PixieBrix may not have
+   * access to the page
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
+   * @since 1.4.10
+   */
+  urlPatterns?: URLPattern | URLPattern[];
+  /**
+   * A selector that must be available on the page in order for the extension to be run.
+   *
+   * NOTE: the selector must be available at the time the contentScript is installed. While the contentScript is loaded
+   * on document_idle, for SPAs this may lead to races between the selector check and rendering of the front-end.
+   */
   selectors?: string | string[];
 };
 
 /**
- * Availability with consistent shape
+ * Availability with consistent shape (i.e., all fields are arrays if provded)
  * @see Availability
  */
 export type NormalizedAvailability = {
   matchPatterns?: string[];
+  urlPatterns?: URLPattern[];
   selectors?: string[];
 };
 
@@ -137,7 +169,7 @@ export type BlockConfig = {
   /**
    * (Optional) root JQuery/CSS selector. The selector is relative to the `root` that is passed to the pipeline/stage.
    *
-   * An error is thrown at runtime if the selector doesn't match exactly one argument
+   * An error is thrown at runtime if the selector doesn't match exactly one element
    * @see rootMode
    */
   root?: string;

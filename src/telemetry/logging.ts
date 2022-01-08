@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { recordError } from "@/background/logging";
+import { recordError } from "@/background/messenger/api";
 import { rollbar, toLogArgument } from "@/telemetry/rollbar";
 import { MessageContext } from "@/core";
 import { serializeError } from "serialize-error";
-import { isBackgroundPage, isExtensionContext } from "webext-detect-page";
+import { isBackground, isExtensionContext } from "webext-detect-page";
 import { selectError } from "@/errors";
 
 /**
@@ -28,7 +28,7 @@ import { selectError } from "@/errors";
  * @param context optional context for error telemetry
  */
 export function reportError(error: unknown, context?: MessageContext): void {
-  void _reportError(error, context).catch((reportingError: unknown) => {
+  void _reportError(error, context).catch((reportingError) => {
     console.error("An error occurred when reporting an error", {
       originalError: error,
       reportingError,
@@ -48,11 +48,11 @@ async function _reportError(
     return;
   }
 
-  if (!isBackgroundPage()) {
+  if (!isBackground()) {
     // Also log the error in the context it occurred in, so the developer
     // doesn't have to open the background page to see it
     console.error(error);
   }
 
-  await recordError(serializeError(selectError(error)), context, null);
+  recordError(serializeError(selectError(error)), context, null);
 }

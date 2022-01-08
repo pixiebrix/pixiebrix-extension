@@ -23,7 +23,6 @@ const WebExtensionTarget = require("webpack-target-webextension");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
 const { ESBuildMinifyPlugin } = require("esbuild-loader");
-const RollbarSourceMapPlugin = require("rollbar-sourcemap-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, compact } = require("lodash");
@@ -48,7 +47,8 @@ function parseEnv(value) {
   return Number.isNaN(Number(value)) ? value : Number(value);
 }
 
-// Include defaults required for webpack here. Add defaults for the extension bundle to EnvironmentPlugin
+// Default ENVs used by webpack
+// Note: Default ENVs used by the extension itself should be set in EnvironmentPlugin
 const defaults = {
   DEV_NOTIFY: "true",
   DEV_SLIM: "false",
@@ -72,6 +72,10 @@ for (const [env, defaultValue] of Object.entries(defaults)) {
 console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
 console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
+console.log(
+  "ROLLBAR_BROWSER_ACCESS_TOKEN:",
+  process.env.ROLLBAR_BROWSER_ACCESS_TOKEN
+);
 
 if (!process.env.SOURCE_VERSION) {
   process.env.SOURCE_VERSION = require("child_process")
@@ -84,35 +88,14 @@ if (!process.env.SOURCE_VERSION) {
 // Disable sourcemaps on CI unless it's a PUBLIC_RELEASE
 const produceSourcemap =
   !parseEnv(process.env.CI) || parseEnv(process.env.PUBLIC_RELEASE);
-if (!produceSourcemap) {
-  console.log("No sourcemaps will be generated");
-}
 
 const sourceMapPublicUrl =
   parseEnv(process.env.PUBLIC_RELEASE) &&
   `https://pixiebrix-extension-source-maps.s3.amazonaws.com/${process.env.SOURCE_MAP_PATH}/`;
-if (sourceMapPublicUrl) {
-  console.log("Source maps will be available at", sourceMapPublicUrl);
-}
-
-// Setup Rollbar
-const rollbarPlugin =
-  produceSourcemap &&
-  parseEnv(process.env.ROLLBAR_BROWSER_ACCESS_TOKEN) &&
-  parseEnv(process.env.ROLLBAR_BROWSER_ACCESS_TOKEN) &&
-  new RollbarSourceMapPlugin({
-    accessToken: process.env.ROLLBAR_POST_SERVER_ITEM_TOKEN,
-    version: process.env.SOURCE_VERSION, // https://stackoverflow.com/a/43661131
-    publicPath: process.env.ROLLBAR_PUBLIC_PATH,
-  });
-if (rollbarPlugin) {
-  console.log(
-    "Rollbar was configured with",
-    process.env.ROLLBAR_BROWSER_ACCESS_TOKEN
-  );
-} else {
-  console.log("Rollbar was not configured");
-}
+console.log(
+  "Sourcemaps:",
+  sourceMapPublicUrl ? sourceMapPublicUrl : produceSourcemap ? "Local" : "No"
+);
 
 function getVersion() {
   // `manifest.json` only supports numbers in the version, so use the semver
@@ -162,9 +145,6 @@ function customizeManifest(manifest, isProduction) {
   const policy = new Policy(manifest.content_security_policy);
 
   policy.add("connect-src", process.env.SERVICE_URL);
-  if (!isProduction) {
-    policy.add("connect-src", "ws://localhost:9090/ http://127.0.0.1:8000");
-  }
 
   if (!isProduction) {
     // React Dev Tools app. See https://github.com/pixiebrix/pixiebrix-extension/wiki/Development-commands#react-dev-tools
@@ -238,14 +218,8 @@ module.exports = (env, options) =>
     // Explicitly handled by `SourceMapDevToolPlugin` below
     devtool: false,
 
-    // https://webpack.js.org/configuration/watch/#saving-in-webstorm
-    watchOptions: {
-      ignored: /node_modules/,
-    },
-
     output: {
       path: path.resolve("dist"),
-      globalObject: "window",
       chunkFilename: "bundles/[name].bundle.js",
       environment: {
         dynamicImport: true,
@@ -257,12 +231,9 @@ module.exports = (env, options) =>
         [
           "background",
           "contentScript",
-          "devtools",
           "devtoolsPanel",
-          "frame",
           "ephemeralForm",
           "options",
-          "support",
           "action",
           "permissionsPopup",
         ].map((name) => [
@@ -280,8 +251,14 @@ module.exports = (env, options) =>
         "lodash-es",
         "js-beautify",
         "css-selector-generator",
+        "@rjsf/bootstrap-4",
         "@fortawesome/free-solid-svg-icons",
       ],
+
+      // Tiny files without imports, no vendors needed
+      frame: "./src/frame",
+      devtools: "./src/devtools",
+
       // The script that gets injected into the host page should not have a vendor chunk
       script: "./src/script",
     },
@@ -292,7 +269,9 @@ module.exports = (env, options) =>
         ...devDependenciesOnly(options, "redux-logger"),
 
         // Enables static analysis and removal of dead code
-        "webext-detect-page": path.resolve("src/__mocks__/webextDetectPage"),
+        "webext-detect-page": path.resolve(
+          "src/vendors/webextDetectPage.static.js"
+        ),
       },
     },
 
@@ -319,8 +298,6 @@ module.exports = (env, options) =>
       maxAssetSize: 15_120_000,
     },
     plugins: compact([
-      rollbarPlugin,
-
       produceSourcemap &&
         new webpack.SourceMapDevToolPlugin({
           publicPath: sourceMapPublicUrl,
@@ -406,6 +383,19 @@ module.exports = (env, options) =>
               options: {
                 // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
                 implementation: require("node-sass"),
+              },
+            },
+          ],
+        },
+        {
+          test: /\.svg$/,
+          resourceQuery: /loadAsComponent/,
+          use: [
+            {
+              loader: "@svgr/webpack",
+              options: {
+                typescript: true,
+                ext: "tsx",
               },
             },
           ],

@@ -16,25 +16,27 @@
  */
 
 import { registerBlock } from "@/blocks/registry";
-import { AddUpdateCompany, AddUpdateContact } from "./hubspot";
+import { AddUpdateCompany, AddUpdateContact } from "./hubspot/upsert";
+import { AddOrganization, AddPerson } from "./pipedrive/create";
+import { ResolvePerson } from "./pipedrive/resolvers";
 import {
-  AddOrganization,
-  AddPerson,
   DEAL_READER,
   ORGANIZATION_READER,
   PERSON_READER,
-  ResolvePerson,
-} from "./pipedrive";
+} from "./pipedrive/readers";
+import { GoogleBigQueryQuery } from "./google/bigquery/query";
+import { GeocodeTransformer } from "./google/geocode";
+import { GoogleSheetsAppend } from "./google/sheets/append";
 import {
-  GeocodeTransformer,
-  GoogleBigQueryQuery,
-  GoogleSheetsAppend,
-} from "./google";
-import { SendAdvancedSlackMessage, SendSimpleSlackMessage } from "./slack";
-import { AddLead } from "./salesforce";
-import { RunLocalProcess, RunProcess, UiPathAppRenderer } from "./uipath";
-import { PushZap } from "./zapier";
-import { RunBot } from "./automationanywhere";
+  SendAdvancedSlackMessage,
+  SendSimpleSlackMessage,
+} from "./slack/message";
+import { AddLead } from "./salesforce/lead";
+import { RunProcess } from "./uipath/process";
+import { RunLocalProcess } from "./uipath/localProcess";
+import { UiPathAppRenderer } from "./uipath/embedApp";
+import { PushZap } from "./zapier/push";
+import { RunBot } from "./automationanywhere/run";
 import { GoogleSheetsLookup } from "@/contrib/google/sheets/lookup";
 
 function registerContribBlocks(): void {

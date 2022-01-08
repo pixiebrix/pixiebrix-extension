@@ -114,7 +114,7 @@ async function onContentScriptReceiveMessage(
   }
 
   if (!options.asyncResponse) {
-    void handler(...payload).catch((error: unknown) => {
+    void handler(...payload).catch((error) => {
       console.warn(`${type}: ${meta.nonce}: Notification error`, error);
     });
   }
@@ -126,7 +126,7 @@ async function onContentScriptReceiveMessage(
   try {
     response.payload = await handler(...payload);
     console.debug(`${type}: ${meta.nonce}: Handler success`);
-  } catch (error: unknown) {
+  } catch (error) {
     response.payload = toErrorResponse(type, error);
     console.warn(`${type}: ${meta.nonce}: Handler error`, error);
   }
@@ -201,6 +201,3 @@ export function liftExternal<
     return payload;
   };
 }
-
-/** @deprecated The registration now happens automatically */
-export default () => {};

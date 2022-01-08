@@ -42,6 +42,10 @@ import {
   savingExtensionSlice,
   SavingExtensionState,
 } from "@/devTools/editor/panes/save/savingExtensionSlice";
+import {
+  documentBuilderSlice,
+  DocumentBuilderState,
+} from "./editor/slices/documentBuilderSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -55,6 +59,7 @@ export type RootState = {
   editor: EditorState;
   savingExtension: SavingExtensionState;
   formBuilder: FormBuilderState;
+  documentBuilder: DocumentBuilderState;
   settings: SettingsState;
   runtime: RuntimeState;
 };
@@ -75,6 +80,7 @@ const store = configureStore({
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
     formBuilder: formBuilderSlice.reducer,
+    documentBuilder: documentBuilderSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware: (getDefaultMiddleware) => [

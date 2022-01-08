@@ -32,6 +32,7 @@ import { ElementReader } from "@/blocks/readers/ElementReader";
 import { registerFactory } from "@/blocks/readers/factory";
 import { frameworkReadFactory } from "@/blocks/readers/frameworkReader";
 import { readJQuery } from "@/blocks/readers/jquery";
+import { HtmlReader } from "./HtmlReader";
 
 function registerReaders(): void {
   // Built-in readers
@@ -46,6 +47,7 @@ function registerReaders(): void {
   registerBlock(new ImageReader());
   registerBlock(new ImageExifReader());
   registerBlock(new ElementReader());
+  registerBlock(new HtmlReader());
 
   // Framework readers
   registerFactory("angularjs", frameworkReadFactory("angularjs"));

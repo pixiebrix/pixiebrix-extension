@@ -29,7 +29,7 @@ import {
 } from "@/core";
 import { orderBy, pick } from "lodash";
 import { reportEvent } from "@/telemetry/events";
-import { preloadContextMenus } from "@/background/initContextMenus";
+import { contextMenus, traces } from "@/background/messenger/api";
 import { selectEventData } from "@/telemetry/deployments";
 import { uuidv4 } from "@/types/helpers";
 import { ExtensionOptionsState, requireLatestState } from "@/store/extensions";
@@ -37,7 +37,6 @@ import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { CloudExtension, Deployment } from "@/types/contract";
 import { saveUserExtension } from "@/services/apiClient";
 import { reportError } from "@/telemetry/logging";
-import { clearExtensionTraces } from "@/background/trace";
 
 type InstallMode = "local" | "remote";
 
@@ -205,7 +204,7 @@ export const optionsSlice = createSlice({
 
       state.extensions.push({ ...extension, active: true });
 
-      void preloadContextMenus({ extensions: [extension] });
+      void contextMenus.preload([extension]);
     },
 
     attachExtension(
@@ -301,7 +300,7 @@ export const optionsSlice = createSlice({
 
         state.extensions.push(extension);
 
-        void preloadContextMenus({ extensions: [extension] });
+        void contextMenus.preload([extension]);
       }
     },
     // XXX: why do we expose a `extensionId` in addition IExtension's `id` prop here?
@@ -404,7 +403,7 @@ export const optionsSlice = createSlice({
       requireLatestState(state);
 
       // Make sure we're not keeping any private data around from Page Editor sessions
-      void clearExtensionTraces(extensionId);
+      traces.clear(extensionId);
 
       // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);

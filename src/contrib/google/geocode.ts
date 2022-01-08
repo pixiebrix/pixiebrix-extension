@@ -16,7 +16,7 @@
  */
 
 import { isEmpty } from "lodash";
-import { proxyService } from "@/background/requests";
+import { proxyService } from "@/background/messenger/api";
 import { Transformer } from "@/types";
 import { BlockArg, SanitizedServiceConfiguration, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";

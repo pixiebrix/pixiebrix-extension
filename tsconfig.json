@@ -19,7 +19,6 @@
     "noImplicitReturns": false,
     "noUnusedParameters": false,
     "useDefineForClassFields": false,
-    "useUnknownInCatchVariables": false, // https://github.com/pixiebrix/pixiebrix-extension/issues/779
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],
@@ -32,6 +31,7 @@
       // Silently improve tree-shakeability and AMD-related errors like #943
       "lodash": ["node_modules/lodash-es"]
     },
+    "lib": ["ES2021", "DOM", "DOM.Iterable"],
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
   "exclude": ["venv", "dist", "node_modules"]

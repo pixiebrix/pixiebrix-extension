@@ -23,7 +23,7 @@ import {
 import serviceRegistry from "@/services/registry";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { isBackgroundPage } from "webext-detect-page";
+import { isBackground } from "webext-detect-page";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { proxyService } from "./requests";
 import { ContextError } from "@/errors";
@@ -33,10 +33,10 @@ import { RemoteServiceError } from "@/services/errors";
 import { validateRegistryId } from "@/types/helpers";
 
 const axiosMock = new MockAdapter(axios);
-const mockIsBackgroundPage = isBackgroundPage as jest.MockedFunction<
-  typeof isBackgroundPage
+const mockisBackground = isBackground as jest.MockedFunction<
+  typeof isBackground
 >;
-mockIsBackgroundPage.mockImplementation(() => false);
+mockisBackground.mockImplementation(() => true);
 
 jest.mock("@/background/protocol");
 jest.mock("@/auth/token");
@@ -117,7 +117,7 @@ describe("unauthenticated direct requests", () => {
     try {
       await proxyService(null, requestConfig);
       fail("Expected proxyService to throw a RemoteServiceError error");
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBeInstanceOf(RemoteServiceError);
       const { status } = (error as RemoteServiceError).response;
       expect(status).toEqual(500);
@@ -149,7 +149,7 @@ describe("authenticated direct requests", () => {
     try {
       await proxyService(directServiceConfig, requestConfig);
       fail("Expected proxyService to throw an error");
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBeInstanceOf(ContextError);
       const { status } = ((error as ContextError).cause as AxiosError).response;
       expect(status).toEqual(403);
@@ -176,25 +176,27 @@ describe("proxy service requests", () => {
     expect(data).toEqual({ foo: 42 });
   });
 
-  describe.each([[400], [401], [403], [500]])(
+  describe.each([[400], [401], [403], [405], [500]])(
     "remote status: %s",
     (statusCode) => {
       it("can proxy remote error", async () => {
+        const reason = "Bad request";
+
         axiosMock.onAny().reply(200, {
           json: {},
-          reason: "Bad request",
+          reason,
           status_code: statusCode,
         });
 
         try {
           await proxyService(proxiedServiceConfig, requestConfig);
           fail("Expected proxyService to throw an error");
-        } catch (error: unknown) {
+        } catch (error) {
           expect(error).toBeInstanceOf(ContextError);
           const { status, statusText } = ((error as ContextError)
             .cause as AxiosError).response;
           expect(status).toEqual(statusCode);
-          expect(statusText).toEqual("Bad request");
+          expect(statusText).toEqual(reason);
         }
       });
     }
@@ -206,7 +208,7 @@ describe("proxy service requests", () => {
     try {
       await proxyService(proxiedServiceConfig, requestConfig);
       fail("Expected proxyService to throw an error");
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBeInstanceOf(Error);
       expect((error as Error).message).toEqual(
         "API proxy error: Request failed with status code 500"

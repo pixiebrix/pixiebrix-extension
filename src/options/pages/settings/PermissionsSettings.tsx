@@ -22,6 +22,7 @@ import browser, { Manifest } from "webextension-polyfill";
 import { sortBy } from "lodash";
 import { useAsyncEffect } from "use-async-effect";
 import { Button, Card, ListGroup } from "react-bootstrap";
+
 type OptionalPermission = Manifest.OptionalPermission;
 type Permissions = chrome.permissions.Permissions;
 

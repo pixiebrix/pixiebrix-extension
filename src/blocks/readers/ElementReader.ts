@@ -19,6 +19,12 @@ import { Reader } from "@/types";
 import { ReaderRoot, Schema } from "@/core";
 import { isHTMLElement } from "@/blocks/readers/frameworkReader";
 
+/**
+ * Read attributes, text, etc. from an HTML element.
+ *
+ * To read the HTML itself, use HtmlReader
+ * @see HtmlReader
+ */
 export class ElementReader extends Reader {
   defaultOutputKey = "element";
 

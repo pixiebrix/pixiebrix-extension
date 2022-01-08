@@ -15,14 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
+import { Effect, UnknownObject } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
-import { unary } from "lodash";
+import { isPlainObject, unary } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/sheetsHelpers";
 import { sheets } from "@/background/messenger/api";
+import { getErrorMessage } from "@/errors";
 
 type CellValue = string | number | null;
 
@@ -103,8 +104,11 @@ export const GOOGLE_SHEETS_APPEND_ID = validateRegistryId(
   "@pixiebrix/google/sheets-append"
 );
 
-function isAuthError(error: { code: number }): boolean {
-  return [404, 401, 403].includes(error.code);
+function isAuthError(error: unknown): boolean {
+  return (
+    isPlainObject(error) &&
+    ([404, 401, 403] as unknown[]).includes((error as UnknownObject).code)
+  );
 }
 
 export class GoogleSheetsAppend extends Effect {
@@ -120,7 +124,15 @@ export class GoogleSheetsAppend extends Effect {
   inputSchema: Schema = APPEND_SCHEMA;
 
   async effect(
-    { spreadsheetId, tabName, rowValues: rawValues = {} }: BlockArg,
+    {
+      spreadsheetId,
+      tabName,
+      rowValues: rawValues = {},
+    }: BlockArg<{
+      spreadsheetId: string;
+      tabName: string;
+      rowValues: Record<string, CellValue> | RowValue[];
+    }>,
     { logger }: BlockOptions
   ): Promise<void> {
     const rowValues =
@@ -139,9 +151,10 @@ export class GoogleSheetsAppend extends Effect {
       console.debug(
         `Found headers for ${tabName}: ${currentHeaders.join(", ")}`
       );
-      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
-      logger.warn(`Error retrieving headers: ${error.toString()}`, error);
+      logger.warn(`Error retrieving headers: ${getErrorMessage(error)}`, {
+        error,
+      });
       if (isAuthError(error)) {
         throw error;
       }

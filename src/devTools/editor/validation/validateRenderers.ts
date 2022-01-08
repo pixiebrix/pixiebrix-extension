@@ -1,9 +1,7 @@
 import { BlockPipeline } from "@/blocks/types";
-import {
-  BlocksMap,
-  FormikErrorTree,
-} from "@/devTools/editor/tabs/editTab/editTabTypes";
+import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
+import { TypedBlockMap } from "@/blocks/registry";
 
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =
   "A panel can only have one renderer. There are one or more renderers configured after this brick.";
@@ -12,7 +10,7 @@ export const RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE =
 function validateRenderers(
   pipelineErrors: FormikErrorTree,
   pipeline: BlockPipeline,
-  allBlocks: BlocksMap,
+  allBlocks: TypedBlockMap,
   elementType: ElementType
 ) {
   if (elementType !== "actionPanel" && elementType !== "panel") {
@@ -23,7 +21,7 @@ function validateRenderers(
   for (let blockIndex = pipeline.length - 1; blockIndex >= 0; --blockIndex) {
     // eslint-disable-next-line security/detect-object-injection
     const pipelineBlock = pipeline[blockIndex];
-    const blockType = allBlocks[pipelineBlock.id]?.type;
+    const blockType = allBlocks.get(pipelineBlock.id)?.type;
     const blockErrors = [];
 
     if (blockType !== "renderer") {

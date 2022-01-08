@@ -22,7 +22,7 @@ import EditorNode, {
 } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowDown,
+  faPaste,
   faPlus,
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
@@ -30,23 +30,9 @@ import { IBlock, RegistryId, UUID } from "@/core";
 import BlockModal from "@/components/brickModal/BrickModal";
 import useBrickRecommendations from "@/devTools/editor/tabs/editTab/useBrickRecommendations";
 import cx from "classnames";
-
-function renderAppend(onClick: () => void, addRightMargin: boolean) {
-  return (
-    <div
-      className={cx(styles.appendContainer, {
-        [styles.addRightMargin]: addRightMargin,
-      })}
-    >
-      <FontAwesomeIcon
-        icon={faArrowDown}
-        size="lg"
-        className={styles.appendArrow}
-      />
-      <EditorNode muted title="Add" icon={faPlus} onClick={onClick} />
-    </div>
-  );
-}
+import TooltipIconButton from "@/components/TooltipIconButton";
+import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
+import { ListGroup } from "react-bootstrap";
 
 const addBrickCaption = (
   <span>
@@ -62,10 +48,11 @@ const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];
   activeNodeId: NodeId;
   relevantBlocksToAdd: IBlock[];
-  addBlock: (block: IBlock, beforeInstanceId?: UUID) => void;
+  addBlock: (block: IBlock, pipelineIndex: number) => void;
   showAppend: boolean;
   moveBlockUp: (instanceId: UUID) => void;
   moveBlockDown: (instanceId: UUID) => void;
+  pasteBlock?: (pipelineIndex: number) => void;
 }> = ({
   nodes,
   activeNodeId,
@@ -74,32 +61,16 @@ const EditorNodeLayout: React.FC<{
   showAppend,
   moveBlockUp,
   moveBlockDown,
+  pasteBlock,
 }) => {
   const recommendations: RegistryId[] = useBrickRecommendations();
-
-  function renderInsert(onClick: () => void, addRightMargin: boolean) {
-    return (
-      // Don't use bootstrap styling
-      <button
-        type="button"
-        onClick={onClick}
-        className={cx(styles.insertButton, {
-          [styles.addRightMargin]: addRightMargin,
-        })}
-      >
-        <FontAwesomeIcon
-          icon={faPlusCircle}
-          size="lg"
-          className={styles.plus}
-        />
-      </button>
-    );
-  }
+  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
   const canMoveAnything = nodes.length > 2;
+  const finalIndex = nodes.length - 1;
 
   return (
-    <div className={styles.root}>
+    <ListGroup variant="flush">
       {nodes.length > 0 &&
         nodes.map((nodeProps, index) => {
           const { nodeId } = nodeProps;
@@ -109,7 +80,7 @@ const EditorNodeLayout: React.FC<{
           // index 0.
           if (nodeId !== FOUNDATION_NODE_ID) {
             nodeProps.canMoveUp = index > 1; // Any nodes beyond the first non-foundation node
-            nodeProps.canMoveDown = index > 0 && index + 1 < nodes.length; // Not the first and not the last
+            nodeProps.canMoveDown = index > 0 && index < finalIndex; // Not the first and not the last
             nodeProps.onClickMoveUp = () => {
               moveBlockUp(nodeId);
             };
@@ -119,39 +90,64 @@ const EditorNodeLayout: React.FC<{
             };
           }
 
+          const showAddBlock =
+            isApiAtLeastV2 && (index < finalIndex || showAppend);
+          const isFinal = index === finalIndex;
+          const showAddMessage = showAddBlock && isFinal;
+          const showPaste = pasteBlock && isApiAtLeastV2;
+
           return (
-            <React.Fragment key={index}>
-              {nodeId !== FOUNDATION_NODE_ID && (
-                <BlockModal
-                  bricks={relevantBlocksToAdd}
-                  renderButton={(onClick) =>
-                    renderInsert(onClick, canMoveAnything)
-                  }
-                  recommendations={recommendations}
-                  selectCaption={addBrickCaption}
-                  onSelect={(block) => {
-                    addBlock(block, nodeId);
-                  }}
-                />
-              )}
+            <React.Fragment key={nodeId}>
               <EditorNode
                 active={nodeId === activeNodeId}
                 canMoveAnything={canMoveAnything}
                 {...nodeProps}
               />
+              <div
+                className={cx(styles.actions, {
+                  [styles.finalActions]: isFinal,
+                })}
+              >
+                {showAddBlock && (
+                  <BlockModal
+                    bricks={relevantBlocksToAdd}
+                    renderButton={(onClick) => (
+                      <TooltipIconButton
+                        name={`add-node-${index}`}
+                        icon={faPlusCircle}
+                        onClick={onClick}
+                        tooltipText="Add a brick"
+                      />
+                    )}
+                    recommendations={recommendations}
+                    selectCaption={addBrickCaption}
+                    onSelect={(block) => {
+                      addBlock(block, index);
+                    }}
+                  />
+                )}
+                {showPaste && (
+                  <TooltipIconButton
+                    name={`paste-brick-${index}`}
+                    icon={faPaste}
+                    onClick={() => {
+                      pasteBlock(index);
+                    }}
+                    tooltipText="Paste copied brick"
+                  />
+                )}
+              </div>
+              {showAddMessage && (
+                <p className={styles.appendInfo}>
+                  <small className="text-muted">
+                    Add more bricks with the plus button
+                  </small>
+                </p>
+              )}
             </React.Fragment>
           );
         })}
-      {showAppend && (
-        <BlockModal
-          bricks={relevantBlocksToAdd}
-          renderButton={(onClick) => renderAppend(onClick, canMoveAnything)}
-          recommendations={recommendations}
-          selectCaption={addBrickCaption}
-          onSelect={addBlock}
-        />
-      )}
-    </div>
+    </ListGroup>
   );
 };
 

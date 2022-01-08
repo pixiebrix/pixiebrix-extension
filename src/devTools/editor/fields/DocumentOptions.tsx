@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense } from "react";
+import React, { useEffect } from "react";
 import { validateRegistryId } from "@/types/helpers";
-import { isPlainObject, partial } from "lodash";
 import { joinName } from "@/utils";
 import { useField } from "formik";
-import AceEditor from "@/vendors/AceEditor";
-import { UnknownObject } from "@/types";
+import DocumentEditor from "@/components/documentBuilder/edit/DocumentEditor";
+import useReduxState from "@/hooks/useReduxState";
+import { actions as documentBuilderActions } from "@/devTools/editor/slices/documentBuilderSlice";
+import documentBuilderSelectors from "@/devTools/editor/slices/documentBuilderSelectors";
+import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import ConfigErrorBoundary from "@/devTools/editor/fields/ConfigErrorBoundary";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");
 
@@ -29,26 +32,35 @@ const DocumentOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
-  const configName = partial(joinName, name, configKey);
-  const [{ value }, , { setValue }] = useField<string | UnknownObject>(
-    configName("body")
+  const [activeElement, setActiveElement] = useReduxState(
+    documentBuilderSelectors.activeElement,
+    documentBuilderActions.setActiveElement
   );
 
-  if (isPlainObject(value)) {
-    return <div>Edit in the workshop</div>;
-  }
+  const bodyName = joinName(name, configKey, "body");
+  const [{ value }, , { setValue }] = useField<DocumentElement[]>(bodyName);
+
+  useEffect(
+    () => () => {
+      // Clean up selected element on destroy
+      setActiveElement(null);
+    },
+    [bodyName]
+  );
+
+  useEffect(() => {
+    if (!Array.isArray(value)) {
+      setValue([]);
+    }
+  }, [value]);
 
   return (
-    <Suspense fallback={<div className="text-muted">Loading...</div>}>
-      <AceEditor
-        value={value as string}
-        onChange={setValue}
-        mode="yaml"
-        theme="chrome"
-        width="100%"
-        name="ACE_EDITOR_DIV"
+    <ConfigErrorBoundary>
+      <DocumentEditor
+        activeElement={activeElement}
+        setActiveElement={setActiveElement}
       />
-    </Suspense>
+    </ConfigErrorBoundary>
   );
 };
 

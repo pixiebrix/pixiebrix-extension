@@ -17,7 +17,7 @@
 
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { proxyService } from "@/background/requests";
+import { proxyService } from "@/background/messenger/api";
 
 export class AddLead extends Effect {
   constructor() {

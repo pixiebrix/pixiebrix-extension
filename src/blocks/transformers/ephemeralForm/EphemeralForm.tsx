@@ -27,6 +27,11 @@ import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 import { Target } from "@/types";
 import { validateUUID } from "@/types/helpers";
+import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
+
+const uiWidgets = {
+  imageCrop: ImageCropWidget,
+};
 
 const ModalLayout: React.FC = ({ children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
@@ -78,6 +83,7 @@ const EphemeralForm: React.FC = () => {
       <JsonSchemaForm
         schema={definition.schema}
         uiSchema={definition.uiSchema}
+        widgets={uiWidgets}
         onSubmit={({ formData: values }) => {
           void resolveForm(target, nonce, values);
         }}

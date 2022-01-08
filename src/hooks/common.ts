@@ -92,7 +92,7 @@ export function useAsyncState<T>(
         ? promiseOrGenerator()
         : promiseOrGenerator);
       dispatch(slice.actions.success({ data: promiseResult }));
-    } catch (error: unknown) {
+    } catch (error) {
       dispatch(slice.actions.failure({ error }));
     }
   }, [dispatch, promiseOrGenerator]);
@@ -105,7 +105,7 @@ export function useAsyncState<T>(
         : promiseOrGenerator);
       if (!isMounted()) return;
       dispatch(slice.actions.success({ data: promiseResult }));
-    } catch (error: unknown) {
+    } catch (error) {
       if (isMounted()) {
         dispatch(slice.actions.failure({ error }));
       }

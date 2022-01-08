@@ -36,27 +36,42 @@ import TemplateToggleWidget, {
   InputModeOption,
   StringOption,
 } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
-import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
+import TextWidget from "@/components/fields/schemaFields/widgets/v3/TextWidget";
 import { Schema } from "@/core";
 import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faToggleOff } from "@fortawesome/free-solid-svg-icons";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import IntegerWidget from "@/components/fields/schemaFields/widgets/IntegerWidget";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
 import OmitFieldWidget from "@/components/fields/schemaFields/widgets/OmitFieldWidget";
 import cx from "classnames";
+import SchemaSelectWidget, {
+  isSelectField,
+} from "@/components/fields/schemaFields/widgets/v3/SchemaSelectWidget";
+import { isTemplateExpression } from "@/runtime/mapArgs";
+import { UnknownObject } from "@/types";
+import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 
 const varOption: StringOption = {
   label: "Variable",
   value: "var",
-  symbol: "⟮𝑥⟯",
+  symbol: <OptionIcon icon="variable" />,
   Widget: TextWidget,
-  defaultValue: {
-    __type__: "var",
-    __value__: "",
+  interpretValue: (oldValue: unknown) => {
+    let newValue = "";
+    if (typeof oldValue === "string") {
+      newValue = oldValue;
+    } else if (typeof oldValue === "number" && oldValue > 0) {
+      newValue = String(oldValue);
+    } else if (isTemplateExpression(oldValue)) {
+      newValue = oldValue.__value__;
+    }
+
+    return {
+      __type__: "var",
+      __value__: newValue,
+    };
   },
 };
 
@@ -134,11 +149,10 @@ function getToggleOptions({
       {
         label: "Array items",
         value: "array",
-        symbol: "[...]",
+        symbol: <OptionIcon icon="array" />,
         Widget,
-        defaultValue: Array.isArray(fieldSchema.default)
-          ? fieldSchema.default
-          : [],
+        interpretValue: () =>
+          Array.isArray(fieldSchema.default) ? fieldSchema.default : [],
       },
       varOption
     );
@@ -158,11 +172,12 @@ function getToggleOptions({
       {
         label: "Object properties",
         value: "object",
-        symbol: "{...}",
+        symbol: <OptionIcon icon="object" />,
         Widget,
-        defaultValue: (typeof fieldSchema.default === "object"
-          ? fieldSchema.default
-          : {}) as Record<string, unknown>,
+        interpretValue: () =>
+          (typeof fieldSchema.default === "object"
+            ? fieldSchema.default
+            : {}) as UnknownObject,
       },
       varOption
     );
@@ -173,9 +188,9 @@ function getToggleOptions({
       {
         label: "Toggle",
         value: "boolean",
-        symbol: <FontAwesomeIcon icon={faToggleOff} />,
-        Widget: SwitchButtonWidget,
-        defaultValue:
+        symbol: <OptionIcon icon="toggle" />,
+        Widget: BooleanWidget,
+        interpretValue: () =>
           typeof fieldSchema.default === "boolean"
             ? fieldSchema.default
             : false,
@@ -184,57 +199,53 @@ function getToggleOptions({
     );
   }
 
-  if (fieldSchema.type === "string" || anyType) {
-    if (
-      fieldSchema.enum &&
-      Array.isArray(fieldSchema.enum) &&
-      fieldSchema.enum.length > 0
-    ) {
-      pushOptions({
+  if (isSelectField(fieldSchema)) {
+    pushOptions(
+      {
         label: "Select...",
         value: "string",
-        symbol: "a|b|c",
-        Widget: TextWidget,
-        defaultValue:
+        symbol: <OptionIcon icon="select" />,
+        Widget: SchemaSelectWidget,
+        interpretValue: () =>
           typeof fieldSchema.default === "string"
             ? String(fieldSchema.default)
-            : "",
-      });
-    } else {
-      pushOptions({
-        label: "Plain text",
-        value: "string",
-        symbol: "Abc",
-        Widget: TextWidget,
-        defaultValue:
-          typeof fieldSchema.default === "string"
-            ? String(fieldSchema.default)
-            : "",
-      });
-    }
-
+            : null,
+      },
+      varOption
+    );
+  }
+  // Using "else" here because we don't want to have both select and plain text
+  // options at the same time. If something has suggestions and allows typing
+  // custom values as well, that will be covered by "creatable" within the
+  // SchemaSelectWidget.
+  else if (fieldSchema.type === "string" || anyType) {
     pushOptions(
-      varOption,
       {
-        label: "Mustache template",
-        value: "mustache",
-        symbol: "{{  }}",
+        label: "Text",
+        value: "string",
+        symbol: <OptionIcon icon="text" />,
         Widget: TextWidget,
-        defaultValue: {
-          __type__: "mustache",
-          __value__: "",
+        interpretValue: (oldValue: unknown) => {
+          let newValue =
+            typeof fieldSchema.default === "string" ? fieldSchema.default : "";
+          if (typeof oldValue === "string" && oldValue.length > 0) {
+            newValue = oldValue;
+          } else if (typeof oldValue === "number" && oldValue > 0) {
+            newValue = String(oldValue);
+          } else if (
+            isTemplateExpression(oldValue) &&
+            oldValue.__value__.length > 0
+          ) {
+            newValue = oldValue.__value__;
+          }
+
+          return {
+            __type__: "nunjucks",
+            __value__: newValue,
+          };
         },
       },
-      {
-        label: "Nunjucks template",
-        value: "nunjucks",
-        symbol: "{%%}",
-        Widget: TextWidget,
-        defaultValue: {
-          __type__: "nunjucks",
-          __value__: "",
-        },
-      }
+      varOption
     );
   }
 
@@ -244,10 +255,26 @@ function getToggleOptions({
       {
         label: "Whole number",
         value: "number",
-        symbol: "123",
+        symbol: <OptionIcon icon="number" />,
         Widget: IntegerWidget,
-        defaultValue:
-          typeof fieldSchema.default === "number" ? fieldSchema.default : 0,
+        interpretValue: (oldValue: unknown) => {
+          let int = Number.NaN;
+          if (typeof oldValue === "string") {
+            int = Number.parseInt(oldValue, 10);
+          }
+
+          if (isTemplateExpression(oldValue)) {
+            int = Number.parseInt(oldValue.__value__, 10);
+          }
+
+          if (!Number.isNaN(int)) {
+            return int;
+          }
+
+          return typeof fieldSchema.default === "number"
+            ? fieldSchema.default
+            : 0;
+        },
       },
       varOption
     );
@@ -258,10 +285,26 @@ function getToggleOptions({
       {
         label: "Number",
         value: "number",
-        symbol: "1.23",
+        symbol: <OptionIcon icon="number" />,
         Widget: NumberWidget,
-        defaultValue:
-          typeof fieldSchema.default === "number" ? fieldSchema.default : 0,
+        interpretValue: (oldValue: unknown) => {
+          let float = Number.NaN;
+          if (typeof oldValue === "string") {
+            float = Number.parseFloat(oldValue);
+          }
+
+          if (isTemplateExpression(oldValue)) {
+            float = Number.parseFloat(oldValue.__value__);
+          }
+
+          if (!Number.isNaN(float)) {
+            return float;
+          }
+
+          return typeof fieldSchema.default === "number"
+            ? fieldSchema.default
+            : 0;
+        },
       },
       varOption
     );
@@ -292,20 +335,33 @@ function getToggleOptions({
       pushOptions({
         label: "Remove",
         value: "omit",
-        symbol: "❌",
+        symbol: <OptionIcon icon="exclude" />,
         Widget: OmitFieldWidget,
       });
     } else {
       pushOptions({
         label: "Exclude",
         value: "omit",
-        symbol: "∅",
+        symbol: <OptionIcon icon="exclude" />,
         Widget: OmitFieldWidget,
       });
     }
   }
 
   return sortBy(options, (opt: InputModeOption) => opt.value === "omit");
+}
+
+export function schemaSupportsTemplates(schema: Schema): boolean {
+  const options = getToggleOptions({
+    fieldSchema: schema,
+    isRequired: false,
+    customToggleModes: [],
+    isObjectProperty: false,
+    isArrayItem: false,
+  });
+  return options.some(
+    (option) => option.value === "string" && option.label === "Text"
+  );
 }
 
 const BasicSchemaField: SchemaFieldComponent = (props) => {
@@ -365,12 +421,15 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
   const [{ value }, { error, touched }, { setValue }] = useField(name);
 
   useEffect(() => {
-    // Initialize any undefined/empty required fields to prevent inferring an "omit" input
-    if (!value && isRequired && !isEmpty(inputModeOptions)) {
-      setValue(inputModeOptions[0].defaultValue);
+    // Initialize any undefined required fields to prevent inferring an "omit" input
+    if (value === undefined && isRequired && !isEmpty(inputModeOptions)) {
+      setValue(inputModeOptions[0].interpretValue(value));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
-  }, []);
+    // We only want to run this on mount, but also for some reason, sometimes the formik
+    // helpers reference (setValue) changes, so we need to account for that in the dependencies
+    // See: https://github.com/pixiebrix/pixiebrix-extension/issues/2269
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setValue]);
 
   if (isEmpty(inputModeOptions)) {
     return (

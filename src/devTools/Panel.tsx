@@ -98,13 +98,13 @@ const Panel: React.FunctionComponent = () => {
     );
   }
 
-  if (context.portError || context.tabState.error) {
+  if (context.tabState.error) {
     return (
       <Centered>
         <div className="PaneTitle">
           <b>An error occurred</b>
         </div>
-        <div>{context.portError ?? context.tabState?.error}</div>
+        <div>{context.tabState?.error}</div>
         <div className="mt-2">
           <Button
             onClick={() => {
@@ -113,17 +113,6 @@ const Panel: React.FunctionComponent = () => {
           >
             Reload Editor
           </Button>
-        </div>
-      </Centered>
-    );
-  }
-
-  if (!context.port) {
-    return (
-      <Centered>
-        <p>Initializing connection...</p>
-        <div className="d-flex justify-content-center">
-          <GridLoader />
         </div>
       </Centered>
     );

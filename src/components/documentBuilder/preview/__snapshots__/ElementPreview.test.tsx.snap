@@ -1,0 +1,355 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`can preview default button 1`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="root inlineWrapper"
+    >
+      <button
+        class="btn btn-primary"
+        type="button"
+      >
+        Action
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`can preview default card 1`] = `
+<DocumentFragment>
+  <div
+    class="root"
+  >
+    <div
+      class="card"
+    >
+      <div
+        class="card-header"
+      >
+        Header
+      </div>
+      <div
+        class="container card-body"
+      >
+        <div
+          class="addElement dropdown"
+        >
+          <button
+            aria-expanded="false"
+            aria-haspopup="true"
+            class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+              data-icon="ellipsis-v"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 192 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`can preview default column 1`] = `
+<DocumentFragment>
+  <div
+    class="container root col"
+  >
+    <span
+      class="text-muted"
+    >
+      column
+    </span>
+    <div
+      class="addElement dropdown"
+    >
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+          data-icon="ellipsis-v"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`can preview default container 1`] = `
+<DocumentFragment>
+  <div
+    class="container root container"
+  >
+    <div
+      class="container root row"
+    >
+      <div
+        class="container root col"
+      >
+        <span
+          class="text-muted"
+        >
+          column
+        </span>
+        <div
+          class="addElement dropdown"
+        >
+          <button
+            aria-expanded="false"
+            aria-haspopup="true"
+            class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+              data-icon="ellipsis-v"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 192 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div
+        class="addElement dropdown"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+            data-icon="ellipsis-v"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 192 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div
+      class="addElement dropdown"
+    >
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+          data-icon="ellipsis-v"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`can preview default header_1 1`] = `
+<DocumentFragment>
+  <h1
+    class="root"
+  >
+    Header
+  </h1>
+</DocumentFragment>
+`;
+
+exports[`can preview default header_2 1`] = `
+<DocumentFragment>
+  <h2
+    class="root"
+  >
+    Header
+  </h2>
+</DocumentFragment>
+`;
+
+exports[`can preview default header_3 1`] = `
+<DocumentFragment>
+  <h3
+    class="root"
+  >
+    Header
+  </h3>
+</DocumentFragment>
+`;
+
+exports[`can preview default list 1`] = `
+<DocumentFragment>
+  <div
+    class="root container listContainer"
+  >
+    <div
+      class="text-muted"
+    >
+      List: undefined
+    </div>
+    <div
+      class="text-muted"
+    >
+      Element key: @element
+    </div>
+    <p
+      class="root"
+    >
+      Paragraph text.
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`can preview default pipeline 1`] = `
+<DocumentFragment>
+  <div
+    class="root"
+  >
+    <h3>
+      Block
+    </h3>
+    <p>
+      @pixiebrix/markdown
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`can preview default row 1`] = `
+<DocumentFragment>
+  <div
+    class="container root row"
+  >
+    <div
+      class="container root col"
+    >
+      <span
+        class="text-muted"
+      >
+        column
+      </span>
+      <div
+        class="addElement dropdown"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="true"
+          class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+            data-icon="ellipsis-v"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 192 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div
+      class="addElement dropdown"
+    >
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="toggle toggle dropdown-toggle btn btn-light btn-sm"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-ellipsis-v fa-w-6 "
+          data-icon="ellipsis-v"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`can preview default text 1`] = `
+<DocumentFragment>
+  <p
+    class="root"
+  >
+    Paragraph text.
+  </p>
+</DocumentFragment>
+`;

@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useFormikContext } from "formik";
 import { groupBy } from "lodash";
 import { Badge, Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
@@ -91,10 +85,6 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, editable }) => {
   const [step, setStep] = useState(wizard[0].step);
 
-  useEffect(() => {
-    setStep(wizard[0].step);
-  }, [setStep]);
-
   const { refresh: refreshLogs } = useContext(LogContext);
 
   const availableDefinition = element.extensionPoint.definition.isAvailable;
@@ -115,7 +105,7 @@ const ElementWizard: React.FunctionComponent<{
   const onSave = async () => {
     try {
       await save();
-    } catch (error: unknown) {
+    } catch (error) {
       setStatus(error);
     }
   };
@@ -136,8 +126,8 @@ const ElementWizard: React.FunctionComponent<{
       <BootstrapForm
         autoComplete="off"
         noValidate
-        onSubmit={(e) => {
-          e.preventDefault();
+        onSubmit={(event) => {
+          event.preventDefault();
         }}
         onReset={handleReset}
         className={styles.form}

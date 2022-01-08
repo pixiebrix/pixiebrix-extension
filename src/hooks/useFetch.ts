@@ -42,7 +42,7 @@ function useFetch<TData = unknown>(
     try {
       const data = await fetch<TData>(relativeOrAbsoluteUrl);
       setData(data);
-    } catch (error: unknown) {
+    } catch (error) {
       setError(error);
       notify.error("An error occurred fetching data from the server");
     }
@@ -58,7 +58,7 @@ function useFetch<TData = unknown>(
           const data = await fetch<TData>(relativeOrAbsoluteUrl);
           if (!isMounted()) return;
           setData(data);
-        } catch (error: unknown) {
+        } catch (error) {
           if (!isMounted()) return;
           setError(error);
           notify.error("An error occurred fetching data from the server");

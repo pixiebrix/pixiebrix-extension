@@ -15,14 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.notifyjs-corner {
-  z-index: 9999999 !important;
-}
-
-.notifyjs-corner .notifyjs-wrapper {
-  z-index: 9999999 !important;
-}
-
 .pixiebrix .collapse:not(.show) {
   display: none;
 }

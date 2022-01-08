@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftBackground } from "@/background/protocol";
 import { ensureAuth, handleRejection } from "@/contrib/google/auth";
 
 const GOOGLE_BIGQUERY_SCOPES = [
@@ -29,8 +28,6 @@ export const DISCOVERY_DOCS: string[] = [
   "https://bigquery.googleapis.com/discovery/v1/apis/bigquery/v2/rest",
 ];
 
-const actionId = (x: string) => `GOOGLE_BIGQUERY_${x}`;
-
 const initialized = false;
 
 async function ensureBigQuery(): Promise<void> {
@@ -41,31 +38,29 @@ async function ensureBigQuery(): Promise<void> {
   // https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md
   try {
     await gapi.client.load("bigquery", "v2");
-    return;
-    // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
     console.debug("Error fetching BigQuery API definition", {
-      error: error.error,
+      error,
     });
     throw new Error("Error fetching BigQuery API definition");
   }
 }
 
-export const readQuery = liftBackground(
-  actionId("READ"),
-  async (projectId: string, resource: gapi.client.bigquery.QueryRequest) => {
-    console.debug("Read query", { projectId, resource });
-    const token = await ensureAuth(GOOGLE_BIGQUERY_SCOPES);
-    await ensureBigQuery();
-    try {
-      return await gapi.client.bigquery.jobs.query({
-        projectId,
-        prettyPrint: true,
-        alt: "json",
-        resource,
-      });
-    } catch (error: unknown) {
+export async function readQuery(
+  projectId: string,
+  resource: gapi.client.bigquery.QueryRequest
+): Promise<gapi.client.Response<gapi.client.bigquery.QueryResponse>> {
+  console.debug("Read query", { projectId, resource });
+  const token = await ensureAuth(GOOGLE_BIGQUERY_SCOPES);
+  await ensureBigQuery();
+  return gapi.client.bigquery.jobs
+    .query({
+      projectId,
+      prettyPrint: true,
+      alt: "json",
+      resource,
+    })
+    .catch(async (error) => {
       throw await handleRejection(token, error);
-    }
-  }
-);
+    });
+}

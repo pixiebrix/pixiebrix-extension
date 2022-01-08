@@ -81,9 +81,9 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   const copyLabelRenderer = useLabelRenderer();
 
   const onChangeQuery = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(e.target.value);
-      onSearchQueryChanged?.(e.target.value);
+    ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(target.value);
+      onSearchQueryChanged?.(target.value);
     },
     [onSearchQueryChanged]
   );
@@ -110,7 +110,15 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
           data={searchResults}
           labelRenderer={copyable ? copyLabelRenderer : undefined}
           hideRoot
-          theme={theme}
+          theme={{
+            extend: theme,
+            value: ({ style }) => ({
+              style: {
+                ...style,
+                whiteSpace: "pre-wrap",
+              },
+            }),
+          }}
           invertTheme
           {...restProps}
         />

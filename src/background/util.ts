@@ -17,13 +17,12 @@
 
 import pDefer from "p-defer";
 import browser from "webextension-polyfill";
-import { injectContentScript } from "webext-content-scripts";
+import { executeFunction, injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
-import { evaluableFunction } from "@/utils";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
 
@@ -44,18 +43,6 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
   return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
 }
 
-export async function checkTargetPermissions(target: Target): Promise<boolean> {
-  return browser.tabs
-    .executeScript(target.tabId, {
-      code: "true",
-      frameId: target.frameId,
-    })
-    .then(
-      () => true,
-      () => false
-    );
-}
-
 interface TargetState {
   url: string;
   installed: boolean;
@@ -69,16 +56,11 @@ interface TargetState {
 export async function getTargetState(target: Target): Promise<TargetState> {
   expectContext("background");
 
-  const [state] = await browser.tabs.executeScript(target.tabId, {
-    // This imitates the new chrome.scripting API by wrapping a function in a IIFE
-    code: evaluableFunction(() => ({
-      url: location.href,
-      installed: Symbol.for("pixiebrix-content-script") in window,
-      ready: Symbol.for("pixiebrix-content-script-ready") in window,
-    })),
-    frameId: target.frameId,
-  });
-  return state;
+  return executeFunction(target, () => ({
+    url: location.href,
+    installed: Symbol.for("pixiebrix-content-script") in window,
+    ready: Symbol.for("pixiebrix-content-script-ready") in window,
+  }));
 }
 
 export async function onReadyNotification(signal: AbortSignal): Promise<void> {

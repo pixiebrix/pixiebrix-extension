@@ -24,11 +24,13 @@ import { Link, Redirect, Route } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
-import { uninstallContextMenu } from "@/background/messenger/api";
+import {
+  reactivateEveryTab,
+  uninstallContextMenu,
+} from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
 import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
-import { reactivate } from "@/background/navigation";
 import { Dispatch } from "redux";
 import { selectExtensions } from "@/options/selectors";
 import { OptionsState } from "@/store/extensions";
@@ -50,7 +52,7 @@ import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 
 const { removeExtension } = optionsSlice.actions;
 
-export const InstalledPage: React.FunctionComponent<{
+export const _InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
   push: (path: string) => void;
   onRemove: RemoveAction;
@@ -222,10 +224,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     dispatch(removeExtension({ extensionId }));
     // XXX: also remove remove side panel panels that are already open?
     void uninstallContextMenu({ extensionId }).catch(reportError);
-    void reactivate().catch((error: unknown) => {
-      console.warn("Error re-activating content scripts", { error });
-    });
+    reactivateEveryTab();
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(InstalledPage);
+export default connect(mapStateToProps, mapDispatchToProps)(_InstalledPage);

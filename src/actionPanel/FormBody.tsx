@@ -20,7 +20,7 @@ import { FormEntry } from "@/actionPanel/actionPanelTypes";
 import { useAsyncState } from "@/hooks/common";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
-import { createFrameSrc } from "@/blocks/transformers/ephemeralForm/formTransformer";
+import { createFrameSource } from "@/blocks/transformers/ephemeralForm/formTransformer";
 
 type FormBodyProps = {
   form: FormEntry;
@@ -32,8 +32,8 @@ type FormBodyProps = {
  * @constructor
  */
 const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
-  const [srcURL, isLoading, error] = useAsyncState(
-    async () => createFrameSrc(form.nonce, "panel"),
+  const [sourceURL, isLoading, error] = useAsyncState(
+    async () => createFrameSource(form.nonce, "panel"),
     [form.nonce]
   );
 
@@ -58,7 +58,7 @@ const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
       title={form.nonce}
       height="100%"
       width="100%"
-      src={srcURL.toString()}
+      src={sourceURL.toString()}
       style={{ border: "none" }}
       allowFullScreen={false}
     />

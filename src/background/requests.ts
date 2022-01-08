@@ -16,8 +16,7 @@
  */
 
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
-import { liftBackground } from "@/background/protocol";
-import { SanitizedServiceConfiguration, ServiceConfig, UUID } from "@/core";
+import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { RemoteServiceError } from "@/services/errors";
 import serviceRegistry from "@/services/registry";
@@ -92,40 +91,32 @@ interface SanitizedResponse<T = unknown> {
   statusText: string;
 }
 
-function cleanResponse<T>(response: AxiosResponse<T>): SanitizedResponse<T> {
-  // Firefox won't send response objects from the background page to the content script. So strip out the
-  // potentially sensitive parts of the response (the request, headers, etc.)
-  return JSON.parse(
-    JSON.stringify({
-      data: response.data,
-      status: response.status,
-      statusText: response.statusText,
-    })
+export async function doCleanAxiosRequest<T>(
+  config: AxiosRequestConfig
+): Promise<SanitizedResponse<T>> {
+  // Network requests must go through background page for permissions/CORS to work properly
+  expectContext(
+    "background",
+    "Network requests must be made from the background page"
   );
-}
 
-const backgroundRequest = liftBackground(
-  "HTTP_REQUEST",
-  async (config: AxiosRequestConfig) => {
-    try {
-      return cleanResponse(await axios(config));
-      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-    } catch (error) {
+  try {
+    const { data, status, statusText } = await axios(config);
+
+    // Firefox won't send response objects from the background page to the content script. So strip out the
+    // potentially sensitive parts of the response (the request, headers, etc.)
+    return JSON.parse(JSON.stringify({ data, status, statusText }));
+  } catch (error) {
+    if (isAxiosError(error)) {
       // Axios offers its own serialization method, but it doesn't include the response.
       // By deleting toJSON, the serialize-error library will use its default serialization
-      console.trace("Error performing request from background page", { error });
       delete error.toJSON;
-      throw error;
     }
-  }
-);
 
-export const deleteCachedAuth = liftBackground(
-  "DELETE_CACHED_AUTH",
-  async (authId: UUID) => {
-    await deleteCachedAuthData(authId);
+    console.trace("Error performing request from background page", { error });
+    throw error;
   }
-);
+}
 
 async function authenticate(
   config: SanitizedServiceConfiguration,
@@ -147,7 +138,10 @@ async function authenticate(
 
     return service.authenticateRequest(
       ({ apiKey } as unknown) as ServiceConfig,
-      { ...request, url: await absoluteApiUrl(request.url) }
+      {
+        ...request,
+        url: await absoluteApiUrl(request.url),
+      }
     );
   }
 
@@ -207,10 +201,10 @@ async function proxyRequest<T>(
 
   let proxyResponse;
   try {
-    proxyResponse = (await backgroundRequest(
+    proxyResponse = await doCleanAxiosRequest<ProxyResponseData>(
       authenticatedRequestConfig
-    )) as SanitizedResponse<ProxyResponseData>;
-  } catch (error: unknown) {
+    );
+  } catch (error) {
     // If there's a server error with the proxy server itself, we'll also see it in the Rollbar logs for the server.
     throw new Error(`API proxy error: ${getErrorMessage(error)}`);
   }
@@ -237,52 +231,42 @@ async function proxyRequest<T>(
 
 const UNAUTHORIZED_STATUS_CODES = [401, 403];
 
-const _proxyService = liftBackground(
-  "PROXY",
-  async (
-    serviceConfig: SanitizedServiceConfiguration,
-    requestConfig: AxiosRequestConfig
-  ): Promise<RemoteResponse> => {
-    if (serviceConfig.proxy) {
-      // Service uses the PixieBrix remote proxy to perform authentication. Proxy the request.
-      return proxyRequest(serviceConfig, requestConfig);
-    }
+async function _proxyService(
+  serviceConfig: SanitizedServiceConfiguration,
+  requestConfig: AxiosRequestConfig
+): Promise<RemoteResponse> {
+  if (serviceConfig.proxy) {
+    // Service uses the PixieBrix remote proxy to perform authentication. Proxy the request.
+    return proxyRequest(serviceConfig, requestConfig);
+  }
 
-    try {
-      return await backgroundRequest(
-        await authenticate(serviceConfig, requestConfig)
-      );
-    } catch (error: unknown) {
-      // Try again - have the user login again, or automatically try to get a new token
-      if (
-        isAxiosError(error) &&
-        UNAUTHORIZED_STATUS_CODES.includes(error.response?.status)
-      ) {
-        const service = await serviceRegistry.lookup(serviceConfig.serviceId);
-        if (service.isOAuth2 || service.isToken) {
-          await deleteCachedAuthData(serviceConfig.id);
-          return backgroundRequest(
-            await authenticate(serviceConfig, requestConfig)
-          );
-        }
+  try {
+    return await doCleanAxiosRequest(
+      await authenticate(serviceConfig, requestConfig)
+    );
+  } catch (error) {
+    // Try again - have the user login again, or automatically try to get a new token
+    if (
+      isAxiosError(error) &&
+      UNAUTHORIZED_STATUS_CODES.includes(error.response?.status)
+    ) {
+      const service = await serviceRegistry.lookup(serviceConfig.serviceId);
+      if (service.isOAuth2 || service.isToken) {
+        await deleteCachedAuthData(serviceConfig.id);
+        return doCleanAxiosRequest(
+          await authenticate(serviceConfig, requestConfig)
+        );
       }
-
-      console.debug(
-        "Error occurred when making a request from the background page",
-        { error }
-      );
-
-      throw error;
     }
-  }
-);
 
-export const clearServiceCache = liftBackground(
-  "CLEAR_SERVICE_CACHE",
-  async () => {
-    serviceRegistry.clear();
+    console.debug(
+      "Error occurred when making a request from the background page",
+      { error }
+    );
+
+    throw error;
   }
-);
+}
 
 /**
  * Perform an request either directly, or via the PixieBrix authentication proxy
@@ -292,6 +276,8 @@ export const clearServiceCache = liftBackground(
 export async function proxyService<TData>(
   serviceConfig: SanitizedServiceConfiguration | null,
   requestConfig: AxiosRequestConfig
+  // Note: This signature is ignored by `webext-messenger`
+  // so it must be copied into `background/messenger/api.ts`
 ): Promise<RemoteResponse<TData>> {
   if (serviceConfig != null && typeof serviceConfig !== "object") {
     throw new Error("expected configured service for serviceConfig");
@@ -304,10 +290,8 @@ export async function proxyService<TData>(
     }
 
     try {
-      return (await backgroundRequest(
-        requestConfig
-      )) as SanitizedResponse<TData>;
-    } catch (error: unknown) {
+      return await doCleanAxiosRequest<TData>(requestConfig);
+    } catch (error) {
       if (!isAxiosError(error)) {
         throw error;
       }
@@ -329,7 +313,7 @@ export async function proxyService<TData>(
       serviceConfig,
       requestConfig
     )) as RemoteResponse<TData>;
-  } catch (error: unknown) {
+  } catch (error) {
     throw new ContextError(selectError(error) as Error, {
       serviceId: serviceConfig.serviceId,
       authId: serviceConfig.id,

@@ -16,20 +16,15 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { liftBackground } from "@/background/protocol";
 import { rollbar } from "@/telemetry/rollbar";
 import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy, isEmpty } from "lodash";
-import { _getDNT } from "@/background/telemetry";
+import { allowsTrack } from "@/telemetry/dnt";
 import { isContentScript } from "webext-detect-page";
-import {
-  ManualStorageKey,
-  readStorageWithMigration,
-  setStorage,
-} from "@/chrome";
+import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   hasBusinessRootCause,
   hasCancelRootCause,
@@ -201,71 +196,63 @@ function buildContext(
   return context;
 }
 
-export const recordError = liftBackground(
-  "RECORD_ERROR",
-  async (
-    error: SerializedError,
-    context: MessageContext,
-    data: JsonObject | undefined
-  ): Promise<void> => {
-    try {
-      const message = getErrorMessage(error);
+export async function recordError(
+  error: SerializedError,
+  context: MessageContext,
+  data: JsonObject | undefined
+): Promise<void> {
+  try {
+    const message = getErrorMessage(error);
 
-      if (!(await _getDNT())) {
-        // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the object is the custom
-        // payload data. WARNING: the prototype chain is lost during deserialization, so make sure any predicate you
-        // call here also handles deserialized errors properly.
-        // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
-        // See https://github.com/sindresorhus/serialize-error/issues/48
-        const errorObj = deserializeError(error);
+    if (await allowsTrack()) {
+      // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the object is the custom
+      // payload data. WARNING: the prototype chain is lost during deserialization, so make sure any predicate you
+      // call here also handles deserialized errors properly.
+      // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+      // See https://github.com/sindresorhus/serialize-error/issues/48
+      const errorObj = deserializeError(error);
 
-        if (hasCancelRootCause(error)) {
-          // NOP - no reason to send to Rollbar
-        } else if (hasBusinessRootCause(error)) {
-          rollbar.debug(message, errorObj);
-        } else {
-          rollbar.error(message, errorObj);
-        }
+      if (hasCancelRootCause(error)) {
+        // NOP - no reason to send to Rollbar
+      } else if (hasBusinessRootCause(error)) {
+        rollbar.debug(message, errorObj);
+      } else {
+        rollbar.error(message, errorObj);
       }
-
-      await appendEntry({
-        uuid: uuidv4(),
-        timestamp: Date.now().toString(),
-        level: "error",
-        context: buildContext(error, context),
-        message,
-        error,
-        data,
-      });
-    } catch {
-      console.error("An error occurred while recording another error", {
-        error,
-        context,
-      });
     }
-  },
-  { asyncResponse: false }
-);
 
-export const recordLog = liftBackground(
-  "RECORD_LOG",
-  async (
-    context: MessageContext,
-    level: MessageLevel,
-    message: string,
-    data: JsonObject
-  ): Promise<void> => {
     await appendEntry({
       uuid: uuidv4(),
       timestamp: Date.now().toString(),
-      level,
+      level: "error",
+      context: buildContext(error, context),
       message,
+      error,
       data,
-      context: context ?? {},
     });
-  },
-  { asyncResponse: false }
-);
+  } catch {
+    console.error("An error occurred while recording another error", {
+      error,
+      context,
+    });
+  }
+}
+
+export async function recordLog(
+  context: MessageContext,
+  level: MessageLevel,
+  message: string,
+  data: JsonObject
+): Promise<void> {
+  await appendEntry({
+    uuid: uuidv4(),
+    timestamp: Date.now().toString(),
+    level,
+    message,
+    data,
+    context: context ?? {},
+  });
+}
 
 export class BackgroundLogger implements ILogger {
   readonly context: MessageContext;
@@ -325,30 +312,21 @@ export type LoggingConfig = {
 const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS" as ManualStorageKey;
 let _config: LoggingConfig = null;
 
-export async function _getLoggingConfig(): Promise<LoggingConfig> {
+export async function getLoggingConfig(): Promise<LoggingConfig> {
   expectContext("background");
 
   if (_config != null) {
     return _config;
   }
 
-  return readStorageWithMigration(LOG_CONFIG_STORAGE_KEY, {
+  return readStorage(LOG_CONFIG_STORAGE_KEY, {
     logValues: false,
   });
 }
 
-export async function _setLoggingConfig(config: LoggingConfig): Promise<void> {
+export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
   expectContext("background");
 
   await setStorage(LOG_CONFIG_STORAGE_KEY, config);
   _config = config;
 }
-
-export const getLoggingConfig = liftBackground("GET_LOGGING_CONFIG", async () =>
-  _getLoggingConfig()
-);
-
-export const setLoggingConfig = liftBackground(
-  "SET_LOGGING_CONFIG",
-  async (config: LoggingConfig) => _setLoggingConfig(config)
-);

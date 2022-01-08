@@ -94,7 +94,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
         rootSelector
       );
       dispatch(previewSlice.actions.runSuccess({ "@input": data }));
-    } catch (error: unknown) {
+    } catch (error) {
       dispatch(previewSlice.actions.runError(error));
     }
   }, []);

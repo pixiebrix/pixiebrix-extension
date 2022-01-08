@@ -54,13 +54,31 @@ export const noopProxy: ReadProxy = {
   },
 };
 
+type GetPropOptions = {
+  /**
+   * Arguments to apply if path refers to a method.
+   */
+  args?: UnknownObject;
+  /**
+   * Proxy to navigate/traverse the object. (Default: noopProxy, which only traverses own properties)
+   * @see noopProxy
+   */
+  proxy?: ReadProxy;
+  /**
+   * Max depth of nested object returned (Used when reading data from stores/caches which have a lot of redundant
+   * data, e.g., the EmberJS component cache)
+   */
+  maxDepth?: number;
+};
+
 export function getPropByPath(
-  obj: Record<string, unknown>,
+  obj: UnknownObject,
   path: string,
   {
     args = {},
     proxy = noopProxy,
-  }: { args?: Record<string, unknown>; proxy?: ReadProxy } | undefined = {}
+    maxDepth = null,
+  }: GetPropOptions | undefined = {}
 ): unknown {
   // Consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
 
@@ -104,7 +122,7 @@ export function getPropByPath(
     if (typeof value === "function") {
       try {
         value = value.apply(previous, args);
-      } catch (error: unknown) {
+      } catch (error) {
         throw new Error(
           `Error running method ${part}: ${getErrorMessage(error)}`
         );
@@ -112,7 +130,7 @@ export function getPropByPath(
     }
   }
 
-  return cleanValue(toJS(value));
+  return cleanValue(toJS(value), maxDepth);
 }
 
 export function getFieldNamesFromPathString(

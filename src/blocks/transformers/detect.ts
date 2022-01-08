@@ -18,6 +18,7 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { $safeFind } from "@/helpers";
 
 export class DetectElement extends Transformer {
   defaultOutputKey = "match";
@@ -54,7 +55,7 @@ export class DetectElement extends Transformer {
   };
 
   async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
-    const $result = $(document).find(selector);
+    const $result = $safeFind(selector);
     return {
       count: $result.length,
       exists: $result.length > 0,

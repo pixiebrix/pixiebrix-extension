@@ -17,9 +17,8 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { ExtensionPoint } from "@/types";
-import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
-import { castArray, once, debounce, cloneDeep } from "lodash";
+import { castArray, once, debounce, cloneDeep, merge } from "lodash";
 import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { reportError } from "@/telemetry/logging";
 import {
@@ -51,7 +50,6 @@ import {
 } from "@/errors";
 import {
   DEFAULT_ACTION_RESULTS,
-  mergeConfig,
   MessageConfig,
   notifyError,
   notifyResult,
@@ -69,6 +67,8 @@ import { mapArgs } from "@/runtime/mapArgs";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { $safeFind } from "@/helpers";
+import sanitize from "@/utils/sanitize";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -239,7 +239,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         if (cancelObserver) {
           cancelObserver();
         }
-      } catch (error: unknown) {
+      } catch (error) {
         // Try to proceed as normal
         reportError(error, this.logger.context);
       }
@@ -256,7 +256,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     );
     // Can't use this.menus.values() here b/c because it may have already been cleared
     for (const extensionId of extensionIds) {
-      const $item = $(document).find(`[${DATA_ATTR}="${extensionId}"]`);
+      const $item = $safeFind(`[${DATA_ATTR}="${extensionId}"]`);
       if ($item.length === 0) {
         console.warn(`Item for ${extensionId} was not in the menu`);
       }
@@ -291,7 +291,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         this.removeExtensions(extensions.map((x) => x.id));
         // Release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         this.logger.error(error);
       }
@@ -465,13 +464,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const implicitRender = versionOptions.explicitRender
       ? null
       : await engineRenderer(
-          extension.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE
+          extension.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+          versionOptions
         );
 
     let html: string;
 
     if (extension.config.if) {
-      // Read latest state at the time of the action
+      // Read the latest state at the time of the action
       const input = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
 
@@ -499,35 +499,39 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       }
     }
 
+    const renderMustache = await engineRenderer("mustache", versionOptions);
+
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
       const extensionContext = { ...ctxt, ...serviceContext };
-      html = Mustache.render(this.getTemplate(), {
+
+      html = renderMustache(this.getTemplate(), {
         caption: (await mapArgs(caption, extensionContext, {
           implicitRender,
+          autoescape: versionOptions.autoescape,
         })) as string,
         icon: icon ? await getSvgIcon(icon) : null,
-      });
+      }) as string;
     } else {
-      html = Mustache.render(this.getTemplate(), {
+      html = renderMustache(this.getTemplate(), {
         caption,
         icon: icon ? await getSvgIcon(icon) : null,
-      });
+      }) as string;
     }
 
     const $menuItem = this.makeItem(html, extension);
 
-    $menuItem.on("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    $menuItem.on("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
 
       console.debug("Run menu item", this.logger.context);
 
       reportEvent("MenuItemClick", selectEventData(extension));
 
       try {
-        // Read latest state at the time of the action
+        // Read the latest state at the time of the action
         const reader = await this.defaultReader();
 
         const initialValues: InitialValues = {
@@ -546,20 +550,19 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
         notifyResult(
           extension.id,
-          mergeConfig(onSuccess, DEFAULT_ACTION_RESULTS.success)
+          merge({}, onSuccess, DEFAULT_ACTION_RESULTS.success)
         );
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         if (hasCancelRootCause(error)) {
           notifyResult(
             extension.id,
-            mergeConfig(onCancel, DEFAULT_ACTION_RESULTS.cancel)
+            merge({}, onCancel, DEFAULT_ACTION_RESULTS.cancel)
           );
         } else {
           extensionLogger.error(error);
           notifyResult(
             extension.id,
-            mergeConfig(onError, DEFAULT_ACTION_RESULTS.error)
+            merge({}, onError, DEFAULT_ACTION_RESULTS.error)
           );
         }
       }
@@ -610,7 +613,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
       let elementCount = 0;
       for (const dependency of dependencies) {
-        const $dependency = $(document).find(dependency);
+        const $dependency = $safeFind(dependency);
         if ($dependency.length > 0) {
           for (const element of $dependency) {
             elementCount++;
@@ -635,14 +638,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       this.cancelDependencyObservers.set(extension.id, () => {
         try {
           observer.disconnect();
-        } catch (error: unknown) {
+        } catch (error) {
           console.error("Error cancelling mutation observer", error);
         }
 
         for (const cancel of cancellers) {
           try {
             cancel();
-          } catch (error: unknown) {
+          } catch (error) {
             console.error("Error cancelling dependency observer", error);
           }
         }
@@ -663,9 +666,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const errors = [];
 
     const containerSelector = this.getContainerSelector();
-    const $currentMenus = $(document).find(
-      castArray(containerSelector).join(" ")
-    );
+    const $currentMenus = $safeFind(castArray(containerSelector).join(" "));
     const currentMenus = $currentMenus.toArray();
 
     for (const menu of this.menus.values()) {
@@ -705,7 +706,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
         try {
           await this.runExtension(menu, ctxtPromise, extension);
-        } catch (error: unknown) {
+        } catch (error) {
           if (error instanceof PromiseCancelled) {
             console.debug(
               `menuItemExtension run promise cancelled for extension: ${extension.id}`
@@ -799,7 +800,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
     if (typeof position === "object") {
       if (position.sibling) {
-        const $sibling = $menu.find(position.sibling);
+        const $sibling = $safeFind(position.sibling, $menu);
         if ($sibling.length > 1) {
           throw new Error(
             `Multiple sibling elements for selector: ${position.sibling}`
@@ -874,18 +875,20 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   }
 
   protected makeItem(
-    html: string,
+    unsanitizedHTML: string,
     extension: ResolvedExtension<MenuItemExtensionConfig>
   ): JQuery {
+    const sanitizedHTML = sanitize(unsanitizedHTML);
+
     let $root: JQuery;
 
     if (this._definition.shadowDOM) {
       const root = document.createElement(this._definition.shadowDOM.tag);
       const shadowRoot = root.attachShadow({ mode: "closed" });
-      shadowRoot.innerHTML = html;
+      shadowRoot.innerHTML = sanitizedHTML;
       $root = $(root);
     } else {
-      $root = $(html);
+      $root = $(sanitizedHTML);
     }
 
     $root.attr(DATA_ATTR, extension.id);

@@ -35,11 +35,14 @@ import ConsoleLogger from "@/tests/ConsoleLogger";
 import { SerializableResponse } from "@/messaging/protocol";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors";
+import { $safeFind } from "@/helpers";
+import { clearDynamicElements } from "@/nativeEditor/dynamic";
+import { reactivateTab } from "./lifecycle";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
     return await factory();
-  } catch (error: unknown) {
+  } catch (error) {
     if (deserializeError(error).name === "ComponentNotFoundError") {
       return "Component not detected";
     }
@@ -117,7 +120,7 @@ export async function runReaderBlock({
 }) {
   const root = isNullOrBlank(rootSelector)
     ? document
-    : $(document).find(rootSelector).get(0);
+    : $safeFind(rootSelector).get(0);
 
   if (id === "@pixiebrix/context-menu-data") {
     // HACK: special handling for context menu built-in
@@ -156,7 +159,7 @@ export async function runReader({
 
   const root = isNullOrBlank(rootSelector)
     ? document
-    : $(document).find(rootSelector).get(0);
+    : $safeFind(rootSelector).get(0);
 
   return makeRead(config)(root);
 }
@@ -186,4 +189,9 @@ export async function readSelected() {
   return {
     error: "No element selected",
   };
+}
+
+export async function resetTab(): Promise<void> {
+  await clearDynamicElements({});
+  await reactivateTab();
 }

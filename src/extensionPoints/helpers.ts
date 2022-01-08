@@ -19,6 +19,7 @@ import { castArray, noop, once } from "lodash";
 import initialize from "@/vendors/initialize";
 import { sleep, waitAnimationFrame } from "@/utils";
 import { MessageContext, ResolvedExtension } from "@/core";
+import { $safeFind } from "@/helpers";
 
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
@@ -68,7 +69,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
           for (const observer of observers) {
             try {
               observer.disconnect();
-            } catch (error: unknown) {
+            } catch (error) {
               console.warn("Error disconnecting mutation observer", error);
             }
           }
@@ -85,7 +86,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
     for (const observer of observers) {
       try {
         observer.disconnect();
-      } catch (error: unknown) {
+      } catch (error) {
         console.warn("Error disconnecting mutation observer", error);
       }
     }
@@ -147,8 +148,7 @@ function pollSelector(
   const $target = $(target);
   const promise = _wait<JQuery>(
     () => {
-      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
-      const $elt = $target.find(selector);
+      const $elt = $safeFind(selector, $target);
       return $elt.length > 0 ? $elt : null;
     },
     () => cancelled,
@@ -223,8 +223,10 @@ export function awaitElementOnce(
   const [nextSelector, ...rest] = selectors;
 
   // Find immediately, or wait for it to be initialized
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- JQuery false positive
-  const $element: JQuery<HTMLElement | Document> = $root.find(nextSelector);
+  const $element: JQuery<HTMLElement | Document> = $safeFind(
+    nextSelector,
+    $root
+  );
 
   if ($element.length === 0) {
     console.debug(

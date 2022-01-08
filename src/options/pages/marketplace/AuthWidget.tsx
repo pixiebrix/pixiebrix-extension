@@ -25,7 +25,7 @@ import registry from "@/services/registry";
 import { RawServiceConfiguration, RegistryId, UUID } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { persistor } from "@/options/store";
-import { refresh as refreshBackgroundLocator } from "@/background/locator";
+import { services } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -84,7 +84,7 @@ const AuthWidget: React.FunctionComponent<{
       await persistor.flush();
 
       // Also refresh the service locator on the background so the new auth works immediately
-      await refreshBackgroundLocator({ remote: false, local: true });
+      await services.refresh({ remote: false, local: true });
 
       if (onRefresh) {
         onRefresh();

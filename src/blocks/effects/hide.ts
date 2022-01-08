@@ -18,6 +18,7 @@
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { $safeFind } from "@/helpers";
 
 export class HideEffect extends Effect {
   constructor() {
@@ -49,7 +50,7 @@ export class HideEffect extends Effect {
     selector: string;
     mode?: "hide" | "remove";
   }>): Promise<void> {
-    const $elt = $(document).find(selector);
+    const $elt = $safeFind(selector);
     if (mode === "hide") {
       $elt.hide();
     } else {

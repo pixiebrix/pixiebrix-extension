@@ -45,6 +45,22 @@ describe("loadYaml", () => {
       },
     });
   });
+
+  test("deserialize defer", async () => {
+    expect(
+      loadBrickYaml("foo: !defer\n  bar: !mustache '{{ @element }}'")
+    ).toEqual({
+      foo: {
+        __type__: "defer",
+        __value__: {
+          bar: {
+            __type__: "mustache",
+            __value__: "{{ @element }}",
+          },
+        },
+      },
+    });
+  });
 });
 
 describe("dumpYaml", () => {
@@ -68,6 +84,17 @@ describe("dumpYaml", () => {
     });
 
     expect(dumped).toBe("foo: !pipeline \n  - id: '@pixiebrix/confetti'\n");
+  });
+
+  test("serialize defer", () => {
+    const dumped = dumpBrickYaml({
+      foo: {
+        __type__: "defer",
+        __value__: { bar: 42 },
+      },
+    });
+
+    expect(dumped).toBe("foo: !defer \n  bar: 42\n");
   });
 
   test("strips sharing information", () => {

@@ -16,7 +16,7 @@
  */
 
 import { Effect } from "@/types";
-import { proxyService } from "@/background/requests";
+import { proxyService } from "@/background/messenger/api";
 import { Schema, BlockArg } from "@/core";
 import { partial } from "lodash";
 import { BusinessError } from "@/errors";

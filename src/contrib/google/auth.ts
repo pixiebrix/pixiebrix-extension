@@ -42,7 +42,7 @@ export async function ensureAuth(
       gapi.auth.setToken({ access_token: token } as any);
       return token;
     }
-  } catch (error: unknown) {
+  } catch (error) {
     throw new Error(`Cannot get Chrome OAuth token: ${getErrorMessage(error)}`);
   }
 

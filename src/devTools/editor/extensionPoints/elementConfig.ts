@@ -37,7 +37,8 @@ export type ElementType =
   | "trigger"
   | "panel"
   | "contextMenu"
-  | "actionPanel";
+  | "actionPanel"
+  | "quickBar";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
@@ -69,6 +70,12 @@ export interface BaseFormState<
    * @see ApiVersion
    */
   readonly apiVersion: ApiVersion;
+
+  /**
+   * Are we currently showing the info message to users about upgrading from v2 to v3 of
+   * the runtime api for this extension?
+   */
+  readonly showV3UpgradeMessage: boolean;
 
   /**
    * The extension uuid

@@ -15,10 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { FocusEventHandler, useCallback, useState } from "react";
+import React, {
+  FocusEventHandler,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Form, FormControlProps } from "react-bootstrap";
 import { useField } from "formik";
 import { round } from "lodash";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
 /**
  * A basic input widget for numbers
@@ -26,38 +33,60 @@ import { round } from "lodash";
  * @see: IntegerWidget
  */
 const NumberWidget: React.FC<
-  FormControlProps & {
-    name: string;
-    step?: number;
-  }
-> = ({ name, step, ...restProps }) => {
+  SchemaFieldProps &
+    FormControlProps & {
+      step?: number;
+    }
+> = ({
+  name,
+  schema,
+  isRequired,
+  uiSchema,
+  hideLabel,
+  isObjectProperty,
+  isArrayItem,
+  onClick,
+  focusInput,
+  step,
+  ...restProps
+}) => {
   const [{ value: formValue }, , { setValue: setFormValue }] = useField<number>(
     name
   );
   const [value, setValue] = useState<string>(String(formValue));
 
+  const inputRef = useRef<HTMLInputElement>();
+
+  useEffect(() => {
+    if (focusInput) {
+      inputRef.current?.focus();
+    }
+  }, [focusInput]);
+
   const onChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
-    (e) => {
-      setValue(e.target.value);
+    ({ target }) => {
+      setValue(target.value);
     },
     []
   );
 
   const onBlur: FocusEventHandler<HTMLInputElement> = useCallback(() => {
-    const numberVal = Number(value);
-    const newVal = step ? round(numberVal / step) * step : numberVal;
-    setFormValue(newVal);
-    setValue(String(newVal));
+    const numberValue = Number(value);
+    const newValue = step ? round(numberValue / step) * step : numberValue;
+    setFormValue(newValue);
+    setValue(String(newValue));
   }, [setFormValue, step, value]);
 
   return (
+    // Spread the input props first so that we override the explicit ones below
     <Form.Control
+      {...restProps}
       type="number"
       value={value}
       onChange={onChange}
       onBlur={onBlur}
       step={step ? String(step) : ""}
-      {...restProps}
+      ref={inputRef}
     />
   );
 };

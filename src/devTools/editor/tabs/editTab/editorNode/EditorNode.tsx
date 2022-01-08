@@ -15,17 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import cx from "classnames";
-import {
-  faArrowDown,
-  faArrowUp,
-  faExclamationCircle,
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+import { ListGroup } from "react-bootstrap";
+import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { NodeId } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 
 export type EditorNodeProps = {
@@ -34,7 +29,6 @@ export type EditorNodeProps = {
   outputKey?: string;
   icon?: IconProp | React.ReactNode;
   onClick?: () => void;
-  muted?: boolean;
   active?: boolean;
   hasError?: boolean;
   hasWarning?: boolean;
@@ -59,7 +53,6 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   icon: iconProp,
   title,
   outputKey,
-  muted,
   active,
   hasError,
   hasWarning,
@@ -69,6 +62,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   onClickMoveUp,
   onClickMoveDown,
 }) => {
+  const nodeRef = useRef<HTMLAnchorElement>(null);
   const outputName = outputKey ? `@${outputKey}` : "";
 
   const icon = isFontAwesomeIcon(iconProp) ? (
@@ -79,79 +73,72 @@ const EditorNode: React.FC<EditorNodeProps> = ({
 
   const errorBadge =
     hasError || hasWarning ? (
-      <span className={cx("fa-layers", "fa-fw", styles.errorBadge)}>
-        <span className={styles.exclamationBackground} />
-        <FontAwesomeIcon
-          icon={hasError ? faExclamationCircle : faExclamationTriangle}
-          className={cx({
-            [styles.errorBadgeBackground]: hasError,
-            [styles.warningBadgeBackground]: hasWarning,
-          })}
+      <span className={styles.errorBadge}>
+        <img
+          src={
+            hasError
+              ? "/img/fa-exclamation-circle-custom.svg"
+              : "/img/fa-exclamation-triangle-custom.svg"
+          }
+          alt=""
         />
       </span>
     ) : null;
 
+  useEffect(() => {
+    if (active) {
+      nodeRef.current?.focus();
+    }
+  }, [active]);
   return (
-    // Use our own custom style here, not bootstrap
-    <div className={styles.root}>
-      <div
-        className={cx(styles.title, {
-          [styles.addRightMargin]: canMoveAnything,
-        })}
-      >
-        {title}
+    <ListGroup.Item
+      ref={nodeRef}
+      action
+      onClick={onClick}
+      active={active}
+      className={styles.root}
+    >
+      <div className={styles.icon}>
+        {icon}
+        {errorBadge}
       </div>
-      <div className={styles.buttonRow}>
-        <button
-          type="button"
-          onClick={onClick}
-          className={cx(styles.nodeButton, styles.button, {
-            [styles.mutedNode]: muted,
-            [styles.activeNode]: active,
-          })}
-        >
-          {errorBadge}
-          {icon}
-        </button>
-        {canMoveAnything && (
-          <div className={styles.moveButtons}>
-            {(canMoveUp || canMoveDown) && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClickMoveUp();
-                  }}
-                  title="Move brick higher"
-                  disabled={!canMoveUp}
-                  className={styles.button}
-                >
-                  <FontAwesomeIcon icon={faArrowUp} size="sm" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClickMoveDown();
-                  }}
-                  title="Move brick lower"
-                  disabled={!canMoveDown}
-                  className={styles.button}
-                >
-                  <FontAwesomeIcon icon={faArrowDown} size="sm" />
-                </button>
-              </>
-            )}
-          </div>
-        )}
+      <div className={styles.text}>
+        <div>{title}</div>
+        {outputName && <div className={styles.outputKey}>{outputName}</div>}
       </div>
-      <div
-        className={cx(styles.outputKey, {
-          [styles.addRightMargin]: canMoveAnything,
-        })}
-      >
-        {outputName}
-      </div>
-    </div>
+      {canMoveAnything && (
+        <div className={styles.moveButtons}>
+          {(canMoveUp || canMoveDown) && (
+            <>
+              <button
+                type="button"
+                onClick={(event) => {
+                  onClickMoveUp();
+                  event.stopPropagation();
+                }}
+                title="Move brick higher"
+                disabled={!canMoveUp}
+                className={styles.moveButton}
+              >
+                <FontAwesomeIcon icon={faArrowUp} size="sm" />
+              </button>
+              <button
+                type="button"
+                onClick={(event) => {
+                  onClickMoveDown();
+                  event.stopPropagation();
+                }}
+                title="Move brick lower"
+                disabled={!canMoveDown}
+                className={styles.moveButton}
+              >
+                <FontAwesomeIcon icon={faArrowDown} size="sm" />
+              </button>
+            </>
+          )}
+        </div>
+      )}
+    </ListGroup.Item>
   );
 };
 

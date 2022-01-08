@@ -20,7 +20,7 @@ import { getChromeExtensionId, RuntimeNotFoundError } from "@/chrome";
 import browser, { Runtime } from "webextension-polyfill";
 import { patternToRegex } from "webext-patterns";
 import chromeP from "webext-polyfill-kinda";
-import { isBackgroundPage, isExtensionContext } from "webext-detect-page";
+import { isBackground, isExtensionContext } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 
 import {
@@ -32,6 +32,7 @@ import {
   isErrorResponse,
   RemoteProcedureCallRequest,
 } from "@/messaging/protocol";
+
 type ChromeMessageSender = chrome.runtime.MessageSender;
 
 export const MESSAGE_PREFIX = "@@pixiebrix/background/";
@@ -71,7 +72,7 @@ async function handleRequest(
       `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
     );
     return value;
-  } catch (error: unknown) {
+  } catch (error) {
     if (isNotification(options)) {
       console.warn(
         `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
@@ -114,7 +115,7 @@ async function callBackground(
     console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {
       extensionId,
     });
-    sendMessage(extensionId, message, {}).catch((error: unknown) => {
+    sendMessage(extensionId, message, {}).catch((error) => {
       console.warn(
         `An error occurred processing background notification ${type} (nonce: ${nonce})`,
         error
@@ -127,7 +128,7 @@ async function callBackground(
     let response;
     try {
       response = await sendMessage(extensionId, message, {});
-    } catch (error: unknown) {
+    } catch (error) {
       console.debug(
         `Error sending background action ${type} (nonce: ${nonce})`,
         { extensionId, error }
@@ -164,7 +165,7 @@ export function liftBackground<
 ): (...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
-  if (isBackgroundPage()) {
+  if (isBackground()) {
     if (handlers.has(fullType)) {
       console.warn(`Handler already registered for ${fullType}`);
     } else {
@@ -195,7 +196,7 @@ function backgroundListener(
   }
 }
 
-if (isBackgroundPage()) {
+if (isBackground()) {
   browser.runtime.onMessage.addListener(backgroundListener);
   browser.runtime.onMessageExternal.addListener(backgroundListener);
 }

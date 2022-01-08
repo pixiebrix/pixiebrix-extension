@@ -16,30 +16,14 @@
  */
 
 import React, { useCallback } from "react";
-import "@/layout/Banner";
-import cx from "classnames";
 import useDeployments from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
 import { useRouteMatch } from "react-router";
 import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
+import Banner from "@/components/banner/Banner";
 
-const Banner: React.FC<{ className?: string }> = ({ className, children }) => (
-  <div
-    className={cx("deployment-banner w-100", className)}
-    style={{ flex: "none" }}
-  >
-    <div className="mx-auto d-flex">
-      <div className="flex-grow-1" />
-      <div className="align-self-center">{children}</div>
-      <div className="flex-grow-1" />
-    </div>
-  </div>
-);
-
-const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
-  className,
-}) => {
+const DeploymentBanner: React.FunctionComponent = () => {
   const { hasUpdate, update, extensionUpdateRequired } = useDeployments();
 
   // Only show on certain pages where the user expects to see a top-level install button. It's especially confusing
@@ -63,7 +47,7 @@ const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
 
   if (extensionUpdateRequired) {
     return (
-      <Banner className={className}>
+      <Banner variant="info">
         Update the PixieBrix extension to activate team bricks
         <AsyncButton className="info ml-3" size="sm" onClick={updateExtension}>
           Update
@@ -73,7 +57,7 @@ const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
   }
 
   return (
-    <Banner className={className}>
+    <Banner variant="info">
       Team bricks are ready to activate
       <AsyncButton className="info ml-3" size="sm" onClick={update}>
         Activate

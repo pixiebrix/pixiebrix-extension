@@ -23,13 +23,20 @@ import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
 import { UnknownObject } from "@/types";
 
+interface Props {
+  /**
+   * Where the error happened, a hint in a free form
+   */
+  errorContext?: string;
+}
+
 interface State {
   hasError: boolean;
   errorMessage: string;
   stack: string;
 }
 
-class ErrorBoundary extends Component<UnknownObject, State> {
+class ErrorBoundary extends Component<Props, State> {
   constructor(props: UnknownObject) {
     super(props);
     this.state = { hasError: false, errorMessage: undefined, stack: undefined };
@@ -53,6 +60,7 @@ class ErrorBoundary extends Component<UnknownObject, State> {
       return (
         <div>
           <h1>Something went wrong.</h1>
+          {this.props.errorContext && <h2>{this.props.errorContext}</h2>}
           <div>
             <p>{this.state.errorMessage}</p>
           </div>

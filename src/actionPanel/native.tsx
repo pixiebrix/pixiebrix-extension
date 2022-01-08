@@ -18,16 +18,10 @@
 import browser from "webextension-polyfill";
 import { reportError } from "@/telemetry/logging";
 import { uuidv4 } from "@/types/helpers";
-import {
-  HIDE_FORM_MESSAGE,
-  RENDER_PANELS_MESSAGE,
-  SHOW_FORM_MESSAGE,
-} from "@/actionPanel/protocol";
 import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef, UUID } from "@/core";
-import { browserAction } from "@/background/messenger/api";
 import {
   ActionPanelStore,
   FormEntry,
@@ -35,10 +29,13 @@ import {
   RendererError,
 } from "@/actionPanel/actionPanelTypes";
 import { RendererPayload } from "@/runtime/runtimeTypes";
+import { renderPanels, hideForm, showForm } from "@/actionPanel/messenger/api";
+import { MAX_Z_INDEX } from "@/common";
+import pDefer from "p-defer";
 
 const SIDEBAR_WIDTH_PX = 400;
-const PANEL_CONTAINER_ID = "pixiebrix-extension";
-const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
+const PANEL_FRAME_ID = "pixiebrix-extension";
+const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
 export const PANEL_HIDING_EVENT = "pixiebrix:hideActionPanel";
 
 let renderSequenceNumber = 0;
@@ -95,50 +92,81 @@ function restoreDocumentStyle(): void {
 
 function insertActionPanel(): string {
   const nonce = uuidv4();
-
   const actionURL = browser.runtime.getURL("action.html");
 
-  const $panelContainer = $(
-    `<div id="${PANEL_CONTAINER_ID}" data-nonce="${nonce}" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border-left: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
-  );
-
-  // CSS approach not well supported? https://stackoverflow.com/questions/15494568/html-iframe-disable-scroll
-  // noinspection HtmlDeprecatedAttribute
-  const $frame = $(
-    `<iframe id="pixiebrix-frame" src="${actionURL}?nonce=${nonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" ></iframe>`
-  );
-
-  $panelContainer.append($frame);
-
-  $("body").append($panelContainer);
+  $("<iframe>")
+    .attr({
+      id: PANEL_FRAME_ID,
+      src: `${actionURL}?nonce=${nonce}`,
+      "data-nonce": nonce, // Don't use jQuery.data because we need the attribute
+    })
+    .css({
+      position: "fixed",
+      top: 0,
+      right: 0,
+      zIndex: MAX_Z_INDEX,
+      width: SIDEBAR_WIDTH_PX,
+      height: "100%",
+      border: 0,
+      borderLeft: "1px solid lightgray",
+      background: "#f2edf3",
+    })
+    .appendTo("body");
 
   return nonce;
 }
 
+/**
+ * Add the action panel to the page if it's not already on the page
+ * @param callbacks callbacks to refresh the panels, leave blank to refresh all extension panels
+ */
 export function showActionPanel(callbacks = extensionCallbacks): string {
   reportEvent("SidePanelShow");
-
-  adjustDocumentStyle();
 
   const container: HTMLElement = document.querySelector(
     PANEL_CONTAINER_SELECTOR
   );
 
-  const nonce = container?.dataset?.nonce ?? insertActionPanel();
+  let nonce = container?.dataset?.nonce;
+
+  if (!nonce) {
+    console.debug("SidePanel is not on the page, attaching side panel");
+    adjustDocumentStyle();
+    nonce = insertActionPanel();
+  }
 
   // Run the extension points available on the page. If the action panel is already in the page, running
-  // all the callbacks ensures the content is up to date
+  // all the callbacks ensures the content is up-to-date
   for (const callback of callbacks) {
     try {
       callback();
-    } catch (error: unknown) {
+    } catch (error) {
       // The callbacks should each have their own error handling. But wrap in a try-catch to ensure running
       // the callbacks does not interfere prevent showing the sidebar
       reportError(error);
     }
   }
 
+  // TODO: Drop `nonce` if not used by the caller
   return nonce;
+}
+
+/**
+ * Awaitable version of showActionPanel which does not reload existing panels if the action panel is already visible
+ * @see showActionPanel
+ */
+export async function ensureActionPanel(): Promise<void> {
+  const show = pDefer();
+
+  if (!isActionPanelVisible()) {
+    registerShowCallback(show.resolve);
+    try {
+      showActionPanel();
+      await show.promise;
+    } finally {
+      removeShowCallback(show.resolve);
+    }
+  }
 }
 
 export function hideActionPanel(): void {
@@ -166,17 +194,13 @@ export function getStore(): ActionPanelStore {
   return { panels, forms: [] };
 }
 
-function renderPanels() {
+function renderPanelsIfVisible() {
   expectContext("contentScript");
 
   if (isActionPanelVisible()) {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
-
-    browserAction.forwardFrameNotification(seqNum, {
-      type: RENDER_PANELS_MESSAGE,
-      payload: { panels },
-    } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
+    void renderPanels({ tabId: "this", page: "/action.html" }, seqNum, panels);
   } else {
     console.debug(
       "Skipping renderPanels because the action panel is not visible"
@@ -195,11 +219,7 @@ export function showActionPanelForm(entry: FormEntry) {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-
-  browserAction.forwardFrameNotification(seqNum, {
-    type: SHOW_FORM_MESSAGE,
-    payload: entry,
-  } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
+  void showForm({ tabId: "this", page: "/action.html" }, seqNum, entry);
 }
 
 export function hideActionPanelForm(nonce: UUID) {
@@ -212,11 +232,7 @@ export function hideActionPanelForm(nonce: UUID) {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-
-  browserAction.forwardFrameNotification(seqNum, {
-    type: HIDE_FORM_MESSAGE,
-    payload: { nonce },
-  } as any); // Temporary, until https://github.com/pixiebrix/webext-messenger/issues/31
+  void hideForm({ tabId: "this", page: "/action.html" }, seqNum, nonce);
 }
 
 export function removeExtension(extensionId: string): void {
@@ -225,7 +241,7 @@ export function removeExtension(extensionId: string): void {
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
   panels.push(...current.filter((x) => x.extensionId !== extensionId));
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 export function removeExtensionPoint(extensionPointId: string): void {
@@ -236,7 +252,7 @@ export function removeExtensionPoint(extensionPointId: string): void {
   panels.push(
     ...current.filter((x) => x.extensionPointId !== extensionPointId)
   );
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 /**
@@ -268,7 +284,7 @@ export function reservePanels(refs: ExtensionRef[]): void {
     }
   }
 
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 export function updateHeading(extensionId: string, heading: string): void {
@@ -281,7 +297,7 @@ export function updateHeading(extensionId: string, heading: string): void {
       entry.extensionPointId,
       { ...entry }
     );
-    renderPanels();
+    renderPanelsIfVisible();
   } else {
     console.warn(
       "updateHeading: No panel exists for extension %s",
@@ -320,7 +336,7 @@ export function upsertPanel(
     panels.push({ extensionId, extensionPointId, heading, payload });
   }
 
-  renderPanels();
+  renderPanelsIfVisible();
 }
 
 if (IS_BROWSER) {

@@ -21,11 +21,12 @@ $nav-height: 31px; // To match the height of the actions of the Sidebar
   height: $nav-height;
   flex-wrap: nowrap !important;
   box-shadow: 0 2px 2px gray;
+  position: relative;
+  z-index: 1; // Paint the shadow above the content below
 }
 
 .tabContent {
   height: calc(100% - #{$nav-height});
-  padding: 2px 5px 5px 5px;
 }
 
 .form {

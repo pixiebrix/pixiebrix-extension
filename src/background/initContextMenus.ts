@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftBackground } from "@/background/protocol";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import {
   ContextMenuConfig,
@@ -27,7 +26,9 @@ import { resolveDefinitions } from "@/registry/internal";
 import { allSettledValues } from "@/utils";
 import { expectContext } from "@/utils/expectContext";
 
-async function preload(extensions: IExtension[]): Promise<void> {
+export async function preloadContextMenus(
+  extensions: IExtension[]
+): Promise<void> {
   expectContext("background");
   await Promise.allSettled(
     extensions.map(async (definition) => {
@@ -45,22 +46,15 @@ async function preload(extensions: IExtension[]): Promise<void> {
   );
 }
 
-export const preloadContextMenus = liftBackground(
-  "PRELOAD_CONTEXT_MENUS",
-  async ({ extensions }: { extensions: IExtension[] }) => {
-    await preload(extensions);
-  }
-);
-
 async function preloadAllContextMenus(): Promise<void> {
   const { extensions } = await loadOptions();
   const resolved = await allSettledValues(
     extensions.map(async (x) => resolveDefinitions(x))
   );
-  await preload(resolved);
+  await preloadContextMenus(resolved);
 }
 
-export default (): void => {
+export default function initContextMenus(): void {
   expectContext("background");
   void preloadAllContextMenus();
-};
+}

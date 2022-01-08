@@ -9,7 +9,7 @@ async function handleIconImport(
   try {
     const { definition } = await moduleImport;
     return definition;
-  } catch (error: unknown) {
+  } catch (error) {
     console.warn("Error importing FontAwesome icon library module", { error });
     throw error;
   }

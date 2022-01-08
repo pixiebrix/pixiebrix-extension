@@ -263,7 +263,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   }
 
   private async runExtension(
-    readerContext: ReaderOutput,
+    readerOutput: ReaderOutput,
     extension: ResolvedExtension<PanelConfig>
   ) {
     if (this.uninstalled) {
@@ -306,7 +306,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
 
     const serviceContext = await makeServiceContext(extension.services);
-    const extensionContext = { ...readerContext, ...serviceContext };
+    const extensionContext = { ...readerOutput, ...serviceContext };
 
     const $panel = $(
       Mustache.render(this.getTemplate(), {
@@ -375,7 +375,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         isBodyInstalled = true;
 
         const initialValues: InitialValues = {
-          input: extension.optionsArgs,
+          input: readerOutput,
           optionsArgs: extension.optionsArgs,
           serviceContext,
           root: document,
@@ -395,7 +395,6 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
             shadowDOM,
           });
           extensionLogger.debug("Successfully installed panel");
-          // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
         } catch (error) {
           extensionLogger.error(error);
         }
@@ -460,7 +459,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         // Running in loop to ensure consistent placement. OK because `installBody` in runExtension is runs asynchronously
         // eslint-disable-next-line no-await-in-loop
         await this.runExtension(readerContext, extension);
-      } catch (error: unknown) {
+      } catch (error) {
         errors.push(error);
         this.logger
           .childLogger({

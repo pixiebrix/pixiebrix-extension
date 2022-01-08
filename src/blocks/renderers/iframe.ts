@@ -16,8 +16,9 @@
  */
 
 import { Renderer } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { BlockArg, SafeHTML, Schema } from "@/core";
 import browser from "webextension-polyfill";
+import { assumeSafe } from "@/utils/sanitize";
 
 export class IFrameRenderer extends Renderer {
   constructor() {
@@ -60,15 +61,29 @@ export class IFrameRenderer extends Renderer {
     title = "PixieBrix",
     height = "100%",
     width = "100%",
-    safeMode,
-  }: BlockArg): Promise<string> {
+    safeMode = false,
+  }: BlockArg<{
+    url: string;
+    title?: string;
+    height?: string;
+    width?: string;
+    safeMode?: boolean;
+  }>): Promise<SafeHTML> {
+    // Parse the URL to ensure it's a real URL (i.e., not an XSS attempt)
+    const parsedURL = new URL(url);
+
     if (safeMode) {
-      return `<iframe src="${url}" title="${title}" height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>`;
+      return assumeSafe(
+        `<iframe src="${parsedURL.href}" title="${title}" height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>`
+      );
     }
 
     // https://transitory.technology/browser-extensions-and-csp-headers/
-    const frameSrc = browser.runtime.getURL("frame.html");
-    const src = `${frameSrc}?url=${encodeURIComponent(url)}`;
-    return `<iframe src="${src}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`;
+    const frameURL = browser.runtime.getURL("frame.html");
+    const source = `${frameURL}?url=${encodeURIComponent(parsedURL.href)}`;
+
+    return assumeSafe(
+      `<iframe src="${source}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`
+    );
   }
 }

@@ -144,7 +144,7 @@ export class Registry<
   private parse(raw: unknown): Item | undefined {
     try {
       return this.deserialize(raw);
-    } catch (error: unknown) {
+    } catch (error) {
       console.warn(
         "Error de-serializing item: %s",
         getErrorMessage(error),

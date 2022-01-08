@@ -1,17 +1,17 @@
 {
   "silent": true,
-  "testEnvironment": "jest-environment-jsdom",
+  "testEnvironment": "jest-environment-jsdom-global",
   "modulePaths": ["/src"],
   "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
   "testPathIgnorePatterns": ["<rootDir>/src/vendors/", "<rootDir>/selenium/"],
   "transform": {
-    "^.+\\.[jt]sx?$": "babel-jest",
+    "^.+\\.[jt]sx?$": "@swc/jest",
     "^.+\\.ya?ml$": "yaml-jest-transform",
     "^.+\\.ya?ml\\?loadAsText$": "jest-raw-loader",
     "^.+\\.txt$": "jest-raw-loader"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!@cfworker|idb|webext-|p-timeout|p-defer|serialize-error)"
+    "node_modules/(?!@cfworker|idb|webext-|p-timeout|p-retry|p-defer|serialize-error|urlpattern-polyfill)"
   ],
   "setupFiles": [
     "<rootDir>/src/testEnv.js",
@@ -35,6 +35,7 @@
     "^@contrib/(.*?)(\\?loadAsText)?$": "<rootDir>/contrib/$1",
     "^@schemas/(.*)$": "<rootDir>/schemas/$1",
     "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
-    "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
+    "\\.(gif|ttf|eot|svg)$|\\?loadAsUrl$": "<rootDir>/src/__mocks__/fileMock.js",
+    "\\.svg\\?loadAsComponent$": "<rootDir>/src/__mocks__/svgAsComponentMock.js"
   }
 }

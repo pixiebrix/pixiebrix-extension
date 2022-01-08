@@ -18,6 +18,7 @@
 import React, { ReactNode, SyntheticEvent } from "react";
 import { Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import styles from "./EllipsisMenu.module.scss";
 
@@ -26,12 +27,22 @@ type Item = {
   hide?: boolean;
   action: () => void;
   className?: string;
+  disabled?: boolean;
 };
 
 const EllipsisMenu: React.FunctionComponent<{
+  className?: string;
+  toggleClassName?: string;
   variant?: string;
   items: Item[];
-}> = ({ variant = "light", items }) => {
+  menuBoundary?: Element;
+}> = ({
+  className,
+  toggleClassName,
+  variant = "light",
+  items,
+  menuBoundary,
+}) => {
   const onToggle = (
     isOpen: boolean,
     event: SyntheticEvent<Dropdown>,
@@ -47,7 +58,7 @@ const EllipsisMenu: React.FunctionComponent<{
         // hence no other element knows that the click happened.
         // Simulating the click on the body will let other menus know user clicked somewhere.
         document.body.click();
-      } catch (error: unknown) {
+      } catch (error) {
         console.debug(
           "EllipsisMenu. Failed to trigger closing other menus",
           error
@@ -56,12 +67,30 @@ const EllipsisMenu: React.FunctionComponent<{
     }
   };
 
+  // This will set the boundary element for the Ellipsis menu popup
+  const dropdownMenuOptions = menuBoundary
+    ? {
+        modifiers: [
+          {
+            name: "flip",
+            options: {
+              boundary: menuBoundary,
+            },
+          },
+        ],
+      }
+    : undefined;
+
   return (
-    <Dropdown alignRight onToggle={onToggle}>
-      <Dropdown.Toggle className={styles.toggle} variant={variant} size="sm">
+    <Dropdown alignRight onToggle={onToggle} className={className}>
+      <Dropdown.Toggle
+        className={cx(styles.toggle, toggleClassName)}
+        variant={variant}
+        size="sm"
+      >
         <FontAwesomeIcon icon={faEllipsisV} />
       </Dropdown.Toggle>
-      <Dropdown.Menu>
+      <Dropdown.Menu popperConfig={dropdownMenuOptions}>
         {items
           .filter((x) => !x.hide)
           .map((item, index) => (
@@ -71,6 +100,7 @@ const EllipsisMenu: React.FunctionComponent<{
                 item.action();
               }}
               className={item.className}
+              disabled={item.disabled}
             >
               {item.title}
             </Dropdown.Item>

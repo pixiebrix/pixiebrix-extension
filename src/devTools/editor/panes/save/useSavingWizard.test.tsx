@@ -49,9 +49,6 @@ jest.unmock("react-redux");
 jest.mock("@/telemetry/logging");
 jest.mock("@/devTools/editor/hooks/useCreate");
 jest.mock("@/devTools/editor/hooks/useReset");
-jest.mock("@/background/trace", () => ({
-  clearExtensionTraces: jest.fn(),
-}));
 
 jest.mock("@/services/api", () => ({
   useCreateRecipeMutation: jest.fn().mockReturnValue([]),
@@ -100,7 +97,7 @@ test("maintains wizard open state", () => {
   // Save will open the modal window.
   // Should not await for the promise to resolve to check that window is open.
   act(() => {
-    void result.current.save().catch((error: unknown) => {
+    void result.current.save().catch((error) => {
       // Got an error, failing the test
       console.error(error);
       expect(error).toBeUndefined();
@@ -134,7 +131,7 @@ test("saves non recipe element", async () => {
   const { result } = renderUseSavingWizard(store);
 
   act(() => {
-    result.current.save().catch((error: unknown) => {
+    result.current.save().catch((error) => {
       // Got an error, failing the test
       console.error(error);
       expect(error).toBeUndefined();
@@ -212,7 +209,7 @@ describe("saving a Recipe Extension", () => {
 
     // Get into the saving process
     act(() => {
-      void result.current.save().catch((error: unknown) => {
+      void result.current.save().catch((error) => {
         // Got an error, failing the test
         console.error(error);
         expect(error).toBeUndefined();
@@ -337,7 +334,7 @@ describe("saving a Recipe Extension", () => {
     try {
       await creatingRecipePromise;
       await savingPromise;
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBe("Failed to create new Blueprint");
     }
 
@@ -426,7 +423,7 @@ describe("saving a Recipe Extension", () => {
     try {
       await updatingRecipePromise;
       await savingPromise;
-    } catch (error: unknown) {
+    } catch (error) {
       expect(error).toBe("Failed to update the Blueprint");
     }
 

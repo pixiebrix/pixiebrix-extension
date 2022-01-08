@@ -44,7 +44,6 @@ import {
   upsertPanel,
 } from "@/actionPanel/native";
 import Mustache from "mustache";
-import { reportError } from "@/telemetry/logging";
 import { uuidv4 } from "@/types/helpers";
 import { BusinessError, getErrorMessage } from "@/errors";
 import { HeadlessModeError } from "@/blocks/errors";
@@ -144,7 +143,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
       // noinspection ExceptionCaughtLocallyJS
       throw new BusinessError("No renderer brick attached to body");
-    } catch (error: unknown) {
+    } catch (error) {
       const ref = { extensionId: extension.id, extensionPointId: this.id };
 
       if (error instanceof HeadlessModeError) {
@@ -155,12 +154,11 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
           args: error.args,
         });
       } else {
+        extensionLogger.error(error);
         upsertPanel(ref, heading, {
           key: uuidv4(),
           error: getErrorMessage(error as Error),
         });
-        reportError(error);
-        throw error;
       }
     }
   }
@@ -212,7 +210,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       toRun.map(async (extension) => {
         try {
           await this.runExtension(readerContext, extension);
-        } catch (error: unknown) {
+        } catch (error) {
           errors.push(error);
           this.logger
             .childLogger({

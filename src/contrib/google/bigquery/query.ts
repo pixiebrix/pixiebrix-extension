@@ -18,7 +18,7 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { readQuery } from "./handlers";
+import { readGoogleBigQuery } from "@/background/messenger/api";
 import { zipObject } from "lodash";
 
 // Simplified interface for passing scalar parameters
@@ -146,7 +146,7 @@ export class GoogleBigQueryQuery extends Transformer {
     queryParameters = [],
     ...resource
   }: BlockArg): Promise<unknown> {
-    const { result } = await readQuery(projectId, {
+    const { result } = await readGoogleBigQuery(projectId, {
       useLegacySql: false,
       useQueryCache: true,
       queryParameters: queryParameters.map(

@@ -246,8 +246,8 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
                 id="query"
                 placeholder="Start typing to filter blueprints"
                 value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
+                onChange={({ target }) => {
+                  setQuery(target.value);
                 }}
               />
             </InputGroup>

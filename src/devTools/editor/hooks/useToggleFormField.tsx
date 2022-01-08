@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getIn, useField, useFormikContext } from "formik";
-import { UnknownObject } from "@/types";
+import { getIn, useFormikContext } from "formik";
 import { produce } from "immer";
 import { useCallback, useMemo } from "react";
 import {
@@ -25,6 +24,7 @@ import {
 } from "@/components/fields/schemaFields/fieldInputMode";
 import { isObject } from "@/utils";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 
 export function removeField(parent: unknown, fieldName: string): void {
   if (Array.isArray(parent)) {
@@ -33,19 +33,20 @@ export function removeField(parent: unknown, fieldName: string): void {
   } else if (isObject(parent)) {
     // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-dynamic-delete
     delete parent[fieldName];
+  } else {
+    // Can't remove a field from something that isn't an array or object
+    console.warn(
+      `Can't remove '${fieldName}', parent is not an object or array`,
+      {
+        parent,
+      }
+    );
   }
-
-  // Can't remove a field from something that isn't an array or object
-  console.warn(`Can't remove '${fieldName}, parent is not an object or array`, {
-    parent,
-  });
 }
 
-function useToggleFormField<T>(
+function useToggleFormField(
   name: string
 ): {
-  value: T;
-  setValue: (value: T) => void;
   inputMode: FieldInputMode;
   onOmitField: () => void;
 } {
@@ -53,7 +54,7 @@ function useToggleFormField<T>(
   const {
     values: formState,
     setValues: setFormState,
-  } = useFormikContext<UnknownObject>();
+  } = useFormikContext<FormState>();
   const parentValues = getIn(formState, parentFieldName) ?? formState;
 
   const inputMode = useMemo(() => inferInputMode(parentValues, fieldName), [
@@ -82,11 +83,7 @@ function useToggleFormField<T>(
     setFormState(newFormState);
   }, [fieldName, formState, name, parentFieldName, setFormState]);
 
-  const [{ value }, , { setValue }] = useField<T>(name);
-
   return {
-    value,
-    setValue,
     inputMode,
     onOmitField,
   };

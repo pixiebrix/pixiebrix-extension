@@ -54,7 +54,7 @@ const ScopeSettings: React.FunctionComponent = () => {
     ) => {
       try {
         await (await getLinkedApiClient()).patch("/api/settings/", values);
-      } catch (error: unknown) {
+      } catch (error) {
         if (!isAxiosError(error)) {
           notify.error("Error updating account alias", {
             error,

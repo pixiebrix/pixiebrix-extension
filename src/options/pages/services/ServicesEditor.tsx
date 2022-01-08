@@ -28,15 +28,16 @@ import SharedServicesCard from "./SharedServicesCard";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import useServiceDefinitions from "./useServiceDefinitions";
 import { persistor, RootState } from "@/options/store";
-import { RawServiceConfiguration } from "@/core";
 import { SanitizedAuth } from "@/types/contract";
-import { refresh as refreshBackgroundAuths } from "@/background/locator";
+import { services } from "@/background/messenger/api";
 import GridLoader from "react-spinners/GridLoader";
 import ZapierModal from "@/options/pages/services/ZapierModal";
 import AuthContext from "@/auth/AuthContext";
 import { useTitle } from "@/hooks/title";
 import useFetch from "@/hooks/useFetch";
 import useNotifications from "@/hooks/useNotifications";
+import { useParams } from "react-router";
+import { IService, RawServiceConfiguration, UUID } from "@/core";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -65,6 +66,17 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     selectConfiguredServices
   );
 
+  const { id: configurationId } = useParams<{ id: UUID }>();
+
+  const [
+    newConfigurationService,
+    setNewConfigurationService,
+  ] = useState<IService>(null);
+  const [
+    newConfiguration,
+    setNewConfiguration,
+  ] = useState<RawServiceConfiguration>(null);
+
   const [activeTab, setTab] = useState("private");
 
   const notify = useNotifications();
@@ -77,18 +89,30 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     isPending: servicesPending,
   } = useServiceDefinitions();
 
+  const isConfiguring =
+    configurationId &&
+    ((newConfigurationService && newConfiguration) ||
+      (activeService && activeConfiguration));
+
   const handleSave = useCallback(
     async (config) => {
       updateServiceConfig(config);
       notify.success(
-        `Updated your private configuration for ${activeService.name}`
+        `${
+          newConfigurationService ? "Created" : "Updated"
+        } private configuration for ${
+          (activeService ?? newConfigurationService)?.name
+        }.`
       );
+
+      setNewConfiguration(null);
+      setNewConfigurationService(null);
 
       await persistor.flush();
 
       try {
-        await refreshBackgroundAuths();
-      } catch (error: unknown) {
+        await services.refresh();
+      } catch (error) {
         notify.warning(
           "Error refreshing service configurations, restart the PixieBrix extension",
           {
@@ -99,20 +123,25 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
       navigate("/services");
     },
-    [updateServiceConfig, activeService, notify, navigate]
+    [
+      updateServiceConfig,
+      notify,
+      activeService,
+      newConfigurationService,
+      navigate,
+    ]
   );
 
   const handleDelete = useCallback(
     async (id) => {
       deleteServiceConfig({ id });
-
       notify.success(`Deleted private configuration for ${activeService.name}`);
 
       await persistor.flush();
 
       try {
-        await refreshBackgroundAuths();
-      } catch (error: unknown) {
+        await services.refresh();
+      } catch (error) {
         notify.warning(
           "Error refreshing service configurations, restart the PixieBrix extension",
           {
@@ -161,11 +190,11 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
           }}
         />
       )}
-      {activeConfiguration && activeService && (
+      {isConfiguring && (
         <ServiceEditorModal
-          configuration={activeConfiguration}
-          service={activeService}
-          onDelete={handleDelete}
+          configuration={activeConfiguration ?? newConfiguration}
+          service={activeService ?? newConfigurationService}
+          onDelete={activeConfiguration && handleDelete}
           onClose={() => {
             navigate("/services");
           }}
@@ -214,7 +243,12 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
                 navigate={navigate}
                 services={serviceDefinitions}
                 onCreate={(config) => {
-                  updateServiceConfig(config);
+                  setNewConfiguration(config);
+                  setNewConfigurationService(
+                    (serviceDefinitions ?? []).find(
+                      (x) => x.id === config.serviceId
+                    )
+                  );
                   navigate(`/services/${encodeURIComponent(config.id)}`);
                 }}
               />

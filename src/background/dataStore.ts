@@ -15,46 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  ManualStorageKey,
-  readStorageWithMigration,
-  setStorage,
-} from "@/chrome";
+import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { JsonObject } from "type-fest";
-import { liftBackground } from "./protocol";
-import { SerializableResponse } from "@/messaging/protocol";
 
 export const LOCAL_DATA_STORE = "LOCAL_DATA_STORE" as ManualStorageKey;
 export const KEY_PREFIX = "@@";
 
-async function _getRecord(primaryKey: string): Promise<unknown> {
-  const data = await readStorageWithMigration<Record<string, unknown>>(
-    LOCAL_DATA_STORE,
-    {}
-  );
+export async function getRecord(primaryKey: string): Promise<unknown> {
+  const data = await readStorage<Record<string, unknown>>(LOCAL_DATA_STORE, {});
   return data[`${KEY_PREFIX}${primaryKey}`] ?? {};
 }
 
-async function _setRecord(
+export async function setRecord(
   primaryKey: string,
   value: JsonObject
 ): Promise<void> {
-  const data = await readStorageWithMigration<Record<string, unknown>>(
-    LOCAL_DATA_STORE,
-    {}
-  );
+  const data = await readStorage<Record<string, unknown>>(LOCAL_DATA_STORE, {});
   data[`${KEY_PREFIX}${primaryKey}`] = value;
   await setStorage(LOCAL_DATA_STORE, data);
 }
-
-export const getRecord = liftBackground(
-  "GET_DATA_STORE",
-  async (primaryKey: string) => _getRecord(primaryKey) as SerializableResponse
-);
-
-export const setRecord = liftBackground(
-  "SET_DATA_STORE",
-  async (primaryKey: string, value: JsonObject) => {
-    await _setRecord(primaryKey, value);
-  }
-);

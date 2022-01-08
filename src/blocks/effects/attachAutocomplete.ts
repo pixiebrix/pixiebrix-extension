@@ -22,6 +22,7 @@ import { AutocompleteItem } from "autocompleter";
 
 import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
 import { attachStylesheet } from "@/blocks/util";
+import { $safeFind } from "@/helpers";
 
 export class AttachAutocomplete extends Effect {
   constructor() {
@@ -58,11 +59,13 @@ export class AttachAutocomplete extends Effect {
     }>,
     { logger }: BlockOptions
   ): Promise<void> {
-    const $elt = $(document).find(selector);
+    const $elt = $safeFind(selector);
 
     const inputs = $elt.toArray().filter((x) => x.tagName === "INPUT");
 
-    const { default: autocompleter } = await import("autocompleter");
+    const { default: autocompleter } = await import(
+      /* webpackChunkName: "autocompleter" */ "autocompleter"
+    );
     // TODO: adjust style to hard-code font color so it works on dark themes that have a light font color by default
     await attachStylesheet(autocompleterStyleUrl);
 

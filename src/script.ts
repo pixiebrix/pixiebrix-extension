@@ -76,10 +76,12 @@ import { requireSingleElement } from "@/nativeEditor/utils";
 import { getPropByPath, noopProxy, ReadProxy } from "@/runtime/pathHelpers";
 import { UnknownObject } from "@/types";
 
+const MAX_READ_DEPTH = 5;
+
 const attachListener = initialize();
 
 attachListener(SEARCH_WINDOW, ({ query }) => {
-  console.debug(`Searching window for query: ${query}`);
+  console.debug("Searching window for query: %s", query);
   return {
     results: globalSearch(window, query),
   };
@@ -113,11 +115,13 @@ function readPathSpec(
       values[key] = getPropByPath(obj as UnknownObject, path, {
         args: args as UnknownObject,
         proxy,
+        maxDepth: MAX_READ_DEPTH,
       });
     } else {
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
       values[key] = getPropByPath(obj as Record<string, unknown>, pathOrObj, {
         proxy,
+        maxDepth: MAX_READ_DEPTH,
       });
     }
   }
@@ -154,7 +158,7 @@ async function read<TComponent>(
 
   try {
     element = requireSingleElement(selector);
-  } catch (error: unknown) {
+  } catch (error) {
     console.debug("read: error calling requireSingleElement", {
       error,
       options,
@@ -174,7 +178,7 @@ async function read<TComponent>(
       retryMillis,
       predicate: identity,
     });
-  } catch (error: unknown) {
+  } catch (error) {
     if (error instanceof TimeoutError) {
       console.warn(
         `Could not find framework component for selector ${selector} in ${waitMillis}ms`

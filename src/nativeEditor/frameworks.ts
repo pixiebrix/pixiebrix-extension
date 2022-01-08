@@ -64,7 +64,7 @@ export async function elementInfo(
 
     try {
       component = adapter.getComponent(element);
-    } catch (error: unknown) {
+    } catch (error) {
       console.debug("Could not get component information", { error });
     }
 

@@ -19,6 +19,9 @@
 // ensure the webpack path is correct
 import "@/extensionContext";
 
+// Required for MV3; Service Workers don't have XMLHttpRequest
+import "@/background/axiosFetch";
+
 // Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/rollbar";
 
@@ -28,29 +31,26 @@ import "@/background/messenger/registration";
 import "@/development/autoreload";
 import "@/background/installer";
 import "@/messaging/external";
-import "@/background/requests";
 import "@/background/locator";
-import "@/background/logging";
-import "@/background/auth";
 import "@/background/contextMenus";
-import "@/background/dataStore";
-import "@/background/devtools";
 import "@/background/browserAction";
-import "@/background/permissionPrompt";
-import "@/background/trace";
 
 import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";
 import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
 import initContextMenus from "@/background/initContextMenus";
+import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deployment";
 import initFirefoxCompat from "@/background/firefoxCompat";
+import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 
 initNavigation();
 initExecutor();
 initGoogle();
 initFrames();
 initContextMenus();
+initBrowserCommands();
 initDeploymentUpdater();
 void initFirefoxCompat();
+activateBrowserActionIcon();

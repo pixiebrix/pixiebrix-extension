@@ -21,6 +21,7 @@ import { DevToolsContext } from "@/devTools/context";
 import { sortBy } from "lodash";
 import {
   Badge,
+  Button,
   Dropdown,
   DropdownButton,
   Form,
@@ -46,6 +47,7 @@ import {
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
+import AuthContext from "@/auth/AuthContext";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -90,8 +92,11 @@ const SidebarExpanded: React.FunctionComponent<
   collapseSidebar,
 }) => {
   const context = useContext(DevToolsContext);
+
+  const { flags } = useContext(AuthContext);
+  const showBetaExtensionPoints = flags.includes("page-editor-beta");
+
   const {
-    port,
     tabState: { hasPermissions },
   } = context;
 
@@ -157,8 +162,9 @@ const SidebarExpanded: React.FunctionComponent<
               id="add-extension-point"
               className="mr-2"
             >
-              {sortBy([...ADAPTERS.values()], (x) => x.displayOrder).map(
-                (element) => (
+              {sortBy([...ADAPTERS.values()], (x) => x.displayOrder)
+                .filter((element) => showBetaExtensionPoints || !element.beta)
+                .map((element) => (
                   <DropdownEntry
                     key={element.elementType}
                     caption={element.label}
@@ -168,17 +174,17 @@ const SidebarExpanded: React.FunctionComponent<
                       addElement(element);
                     }}
                   />
-                )
-              )}
+                ))}
             </DropdownButton>
           </div>
-          <button
-            className={cx("navbar-toggler", styles.toggle)}
+          <Button
+            variant="light"
+            className={cx(styles.toggle)}
             type="button"
             onClick={collapseSidebar}
           >
             <FontAwesomeIcon icon={faAngleDoubleLeft} />
-          </button>
+          </Button>
         </div>
 
         {unavailableCount ? (
@@ -210,7 +216,6 @@ const SidebarExpanded: React.FunctionComponent<
               <DynamicEntry
                 key={`dynamic-${entry.uuid}`}
                 item={entry}
-                port={port}
                 available={
                   !availableDynamicIds || availableDynamicIds.has(entry.uuid)
                 }
@@ -229,14 +234,15 @@ const SidebarCollapsed: React.FunctionComponent<{
   expandSidebar: () => void;
 }> = ({ expandSidebar }) => (
   <div className={cx(styles.root, styles.collapsed)}>
-    <button
-      className={cx("navbar-toggler", styles.toggle)}
+    <Button
+      variant="light"
+      className={cx(styles.toggle)}
       type="button"
       onClick={expandSidebar}
     >
       <Logo />
       <FontAwesomeIcon icon={faAngleDoubleRight} />
-    </button>
+    </Button>
   </div>
 );
 

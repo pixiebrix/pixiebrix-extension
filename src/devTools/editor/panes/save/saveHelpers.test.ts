@@ -36,6 +36,7 @@ import { InnerDefinitionRef } from "@/core";
 import { MenuDefinition } from "@/extensionPoints/menuItemExtension";
 
 jest.mock("@/background/initContextMenus");
+jest.mock("@/background/messenger/api");
 
 jest.mock("@/devTools/editor/extensionPoints/base", () => ({
   ...(jest.requireActual(

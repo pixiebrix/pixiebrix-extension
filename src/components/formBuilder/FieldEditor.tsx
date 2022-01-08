@@ -45,6 +45,12 @@ import { uniq } from "lodash";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
+const imageForCroppingSourceSchema: Schema = {
+  type: "string",
+  description:
+    "The source image data URI: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs",
+};
+
 const FieldEditor: React.FC<{
   name: string;
   propertyName: string;
@@ -226,6 +232,14 @@ const FieldEditor: React.FC<{
         value={selectedUiTypeOption.value}
         onChange={onUiTypeChange}
       />
+
+      {parseUiType(selectedUiTypeOption.value).uiWidget === "imageCrop" && (
+        <SchemaField
+          label="Image source"
+          name={`${name}.uiSchema.${propertyName}.source`}
+          schema={imageForCroppingSourceSchema}
+        />
+      )}
 
       {!FIELD_TYPES_WITHOUT_DEFAULT.includes(selectedUiTypeOption.value) && (
         <SchemaField {...defaultFieldProps} />

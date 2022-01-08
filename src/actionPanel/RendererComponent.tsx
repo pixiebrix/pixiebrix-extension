@@ -1,8 +1,5 @@
 import React, { useMemo } from "react";
 import { RendererOutput } from "@/core";
-import createDOMPurify, { DOMPurifyI } from "dompurify";
-
-let DOMPurify: DOMPurifyI;
 
 /**
  * React component to display the output of a renderer brick
@@ -13,14 +10,11 @@ const RendererComponent: React.FunctionComponent<{
 }> = ({ body }) =>
   useMemo(() => {
     if (typeof body === "string") {
-      if (!DOMPurify) {
-        DOMPurify = createDOMPurify(window);
-      }
-
+      // This is safe because if body is a string it's a SafeHTML value
       return (
         <div
           style={{ height: "100%" }}
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(body) }}
+          dangerouslySetInnerHTML={{ __html: body }}
         />
       );
     }

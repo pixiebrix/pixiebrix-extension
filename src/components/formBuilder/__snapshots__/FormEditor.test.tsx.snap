@@ -17,12 +17,11 @@ exports[`FormEditor renders empty schema 1`] = `
       <div
         class="col-lg-9"
       >
-        <input
+        <textarea
           class="form-control"
           id="rjsfSchema.schema.title"
           name="rjsfSchema.schema.title"
-          type="text"
-          value=""
+          rows="1"
         />
       </div>
     </div>
@@ -38,12 +37,11 @@ exports[`FormEditor renders empty schema 1`] = `
       <div
         class="col-lg-9"
       >
-        <input
+        <textarea
           class="form-control"
           id="rjsfSchema.schema.description"
           name="rjsfSchema.schema.description"
-          type="text"
-          value=""
+          rows="1"
         />
       </div>
     </div>
@@ -78,10 +76,10 @@ exports[`FormEditor renders empty schema 1`] = `
       </div>
     </div>
     <div
-      class="currFieldRow row"
+      class="currentFieldRow row"
     >
       <div
-        class="currField col-xl-3"
+        class="currentField col-xl-3"
       >
         <h6>
           Current Field
@@ -123,13 +121,14 @@ exports[`FormEditor renders simple schema 1`] = `
       <div
         class="col-lg-9"
       >
-        <input
+        <textarea
           class="form-control"
           id="rjsfSchema.schema.title"
           name="rjsfSchema.schema.title"
-          type="text"
-          value="A form"
-        />
+          rows="1"
+        >
+          A form
+        </textarea>
       </div>
     </div>
     <div
@@ -144,13 +143,14 @@ exports[`FormEditor renders simple schema 1`] = `
       <div
         class="col-lg-9"
       >
-        <input
+        <textarea
           class="form-control"
           id="rjsfSchema.schema.description"
           name="rjsfSchema.schema.description"
-          type="text"
-          value="A form example."
-        />
+          rows="1"
+        >
+          A form example.
+        </textarea>
       </div>
     </div>
     <hr />
@@ -184,10 +184,10 @@ exports[`FormEditor renders simple schema 1`] = `
       </div>
     </div>
     <div
-      class="currFieldRow row"
+      class="currentFieldRow row"
     >
       <div
-        class="currField col-xl-3"
+        class="currentField col-xl-3"
       >
         <h6>
           Current Field
@@ -269,13 +269,14 @@ exports[`FormEditor renders simple schema 1`] = `
         <div
           class="col-lg-9"
         >
-          <input
+          <textarea
             class="form-control"
             id="rjsfSchema.schema.properties.firstName.title"
             name="rjsfSchema.schema.properties.firstName.title"
-            type="text"
-            value="First name"
-          />
+            rows="1"
+          >
+            First name
+          </textarea>
           <small
             class="text-muted form-text"
           >
@@ -295,12 +296,11 @@ exports[`FormEditor renders simple schema 1`] = `
         <div
           class="col-lg-9"
         >
-          <input
+          <textarea
             class="form-control"
             id="rjsfSchema.schema.properties.firstName.description"
             name="rjsfSchema.schema.properties.firstName.description"
-            type="text"
-            value=""
+            rows="1"
           />
           <small
             class="text-muted form-text"
@@ -322,8 +322,12 @@ exports[`FormEditor renders simple schema 1`] = `
           class="col-lg-9"
         >
           <div
-            class=" css-2b097c-container"
+            class=" css-b62m3t-container"
           >
+            <span
+              class="css-1f43avz-a11yText-A11yText"
+              id="react-select-2-live-region"
+            />
             <span
               aria-atomic="false"
               aria-live="polite"
@@ -331,39 +335,38 @@ exports[`FormEditor renders simple schema 1`] = `
               class="css-1f43avz-a11yText-A11yText"
             />
             <div
-              class=" css-yk16xz-control"
+              class=" css-1s2u09g-control"
             >
               <div
-                class=" css-g1d714-ValueContainer"
+                class=" css-319lph-ValueContainer"
               >
                 <div
-                  class=" css-1uccc91-singleValue"
+                  class=" css-qc6sy-singleValue"
                 >
                   Single line text
                 </div>
                 <div
-                  class="css-b8ldur-Input"
+                  class=" css-6j8wv5-Input"
+                  data-value=""
                 >
-                  <div
+                  <input
+                    aria-autocomplete="list"
+                    aria-controls="react-select-2-listbox"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    aria-owns="react-select-2-listbox"
+                    autocapitalize="none"
+                    autocomplete="off"
+                    autocorrect="off"
                     class=""
-                    style="display: inline-block;"
-                  >
-                    <input
-                      aria-autocomplete="list"
-                      autocapitalize="none"
-                      autocomplete="off"
-                      autocorrect="off"
-                      id="rjsfSchema.schema.properties.firstName.uiType"
-                      spellcheck="false"
-                      style="box-sizing: content-box; width: 2px; border: 0px; opacity: 1; outline: 0; padding: 0px;"
-                      tabindex="0"
-                      type="text"
-                      value=""
-                    />
-                    <div
-                      style="position: absolute; top: 0px; left: 0px; visibility: hidden; height: 0px; overflow: scroll; white-space: pre; font-family: -webkit-small-control; letter-spacing: normal; text-transform: none;"
-                    />
-                  </div>
+                    id="rjsfSchema.schema.properties.firstName.uiType"
+                    role="combobox"
+                    spellcheck="false"
+                    style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                    tabindex="0"
+                    type="text"
+                    value=""
+                  />
                 </div>
               </div>
               <div
@@ -411,13 +414,14 @@ exports[`FormEditor renders simple schema 1`] = `
         <div
           class="col-lg-9"
         >
-          <input
+          <textarea
             class="form-control"
             id="rjsfSchema.schema.properties.firstName.default"
             name="rjsfSchema.schema.properties.firstName.default"
-            type="text"
-            value="Chuck"
-          />
+            rows="1"
+          >
+            Chuck
+          </textarea>
         </div>
       </div>
       <div

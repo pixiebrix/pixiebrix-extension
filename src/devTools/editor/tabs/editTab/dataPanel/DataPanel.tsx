@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -21,7 +22,7 @@ import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
 import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
-import { Alert, Nav, Tab } from "react-bootstrap";
+import { Alert, Button, Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./DataPanel.module.scss";
 import FormPreview from "@/components/formBuilder/FormPreview";
@@ -44,6 +45,10 @@ import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
 import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
+import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
+import documentBuilderSelectors from "@/devTools/editor/slices/documentBuilderSelectors";
+import { actions as documentBuilderActions } from "@/devTools/editor/slices/documentBuilderSlice";
+import copy from "copy-to-clipboard";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -120,10 +125,19 @@ const DataPanel: React.FC<{
     actions.setActiveField
   );
 
+  const [
+    documentBuilderActiveElement,
+    setDocumentBuilderActiveElement,
+  ] = useReduxState(
+    documentBuilderSelectors.activeElement,
+    documentBuilderActions.setActiveElement
+  );
+
+  const documentBodyName = `extension.blockPipeline.${blockIndex}.config.body`;
+
   const outputObj: JsonObject =
     record !== undefined && "output" in record
-      ? // eslint-disable-next-line unicorn/no-nested-ternary -- prettier disagrees
-        "outputKey" in record
+      ? "outputKey" in record
         ? { [`@${record.outputKey}`]: record.output }
         : record.output
       : null;
@@ -131,10 +145,11 @@ const DataPanel: React.FC<{
   const [previewInfo] = usePreviewInfo(block?.id);
 
   const showFormPreview = block.config?.schema && block.config?.uiSchema;
+  const showDocumentPreview = block.config?.body;
   const showBlockPreview = record || previewInfo?.traceOptional;
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
-    showFormPreview ? "preview" : "output"
+    showFormPreview || showDocumentPreview ? "preview" : "output"
   );
 
   const [contextQuery, setContextQuery] = useDataPanelTabSearchQuery("context");
@@ -144,153 +159,177 @@ const DataPanel: React.FC<{
   );
   const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
 
+  const popupBoundary = showDocumentPreview
+    ? document.querySelector(`.${styles.tabContent}`)
+    : undefined;
+
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
-      <Nav variant="tabs">
-        <Nav.Item className={styles.tabNav}>
-          <Nav.Link eventKey="context">Context</Nav.Link>
-        </Nav.Item>
-        {showDeveloperTabs && (
-          <>
-            <Nav.Item className={styles.tabNav}>
-              <Nav.Link eventKey="formik">Formik</Nav.Link>
-            </Nav.Item>
-            <Nav.Item className={styles.tabNav}>
-              <Nav.Link eventKey="blockConfig">Raw Block</Nav.Link>
-            </Nav.Item>
-          </>
-        )}
-        <Nav.Item className={styles.tabNav}>
-          <Nav.Link eventKey="rendered">Rendered</Nav.Link>
-        </Nav.Item>
-        <Nav.Item className={styles.tabNav}>
-          <Nav.Link eventKey="output">Output</Nav.Link>
-        </Nav.Item>
-        <Nav.Item className={styles.tabNav}>
-          <Nav.Link eventKey="preview">Preview</Nav.Link>
-        </Nav.Item>
-      </Nav>
-      <Tab.Content>
-        <DataTab eventKey="context" isTraceEmpty={!record}>
-          {isInputStale && (
-            <Alert variant="warning">
-              <FontAwesomeIcon icon={faExclamationTriangle} /> A previous block
-              has changed, input context may be out of date
-            </Alert>
-          )}
-          <JsonTree
-            data={relevantContext}
-            copyable
-            searchable
-            initialSearchQuery={contextQuery}
-            onSearchQueryChanged={setContextQuery}
-            shouldExpandNode={(keyPath) =>
-              keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
-            }
-          />
-        </DataTab>
-        {showDeveloperTabs && (
-          <>
-            <DataTab eventKey="formik">
-              <div className="text-info">
-                <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
-                to developers
-              </div>
-              <JsonTree
-                data={formikData ?? {}}
-                searchable
-                initialSearchQuery={formikQuery}
-                onSearchQueryChanged={setFormikQuery}
-              />
-            </DataTab>
-            <DataTab eventKey="blockConfig">
-              <div className="text-info">
-                <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
-                to developers
-              </div>
-              <JsonTree data={block ?? {}} />
-            </DataTab>
-          </>
-        )}
-        <DataTab eventKey="rendered" isTraceEmpty={!record}>
-          {record && (
+      <div className={styles.tabContainer}>
+        <Nav variant="tabs">
+          <Nav.Item className={styles.tabNav}>
+            <Nav.Link eventKey="context">Context</Nav.Link>
+          </Nav.Item>
+          {showDeveloperTabs && (
             <>
-              {isInputStale && (
-                <Alert variant="warning">
-                  <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
-                  block has changed, input context may be out of date
-                </Alert>
-              )}
-              <JsonTree
-                data={record.renderedArgs}
-                copyable
-                searchable
-                initialSearchQuery={renderedQuery}
-                onSearchQueryChanged={setRenderedQuery}
-                label="Rendered Inputs"
-              />
+              <Nav.Item className={styles.tabNav}>
+                <Nav.Link eventKey="formik">Formik</Nav.Link>
+              </Nav.Item>
+              <Nav.Item className={styles.tabNav}>
+                <Nav.Link eventKey="blockConfig">Raw Block</Nav.Link>
+              </Nav.Item>
             </>
           )}
-        </DataTab>
-        <DataTab
-          eventKey="output"
-          isTraceEmpty={!record}
-          isTraceOptional={previewInfo?.traceOptional}
-        >
-          {outputObj && (
+          <Nav.Item className={styles.tabNav}>
+            <Nav.Link eventKey="rendered">Rendered</Nav.Link>
+          </Nav.Item>
+          <Nav.Item className={styles.tabNav}>
+            <Nav.Link eventKey="output">Output</Nav.Link>
+          </Nav.Item>
+          <Nav.Item className={styles.tabNav}>
+            <Nav.Link eventKey="preview">Preview</Nav.Link>
+          </Nav.Item>
+        </Nav>
+        <Tab.Content className={styles.tabContent}>
+          <DataTab eventKey="context" isTraceEmpty={!record}>
+            {isInputStale && (
+              <Alert variant="warning">
+                <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
+                block has changed, input context may be out of date
+              </Alert>
+            )}
+            <JsonTree
+              data={relevantContext}
+              copyable
+              searchable
+              initialSearchQuery={contextQuery}
+              onSearchQueryChanged={setContextQuery}
+              shouldExpandNode={(keyPath) =>
+                keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
+              }
+            />
+          </DataTab>
+          {showDeveloperTabs && (
             <>
-              {isCurrentStale && (
-                <Alert variant="warning">
-                  <FontAwesomeIcon icon={faExclamationTriangle} /> This or a
-                  previous block has changed, output may be out of date
-                </Alert>
-              )}
-              <JsonTree
-                data={outputObj}
-                copyable
-                searchable
-                initialSearchQuery={outputQuery}
-                onSearchQueryChanged={setOutputQuery}
-                label="Data"
-                shouldExpandNode={(keyPath) =>
-                  keyPath.length === 1 &&
-                  "outputKey" in record &&
-                  keyPath[0] === `@${record.outputKey}`
-                }
-              />
+              <DataTab eventKey="formik">
+                <div className="text-info">
+                  <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
+                  visible to developers
+                </div>
+                <JsonTree
+                  data={formikData ?? {}}
+                  searchable
+                  initialSearchQuery={formikQuery}
+                  onSearchQueryChanged={setFormikQuery}
+                />
+              </DataTab>
+              <DataTab eventKey="blockConfig">
+                <div className="text-info">
+                  <FontAwesomeIcon icon={faInfoCircle} /> This tab is only
+                  visible to developers
+                </div>
+                <JsonTree data={block ?? {}} />
+                <Button
+                  onClick={() => {
+                    copy(JSON.stringify(block, undefined, 2));
+                  }}
+                  size="sm"
+                >
+                  Copy JSON
+                </Button>
+              </DataTab>
             </>
           )}
-          {record && "error" in record && (
-            <JsonTree data={record.error} label="Error" />
-          )}
-        </DataTab>
-        <DataTab
-          eventKey="preview"
-          isTraceEmpty={false}
-          // Only mount if the user is viewing it, because output previews take up resources to run
-          mountOnEnter
-          unmountOnExit
-        >
-          {showFormPreview ? (
-            <ErrorBoundary>
-              <FormPreview
-                rjsfSchema={block.config as RJSFSchema}
-                activeField={formBuilderActiveField}
-                setActiveField={setFormBuilderActiveField}
-              />
-            </ErrorBoundary>
-          ) : // eslint-disable-next-line unicorn/no-nested-ternary -- pre-commit removes the parens
-          showBlockPreview ? (
-            <ErrorBoundary>
-              <BlockPreview traceRecord={record} blockConfig={block} />
-            </ErrorBoundary>
-          ) : (
-            <div className="text-muted">
-              Run the extension once to enable live preview
-            </div>
-          )}
-        </DataTab>
-      </Tab.Content>
+          <DataTab eventKey="rendered" isTraceEmpty={!record}>
+            {record && (
+              <>
+                {isInputStale && (
+                  <Alert variant="warning">
+                    <FontAwesomeIcon icon={faExclamationTriangle} /> A previous
+                    block has changed, input context may be out of date
+                  </Alert>
+                )}
+                <JsonTree
+                  data={record.renderedArgs}
+                  copyable
+                  searchable
+                  initialSearchQuery={renderedQuery}
+                  onSearchQueryChanged={setRenderedQuery}
+                  label="Rendered Inputs"
+                />
+              </>
+            )}
+          </DataTab>
+          <DataTab
+            eventKey="output"
+            isTraceEmpty={!record}
+            isTraceOptional={previewInfo?.traceOptional}
+          >
+            {outputObj && (
+              <>
+                {isCurrentStale && (
+                  <Alert variant="warning">
+                    <FontAwesomeIcon icon={faExclamationTriangle} /> This or a
+                    previous block has changed, output may be out of date
+                  </Alert>
+                )}
+                <JsonTree
+                  data={outputObj}
+                  copyable
+                  searchable
+                  initialSearchQuery={outputQuery}
+                  onSearchQueryChanged={setOutputQuery}
+                  label="Data"
+                  shouldExpandNode={(keyPath) =>
+                    keyPath.length === 1 &&
+                    "outputKey" in record &&
+                    keyPath[0] === `@${record.outputKey}`
+                  }
+                />
+              </>
+            )}
+            {record && "error" in record && (
+              <JsonTree data={record.error} label="Error" />
+            )}
+          </DataTab>
+          <DataTab
+            eventKey="preview"
+            isTraceEmpty={false}
+            // Only mount if the user is viewing it, because output previews take up resources to run
+            mountOnEnter
+            unmountOnExit
+          >
+            {showFormPreview || showDocumentPreview ? (
+              <ErrorBoundary>
+                {showFormPreview ? (
+                  <div className={styles.selectablePreviewContainer}>
+                    <FormPreview
+                      rjsfSchema={block.config as RJSFSchema}
+                      activeField={formBuilderActiveField}
+                      setActiveField={setFormBuilderActiveField}
+                    />
+                  </div>
+                ) : (
+                  <DocumentPreview
+                    name={documentBodyName}
+                    activeElement={documentBuilderActiveElement}
+                    setActiveElement={setDocumentBuilderActiveElement}
+                    menuBoundary={popupBoundary}
+                  />
+                )}
+              </ErrorBoundary>
+            ) : showBlockPreview ? (
+              <ErrorBoundary>
+                <BlockPreview traceRecord={record} blockConfig={block} />
+              </ErrorBoundary>
+            ) : (
+              <div className="text-muted">
+                Run the extension once to enable live preview
+              </div>
+            )}
+          </DataTab>
+        </Tab.Content>
+      </div>
     </Tab.Container>
   );
 };

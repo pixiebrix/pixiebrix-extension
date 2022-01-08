@@ -81,7 +81,7 @@ function defaultOutputKey(
   ) as OutputKey;
 }
 
-export function keyToFieldValue(key: OutputKey): ServiceKeyVar {
+export function keyToFieldValue(key: OutputKey | null): ServiceKeyVar {
   return key == null ? null : (`@${key}` as ServiceKeyVar);
 }
 
@@ -193,6 +193,14 @@ function produceServiceAuths(
   return nextState;
 }
 
+function clearServiceSelection(
+  state: ServiceSlice,
+  fieldName: string
+): ServiceSlice {
+  const nextState = setIn(state, fieldName, null);
+  return produceExcludeUnusedDependencies(nextState);
+}
+
 /**
  * A schema-driven Service Selector that automatically maintains the services form state (and output keys)
  * @see ServiceDependency
@@ -223,9 +231,12 @@ const ServiceField: React.FunctionComponent<
 
   const onChange: SelectWidgetOnChange<AuthOption> = useCallback(
     ({ target: { value, options } }) => {
-      setRootValues(
-        produceServiceAuths(root, field.name, value, serviceIds, options)
-      );
+      // Value will be null when the selection is "cleared"
+      const newState =
+        value == null
+          ? clearServiceSelection(root, field.name)
+          : produceServiceAuths(root, field.name, value, serviceIds, options);
+      setRootValues(newState);
     },
     [root, setRootValues, serviceIds, field.name]
   );
@@ -262,6 +273,12 @@ const ServiceField: React.FunctionComponent<
     [serviceIds, options]
   );
 
+  // The SelectWidget re-looks up the option based on the value
+  const selectedValue = useMemo(
+    () => (value ? lookupAuthId(root.services, authOptions, value) : null),
+    [authOptions, root.services, value]
+  );
+
   // Use FieldTemplate here directly b/c this component is mapping between the Formik state and the options for the
   // select widget.
   return (
@@ -282,10 +299,9 @@ const ServiceField: React.FunctionComponent<
         </span>
       }
       as={SelectWidget}
-      blankValue={null}
+      isClearable
       options={options}
-      // The SelectWidget re-looks up the option based on the value
-      value={lookupAuthId(root.services, authOptions, value)}
+      value={selectedValue}
       onChange={onChange}
       error={meta.error}
       touched={meta.touched}

@@ -41,6 +41,7 @@ import { BusinessError } from "@/errors";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
+import { $safeFind } from "@/helpers";
 
 /**
  * @throws InputValidationError if blockArgs does not match the input schema for block
@@ -108,17 +109,19 @@ export async function logIfInvalidOutput(
 export async function shouldRunBlock(
   blockConfig: BlockConfig,
   context: BlockArgContext,
-  { explicitRender }: ApiVersionOptions
+  { explicitRender, autoescape }: ApiVersionOptions
 ): Promise<boolean> {
   if (blockConfig.if !== undefined) {
     const render = explicitRender
       ? null
       : await engineRenderer(
-          blockConfig.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE
+          blockConfig.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
+          { autoescape }
         );
 
     const { if: condition } = (await mapArgs({ if: blockConfig.if }, context, {
       implicitRender: render,
+      autoescape,
     })) as { if: unknown };
 
     return boolean(condition);
@@ -150,8 +153,9 @@ export function selectBlockRootElement(
 
   const $root = $(root ?? document);
 
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jQuery
-  const $stageRoot = blockConfig.root ? $root.find(blockConfig.root) : $root;
+  const $stageRoot = blockConfig.root
+    ? $safeFind(blockConfig.root, $root)
+    : $root;
 
   if ($stageRoot.length > 1) {
     throw new BusinessError(`Multiple roots found for ${blockConfig.root}`);

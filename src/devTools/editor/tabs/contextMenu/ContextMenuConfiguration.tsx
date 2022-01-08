@@ -29,7 +29,7 @@ import { DEFAULT_SHORTCUTS } from "@/devTools/editor/components/UrlMatchPatternW
 
 const menuSnippets: Snippet[] = [{ label: "selected text", value: "%s" }];
 
-const contextOptions = [
+export const contextOptions = [
   "page",
   "all",
   "frame",

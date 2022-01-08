@@ -133,7 +133,7 @@ class LazyLocatorFactory {
         { requireLinked: true }
       );
       console.debug(`Fetched ${this.remote.length} remote service auths`);
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof ExtensionNotLinkedError) {
         this.remote = [];
       } else {

@@ -21,7 +21,7 @@ import { partial } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
 import { SanitizedServiceConfiguration, Schema } from "@/core";
 import { useField } from "formik";
-import { proxyService } from "@/background/requests";
+import { proxyService } from "@/background/messenger/api";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { Option } from "@/components/form/widgets/SelectWidget";
 import { ODataResponseData, Robot } from "./uipathContract";

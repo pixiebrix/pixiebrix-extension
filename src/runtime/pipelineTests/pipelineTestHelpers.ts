@@ -1,11 +1,15 @@
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { Block, UnknownObject } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { ApiVersion, BlockArg, BlockOptions } from "@/core";
+import { ApiVersion, BlockArg, BlockOptions, Schema } from "@/core";
 import { InitialValues } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors";
-import { BlockPipeline } from "@/blocks/types";
+import {
+  isDeferExpression,
+  mapArgs,
+  PipelineExpression,
+} from "@/runtime/mapArgs";
 
 const logger = new ConsoleLogger();
 
@@ -95,14 +99,15 @@ class ArrayBlock extends Block {
   }
 }
 
-class PipelineBlock extends Block {
-  constructor() {
-    super("test/pipeline", "Pipeline Block");
-  }
-
-  inputSchema = propertiesToSchema({
-    // TODO: write a schema in schemas directory. The one in component.json is incomplete
-    pipeline: {
+// TODO: write a schema in schemas directory. The one in component.json is incomplete
+const pipelineSchema: Schema = {
+  type: "object",
+  properties: {
+    __type__: {
+      type: "string",
+      const: "pipeline",
+    },
+    __value__: {
       type: "array",
       items: {
         properties: {
@@ -116,12 +121,79 @@ class PipelineBlock extends Block {
         required: ["id"],
       },
     },
+  },
+};
+
+class PipelineBlock extends Block {
+  constructor() {
+    super("test/pipeline", "Pipeline Block");
+  }
+
+  inputSchema = propertiesToSchema({
+    pipeline: pipelineSchema,
   });
 
-  async run({ pipeline }: BlockArg<{ pipeline: BlockPipeline }>) {
+  async run({ pipeline }: BlockArg<{ pipeline: PipelineExpression }>) {
     return {
-      length: pipeline.length,
+      length: pipeline.__value__.length,
     };
+  }
+}
+
+/**
+ * Test block that renders an array of elements with a deferred expression
+ */
+class DeferBlock extends Block {
+  constructor() {
+    super("test/defer", "Defer Block");
+  }
+
+  inputSchema = propertiesToSchema(
+    {
+      array: {
+        type: "array",
+      },
+      elementKey: {
+        type: "string",
+        default: "element",
+      },
+      element: {
+        type: "object",
+        additionalProperties: true,
+      },
+    },
+    ["array", "element"]
+  );
+
+  async run(
+    {
+      element,
+      array = [],
+      elementKey = "element",
+    }: BlockArg<{
+      element: UnknownObject;
+      array: unknown[];
+      elementKey?: string;
+    }>,
+    { ctxt }: BlockOptions
+  ) {
+    return Promise.all(
+      array.map(async (data) => {
+        const elementContext = {
+          ...ctxt,
+          [`@${elementKey}`]: data,
+        };
+
+        if (isDeferExpression(element)) {
+          return mapArgs(element.__value__, elementContext, {
+            implicitRender: null,
+            ...apiVersionOptions("v3"),
+          });
+        }
+
+        return element;
+      })
+    );
   }
 }
 
@@ -132,6 +204,7 @@ export const throwBlock = new ThrowBlock();
 export const teapotBlock = new TeapotBlock();
 export const arrayBlock = new ArrayBlock();
 export const pipelineBlock = new PipelineBlock();
+export const deferBlock = new DeferBlock();
 
 /**
  * Helper method to pass only `input` to reducePipeline.

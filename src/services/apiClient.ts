@@ -74,7 +74,7 @@ export async function getLinkedApiClient(): Promise<AxiosInstance> {
 export async function maybeGetLinkedApiClient(): Promise<AxiosInstance | null> {
   try {
     return await getLinkedApiClient();
-  } catch (error: unknown) {
+  } catch (error) {
     if (error instanceof ExtensionNotLinkedError) {
       return null;
     }

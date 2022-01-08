@@ -25,22 +25,22 @@ import { useAsyncEffect } from "use-async-effect";
 import { isEmpty } from "lodash";
 import { thisTab } from "@/devTools/utils";
 import { detectFrameworks, searchWindow } from "@/contentScript/messenger/api";
+import { getErrorMessage } from "@/errors";
 
-function useSearchWindow(query: string) {
+function useSearchWindow(query: string): [unknown[] | null, unknown | null] {
   const { tabId } = browser.devtools.inspectedWindow;
-  const [results, setResults] = useState([]);
-  const [error, setError] = useState();
+  const [results, setResults] = useState<unknown[] | null>([]);
+  const [error, setError] = useState<unknown | null>();
 
   useAsyncEffect(
     async (isMounted) => {
       if (!query) return;
-      setError(undefined);
-      setResults(undefined);
+      setError(null);
+      setResults(null);
       try {
         const { results } = await searchWindow(thisTab, query);
         if (!isMounted()) return;
-        setResults(results as any);
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
+        setResults(results);
       } catch (error) {
         if (!isMounted()) return;
         setError(error);
@@ -64,7 +64,9 @@ const Locator: React.FunctionComponent = () => {
   return (
     <div>
       <div>Welcome to the future of reverse engineering!</div>
-      {!isEmpty(frameworks) ? (
+      {isEmpty(frameworks) ? (
+        <span>No front-end frameworks detected</span>
+      ) : (
         <>
           Frameworks Detected
           <ul>
@@ -75,8 +77,6 @@ const Locator: React.FunctionComponent = () => {
             ))}
           </ul>
         </>
-      ) : (
-        <span>No front-end frameworks detected</span>
       )}
       <InputGroup className="mb-3">
         <InputGroup.Prepend>
@@ -86,16 +86,18 @@ const Locator: React.FunctionComponent = () => {
           placeholder="Expression"
           aria-label="Expression"
           defaultValue={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
+          onChange={({ target }) => {
+            setQuery(target.value);
           }}
           aria-describedby="search-addon"
         />
       </InputGroup>
 
-      {searchError?.toString()}
+      {searchError && getErrorMessage(searchError)}
 
-      {searchResults != null ? (
+      {searchResults == null ? (
+        <GridLoader />
+      ) : (
         <Table>
           <thead>
             <tr>
@@ -112,8 +114,6 @@ const Locator: React.FunctionComponent = () => {
             ))}
           </tbody>
         </Table>
-      ) : (
-        <GridLoader />
       )}
     </div>
   );

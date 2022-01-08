@@ -21,6 +21,7 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
+  extensionWithNormalizedPipeline,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
@@ -30,7 +31,6 @@ import {
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-  withInstanceIds,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -43,7 +43,7 @@ import {
 } from "@/extensionPoints/triggerExtension";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray, identity, pickBy } from "lodash";
+import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -54,6 +54,7 @@ import {
 import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
+import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 
 export interface TriggerFormState extends BaseFormState {
   type: "trigger";
@@ -66,6 +67,7 @@ export interface TriggerFormState extends BaseFormState {
       reader: SingleLayerReaderConfig;
       attachMode: AttachMode;
       targetMode: TargetMode;
+      intervalMillis: number | null;
       isAvailable: NormalizedAvailability;
     };
   };
@@ -87,6 +89,7 @@ function fromNativeElement(
         rootSelector: null,
         attachMode: null,
         targetMode: null,
+        intervalMillis: null,
         reader: getImplicitReader("trigger"),
         isAvailable: makeIsAvailable(url),
       },
@@ -107,6 +110,7 @@ function selectExtensionPoint(
       rootSelector,
       attachMode,
       targetMode,
+      intervalMillis,
       reader,
       trigger,
     },
@@ -118,6 +122,7 @@ function selectExtensionPoint(
       reader,
       isAvailable: pickBy(isAvailable, identity),
       trigger,
+      intervalMillis,
       attachMode,
       targetMode,
       rootSelector,
@@ -162,12 +167,14 @@ async function fromExtensionPoint(
     attachMode,
     targetMode,
     reader,
+    intervalMillis,
     trigger = "load",
   } = extensionPoint.definition;
 
   return {
     uuid: uuidv4(),
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+    showV3UpgradeMessage: false,
     installed: true,
     type,
     label: `My ${getDomain(url)} ${trigger} trigger`,
@@ -188,6 +195,7 @@ async function fromExtensionPoint(
         attachMode,
         targetMode,
         trigger,
+        intervalMillis,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
@@ -211,16 +219,29 @@ async function fromExtension(
     targetMode,
     trigger,
     reader,
+    intervalMillis,
   } = extensionPoint.definition;
 
-  const blockPipeline = withInstanceIds(castArray(config.config.action));
+  const base = baseFromExtension(config, extensionPoint.definition.type);
+  const extension = extensionWithNormalizedPipeline(config.config, "action");
+  let showV3UpgradeMessage = false;
+  let { apiVersion } = base;
+
+  if (apiVersion === "v2") {
+    extension.blockPipeline = await upgradePipelineToV3(
+      extension.blockPipeline
+    );
+    showV3UpgradeMessage = true;
+    apiVersion = "v3";
+  }
 
   return {
-    ...baseFromExtension(config, extensionPoint.definition.type),
+    ...base,
 
-    extension: {
-      blockPipeline,
-    },
+    apiVersion,
+    showV3UpgradeMessage,
+
+    extension,
 
     extensionPoint: {
       metadata: extensionPoint.metadata,
@@ -229,6 +250,7 @@ async function fromExtension(
         trigger,
         attachMode,
         targetMode,
+        intervalMillis,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },

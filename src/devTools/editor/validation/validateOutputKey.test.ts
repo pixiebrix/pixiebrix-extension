@@ -23,7 +23,7 @@ import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
 test("returns when no blocks given", async () => {
   const pipelineErrors: FormikErrorTree = {};
-  validateOutputKey(pipelineErrors, pipelineFactory(), {});
+  validateOutputKey(pipelineErrors, pipelineFactory(), new Map());
 
   expect(pipelineErrors).toEqual({});
 });

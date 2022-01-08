@@ -17,6 +17,7 @@
 
 import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
+import { $safeFind } from "@/helpers";
 
 // https://developer.mozilla.org/en-US/docs/Web/Events
 const DOM_EVENTS = [
@@ -67,14 +68,14 @@ export class ElementEvent extends Effect {
         examples: DOM_EVENTS,
       },
     },
-    required: ["selector"],
+    required: ["selector", "event"],
   };
 
   async effect(
     { selector, event }: BlockArg,
     { logger }: BlockOptions
   ): Promise<void> {
-    const $element = $(document).find(selector);
+    const $element = $safeFind(selector);
 
     if ($element.length === 0) {
       logger.debug(`Element not found for selector: ${selector as string}`);

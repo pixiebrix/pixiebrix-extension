@@ -36,10 +36,10 @@ import { pixieServiceFactory } from "@/services/locator";
 
 // Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
-import * as logging from "@/background/logging";
-import * as locator from "@/background/locator";
+import * as logging from "@/background/messenger/api";
+import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-jest.mock("@/background/trace");
+
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
 });
@@ -53,7 +53,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
   "apiVersion: %s",
   (apiVersion: ApiVersion) => {
     test("pass services in context with __service", async () => {
-      (locator.locate as any) = jest
+      (services.locate as any) = jest
         .fn()
         .mockResolvedValue(pixieServiceFactory());
 
@@ -85,7 +85,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
 describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("pass services for var without __service", async () => {
-    (locator.locate as any) = jest
+    (services.locate as any) = jest
       .fn()
       .mockResolvedValue(pixieServiceFactory());
 
@@ -113,7 +113,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const authId = uuidv4();
     const serviceId = validateRegistryId("test/api");
 
-    (locator.locate as any) = jest.fn().mockResolvedValue(({
+    (services.locate as any) = jest.fn().mockResolvedValue(({
       id: authId,
       serviceId,
       proxy: false,
@@ -145,7 +145,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
 
 describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
   test("pass services for var without __service", async () => {
-    (locator.locate as any) = jest
+    (services.locate as any) = jest
       .fn()
       .mockResolvedValue(pixieServiceFactory());
 
@@ -178,7 +178,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const authId = uuidv4();
     const serviceId = validateRegistryId("test/api");
 
-    (locator.locate as any) = jest.fn().mockResolvedValue(({
+    (services.locate as any) = jest.fn().mockResolvedValue(({
       id: authId,
       serviceId,
       proxy: false,
@@ -222,7 +222,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       const authId = uuidv4();
       const serviceId = validateRegistryId("test/api");
 
-      (locator.locate as any) = jest.fn().mockResolvedValue(({
+      (services.locate as any) = jest.fn().mockResolvedValue(({
         id: authId,
         serviceId,
         proxy: false,

@@ -26,12 +26,11 @@ exports[`Marketplace Activate Wizard OptionsBody renders text field 1`] = `
       <div
         class="col-lg-9"
       >
-        <input
+        <textarea
           class="form-control"
           id="optionsArgs.textField"
           name="optionsArgs.textField"
-          type="text"
-          value=""
+          rows="1"
         />
       </div>
     </div>

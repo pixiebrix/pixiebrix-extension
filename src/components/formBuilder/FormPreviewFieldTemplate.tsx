@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import { Field, FieldProps } from "@rjsf/core";
 import React from "react";
 import { SetActiveField } from "./formBuilderTypes";
@@ -30,7 +28,6 @@ export interface FormPreviewFieldProps extends FieldProps {
 
 interface FormPreviewFieldTemplateProps extends FormPreviewFieldProps {
   as: Field;
-  setActiveField: SetActiveField;
   className?: string;
 }
 
@@ -51,6 +48,7 @@ const FormPreviewFieldTemplate: React.FC<FormPreviewFieldTemplateProps> = ({
   };
 
   return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- TODO
     <div
       onClick={onClick}
       className={cx(styles.root, className, { [styles.isActive]: isActive })}

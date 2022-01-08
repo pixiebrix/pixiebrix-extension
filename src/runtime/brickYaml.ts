@@ -18,6 +18,7 @@
 import yaml from "js-yaml";
 import { UnknownObject } from "@/types";
 import { produce } from "immer";
+import { isPlainObject } from "lodash";
 
 /**
  * @param tag the tag name, without the leading `!`
@@ -44,6 +45,24 @@ function createExpression(tag: string): yaml.Type {
   });
 }
 
+const deferExpression = new yaml.Type("!defer", {
+  kind: "mapping",
+
+  resolve: (data) => isPlainObject(data),
+
+  construct: (data) => ({
+    __type__: "defer",
+    __value__: data,
+  }),
+
+  predicate: (data) =>
+    typeof data === "object" &&
+    "__type__" in data &&
+    (data as UnknownObject).__type__ === "defer",
+
+  represent: (data) => (data as UnknownObject).__value__,
+});
+
 const pipelineExpression = new yaml.Type("!pipeline", {
   kind: "sequence",
 
@@ -68,6 +87,7 @@ const RUNTIME_SCHEMA = yaml.DEFAULT_SCHEMA.extend([
   createExpression("handlebars"),
   createExpression("nunjucks"),
   pipelineExpression,
+  deferExpression,
 ]);
 
 /**

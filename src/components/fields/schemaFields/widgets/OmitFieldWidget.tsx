@@ -27,7 +27,28 @@ const OmitFieldWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   hideLabel,
   isObjectProperty,
   isArrayItem,
+  onClick,
+  focusInput,
   ...restProps
-}) => <Form.Control name={name} {...restProps} disabled />;
+}) => (
+  <div
+    onClick={onClick}
+    // Divs with click handlers should have a button role for accessibility reasons
+    role="button"
+    // Also for accessibility, we make this "tab-able" by adding a tab index here
+    tabIndex={0}
+    // Finally, since the field can be tabbed over to, we add a handler for
+    // enter-key so that this field can be switched to 'var' input and
+    // focused, using the keyboard, just like a mouse click
+    onKeyUp={(event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        onClick();
+      }
+    }}
+  >
+    <Form.Control name={name} {...restProps} disabled />
+  </div>
+);
 
 export default OmitFieldWidget;

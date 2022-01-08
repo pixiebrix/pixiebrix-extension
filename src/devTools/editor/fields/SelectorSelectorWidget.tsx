@@ -170,7 +170,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
 
       console.debug("Setting selector", { selected, firstSelector });
       setValue(firstSelector);
-    } catch (error: unknown) {
+    } catch (error) {
       notify.error(`Error selecting element: ${getErrorMessage(error)}`, {
         error,
       });

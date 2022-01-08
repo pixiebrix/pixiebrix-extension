@@ -20,3 +20,6 @@ import "@testing-library/jest-dom";
 
 global.$ = $;
 global.jQuery = $;
+
+// Disable onMessage handler, or else it will respond to `sendMessage` calls locally
+global.browser.runtime.onMessage.addListener = jest.fn();

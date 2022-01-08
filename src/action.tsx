@@ -20,13 +20,10 @@ import "@/extensionContext";
 // Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/rollbar";
 
+import "@/actionPanel/messenger/registration";
 import App from "@/actionPanel/ActionPanelApp";
 import ReactDOM from "react-dom";
 import React from "react";
-
-import { browserAction } from "@/background/messenger/api";
-import { UUID } from "@/core";
-import "@/actionPanel/protocol";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 
@@ -34,13 +31,6 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
 import "@/action.scss";
-
-const url = new URL(location.href);
-const nonce = url.searchParams.get("nonce") as UUID;
-
-void browserAction.registerActionFrame(nonce).then(() => {
-  console.debug("Registered action frame with background page");
-});
 
 registerContribBlocks();
 registerBuiltinBlocks();

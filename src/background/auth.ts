@@ -16,11 +16,7 @@
  */
 
 import axios, { AxiosResponse } from "axios";
-import {
-  ManualStorageKey,
-  readStorageWithMigration,
-  setStorage,
-} from "@/chrome";
+import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   IService,
   AuthData,
@@ -49,7 +45,7 @@ async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
     "Only the background page can access oauth2 information"
   );
 
-  const current = await readStorageWithMigration<Record<UUID, TAuthData>>(
+  const current = await readStorage<Record<UUID, TAuthData>>(
     OAUTH2_STORAGE_KEY,
     {}
   );
@@ -67,7 +63,7 @@ export async function getCachedAuthData(
     "Only the background page can access oauth2 information"
   );
 
-  const current = await readStorageWithMigration<Record<UUID, AuthData>>(
+  const current = await readStorage<Record<UUID, AuthData>>(
     OAUTH2_STORAGE_KEY,
     {}
   );
@@ -83,7 +79,7 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
     "Only the background page can access oauth2 information"
   );
 
-  const current = await readStorageWithMigration<Record<UUID, AuthData>>(
+  const current = await readStorage<Record<UUID, AuthData>>(
     OAUTH2_STORAGE_KEY,
     {}
   );
@@ -307,7 +303,7 @@ async function codeGrantFlow(
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error(error);
     throw new Error(`Error getting OAuth2 token: ${getErrorMessage(error)}`);
   }

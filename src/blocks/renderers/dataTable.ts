@@ -18,6 +18,8 @@
 
 import { BusinessError } from "@/errors";
 import { UnknownObject } from "@/types";
+import { SafeHTML } from "@/core";
+import sanitize from "@/utils/sanitize";
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 export interface Row {
@@ -51,15 +53,7 @@ function renderRow<TRow extends Row>(
   return `<tr>${columnHTML}</tr>`;
 }
 
-function makeDataTable<TRow extends UnknownObject>(
-  columns: Array<ColumnDefinition<TRow>>
-): (ctxt: unknown) => string {
-  return (ctxt: unknown): string => {
-    if (!Array.isArray(ctxt)) {
-      throw new BusinessError("makeDataTable expected an array of data");
-    }
-
-    return `
+const style = `
 <style>
 table.blueTable {
   border: 1px solid #1C6EA4;
@@ -119,7 +113,18 @@ table.blueTable tfoot .links a{
   border-radius: 5px;
 }
 </style>
-        <table class="blueTable">
+`;
+
+function makeDataTable<TRow extends UnknownObject>(
+  columns: Array<ColumnDefinition<TRow>>
+): (ctxt: unknown) => SafeHTML {
+  return (ctxt: unknown): SafeHTML => {
+    if (!Array.isArray(ctxt)) {
+      throw new BusinessError("makeDataTable expected an array of data");
+    }
+
+    const rawTable = `
+         <table class="blueTable">
             <thead>
             <tr>
                 ${columns.map((x) => `<th>${x.label}</th>`).join("\n")}
@@ -130,6 +135,11 @@ table.blueTable tfoot .links a{
             </tbody>
         </table>
     `;
+
+    return `
+        ${style}
+        ${sanitize(rawTable)}
+    ` as SafeHTML;
   };
 }
 

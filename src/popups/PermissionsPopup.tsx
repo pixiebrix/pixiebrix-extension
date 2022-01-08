@@ -50,7 +50,7 @@ const PermissionsPopup: React.FC = () => {
       }
 
       setRejected(true);
-    } catch (error: unknown) {
+    } catch (error) {
       reportError(error);
       setError(getErrorMessage(error));
     }

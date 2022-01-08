@@ -16,9 +16,7 @@
  */
 
 import LazyLocatorFactory from "@/services/locator";
-import { liftBackground } from "@/background/protocol";
-import { isBackgroundPage } from "webext-detect-page";
-import { RegistryId, UUID } from "@/core";
+import { isBackground } from "webext-detect-page";
 
 export const locator = new LazyLocatorFactory();
 
@@ -26,45 +24,31 @@ async function initLocator() {
   await locator.refresh();
 }
 
-export const locate = liftBackground(
-  "LOCATE_SERVICE",
-  async (serviceId: RegistryId, id: UUID | null) =>
-    locator.locate(serviceId, id)
-);
-
 type RefreshOptions = {
   local: boolean;
   remote: boolean;
 };
 
-export const refresh: (
-  options?: RefreshOptions
-) => Promise<unknown> = liftBackground(
-  "REFRESH_SERVICES",
-  async (options: RefreshOptions) => {
-    const { local, remote } = {
-      local: true,
-      remote: true,
-      ...options,
-    };
+export async function refreshServices(options?: RefreshOptions): Promise<void> {
+  const { local, remote } = {
+    local: true,
+    remote: true,
+    ...options,
+  };
 
-    if (remote && local) {
-      await locator.refresh();
-    } else if (remote) {
-      await locator.refreshRemote();
-    } else if (local) {
-      await locator.refreshLocal();
-    } else {
-      // Prevent buggy call sites from silently causing issues
-      throw new Error("Either local or remote must be set to true");
-    }
-  },
-  {
-    asyncResponse: false,
+  if (remote && local) {
+    await locator.refresh();
+  } else if (remote) {
+    await locator.refreshRemote();
+  } else if (local) {
+    await locator.refreshLocal();
+  } else {
+    // Prevent buggy call sites from silently causing issues
+    throw new Error("Either local or remote must be set to true");
   }
-);
+}
 
-if (isBackgroundPage()) {
+if (isBackground()) {
   void initLocator().then(() => {
     console.debug("Eagerly initialized service locator");
   });

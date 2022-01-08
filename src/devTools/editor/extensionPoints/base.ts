@@ -25,7 +25,7 @@ import {
   SafeString,
   UUID,
 } from "@/core";
-import { castArray, cloneDeep, omit } from "lodash";
+import { castArray, cloneDeep, isEmpty, omit } from "lodash";
 import {
   assertExtensionPointConfig,
   ExtensionPointConfig,
@@ -63,8 +63,7 @@ export interface WizardStep {
  * Brick definition API controlling how the PixieBrix runtime interprets brick configurations
  * @see ApiVersion
  */
-// Keep at v2 until the Page Editor supports v3 expressions
-export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v2";
+export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v3";
 
 /**
  * Default definition entry for the inner definition of the extensionPoint for the extension
@@ -82,6 +81,7 @@ export function isInnerExtensionPoint(
 export function makeIsAvailable(url: string): NormalizedAvailability {
   return {
     matchPatterns: [createSitePattern(url)],
+    urlPatterns: [],
     selectors: [],
   };
 }
@@ -164,6 +164,7 @@ export function makeInitialBaseState(
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+    showV3UpgradeMessage: false,
     services: [],
     optionsArgs: {},
     extension: {
@@ -194,10 +195,12 @@ export function selectIsAvailable(
 
   const { isAvailable } = extensionPoint.definition;
   const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
+  const urlPatterns = castArray(isAvailable.urlPatterns ?? []);
   const selectors = castArray(isAvailable.selectors ?? []);
 
   return {
     matchPatterns,
+    urlPatterns,
     selectors,
   };
 }
@@ -206,16 +209,18 @@ export function selectIsAvailable(
  * Exclude malformed matchPatterns and selectors from an isAvailable section that may have found their way over from the
  * Page Editor.
  *
- * Currently excludes:
+ * Currently, excludes:
  * - Null values
  * - Blank values
  */
 export function cleanIsAvailable({
   matchPatterns = [],
+  urlPatterns = [],
   selectors = [],
 }: NormalizedAvailability): NormalizedAvailability {
   return {
     matchPatterns: matchPatterns.filter((x) => !isNullOrBlank(x)),
+    urlPatterns: urlPatterns.filter((x) => isEmpty(x)),
     selectors: selectors.filter((x) => !isNullOrBlank(x)),
   };
 }
@@ -361,7 +366,7 @@ export function getImplicitReader(type: ElementType): SingleLayerReaderConfig {
     ]);
   }
 
-  // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by the
+  // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by
   // the contextMenu extension point.
   return [validateRegistryId("@pixiebrix/document-metadata")];
 }
@@ -379,14 +384,13 @@ export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
  * @param pipelineProp the name of the pipeline prop, currently either "action" or "body"
  * @param defaults
  */
-export function normalizePipeline<
+export function extensionWithNormalizedPipeline<
   T extends UnknownObject,
   Prop extends keyof T
 >(
   config: T,
   pipelineProp: Prop,
   defaults: Partial<T> = {}
-  // eslint-disable-next-line @typescript-eslint/ban-types -- not error-prone because parameters check keyof
 ): BaseExtensionState & Omit<T, Prop> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {

@@ -45,36 +45,52 @@ module.exports = {
       ),
     };
 
+    const fileLoaderRule = config.module.rules.find(
+      (rule) => rule.test && rule.test.test(".svg")
+    );
+    fileLoaderRule.resourceQuery = { not: [/loadAsComponent/] };
+
     config.module.rules.push(
-      ...[
-        {
-          test: /\.ya?ml$/,
-          resourceQuery: { not: [/loadAsText/] },
-          type: "json",
-          use: "yaml-loader",
-        },
-        {
-          test: /\.ya?ml$/,
-          resourceQuery: /loadAsText/,
-          use: "raw-loader",
-        },
-        {
-          test: /\.scss$/,
-          use: [
-            // style-loader loads the css into the DOM
-            "style-loader",
-            "css-loader",
-            {
-              loader: "sass-loader",
-              options: {
-                sourceMap: true,
-                // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
-                implementation: require("node-sass"),
-              },
+      {
+        test: /\.ya?ml$/,
+        resourceQuery: { not: [/loadAsText/] },
+        type: "json",
+        use: "yaml-loader",
+      },
+      {
+        test: /\.ya?ml$/,
+        resourceQuery: /loadAsText/,
+        use: "raw-loader",
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          // style-loader loads the css into the DOM
+          "style-loader",
+          "css-loader",
+          {
+            loader: "sass-loader",
+            options: {
+              sourceMap: true,
+              // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
+              implementation: require("node-sass"),
             },
-          ],
-        },
-      ]
+          },
+        ],
+      },
+      {
+        test: /\.svg$/,
+        resourceQuery: /loadAsComponent/,
+        use: [
+          {
+            loader: "@svgr/webpack",
+            options: {
+              typescript: true,
+              ext: "tsx",
+            },
+          },
+        ],
+      }
     );
 
     config.plugins.push(

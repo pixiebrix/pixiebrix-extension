@@ -16,13 +16,11 @@
  */
 
 import { Renderer } from "@/types";
-import createDOMPurify, { DOMPurifyI } from "dompurify";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg } from "@/core";
+import { BlockArg, SafeHTML } from "@/core";
+import sanitize from "@/utils/sanitize";
 
 export class MarkdownRenderer extends Renderer {
-  private DOMPurify: DOMPurifyI;
-
   constructor() {
     super(
       "@pixiebrix/markdown",
@@ -42,13 +40,8 @@ export class MarkdownRenderer extends Renderer {
     ["markdown"]
   );
 
-  async render({ markdown }: BlockArg): Promise<string> {
-    const { marked } = await import("marked");
-
-    if (!this.DOMPurify) {
-      this.DOMPurify = createDOMPurify(window);
-    }
-
-    return this.DOMPurify.sanitize(marked(markdown));
+  async render({ markdown }: BlockArg): Promise<SafeHTML> {
+    const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
+    return sanitize(marked(markdown));
   }
 }

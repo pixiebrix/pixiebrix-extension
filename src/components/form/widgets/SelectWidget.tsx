@@ -17,7 +17,7 @@
 
 import React, { ChangeEvent } from "react";
 import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
-import Select, { SelectComponentsConfig } from "react-select";
+import Select, { GroupBase, SelectComponentsConfig } from "react-select";
 import { getErrorMessage } from "@/errors";
 
 // Type of the Select options
@@ -51,7 +51,7 @@ type SelectWidgetProps<
   loadingMessage?: string;
   error?: unknown;
   disabled?: boolean;
-  components?: SelectComponentsConfig<TOption, boolean>;
+  components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
 };
 
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
@@ -74,10 +74,11 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
     );
   }
 
-  const patchedOnChange = ({ value }: TOption) => {
-    onChange({ target: { value, name, options } } as ChangeEvent<
-      SelectLike<TOption>
-    >);
+  // Option will be null when the select is "cleared"
+  const patchedOnChange = (option: TOption | null) => {
+    onChange({
+      target: { value: option?.value ?? null, name, options },
+    } as ChangeEvent<SelectLike<TOption>>);
   };
 
   // Pass null instead of undefined if options is not defined
@@ -86,6 +87,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
 
   return (
     <Select
+      menuPlacement="auto"
       inputId={id}
       name={name}
       isDisabled={disabled}

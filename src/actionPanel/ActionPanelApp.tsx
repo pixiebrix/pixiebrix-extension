@@ -32,23 +32,22 @@ import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
 import GridLoader from "react-spinners/GridLoader";
 import { PersistGate } from "redux-persist/integration/react";
-import { browserAction } from "@/background/messenger/api";
-import { ary } from "lodash";
-import { ActionPanelStore, FormEntry } from "@/actionPanel/actionPanelTypes";
+import { PanelEntry, FormEntry } from "@/actionPanel/actionPanelTypes";
 import ActionPanelTabs from "@/actionPanel/ActionPanelTabs";
 import slice, { blankActionPanelState } from "./actionPanelSlice";
-import { UUID } from "@/core";
 import { AnyAction } from "redux";
+import { hideActionPanel } from "@/contentScript/messenger/api";
+import { whoAmI } from "@/background/messenger/api";
 
 function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
   return {
-    onRenderPanels: ({ panels }: ActionPanelStore) => {
+    onRenderPanels: (panels: PanelEntry[]) => {
       dispatch(slice.actions.setPanels({ panels }));
     },
     onShowForm: (form: FormEntry) => {
       dispatch(slice.actions.addForm({ form }));
     },
-    onHideForm: ({ nonce }: { nonce: UUID }) => {
+    onHideForm: ({ nonce }: Partial<FormEntry>) => {
       dispatch(slice.actions.removeForm(nonce));
     },
   };
@@ -79,14 +78,14 @@ const ActionPanelApp: React.FunctionComponent = () => {
     <Provider store={store}>
       <PersistGate loading={<GridLoader />} persistor={persistor}>
         <ToastProvider>
-          <div className="d-flex flex-column" style={{ height: "100vh" }}>
-            <div className="d-flex flex-row mb-2 p-2 justify-content-between align-content-center">
+          <div className="full-height">
+            <div className="d-flex p-2 justify-content-between align-content-center">
               <Button
                 className="action-panel-button"
-                onClick={
-                  // Ignore the onClick args since they can't be serialized by the messenging framework
-                  ary(browserAction.hideActionFrame, 0)
-                }
+                onClick={async () => {
+                  const sidebar = await whoAmI();
+                  await hideActionPanel({ tabId: sidebar.tab.id! });
+                }}
                 size="sm"
                 variant="link"
               >
@@ -113,7 +112,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
               </Button>
             </div>
 
-            <div className="mt-2" style={{ minHeight: 1, flex: "1 1 auto" }}>
+            <div className="full-height">
               {state.panels?.length || state.forms?.length ? (
                 <ActionPanelTabs
                   {...state}

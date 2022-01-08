@@ -39,6 +39,8 @@ import {
   ContextMenuReader,
 } from "@/extensionPoints/contextMenu";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
+import { $safeFind } from "@/helpers";
+import { TriggerDefinition } from "@/extensionPoints/triggerExtension";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
@@ -117,7 +119,7 @@ export async function runExtensionPointReader(
 
   // Handle element-based reader context for triggers
   if (rootSelector) {
-    const $root = $(document).find(rootSelector);
+    const $root = $safeFind(rootSelector);
     if ($root.length === 1) {
       // If there's a single root, use that even if it's not the active element (because that's likely the one the user
       // is intending to use).
@@ -165,13 +167,23 @@ export async function updateDynamicElement({
 }: DynamicDefinition): Promise<void> {
   expectContext("contentScript");
 
+  // HACK: hack so that when using the Page Editor the interval trigger only runs when you manually trigger it
+  //  Otherwise it's hard to work with the interval trigger because you keep losing the trace from the previous run
+  if (extensionPointConfig.definition.type === "trigger") {
+    const triggerDefinition = extensionPointConfig.definition as TriggerDefinition;
+    if (triggerDefinition.trigger === "interval") {
+      // OK to assign directly since the object comes from the messenger (so we have a fresh object)
+      triggerDefinition.trigger = "load";
+    }
+  }
+
   const extensionPoint = extensionPointFactory(extensionPointConfig);
 
   _temporaryExtensions.set(extensionConfig.id, extensionPoint);
 
   clearDynamic(extensionConfig.id, { clearTrace: false });
 
-  // In practice, should be a no-op because the page editor handles the extensionPoint
+  // In practice, should be a no-op because the Page Editor handles the extensionPoint
   const resolved = await resolveDefinitions(extensionConfig);
 
   extensionPoint.addExtension(resolved);
@@ -185,7 +197,7 @@ export async function enableOverlay(selector: string): Promise<void> {
     _overlay = new Overlay();
   }
 
-  const $elt = $(document).find(selector);
+  const $elt = $safeFind(selector);
   _overlay.inspect($elt.toArray(), null);
 }
 

@@ -19,7 +19,7 @@
 import { useField } from "formik";
 import React, { useEffect, useMemo } from "react";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
-import { Button, ButtonGroup, Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import FieldEditor from "./FieldEditor";
 import {
   DEFAULT_FIELD_TYPE,
@@ -30,12 +30,7 @@ import {
 } from "./formBuilderHelpers";
 import { UI_ORDER } from "./schemaFieldNames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowDown,
-  faArrowUp,
-  faPlus,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Schema } from "@/core";
 import { produce } from "immer";
 import styles from "./FormEditor.module.scss";
@@ -43,33 +38,13 @@ import { joinName } from "@/utils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import LayoutWidget from "@/components/LayoutWidget";
 
 export type FormEditorProps = {
   name: string;
   activeField?: string;
   setActiveField: SetActiveField;
 };
-
-const LayoutWidget: React.FC<{
-  canMoveUp: boolean;
-  moveUp: () => void;
-  canMoveDown: boolean;
-  moveDown: () => void;
-}> = ({ canMoveUp, moveUp, canMoveDown, moveDown }) => (
-  <ButtonGroup>
-    <Button onClick={moveUp} disabled={!canMoveUp} variant="light" size="sm">
-      <FontAwesomeIcon icon={faArrowUp} /> Move up
-    </Button>
-    <Button
-      onClick={moveDown}
-      disabled={!canMoveDown}
-      variant="light"
-      size="sm"
-    >
-      <FontAwesomeIcon icon={faArrowDown} /> Move down
-    </Button>
-  </ButtonGroup>
-);
 
 const FormEditor: React.FC<FormEditorProps> = ({
   name,
@@ -99,13 +74,17 @@ const FormEditor: React.FC<FormEditorProps> = ({
   useEffect(
     () => {
       const firstInOrder = uiSchema?.[UI_ORDER]?.[0];
-      if (firstInOrder && firstInOrder !== "*") {
+      if (
+        firstInOrder &&
+        firstInOrder !== "*" &&
+        firstInOrder !== activeField
+      ) {
         setActiveField(firstInOrder);
         return;
       }
 
       const firstInProperties = Object.keys(schema?.properties || {})[0];
-      if (firstInProperties) {
+      if (firstInProperties && firstInProperties !== activeField) {
         setActiveField(firstInProperties);
       }
     },
@@ -207,8 +186,8 @@ const FormEditor: React.FC<FormEditorProps> = ({
         </Col>
       </Row>
 
-      <Row className={styles.currFieldRow}>
-        <Col xl="3" className={styles.currField}>
+      <Row className={styles.currentFieldRow}>
+        <Col xl="3" className={styles.currentField}>
           <h6>Current Field</h6>
         </Col>
         {activeField && (

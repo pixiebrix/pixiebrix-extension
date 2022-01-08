@@ -56,7 +56,7 @@ const ActivateForm: React.FunctionComponent<{
         );
         notify.success("Activated brick");
         dispatch(push("/installed"));
-      } catch (error: unknown) {
+      } catch (error) {
         notify.error("Error activating brick", {
           error,
         });

@@ -20,12 +20,18 @@ import { Renderer } from "@/types";
 import { BlockArg, BlockOptions, ComponentRef, Schema, UiSchema } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
-import { getRecord, setRecord } from "@/background/dataStore";
+import { dataStore } from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
 import { notifyResult } from "@/contentScript/notify";
 
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import BootstrapStylesheet from "./BootstrapStylesheet";
+import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
+import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
+
+const uiWidgets = {
+  imageCrop: ImageCropWidget,
+};
 
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;
@@ -33,13 +39,15 @@ const CustomFormComponent: React.FunctionComponent<{
   formData: JsonObject;
   onSubmit: (values: JsonObject) => Promise<void>;
 }> = ({ schema, uiSchema, formData, onSubmit }) => (
-  <div className="CustomForm">
+  <div className="CustomForm p-3">
     <BootstrapStylesheet />
+    <ImageCropStylesheet />
     <link rel="stylesheet" href={custom} />
     <JsonSchemaForm
       schema={schema}
       uiSchema={uiSchema}
       formData={formData}
+      widgets={uiWidgets}
       onSubmit={async ({ formData }) => {
         await onSubmit(formData);
       }}
@@ -84,7 +92,7 @@ export class CustomFormRenderer extends Renderer {
     { recordId, schema, uiSchema }: BlockArg,
     { logger }: BlockOptions
   ): Promise<ComponentRef> {
-    const formData = await getRecord(recordId);
+    const formData = await dataStore.get(recordId);
 
     console.debug("Building panel for record: [[ %s ]]", recordId);
 
@@ -97,14 +105,14 @@ export class CustomFormRenderer extends Renderer {
         uiSchema,
         onSubmit: async (values: JsonObject) => {
           try {
-            await setRecord(recordId, values);
+            await dataStore.set(recordId, values);
             notifyResult(logger.context.extensionId, {
               message: "Saved record",
               config: {
                 className: "success",
               },
             });
-          } catch (error: unknown) {
+          } catch (error) {
             reportError(error);
             notifyResult(logger.context.extensionId, {
               message: "Error saving record",

@@ -17,7 +17,7 @@
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Schema } from "@/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/FormEditor";
 import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
@@ -42,6 +42,14 @@ const FormRendererOptions: React.FC<{
   );
 
   const configName = `${name}.${configKey}`;
+
+  useEffect(
+    () => () => {
+      // Clean up selected field on destroy
+      setActiveField(null);
+    },
+    [configName]
+  );
 
   return (
     <div>

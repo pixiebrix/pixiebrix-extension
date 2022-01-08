@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { recordEvent, initUID } from "@/background/telemetry";
+import { recordEvent } from "@/background/messenger/api";
 import { JsonObject } from "type-fest";
 
 /**
@@ -24,13 +24,5 @@ import { JsonObject } from "type-fest";
  */
 export function reportEvent(event: string, data: JsonObject = {}): void {
   console.debug(event, data);
-  void recordEvent({ event, data }).catch((error: unknown) => {
-    console.warn("Error reporting event %s", event, { error });
-  });
-}
-
-export function initTelemetry(): void {
-  void initUID().catch((error: unknown) => {
-    console.warn("Error initializing uid", { error });
-  });
+  recordEvent({ event, data });
 }
