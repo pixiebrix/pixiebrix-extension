@@ -19,6 +19,7 @@
 import "regenerator-runtime/runtime";
 
 import Select from "react-select-virtualized";
+import { components, OptionProps } from "react-select";
 import React, { useMemo } from "react";
 import { IconOption } from "@/icons/types";
 import { icons } from "@/icons/list";
@@ -37,16 +38,17 @@ const iconOptions: IconOption[] = sortBy(
 );
 
 // https://github.com/JedWatson/react-select/issues/3480#issuecomment-481566579
-function customSingleValue({ data }: { data: IconOption }): JSX.Element {
+function SingleValue(props: OptionProps<IconOption>): JSX.Element {
+  const { SingleValue } = components;
   return (
-    <div className="input-select">
-      <div className="input-select__single-value">
-        <span className="input-select__icon mr-2">
-          <Icon icon={data.value.id} library={data.value.library} />
-        </span>
-        <span>{data.label}</span>
-      </div>
-    </div>
+    <SingleValue {...props}>
+      <Icon
+        icon={props.data.value.id}
+        library={props.data.value.library}
+        className="mr-2"
+      />
+      {props.data.label}
+    </SingleValue>
   );
 }
 
@@ -77,9 +79,10 @@ const IconSelector: React.FunctionComponent<OwnProps> = ({
       value={selectedOption}
       options={iconOptions}
       onChange={onChange}
-      // React-select-virtualized doesn't support styling the elements in the dropdown, so can't show
-      // the icons in the actual dropdown
-      components={{ SingleValue: customSingleValue }}
+      // Only style the selected value because `react-select-virtualized`
+      // does not allow the customization of the list
+      // https://github.com/guiyep/react-select-virtualized/issues/13#issuecomment-527238574
+      components={{ SingleValue }}
     />
   );
 };
