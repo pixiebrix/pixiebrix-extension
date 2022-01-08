@@ -21,6 +21,7 @@ import { DevToolsContext } from "@/devTools/context";
 import { sortBy } from "lodash";
 import {
   Badge,
+  Button,
   Dropdown,
   DropdownButton,
   Form,
@@ -176,13 +177,14 @@ const SidebarExpanded: React.FunctionComponent<
                 ))}
             </DropdownButton>
           </div>
-          <button
-            className={cx("navbar-toggler", styles.toggle)}
+          <Button
+            variant="light"
+            className={cx(styles.toggle)}
             type="button"
             onClick={collapseSidebar}
           >
             <FontAwesomeIcon icon={faAngleDoubleLeft} />
-          </button>
+          </Button>
         </div>
 
         {unavailableCount ? (
@@ -232,14 +234,15 @@ const SidebarCollapsed: React.FunctionComponent<{
   expandSidebar: () => void;
 }> = ({ expandSidebar }) => (
   <div className={cx(styles.root, styles.collapsed)}>
-    <button
-      className={cx("navbar-toggler", styles.toggle)}
+    <Button
+      variant="light"
+      className={cx(styles.toggle)}
       type="button"
       onClick={expandSidebar}
     >
       <Logo />
       <FontAwesomeIcon icon={faAngleDoubleRight} />
-    </button>
+    </Button>
   </div>
 );
 

@@ -32,6 +32,7 @@ import useBrickRecommendations from "@/devTools/editor/tabs/editTab/useBrickReco
 import cx from "classnames";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
+import { ListGroup } from "react-bootstrap";
 
 const addBrickCaption = (
   <span>
@@ -69,7 +70,7 @@ const EditorNodeLayout: React.FC<{
   const finalIndex = nodes.length - 1;
 
   return (
-    <>
+    <ListGroup variant="flush">
       {nodes.length > 0 &&
         nodes.map((nodeProps, index) => {
           const { nodeId } = nodeProps;
@@ -146,7 +147,7 @@ const EditorNodeLayout: React.FC<{
             </React.Fragment>
           );
         })}
-    </>
+    </ListGroup>
   );
 };
 
