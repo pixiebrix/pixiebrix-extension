@@ -33,9 +33,13 @@ export async function getCurrentURL(): Promise<string> {
     throw new Error("getCurrentURL can only run in the developer tools");
   }
 
-  const [response, error] = await browser.devtools.inspectedWindow.eval(
-    "location.href"
-  );
+  const tab = await browser.tabs.get(chrome.devtools.inspectedWindow.tabId);
+  return tab.url;
+}
+
+/** Wrapper around the dev tools’ `eval` function to throw proper errors */
+export async function devToolsEval(code: string) {
+  const [response, error] = await browser.devtools.inspectedWindow.eval(code);
 
   // Handle Dev Tools API error response
   // https://developer.chrome.com/docs/extensions/reference/devtools_inspectedWindow/#method-eval
