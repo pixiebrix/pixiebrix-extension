@@ -23,6 +23,7 @@
 .icon {
   width: 1.5em;
   text-align: center;
+  flex-shrink: 0;
 }
 .name {
   flex-grow: 1;
