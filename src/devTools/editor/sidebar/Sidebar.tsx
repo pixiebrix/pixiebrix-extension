@@ -190,6 +190,7 @@ const SidebarExpanded: React.FunctionComponent<
         {unavailableCount ? (
           <div className={styles.unavailable}>
             <Form.Check
+              id="unavailable-extensions-checkbox"
               type="checkbox"
               label={`Show ${unavailableCount} unavailable`}
               defaultChecked={showAll}
