@@ -18,16 +18,14 @@
 import { toggleQuickBar } from "@/contentScript/messenger/api";
 import { Target } from "@/types";
 import { expectContext } from "@/utils/expectContext";
-import browser from "webextension-polyfill";
+import { canReceiveContentScript } from "@/utils/permissions";
 import { ensureContentScript } from "./util";
 
-async function handleCommand(command: string): Promise<void> {
-  if (command !== "toggle-quick-bar") {
-    return;
-  }
-
-  const [tab] = await browser.tabs.query({ currentWindow: true, active: true });
-  if (!tab) {
+async function handleCommand(
+  command: string,
+  tab: chrome.tabs.Tab
+): Promise<void> {
+  if (command !== "toggle-quick-bar" || !canReceiveContentScript(tab.url)) {
     return;
   }
 
@@ -42,5 +40,5 @@ async function handleCommand(command: string): Promise<void> {
 
 export default function initBrowserCommands(): void {
   expectContext("background");
-  browser.commands.onCommand.addListener(handleCommand);
+  chrome.commands.onCommand.addListener(handleCommand);
 }
