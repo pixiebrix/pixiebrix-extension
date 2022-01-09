@@ -20,15 +20,13 @@ import { DevToolsContext } from "@/devTools/context";
 import Centered from "@/devTools/editor/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
-import {
-  canReceiveContentScript,
-  requestPermissions,
-} from "@/utils/permissions";
+import { requestPermissions } from "@/utils/permissions";
 import AsyncButton from "@/components/AsyncButton";
 import { getCurrentURL } from "@/devTools/utils";
 import { safeParseUrl } from "@/utils";
 import { parse as parseDomain } from "psl";
 import { useAsyncEffect } from "use-async-effect";
+import { isScriptableUrl } from "webext-content-scripts";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { connect } = useContext(DevToolsContext);
@@ -43,7 +41,7 @@ const PermissionsPane: React.FunctionComponent = () => {
     }
 
     const { hostname } = safeParseUrl(url);
-    setAllowed(canReceiveContentScript(url));
+    setAllowed(url.startsWith("http") && isScriptableUrl(url));
     const result = parseDomain(hostname);
     if ("domain" in result && result.domain) {
       setSiteLabel(result.domain);

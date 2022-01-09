@@ -25,7 +25,6 @@ import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
-import { canReceiveContentScript } from "@/utils/permissions";
 
 /** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
@@ -125,7 +124,7 @@ export async function ensureContentScript(target: Target): Promise<void> {
       return;
     }
 
-    if (!canReceiveContentScript(result.url)) {
+    if (!result.url.startsWith("http")) {
       console.debug(
         "ensureContentScript: PixieBrix can’t run on this page",
         result.url

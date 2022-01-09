@@ -21,7 +21,6 @@ import {
   containsPermissions,
   openPopupPrompt,
 } from "@/background/messenger/api";
-import { isScriptableUrl } from "webext-content-scripts";
 
 /** Filters out any permissions that are not part of `optional_permissions` */
 export function selectOptionalPermissions(
@@ -72,12 +71,4 @@ export async function requestPermissions(
   const { tabId } = browser.devtools.inspectedWindow;
   await openPopupPrompt(tabId, page.toString());
   return containsPermissions(permissions);
-}
-
-/**
- * Determines whether a page can potentially execute a content script.
- * This excludes non-http pages and extension gallery pages.
- */
-export function canReceiveContentScript(url: string): boolean {
-  return url.startsWith("http") && isScriptableUrl(url);
 }
