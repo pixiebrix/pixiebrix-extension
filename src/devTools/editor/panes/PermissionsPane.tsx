@@ -36,10 +36,14 @@ const PermissionsPane: React.FunctionComponent = () => {
 
   useAsyncEffect(async (isMounted) => {
     const url = await getCurrentURL();
-    const { protocol, hostname } = safeParseUrl(await getCurrentURL());
-    setAllowed(protocol.startsWith("http") && isScriptableUrl(url));
+    if (!isMounted()) {
+      return;
+    }
+
+    const { hostname } = safeParseUrl(url);
+    setAllowed(url.startsWith("http") && isScriptableUrl(url));
     const result = parseDomain(hostname);
-    if ("domain" in result && result.domain && isMounted()) {
+    if ("domain" in result && result.domain) {
       setSiteLabel(result.domain);
     }
   }, []);
