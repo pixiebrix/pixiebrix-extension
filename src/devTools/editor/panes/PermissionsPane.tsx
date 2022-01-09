@@ -26,14 +26,18 @@ import { getCurrentURL } from "@/devTools/utils";
 import { safeParseUrl } from "@/utils";
 import { parse as parseDomain } from "psl";
 import { useAsyncEffect } from "use-async-effect";
+import { isScriptableUrl } from "webext-content-scripts";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { connect } = useContext(DevToolsContext);
   const [rejected, setRejected] = useState(false);
+  const [allowed, setAllowed] = useState(true);
   const [siteLabel, setSiteLabel] = useState("this page");
 
   useAsyncEffect(async (isMounted) => {
-    const { hostname } = safeParseUrl(await getCurrentURL());
+    const url = await getCurrentURL();
+    const { protocol, hostname } = safeParseUrl(await getCurrentURL());
+    setAllowed(protocol.startsWith("http") && isScriptableUrl(url));
     const result = parseDomain(hostname);
     if ("domain" in result && result.domain && isMounted()) {
       setSiteLabel(result.domain);
@@ -51,24 +55,31 @@ const PermissionsPane: React.FunctionComponent = () => {
 
   return (
     <Centered vertically={true}>
-      <p>
-        <AsyncButton onClick={onRequestPermission} className="btn-">
-          <FontAwesomeIcon icon={faShieldAlt} /> Enable PixieBrix on {siteLabel}
-        </AsyncButton>
-      </p>
+      {allowed ? (
+        <>
+          <p>
+            <AsyncButton onClick={onRequestPermission} className="btn-">
+              <FontAwesomeIcon icon={faShieldAlt} /> Enable PixieBrix on{" "}
+              {siteLabel}
+            </AsyncButton>
+          </p>
 
-      <p className="text-muted small">
-        Your browser will prompt you to Allow permissions. <br />
-        You can revoke the permissions from PixieBrix&apos;s Settings page.
-      </p>
+          <p className="text-muted small">
+            Your browser will prompt you to Allow permissions. <br />
+            You can revoke the permissions from PixieBrix&apos;s Settings page.
+          </p>
 
-      {rejected && (
-        <p className="text-info small">
-          <FontAwesomeIcon icon={faInfoCircle} />
-          &nbsp; You can grant temporary permissions by clicking on the
-          PixieBrix extension menu item in your browser&apos;s extensions
-          dropdown.
-        </p>
+          {rejected && (
+            <p className="text-info small">
+              <FontAwesomeIcon icon={faInfoCircle} />
+              &nbsp; You can grant temporary permissions by clicking on the
+              PixieBrix extension menu item in your browser&apos;s extensions
+              dropdown.
+            </p>
+          )}
+        </>
+      ) : (
+        <p>PixieBrix cannot change this page</p>
       )}
     </Centered>
   );
