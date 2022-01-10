@@ -82,6 +82,12 @@ const sampleSchemas: SchemaTestCase[] = [
   },
 
   {
+    name: "basic object",
+    schema: {
+      type: "object",
+    },
+  },
+  {
     name: "object with defined properties",
     schema: {
       type: "object",
