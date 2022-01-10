@@ -61,25 +61,4 @@ describe("option mode switching", () => {
 
     expectToggleMode(container, "Text");
   });
-
-  test("doesn't automatically switch to Text in case of Select field", async () => {
-    const { container } = renderSchemaField(
-      "test",
-      { type: "string", enum: ["option 1", "option 2"] },
-      {
-        test: {
-          __type__: "var",
-          __value__: "@data",
-        },
-      }
-    );
-
-    expectToggleMode(container, "Variable");
-
-    const inputElement = screen.getByLabelText("test");
-    fireTextInput(inputElement, "text");
-    await waitForEffect();
-
-    expectToggleMode(container, "Variable");
-  });
 });
