@@ -91,16 +91,12 @@ const Page: React.FunctionComponent<{
       <div className="d-flex">
         <div className="flex-grow-1">
           <PageTitle icon={icon} title={title} />
-          <div className="pb-4">
-            {typeof description === "string" ? (
-              <p>{description}</p>
-            ) : (
-              description
-            )}
-            {breadcrumb}
-          </div>
         </div>
         {toolbar && <div>{toolbar}</div>}
+      </div>
+      <div className="pb-4">
+        {typeof description === "string" ? <p>{description}</p> : description}
+        {breadcrumb}
       </div>
       {body}
     </div>

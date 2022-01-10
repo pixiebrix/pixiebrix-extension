@@ -20,14 +20,7 @@ import { Button, Card, Table } from "react-bootstrap";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { RootState } from "@/options/store";
-import { uuidv4 } from "@/types/helpers";
-import BrickModal from "@/components/brickModal/BrickModal";
-import {
-  faEyeSlash,
-  faPlus,
-  faSignOutAlt,
-  faEdit,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
 import { deleteCachedAuthData } from "@/background/messenger/api";
@@ -44,7 +37,6 @@ const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
 type OwnProps = {
   services: IService[];
   navigate: (url: string) => void;
-  onCreate: (configuration: RawServiceConfiguration) => void;
 };
 
 const SERVICES_PER_PAGE = 10;
@@ -52,7 +44,6 @@ const SERVICES_PER_PAGE = 10;
 const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   services,
   navigate,
-  onCreate,
 }) => {
   const notify = useNotifications();
   const { isLoggedIn } = useContext(AuthContext);
@@ -76,21 +67,9 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
     [notify]
   );
 
-  const onSelect = useCallback(
-    (service: IService) => {
-      onCreate({
-        id: uuidv4(),
-        label: undefined,
-        serviceId: service.id,
-        config: {},
-      } as RawServiceConfiguration);
-    },
-    [onCreate]
-  );
-
   const numPages = useMemo(
     () => Math.ceil(configuredServices.length / SERVICES_PER_PAGE),
-    [configuredServices, SERVICES_PER_PAGE]
+    [configuredServices]
   );
 
   const pageServices = useMemo(
@@ -104,13 +83,6 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
 
   return (
     <>
-      <Card.Body className="pb-2 px-3">
-        <p className="text-info">
-          <FontAwesomeIcon icon={faEyeSlash} /> Private configurations are
-          stored in your browser. They are never transmitted to the PixieBrix
-          servers or shared with your team
-        </p>
-      </Card.Body>
       <Table className={styles.integrationsTable}>
         <thead>
           <tr>
@@ -211,19 +183,9 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         </tbody>
       </Table>
       <Card.Footer className="d-flex align-items-center justify-content-between">
-        <BrickModal
-          onSelect={onSelect}
-          bricks={services}
-          modalClassName={styles.ModalOverride}
-          selectCaption={
-            <span>
-              <FontAwesomeIcon icon={faPlus} className="mr-1" /> Configure
-            </span>
-          }
-          caption="Add Private Integration"
-        />
         <span className="text-muted">
-          Showing {page * SERVICES_PER_PAGE + 1} to{" "}
+          Showing{" "}
+          {Math.min(page * SERVICES_PER_PAGE + 1, configuredServices.length)} to{" "}
           {SERVICES_PER_PAGE * page + pageServices.length} of{" "}
           {configuredServices.length} integrations
         </span>
