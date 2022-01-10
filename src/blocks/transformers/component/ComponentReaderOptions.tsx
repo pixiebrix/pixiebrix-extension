@@ -98,7 +98,6 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
       />
 
       <SchemaField
-        isRequired
         name={joinName(configFieldName, "selector")}
         schema={selectorFieldSchema}
       />
