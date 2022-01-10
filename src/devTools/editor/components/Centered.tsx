@@ -19,12 +19,22 @@ import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import cx from "classnames";
 
-const Centered: React.FunctionComponent<{ isScrollable?: boolean }> = ({
-  isScrollable = false,
-  children,
-}) => (
-  <Container fluid className={cx({ "h-100 pb-2 overflow-auto": isScrollable })}>
-    <Row>
+const Centered: React.FunctionComponent<{
+  isScrollable?: boolean;
+  vertically?: boolean;
+}> = ({ isScrollable = false, vertically = false, children }) => (
+  <Container
+    fluid
+    className={cx({
+      "h-100 pb-2 overflow-auto": isScrollable,
+      "h-100": vertically,
+    })}
+  >
+    <Row
+      className={cx({
+        "h-100 align-items-center": vertically,
+      })}
+    >
       <Col className="mx-auto mt-4 text-center" sm={11} md={9} lg={6} xl={5}>
         {children}
       </Col>
