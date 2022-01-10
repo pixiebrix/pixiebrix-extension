@@ -37,6 +37,7 @@ import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
 import { NOFICATIONS_Z_INDEX } from "@/common";
 import { useEventListener } from "@/hooks/useEventListener";
+import { Stylesheet } from "@/components/Stylesheet";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -275,13 +276,14 @@ const KBarComponent: React.FC = () => {
 
 const QuickBarApp: React.FC = () => (
   <ReactShadowRoot mode="closed">
-    <link rel="stylesheet" href={faStyleSheet} />
-    <KBarProvider actions={quickBarRegistry.actions}>
-      <AutoShow />
-      <KBarToggle>
-        <KBarComponent />
-      </KBarToggle>
-    </KBarProvider>
+    <Stylesheet href={faStyleSheet}>
+      <KBarProvider actions={quickBarRegistry.actions}>
+        <AutoShow />
+        <KBarToggle>
+          <KBarComponent />
+        </KBarToggle>
+      </KBarProvider>
+    </Stylesheet>
   </ReactShadowRoot>
 );
 
