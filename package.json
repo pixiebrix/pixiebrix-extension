@@ -217,7 +217,7 @@
     "@types/webpack-env": "^1.16.2",
     "@types/yup": "^0.29.13",
     "axios-mock-adapter": "^1.19.0",
-    "chromedriver": "^96.0.0",
+    "chromedriver": "^97.0.0",
     "compass-mixins": "^0.12.10",
     "concurrently": "^6.2.1",
     "cooky-cutter": "^1.5.4",
