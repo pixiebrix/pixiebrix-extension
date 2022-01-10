@@ -63,7 +63,6 @@ const SaveExtensionWizard: React.FC = () => {
 
   const elementRecipeMeta = element.recipe;
   const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
-  console.log("recipe", recipe);
 
   const showCreateRecipeModal = () => {
     isNewRecipe.current = true;
