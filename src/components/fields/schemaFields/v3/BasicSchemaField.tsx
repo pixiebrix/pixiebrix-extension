@@ -200,19 +200,16 @@ function getToggleOptions({
   }
 
   if (isSelectField(fieldSchema)) {
-    pushOptions(
-      {
-        label: "Select...",
-        value: "select",
-        symbol: <OptionIcon icon="select" />,
-        Widget: SchemaSelectWidget,
-        interpretValue: () =>
-          typeof fieldSchema.default === "string"
-            ? String(fieldSchema.default)
-            : null,
-      },
-      varOption
-    );
+    pushOptions({
+      label: "Select...",
+      value: "select",
+      symbol: <OptionIcon icon="select" />,
+      Widget: SchemaSelectWidget,
+      interpretValue: () =>
+        typeof fieldSchema.default === "string"
+          ? String(fieldSchema.default)
+          : null,
+    });
   }
 
   if (fieldSchema.type === "string" || anyType) {
