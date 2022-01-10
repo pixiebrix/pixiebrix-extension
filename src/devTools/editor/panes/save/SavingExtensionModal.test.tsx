@@ -15,18 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { RecipeDefinition } from "@/types/definitions";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import SavingExtensionModal from "./SavingExtensionModal";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { define } from "cooky-cutter";
+import {
+  installedRecipeMetadataFactory,
+  recipeMetadataFactory,
+} from "@/tests/factories";
 
-const RECIPE_NAME = "Recipe for tests.";
+const simpleRecipeFactory = define<RecipeDefinition>({
+  apiVersion: "v3",
+  metadata: installedRecipeMetadataFactory,
+} as any);
+
+const simpleElementFactory = define<FormState>({
+  apiVersion: "v3",
+  recipe: recipeMetadataFactory,
+} as any);
 
 test("renders all buttons when Recipe is editable", () => {
+  const recipe = simpleRecipeFactory();
+  const element = simpleElementFactory();
+
   render(
     <SavingExtensionModal
-      recipeName={RECIPE_NAME}
-      installedRecipeVersion="1.0.0"
-      latestRecipeVersion="1.0.0"
+      recipe={recipe}
+      element={element}
       isRecipeEditable
       close={jest.fn()}
       saveAsPersonalExtension={jest.fn()}
@@ -50,49 +67,7 @@ test("renders all buttons when Recipe is editable", () => {
   expect(cancelButton).toHaveClass("btn-info");
 });
 
-test("renders all buttons when Recipe is editable and latest version", () => {
-  render(
-    <SavingExtensionModal
-      recipeName={RECIPE_NAME}
-      installedRecipeVersion="1.0.0"
-      latestRecipeVersion="1.0.0"
-      isRecipeEditable={false}
-      close={jest.fn()}
-      saveAsPersonalExtension={jest.fn()}
-      showCreateRecipeModal={jest.fn()}
-      showUpdateRecipeModal={jest.fn()}
-    />
-  );
-
-  const updateBlueprintButton = screen.queryByText("Update Blueprint");
-  expect(updateBlueprintButton).toBeNull();
-
-  const saveAsNewBlueprintButton = screen.getByText("Save as New Blueprint");
-  expect(saveAsNewBlueprintButton).toHaveClass("btn-primary");
-
-  const saveAsPersonalExtensionButton = screen.getByText(
-    "Save as Personal Extension"
-  );
-  expect(saveAsPersonalExtensionButton).toHaveClass("btn-secondary");
-
-  const cancelButton = screen.getByText("Cancel");
-  expect(cancelButton).toHaveClass("btn-info");
-});
-
-test("doesn't render recipe buttons when recipe is editable and not latest version", () => {
-  render(
-    <SavingExtensionModal
-      recipeName={RECIPE_NAME}
-      installedRecipeVersion="1.0.0"
-      latestRecipeVersion="2.0.0"
-      isRecipeEditable
-      close={jest.fn()}
-      saveAsPersonalExtension={jest.fn()}
-      showCreateRecipeModal={jest.fn()}
-      showUpdateRecipeModal={jest.fn()}
-    />
-  );
-
+function expectNoRecipeButtons() {
   const updateBlueprintButton = screen.queryByText("Update Blueprint");
   expect(updateBlueprintButton).toBeNull();
 
@@ -106,14 +81,39 @@ test("doesn't render recipe buttons when recipe is editable and not latest versi
 
   const cancelButton = screen.getByText("Cancel");
   expect(cancelButton).toHaveClass("btn-info");
+}
+
+test("doesn't render recipe buttons when recipe is editable and not latest version", () => {
+  const recipe = simpleRecipeFactory({
+    metadata: installedRecipeMetadataFactory({
+      version: "2.0.0",
+    }),
+  });
+  const element = simpleElementFactory();
+
+  render(
+    <SavingExtensionModal
+      recipe={recipe}
+      element={element}
+      isRecipeEditable
+      close={jest.fn()}
+      saveAsPersonalExtension={jest.fn()}
+      showCreateRecipeModal={jest.fn()}
+      showUpdateRecipeModal={jest.fn()}
+    />
+  );
+
+  expectNoRecipeButtons();
 });
 
 test("renders new recipe button when recipe is not editable", () => {
+  const recipe = simpleRecipeFactory();
+  const element = simpleElementFactory();
+
   render(
     <SavingExtensionModal
-      recipeName={RECIPE_NAME}
-      installedRecipeVersion="1.0.0"
-      latestRecipeVersion="1.0.0"
+      recipe={recipe}
+      element={element}
       isRecipeEditable={false}
       close={jest.fn()}
       saveAsPersonalExtension={jest.fn()}
@@ -135,4 +135,27 @@ test("renders new recipe button when recipe is not editable", () => {
 
   const cancelButton = screen.getByText("Cancel");
   expect(cancelButton).toHaveClass("btn-info");
+});
+
+test("doesn't render recipe buttons when extension API is not compatible with recipe", () => {
+  const recipe = simpleRecipeFactory({
+    apiVersion: "v2",
+  });
+  const element = simpleElementFactory({
+    apiVersion: "v3",
+  });
+
+  render(
+    <SavingExtensionModal
+      recipe={recipe}
+      element={element}
+      isRecipeEditable
+      close={jest.fn()}
+      saveAsPersonalExtension={jest.fn()}
+      showCreateRecipeModal={jest.fn()}
+      showUpdateRecipeModal={jest.fn()}
+    />
+  );
+
+  expectNoRecipeButtons();
 });

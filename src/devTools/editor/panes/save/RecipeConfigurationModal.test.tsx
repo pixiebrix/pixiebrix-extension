@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { metadataFactory } from "@/tests/factories";
+import { recipeMetadataFactory } from "@/tests/factories";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import RecipeConfigurationModal from "./RecipeConfigurationModal";
@@ -23,7 +23,7 @@ import RecipeConfigurationModal from "./RecipeConfigurationModal";
 test("renders Save as New Blueprint button and editable ID field for a new recipe", () => {
   render(
     <RecipeConfigurationModal
-      initialValues={metadataFactory()}
+      initialValues={recipeMetadataFactory()}
       isNewRecipe
       close={jest.fn()}
       navigateBack={jest.fn()}
@@ -48,7 +48,7 @@ test("renders Save as New Blueprint button and editable ID field for a new recip
 test("renders Update button and disabled ID field when updating recipe", () => {
   render(
     <RecipeConfigurationModal
-      initialValues={metadataFactory()}
+      initialValues={recipeMetadataFactory()}
       isNewRecipe={false}
       close={jest.fn()}
       navigateBack={jest.fn()}

@@ -26,7 +26,7 @@ import useSavingWizard from "./useSavingWizard";
 import {
   formStateFactory,
   menuItemFormStateFactory,
-  metadataFactory,
+  recipeMetadataFactory,
   recipeFactory,
   installedRecipeMetadataFactory,
 } from "@/tests/factories";
@@ -281,7 +281,7 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isSaving).toBe(false);
 
     // Saving with a new Recipe
-    const newRecipeMeta = metadataFactory();
+    const newRecipeMeta = recipeMetadataFactory();
     const savingElementPromise = act(async () =>
       result.current.saveElementAndCreateNewRecipe(newRecipeMeta)
     );
@@ -323,7 +323,7 @@ describe("saving a Recipe Extension", () => {
     });
 
     // Saving with a new Recipe
-    const newRecipeMeta = metadataFactory();
+    const newRecipeMeta = recipeMetadataFactory();
     let creatingRecipePromise: Promise<void>;
     act(() => {
       creatingRecipePromise = result.current.saveElementAndCreateNewRecipe(
@@ -371,7 +371,7 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isSaving).toBe(false);
 
     // Saving with a new Recipe
-    const newRecipeMeta = metadataFactory({ id: recipe.metadata.id });
+    const newRecipeMeta = recipeMetadataFactory({ id: recipe.metadata.id });
     const savingElementPromise = act(async () =>
       result.current.saveElementAndUpdateRecipe(newRecipeMeta)
     );
@@ -412,7 +412,7 @@ describe("saving a Recipe Extension", () => {
     });
 
     // Saving with a new Recipe
-    const newRecipeMeta = metadataFactory();
+    const newRecipeMeta = recipeMetadataFactory();
     let updatingRecipePromise: Promise<void>;
     act(() => {
       updatingRecipePromise = result.current.saveElementAndUpdateRecipe(

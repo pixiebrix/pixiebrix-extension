@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { RecipeDefinition } from "@/types/definitions";
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 
 type OwnProps = {
-  recipeName: string;
-  installedRecipeVersion: string;
-  latestRecipeVersion: string;
+  recipe: RecipeDefinition;
+  element: FormState;
   isRecipeEditable: boolean;
   close: () => void;
   saveAsPersonalExtension: () => void;
@@ -30,9 +31,8 @@ type OwnProps = {
 };
 
 const SavingExtensionModal: React.FC<OwnProps> = ({
-  recipeName,
-  installedRecipeVersion,
-  latestRecipeVersion,
+  recipe,
+  element,
   isRecipeEditable,
   close,
   saveAsPersonalExtension,
@@ -43,7 +43,13 @@ const SavingExtensionModal: React.FC<OwnProps> = ({
   let showNewRecipeButton = false;
   let showUpdateRecipeButton = false;
 
-  if (isRecipeEditable) {
+  const recipeName = recipe.metadata.name;
+  const installedRecipeVersion = element.recipe.version;
+  const latestRecipeVersion = recipe.metadata.version;
+
+  if (recipe.apiVersion !== element.apiVersion) {
+    message = `This extension is part of blueprint ${recipeName}. The API version ${recipe.apiVersion} of the blueprint is not compatible with the current API version ${element.apiVersion} of the extension.`;
+  } else if (isRecipeEditable) {
     if (installedRecipeVersion === latestRecipeVersion) {
       message = `This extension is part of blueprint ${recipeName}, do you want to edit the blueprint, or create a personal extension?`;
       showNewRecipeButton = true;
