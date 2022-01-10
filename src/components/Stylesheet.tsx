@@ -19,7 +19,9 @@ import React, { useState } from "react";
 import { castArray, uniq } from "lodash";
 
 /**
- * Loads one or more stylesheets and hides the content until they're done loading
+ * Loads one or more stylesheets and hides the content until they're done loading.
+ *
+ * Does not support changing the initial href(s)
  */
 export const Stylesheet: React.FC<{ href: string | string[] }> = ({
   href,
@@ -27,6 +29,9 @@ export const Stylesheet: React.FC<{ href: string | string[] }> = ({
 }) => {
   const urls = uniq(castArray(href));
   const [resolved, setResolved] = useState<string[]>([]);
+
+  // `every` returns true for empty arrays
+  const allResolved = urls.every((url) => resolved.includes(url));
 
   return (
     <>
@@ -47,7 +52,7 @@ export const Stylesheet: React.FC<{ href: string | string[] }> = ({
         );
       })}
       {/* Include the DOM to start loading the subresources too */}
-      <div hidden={resolved.length < urls.length}>{children}</div>
+      <div hidden={!allResolved}>{children}</div>
     </>
   );
 };
