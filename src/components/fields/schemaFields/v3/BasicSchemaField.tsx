@@ -203,7 +203,7 @@ function getToggleOptions({
     pushOptions(
       {
         label: "Select...",
-        value: "string",
+        value: "select",
         symbol: <OptionIcon icon="select" />,
         Widget: SchemaSelectWidget,
         interpretValue: () =>
@@ -214,11 +214,8 @@ function getToggleOptions({
       varOption
     );
   }
-  // Using "else" here because we don't want to have both select and plain text
-  // options at the same time. If something has suggestions and allows typing
-  // custom values as well, that will be covered by "creatable" within the
-  // SchemaSelectWidget.
-  else if (fieldSchema.type === "string" || anyType) {
+
+  if (fieldSchema.type === "string" || anyType) {
     pushOptions(
       {
         label: "Text",
