@@ -16,7 +16,7 @@
  */
 
 import React, { useState } from "react";
-import { castArray } from "lodash";
+import { castArray, uniq } from "lodash";
 
 /**
  * Loads one or more stylesheets and hides the content until they're done loading
@@ -25,26 +25,29 @@ export const Stylesheet: React.FC<{ href: string | string[] }> = ({
   href,
   children,
 }) => {
-  const urls = castArray(href);
-  const [remaining, setRemaining] = useState(urls.length);
-  function onLoad() {
-    setRemaining(remaining - 1);
-  }
+  const urls = uniq(castArray(href));
+  const [resolved, setResolved] = useState<string[]>([]);
 
   return (
     <>
-      {urls.map((href, index) => (
-        <link
-          rel="stylesheet"
-          href={href}
-          key={index}
-          onLoad={onLoad}
-          // The content must be shown even if this fails
-          onError={onLoad}
-        />
-      ))}
+      {urls.map((href) => {
+        const resolve = () => {
+          setResolved((prev) => [...prev, href]);
+        };
+
+        return (
+          <link
+            rel="stylesheet"
+            href={href}
+            key={href}
+            onLoad={resolve}
+            // The content must be shown even if this fails
+            onError={resolve}
+          />
+        );
+      })}
       {/* Include the DOM to start loading the subresources too */}
-      <div hidden={remaining > 0}>{children}</div>
+      <div hidden={resolved.length < urls.length}>{children}</div>
     </>
   );
 };
