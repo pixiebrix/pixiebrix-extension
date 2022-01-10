@@ -18,5 +18,5 @@
 export default function activateBrowserActionIcon() {
   // This re-sets the colored manifest icons
   const { icons: path } = chrome.runtime.getManifest();
-  chrome.browserAction.setIcon({ path });
+  (chrome.browserAction ?? chrome.action).setIcon({ path });
 }

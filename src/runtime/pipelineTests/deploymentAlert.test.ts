@@ -27,15 +27,15 @@ import {
 
 // Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
-import * as logging from "@/background/logging";
-import * as telemetry from "@/background/telemetry";
+import * as logging from "@/background/messenger/api";
+import { sendDeploymentAlert } from "@/background/messenger/api";
 import { ApiVersion } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { serializeError } from "serialize-error";
 import { ContextError } from "@/errors";
-jest.mock("@/background/trace");
-jest.mock("@/background/telemetry");
+
+jest.mock("@/background/messenger/api");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
 });
@@ -43,7 +43,7 @@ jest.mock("@/background/telemetry");
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register(echoBlock, contextBlock, throwBlock);
-  (telemetry.sendDeploymentAlert as any).mockReset();
+  (sendDeploymentAlert as any).mockReset();
 });
 
 describe.each([["v1"], ["v2"], ["v3"]])(
@@ -67,7 +67,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       }).rejects.toThrow();
 
       // Not called because the run is not associated with a deployment id
-      expect(telemetry.sendDeploymentAlert).toHaveBeenCalledTimes(0);
+      expect(sendDeploymentAlert).toHaveBeenCalledTimes(0);
     });
 
     test("send deployment alert", async () => {
@@ -96,8 +96,8 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         serializedError = serializeError((error as ContextError).cause);
       }
 
-      expect(telemetry.sendDeploymentAlert).toHaveBeenCalledTimes(1);
-      expect(telemetry.sendDeploymentAlert).toBeCalledWith({
+      expect(sendDeploymentAlert).toHaveBeenCalledTimes(1);
+      expect(sendDeploymentAlert).toBeCalledWith({
         deploymentId,
         data: {
           id: throwBlock.id,

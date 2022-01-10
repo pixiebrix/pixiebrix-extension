@@ -16,7 +16,7 @@
  */
 
 import LazyLocatorFactory from "@/services/locator";
-import { isBackgroundPage } from "webext-detect-page";
+import { isBackground } from "webext-detect-page";
 
 export const locator = new LazyLocatorFactory();
 
@@ -48,7 +48,7 @@ export async function refreshServices(options?: RefreshOptions): Promise<void> {
   }
 }
 
-if (isBackgroundPage()) {
+if (isBackground()) {
   void initLocator().then(() => {
     console.debug("Eagerly initialized service locator");
   });

@@ -20,7 +20,7 @@ import React from "react";
 import ReactShadowRoot from "react-shadow-root";
 import BootstrapStylesheet from "@/blocks/renderers/BootstrapStylesheet";
 import { DocumentViewProps } from "./DocumentViewProps";
-import DocumentContext from "@/components/documentBuilder/DocumentContext";
+import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 
 const DocumentView: React.FC<DocumentViewProps> = ({ body, options }) => (
   // Wrap in a React context provider that passes BlockOptions down to any embedded bricks

@@ -46,11 +46,10 @@ function validationMessage(validation: ExtensionValidationResult) {
   let message = "Invalid Configuration";
   if (validation.notConfigured.length > 0) {
     const services = validation.notConfigured.map((x) => x.serviceId);
-    if (services.length > 1) {
-      message = `You need to select configurations for ${services.join(", ")}`;
-    } else {
-      message = `You need to select a configuration for ${services[0]}`;
-    }
+    message =
+      services.length > 1
+        ? `You need to select configurations for ${services.join(", ")}`
+        : `You need to select a configuration for ${services[0]}`;
   } else if (validation.missingConfiguration.length > 0) {
     const services = validation.missingConfiguration.map((x) => x.serviceId);
     message = `

@@ -15,20 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Icon.module.scss";
 import React, { useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { IconLibrary } from "@/core";
 import getSvgIcon from "@/icons/getSvgIcon";
+import cx from "classnames";
 
-const Icon: React.FunctionComponent<{ icon: string; library: IconLibrary }> = ({
-  icon,
-  library,
-}) => {
+const Icon: React.FunctionComponent<{
+  icon: string;
+  library: IconLibrary;
+  size?: number;
+  className?: string;
+}> = ({ icon, library, size = 16, className }) => {
   const [svg, setSvg] = useState("");
 
   useAsyncEffect(
     async (isMounted) => {
-      const svg = await getSvgIcon({ id: icon, library, size: 16 });
+      const svg = await getSvgIcon({ id: icon, library, size });
       if (!isMounted()) {
         return;
       }
@@ -40,6 +44,7 @@ const Icon: React.FunctionComponent<{ icon: string; library: IconLibrary }> = ({
 
   return (
     <span
+      className={cx(className, styles.root)}
       dangerouslySetInnerHTML={{
         __html: svg,
       }}

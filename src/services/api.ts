@@ -32,6 +32,7 @@ import {
   MarketplaceListing,
   Organization,
   PackageUpsertResponse,
+  PendingInvitation,
   SanitizedAuth,
   UserRole,
 } from "@/types/contract";
@@ -76,6 +77,7 @@ export const appApi = createApi({
     "MarketplaceListings",
     "Recipes",
     "EditablePackages",
+    "Invitations",
   ],
   endpoints: (builder) => ({
     getDatabases: builder.query<Database[], void>({
@@ -228,6 +230,10 @@ export const appApi = createApi({
       },
       invalidatesTags: ["Recipes", "EditablePackages"],
     }),
+    getInvitations: builder.query<PendingInvitation[], void>({
+      query: () => ({ url: "/api/invitations/me", method: "get" }),
+      providesTags: ["Invitations"],
+    }),
   }),
 });
 
@@ -244,4 +250,5 @@ export const {
   useGetEditablePackagesQuery,
   useCreateRecipeMutation,
   useUpdateRecipeMutation,
+  useGetInvitationsQuery,
 } = appApi;

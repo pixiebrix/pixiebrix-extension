@@ -84,15 +84,15 @@ function hasTextNodeChild($element: JQuery): boolean {
     .some((x) => x.nodeType === Node.TEXT_NODE);
 }
 
-function commonAttr($items: JQuery, attr: string) {
+function commonAttribute($items: JQuery, attribute: string) {
   const attributeValues = $items
     .toArray()
-    .map((x) => x.attributes.getNamedItem(attr)?.value);
+    .map((x) => x.attributes.getNamedItem(attribute)?.value);
 
   let unfiltered: string[];
 
   // For classes and rel we take the common values
-  if (MULTI_ATTRS.includes(attr)) {
+  if (MULTI_ATTRS.includes(attribute)) {
     const classNames = attributeValues.map((x) => (x ? x.split(" ") : []));
     unfiltered = intersection(...classNames);
   } else if (uniq(attributeValues).length === 1) {
@@ -102,7 +102,7 @@ function commonAttr($items: JQuery, attr: string) {
     return null;
   }
 
-  const exclude = VALUE_EXCLUDE_PATTERNS.get(attr) ?? [];
+  const exclude = VALUE_EXCLUDE_PATTERNS.get(attribute) ?? [];
 
   const filtered = unfiltered.filter(
     (value) => !exclude.some((regex) => regex.test(value))
@@ -111,7 +111,7 @@ function commonAttr($items: JQuery, attr: string) {
   return filtered.length > 0 ? filtered.join(" ") : null;
 }
 
-function setCommonAttrs($common: JQuery, $items: JQuery) {
+function setCommonAttributes($common: JQuery, $items: JQuery) {
   const { attributes } = $items.get(0);
 
   // Find the common attributes between the elements
@@ -120,7 +120,7 @@ function setCommonAttrs($common: JQuery, $items: JQuery) {
       continue;
     }
 
-    const value = commonAttr($items, name);
+    const value = commonAttribute($items, name);
     if (value != null) {
       if (
         value
@@ -202,7 +202,7 @@ function commonButtonStructure(
   const $common = $(`<${proto.tagName.toLowerCase()}>`);
 
   try {
-    setCommonAttrs($common, $items);
+    setCommonAttributes($common, $items);
   } catch (error) {
     if (error instanceof SkipElement) {
       // Shouldn't happen at the top level
@@ -289,7 +289,7 @@ function commonPanelStructure(
 
   const $common = $(`<${proto.tagName.toLowerCase()}>`);
 
-  setCommonAttrs($common, $items);
+  setCommonAttributes($common, $items);
 
   // Heuristic that assumes tag matches from the beginning
   for (let i = 0; i < proto.children.length; i++) {
@@ -342,7 +342,7 @@ function commonPanelStructure(
 function buildHeader(proto: HTMLElement): [JQuery, boolean] {
   const tag = proto.tagName.toLowerCase();
   const $inferred = $(`<${tag}>`);
-  setCommonAttrs($inferred, $(proto));
+  setCommonAttributes($inferred, $(proto));
 
   let inserted = false;
 
@@ -373,7 +373,7 @@ function buildBody(proto: HTMLElement): [JQuery<HTMLElement | Text>, boolean] {
   }
 
   const $inferred = $(`<${proto.tagName.toLowerCase()}>`);
-  setCommonAttrs($inferred, $(proto));
+  setCommonAttributes($inferred, $(proto));
 
   for (let i = 0; i < proto.children.length; i++) {
     const child = proto.children.item(i) as HTMLElement;
@@ -399,7 +399,7 @@ export function buildSinglePanelElement(
   let bodyInserted = false;
 
   const $inferred = $(`<${proto.tagName.toLowerCase()}>`);
-  setCommonAttrs($inferred, $(proto));
+  setCommonAttributes($inferred, $(proto));
 
   for (let i = 0; i < proto.children.length; i++) {
     const child = proto.children.item(i) as HTMLElement;
@@ -716,7 +716,7 @@ export function inferButtonHTML(
       ($items.is(element) || $items.has(element).length > 0)
     ) {
       if (buttonTag === "input") {
-        const commonType = commonAttr($items, "type") ?? "button";
+        const commonType = commonAttribute($items, "type") ?? "button";
         const inputType = ["submit", "reset"].includes(commonType)
           ? "button"
           : commonType;

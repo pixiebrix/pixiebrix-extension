@@ -52,7 +52,7 @@ import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 
 const { removeExtension } = optionsSlice.actions;
 
-export const InstalledPage: React.FunctionComponent<{
+export const _InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
   push: (path: string) => void;
   onRemove: RemoveAction;
@@ -228,4 +228,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(InstalledPage);
+export default connect(mapStateToProps, mapDispatchToProps)(_InstalledPage);

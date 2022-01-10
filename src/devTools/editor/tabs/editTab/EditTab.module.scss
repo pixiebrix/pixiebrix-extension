@@ -28,10 +28,11 @@
 }
 
 .nodeLayout {
+  position: relative;
   flex-grow: 0;
   flex-shrink: 0;
   height: 100%;
-  width: 170px;
+  width: 200px;
   overflow-y: auto;
   padding-top: 10px;
 }

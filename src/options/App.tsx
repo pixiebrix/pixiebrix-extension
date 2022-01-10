@@ -37,7 +37,7 @@ import { ToastProvider } from "react-toast-notifications";
 import "@/vendors/theme/app/app.scss";
 import AuthContext from "@/auth/AuthContext";
 import { useAsyncState } from "@/hooks/common";
-import Banner from "@/layout/Banner";
+import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
@@ -47,7 +47,7 @@ import { SettingsState } from "@/options/slices";
 import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
 import { AuthState } from "@/core";
-import { initTelemetry } from "@/telemetry/events";
+import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
@@ -55,6 +55,7 @@ import "@/contrib/editors";
 import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import WorkshopPage from "./pages/workshop/WorkshopPage";
+import InvitationBanner from "@/options/pages/InvitationBanner";
 
 // Register the built-in bricks
 registerBuiltinBlocks();
@@ -92,9 +93,10 @@ const Layout = () => {
           <Sidebar />
           <div className="main-panel">
             <ErrorModal />
-            <Banner />
+            <EnvironmentBanner />
             <UpdateBanner />
             <DeploymentBanner />
+            <InvitationBanner />
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>

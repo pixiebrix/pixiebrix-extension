@@ -22,7 +22,7 @@ import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
 import { useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
-import { Alert, Nav, Tab } from "react-bootstrap";
+import { Alert, Button, Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./DataPanel.module.scss";
 import FormPreview from "@/components/formBuilder/FormPreview";
@@ -45,9 +45,10 @@ import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DataTab from "./DataTab";
 import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
-import DocumentPreview from "@/components/documentBuilder/DocumentPreview";
+import DocumentPreview from "@/components/documentBuilder/preview/DocumentPreview";
 import documentBuilderSelectors from "@/devTools/editor/slices/documentBuilderSelectors";
 import { actions as documentBuilderActions } from "@/devTools/editor/slices/documentBuilderSlice";
+import copy from "copy-to-clipboard";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -136,8 +137,7 @@ const DataPanel: React.FC<{
 
   const outputObj: JsonObject =
     record !== undefined && "output" in record
-      ? // eslint-disable-next-line unicorn/no-nested-ternary -- prettier disagrees
-        "outputKey" in record
+      ? "outputKey" in record
         ? { [`@${record.outputKey}`]: record.output }
         : record.output
       : null;
@@ -229,6 +229,14 @@ const DataPanel: React.FC<{
                   visible to developers
                 </div>
                 <JsonTree data={block ?? {}} />
+                <Button
+                  onClick={() => {
+                    copy(JSON.stringify(block, undefined, 2));
+                  }}
+                  size="sm"
+                >
+                  Copy JSON
+                </Button>
               </DataTab>
             </>
           )}
@@ -310,8 +318,7 @@ const DataPanel: React.FC<{
                   />
                 )}
               </ErrorBoundary>
-            ) : // eslint-disable-next-line unicorn/no-nested-ternary -- the style rule conflicts with prettier
-            showBlockPreview ? (
+            ) : showBlockPreview ? (
               <ErrorBoundary>
                 <BlockPreview traceRecord={record} blockConfig={block} />
               </ErrorBoundary>

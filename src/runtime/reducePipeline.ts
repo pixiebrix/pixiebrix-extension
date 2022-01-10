@@ -28,20 +28,17 @@ import {
 import { castArray, isPlainObject } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import {
-  executeInAll,
-  executeInOpener,
-  executeInTarget,
-} from "@/background/executor";
-import { executeBrick } from "@/background/messenger/api";
-import { getLoggingConfig } from "@/background/logging";
-import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
-import { sendDeploymentAlert } from "@/background/telemetry";
+  getLoggingConfig,
+  requestRun,
+  sendDeploymentAlert,
+  traces,
+} from "@/background/messenger/api";
+import { hideNotification, showNotification } from "@/contentScript/notify";
 import { serializeError } from "serialize-error";
-import { HeadlessModeError, RemoteExecutionError } from "@/blocks/errors";
+import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
-import { recordTraceEntry, recordTraceExit } from "@/background/trace";
 import { uuidv4 } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
@@ -59,6 +56,7 @@ import {
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { UnknownObject } from "@/types";
+import { RunBlock } from "@/contentScript/executor";
 
 type CommonOptions = ApiVersionOptions & {
   /**
@@ -217,31 +215,27 @@ async function execute(
     messageContext: options.logger.context,
   };
 
+  const request: RunBlock = {
+    blockId: config.id,
+    blockArgs: args,
+    options: commonOptions,
+  };
+
   switch (config.window ?? "self") {
     case "opener": {
-      return executeInOpener(config.id, args, commonOptions);
+      return requestRun.inOpener(request);
     }
 
     case "target": {
-      return executeInTarget(config.id, args, commonOptions);
+      return requestRun.inTarget(request);
     }
 
     case "broadcast": {
-      return executeInAll(config.id, args, commonOptions);
+      return requestRun.inAll(request);
     }
 
     case "remote": {
-      const { data, error } = (
-        await executeBrick.onServer(config.id, args)
-      ).data;
-      if (error) {
-        throw new RemoteExecutionError(
-          "Error while executing brick remotely",
-          error
-        );
-      }
-
-      return data;
+      return requestRun.onServer(request);
     }
 
     case "self": {
@@ -335,7 +329,7 @@ async function renderBlockArg(
     );
   }
 
-  void recordTraceEntry({
+  traces.addEntry({
     ...selectTraceRecordMeta(resolvedConfig, options),
     timestamp: new Date().toISOString(),
     templateContext: state.context as JsonObject,
@@ -370,13 +364,13 @@ export async function runBlock(
     await throwIfInvalidInput(block, props.args);
   }
 
-  let progressCallbacks: NotificationCallbacks;
+  let notification: string;
 
   if (stage.notifyProgress) {
-    progressCallbacks = notifyProgress(
-      logger.context.extensionId,
-      stage.label ?? block.name
-    );
+    notification = showNotification({
+      message: stage.label ?? block.name,
+      type: "loading",
+    });
   }
 
   if (type === "renderer" && headless) {
@@ -393,8 +387,8 @@ export async function runBlock(
     const validatedProps = (props as unknown) as BlockProps<BlockArg>;
     return await execute(resolvedConfig, validatedProps, options);
   } finally {
-    if (progressCallbacks) {
-      progressCallbacks.hide();
+    if (stage.notifyProgress) {
+      hideNotification(notification);
     }
   }
 }
@@ -486,7 +480,7 @@ export async function blockReducer(
     });
   }
 
-  void recordTraceExit({
+  traces.addExit({
     runId,
     extensionId: logger.context.extensionId,
     blockId: blockConfig.id,
@@ -548,7 +542,7 @@ async function throwBlockError(
     throw error;
   }
 
-  void recordTraceExit({
+  traces.addExit({
     runId,
     extensionId: logger.context.extensionId,
     blockId: blockConfig.id,
@@ -560,7 +554,7 @@ async function throwBlockError(
     // An affordance to send emails to allow for manual process recovery if a step fails (e.g., an API call to a
     // transaction queue fails)
     if (logger.context.deploymentId) {
-      void sendDeploymentAlert({
+      sendDeploymentAlert({
         deploymentId: logger.context.deploymentId,
         data: {
           id: blockConfig.id,

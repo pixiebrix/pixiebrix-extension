@@ -21,9 +21,8 @@ import { deferBlock, simpleInput, testOptions } from "./pipelineTestHelpers";
 
 // Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
-import * as logging from "@/background/logging";
+import * as logging from "@/background/messenger/api";
 
-jest.mock("@/background/trace");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
 });
@@ -34,7 +33,36 @@ beforeEach(() => {
 });
 
 describe("apiVersion: v3", () => {
-  test("run block with defer arg", async () => {
+  const deferred = {
+    __type__: "defer",
+    __value__: {
+      __type__: "mustache",
+      __value__: "{{ @element }} - {{ @input.value }}",
+    },
+  };
+
+  test("deferBlock renders top-level deferred block", async () => {
+    const pipeline = {
+      id: deferBlock.id,
+      config: {
+        array: [1, 2],
+        element: deferred,
+      },
+    };
+
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({ value: 42 }),
+      testOptions("v3")
+    );
+    expect(result).toStrictEqual([
+      // The deferBlock is set up to look for !defer expression as the top level expression
+      "1 - 42",
+      "2 - 42",
+    ]);
+  });
+
+  test("deferBlock only renders top-level deferred block", async () => {
     const pipeline = {
       id: deferBlock.id,
       config: {
@@ -44,24 +72,20 @@ describe("apiVersion: v3", () => {
             __type__: "mustache",
             __value__: "{{ @element }} - {{ @input.value }}",
           },
-          deferred: {
-            __type__: "defer",
-            __value__: {
-              __type__: "mustache",
-              __value__: "{{ @element }} - {{ @input.value }}",
-            },
-          },
+          deferred,
         },
       },
     };
+
     const result = await reducePipeline(
       pipeline,
       simpleInput({ value: 42 }),
       testOptions("v3")
     );
     expect(result).toStrictEqual([
-      { immediate: " - 42", deferred: "1 - 42" },
-      { immediate: " - 42", deferred: "2 - 42" },
+      // The deferBlock is set up to look for !defer expression as the top level expression
+      { immediate: " - 42", deferred },
+      { immediate: " - 42", deferred },
     ]);
   });
 });

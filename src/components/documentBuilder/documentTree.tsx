@@ -16,16 +16,19 @@
  */
 
 import React from "react";
-import BlockPipeline from "@/components/documentBuilder/DocumentBlock";
-import { isExpression, isPipelineExpression } from "@/runtime/mapArgs";
+import BlockElement from "@/components/documentBuilder/render/BlockElement";
+import { isPipelineExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import { get } from "lodash";
 import { Card, Col, Container, Row } from "react-bootstrap";
-import { DocumentComponent, DocumentElement } from "./documentBuilderTypes";
-import DocumentButton from "@/components/documentBuilder/DocumentButton";
-import useNotifications from "@/hooks/useNotifications";
-import documentTreeStyles from "./documentTree.module.scss";
-import cx from "classnames";
+import {
+  BuildDocumentBranch,
+  DocumentComponent,
+  DocumentElement,
+} from "./documentBuilderTypes";
+import ButtonElement from "@/components/documentBuilder/render/ButtonElement";
+import ListElement from "@/components/documentBuilder/render/ListElement";
+import { BusinessError } from "@/errors";
 
 const headerComponents = {
   header_1: "h1",
@@ -41,12 +44,14 @@ const gridComponents = {
 
 const UnknownType: React.FC<{ componentType: string }> = ({
   componentType,
-}) => <span>Unknown type: {componentType}</span>;
+}) => (
+  <div className="text-danger">Unknown component type: {componentType}</div>
+);
 
 export function getComponentDefinition(
   element: DocumentElement
 ): DocumentComponent {
-  const componentType = String(element.type);
+  const componentType = element.type;
   const config = get(element, "config", {} as UnknownObject);
 
   switch (componentType) {
@@ -95,16 +100,21 @@ export function getComponentDefinition(
       };
     }
 
-    case "block": {
+    case "pipeline": {
       const { pipeline } = config;
+
       if (typeof pipeline !== "undefined" && !isPipelineExpression(pipeline)) {
-        throw new Error("Expected pipeline expression for pipeline");
+        console.debug("Expected pipeline expression for pipeline", {
+          componentType: "pipeline",
+          config,
+        });
+        throw new BusinessError("Expected pipeline expression for pipeline");
       }
 
       return {
-        Component: BlockPipeline,
+        Component: BlockElement,
         props: {
-          pipeline: pipeline?.__value__,
+          pipeline: pipeline.__value__,
         },
       };
     }
@@ -112,16 +122,34 @@ export function getComponentDefinition(
     case "button": {
       const { title, onClick, ...props } = config;
       if (typeof onClick !== "undefined" && !isPipelineExpression(onClick)) {
-        throw new Error("Expected pipeline expression for onClick");
+        console.debug("Expected pipeline expression for onClick", {
+          componentType: "button",
+          config,
+        });
+        throw new BusinessError("Expected pipeline expression for onClick");
       }
 
       return {
-        Component: DocumentButton,
+        Component: ButtonElement,
         props: {
           children: title,
-          onClick: onClick?.__value__,
+          onClick: onClick.__value__,
           ...props,
         },
+      };
+    }
+
+    case "list": {
+      const props = {
+        array: config.array,
+        elementKey: config.elementKey,
+        config: config.element,
+        buildDocumentBranch,
+      };
+
+      return {
+        Component: ListElement,
+        props,
       };
     }
 
@@ -134,150 +162,14 @@ export function getComponentDefinition(
   }
 }
 
-type PreviewComponentProps = {
-  className?: string;
-  onClick: React.MouseEventHandler<HTMLDivElement>;
-  onMouseEnter: React.MouseEventHandler<HTMLDivElement>;
-  onMouseLeave: React.MouseEventHandler<HTMLDivElement>;
-};
-
-export function getPreviewComponentDefinition(
-  element: DocumentElement
-): DocumentComponent {
-  const componentType = String(element.type);
-  const config = get(element, "config", {} as UnknownObject);
-
-  switch (componentType) {
-    case "header_1":
-    case "header_2":
-    case "header_3": {
-      const { title } = config;
-      if (isExpression(title)) {
-        const previewElement = {
-          ...element,
-          config: {
-            ...config,
-            title: title.__value__,
-          },
-        };
-        return getComponentDefinition(previewElement);
-      }
-
-      return getComponentDefinition(element);
-    }
-
-    case "text": {
-      const { text } = config;
-      if (isExpression(text)) {
-        const previewElement = {
-          ...element,
-          config: {
-            ...config,
-            text: text.__value__,
-          },
-        };
-        return getComponentDefinition(previewElement);
-      }
-
-      return getComponentDefinition(element);
-    }
-
-    case "container":
-    case "row":
-    case "column": {
-      const { Component, props } = getComponentDefinition(element);
-      props.className = cx(props.className, documentTreeStyles.container);
-
-      if (!element.children?.length) {
-        props.children = <span className="text-muted">{componentType}</span>;
-      }
-
-      return { Component, props };
-    }
-
-    case "card": {
-      let { heading } = config;
-      if (isExpression(heading)) {
-        heading = heading.__value__;
-      }
-
-      const previewElement = {
-        ...element,
-        config: {
-          ...config,
-          heading,
-          bodyProps: { className: documentTreeStyles.container },
-        },
-      };
-
-      const { Component, props } = getComponentDefinition(previewElement);
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        children,
-        ...restPreviewProps
-      }) => (
-        <div {...restPreviewProps}>
-          <Component {...props}>{children}</Component>
-        </div>
-      );
-
-      return { Component: PreviewComponent };
-    }
-
-    case "block": {
-      const pipeline = get(element, "config.pipeline", "");
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        className,
-        ...restPreviewProps
-      }) => (
-        <div className={cx(className)} {...restPreviewProps}>
-          <h3>Block</h3>
-          <p>{pipeline}</p>
-        </div>
-      );
-
-      return { Component: PreviewComponent };
-    }
-
-    case "button": {
-      const { Component, props } = getComponentDefinition(element);
-      const PreviewComponent: React.FC<PreviewComponentProps> = ({
-        className,
-        ...restPreviewProps
-      }) => {
-        const notify = useNotifications();
-        return (
-          <div>
-            <div
-              className={cx(className, documentTreeStyles.inlineWrapper)}
-              {...restPreviewProps}
-            >
-              <Component
-                {...props}
-                onClick={() => {
-                  notify.info("Action button clicked.");
-                }}
-              />
-            </div>
-          </div>
-        );
-      };
-
-      return { Component: PreviewComponent };
-    }
-
-    default:
-      return getComponentDefinition(element);
-  }
-}
-
-export function buildDocumentBranch(root: DocumentElement): DocumentComponent {
+export const buildDocumentBranch: BuildDocumentBranch = (root) => {
   const componentDefinition = getComponentDefinition(root);
   if (root.children?.length > 0) {
-    componentDefinition.props.children = root.children.map((child, i) => {
+    componentDefinition.props.children = root.children.map((child, index) => {
       const { Component, props } = buildDocumentBranch(child);
-      return <Component key={i} {...props} />;
+      return <Component key={index} {...props} />;
     });
   }
 
   return componentDefinition;
-}
+};

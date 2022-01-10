@@ -17,7 +17,7 @@
 
 import pTimeout from "p-timeout";
 import browser, { Menus, Tabs } from "webextension-polyfill";
-import { isBackgroundPage } from "webext-detect-page";
+import { isBackground } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { noop } from "lodash";
 import {
@@ -94,20 +94,19 @@ async function dispatchMenu(
     });
     void showNotification(target, {
       message: "Ran content menu item action",
-      className: "success",
+      type: "success",
     });
   } catch (error) {
     if (hasCancelRootCause(error)) {
       void showNotification(target, {
         message: "The action was cancelled",
-        className: "info",
       });
     } else {
       const message = `Error handling context menu action: ${getErrorMessage(
         error
       )}`;
       reportError(new Error(message));
-      void showNotification(target, { message, className: "error" });
+      void showNotification(target, { message, type: "error" });
     }
   }
 }
@@ -242,7 +241,7 @@ export async function ensureContextMenu({
   }
 }
 
-if (isBackgroundPage()) {
+if (isBackground()) {
   browser.contextMenus.onClicked.addListener(menuListener);
   console.debug("Attached context menu listener");
 }

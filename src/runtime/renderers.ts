@@ -26,7 +26,9 @@ const hyphenRegex = /-/gi;
 export type Renderer = (template: string, context: unknown) => unknown;
 
 const ensureNunjucks = once(async () => {
-  const { default: nunjucks } = await import("nunjucks");
+  const { default: nunjucks } = await import(
+    /* webpackChunkName: "nunjucks" */ "nunjucks"
+  );
   return nunjucks;
 });
 
@@ -71,7 +73,9 @@ export async function engineRenderer(
     }
 
     case "handlebars": {
-      const { default: handlebars } = await import("handlebars");
+      const { default: handlebars } = await import(
+        /* webpackChunkName: "handlebars" */ "handlebars"
+      );
       return (template, ctxt) => {
         const compiledTemplate = handlebars.compile(template, {
           noEscape: !autoescape,

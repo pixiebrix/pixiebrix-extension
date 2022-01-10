@@ -17,20 +17,15 @@
 
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
-import { isContentScript } from "webext-detect-page";
-
-// TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
-if (isContentScript() && process.env.DEBUG) {
-  console.warn(
-    "This should not have been imported in the content script. Use the API directly instead."
-  );
-}
 
 export const getFormDefinition = getMethod("FORM_GET_DEFINITION");
 export const resolveForm = getMethod("FORM_RESOLVE");
 export const cancelForm = getMethod("FORM_CANCEL");
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");
+export const resetTab = getNotifier("RESET_TAB");
+
+export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
 export const toggleActionPanel = getMethod("TOGGLE_ACTION_PANEL");
 export const showActionPanel = getMethod("SHOW_ACTION_PANEL");
@@ -59,9 +54,10 @@ export const checkAvailable = getMethod("CHECK_AVAILABLE");
 export const handleNavigate = getNotifier("HANDLE_NAVIGATE");
 export const showNotification = getMethod("SHOW_NOTIFICATION");
 export const linkChildTab = getNotifier("LINK_CHILD_TAB");
-export const runBlockInContentScript = getMethod("RUN_BLOCK");
+export const runBrick = getMethod("RUN_BRICK");
 export const cancelSelect = getMethod("CANCEL_SELECT_ELEMENT");
 export const selectElement = getMethod("SELECT_ELEMENT");
 
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runEffectPipeline = getMethod("RUN_EFFECT_PIPELINE");
+export const runMapArgs = getMethod("RUN_MAP_ARGS");

@@ -37,7 +37,7 @@ const expressionTypes: ExpressionType[] = [
   "defer",
 ];
 
-type Args = string | UnknownObject | UnknownObject[];
+export type Args = string | UnknownObject | UnknownObject[];
 
 /**
  * Returns true if value represents an explicit expression
@@ -55,10 +55,23 @@ export function isExpression(value: unknown): value is Expression<unknown> {
   return false;
 }
 
+export type PipelineExpression = Expression<BlockPipeline, "pipeline">;
+
 export function isPipelineExpression(
   value: unknown
-): value is Expression<BlockPipeline, "pipeline"> {
+): value is PipelineExpression {
   return isExpression(value) && value.__type__ === "pipeline";
+}
+
+export type DeferExpression<TValue = UnknownObject> = Expression<
+  TValue,
+  "defer"
+>;
+
+export function isDeferExpression<TValue = UnknownObject>(
+  value: unknown
+): value is DeferExpression<TValue> {
+  return isExpression(value) && value.__type__ === "defer";
 }
 
 /**
@@ -88,9 +101,10 @@ export async function renderExplicit(
     return render(config.__value__, ctxt);
   }
 
-  if (isExpression(config) && ["pipeline", "defer"].includes(config.__type__)) {
-    // Pipelines are passed through directly
-    return config.__value__;
+  if (isPipelineExpression(config) || isDeferExpression(config)) {
+    // Pipeline and defer are not rendered. The brick that consumes the configuration is responsible for rendering
+    // the value. We keep the expression type so that the brick has enough information to determine the expression type
+    return config;
   }
 
   // Array.isArray must come before the object check because arrays are objects
@@ -180,7 +194,9 @@ export function renderImplicit(
   return config;
 }
 
-type MapOptions = {
+// We're intentionally forcing all properties to be provided to eliminate mistakes where a call site is not updated
+// when we introduce a new option
+export type MapOptions = {
   /**
    * Render method for v1-v2 implicit runtime behavior
    */
@@ -198,7 +214,9 @@ type MapOptions = {
 export async function mapArgs(
   config: Args,
   ctxt: UnknownObject,
-  { implicitRender = null, autoescape = true }: MapOptions
+  // We're intentionally forcing callers to provide options here because the options should always depend on the
+  // `apiVersion` of the block/extensionPoint/blueprint that mapArgs is being called from
+  { implicitRender, autoescape }: MapOptions
 ): Promise<unknown> {
   if (implicitRender) {
     return renderImplicit(config, ctxt, implicitRender);

@@ -92,6 +92,53 @@ describe("handlebars", () => {
   });
 });
 
+describe("identity - deep clone", () => {
+  const config = {
+    filter: {
+      operator: "and",
+      operands: [
+        {
+          operator: "or",
+          operands: [
+            {
+              operator: "substring",
+              field: "process",
+              value: "Email Proof of Funds",
+            },
+          ],
+        },
+      ],
+    },
+    sort: {
+      field: "id",
+      direction: "desc",
+    },
+    page: {
+      offset: 0,
+      length: 80,
+    },
+  };
+
+  test("deep clone object/arrays", async () => {
+    const rendered = await renderExplicit(config, {}, apiVersionOptions("v3"));
+
+    expect(rendered).toEqual(config);
+  });
+
+  test("deep clone complex var", async () => {
+    const rendered = await renderExplicit(
+      {
+        __type__: "var",
+        __value__: "@payload",
+      },
+      { "@payload": config },
+      apiVersionOptions("v3")
+    );
+
+    expect(rendered).toEqual(config);
+  });
+});
+
 describe("defer", () => {
   test("render !defer stops at defer", async () => {
     const config = {
@@ -114,7 +161,10 @@ describe("defer", () => {
     );
 
     expect(rendered).toEqual({
-      foo: config,
+      foo: {
+        __type__: "defer",
+        __value__: config,
+      },
       bar: { foo: 42 },
     });
   });
@@ -122,19 +172,21 @@ describe("defer", () => {
 
 describe("pipeline", () => {
   test("render !pipeline", async () => {
+    const expression = {
+      __type__: "pipeline",
+      __value__: [{ id: "@pixiebrix/confetti" }],
+    };
+
     const rendered = await renderExplicit(
       {
-        foo: {
-          __type__: "pipeline",
-          __value__: [{ id: "@pixiebrix/confetti" }],
-        },
+        foo: expression,
       },
       { array: ["bar"] },
       { autoescape: false }
     );
 
     expect(rendered).toEqual({
-      foo: [{ id: "@pixiebrix/confetti" }],
+      foo: expression,
     });
   });
 
@@ -164,7 +216,10 @@ describe("pipeline", () => {
     );
 
     expect(rendered).toEqual({
-      foo: [{ id: "@pixiebrix/confetti", config }],
+      foo: {
+        __type__: "pipeline",
+        __value__: [{ id: "@pixiebrix/confetti", config }],
+      },
       bar: { foo: 42 },
     });
   });

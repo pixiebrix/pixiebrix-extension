@@ -16,125 +16,74 @@
  */
 
 .root {
-  display: inline-flex;
-  flex-direction: column;
-  border: none;
-  background: none;
-  align-items: center;
-}
-
-.activeNode {
-  color: #fff;
-  background-color: #b66dff;
-}
-
-.button {
-  border: none;
-  &:not(.activeNode) {
-    background-color: #dedede;
-  }
-
-  &:hover {
-    color: #fff;
-    background-color: #c58aff;
-  }
-
-  &:active {
-    color: #fff;
-    background-color: #b66dff;
-  }
-
-  // Disable hover state
-  &[disabled] {
-    background-color: #dedede55;
-    pointer-events: none;
-  }
-}
-
-.buttonRow {
+  $borderWidth: 1px;
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  font-size: 0.875rem;
+  padding: 20px 10px;
+  padding-right: 0;
 }
 
-.moveButtons {
+.icon {
   display: flex;
-  width: 26px;
-  flex-direction: column;
-  margin-left: 6px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  place-items: center;
+  place-content: center;
+  width: 1.2em;
+  margin-right: 10px;
+  font-size: 1.65em;
 
-  > button {
-    border-radius: 4px;
-
-    &:first-child {
-      margin-bottom: 2px;
-    }
+  // External icon
+  img {
+    // !important is to override the inline CSS
+    width: 1.2em !important;
+    height: 1.2em !important;
   }
-}
-
-.nodeButton {
-  display: flex;
-  flex-direction: column;
-  border-radius: 20%;
-  width: 60px;
-  height: 60px;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.mutedNode {
-  border: 2px dashed #6c757d;
-  color: #6c757d;
-}
-
-.title {
-  text-align: center;
-  vertical-align: top;
-  margin-bottom: 0.25rem;
-  max-width: 120px;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-}
-
-.outputKey {
-  font-family: monospace;
-  max-width: 120px;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-  vertical-align: top;
-  margin-top: 0.25rem;
-}
-
-.addRightMargin {
-  margin-right: 36px; // move-buttons width + left margin
+  svg {
+    font-size: inherit;
+  }
 }
 
 .errorBadge {
-  position: absolute;
-  right: 0;
-  top: 0;
-  transform: translate3d(50%, -50%, 0);
-  width: 24px;
-  height: 24px;
-
-  & > svg {
-    height: 24px;
-    width: 24px !important;
+  width: 0;
+  img {
+    font-size: 0.7em;
+    transform: translate(-0.7em, -0.8em);
   }
 }
-.exclamationBackground {
-  display: inline-block;
-  background: #ffffff;
-  height: 18px;
-  margin-top: 4px;
-  width: 6px;
+
+.text {
+  line-height: 1.2;
 }
-.warningBadgeBackground {
-  color: #efa31d;
+.outputKey {
+  margin-top: 0.4em;
+  font-size: 0.9em !important;
+  font-family: monospace;
 }
-.errorBadgeBackground {
-  color: #fc3939;
+.moveButtons {
+  margin-left: auto;
+}
+
+.moveButton {
+  border: none;
+  background: none;
+  color: inherit;
+  display: block;
+  padding: 0.4em;
+  svg {
+    display: block;
+  }
+
+  &:enabled:hover {
+    background-color: #0002;
+
+    .activeNode & {
+      background-color: #fff6;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }

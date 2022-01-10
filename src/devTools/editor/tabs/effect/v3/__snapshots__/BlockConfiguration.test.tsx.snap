@@ -43,6 +43,7 @@ exports[`renders 1`] = `
               </div>
               <div
                 class="dropdown dropdown"
+                data-test-selected="Text"
                 data-testid="toggle-extension.blockPipeline[0].config.message"
               >
                 <button
@@ -54,7 +55,9 @@ exports[`renders 1`] = `
                   <span
                     class="symbol"
                   >
-                    Abc
+                    <svg
+                      class="root"
+                    />
                   </span>
                 </button>
               </div>

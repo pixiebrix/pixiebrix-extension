@@ -32,6 +32,7 @@ import {
   pickBy,
   isPlainObject,
   compact,
+  unary,
 } from "lodash";
 import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
@@ -112,11 +113,11 @@ export async function resolveObj<T>(
  */
 export async function asyncMapValues<T, TResult>(
   mapping: T,
-  func: ObjectIterator<T, Promise<TResult>>
+  fn: ObjectIterator<T, Promise<TResult>>
 ): Promise<{ [K in keyof T]: TResult }> {
   const entries = Object.entries(mapping);
   const values = await Promise.all(
-    entries.map(async ([key, value]) => func(value, key, mapping))
+    entries.map(async ([key, value]) => fn(value, key, mapping))
   );
   return Object.fromEntries(
     zip(entries, values).map(([[key], value]) => [key, value])
@@ -162,12 +163,12 @@ export async function awaitValue<T>(
   throw new TimeoutError(`Value not found after ${waitMillis} milliseconds`);
 }
 
-export function isPrimitive(val: unknown): val is Primitive {
-  if (typeof val === "object") {
-    return val === null;
+export function isPrimitive(value: unknown): value is Primitive {
+  if (typeof value === "object") {
+    return value === null;
   }
 
-  return typeof val !== "function";
+  return typeof value !== "function";
 }
 
 /**
@@ -246,23 +247,27 @@ export function clearObject(obj: Record<string, unknown>): void {
  */
 export function cleanValue(
   value: unknown[],
-  maxDepth?: number,
+  maxDepth?: number | undefined,
   depth?: number
 ): unknown[];
 export function cleanValue(
   value: Record<string, unknown>,
-  maxDepth?: number,
+  maxDepth?: number | undefined,
   depth?: number
 ): Record<string, unknown>;
 export function cleanValue(
   value: unknown,
-  maxDepth?: number,
+  maxDepth?: number | undefined,
   depth?: number
 ): unknown;
-export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
+export function cleanValue(
+  value: unknown,
+  maxDepth: number | undefined,
+  depth = 0
+): unknown {
   const recurse = partial(cleanValue, partial.placeholder, maxDepth, depth + 1);
 
-  if (depth > maxDepth) {
+  if (maxDepth != null && depth > maxDepth) {
     return undefined;
   }
 
@@ -358,14 +363,14 @@ export function evaluableFunction(
  * Lift a unary function to pass through null/undefined.
  */
 export function optional<T extends (arg: unknown) => unknown>(
-  func: T
+  fn: T
 ): (arg: null | Parameters<T>[0]) => ReturnType<T> | null {
   return (arg: Parameters<T>[0]) => {
     if (arg == null) {
       return null;
     }
 
-    return func(arg) as ReturnType<T>;
+    return fn(arg) as ReturnType<T>;
   };
 }
 
@@ -498,4 +503,12 @@ export async function runInMillis<TResult>(
   }
 
   return value as TResult;
+}
+
+/** Loop an iterable with the ability to place `await` in the loop itself */
+export async function asyncLoop<Item>(
+  iterable: Iterable<Item>,
+  iteratee: (item: Item) => Promise<void>
+): Promise<void> {
+  await Promise.all([...iterable].map(unary(iteratee)));
 }

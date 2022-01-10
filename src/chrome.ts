@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pDefer from "p-defer";
-import pTimeout from "p-timeout";
 import { isExtensionContext } from "webext-detect-page";
-import browser, { Runtime } from "webextension-polyfill";
+import browser from "webextension-polyfill";
 import { forbidContext } from "@/utils/expectContext";
 import { JsonValue } from "type-fest";
 
@@ -75,41 +73,8 @@ export function getChromeExtensionId(): string {
   );
 }
 
-/**
- * Connect to the background page and throw real errors if the connection fails.
- * NOTE: To determine whether the connection was successful, the background page
- * needs to send one message back within a second.
- * */
-export async function runtimeConnect(name: string): Promise<Runtime.Port> {
-  forbidContext("background");
-
-  const { resolve, reject, promise: connectionPromise } = pDefer();
-
-  const onDisconnect = () => {
-    // If the connection fails, the error will only be available on this callback
-    // TODO: Also handle port.error in Firefox https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/Port#type
-    const message =
-      chrome.runtime.lastError?.message ??
-      "There was an error while connecting to the runtime";
-    reject(new Error(message));
-  };
-
-  const port = browser.runtime.connect(null, { name });
-  port.onMessage.addListener(resolve); // Any message is accepted
-  port.onDisconnect.addListener(onDisconnect);
-
-  try {
-    // The timeout is to avoid hanging if the background isn't set up to respond immediately
-    await pTimeout(
-      connectionPromise,
-      1000,
-      "The background page hasn’t responded in time"
-    );
-    return port;
-  } finally {
-    port.onMessage.removeListener(resolve);
-    port.onDisconnect.removeListener(onDisconnect);
-  }
+export async function getExtensionVersion() {
+  return browser.runtime.getManifest().version;
 }
 
 export class RuntimeNotFoundError extends Error {
@@ -117,38 +82,6 @@ export class RuntimeNotFoundError extends Error {
     super(message);
     this.name = "RuntimeNotFoundError";
   }
-}
-
-/**
- * Read from `browser.storage.local`, updating the value to be stored as an object instead of a JSON-stringified value
- *
- * WARNING: this method will convert string numbers, e.g., "42" to the the corresponding number. So this method is
- * not safe to use with storage holding primitive user-defined data.
- *
- * @deprecated Use `readStorage` instead
- * @see readStorage
- */
-export async function readStorageWithMigration<T = unknown>(
-  storageKey: ManualStorageKey,
-  defaultValue: T
-): Promise<T | undefined> {
-  const storedValue = await readStorage<T>(storageKey, defaultValue);
-  if (typeof storedValue !== "string") {
-    // No migration necessary
-    return storedValue;
-  }
-
-  let parsedValue: T;
-
-  try {
-    parsedValue = JSON.parse(storedValue) as T;
-    await browser.storage.local.set({ [storageKey]: parsedValue });
-  } catch {
-    // If it's not a valid JSON-string we must be working with a value that's already been migrated
-    parsedValue = storedValue;
-  }
-
-  return parsedValue;
 }
 
 export async function readStorage<T = unknown>(

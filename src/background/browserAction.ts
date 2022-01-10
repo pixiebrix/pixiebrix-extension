@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBackgroundPage } from "webext-detect-page";
+import { isBackground } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import browser, { Tabs } from "webextension-polyfill";
 import { safeParseUrl } from "@/utils";
-import { emitDevtools } from "@/background/devtools/internal";
 import { toggleActionPanel } from "@/contentScript/messenger/api";
+import { updateDevTools } from "@/devTools/messenger/api";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAME_NOTIFICATION`;
@@ -50,10 +50,7 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
     });
 
     // Inform editor that it now has the ActiveTab permission, if it's open
-    emitDevtools("HistoryStateUpdate", {
-      tabId: tab.id,
-      frameId: TOP_LEVEL_FRAME_ID,
-    });
+    updateDevTools({ page: `/devtoolsPanel.html?tabId=${tab.id}` });
   } catch (error) {
     await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
     console.error(error);
@@ -61,7 +58,7 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   }
 }
 
-if (isBackgroundPage()) {
-  browser.browserAction.onClicked.addListener(handleBrowserAction);
-  console.debug("Installed browserAction click listener");
+if (isBackground()) {
+  const action = browser.browserAction ?? browser.action;
+  action.onClicked.addListener(handleBrowserAction);
 }

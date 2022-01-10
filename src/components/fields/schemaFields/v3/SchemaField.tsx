@@ -17,12 +17,20 @@
 
 import React from "react";
 import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
-import { isServiceField } from "@/components/fields/schemaFields/v1/ServiceField";
 import BasicSchemaField from "@/components/fields/schemaFields/v3/BasicSchemaField";
-import ServiceField from "@/components/fields/schemaFields/v3/ServiceField";
+import ServiceField, {
+  isServiceField,
+} from "@/components/fields/schemaFields/v3/ServiceField";
+import AppServiceField, {
+  isAppServiceField,
+} from "@/components/fields/schemaFields/AppServiceField";
 
 const SchemaField: SchemaFieldComponent = (props) => {
   const { schema } = props;
+
+  if (isAppServiceField(schema)) {
+    return <AppServiceField {...props} />;
+  }
 
   if (isServiceField(schema)) {
     return <ServiceField {...props} />;

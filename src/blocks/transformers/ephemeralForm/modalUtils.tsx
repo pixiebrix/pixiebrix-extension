@@ -33,6 +33,7 @@ export function showModal(url: URL, signal: AbortSignal): void {
     >
       <iframe
         src={url.href}
+        title="Modal content"
         style={{
           border: "0",
           flexGrow: 1, // Fit dialog

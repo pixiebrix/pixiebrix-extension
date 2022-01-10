@@ -15,18 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ReactDOM from "react-dom";
-import React from "react";
-
-import Panel from "@/devTools/Panel";
-
-import "@/telemetry/reportUncaughtErrors";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@/vendors/overrides.scss";
 import "@/devTools/Panel.scss";
 
+import "@/development/darkMode";
+import "@/telemetry/reportUncaughtErrors";
+import "@/devTools/messenger/registration";
+
+import ReactDOM from "react-dom";
+import React from "react";
+import Panel from "@/devTools/Panel";
+import { watchNavigation } from "@/devTools/protocol";
 import initGoogle from "@/contrib/google/initGoogle";
 
 initGoogle();
+watchNavigation();
 
 ReactDOM.render(<Panel />, document.querySelector("#container"));

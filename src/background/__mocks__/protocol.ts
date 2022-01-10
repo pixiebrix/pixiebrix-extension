@@ -47,7 +47,7 @@ export function liftBackground<
       throw new Error("background notifications not implemented");
     }
 
-    (detect.isBackgroundPage as any).mockReturnValue(true);
+    (detect.isBackground as any).mockReturnValue(true);
 
     try {
       let handlerResult: unknown;
@@ -65,7 +65,7 @@ export function liftBackground<
 
       return handlerResult as R;
     } finally {
-      (detect.isBackgroundPage as any).mockReturnValue(false);
+      (detect.isBackground as any).mockReturnValue(false);
     }
   };
 }

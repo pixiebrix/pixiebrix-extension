@@ -41,7 +41,7 @@ export class MarkdownRenderer extends Renderer {
   );
 
   async render({ markdown }: BlockArg): Promise<SafeHTML> {
-    const { marked } = await import("marked");
+    const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
     return sanitize(marked(markdown));
   }
 }

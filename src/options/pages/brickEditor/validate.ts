@@ -69,7 +69,7 @@ export async function validateSchema(
   }
 
   if (!validation.valid) {
-    console.log("Validation results", validation.errors);
+    console.debug("Validation results", validation.errors);
     return {
       config: validation.errors.map((x) => `${x.instanceLocation}: ${x.error}`),
     };

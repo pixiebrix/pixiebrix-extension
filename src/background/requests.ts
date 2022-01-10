@@ -94,6 +94,12 @@ interface SanitizedResponse<T = unknown> {
 export async function doCleanAxiosRequest<T>(
   config: AxiosRequestConfig
 ): Promise<SanitizedResponse<T>> {
+  // Network requests must go through background page for permissions/CORS to work properly
+  expectContext(
+    "background",
+    "Network requests must be made from the background page"
+  );
+
   try {
     const { data, status, statusText } = await axios(config);
 
@@ -225,7 +231,7 @@ async function proxyRequest<T>(
 
 const UNAUTHORIZED_STATUS_CODES = [401, 403];
 
-export async function _proxyService(
+async function _proxyService(
   serviceConfig: SanitizedServiceConfiguration,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse> {
@@ -270,6 +276,8 @@ export async function _proxyService(
 export async function proxyService<TData>(
   serviceConfig: SanitizedServiceConfiguration | null,
   requestConfig: AxiosRequestConfig
+  // Note: This signature is ignored by `webext-messenger`
+  // so it must be copied into `background/messenger/api.ts`
 ): Promise<RemoteResponse<TData>> {
   if (serviceConfig != null && typeof serviceConfig !== "object") {
     throw new Error("expected configured service for serviceConfig");

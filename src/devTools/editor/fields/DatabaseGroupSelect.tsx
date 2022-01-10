@@ -36,7 +36,7 @@ const DatabaseGroupSelect = () => {
   ] = appApi.endpoints.getGroups.useLazyQuery();
   useEffect(() => {
     if (selectedOrganizationId) {
-      loadOrganizationGroups(selectedOrganizationId, true);
+      void loadOrganizationGroups(selectedOrganizationId, true);
     }
 
     setGroupId("" as UUID, false);

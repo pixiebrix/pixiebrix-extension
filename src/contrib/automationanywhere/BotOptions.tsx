@@ -22,7 +22,7 @@ import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run
 import { SanitizedServiceConfiguration, Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
-import { proxyService } from "@/background/requests";
+import { proxyService } from "@/background/messenger/api";
 import useDependency from "@/services/useDependency";
 import {
   Bot,

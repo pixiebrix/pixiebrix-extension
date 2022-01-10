@@ -21,6 +21,8 @@ import { CustomFieldDefinitions } from "@/components/fields/schemaFields/SchemaF
 import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
 import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { Schema } from "@/core";
+import { isTemplateExpression } from "@/runtime/mapArgs";
+import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
 
 export const ClearableSelectorWidget: React.FunctionComponent<{
   name: string;
@@ -50,9 +52,19 @@ const devtoolFieldOverrides: CustomFieldDefinitions = {
       option: {
         label: "Selector",
         value: "string",
-        symbol: "$( )",
+        symbol: <OptionIcon icon="querySelector" />,
         Widget: ClearableSelectorWidget,
-        defaultValue: "",
+        interpretValue: (oldValue: unknown) => {
+          if (typeof oldValue === "string") {
+            return oldValue;
+          }
+
+          if (isTemplateExpression(oldValue)) {
+            return oldValue.__value__;
+          }
+
+          return "";
+        },
       },
     },
   ],

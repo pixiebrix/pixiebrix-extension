@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render, fireEvent, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Formik } from "formik";
 import { ApiVersion, Expression, Schema, TemplateEngine } from "@/core";
@@ -25,15 +25,17 @@ import { waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { uniq } from "lodash";
 
-function expectToggleOptions(container: HTMLElement, expected: string[]): void {
+async function expectToggleOptions(container: HTMLElement, expected: string[]) {
   // React Bootstrap dropdown does not render children items unless toggled
-  fireEvent.click(container.querySelector("button"));
+  userEvent.click(container.querySelector("button"));
   const actual = new Set(
     [...container.querySelectorAll("a")].map((x) =>
       x.getAttribute("data-testid")
     )
   );
-  expect(actual).toEqual(new Set(expected));
+  await waitFor(() => {
+    expect(actual).toEqual(new Set(expected));
+  });
 }
 
 interface SchemaTestCase {
@@ -79,6 +81,12 @@ const sampleSchemas: SchemaTestCase[] = [
     },
   },
 
+  {
+    name: "basic object",
+    schema: {
+      type: "object",
+    },
+  },
   {
     name: "object with defined properties",
     schema: {
@@ -172,11 +180,11 @@ const schemaTestCases: ReadonlyArray<
 
 function expressionValue<T extends TemplateEngine>(
   type: T,
-  value?: string
+  value = ""
 ): Expression<string, T> {
   return {
     __type__: type,
-    __value__: value ?? "",
+    __value__: value,
   };
 }
 
@@ -206,7 +214,7 @@ describe("SchemaField", () => {
     }
   );
 
-  test("string field options", () => {
+  test("string field options", async () => {
     const { container } = render(
       <Formik
         onSubmit={() => {}}
@@ -226,16 +234,10 @@ describe("SchemaField", () => {
     // Renders text entry HTML element
     expect(container.querySelector("textarea")).not.toBeNull();
 
-    expectToggleOptions(container, [
-      "string",
-      "var",
-      "mustache",
-      "nunjucks",
-      "omit",
-    ]);
+    await expectToggleOptions(container, ["string", "var", "omit"]);
   });
 
-  test("integer field options", () => {
+  test("integer field options", async () => {
     const { container } = render(
       <Formik
         onSubmit={() => {}}
@@ -254,15 +256,20 @@ describe("SchemaField", () => {
 
     // Renders number entry HTML element
     expect(container.querySelector("input[type='number']")).not.toBeNull();
-    expectToggleOptions(container, ["number", "var", "omit"]);
+    await expectToggleOptions(container, ["number", "var", "omit"]);
   });
 
   test.each`
-    startValue                            | inputMode     | toggleOption  | expectedEndValue
-    ${{ foo: "bar" }}                     | ${"Object"}   | ${"Variable"} | ${expressionValue("var")}
-    ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Object"}   | ${{}}
-    ${expressionValue("var", "abc")}      | ${"Variable"} | ${"Mustache"} | ${expressionValue("mustache", "")}
-    ${expressionValue("mustache", "def")} | ${"Mustache"} | ${"Array"}    | ${[]}
+    startValue                             | inputMode     | toggleOption  | expectedEndValue
+    ${{ foo: "bar" }}                      | ${"Object"}   | ${"Variable"} | ${expressionValue("var")}
+    ${1.23}                                | ${"Number"}   | ${"Text"}     | ${expressionValue("nunjucks", "1.23")}
+    ${1.23}                                | ${"Number"}   | ${"Variable"} | ${expressionValue("var", "1.23")}
+    ${expressionValue("var", "abc")}       | ${"Variable"} | ${"Text"}     | ${expressionValue("nunjucks", "abc")}
+    ${expressionValue("nunjucks", "abc")}  | ${"Text"}     | ${"Variable"} | ${expressionValue("var", "abc")}
+    ${expressionValue("nunjucks", "1.23")} | ${"Text"}     | ${"Number"}   | ${1.23}
+    ${expressionValue("var", "1.23")}      | ${"Variable"} | ${"Number"}   | ${1.23}
+    ${expressionValue("nunjucks", "def")}  | ${"Text"}     | ${"Array"}    | ${[]}
+    ${expressionValue("var", "abc")}       | ${"Variable"} | ${"Object"}   | ${{}}
   `(
     "Test field toggle transition from $inputMode to $toggleOption",
     async ({ startValue, toggleOption, expectedEndValue }) => {
@@ -308,7 +315,7 @@ describe("SchemaField", () => {
     }
   );
 
-  test("string/integer field options", () => {
+  test("string/integer field options", async () => {
     const { container } = render(
       <Formik
         onSubmit={() => {}}
@@ -327,14 +334,7 @@ describe("SchemaField", () => {
 
     // Renders number entry HTML element because current value is a number
     expect(container.querySelector("input[type='number']")).not.toBeNull();
-    expectToggleOptions(container, [
-      "string",
-      "number",
-      "var",
-      "mustache",
-      "nunjucks",
-      "omit",
-    ]);
+    await expectToggleOptions(container, ["string", "number", "var", "omit"]);
   });
 
   test("v2 field oneOf type priority shows text", () => {
@@ -370,17 +370,23 @@ describe("SchemaField", () => {
   test.each(schemaTestCases)(
     "v3 field toggle doesn't show duplicate options - %s",
     async (_, schema) => {
+      const fieldName = "aTestField";
       const FormikTemplate = createFormikTemplate({ apiVersion: "v3" });
       const { container } = render(
         <FormikTemplate>
-          <SchemaField name="aTestField" schema={schema} />
+          <SchemaField name={fieldName} schema={schema} />
         </FormikTemplate>
       );
 
       await waitForEffect();
 
+      const widgetLoadingIndicator = screen.queryByTestId(
+        `${fieldName}-widget-loading`
+      );
+      expect(widgetLoadingIndicator).toBeNull();
+
       const toggle = screen
-        .getByTestId("toggle-aTestField")
+        .queryByTestId(`toggle-${fieldName}`)
         .querySelector("button");
       expect(toggle).not.toBeNull();
 

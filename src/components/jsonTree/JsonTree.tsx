@@ -81,9 +81,9 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   const copyLabelRenderer = useLabelRenderer();
 
   const onChangeQuery = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setQuery(e.target.value);
-      onSearchQueryChanged?.(e.target.value);
+    ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(target.value);
+      onSearchQueryChanged?.(target.value);
     },
     [onSearchQueryChanged]
   );

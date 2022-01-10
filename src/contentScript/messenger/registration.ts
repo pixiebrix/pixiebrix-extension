@@ -36,14 +36,15 @@ import {
   toggleActionPanel,
   removeExtension,
 } from "@/actionPanel/native";
+import { insertPanel } from "@/nativeEditor/insertPanel";
+import { insertButton } from "@/nativeEditor/insertButton";
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
-  insertButton,
-  insertPanel,
+  runExtensionPointReader,
   updateDynamicElement,
-} from "@/nativeEditor";
+} from "@/nativeEditor/dynamic";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
 import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
 import {
@@ -51,19 +52,18 @@ import {
   runReaderBlock,
   runReader,
   readSelected,
+  resetTab,
 } from "@/contentScript/devTools";
 import { checkAvailable } from "@/blocks/available";
 import { showNotification } from "@/contentScript/notify";
-import {
-  linkChildTab,
-  runBlockInContentScript,
-} from "@/contentScript/executor";
+import { linkChildTab, runBrick } from "@/contentScript/executor";
 import { cancelSelect, selectElement } from "@/nativeEditor/selector";
-import { runExtensionPointReader } from "@/nativeEditor/dynamic";
 import {
   runEffectPipeline,
+  runMapArgs,
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol";
+import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 
 expectContext("contentScript");
 
@@ -75,7 +75,9 @@ declare global {
 
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
+    RESET_TAB: typeof resetTab;
 
+    TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
     TOGGLE_ACTION_PANEL: typeof toggleActionPanel;
     SHOW_ACTION_PANEL: typeof showActionPanel;
@@ -104,12 +106,13 @@ declare global {
     HANDLE_NAVIGATE: typeof handleNavigate;
     SHOW_NOTIFICATION: typeof showNotification;
     LINK_CHILD_TAB: typeof linkChildTab;
-    RUN_BLOCK: typeof runBlockInContentScript;
+    RUN_BRICK: typeof runBrick;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
 
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_EFFECT_PIPELINE: typeof runEffectPipeline;
+    RUN_MAP_ARGS: typeof runMapArgs;
   }
 }
 
@@ -120,7 +123,9 @@ registerMethods({
 
   QUEUE_REACTIVATE_TAB: queueReactivateTab,
   REACTIVATE_TAB: reactivateTab,
+  RESET_TAB: resetTab,
 
+  TOGGLE_QUICK_BAR: toggleQuickBar,
   HANDLE_MENU_ACTION: handleMenuAction,
   TOGGLE_ACTION_PANEL: toggleActionPanel,
   SHOW_ACTION_PANEL: showActionPanel,
@@ -150,10 +155,11 @@ registerMethods({
   SHOW_NOTIFICATION: showNotification,
 
   LINK_CHILD_TAB: linkChildTab,
-  RUN_BLOCK: runBlockInContentScript,
+  RUN_BRICK: runBrick,
   CANCEL_SELECT_ELEMENT: cancelSelect,
   SELECT_ELEMENT: selectElement,
 
   RUN_RENDERER_PIPELINE: runRendererPipeline,
   RUN_EFFECT_PIPELINE: runEffectPipeline,
+  RUN_MAP_ARGS: runMapArgs,
 });

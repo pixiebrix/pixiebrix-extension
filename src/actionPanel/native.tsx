@@ -30,10 +30,12 @@ import {
 } from "@/actionPanel/actionPanelTypes";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import { renderPanels, hideForm, showForm } from "@/actionPanel/messenger/api";
+import { MAX_Z_INDEX } from "@/common";
+import pDefer from "p-defer";
 
 const SIDEBAR_WIDTH_PX = 400;
-const PANEL_CONTAINER_ID = "pixiebrix-extension";
-const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
+const PANEL_FRAME_ID = "pixiebrix-extension";
+const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
 export const PANEL_HIDING_EVENT = "pixiebrix:hideActionPanel";
 
 let renderSequenceNumber = 0;
@@ -90,39 +92,51 @@ function restoreDocumentStyle(): void {
 
 function insertActionPanel(): string {
   const nonce = uuidv4();
-
   const actionURL = browser.runtime.getURL("action.html");
 
-  const $panelContainer = $(
-    `<div id="${PANEL_CONTAINER_ID}" data-nonce="${nonce}" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border-left: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
-  );
-
-  // CSS approach not well supported? https://stackoverflow.com/questions/15494568/html-iframe-disable-scroll
-  // noinspection HtmlDeprecatedAttribute
-  const $frame = $(
-    `<iframe id="pixiebrix-frame" src="${actionURL}?nonce=${nonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" ></iframe>`
-  );
-
-  $panelContainer.append($frame);
-
-  $("body").append($panelContainer);
+  $("<iframe>")
+    .attr({
+      id: PANEL_FRAME_ID,
+      src: `${actionURL}?nonce=${nonce}`,
+      "data-nonce": nonce, // Don't use jQuery.data because we need the attribute
+    })
+    .css({
+      position: "fixed",
+      top: 0,
+      right: 0,
+      zIndex: MAX_Z_INDEX,
+      width: SIDEBAR_WIDTH_PX,
+      height: "100%",
+      border: 0,
+      borderLeft: "1px solid lightgray",
+      background: "#f2edf3",
+    })
+    .appendTo("body");
 
   return nonce;
 }
 
+/**
+ * Add the action panel to the page if it's not already on the page
+ * @param callbacks callbacks to refresh the panels, leave blank to refresh all extension panels
+ */
 export function showActionPanel(callbacks = extensionCallbacks): string {
   reportEvent("SidePanelShow");
-
-  adjustDocumentStyle();
 
   const container: HTMLElement = document.querySelector(
     PANEL_CONTAINER_SELECTOR
   );
 
-  const nonce = container?.dataset?.nonce ?? insertActionPanel();
+  let nonce = container?.dataset?.nonce;
+
+  if (!nonce) {
+    console.debug("SidePanel is not on the page, attaching side panel");
+    adjustDocumentStyle();
+    nonce = insertActionPanel();
+  }
 
   // Run the extension points available on the page. If the action panel is already in the page, running
-  // all the callbacks ensures the content is up to date
+  // all the callbacks ensures the content is up-to-date
   for (const callback of callbacks) {
     try {
       callback();
@@ -133,8 +147,26 @@ export function showActionPanel(callbacks = extensionCallbacks): string {
     }
   }
 
-  // TODO: Drop `nonce` if not used anywhere
+  // TODO: Drop `nonce` if not used by the caller
   return nonce;
+}
+
+/**
+ * Awaitable version of showActionPanel which does not reload existing panels if the action panel is already visible
+ * @see showActionPanel
+ */
+export async function ensureActionPanel(): Promise<void> {
+  const show = pDefer();
+
+  if (!isActionPanelVisible()) {
+    registerShowCallback(show.resolve);
+    try {
+      showActionPanel();
+      await show.promise;
+    } finally {
+      removeShowCallback(show.resolve);
+    }
+  }
 }
 
 export function hideActionPanel(): void {

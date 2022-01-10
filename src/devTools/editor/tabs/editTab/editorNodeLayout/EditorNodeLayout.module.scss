@@ -15,44 +15,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
+.actions {
+  height: 0;
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding-bottom: 6px;
-}
+  place-content: center;
+  place-items: center;
+  gap: 0.2em;
 
-.insertButton {
-  border: none;
-  background: none;
-  margin-top: 0.5rem;
-  margin-bottom: 0.75rem;
-}
+  position: relative;
+  z-index: 3; // Above Bootstrap’s .list-item.active
 
-.plus {
-  border: none;
-  border-radius: 50%;
-
-  &:hover {
-    color: #a462e6;
+  --size: 22px;
+  button {
+    display: block;
+    border: none;
+    color: gray;
+    background-color: white;
+    border-radius: 50%;
+    padding: 0;
+    outline: none;
+    &:focus,
+    &:hover {
+      color: var(--blue);
+    }
   }
 
-  &:active {
-    color: #b66dff;
+  svg {
+    display: block;
+    font-size: var(--size);
+    border: solid 3px white;
+    border-radius: 50%;
   }
 }
 
-.appendContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.finalActions {
+  --size: 40px;
+  height: auto;
+  margin: 0.4em 0;
+  gap: 0.6em;
 }
 
-.appendArrow {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.addRightMargin {
-  margin-right: 36px; // move-buttons width + left margin
+.appendInfo {
+  padding: 0 2em 1em;
+  text-align: center;
 }

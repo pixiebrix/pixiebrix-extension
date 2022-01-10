@@ -68,7 +68,9 @@ export class ParseCsv extends Transformer {
     { content }: BlockArg,
     { logger }: BlockOptions
   ): Promise<unknown> {
-    const { default: Papa } = await import("papaparse");
+    const { default: Papa } = await import(
+      /* webpackChunkName: "papaparse" */ "papaparse"
+    );
     const { data, errors } = Papa.parse(content);
 
     if (errors.length > 0) {

@@ -17,26 +17,21 @@
 
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { waitForEffect } from "@/tests/testHelpers";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import React from "react";
 import blockRegistry from "@/blocks/registry";
 import { MarkdownRenderer } from "@/blocks/renderers/markdown";
-import * as logging from "@/background/logging";
 import * as backgroundAPI from "@/background/messenger/api";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import {
-  buildDocumentBranch,
-  getPreviewComponentDefinition,
-} from "./documentTree";
-import { DocumentElement, DocumentElementType } from "./documentBuilderTypes";
+import { buildDocumentBranch } from "./documentTree";
+import { DocumentElementType } from "./documentBuilderTypes";
 
-// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
+// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandled rejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/background/messenger/api");
-jest.mock("@/background/trace");
-(logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
+(backgroundAPI.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
 });
 
@@ -102,11 +97,11 @@ describe("When rendered in panel", () => {
     };
     const { container } = renderDocument(config);
 
-    const element = container.querySelector("span");
+    const element = container.querySelector("div");
 
     expect(element).not.toBeNull();
     expect(element).toHaveTextContent(
-      "Unknown type: TheTypeForWhichAComponentIsNotDefined"
+      "Unknown component type: TheTypeForWhichAComponentIsNotDefined"
     );
   });
 
@@ -285,16 +280,21 @@ describe("When rendered in panel", () => {
 
   test("renders block", async () => {
     const markdown = "Pipeline text for card test.";
-    (backgroundAPI.whoAmI as any).mockResolvedValue({ tab: { id: 0 } });
-    (contentScriptAPI.runRendererPipeline as any).mockResolvedValue({
+    (backgroundAPI.whoAmI as jest.Mock).mockResolvedValueOnce({
+      tab: { id: 0 },
+    });
+    (contentScriptAPI.runRendererPipeline as jest.Mock).mockResolvedValueOnce({
       blockId: markdownBlock.id,
       key: uuidv4(),
       args: { markdown },
       ctxt: { "@input": {}, "@options": {} },
     });
+    (contentScriptAPI.runMapArgs as jest.Mock).mockImplementationOnce(
+      async (inputConfig) => Promise.resolve(inputConfig)
+    );
 
     const yamlConfig = `
-type: block
+type: pipeline
 config:
   pipeline: !pipeline
     - id: "${markdownBlock.id}"
@@ -304,7 +304,7 @@ config:
     const config = loadBrickYaml(yamlConfig);
     const { container } = renderDocument(config);
 
-    // Wait for useAsyncState inside of PipelineComponent
+    // Wait for useAsyncState inside the PipelineComponent
     await waitForEffect();
 
     expectBlockContainerRendered(container, markdownBlock.id);
@@ -322,47 +322,6 @@ config:
       `[data-block-id="${blockId}"]`
     );
     expect(blockContainer).not.toBeNull();
-    expect(blockContainer).toHaveClass("h-100");
+    expect(blockContainer).toHaveClass("full-height");
   }
-});
-
-describe("when rendered in preview", () => {
-  test.each(["container", "row", "column"])(
-    "shows name of an empty %s",
-    (elementType: DocumentElementType) => {
-      const element: DocumentElement = {
-        type: elementType,
-        config: {},
-        children: [],
-      };
-
-      const actual = getPreviewComponentDefinition(element);
-
-      render(actual.props.children as any);
-      expect(screen.getByText(elementType)).not.toBeNull();
-    }
-  );
-
-  test.each(["container", "row", "column"])(
-    "doesn't show name of %s with children",
-    (elementType: DocumentElementType) => {
-      const element: DocumentElement = {
-        type: elementType,
-        config: {},
-        children: [
-          {
-            type: "text",
-            config: {
-              text: "child element",
-            },
-          },
-        ],
-      };
-
-      const actual = getPreviewComponentDefinition(element);
-
-      render(actual.props.children as any);
-      expect(screen.queryByText(elementType)).toBeNull();
-    }
-  );
 });

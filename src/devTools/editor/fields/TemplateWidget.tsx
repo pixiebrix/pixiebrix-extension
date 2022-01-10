@@ -18,6 +18,7 @@
 import React, { useCallback, useRef } from "react";
 import { Form } from "react-bootstrap";
 import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
+import { LinkButton } from "@/components/LinkButton";
 
 export type Snippet = {
   label: string;
@@ -59,18 +60,16 @@ const TemplateWidget: React.FC<TemplateWidgetProps> = ({
         <div className="small">
           <span>Insert at cursor:</span>
           {snippets.map((snippet: Snippet) => (
-            <a
+            <LinkButton
               key={snippet.label}
-              href="#"
-              className="mx-2"
-              role="button"
-              onClick={(e) => {
+              className="ml-2"
+              onClick={(event) => {
                 insertSnippet(snippet.value);
-                e.preventDefault();
+                event.preventDefault();
               }}
             >
               {snippet.label}
-            </a>
+            </LinkButton>
           ))}
         </div>
       )}

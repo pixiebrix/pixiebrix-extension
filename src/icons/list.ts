@@ -17,6 +17,7 @@
 /* eslint-disable unicorn/prefer-module -- There's no module equivalent to require.context */
 
 import { IconLibrary } from "@/core";
+
 type RequireContext = __WebpackModuleApi.RequireContext;
 
 function getIconMap(resolve: RequireContext): Map<string, string> {

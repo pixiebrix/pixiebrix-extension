@@ -118,7 +118,9 @@ export class TourEffect extends Effect {
       stylesheetLink.remove();
     };
 
-    const { default: introJs } = await import("intro.js");
+    const { default: introJs } = await import(
+      /* webpackChunkName: "intro.js" */ "intro.js"
+    );
 
     return new Promise<void>((resolve, reject) => {
       if (tourInProgress) {

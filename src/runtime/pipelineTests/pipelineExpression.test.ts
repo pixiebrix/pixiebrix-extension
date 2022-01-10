@@ -17,20 +17,24 @@
 
 import blockRegistry from "@/blocks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { pipelineBlock, simpleInput, testOptions } from "./pipelineTestHelpers";
+import {
+  identityBlock,
+  pipelineBlock,
+  simpleInput,
+  testOptions,
+} from "./pipelineTestHelpers";
 
-// Mock the recordX trace methods. Otherwise they'll fail and Jest will have unhandledrejection errors since we call
+// Mock the recordX trace methods. Otherwise, they'll fail and Jest will have unhandledrejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
-import * as logging from "@/background/logging";
+import * as logging from "@/background/messenger/api";
 
-jest.mock("@/background/trace");
 (logging.getLoggingConfig as any) = jest.fn().mockResolvedValue({
   logValues: true,
 });
 
 beforeEach(() => {
   blockRegistry.clear();
-  blockRegistry.register(pipelineBlock);
+  blockRegistry.register(pipelineBlock, identityBlock);
 });
 
 describe("apiVersion: v3", () => {
@@ -50,5 +54,28 @@ describe("apiVersion: v3", () => {
       testOptions("v3")
     );
     expect(result).toStrictEqual({ length: 1 });
+  });
+
+  test("keep pipeline expression", async () => {
+    const pipeline = {
+      id: identityBlock.id,
+      config: {
+        data: {
+          __type__: "pipeline",
+          __value__: [{ id: "@pixiebrix/confetti" }],
+        },
+      },
+    };
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      testOptions("v3")
+    );
+    expect(result).toStrictEqual({
+      data: {
+        __type__: "pipeline",
+        __value__: [{ id: "@pixiebrix/confetti" }],
+      },
+    });
   });
 });

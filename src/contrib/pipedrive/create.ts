@@ -16,9 +16,10 @@
  */
 
 import { Effect } from "@/types";
-import { proxyService } from "@/background/requests";
+import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
+import { showNotification } from "@/contentScript/notify";
 
 export class AddOrganization extends Effect {
   // https://developers.pipedrive.com/docs/api/v1/#!/Organizations/post_organizations
@@ -61,7 +62,7 @@ export class AddOrganization extends Effect {
     });
 
     if (data.items.length > 0) {
-      $.notify(`Organization already exists for ${name}`, "info");
+      showNotification({ message: `Organization already exists for ${name}` });
       return;
     }
 
@@ -71,9 +72,15 @@ export class AddOrganization extends Effect {
         method: "post",
         data: { name, owner_id },
       });
-      $.notify(`Added ${name} to Pipedrive`, "success");
+      showNotification({
+        message: `Added ${name} to Pipedrive`,
+        type: "success",
+      });
     } catch {
-      $.notify(`Error adding ${name} to Pipedrive`, "error");
+      showNotification({
+        message: `Error adding ${name} to Pipedrive`,
+        type: "error",
+      });
     }
   }
 }
@@ -133,7 +140,7 @@ export class AddPerson extends Effect {
     });
 
     if (data.items.length > 0) {
-      $.notify(`Person record already exists for ${name}`, "info");
+      showNotification({ message: `Person record already exists for ${name}` });
       return;
     }
 
@@ -148,9 +155,15 @@ export class AddPerson extends Effect {
           phone: phone ? [phone] : undefined,
         },
       });
-      $.notify(`Added ${name} to Pipedrive`, "success");
+      showNotification({
+        message: `Added ${name} to Pipedrive`,
+        type: "success",
+      });
     } catch {
-      $.notify(`Error adding ${name} to Pipedrive`, "error");
+      showNotification({
+        message: `Error adding ${name} to Pipedrive`,
+        type: "error",
+      });
     }
   }
 }

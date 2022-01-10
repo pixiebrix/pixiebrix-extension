@@ -24,13 +24,31 @@ declare module "*.module.scss" {
   export default classes;
 }
 
+// Package has no types: https://github.com/guiyep/react-select-virtualized/issues/293
 declare module "react-select-virtualized" {
-  export { default } from "react-virtualized-select";
+  export { default } from "react-select";
 }
 
 declare module "generate-schema" {
   import { UnknownObject } from "@/types";
+
   const json: (title: string, obj: unknown) => UnknownObject;
+}
+
+// From https://github.com/mozilla/page-metadata-parser/issues/116#issuecomment-614882830
+declare module "page-metadata-parser" {
+  export type IPageMetadata = Record<string, string | string[]>;
+
+  export type PageMetadataRule = [
+    string,
+    (element: HTMLElement) => string | null
+  ];
+
+  export function getMetadata(
+    doc: Document | HTMLElement,
+    url: string,
+    customRuleSets?: Record<string, PageMetadataRule>
+  ): IPageMetadata;
 }
 
 declare module "@/vendors/initialize" {

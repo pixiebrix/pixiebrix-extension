@@ -17,14 +17,14 @@
 
 import React, { useEffect } from "react";
 import { validateRegistryId } from "@/types/helpers";
-import { isPlainObject } from "lodash";
 import { joinName } from "@/utils";
 import { useField } from "formik";
-import DocumentEditor from "@/components/documentBuilder/DocumentEditor";
+import DocumentEditor from "@/components/documentBuilder/edit/DocumentEditor";
 import useReduxState from "@/hooks/useReduxState";
 import { actions as documentBuilderActions } from "@/devTools/editor/slices/documentBuilderSlice";
 import documentBuilderSelectors from "@/devTools/editor/slices/documentBuilderSelectors";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import ConfigErrorBoundary from "@/devTools/editor/fields/ConfigErrorBoundary";
 
 export const DOCUMENT_ID = validateRegistryId("@pixiebrix/document");
 
@@ -40,24 +40,27 @@ const DocumentOptions: React.FC<{
   const bodyName = joinName(name, configKey, "body");
   const [{ value }, , { setValue }] = useField<DocumentElement[]>(bodyName);
 
-  useEffect(() => {
-    setActiveElement(null);
-  }, []);
+  useEffect(
+    () => () => {
+      // Clean up selected element on destroy
+      setActiveElement(null);
+    },
+    [bodyName]
+  );
+
   useEffect(() => {
     if (!Array.isArray(value)) {
       setValue([]);
     }
   }, [value]);
 
-  if (isPlainObject(value)) {
-    return <div>Edit in the workshop</div>;
-  }
-
   return (
-    <DocumentEditor
-      activeElement={activeElement}
-      setActiveElement={setActiveElement}
-    />
+    <ConfigErrorBoundary>
+      <DocumentEditor
+        activeElement={activeElement}
+        setActiveElement={setActiveElement}
+      />
+    </ConfigErrorBoundary>
   );
 };
 

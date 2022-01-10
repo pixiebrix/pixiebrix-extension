@@ -22,10 +22,13 @@ import {
   getNotifier,
 } from "webext-messenger";
 import browser from "webextension-polyfill";
-import { isBackgroundPage } from "webext-detect-page";
+import { isBackground } from "webext-detect-page";
+import type { SanitizedServiceConfiguration } from "@/core";
+import type { AxiosRequestConfig } from "axios";
+import type { RemoteResponse } from "@/background/requests";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
-if (isBackgroundPage() && process.env.DEBUG) {
+if (isBackground() && process.env.DEBUG) {
   console.warn(
     "This should not have been imported in the background page. Use the API directly instead."
   );
@@ -41,12 +44,12 @@ export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const checkTargetPermissions = getMethod("CHECK_TARGET_PERMISSIONS", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
 export const whoAmI = getMethod("ECHO_SENDER", bg);
+export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
 
 export const closeTab = getMethod("CLOSE_TAB", bg);
-export const markTabAsReady = getMethod("MARK_TAB_AS_READY", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 export const readGoogleBigQuery = getMethod("GOOGLE_BIGQUERY_READ", bg);
@@ -79,8 +82,11 @@ export const dataStore = {
   set: getMethod("SET_DATA_STORE", bg),
 };
 
-export const executeBrick = {
-  onServer: getMethod("EXECUTE_ON_SERVER", bg),
+export const requestRun = {
+  onServer: getMethod("REQUEST_RUN_ON_SERVER", bg),
+  inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
+  inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),
+  inAll: getMethod("REQUEST_RUN_IN_ALL", bg),
 };
 
 export const contextMenus = {
@@ -91,3 +97,28 @@ export const services = {
   locate: getMethod("LOCATE_SERVICE", bg),
   refresh: getMethod("REFRESH_SERVICES", bg),
 };
+
+export const httpRequest = getMethod("HTTP_REQUEST", bg);
+
+// `getMethod` currently strips generics, so we must copy the function signature here
+export const proxyService = getMethod("PROXY", bg) as <TData>(
+  serviceConfig: SanitizedServiceConfiguration | null,
+  requestConfig: AxiosRequestConfig
+) => Promise<RemoteResponse<TData>>;
+
+export const recordLog = getNotifier("RECORD_LOG", bg);
+export const recordError = getNotifier("RECORD_ERROR", bg);
+export const recordEvent = getNotifier("RECORD_EVENT", bg);
+export const getLoggingConfig = getMethod("GET_LOGGING_CONFIG", bg);
+export const setLoggingConfig = getMethod("SET_LOGGING_CONFIG", bg);
+
+export const traces = {
+  addEntry: getNotifier("ADD_TRACE_ENTRY", bg),
+  addExit: getNotifier("ADD_TRACE_EXIT", bg),
+  clear: getNotifier("CLEAR_TRACES", bg),
+};
+
+export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
+export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
+
+export const captureTab = getMethod("CAPTURE_TAB", bg);

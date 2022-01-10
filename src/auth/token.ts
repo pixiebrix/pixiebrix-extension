@@ -19,11 +19,7 @@ import browser from "webextension-polyfill";
 import Cookies from "js-cookie";
 import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
 import { isEqual } from "lodash";
-import {
-  ManualStorageKey,
-  readStorageWithMigration,
-  setStorage,
-} from "@/chrome";
+import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
@@ -40,7 +36,7 @@ export interface AuthData extends UserData {
 }
 
 async function readAuthData(): Promise<AuthData | Partial<AuthData>> {
-  return readStorageWithMigration(STORAGE_EXTENSION_KEY, {});
+  return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 
 export async function getExtensionToken(): Promise<string | undefined> {

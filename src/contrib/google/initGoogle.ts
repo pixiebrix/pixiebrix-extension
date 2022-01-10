@@ -39,7 +39,7 @@ async function onGAPILoad(): Promise<void> {
 }
 
 function initGoogle(): void {
-  if (!isChrome()) {
+  if (!isChrome() || typeof document === "undefined" /* MV3 exclusion */) {
     // TODO: Use feature detection instead of sniffing the user agent
     console.info(
       "Google API not enabled because it's not supported by this browser"
