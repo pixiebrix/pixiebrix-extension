@@ -40,7 +40,7 @@ export function inferInputMode(
     return "omit";
   }
 
-  const hasEnum = !isEmpty(fieldSchema.enum);
+  const hasEnum = !isEmpty(fieldSchema.examples ?? fieldSchema.enum);
 
   // eslint-disable-next-line security/detect-object-injection -- config field names
   const value = fieldConfig[fieldName];
