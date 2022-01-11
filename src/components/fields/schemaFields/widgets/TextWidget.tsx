@@ -23,7 +23,7 @@ import fitTextarea from "fit-textarea";
 import { TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
-import { schemaSupportsTemplates } from "@/components/fields/schemaFields/v3/BasicSchemaField";
+import { schemaSupportsTemplates } from "@/components/fields/schemaFields/BasicSchemaField";
 
 function isVarValue(value: string): boolean {
   return value.startsWith("@") && !value.includes(" ");

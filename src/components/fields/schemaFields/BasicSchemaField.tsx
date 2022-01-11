@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +36,7 @@ import TemplateToggleWidget, {
   InputModeOption,
   StringOption,
 } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
-import TextWidget from "@/components/fields/schemaFields/widgets/v3/TextWidget";
+import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { Schema } from "@/core";
 import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
@@ -47,7 +47,7 @@ import OmitFieldWidget from "@/components/fields/schemaFields/widgets/OmitFieldW
 import cx from "classnames";
 import SchemaSelectWidget, {
   isSelectField,
-} from "@/components/fields/schemaFields/widgets/v3/SchemaSelectWidget";
+} from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
