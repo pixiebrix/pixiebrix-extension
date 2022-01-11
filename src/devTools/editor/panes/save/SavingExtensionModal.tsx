@@ -47,7 +47,8 @@ const SavingExtensionModal: React.FC<OwnProps> = ({
   const installedRecipeVersion = element.recipe.version;
   const latestRecipeVersion = recipe.metadata.version;
 
-  if (recipe.apiVersion !== element.apiVersion) {
+  const canUpdateRecipeApiVersion = recipe.extensionPoints.length === 1;
+  if (recipe.apiVersion !== element.apiVersion && !canUpdateRecipeApiVersion) {
     message = `This extension is part of blueprint ${recipeName}. The API version ${recipe.apiVersion} of the blueprint is not compatible with the current API version ${element.apiVersion} of the extension.`;
   } else if (isRecipeEditable) {
     if (installedRecipeVersion === latestRecipeVersion) {

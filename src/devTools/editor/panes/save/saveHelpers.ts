@@ -135,6 +135,18 @@ export function replaceRecipeExtension(
   return produce(sourceRecipe, (draft) => {
     draft.metadata = metadata;
 
+    if (sourceRecipe.apiVersion !== element.apiVersion) {
+      const canUpdateRecipeApiVersion =
+        sourceRecipe.extensionPoints.length === 1;
+      if (canUpdateRecipeApiVersion) {
+        draft.apiVersion = element.apiVersion;
+      } else {
+        throw new Error(
+          `Element's API Version (${element.apiVersion}) does not match recipe's API Version (${sourceRecipe.apiVersion}) and recipe's API Version cannot be updated`
+        );
+      }
+    }
+
     const index = findRecipeIndex(sourceRecipe, installedExtension);
 
     const adapter = ADAPTERS.get(element.type);
