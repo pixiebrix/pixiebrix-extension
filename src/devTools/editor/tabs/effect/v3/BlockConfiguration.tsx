@@ -91,6 +91,13 @@ const BlockConfiguration: React.FunctionComponent<{
     [configName]
   );
 
+  // Only show if necessary. Currently, only the trigger extension point passes the element
+  // that triggered the event through for the reader root
+  const showRootMode =
+    isRootAware && ["trigger", "contextMenu"].includes(context.values.type);
+  const showIfAndTarget = blockType && blockType !== "renderer";
+  const noAdvancedOptions = !showRootMode && !showIfAndTarget;
+
   return (
     <>
       <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
@@ -121,23 +128,18 @@ const BlockConfiguration: React.FunctionComponent<{
           Advanced Options
         </Card.Header>
         <Card.Body ref={advancedOptionsRef}>
-          {
-            // Only show if necessary. Currently only the trigger extension point passes the element that triggered the
-            // event through for the reader root
-            isRootAware &&
-              ["trigger", "contextMenu"].includes(context.values.type) && (
-                <ConnectedFieldTemplate
-                  name={configName("rootMode")}
-                  label="Root Mode"
-                  as={SelectWidget}
-                  options={rootModeOptions}
-                  blankValue="inherit"
-                  description="The root mode controls which page element PixieBrix provides as the implicit element"
-                />
-              )
-          }
+          {showRootMode && (
+            <ConnectedFieldTemplate
+              name={configName("rootMode")}
+              label="Root Mode"
+              as={SelectWidget}
+              options={rootModeOptions}
+              blankValue="inherit"
+              description="The root mode controls which page element PixieBrix provides as the implicit element"
+            />
+          )}
 
-          {blockType && blockType !== "renderer" && (
+          {showIfAndTarget && (
             <>
               <SchemaField {...ifSchemaProps} />
 
@@ -150,6 +152,10 @@ const BlockConfiguration: React.FunctionComponent<{
                 description="Where to execute the brick."
               />
             </>
+          )}
+
+          {noAdvancedOptions && (
+            <small className="text-muted font-italic">No options to show</small>
           )}
         </Card.Body>
       </Card>
