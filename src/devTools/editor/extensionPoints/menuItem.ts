@@ -59,6 +59,8 @@ import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfi
 import { insertButton } from "@/contentScript/messenger/api";
 import { Except } from "type-fest";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
+import store from "@/devTools/store";
+import { actions } from "@/devTools/editor/slices/editorSlice";
 
 type Extension = BaseExtensionState & Except<MenuItemExtensionConfig, "action">;
 
@@ -210,7 +212,7 @@ export async function fromExtension(
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = extensionWithNormalizedPipeline(config.config, "action");
   let showV3UpgradeMessage = false;
-  let { apiVersion } = base;
+  let { apiVersion, uuid } = base;
 
   if (apiVersion === "v2") {
     extension.blockPipeline = await upgradePipelineToV3(
@@ -218,6 +220,7 @@ export async function fromExtension(
     );
     showV3UpgradeMessage = true;
     apiVersion = "v3";
+    store.dispatch(actions.markElementDirty(uuid));
   }
 
   return {

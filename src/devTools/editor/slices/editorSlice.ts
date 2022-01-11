@@ -363,6 +363,9 @@ export const editorSlice = createSlice({
     clearCopiedBlockConfig: (state) => {
       delete state.copiedBlock;
     },
+    markElementDirty: (state, action: PayloadAction<UUID>) => {
+      state.dirty[action.payload] = true;
+    },
   },
 });
 /* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */

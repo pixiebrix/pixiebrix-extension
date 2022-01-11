@@ -51,6 +51,8 @@ import {
 import React from "react";
 import { Except } from "type-fest";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
+import store from "@/devTools/store";
+import { actions } from "@/devTools/editor/slices/editorSlice";
 
 type Extension = BaseExtensionState & Except<ActionPanelConfig, "body">;
 
@@ -177,7 +179,7 @@ async function fromExtension(
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = extensionWithNormalizedPipeline(config.config, "body");
   let showV3UpgradeMessage = false;
-  let { apiVersion } = base;
+  let { apiVersion, uuid } = base;
 
   if (apiVersion === "v2") {
     extension.blockPipeline = await upgradePipelineToV3(
@@ -185,6 +187,7 @@ async function fromExtension(
     );
     showV3UpgradeMessage = true;
     apiVersion = "v3";
+    store.dispatch(actions.markElementDirty(uuid));
   }
 
   return {

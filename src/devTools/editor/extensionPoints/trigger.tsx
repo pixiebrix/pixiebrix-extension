@@ -55,6 +55,8 @@ import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
+import store from "@/devTools/store";
+import { actions } from "@/devTools/editor/slices/editorSlice";
 
 export interface TriggerFormState extends BaseFormState {
   type: "trigger";
@@ -225,7 +227,7 @@ async function fromExtension(
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = extensionWithNormalizedPipeline(config.config, "action");
   let showV3UpgradeMessage = false;
-  let { apiVersion } = base;
+  let { apiVersion, uuid } = base;
 
   if (apiVersion === "v2") {
     extension.blockPipeline = await upgradePipelineToV3(
@@ -233,6 +235,7 @@ async function fromExtension(
     );
     showV3UpgradeMessage = true;
     apiVersion = "v3";
+    store.dispatch(actions.markElementDirty(uuid));
   }
 
   return {

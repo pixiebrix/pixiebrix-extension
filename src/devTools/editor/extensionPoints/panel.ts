@@ -57,6 +57,8 @@ import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration"
 import { insertPanel } from "@/contentScript/messenger/api";
 import { Except } from "type-fest";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
+import store from "@/devTools/store";
+import { actions } from "@/devTools/editor/slices/editorSlice";
 
 export type PanelTraits = {
   style: {
@@ -227,7 +229,7 @@ async function fromExtension(
     heading: "",
   });
   let showV3UpgradeMessage = false;
-  let { apiVersion } = base;
+  let { apiVersion, uuid } = base;
 
   if (apiVersion === "v2") {
     extension.blockPipeline = await upgradePipelineToV3(
@@ -235,6 +237,7 @@ async function fromExtension(
     );
     showV3UpgradeMessage = true;
     apiVersion = "v3";
+    store.dispatch(actions.markElementDirty(uuid));
   }
 
   return {
