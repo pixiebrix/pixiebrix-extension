@@ -200,25 +200,19 @@ function getToggleOptions({
   }
 
   if (isSelectField(fieldSchema)) {
-    pushOptions(
-      {
-        label: "Select...",
-        value: "string",
-        symbol: <OptionIcon icon="select" />,
-        Widget: SchemaSelectWidget,
-        interpretValue: () =>
-          typeof fieldSchema.default === "string"
-            ? String(fieldSchema.default)
-            : null,
-      },
-      varOption
-    );
+    pushOptions({
+      label: "Select...",
+      value: "select",
+      symbol: <OptionIcon icon="select" />,
+      Widget: SchemaSelectWidget,
+      interpretValue: () =>
+        typeof fieldSchema.default === "string"
+          ? String(fieldSchema.default)
+          : null,
+    });
   }
-  // Using "else" here because we don't want to have both select and plain text
-  // options at the same time. If something has suggestions and allows typing
-  // custom values as well, that will be covered by "creatable" within the
-  // SchemaSelectWidget.
-  else if (fieldSchema.type === "string" || anyType) {
+
+  if (fieldSchema.type === "string" || anyType) {
     pushOptions(
       {
         label: "Text",
