@@ -83,7 +83,7 @@ const PermissionsPane: React.FunctionComponent = () => {
           )}
         </>
       ) : (
-        <p>PixieBrix cannot change this page</p>
+        <p>PixieBrix cannot modify web store or special browser pages</p>
       )}
     </Centered>
   );
