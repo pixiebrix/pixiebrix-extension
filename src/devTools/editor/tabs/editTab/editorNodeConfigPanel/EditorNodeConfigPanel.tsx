@@ -19,8 +19,7 @@ import React, { useMemo } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import BlockConfigurationV1 from "@/devTools/editor/tabs/effect/BlockConfiguration";
-import BlockConfigurationV3 from "@/devTools/editor/tabs/effect/BlockConfiguration";
+import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
@@ -29,7 +28,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./EditorNodeConfigPanel.module.scss";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
-import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 
 const PopoverOutputLabel: React.FC<{
@@ -73,11 +71,6 @@ const EditorNodeConfigPanel: React.FC<{
     [outputDescription]
   );
 
-  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
-  const VersionedBlockConfiguration = isApiAtLeastV3
-    ? BlockConfigurationV3
-    : BlockConfigurationV1;
-
   return (
     <Col>
       {blockError && (
@@ -119,7 +112,7 @@ const EditorNodeConfigPanel: React.FC<{
         </Col>
       </Row>
 
-      <VersionedBlockConfiguration name={blockFieldName} blockId={blockId} />
+      <BlockConfiguration name={blockFieldName} blockId={blockId} />
     </Col>
   );
 };
