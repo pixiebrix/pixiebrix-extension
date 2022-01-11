@@ -22,36 +22,18 @@ import SavingExtensionModal from "./SavingExtensionModal";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { define } from "cooky-cutter";
 import {
+  extensionPointFactory,
   installedRecipeMetadataFactory,
+  recipeFactory,
   recipeMetadataFactory,
 } from "@/tests/factories";
 
-const simpleRecipeFactory = define<RecipeDefinition>({
-  apiVersion: "v3",
-  metadata: installedRecipeMetadataFactory,
-} as any);
-
 const simpleElementFactory = define<FormState>({
-  apiVersion: "v3",
+  apiVersion: "v2",
   recipe: recipeMetadataFactory,
 } as any);
 
-test("renders all buttons when Recipe is editable", () => {
-  const recipe = simpleRecipeFactory();
-  const element = simpleElementFactory();
-
-  render(
-    <SavingExtensionModal
-      recipe={recipe}
-      element={element}
-      isRecipeEditable
-      close={jest.fn()}
-      saveAsPersonalExtension={jest.fn()}
-      showCreateRecipeModal={jest.fn()}
-      showUpdateRecipeModal={jest.fn()}
-    />
-  );
-
+function expectAllRecipeButton() {
   const updateBlueprintButton = screen.getByText("Update Blueprint");
   expect(updateBlueprintButton).toHaveClass("btn-primary");
 
@@ -65,7 +47,7 @@ test("renders all buttons when Recipe is editable", () => {
 
   const cancelButton = screen.getByText("Cancel");
   expect(cancelButton).toHaveClass("btn-info");
-});
+}
 
 function expectNoRecipeButtons() {
   const updateBlueprintButton = screen.queryByText("Update Blueprint");
@@ -83,8 +65,27 @@ function expectNoRecipeButtons() {
   expect(cancelButton).toHaveClass("btn-info");
 }
 
+test("renders all buttons when Recipe is editable", () => {
+  const recipe = recipeFactory();
+  const element = simpleElementFactory();
+
+  render(
+    <SavingExtensionModal
+      recipe={recipe}
+      element={element}
+      isRecipeEditable
+      close={jest.fn()}
+      saveAsPersonalExtension={jest.fn()}
+      showCreateRecipeModal={jest.fn()}
+      showUpdateRecipeModal={jest.fn()}
+    />
+  );
+
+  expectAllRecipeButton();
+});
+
 test("doesn't render recipe buttons when recipe is editable and not latest version", () => {
-  const recipe = simpleRecipeFactory({
+  const recipe = recipeFactory({
     metadata: installedRecipeMetadataFactory({
       version: "2.0.0",
     }),
@@ -107,7 +108,7 @@ test("doesn't render recipe buttons when recipe is editable and not latest versi
 });
 
 test("renders new recipe button when recipe is not editable", () => {
-  const recipe = simpleRecipeFactory();
+  const recipe = recipeFactory();
   const element = simpleElementFactory();
 
   render(
@@ -138,8 +139,10 @@ test("renders new recipe button when recipe is not editable", () => {
 });
 
 test("doesn't render recipe buttons when extension API is not compatible with recipe", () => {
-  const recipe = simpleRecipeFactory({
+  const recipe = recipeFactory({
     apiVersion: "v2",
+    definitions: null,
+    extensionPoints: [extensionPointFactory(), extensionPointFactory()],
   });
   const element = simpleElementFactory({
     apiVersion: "v3",
@@ -158,4 +161,27 @@ test("doesn't render recipe buttons when extension API is not compatible with re
   );
 
   expectNoRecipeButtons();
+});
+
+test("renders all buttons when extension API version changes and it's the only extension inf the recipe", () => {
+  const recipe = recipeFactory({
+    apiVersion: "v2",
+  });
+  const element = simpleElementFactory({
+    apiVersion: "v3",
+  });
+
+  render(
+    <SavingExtensionModal
+      recipe={recipe}
+      element={element}
+      isRecipeEditable
+      close={jest.fn()}
+      saveAsPersonalExtension={jest.fn()}
+      showCreateRecipeModal={jest.fn()}
+      showUpdateRecipeModal={jest.fn()}
+    />
+  );
+
+  expectAllRecipeButton();
 });

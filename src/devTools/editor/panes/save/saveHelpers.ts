@@ -137,7 +137,7 @@ export function replaceRecipeExtension(
 
     if (sourceRecipe.apiVersion !== element.apiVersion) {
       const canUpdateRecipeApiVersion =
-        sourceRecipe.extensionPoints.length === 1;
+        sourceRecipe.extensionPoints.length <= 1;
       if (canUpdateRecipeApiVersion) {
         draft.apiVersion = element.apiVersion;
       } else {

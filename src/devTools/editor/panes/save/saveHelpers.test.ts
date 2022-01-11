@@ -21,7 +21,7 @@ import {
 } from "@/devTools/editor/panes/save/saveHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  extensionPointFactory,
+  recipeDefinitionFactory,
   innerExtensionPointRecipeFactory,
   versionedExtensionPointRecipeFactory,
 } from "@/tests/factories";
@@ -64,7 +64,7 @@ describe("generatePersonalBrickId", () => {
 
 describe("replaceRecipeExtension round trip", () => {
   test("single extension with versioned extensionPoint", async () => {
-    const extensionPoint = extensionPointFactory();
+    const extensionPoint = recipeDefinitionFactory();
     const recipe = versionedExtensionPointRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
     })();
@@ -104,7 +104,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("does not modify other extension point", async () => {
-    const extensionPoint = extensionPointFactory();
+    const extensionPoint = recipeDefinitionFactory();
 
     const recipe = versionedExtensionPointRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
