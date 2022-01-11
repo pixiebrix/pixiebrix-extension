@@ -100,7 +100,7 @@ export interface EditorState {
    * Are we currently showing the info message to users about upgrading from v2 to v3 of
    * the runtime api for this extension?
    */
-  showV3UpgradeMessage?: boolean;
+  showV3UpgradeMessage: boolean;
 }
 
 export const initialState: EditorState = {
@@ -114,6 +114,7 @@ export const initialState: EditorState = {
   inserting: null,
   isBetaUI: false,
   elementUIStates: {},
+  showV3UpgradeMessage: false,
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
@@ -368,9 +369,6 @@ export const editorSlice = createSlice({
     },
     clearCopiedBlockConfig: (state) => {
       delete state.copiedBlock;
-    },
-    markElementDirty: (state, action: PayloadAction<UUID>) => {
-      state.dirty[action.payload] = true;
     },
     showV3UpgradeMessage: (state) => {
       state.showV3UpgradeMessage = true;

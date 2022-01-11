@@ -28,10 +28,9 @@ import { RootState } from "@/devTools/store";
 import { actions } from "@/devTools/editor/slices/editorSlice";
 
 const UpgradedToApiV3: React.FC = () => {
-  const showMessage =
-    useSelector<RootState, boolean>(
-      (root) => root.editor.showV3UpgradeMessage
-    ) ?? false;
+  const showMessage = useSelector<RootState, boolean>(
+    (root) => root.editor.showV3UpgradeMessage
+  );
   const dispatch = useDispatch();
 
   return (
