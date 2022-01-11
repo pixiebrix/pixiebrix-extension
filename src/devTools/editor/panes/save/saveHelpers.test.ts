@@ -337,9 +337,10 @@ describe("replaceRecipeExtension round trip", () => {
     (lookupExtensionPoint as any).mockResolvedValue(extensionPoint);
 
     // Call to fromExtension changes extension version from "v2" to "v3"
-    const element = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0]
-    );
+    const element = await menuItemExtensionAdapter.fromExtension({
+      ...state.extensions[0],
+      apiVersion: "v3",
+    });
     element.label = "New Label";
 
     const newId = generateScopeBrickId("@test", recipe.metadata.id);
@@ -387,9 +388,10 @@ describe("replaceRecipeExtension round trip", () => {
 
     (lookupExtensionPoint as any).mockResolvedValue(extensionPoint);
 
-    const element = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0]
-    );
+    const element = await menuItemExtensionAdapter.fromExtension({
+      ...state.extensions[0],
+      apiVersion: "v3",
+    });
     element.label = "New Label";
 
     const newId = generateScopeBrickId("@test", recipe.metadata.id);
