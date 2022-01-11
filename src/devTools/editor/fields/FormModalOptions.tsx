@@ -79,18 +79,21 @@ const FormModalOptions: React.FC<{
         name={`${configName}.cancelable`}
         label="Cancelable?"
         schema={cancelableSchema}
+        isRequired
       />
 
       <SchemaField
         name={`${configName}.submitCaption`}
         label="Submit Button Text"
         schema={submitCaptionSchema}
+        isRequired
       />
 
       <SchemaField
         name={`${configName}.location`}
         label="Location"
         schema={locationSchema}
+        isRequired
       />
     </div>
   );

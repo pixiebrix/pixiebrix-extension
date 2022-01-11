@@ -102,6 +102,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
             label="Strategy"
             name={configName("strategy")}
             schema={UIPATH_PROPERTIES.strategy as Schema}
+            isRequired
           />
           {strategy === "Specific" && (
             <ConnectedFieldTemplate
@@ -119,12 +120,14 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
               label="Jobs Count"
               name={configName("jobsCount")}
               schema={UIPATH_PROPERTIES.jobsCount as Schema}
+              isRequired
             />
           )}
           <SchemaField
             label="Await Result"
             name={configName("awaitResult")}
             schema={UIPATH_PROPERTIES.awaitResult as Schema}
+            isRequired
           />
 
           <ChildObjectField

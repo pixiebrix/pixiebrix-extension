@@ -181,6 +181,10 @@ export async function getLog(
   return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
 }
 
+/**
+ * Unroll/flatten the context of nested `ContextErrors`
+ * @see SerializedError
+ */
 function buildContext(
   error: SerializedError,
   context: MessageContext
@@ -203,21 +207,24 @@ export async function recordError(
 ): Promise<void> {
   try {
     const message = getErrorMessage(error);
+    const flatContext = buildContext(error, context);
 
     if (await allowsTrack()) {
-      // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the object is the custom
-      // payload data. WARNING: the prototype chain is lost during deserialization, so make sure any predicate you
-      // call here also handles deserialized errors properly.
+      // Deserialize the error into an Error object before passing it to Rollbar so rollbar treats it as the error.
+      // (It treats POJO as the custom data)
       // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+
+      // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
+      // to determine log level also handle serialized/deserialized errors.
       // See https://github.com/sindresorhus/serialize-error/issues/48
       const errorObj = deserializeError(error);
 
       if (hasCancelRootCause(error)) {
         // NOP - no reason to send to Rollbar
       } else if (hasBusinessRootCause(error)) {
-        rollbar.debug(message, errorObj);
+        rollbar.debug(message, errorObj, flatContext);
       } else {
-        rollbar.error(message, errorObj);
+        rollbar.error(message, errorObj, flatContext);
       }
     }
 
@@ -225,7 +232,7 @@ export async function recordError(
       uuid: uuidv4(),
       timestamp: Date.now().toString(),
       level: "error",
-      context: buildContext(error, context),
+      context: flatContext,
       message,
       error,
       data,

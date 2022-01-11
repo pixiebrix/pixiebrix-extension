@@ -15,34 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useState } from "react";
-import { connect, useSelector } from "react-redux";
-import { servicesSlice, ServicesState } from "@/options/slices";
-import { PageTitle } from "@/layout/Page";
-import { Badge, Card, Col, Nav, Row } from "react-bootstrap";
+import React, { useCallback, useState } from "react";
+import { connect } from "react-redux";
+import { servicesSlice } from "@/options/slices";
+import Page from "@/layout/Page";
+import { Card, Col, Row } from "react-bootstrap";
 import { push } from "connected-react-router";
 import ServiceEditorModal from "./ServiceEditorModal";
 import PrivateServicesCard from "./PrivateServicesCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
-import SharedServicesCard from "./SharedServicesCard";
-import { faCloud } from "@fortawesome/free-solid-svg-icons";
+import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";
 import useServiceDefinitions from "./useServiceDefinitions";
-import { persistor, RootState } from "@/options/store";
-import { SanitizedAuth } from "@/types/contract";
+import { persistor } from "@/options/store";
 import { services } from "@/background/messenger/api";
-import GridLoader from "react-spinners/GridLoader";
 import ZapierModal from "@/options/pages/services/ZapierModal";
-import AuthContext from "@/auth/AuthContext";
-import { useTitle } from "@/hooks/title";
-import useFetch from "@/hooks/useFetch";
 import useNotifications from "@/hooks/useNotifications";
 import { useParams } from "react-router";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
+import BrickModal from "@/components/brickModal/BrickModal";
+import styles from "@/options/pages/services/PrivateServicesCard.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { uuidv4 } from "@/types/helpers";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
-
-const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
-  Object.values(services.configured);
 
 type OwnProps = {
   updateServiceConfig: typeof updateServiceConfig;
@@ -55,17 +50,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   deleteServiceConfig,
   navigate,
 }) => {
-  useTitle("Integrations");
-
-  const { data: remoteAuths } = useFetch<SanitizedAuth[]>(
-    "/api/services/shared/?meta=1"
-  );
-  const { flags } = useContext(AuthContext);
-
-  const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
-    selectConfiguredServices
-  );
-
+  const notify = useNotifications();
   const { id: configurationId } = useParams<{ id: UUID }>();
 
   const [
@@ -76,10 +61,6 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     newConfiguration,
     setNewConfiguration,
   ] = useState<RawServiceConfiguration>(null);
-
-  const [activeTab, setTab] = useState("private");
-
-  const notify = useNotifications();
 
   const {
     activeConfiguration,
@@ -132,6 +113,30 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     ]
   );
 
+  const handleCreate = useCallback(
+    (service: IService) => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal tying
+      const config = {
+        id: uuidv4(),
+        label: undefined,
+        serviceId: service.id,
+        config: {},
+      } as RawServiceConfiguration;
+
+      setNewConfiguration(config);
+      setNewConfigurationService(
+        (serviceDefinitions ?? []).find((x) => x.id === config.serviceId)
+      );
+      navigate(`/services/${encodeURIComponent(config.id)}`);
+    },
+    [
+      navigate,
+      serviceDefinitions,
+      setNewConfiguration,
+      setNewConfigurationService,
+    ]
+  );
+
   const handleDelete = useCallback(
     async (id) => {
       deleteServiceConfig({ id });
@@ -155,34 +160,32 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     [deleteServiceConfig, navigate, notify, activeService]
   );
 
-  if (servicesPending) {
-    return (
-      <div>
-        <PageTitle icon={faCloud} title="Integrations" />
-        <div className="pb-4">
-          <p>
-            Configure external accounts, resources, and APIs that you can re-use
-            across bricks
-          </p>
-        </div>
-        <Row>
-          <Col>
-            <GridLoader />
-          </Col>
-        </Row>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <PageTitle icon={faCloud} title="Integrations" />
-      <div className="pb-4">
-        <p>
-          Configure external accounts, resources, and APIs that you can re-use
-          across bricks
-        </p>
-      </div>
+    <Page
+      icon={faCloud}
+      title="Integrations"
+      description="Configure external accounts, resources, and APIs. Personal integrations are
+          stored in your browser; they are never transmitted to the PixieBrix servers or shared with your team"
+      isPending={servicesPending}
+      toolbar={
+        <BrickModal
+          onSelect={handleCreate}
+          bricks={serviceDefinitions}
+          modalClassName={styles.ModalOverride}
+          selectCaption={
+            <span>
+              <FontAwesomeIcon icon={faPlus} className="mr-1" /> Configure
+            </span>
+          }
+          caption={
+            <span>
+              <FontAwesomeIcon icon={faPlus} />
+              &nbsp;Add Integration
+            </span>
+          }
+        />
+      }
+    >
       {showZapier && (
         <ZapierModal
           onClose={() => {
@@ -209,58 +212,15 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       <Row>
         <Col>
           <Card>
-            <Card.Header>
-              <Nav
-                variant="tabs"
-                defaultActiveKey={activeTab}
-                onSelect={(x: string) => {
-                  setTab(x);
-                }}
-              >
-                <Nav.Item>
-                  <Nav.Link eventKey="private">
-                    Private Integrations{" "}
-                    <Badge variant="info">
-                      {configuredServices ? configuredServices.length : "?"}
-                    </Badge>
-                  </Nav.Link>
-                </Nav.Item>
-                {flags.includes("teams") && (
-                  <Nav.Item>
-                    <Nav.Link eventKey="shared">
-                      Shared Integrations{" "}
-                      <Badge variant="info">
-                        {remoteAuths ? remoteAuths.length : "?"}
-                      </Badge>
-                    </Nav.Link>
-                  </Nav.Item>
-                )}
-              </Nav>
-            </Card.Header>
-
-            {activeTab === "private" && (
-              <PrivateServicesCard
-                navigate={navigate}
-                services={serviceDefinitions}
-                onCreate={(config) => {
-                  setNewConfiguration(config);
-                  setNewConfigurationService(
-                    (serviceDefinitions ?? []).find(
-                      (x) => x.id === config.serviceId
-                    )
-                  );
-                  navigate(`/services/${encodeURIComponent(config.id)}`);
-                }}
-              />
-            )}
-
-            {flags.includes("teams") && activeTab === "shared" && (
-              <SharedServicesCard remoteAuths={remoteAuths} />
-            )}
+            <Card.Header>Personal Integrations</Card.Header>
+            <PrivateServicesCard
+              navigate={navigate}
+              services={serviceDefinitions}
+            />
           </Card>
         </Col>
       </Row>
-    </div>
+    </Page>
   );
 };
 

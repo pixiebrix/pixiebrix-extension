@@ -5,9 +5,9 @@ import { useField } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
-import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
 import { isNullOrBlank, joinName } from "@/utils";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import { Schema } from "@/core";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 type FrameworkOption = {
   value: Framework;
@@ -28,6 +28,21 @@ export const readerOptions: FrameworkOption[] = [
   },
   { value: "emberjs", label: "Ember.js" },
 ];
+
+const selectorFieldSchema: Schema = {
+  type: "string",
+  format: "selector",
+  title: "Component Selector",
+  description:
+    "A CSS/JQuery selector for an element corresponding to the component",
+};
+
+const optionalFieldSchema: Schema = {
+  type: "boolean",
+  title: "Optional",
+  description:
+    "Toggle to produce null/undefined if a component is not found (instead of raising an error)",
+};
 
 function useFrameworkOptions(frameworks: FrameworkMeta[]): FrameworkOption[] {
   return useMemo(
@@ -82,18 +97,15 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
         options={frameworkOptions}
       />
 
-      <ConnectedFieldTemplate
+      <SchemaField
         name={joinName(configFieldName, "selector")}
-        label="Component Selector"
-        description="A CSS/JQuery selector for an element corresponding to the component"
-        as={SelectorSelectorWidget}
+        schema={selectorFieldSchema}
       />
 
-      <ConnectedFieldTemplate
+      <SchemaField
+        isRequired
         name={joinName(configFieldName, "optional")}
-        label="Optional"
-        description="Toggle to produce null/undefined if a component is not found (instead of raising an error)"
-        as={SwitchButtonWidget}
+        schema={optionalFieldSchema}
       />
     </>
   );

@@ -20,31 +20,13 @@ import { Primitive } from "type-fest";
 import { compact, includes, isEmpty, mapValues, pickBy } from "lodash";
 import { Target } from "@/types";
 
-function printf(string: string, arguments_: string[]): string {
-  // eslint-disable-next-line unicorn/no-array-reduce -- Short and already described by "printf"
-  return arguments_.reduce(
-    (message, part) => message.replace("%s", part),
-    string
-  );
-}
-
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
     throw new Error("getCurrentURL can only run in the developer tools");
   }
 
-  const [response, error] = await browser.devtools.inspectedWindow.eval(
-    "location.href"
-  );
-
-  // Handle Dev Tools API error response
-  // https://developer.chrome.com/docs/extensions/reference/devtools_inspectedWindow/#method-eval
-  // https://github.com/pixiebrix/pixiebrix-extension/pull/999#discussion_r684370643
-  if (!response && error?.isError) {
-    throw new Error(printf(error.description, error.details));
-  }
-
-  return response;
+  const tab = await browser.tabs.get(chrome.devtools.inspectedWindow.tabId);
+  return tab.url;
 }
 
 function normalize(value: Primitive): string {

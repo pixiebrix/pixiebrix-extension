@@ -150,6 +150,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
               schema={remoteSchema}
               schemaError={remoteSchemaError}
               schemaLoading={remoteSchemaPending}
+              isRequired
             />
           )}
         </>

@@ -36,7 +36,7 @@ export const LOOKUP_SCHEMA: Schema = propertiesToSchema(
     },
     tabName: {
       type: "string",
-      description: "The tab name of the spreadsheet to update.",
+      description: "The tab name of the spreadsheet to lookup the value.",
     },
     header: {
       type: "string",

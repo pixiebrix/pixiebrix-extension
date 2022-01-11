@@ -21,6 +21,7 @@ import { inputProperties } from "@/helpers";
 import { UnknownObject } from "@/types";
 import { Expression, SchemaDefinition, TemplateEngine } from "@/core";
 import { cloneDeep } from "lodash";
+import { isSelectField } from "@/components/fields/schemaFields/widgets/v3/SchemaSelectWidget";
 
 export function stringToExpression(
   value: unknown,
@@ -212,10 +213,10 @@ async function upgradeValue(
       );
     }
   } else if (
-    fieldSchema?.type === "string" &&
-    fieldSchema?.format === "selector"
+    (fieldSchema?.type === "string" && fieldSchema?.format === "selector") ||
+    (fieldSchema && isSelectField(fieldSchema))
   ) {
-    // NOP: the Page Editor doesn't support templated selectors
+    // NOP: the Page Editor doesn't support templated selectors, and we don't want to convert enum values
   } else if (typeof value === "string") {
     // eslint-disable-next-line security/detect-object-injection -- caller iterates over keys
     config[fieldName] = stringToExpression(value, templateEngine);
