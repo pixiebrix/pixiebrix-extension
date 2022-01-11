@@ -52,7 +52,7 @@ const SavingExtensionModal: React.FC<OwnProps> = ({
     message = `This extension is part of blueprint ${recipeName}. The API version ${recipe.apiVersion} of the blueprint is not compatible with the current API version ${element.apiVersion} of the extension.`;
   } else if (isRecipeEditable) {
     if (installedRecipeVersion === latestRecipeVersion) {
-      message = `This extension is part of blueprint ${recipeName}, do you want to edit the blueprint, or create a personal extension?`;
+      message = `This extension is part of blueprint ${recipeName}.`;
       showNewRecipeButton = true;
       showUpdateRecipeButton = true;
     } else {

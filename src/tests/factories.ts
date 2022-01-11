@@ -46,9 +46,8 @@ import menuItem, {
 } from "@/devTools/editor/extensionPoints/menuItem";
 import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { RecipeDefinition } from "@/types/definitions";
+import { RecipeDefinition, ExtensionPointConfig } from "@/types/definitions";
 import { ExtensionPointConfig as ExtensionPointDefinition } from "@/extensionPoints/types";
-import { ExtensionPointConfig } from "@/types/definitions";
 import {
   Context as DevtoolsContextType,
   FrameConnectionState,
