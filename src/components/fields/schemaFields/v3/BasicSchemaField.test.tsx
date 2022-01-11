@@ -41,10 +41,31 @@ describe("option mode switching", () => {
     ).toHaveAttribute("data-test-selected", mode);
   };
 
-  test("switches automatically from variable to text when @ removed", async () => {
+  test("switches automatically from variable to text when @ removed - string field", async () => {
     const { container } = renderSchemaField(
       "test",
       { type: "string" },
+      {
+        test: {
+          __type__: "var",
+          __value__: "@data",
+        },
+      }
+    );
+
+    expectToggleMode(container, "Variable");
+
+    const inputElement = screen.getByLabelText("test");
+    fireTextInput(inputElement, "text");
+    await waitForEffect();
+
+    expectToggleMode(container, "Text");
+  });
+
+  test("switches automatically from variable to text when @ removed - enum field", async () => {
+    const { container } = renderSchemaField(
+      "test",
+      { type: "string", enum: ["option 1", "option 2"] },
       {
         test: {
           __type__: "var",
