@@ -91,22 +91,12 @@ const BlockConfiguration: React.FunctionComponent<{
     [configName]
   );
 
-  const showRootMode = useMemo(
-    () =>
-      // Only show if necessary. Currently, only the trigger extension point passes the
-      // element that triggered the event through for the reader root.
-      isRootAware && ["trigger", "contextMenu"].includes(context.values.type),
-    [context.values.type, isRootAware]
-  );
-
-  const showIfAndTarget = useMemo(() => blockType && blockType !== "renderer", [
-    blockType,
-  ]);
-
-  const noAdvancedOptions = useMemo(() => !showRootMode && !showIfAndTarget, [
-    showIfAndTarget,
-    showRootMode,
-  ]);
+  // Only show if necessary. Currently, only the trigger extension point passes the element
+  // that triggered the event through for the reader root
+  const showRootMode =
+    isRootAware && ["trigger", "contextMenu"].includes(context.values.type);
+  const showIfAndTarget = blockType && blockType !== "renderer";
+  const noAdvancedOptions = !showRootMode && !showIfAndTarget;
 
   return (
     <>
