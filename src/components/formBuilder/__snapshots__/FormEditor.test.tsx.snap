@@ -17,12 +17,46 @@ exports[`FormEditor renders empty schema 1`] = `
       <div
         class="col-lg-9"
       >
-        <textarea
-          class="form-control"
-          id="rjsfSchema.schema.title"
-          name="rjsfSchema.schema.title"
-          rows="1"
-        />
+        <div
+          class="root"
+        >
+          <div
+            class="field"
+          >
+            <div
+              role="button"
+              tabindex="0"
+            >
+              <input
+                class="form-control"
+                disabled=""
+                id="rjsfSchema.schema.title"
+                name="rjsfSchema.schema.title"
+                value=""
+              />
+            </div>
+          </div>
+          <div
+            class="dropdown dropdown"
+            data-test-selected="Exclude"
+            data-testid="toggle-rjsfSchema.schema.title"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-link"
+              type="button"
+            >
+              <span
+                class="symbol"
+              >
+                <svg
+                  class="root"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     <div
@@ -37,12 +71,46 @@ exports[`FormEditor renders empty schema 1`] = `
       <div
         class="col-lg-9"
       >
-        <textarea
-          class="form-control"
-          id="rjsfSchema.schema.description"
-          name="rjsfSchema.schema.description"
-          rows="1"
-        />
+        <div
+          class="root"
+        >
+          <div
+            class="field"
+          >
+            <div
+              role="button"
+              tabindex="0"
+            >
+              <input
+                class="form-control"
+                disabled=""
+                id="rjsfSchema.schema.description"
+                name="rjsfSchema.schema.description"
+                value=""
+              />
+            </div>
+          </div>
+          <div
+            class="dropdown dropdown"
+            data-test-selected="Exclude"
+            data-testid="toggle-rjsfSchema.schema.description"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-link"
+              type="button"
+            >
+              <span
+                class="symbol"
+              >
+                <svg
+                  class="root"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     <hr />
@@ -121,14 +189,42 @@ exports[`FormEditor renders simple schema 1`] = `
       <div
         class="col-lg-9"
       >
-        <textarea
-          class="form-control"
-          id="rjsfSchema.schema.title"
-          name="rjsfSchema.schema.title"
-          rows="1"
+        <div
+          class="root"
         >
-          A form
-        </textarea>
+          <div
+            class="field"
+          >
+            <textarea
+              class="form-control"
+              id="rjsfSchema.schema.title"
+              name="rjsfSchema.schema.title"
+              rows="1"
+            >
+              A form
+            </textarea>
+          </div>
+          <div
+            class="dropdown dropdown"
+            data-test-selected="Text"
+            data-testid="toggle-rjsfSchema.schema.title"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-link"
+              type="button"
+            >
+              <span
+                class="symbol"
+              >
+                <svg
+                  class="root"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     <div
@@ -143,14 +239,42 @@ exports[`FormEditor renders simple schema 1`] = `
       <div
         class="col-lg-9"
       >
-        <textarea
-          class="form-control"
-          id="rjsfSchema.schema.description"
-          name="rjsfSchema.schema.description"
-          rows="1"
+        <div
+          class="root"
         >
-          A form example.
-        </textarea>
+          <div
+            class="field"
+          >
+            <textarea
+              class="form-control"
+              id="rjsfSchema.schema.description"
+              name="rjsfSchema.schema.description"
+              rows="1"
+            >
+              A form example.
+            </textarea>
+          </div>
+          <div
+            class="dropdown dropdown"
+            data-test-selected="Text"
+            data-testid="toggle-rjsfSchema.schema.description"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-link"
+              type="button"
+            >
+              <span
+                class="symbol"
+              >
+                <svg
+                  class="root"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     <hr />
@@ -269,14 +393,42 @@ exports[`FormEditor renders simple schema 1`] = `
         <div
           class="col-lg-9"
         >
-          <textarea
-            class="form-control"
-            id="rjsfSchema.schema.properties.firstName.title"
-            name="rjsfSchema.schema.properties.firstName.title"
-            rows="1"
+          <div
+            class="root"
           >
-            First name
-          </textarea>
+            <div
+              class="field"
+            >
+              <textarea
+                class="form-control"
+                id="rjsfSchema.schema.properties.firstName.title"
+                name="rjsfSchema.schema.properties.firstName.title"
+                rows="1"
+              >
+                First name
+              </textarea>
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Text"
+              data-testid="toggle-rjsfSchema.schema.properties.firstName.title"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <svg
+                    class="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
           <small
             class="text-muted form-text"
           >
@@ -296,12 +448,46 @@ exports[`FormEditor renders simple schema 1`] = `
         <div
           class="col-lg-9"
         >
-          <textarea
-            class="form-control"
-            id="rjsfSchema.schema.properties.firstName.description"
-            name="rjsfSchema.schema.properties.firstName.description"
-            rows="1"
-          />
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <div
+                role="button"
+                tabindex="0"
+              >
+                <input
+                  class="form-control"
+                  disabled=""
+                  id="rjsfSchema.schema.properties.firstName.description"
+                  name="rjsfSchema.schema.properties.firstName.description"
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Exclude"
+              data-testid="toggle-rjsfSchema.schema.properties.firstName.description"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <svg
+                    class="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
           <small
             class="text-muted form-text"
           >
@@ -414,14 +600,42 @@ exports[`FormEditor renders simple schema 1`] = `
         <div
           class="col-lg-9"
         >
-          <textarea
-            class="form-control"
-            id="rjsfSchema.schema.properties.firstName.default"
-            name="rjsfSchema.schema.properties.firstName.default"
-            rows="1"
+          <div
+            class="root"
           >
-            Chuck
-          </textarea>
+            <div
+              class="field"
+            >
+              <textarea
+                class="form-control"
+                id="rjsfSchema.schema.properties.firstName.default"
+                name="rjsfSchema.schema.properties.firstName.default"
+                rows="1"
+              >
+                Chuck
+              </textarea>
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Text"
+              data-testid="toggle-rjsfSchema.schema.properties.firstName.default"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <svg
+                    class="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <div
