@@ -67,6 +67,7 @@ export function inferInputMode(
     return hasEnum ? "select" : "string";
   }
 
+  // TODO: Should handle number the same way as string when implementing https://github.com/pixiebrix/pixiebrix-extension/issues/2341
   if (typeOf === "number" || typeOf === "boolean" || typeOf === "object") {
     return typeOf;
   }
