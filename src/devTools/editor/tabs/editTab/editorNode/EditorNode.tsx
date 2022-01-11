@@ -22,6 +22,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ListGroup } from "react-bootstrap";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { NodeId } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
+import cx from "classnames";
 
 export type EditorNodeProps = {
   nodeId?: NodeId;
@@ -93,10 +94,10 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   return (
     <ListGroup.Item
       ref={nodeRef}
-      action
+      tabIndex={0}
       onClick={onClick}
       active={active}
-      className={styles.root}
+      className={cx(styles.root, "list-group-item-action")}
     >
       <div className={styles.icon}>
         {icon}
