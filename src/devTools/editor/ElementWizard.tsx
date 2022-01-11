@@ -15,17 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { useField, useFormikContext } from "formik";
+import React, { useCallback, useContext, useMemo, useState } from "react";
+import { useFormikContext } from "formik";
 import { groupBy } from "lodash";
 import { Badge, Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
 import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
@@ -38,9 +32,10 @@ import { thisTab } from "@/devTools/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import useSavingWizard from "./panes/save/useSavingWizard";
-import { useSelector } from "react-redux";
-import { RootState } from "@/devTools/store";
-import { ApiVersion } from "@/core";
+import { useDispatch } from "react-redux";
+import { produce } from "immer";
+import { useAsyncEffect } from "use-async-effect";
+import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 
 const LOG_STEP_NAME = "Logs";
 
@@ -130,19 +125,25 @@ const ElementWizard: React.FunctionComponent<{
     [setStep, refreshLogs]
   );
 
-  const showV3Message = useSelector(
-    (root: RootState) => root.editor.showV3UpgradeMessage
-  );
-  const { setValue: setApiVersion } = useField<ApiVersion>("apiVersion")[2];
+  const {
+    values: formState,
+    setValues: setFormState,
+  } = useFormikContext<FormState>();
 
-  useEffect(() => {
-    if (showV3Message) {
-      setApiVersion("v3");
+  const dispatch = useDispatch();
+
+  useAsyncEffect(async () => {
+    if (formState.apiVersion === "v2") {
+      const newState = await produce(formState, async (draft) => {
+        draft.extension.blockPipeline = await upgradePipelineToV3(
+          draft.extension.blockPipeline
+        );
+        draft.apiVersion = "v3";
+      });
+      setFormState(newState);
+      dispatch(actions.showV3UpgradeMessage());
     }
-    // Need to exclude the formik handler here from dependencies. The reference isn't stable, so
-    // it's causing "maximum update depth exceeded" errors.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showV3Message]);
+  }, []);
 
   return (
     <Tab.Container activeKey={step} key={element.uuid}>
