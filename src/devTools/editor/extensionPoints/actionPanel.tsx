@@ -50,9 +50,6 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
 import { Except } from "type-fest";
-import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
-import store from "@/devTools/store";
-import { actions } from "@/devTools/editor/slices/editorSlice";
 
 type Extension = BaseExtensionState & Except<ActionPanelConfig, "body">;
 
@@ -141,7 +138,6 @@ export async function fromExtensionPoint(
   return {
     uuid: uuidv4(),
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    showV3UpgradeMessage: false,
     installed: true,
     type: extensionPoint.definition.type,
     label: heading,
@@ -178,23 +174,9 @@ async function fromExtension(
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = extensionWithNormalizedPipeline(config.config, "body");
-  let showV3UpgradeMessage = false;
-  let { apiVersion, uuid } = base;
-
-  if (apiVersion === "v2") {
-    extension.blockPipeline = await upgradePipelineToV3(
-      extension.blockPipeline
-    );
-    showV3UpgradeMessage = true;
-    apiVersion = "v3";
-    store.dispatch(actions.markElementDirty(uuid));
-  }
 
   return {
     ...base,
-
-    apiVersion,
-    showV3UpgradeMessage,
 
     extension,
 

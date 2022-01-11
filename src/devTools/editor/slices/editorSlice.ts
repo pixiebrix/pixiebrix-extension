@@ -95,6 +95,12 @@ export interface EditorState {
    * A clipboard-style-copy of a block ready to paste into an extension
    */
   copiedBlock?: BlockConfig;
+
+  /**
+   * Are we currently showing the info message to users about upgrading from v2 to v3 of
+   * the runtime api for this extension?
+   */
+  showV3UpgradeMessage?: boolean;
 }
 
 export const initialState: EditorState = {
@@ -365,6 +371,12 @@ export const editorSlice = createSlice({
     },
     markElementDirty: (state, action: PayloadAction<UUID>) => {
       state.dirty[action.payload] = true;
+    },
+    showV3UpgradeMessage: (state) => {
+      state.showV3UpgradeMessage = true;
+    },
+    hideV3UpgradeMessage: (state) => {
+      state.showV3UpgradeMessage = false;
     },
   },
 });

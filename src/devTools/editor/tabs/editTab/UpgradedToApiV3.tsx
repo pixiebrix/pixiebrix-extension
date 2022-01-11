@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { useField } from "formik";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,13 +23,16 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./UpgradedToApiV3.module.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/devTools/store";
+import { actions } from "@/devTools/editor/slices/editorSlice";
 
 const UpgradedToApiV3: React.FC = () => {
-  const [
-    { value: showMessage },
-    ,
-    { setValue: setShowMessage },
-  ] = useField<boolean>("showV3UpgradeMessage");
+  const showMessage =
+    useSelector<RootState, boolean>(
+      (root) => root.editor.showV3UpgradeMessage
+    ) ?? false;
+  const dispatch = useDispatch();
 
   return (
     showMessage && (
@@ -56,7 +58,7 @@ const UpgradedToApiV3: React.FC = () => {
           type="button"
           className={styles.close}
           onClick={() => {
-            setShowMessage(false);
+            dispatch(actions.hideV3UpgradeMessage());
           }}
         >
           <FontAwesomeIcon icon={faTimes} />

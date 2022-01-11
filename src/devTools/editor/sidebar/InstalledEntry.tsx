@@ -31,6 +31,8 @@ import {
   NotAvailableIcon,
   ExtensionIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
+import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
+import { produce } from "immer";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
@@ -53,6 +55,17 @@ const InstalledEntry: React.FunctionComponent<{
         // FIXME: is where we need to uninstall the extension because it will now be a dynamic element? Or should it
         //  be getting handled by lifecycle.ts? Need to add some logging to figure out how other ones work
         dispatch(actions.selectInstalled(state));
+
+        if (state.apiVersion === "v2") {
+          const newState = await produce(state, async (draft) => {
+            draft.extension.blockPipeline = await upgradePipelineToV3(
+              draft.extension.blockPipeline
+            );
+            draft.apiVersion = "v3";
+          });
+          dispatch(actions.editElement(newState));
+          dispatch(actions.showV3UpgradeMessage());
+        }
       } catch (error) {
         reportError(error);
         dispatch(actions.adapterError({ uuid: extension.id, error }));
