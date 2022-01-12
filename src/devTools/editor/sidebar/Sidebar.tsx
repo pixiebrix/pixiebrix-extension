@@ -43,11 +43,16 @@ import styles from "./Sidebar.module.scss";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
+  faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 import AuthContext from "@/auth/AuthContext";
+
+function reload() {
+  location.reload();
+}
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -160,7 +165,6 @@ const SidebarExpanded: React.FunctionComponent<
               size="sm"
               title="Add"
               id="add-extension-point"
-              className="mr-2"
             >
               {sortBy([...ADAPTERS.values()], (x) => x.displayOrder)
                 .filter((element) => showBetaExtensionPoints || !element.beta)
@@ -176,6 +180,12 @@ const SidebarExpanded: React.FunctionComponent<
                   />
                 ))}
             </DropdownButton>
+
+            {process.env.ENVIRONMENT === "development" && (
+              <Button type="button" size="sm" variant="light" onClick={reload}>
+                <FontAwesomeIcon icon={faSync} />
+              </Button>
+            )}
           </div>
           <Button
             variant="light"
