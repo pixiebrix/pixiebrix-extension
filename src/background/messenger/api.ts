@@ -115,6 +115,7 @@ export const traces = {
   addEntry: getNotifier("ADD_TRACE_ENTRY", bg),
   addExit: getNotifier("ADD_TRACE_EXIT", bg),
   clear: getNotifier("CLEAR_TRACES", bg),
+  clearAll: getNotifier("CLEAR_ALL_TRACES", bg),
 };
 
 export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
