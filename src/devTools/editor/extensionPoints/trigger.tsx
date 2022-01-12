@@ -21,6 +21,7 @@ import {
   baseFromExtension,
   baseSelectExtension,
   baseSelectExtensionPoint,
+  extensionWithNormalizedPipeline,
   getImplicitReader,
   lookupExtensionPoint,
   makeInitialBaseState,
@@ -30,7 +31,6 @@ import {
   readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
-  withInstanceIds,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -43,7 +43,7 @@ import {
 } from "@/extensionPoints/triggerExtension";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray, identity, pickBy } from "lodash";
+import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -220,14 +220,13 @@ async function fromExtension(
     intervalMillis,
   } = extensionPoint.definition;
 
-  const blockPipeline = withInstanceIds(castArray(config.config.action));
+  const base = baseFromExtension(config, extensionPoint.definition.type);
+  const extension = extensionWithNormalizedPipeline(config.config, "action");
 
   return {
-    ...baseFromExtension(config, extensionPoint.definition.type),
+    ...base,
 
-    extension: {
-      blockPipeline,
-    },
+    extension,
 
     extensionPoint: {
       metadata: extensionPoint.metadata,

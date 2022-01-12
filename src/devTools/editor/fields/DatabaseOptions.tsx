@@ -32,11 +32,13 @@ import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 
 const keySchema: Schema = {
   type: "string",
+  title: "Key",
   description: "The unique key for the record",
 };
 
 const valueSchema: Schema = {
   type: "object",
+  title: "Value",
   description: "The data to store in the database",
   additionalProperties: true,
 };
@@ -117,13 +119,13 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
         }}
       />
 
-      <SchemaField name={configName("key")} label="Key" schema={keySchema} />
+      <SchemaField name={configName("key")} schema={keySchema} isRequired />
 
       {showValueField && (
         <SchemaField
           name={configName("value")}
-          label="Value"
           schema={valueSchema}
+          isRequired
         />
       )}
 

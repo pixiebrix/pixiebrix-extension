@@ -29,7 +29,7 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  normalizePipeline,
+  extensionWithNormalizedPipeline,
   omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
@@ -205,10 +205,13 @@ export async function fromExtension(
     "menuItem"
   >(config, "menuItem");
 
-  return {
-    ...baseFromExtension(config, extensionPoint.definition.type),
+  const base = baseFromExtension(config, extensionPoint.definition.type);
+  const extension = extensionWithNormalizedPipeline(config.config, "action");
 
-    extension: normalizePipeline(config.config, "action"),
+  return {
+    ...base,
+
+    extension,
 
     // `containerInfo` only populated on initial creation session
     containerInfo: null,

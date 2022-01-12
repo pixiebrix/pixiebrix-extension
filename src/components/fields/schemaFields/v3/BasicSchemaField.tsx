@@ -200,25 +200,19 @@ function getToggleOptions({
   }
 
   if (isSelectField(fieldSchema)) {
-    pushOptions(
-      {
-        label: "Select...",
-        value: "string",
-        symbol: <OptionIcon icon="select" />,
-        Widget: SchemaSelectWidget,
-        interpretValue: () =>
-          typeof fieldSchema.default === "string"
-            ? String(fieldSchema.default)
-            : null,
-      },
-      varOption
-    );
+    pushOptions({
+      label: "Select...",
+      value: "select",
+      symbol: <OptionIcon icon="select" />,
+      Widget: SchemaSelectWidget,
+      interpretValue: () =>
+        typeof fieldSchema.default === "string"
+          ? String(fieldSchema.default)
+          : null,
+    });
   }
-  // Using "else" here because we don't want to have both select and plain text
-  // options at the same time. If something has suggestions and allows typing
-  // custom values as well, that will be covered by "creatable" within the
-  // SchemaSelectWidget.
-  else if (fieldSchema.type === "string" || anyType) {
+
+  if (fieldSchema.type === "string" || anyType) {
     pushOptions(
       {
         label: "Text",
@@ -392,30 +386,44 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
 
   const { customToggleModes } = useContext(SchemaFieldContext);
 
-  const isObjectType =
-    schema.type === "object" ||
-    !Object.prototype.hasOwnProperty.call(schema, "type");
-  if (
-    isObjectType &&
-    schema.properties === undefined &&
-    schema.additionalProperties === undefined &&
-    schema.oneOf === undefined &&
-    schema.anyOf === undefined &&
-    schema.allOf === undefined
-  ) {
-    schema.additionalProperties = true;
-  }
+  const normalizedSchema = useMemo(() => {
+    const isObjectType =
+      schema.type === "object" ||
+      !Object.prototype.hasOwnProperty.call(schema, "type");
+
+    if (
+      isObjectType &&
+      schema.properties === undefined &&
+      schema.additionalProperties === undefined &&
+      schema.oneOf === undefined &&
+      schema.anyOf === undefined &&
+      schema.allOf === undefined
+    ) {
+      return {
+        ...schema,
+        additionalProperties: true,
+      };
+    }
+
+    return schema;
+  }, [schema]);
 
   const inputModeOptions = useMemo(
     () =>
       getToggleOptions({
-        fieldSchema: schema,
+        fieldSchema: normalizedSchema,
         isRequired,
         customToggleModes,
         isObjectProperty,
         isArrayItem,
       }),
-    [customToggleModes, isArrayItem, isObjectProperty, isRequired, schema]
+    [
+      customToggleModes,
+      isArrayItem,
+      isObjectProperty,
+      isRequired,
+      normalizedSchema,
+    ]
   );
 
   const [{ value }, { error, touched }, { setValue }] = useField(name);

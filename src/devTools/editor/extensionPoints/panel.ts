@@ -25,7 +25,7 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  normalizePipeline,
+  extensionWithNormalizedPipeline,
   omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerTypeHack,
@@ -220,12 +220,15 @@ async function fromExtension(
     "panel"
   >(config, "panel");
 
-  return {
-    ...baseFromExtension(config, extensionPoint.definition.type),
+  const base = baseFromExtension(config, extensionPoint.definition.type);
+  const extension = extensionWithNormalizedPipeline(config.config, "body", {
+    heading: "",
+  });
 
-    extension: normalizePipeline(config.config, "body", {
-      heading: "",
-    }),
+  return {
+    ...base,
+
+    extension,
 
     containerInfo: null,
 

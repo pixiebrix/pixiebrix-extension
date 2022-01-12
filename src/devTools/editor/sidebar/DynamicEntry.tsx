@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Entry.module.scss";
 import React, { useCallback } from "react";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
-import { Runtime } from "webextension-polyfill";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
 import { ListGroup } from "react-bootstrap";
@@ -30,6 +30,7 @@ import {
 import { UUID } from "@/core";
 import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
+import cx from "classnames";
 
 /**
  * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
@@ -37,7 +38,6 @@ import { thisTab } from "@/devTools/utils";
  */
 const DynamicEntry: React.FunctionComponent<{
   item: FormState;
-  port: Runtime.Port;
   available: boolean;
   activeElement: string | null;
 }> = ({ item, available, activeElement }) => {
@@ -57,21 +57,25 @@ const DynamicEntry: React.FunctionComponent<{
 
   return (
     <ListGroup.Item
+      className={styles.root}
+      action
       active={item.uuid === activeElement}
       key={`dynamic-${item.uuid}`}
       onMouseEnter={async () => showOverlay(item.uuid)}
       onMouseLeave={async () => hideOverlay()}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
-      style={{ cursor: "pointer" }}
     >
-      <ExtensionIcon type={item.type} /> {getLabel(item)}
+      <span className={styles.icon}>
+        <ExtensionIcon type={item.type} />
+      </span>
+      <span className={styles.name}>{getLabel(item)}</span>
       {!available && (
-        <span className="ml-2">
+        <span className={styles.icon}>
           <NotAvailableIcon />
         </span>
       )}
       {isDirty && (
-        <span className="text-danger ml-2">
+        <span className={cx(styles.icon, "text-danger")}>
           <UnsavedChangesIcon />
         </span>
       )}

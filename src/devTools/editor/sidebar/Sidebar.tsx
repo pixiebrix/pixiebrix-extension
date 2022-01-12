@@ -21,6 +21,7 @@ import { DevToolsContext } from "@/devTools/context";
 import { sortBy } from "lodash";
 import {
   Badge,
+  Button,
   Dropdown,
   DropdownButton,
   Form,
@@ -42,6 +43,7 @@ import styles from "./Sidebar.module.scss";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
+  faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
@@ -93,10 +95,12 @@ const SidebarExpanded: React.FunctionComponent<
   const context = useContext(DevToolsContext);
 
   const { flags } = useContext(AuthContext);
+  const showDeveloperUI =
+    process.env.ENVIRONMENT === "development" ||
+    flags.includes("page-editor-developer");
   const showBetaExtensionPoints = flags.includes("page-editor-beta");
 
   const {
-    port,
     tabState: { hasPermissions },
   } = context;
 
@@ -160,7 +164,6 @@ const SidebarExpanded: React.FunctionComponent<
               size="sm"
               title="Add"
               id="add-extension-point"
-              className="mr-2"
             >
               {sortBy([...ADAPTERS.values()], (x) => x.displayOrder)
                 .filter((element) => showBetaExtensionPoints || !element.beta)
@@ -176,19 +179,34 @@ const SidebarExpanded: React.FunctionComponent<
                   />
                 ))}
             </DropdownButton>
+
+            {showDeveloperUI && (
+              <Button
+                type="button"
+                size="sm"
+                variant="light"
+                onClick={() => {
+                  location.reload();
+                }}
+              >
+                <FontAwesomeIcon icon={faSync} />
+              </Button>
+            )}
           </div>
-          <button
-            className={cx("navbar-toggler", styles.toggle)}
+          <Button
+            variant="light"
+            className={cx(styles.toggle)}
             type="button"
             onClick={collapseSidebar}
           >
             <FontAwesomeIcon icon={faAngleDoubleLeft} />
-          </button>
+          </Button>
         </div>
 
         {unavailableCount ? (
           <div className={styles.unavailable}>
             <Form.Check
+              id="unavailable-extensions-checkbox"
               type="checkbox"
               label={`Show ${unavailableCount} unavailable`}
               defaultChecked={showAll}
@@ -215,7 +233,6 @@ const SidebarExpanded: React.FunctionComponent<
               <DynamicEntry
                 key={`dynamic-${entry.uuid}`}
                 item={entry}
-                port={port}
                 available={
                   !availableDynamicIds || availableDynamicIds.has(entry.uuid)
                 }
@@ -234,14 +251,15 @@ const SidebarCollapsed: React.FunctionComponent<{
   expandSidebar: () => void;
 }> = ({ expandSidebar }) => (
   <div className={cx(styles.root, styles.collapsed)}>
-    <button
-      className={cx("navbar-toggler", styles.toggle)}
+    <Button
+      variant="light"
+      className={cx(styles.toggle)}
       type="button"
       onClick={expandSidebar}
     >
       <Logo />
       <FontAwesomeIcon icon={faAngleDoubleRight} />
-    </button>
+    </Button>
   </div>
 );
 

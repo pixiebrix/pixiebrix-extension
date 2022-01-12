@@ -15,17 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useFormikContext } from "formik";
 import { groupBy } from "lodash";
 import { Badge, Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
 import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
@@ -38,6 +32,10 @@ import { thisTab } from "@/devTools/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import useSavingWizard from "./panes/save/useSavingWizard";
+import { useDispatch } from "react-redux";
+import { produce } from "immer";
+import { useAsyncEffect } from "use-async-effect";
+import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 
 const LOG_STEP_NAME = "Logs";
 
@@ -91,10 +89,6 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, editable }) => {
   const [step, setStep] = useState(wizard[0].step);
 
-  useEffect(() => {
-    setStep(wizard[0].step);
-  }, [setStep]);
-
   const { refresh: refreshLogs } = useContext(LogContext);
 
   const availableDefinition = element.extensionPoint.definition.isAvailable;
@@ -130,6 +124,26 @@ const ElementWizard: React.FunctionComponent<{
     },
     [setStep, refreshLogs]
   );
+
+  const {
+    values: formState,
+    setValues: setFormState,
+  } = useFormikContext<FormState>();
+
+  const dispatch = useDispatch();
+
+  useAsyncEffect(async () => {
+    if (formState.apiVersion === "v2") {
+      const newState = await produce(formState, async (draft) => {
+        draft.extension.blockPipeline = await upgradePipelineToV3(
+          draft.extension.blockPipeline
+        );
+        draft.apiVersion = "v3";
+      });
+      setFormState(newState);
+      dispatch(actions.showV3UpgradeMessage());
+    }
+  }, []);
 
   return (
     <Tab.Container activeKey={step} key={element.uuid}>

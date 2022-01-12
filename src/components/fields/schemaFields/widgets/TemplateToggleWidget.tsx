@@ -39,7 +39,7 @@ interface InputModeOptionBase<
   interpretValue?: (oldValue: unknown) => unknown;
 }
 
-export type StringOption = InputModeOptionBase<"string" | "var"> & {
+export type StringOption = InputModeOptionBase<"string" | "select" | "var"> & {
   interpretValue: (oldValue: unknown) => string | Expression;
 };
 export type NumberOption = InputModeOptionBase<"number"> & {
@@ -89,7 +89,10 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   ...schemaFieldProps
 }) => {
   const [{ value }, , { setValue }] = useField(schemaFieldProps.name);
-  const { inputMode, onOmitField } = useToggleFormField(schemaFieldProps.name);
+  const { inputMode, onOmitField } = useToggleFormField(
+    schemaFieldProps.name,
+    schemaFieldProps.schema
+  );
   const selectedOption = inputModeOptions.find((x) => x.value === inputMode);
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
   const [focusInput, setFocusInput] = useState(false);

@@ -26,7 +26,7 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
-  normalizePipeline,
+  extensionWithNormalizedPipeline,
   omitEditorMetadata,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   removeEmptyValues,
@@ -155,7 +155,6 @@ async function fromExtension(
     QuickBarConfig,
     "quickBar"
   >(config, "quickBar");
-  const extensionConfig = config.config;
 
   const {
     documentUrlPatterns,
@@ -165,10 +164,13 @@ async function fromExtension(
     reader,
   } = extensionPoint.definition;
 
-  return {
-    ...baseFromExtension(config, extensionPoint.definition.type),
+  const base = baseFromExtension(config, extensionPoint.definition.type);
+  const extension = extensionWithNormalizedPipeline(config.config, "action");
 
-    extension: normalizePipeline(extensionConfig, "action"),
+  return {
+    ...base,
+
+    extension,
 
     extensionPoint: {
       metadata: extensionPoint.metadata,

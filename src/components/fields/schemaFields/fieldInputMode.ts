@@ -17,6 +17,8 @@
 
 import { UnknownObject } from "@/types";
 import { isTemplateExpression } from "@/runtime/mapArgs";
+import { Schema } from "@/core";
+import { isEmpty } from "lodash";
 
 export type FieldInputMode =
   | "string"
@@ -25,22 +27,26 @@ export type FieldInputMode =
   | "boolean"
   | "array"
   | "object"
+  | "select"
   | "omit"; // An input option to remove a property
 
 export function inferInputMode(
   fieldConfig: UnknownObject,
-  fieldName: string
+  fieldName: string,
+  fieldSchema: Schema
 ): FieldInputMode {
   const hasField = Object.prototype.hasOwnProperty.call(fieldConfig, fieldName);
   if (!hasField) {
     return "omit";
   }
 
+  const hasEnum = !isEmpty(fieldSchema.examples ?? fieldSchema.enum);
+
   // eslint-disable-next-line security/detect-object-injection -- config field names
   const value = fieldConfig[fieldName];
 
   if (value == null) {
-    return "string";
+    return hasEnum ? "select" : "string";
   }
 
   if (isTemplateExpression(value)) {
@@ -57,12 +63,12 @@ export function inferInputMode(
   }
 
   const typeOf: string = typeof value;
-  if (
-    typeOf === "string" ||
-    typeOf === "number" ||
-    typeOf === "boolean" ||
-    typeOf === "object"
-  ) {
+  if (typeOf === "string") {
+    return hasEnum ? "select" : "string";
+  }
+
+  // TODO: Should handle number the same way as string when implementing https://github.com/pixiebrix/pixiebrix-extension/issues/2341
+  if (typeOf === "number" || typeOf === "boolean" || typeOf === "object") {
     return typeOf;
   }
 

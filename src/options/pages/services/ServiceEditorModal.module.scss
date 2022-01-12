@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2021 PixieBrix, Inc.
+/*!
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -14,12 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* eslint-disable import/export -- These are overrides, it's on purpose */
 
-// eslint-disable-next-line no-restricted-imports -- The node_modules path is to avoid self-references due to webpack alias to this file
-export * from "../../node_modules/webext-detect-page";
+.modal {
+  // 990 because the Google File Picker iframe is 1000; backdrop is 980 (see below)
+  z-index: 990 !important;
+}
 
-export function isExtensionContext() {
-  // Enables static analysis and removal of dead code
-  return true;
+.backdrop {
+  // Modal is 980
+  z-index: 980 !important;
 }

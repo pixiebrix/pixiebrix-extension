@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Entry.module.scss";
 import React, { useCallback } from "react";
 import { IExtension, UUID } from "@/core";
 import { useDispatch } from "react-redux";
@@ -62,14 +63,18 @@ const InstalledEntry: React.FunctionComponent<{
 
   return (
     <ListGroup.Item
+      className={styles.root}
+      action
       active={extension.id === activeElement}
       key={`installed-${extension.id}`}
       onClick={async () => selectHandler(extension)}
-      style={{ cursor: "pointer" }}
     >
-      <ExtensionIcon type={type} /> {extension.label ?? extension.id}
+      <span className={styles.icon}>
+        <ExtensionIcon type={type} />
+      </span>
+      <span className={styles.name}>{extension.label ?? extension.id}</span>
       {!available && (
-        <span className="ml-2">
+        <span className={styles.icon}>
           <NotAvailableIcon />
         </span>
       )}

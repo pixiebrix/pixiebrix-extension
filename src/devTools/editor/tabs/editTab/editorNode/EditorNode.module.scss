@@ -16,19 +16,12 @@
  */
 
 .root {
-  $borderWidth: 1px;
   display: flex;
   align-items: center;
   font-size: 0.875rem;
-  border: solid 1px #ced4da;
-  border-width: $borderWidth 0;
-  margin-top: -$borderWidth; // Overlap borders
   padding: 20px 10px;
   padding-right: 0;
-}
-.activeNode {
-  background-color: var(--blue);
-  color: white;
+  cursor: pointer;
 }
 
 .icon {
@@ -43,8 +36,9 @@
 
   // External icon
   img {
-    width: 1.2em;
-    height: 1.2em;
+    // !important is to override the inline CSS
+    width: 1.2em !important;
+    height: 1.2em !important;
   }
   svg {
     font-size: inherit;
