@@ -462,6 +462,8 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
       {...props}
+      // Pass in schema after spreading props to override the non-normalized schema in props
+      schema={normalizedSchema}
     />
   );
 };
