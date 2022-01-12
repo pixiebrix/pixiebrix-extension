@@ -24,6 +24,11 @@
   width: auto;
   flex-grow: 0;
   flex-shrink: 0;
+
+  > button {
+    padding-left: 0.375rem !important;
+    padding-right: 0.375rem !important;
+  }
 }
 
 .field {
