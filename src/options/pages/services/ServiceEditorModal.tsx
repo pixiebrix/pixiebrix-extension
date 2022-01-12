@@ -126,10 +126,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
     <Modal
       show
       backdropClassName={styles.backdrop}
-      style={{
-        // 999 because the Google File Picker iframe is 1000
-        zIndex: 999,
-      }}
+      className={styles.modal}
       onHide={onClose}
       backdrop="static"
       keyboard={false}

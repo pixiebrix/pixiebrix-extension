@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.modal {
+  // 990 because the Google File Picker iframe is 1000; backdrop is 980 (see below)
+  z-index: 990 !important;
+}
+
 .backdrop {
-  // ServiceEditorModal is 999
-  z-index: 998 !important;
+  // Modal is 980
+  z-index: 980 !important;
 }
