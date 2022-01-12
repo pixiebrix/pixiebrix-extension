@@ -35,6 +35,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
+import styles from "./ServiceEditorModal.module.scss";
 
 export type OwnProps = {
   configuration: RawServiceConfiguration;
@@ -45,7 +46,7 @@ export type OwnProps = {
 };
 
 // Use "v2" because the service configuration form expects literal values for everything. (I.e., expressions are not
-// supports). But we still want to get our SchemaField support for enums, etc.
+// supported). But we still want to get our SchemaField support for enums, etc.
 const FORM_RUNTIME_CONTEXT: RuntimeContext = { apiVersion: "v2" };
 
 const formTheme: ThemeProps = {
@@ -123,8 +124,12 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
 
   return (
     <Modal
-      style={{ zIndex: 9999 }}
       show
+      backdropClassName={styles.backdrop}
+      style={{
+        // 999 because the Google File Picker iframe is 1000
+        zIndex: 999,
+      }}
       onHide={onClose}
       backdrop="static"
       keyboard={false}
