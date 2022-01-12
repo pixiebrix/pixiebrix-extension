@@ -95,6 +95,9 @@ const SidebarExpanded: React.FunctionComponent<
   const context = useContext(DevToolsContext);
 
   const { flags } = useContext(AuthContext);
+  const showDeveloperUI =
+    process.env.ENVIRONMENT === "development" ||
+    flags.includes("page-editor-developer");
   const showBetaExtensionPoints = flags.includes("page-editor-beta");
 
   const {
@@ -177,7 +180,7 @@ const SidebarExpanded: React.FunctionComponent<
                 ))}
             </DropdownButton>
 
-            {process.env.ENVIRONMENT === "development" && (
+            {showDeveloperUI && (
               <Button
                 type="button"
                 size="sm"
