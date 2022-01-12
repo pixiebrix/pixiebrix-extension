@@ -17,8 +17,24 @@
 
 import { UnknownObject } from "@/types";
 import { IBlock } from "@/core";
+import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
 
 export function getExampleBlockConfig(block: IBlock): UnknownObject | null {
+  if (block.id === COMPONENT_READER_ID) {
+    return {
+      selector: "",
+      optional: false,
+    };
+  }
+
+  if (block.id === "@pixiebrix/jquery-reader") {
+    return {
+      selectors: {
+        property: "",
+      },
+    };
+  }
+
   if (block.id === "@pixiebrix/form-modal") {
     return {
       schema: {

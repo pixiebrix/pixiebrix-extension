@@ -43,6 +43,7 @@ import styles from "./Sidebar.module.scss";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
+  faSync,
 } from "@fortawesome/free-solid-svg-icons";
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
@@ -94,6 +95,9 @@ const SidebarExpanded: React.FunctionComponent<
   const context = useContext(DevToolsContext);
 
   const { flags } = useContext(AuthContext);
+  const showDeveloperUI =
+    process.env.ENVIRONMENT === "development" ||
+    flags.includes("page-editor-developer");
   const showBetaExtensionPoints = flags.includes("page-editor-beta");
 
   const {
@@ -160,7 +164,6 @@ const SidebarExpanded: React.FunctionComponent<
               size="sm"
               title="Add"
               id="add-extension-point"
-              className="mr-2"
             >
               {sortBy([...ADAPTERS.values()], (x) => x.displayOrder)
                 .filter((element) => showBetaExtensionPoints || !element.beta)
@@ -176,6 +179,19 @@ const SidebarExpanded: React.FunctionComponent<
                   />
                 ))}
             </DropdownButton>
+
+            {showDeveloperUI && (
+              <Button
+                type="button"
+                size="sm"
+                variant="light"
+                onClick={() => {
+                  location.reload();
+                }}
+              >
+                <FontAwesomeIcon icon={faSync} />
+              </Button>
+            )}
           </div>
           <Button
             variant="light"
@@ -190,6 +206,7 @@ const SidebarExpanded: React.FunctionComponent<
         {unavailableCount ? (
           <div className={styles.unavailable}>
             <Form.Check
+              id="unavailable-extensions-checkbox"
               type="checkbox"
               label={`Show ${unavailableCount} unavailable`}
               defaultChecked={showAll}

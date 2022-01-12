@@ -46,15 +46,15 @@ import menuItem, {
 } from "@/devTools/editor/extensionPoints/menuItem";
 import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { RecipeDefinition } from "@/types/definitions";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { RecipeDefinition, ExtensionPointConfig } from "@/types/definitions";
+import { ExtensionPointConfig as ExtensionPointDefinition } from "@/extensionPoints/types";
 import {
   Context as DevtoolsContextType,
   FrameConnectionState,
 } from "@/devTools/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
 
-export const metadataFactory = define<Metadata>({
+export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
   name: (n: number) => `Recipe ${n}`,
   description: "Recipe generated from factory",
@@ -100,7 +100,7 @@ export const extensionFactory: (
   config: {
     apiVersion: "v2" as ApiVersion,
     kind: "component",
-    metadata: metadataFactory({
+    metadata: recipeMetadataFactory({
       id: validateRegistryId("test/component-1"),
       name: "Text config",
     }),
@@ -198,11 +198,11 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
 
-export const extensionPointFactory = define<ExtensionPointConfig>({
+export const recipeDefinitionFactory = define<ExtensionPointDefinition>({
   kind: "extensionPoint",
-  apiVersion: "v2",
+  apiVersion: "v3",
   metadata: (n: number) =>
-    metadataFactory({
+    recipeMetadataFactory({
       id: validateRegistryId(`test/extension-point-${n}`),
       name: `Extension Point ${n}`,
     }),
@@ -228,7 +228,7 @@ export const versionedExtensionPointRecipeFactory = ({
 }: ExternalExtensionPointParams = {}) =>
   define<RecipeDefinition>({
     kind: "recipe",
-    apiVersion: "v2",
+    apiVersion: "v3",
     metadata: (n: number) => ({
       id: validateRegistryId(`test/recipe-${n}`),
       name: `Recipe ${n}`,
@@ -255,6 +255,15 @@ type InnerExtensionPointParams = {
   extensionPointRef?: InnerDefinitionRef;
 };
 
+export const extensionPointFactory = define<ExtensionPointConfig>({
+  id: "extensionPoint" as InnerDefinitionRef,
+  label: (n: number) => `Test Extension ${n}`,
+  config: {
+    caption: "Button",
+    action: [] as BlockPipeline,
+  },
+});
+
 /**
  * Factory to create a factory that creates a RecipeDefinition that refers to a versioned extensionPoint
  * @param extensionPointId
@@ -264,8 +273,8 @@ export const innerExtensionPointRecipeFactory = ({
 }: InnerExtensionPointParams = {}) =>
   define<RecipeDefinition>({
     kind: "recipe",
-    apiVersion: "v2",
-    metadata: metadataFactory,
+    apiVersion: "v3",
+    metadata: recipeMetadataFactory,
     sharing: { public: false, organizations: [] },
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
     definitions: {
@@ -283,16 +292,7 @@ export const innerExtensionPointRecipeFactory = ({
       },
     },
     options: undefined,
-    extensionPoints: (n: number) => [
-      {
-        id: extensionPointRef,
-        label: `Test Extension for Recipe ${n}`,
-        config: {
-          caption: "Button",
-          action: [] as BlockPipeline,
-        },
-      },
-    ],
+    extensionPoints: () => [extensionPointFactory({ id: extensionPointRef })],
   });
 
 /**
@@ -301,7 +301,7 @@ export const innerExtensionPointRecipeFactory = ({
 export const recipeFactory = innerExtensionPointRecipeFactory();
 
 const internalFormStateFactory = define<FormState>({
-  apiVersion: "v2" as ApiVersion,
+  apiVersion: "v3" as ApiVersion,
   uuid: () => uuidv4(),
   installed: true,
   optionsArgs: null as UserOptions,
@@ -311,7 +311,7 @@ const internalFormStateFactory = define<FormState>({
   type: "panel" as ElementType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
-  extensionPoint: extensionPointFactory,
+  extensionPoint: recipeDefinitionFactory,
 } as any);
 
 export const formStateFactory = (
@@ -336,7 +336,7 @@ export const triggerFormStateFactory = (
 ) => {
   const defaultTriggerProps = trigger.fromNativeElement(
     "https://test.com",
-    metadataFactory({
+    recipeMetadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
@@ -358,7 +358,7 @@ export const menuItemFormStateFactory = (
 ) => {
   const defaultTriggerProps = menuItem.fromNativeElement(
     "https://test.com",
-    metadataFactory({
+    recipeMetadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
