@@ -18,8 +18,10 @@
 import React, { ReactNode } from "react";
 import {
   Col,
+  ColProps,
   Form as BootstrapForm,
   FormControlProps,
+  FormLabelProps,
   Row,
 } from "react-bootstrap";
 import styles from "./FieldTemplate.module.scss";
@@ -33,6 +35,7 @@ export type FieldProps<
   React.ComponentProps<As> & {
     name: string;
     label?: ReactNode;
+    fitLabelWidth?: boolean;
     description?: ReactNode;
     error?: string;
     touched?: boolean;
@@ -67,6 +70,7 @@ export type CustomFieldWidget<
 const FieldTemplate: React.FC<FieldProps> = ({
   name,
   label,
+  fitLabelWidth,
   description,
   error,
   touched,
@@ -128,19 +132,34 @@ const FieldTemplate: React.FC<FieldProps> = ({
     </AsControl>
   );
 
+  const labelProps: FormLabelProps = {
+    column: true,
+    className: styles.label,
+    htmlFor: controlId,
+  };
+
+  if (fitLabelWidth) {
+    labelProps.lg = "auto";
+  } else {
+    labelProps.lg = "3";
+    labelProps.xl = "2";
+  }
+
+  const colProps: ColProps = {};
+
+  if (fitLabelWidth) {
+    colProps.lg = true;
+  } else {
+    colProps.lg = label ? "9" : "12";
+    colProps.xl = label ? "10" : "12";
+  }
+
   return (
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
       {label && (
-        <BootstrapForm.Label
-          column
-          lg="3"
-          className={styles.label}
-          htmlFor={controlId}
-        >
-          {label}
-        </BootstrapForm.Label>
+        <BootstrapForm.Label {...labelProps}>{label}</BootstrapForm.Label>
       )}
-      <Col lg={label ? "9" : "12"}>
+      <Col {...colProps}>
         {formControl}
         {description && (
           <BootstrapForm.Text className="text-muted">
