@@ -50,10 +50,6 @@ import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 import AuthContext from "@/auth/AuthContext";
 
-function reload() {
-  location.reload();
-}
-
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
   icon: IconProp;
@@ -182,7 +178,14 @@ const SidebarExpanded: React.FunctionComponent<
             </DropdownButton>
 
             {process.env.ENVIRONMENT === "development" && (
-              <Button type="button" size="sm" variant="light" onClick={reload}>
+              <Button
+                type="button"
+                size="sm"
+                variant="light"
+                onClick={() => {
+                  location.reload();
+                }}
+              >
                 <FontAwesomeIcon icon={faSync} />
               </Button>
             )}
