@@ -86,8 +86,6 @@ const Layout = () => {
 
   const { flags } = useContext(AuthContext);
 
-  console.log("flags:", flags);
-
   return (
     <div className="w-100">
       <Navbar />
@@ -103,12 +101,19 @@ const Layout = () => {
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
-                  <Route exact path="/blueprints" component={MarketplacePage} />
-                  <Route
-                    exact
-                    path="/blueprints_page"
-                    component={BlueprintsPage}
-                  />
+                  {flags.includes("blueprints-page") ? (
+                    <Route
+                      exact
+                      path="/blueprints"
+                      component={BlueprintsPage}
+                    />
+                  ) : (
+                    <Route
+                      exact
+                      path="/blueprints"
+                      component={MarketplacePage}
+                    />
+                  )}
                   <Route
                     exact
                     path="/extensions/install/:extensionId"
