@@ -27,6 +27,7 @@ import ServicesEditor from "@/options/pages/services/ServicesEditor";
 import BrickCreatePage from "@/options/pages/brickEditor/CreatePage";
 import BrickEditPage from "@/options/pages/brickEditor/EditPage";
 import MarketplacePage from "@/options/pages/MarketplacePage";
+import BlueprintsPage from "@/options/pages/blueprints/BlueprintsPage";
 import SettingsPage from "@/options/pages/settings/SettingsPage";
 import Navbar from "@/layout/Navbar";
 import Footer from "@/layout/Footer";
@@ -85,6 +86,8 @@ const Layout = () => {
 
   const { flags } = useContext(AuthContext);
 
+  console.log("flags:", flags);
+
   return (
     <div className="w-100">
       <Navbar />
@@ -101,6 +104,11 @@ const Layout = () => {
               <ErrorBoundary>
                 <Switch>
                   <Route exact path="/blueprints" component={MarketplacePage} />
+                  <Route
+                    exact
+                    path="/blueprints_page"
+                    component={BlueprintsPage}
+                  />
                   <Route
                     exact
                     path="/extensions/install/:extensionId"

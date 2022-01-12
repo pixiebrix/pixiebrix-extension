@@ -57,6 +57,12 @@ const Sidebar: React.FunctionComponent = () => {
             icon={faScroll}
           />
 
+          <SidebarLink
+            route="/blueprints_page"
+            title="Blueprints"
+            icon={faScroll}
+          />
+
           {!flags.includes("restricted-workshop") && (
             <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
           )}
