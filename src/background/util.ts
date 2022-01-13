@@ -111,25 +111,9 @@ export async function ensureContentScript(target: Target): Promise<void> {
       getTargetState(target), // It will throw if we don't have permissions
     ]);
 
-    if (!result) {
-      console.debug(
-        "ensureContentScript: script messaged us back while waiting",
-        target
-      );
-      return;
-    }
-
-    if (result.ready) {
+    if (!result || result.ready) {
       console.debug("ensureContentScript: already exists and is ready", target);
       return;
-    }
-
-    if (!result.url.startsWith("http")) {
-      console.debug(
-        "ensureContentScript: PixieBrix can’t run on this page",
-        result.url
-      );
-      throw new Error("PixieBrix can’t run on this page");
     }
 
     if (result.installed || (await isContentScriptRegistered(result.url))) {
@@ -139,15 +123,14 @@ export async function ensureContentScript(target: Target): Promise<void> {
       );
     } else {
       console.debug("ensureContentScript: injecting", target);
-      const loadingScripts = browser.runtime
+      const scripts = browser.runtime
         .getManifest()
-        .content_scripts.map(async (script) => {
+        .content_scripts.map((script) => {
           script.all_frames = false;
-          script.run_at = "document_end";
-          return injectContentScript(target, script);
+          return script;
         });
 
-      await Promise.all(loadingScripts);
+      await injectContentScript(target, scripts);
     }
 
     await pTimeout(
