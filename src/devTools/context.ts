@@ -99,7 +99,7 @@ async function connectToFrame(): Promise<FrameMeta> {
     await pTimeout(
       ensureContentScript(thisTab),
       4000,
-      "contentScript not ready in 4s"
+      "The Page Editor could not establish a connection to the page"
     );
   } catch (error) {
     // If it's not a permission error, then throw error as is

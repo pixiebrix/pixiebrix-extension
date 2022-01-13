@@ -38,6 +38,7 @@ import { ModalProvider } from "@/components/ConfirmationModal";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { getErrorMessage } from "@/errors";
+import browser from "webextension-polyfill";
 
 // Import custom options widgets/forms for the built-in bricks
 import "@/contrib/editors";
@@ -82,36 +83,33 @@ const Panel: React.FunctionComponent = () => {
     await blockRegistry.fetch();
   }, []);
 
-  if (authError) {
+  const error =
+    (authError && getErrorMessage(authError)) || context.tabState.error;
+  if (error) {
     return (
-      <Centered>
-        <div className="PaneTitle">Error authenticating account</div>
-        <div>{getErrorMessage(authError)}</div>
-        <Button
-          onClick={() => {
-            location.reload();
-          }}
-        >
-          Reload Editor
-        </Button>
-      </Centered>
-    );
-  }
-
-  if (context.tabState.error) {
-    return (
-      <Centered>
-        <div className="PaneTitle">
-          <b>An error occurred</b>
-        </div>
-        <div>{context.tabState?.error}</div>
+      <Centered vertically>
+        {authError && (
+          <div className="PaneTitle">Error authenticating account</div>
+        )}
+        <div>{error}</div>
         <div className="mt-2">
           <Button
+            onClick={() => {
+              void browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
+            }}
+          >
+            Reload page
+          </Button>
+        </div>
+        <div className="mt-2">
+          <Button
+            size="sm"
+            variant="light"
             onClick={() => {
               location.reload();
             }}
           >
-            Reload Editor
+            Reload editor
           </Button>
         </div>
       </Centered>
