@@ -98,7 +98,7 @@ const Panel: React.FunctionComponent = () => {
               void browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
             }}
           >
-            Reload page
+            Reload Page
           </Button>
         </div>
         <div className="mt-2">
@@ -109,7 +109,7 @@ const Panel: React.FunctionComponent = () => {
               location.reload();
             }}
           >
-            Reload editor
+            Reload Editor
           </Button>
         </div>
       </Centered>
