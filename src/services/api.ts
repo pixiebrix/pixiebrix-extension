@@ -65,6 +65,28 @@ const appBaseQuery: BaseQueryFn<{
   }
 };
 
+function selectRole(
+  organization: components["schemas"]["Organization"]
+): UserRole {
+  // Mapping between the API response and the UI model because we need to know whether the user is an admin of
+  // the organization
+
+  // Currently, the API returns all members only for the organization where the user is an admin,
+  // hence if the user is an admin, they will have role === UserRole.admin,
+  // otherwise there will be no other members listed (no member with role === UserRole.admin).
+
+  // WARNING: currently this role is only accurate for Admin and Manager. All other users are passed as Restricted even
+  // if they have a Member or Developer role on the team
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `organization.members` is about to be removed
+  const isAdminOrManager = (organization as any).members?.some(
+    (member: { role: number }) => member.role === UserRole.admin
+  );
+
+  // For the purposes of the extension, there's no difference between Admins and Managers
+  return isAdminOrManager ? UserRole.admin : UserRole.restricted;
+}
+
 export const appApi = createApi({
   reducerPath: "appApi",
   baseQuery: appBaseQuery,
@@ -126,23 +148,7 @@ export const appApi = createApi({
       ): Organization[] =>
         baseQueryReturnValue.map((apiOrganization) => ({
           ...apiOrganization,
-
-          // Mapping between the API response and the UI model because we need to know whether the user is an admin of
-          // the organization
-
-          // Currently, the API returns all members only for the organization where the user is an admin,
-          // hence if the user is an admin, they will have role === UserRole.admin,
-          // otherwise there will be no other members listed (no member with role === UserRole.admin).
-
-          // WARNING: currently this role is only accurate for Admin. All other users are passed as Restricted even if
-          // they have a Member or Developer role on the team
-
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `organization.members` is about to be removed
-          role: (apiOrganization as any).members?.some(
-            (member: { role: number }) => member.role === UserRole.admin
-          )
-            ? UserRole.admin
-            : UserRole.restricted,
+          role: selectRole(apiOrganization),
         })),
     }),
     getGroups: builder.query<Record<string, Group[]>, string>({
