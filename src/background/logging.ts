@@ -114,7 +114,7 @@ async function getDB() {
       // Create the joint index
       store.createIndex(
         "context",
-        indexKeys.map((x) => `context.${x}`),
+        indexKeys.map((indexKey) => `context.${indexKey}`),
         { unique: false }
       );
     },
@@ -167,15 +167,23 @@ export async function getLog(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
   const db = await getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
-  const match = makeMatchEntry(context);
 
-  const matches = [];
-  for await (const cursor of tx.store) {
-    if (match(cursor.value)) {
-      matches.push(cursor.value);
-    }
-  }
+  const contextQuery =
+    // eslint-disable-next-line security/detect-object-injection -- indexKey is a known property
+    indexKeys.map((indexKey) => String(context[indexKey] ?? "")) as [
+      string,
+      string,
+      string,
+      string,
+      string,
+      string
+    ];
+
+  const matches = await db
+    .transaction(ENTRY_OBJECT_STORE, "readonly")
+    .objectStore(ENTRY_OBJECT_STORE)
+    .index("context")
+    .getAll(contextQuery);
 
   // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
   return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
