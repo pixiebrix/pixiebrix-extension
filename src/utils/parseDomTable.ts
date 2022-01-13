@@ -53,20 +53,23 @@ function getList(
   direction: ParsingOptions["direction"]
 ): List {
   if (direction === "columns") {
-    // Transpose table
+    // Transpose table so we only deal with one direction
     table = zip(...table);
   }
 
+  // Carefully deal with cells because the "table" could just be an empty array
   const [firstRow] = table;
   const lastCell = firstRow?.[firstRow.length - 1];
   const hasHeader = lastCell?.type === "header";
+
   const textTable = table.map((row) => row.map((cell) => cell.value));
   if (hasHeader) {
     const [headers, ...body] = textTable;
     return { headers, body };
   }
 
-  return { headers: [...firstRow.keys()], body: textTable };
+  // If it has no headers, use a 0-based index as header
+  return { headers: [...(firstRow ?? []).keys()], body: textTable };
 }
 
 export default function parseDomTable(
@@ -77,12 +80,6 @@ export default function parseDomTable(
     normalizeTable(table),
     direction ?? guessDirection(table)
   );
-  const values: Array<Record<number | string, string>> = [];
-  for (const row of body) {
-    // Create record for current row
-    const cells = row.map((cell) => cell);
-    values.push(zipObject(headers, cells));
-  }
 
-  return values;
+  return body.map((row) => zipObject(headers, row));
 }
