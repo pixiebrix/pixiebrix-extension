@@ -58,7 +58,7 @@ const isPublic = (extension: ResolvedExtension) =>
 const hasOrganization = (extension: ResolvedExtension) =>
   extension._recipe?.sharing?.organizations.length > 0;
 
-const isPersonalBrick = (extension: ResolvedExtension) =>
+export const isPersonalBrick = (extension: ResolvedExtension) =>
   !extension._recipe && !extension._deployment;
 
 const isPersonalBlueprint = (extension: ResolvedExtension, scope: string) =>
