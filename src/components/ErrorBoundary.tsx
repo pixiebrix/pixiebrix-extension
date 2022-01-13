@@ -58,7 +58,7 @@ class ErrorBoundary extends Component<Props, State> {
   render(): React.ReactNode {
     if (this.state.hasError) {
       return (
-        <div>
+        <div className="p-3">
           <h1>Something went wrong.</h1>
           {this.props.errorContext && <h2>{this.props.errorContext}</h2>}
           <div>
@@ -73,7 +73,7 @@ class ErrorBoundary extends Component<Props, State> {
               <FontAwesomeIcon icon={faRedo} /> Reload the Page
             </Button>
           </div>
-          <pre className="mt-2">
+          <pre className="mt-2 small text-secondary">
             {this.state.stack.replaceAll(
               `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
               ""
