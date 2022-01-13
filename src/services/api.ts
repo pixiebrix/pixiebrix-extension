@@ -130,7 +130,7 @@ export const appApi = createApi({
           // Mapping between the API response and the UI model because we need to know whether the user is an admin of
           // the organization
 
-          // Currently API returns all members only for the organization where the user is an admin,
+          // Currently, the API returns all members only for the organization where the user is an admin,
           // hence if the user is an admin, they will have role === UserRole.admin,
           // otherwise there will be no other members listed (no member with role === UserRole.admin).
 

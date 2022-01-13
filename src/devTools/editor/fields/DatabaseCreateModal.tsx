@@ -69,7 +69,9 @@ const initialValues: DatabaseConfig = {
 
 function getOrganizationOptions(organizations: Organization[]) {
   const organizationOptions = (organizations ?? [])
-    .filter((organization) => organization.role === UserRole.admin)
+    .filter((organization) =>
+      [UserRole.admin, UserRole.manager].includes(organization.role)
+    )
     .map((organization) => ({
       label: organization.name,
       value: organization.id,
