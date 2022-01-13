@@ -37,9 +37,10 @@ import {
   RendererOutput,
 } from "@/core";
 import { AxiosRequestConfig } from "axios";
-import { BackgroundLogger } from "@/background/logging";
+import { BackgroundLogger, recordLog } from "@/background/logging";
 import { Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
+import { recordLog as recordLogBkg } from "@/background/messenger/api";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
@@ -259,6 +260,11 @@ export abstract class Effect extends Block {
   abstract effect(inputs: BlockArg, env?: BlockOptions): Promise<void>;
 
   async run(value: BlockArg, options: BlockOptions): Promise<void> {
+    recordLogBkg(options.logger.context, "debug", "Running effect bkg", {
+      id: this.id,
+      name: this.name,
+    });
+
     return this.effect(value, options);
   }
 }

@@ -36,7 +36,7 @@ import { expectContext } from "@/utils/expectContext";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
-const DB_VERSION_NUMBER = 2;
+const DB_VERSION_NUMBER = 5;
 
 export type MessageLevel = "trace" | "debug" | "info" | "warn" | "error";
 
@@ -63,27 +63,15 @@ interface LogDB extends DBSchema {
     value: LogEntry;
     key: string;
     indexes: {
-      extensionPointId: string;
       extensionId: string;
       blueprintId: string;
-      blockId: string;
-      serviceId: string;
-      authId: string;
-      context: [string, string, string, string, string, string];
     };
   };
 }
 
 const indexKeys: Array<
-  keyof Except<MessageContext, "deploymentId" | "label">
-> = [
-  "extensionPointId",
-  "extensionId",
-  "blueprintId",
-  "blockId",
-  "serviceId",
-  "authId",
-];
+  keyof Except<MessageContext, "extensionPointId" | "deploymentId" | "label">
+> = ["extensionId", "blueprintId", "blockId", "serviceId", "authId"];
 
 async function getDB() {
   return openDB<LogDB>(STORAGE_KEY, DB_VERSION_NUMBER, {
@@ -104,19 +92,13 @@ async function getDB() {
       const store = db.createObjectStore(ENTRY_OBJECT_STORE, {
         keyPath: "uuid",
       });
-      // Create individual indexes
-      for (const indexKey of indexKeys) {
-        store.createIndex(indexKey, `context.${indexKey}`, {
-          unique: false,
-        });
-      }
 
-      // Create the joint index
-      store.createIndex(
-        "context",
-        indexKeys.map((indexKey) => `context.${indexKey}`),
-        { unique: false }
-      );
+      store.createIndex("extensionId", "context.extensionId", {
+        unique: false,
+      });
+      store.createIndex("blueprintId", "context.blueprintId", {
+        unique: false,
+      });
     },
   });
 }
@@ -167,23 +149,28 @@ export async function getLog(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
   const db = await getDB();
-
-  const contextQuery =
-    // eslint-disable-next-line security/detect-object-injection -- indexKey is a known property
-    indexKeys.map((indexKey) => String(context[indexKey] ?? "")) as [
-      string,
-      string,
-      string,
-      string,
-      string,
-      string
-    ];
-
-  const matches = await db
+  const objectStore = db
     .transaction(ENTRY_OBJECT_STORE, "readonly")
-    .objectStore(ENTRY_OBJECT_STORE)
-    .index("context")
-    .getAll(contextQuery);
+    .objectStore(ENTRY_OBJECT_STORE);
+
+  let entries: LogEntry[];
+  if (context.extensionId) {
+    entries = await objectStore
+      .index("extensionId")
+      .getAll(context.extensionId);
+  } else if (context.blueprintId) {
+    entries = await objectStore
+      .index("blueprintId")
+      .getAll(context.blueprintId);
+  } else {
+    // This can lead to huge performance issues
+    entries = await objectStore.getAll();
+  }
+
+  const match = makeMatchEntry(context);
+  const matches = entries.filter((entry) => match(entry));
+
+  console.log("getLog", { context, entries, matches });
 
   // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
   return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
