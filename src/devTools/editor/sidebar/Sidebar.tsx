@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import browser from "webextension-polyfill";
 import React, { FormEvent, useContext, useMemo, useState } from "react";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { sortBy } from "lodash";
+import { sleep } from "@/utils";
 import {
   Badge,
   Button,
@@ -185,7 +187,17 @@ const SidebarExpanded: React.FunctionComponent<
                 type="button"
                 size="sm"
                 variant="light"
-                onClick={() => {
+                title="Shift-click to attempt to reload all contexts"
+                onClick={async (event) => {
+                  if (event.shiftKey) {
+                    browser.runtime?.reload(); // Not guaranteed
+                    await browser.tabs.reload(
+                      browser.devtools.inspectedWindow.tabId
+                    );
+                  }
+
+                  // We must wait before reloading or else the loading fails
+                  await sleep(500);
                   location.reload();
                 }}
               >
