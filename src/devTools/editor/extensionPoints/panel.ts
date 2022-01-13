@@ -56,7 +56,6 @@ import { NormalizedAvailability } from "@/blocks/types";
 import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration";
 import { insertPanel } from "@/contentScript/messenger/api";
 import { Except } from "type-fest";
-import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 
 export type PanelTraits = {
   style: {
@@ -179,7 +178,6 @@ async function fromExtensionPoint(
   return {
     uuid: uuidv4(),
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    showV3UpgradeMessage: false,
     installed: true,
     type: "panel",
     label: `My ${getDomain(url)} panel`,
@@ -226,22 +224,9 @@ async function fromExtension(
   const extension = extensionWithNormalizedPipeline(config.config, "body", {
     heading: "",
   });
-  let showV3UpgradeMessage = false;
-  let { apiVersion } = base;
-
-  if (apiVersion === "v2") {
-    extension.blockPipeline = await upgradePipelineToV3(
-      extension.blockPipeline
-    );
-    showV3UpgradeMessage = true;
-    apiVersion = "v3";
-  }
 
   return {
     ...base,
-
-    apiVersion,
-    showV3UpgradeMessage,
 
     extension,
 

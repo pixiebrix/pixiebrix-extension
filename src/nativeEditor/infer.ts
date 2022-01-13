@@ -428,10 +428,6 @@ function commonButtonHTML(tag: string, $items: JQuery): string {
     $items.toArray().map(unary(removeUnstyledLayout))
   ).filter((x) => x.nodeType === Node.ELEMENT_NODE);
 
-  for (const element of elements) {
-    console.log(outerHTML($(element as HTMLElement)));
-  }
-
   const [$common] = commonButtonStructure($(elements as HTMLElement[]));
 
   // Trick to get the HTML of the actual element
@@ -573,7 +569,10 @@ export function getCommonAncestor(...args: Node[]): Node {
 
 export function findContainerForElement(
   element: HTMLElement
-): { container: HTMLElement; selectors: string[] } {
+): {
+  container: HTMLElement;
+  selectors: string[];
+} {
   let container = element;
   let level = 0;
 
@@ -621,7 +620,10 @@ export function findContainerForElement(
 
 export function findContainer(
   elements: HTMLElement[]
-): { container: HTMLElement; selectors: string[] } {
+): {
+  container: HTMLElement;
+  selectors: string[];
+} {
   if (elements.length > 1) {
     const container = getCommonAncestor(...elements) as HTMLElement | null;
     if (!container) {

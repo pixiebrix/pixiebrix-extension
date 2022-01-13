@@ -37,7 +37,7 @@ import TemplateToggleWidget, {
   StringOption,
 } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import TextWidget from "@/components/fields/schemaFields/widgets/v3/TextWidget";
-import { Schema } from "@/core";
+import { ExpressionType, Schema } from "@/core";
 import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
@@ -69,7 +69,9 @@ const varOption: StringOption = {
     }
 
     return {
-      __type__: "var",
+      // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
+      // Typescript treats the return value as string and doesn't unify it with unknown)
+      __type__: "var" as ExpressionType,
       __value__: newValue,
     };
   },
@@ -234,7 +236,9 @@ function getToggleOptions({
           }
 
           return {
-            __type__: "nunjucks",
+            // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
+            // Typescript treats the return value as string and doesn't unify it with unknown)
+            __type__: "nunjucks" as ExpressionType,
             __value__: newValue,
           };
         },
@@ -462,6 +466,8 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
       {...props}
+      // Pass in schema after spreading props to override the non-normalized schema in props
+      schema={normalizedSchema}
     />
   );
 };

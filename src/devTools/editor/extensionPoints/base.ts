@@ -164,7 +164,6 @@ export function makeInitialBaseState(
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-    showV3UpgradeMessage: false,
     services: [],
     optionsArgs: {},
     extension: {

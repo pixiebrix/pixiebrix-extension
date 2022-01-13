@@ -16,12 +16,12 @@
  */
 
 .root {
-  $borderWidth: 1px;
   display: flex;
   align-items: center;
   font-size: 0.875rem;
   padding: 20px 10px;
   padding-right: 0;
+  cursor: pointer;
 }
 
 .icon {
