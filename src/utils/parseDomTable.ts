@@ -17,10 +17,67 @@
 
 import { zipObject } from "lodash";
 
+interface ParsingOptions {
+  direction?: "rows" | "columns";
+}
+type Headers = Array<number | string>;
+
+interface NormalizedTable {
+  headers: Headers;
+  body: string[][];
+}
+
+type Table = Array<Record<string, string>>;
+
+function guessDirection(table: HTMLTableElement): ParsingOptions["direction"] {
+  const labelRatio =
+    table.rows[0].querySelectorAll("th").length /
+    table.querySelectorAll("th").length;
+  return labelRatio < 0.5 ? "columns" : "rows";
+}
+
+// TODO: Normalize rowspan and colspan in here as well
+function normalizeTable(
+  table: HTMLTableElement,
+  direction = "rows"
+): NormalizedTable {
+  const content = [...table.rows].map((row) =>
+    [...row.cells].map((cell) => cell.textContent)
+  );
+
+  if (direction === "rows") {
+    const [firstRow] = table.rows;
+    const hasHeader =
+      firstRow?.cells[firstRow.cells.length - 1]?.tagName === "TH";
+    if (hasHeader) {
+      const [headers, ...body] = content;
+      return { headers, body: body };
+    }
+
+    return { headers: [...content[0].keys()], body: content };
+  }
+
+  const hasHeader =
+    table.rows[table.rows.length - 1]?.cells[0]?.tagName === "TH";
+  if (hasHeader) {
+    const headers = [];
+    const body = [];
+    for (const row of content) {
+      const [rowHeader, ...rowData] = row;
+      headers.push(rowHeader);
+      body.push(rowData);
+    }
+    return { headers, body };
+  }
+
+  return { headers: [...content[0].keys()], body: content };
+}
+
 export default function parseDomTable(
-  table: HTMLTableElement
-): Array<Record<string, string>> {
-  let headers: Array<number | string>;
+  table: HTMLTableElement,
+  { direction = guessDirection(table) }: ParsingOptions
+): Table {
+  let headers: Headers;
   const values: Array<Record<number | string, string>> = [];
   for (const [index, row] of [...table.rows].entries()) {
     if (index === 0) {
