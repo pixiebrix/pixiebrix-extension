@@ -56,16 +56,16 @@ describe("parseDomTable", () => {
     expect(actual).toStrictEqual(expected);
   });
 
-  test("parse table with incomplete header", () => {
+  test("parse horizontal table", () => {
     const table = getTable(`
-      <tr><th>Name<td>Age
-      <tr><td>Mario<td>42
-      <tr><td>Luigi<td>39
+      <tr><th>Name<td>Mario<td>Luigi
+      <tr><th>Age<td>42<td>39
+      <tr><th>Height<td>5' 6"<td>5' 8"
     `);
 
     const expected = [
-      { Name: "Mario", Age: "42" },
-      { Name: "Luigi", Age: "39" },
+      { Name: "Mario", Age: "42", Height: "5' 6\"" },
+      { Name: "Luigi", Age: "39", Height: "5' 8\"" },
     ];
 
     const actual = parseDomTable(table);

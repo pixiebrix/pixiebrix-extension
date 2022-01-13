@@ -15,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { zipObject } from "lodash";
+import { zip, zipObject } from "lodash";
 
 interface ParsingOptions {
   direction?: "rows" | "columns";
 }
 type Headers = Array<number | string>;
 
-interface NormalizedTable {
+interface List {
   headers: Headers;
   body: string[][];
 }
+type Cell = { type: "value" | "header"; value: string };
+type NormalizedTable = Cell[][];
 
 type Table = Array<Record<string, string>>;
 
@@ -37,65 +39,48 @@ function guessDirection(table: HTMLTableElement): ParsingOptions["direction"] {
 }
 
 // TODO: Normalize rowspan and colspan in here as well
-function normalizeTable(
-  table: HTMLTableElement,
-  direction = "rows"
-): NormalizedTable {
-  const content = [...table.rows].map((row) =>
-    [...row.cells].map((cell) => cell.textContent)
+function normalizeTable(table: HTMLTableElement): NormalizedTable {
+  return [...table.rows].map((row) =>
+    [...row.cells].map((cell) => ({
+      type: cell.tagName === "TH" ? "header" : "value",
+      value: cell.textContent.trim(),
+    }))
   );
+}
 
-  if (direction === "rows") {
-    const [firstRow] = table.rows;
-    const hasHeader =
-      firstRow?.cells[firstRow.cells.length - 1]?.tagName === "TH";
-    if (hasHeader) {
-      const [headers, ...body] = content;
-      return { headers, body: body };
-    }
-
-    return { headers: [...content[0].keys()], body: content };
+function getList(
+  table: NormalizedTable,
+  direction: ParsingOptions["direction"]
+): List {
+  if (direction === "columns") {
+    // Transpose table
+    table = zip(...table);
   }
 
-  const hasHeader =
-    table.rows[table.rows.length - 1]?.cells[0]?.tagName === "TH";
+  const [firstRow] = table;
+  const lastCell = firstRow?.[firstRow.length - 1];
+  const hasHeader = lastCell?.type === "header";
+  const textTable = table.map((row) => row.map((cell) => cell.value));
   if (hasHeader) {
-    const headers = [];
-    const body = [];
-    for (const row of content) {
-      const [rowHeader, ...rowData] = row;
-      headers.push(rowHeader);
-      body.push(rowData);
-    }
+    const [headers, ...body] = textTable;
     return { headers, body };
   }
 
-  return { headers: [...content[0].keys()], body: content };
+  return { headers: [...firstRow.keys()], body: textTable };
 }
 
 export default function parseDomTable(
   table: HTMLTableElement,
-  { direction = guessDirection(table) }: ParsingOptions
+  { direction }: ParsingOptions = {}
 ): Table {
-  let headers: Headers;
+  const { headers, body } = getList(
+    normalizeTable(table),
+    direction ?? guessDirection(table)
+  );
   const values: Array<Record<number | string, string>> = [];
-  for (const [index, row] of [...table.rows].entries()) {
-    if (index === 0) {
-      // If there's at least one `th` in the first row, treat it as headers
-      const isHeader = row.querySelector("th");
-
-      // Parse every column header; use the index if it's not a header
-      headers = [...row.cells].map((header, column) =>
-        isHeader ? header.textContent.trim() : column
-      );
-
-      if (isHeader) {
-        continue;
-      }
-    }
-
+  for (const row of body) {
     // Create record for current row
-    const cells = [...row.cells].map((cell) => cell.textContent.trim());
+    const cells = row.map((cell) => cell);
     values.push(zipObject(headers, cells));
   }
 
