@@ -40,5 +40,6 @@ async function handleCommand(
 
 export default function initBrowserCommands(): void {
   expectContext("background");
+  // TODO: Use browser.* when its types are fixed https://github.com/Lusito/webextension-polyfill-ts/issues/70
   chrome.commands.onCommand.addListener(handleCommand);
 }
