@@ -31,16 +31,16 @@ exports[`renders modal 1`] = `
           class="modal-body"
         >
           <div
-            class="horizontalFormGroup form-group row"
+            class="formGroup form-group row"
           >
             <label
-              class="horizontalLabel form-label col-form-label col-lg-3"
+              class="label form-label col-form-label col-xl-2 col-lg-3"
               for="name"
             >
               Name
             </label>
             <div
-              class="col-lg-9"
+              class="col-xl-10 col-lg-9"
             >
               <input
                 class="form-control"
@@ -56,16 +56,16 @@ exports[`renders modal 1`] = `
             </div>
           </div>
           <div
-            class="horizontalFormGroup form-group row"
+            class="formGroup form-group row"
           >
             <label
-              class="horizontalLabel form-label col-form-label col-lg-3"
+              class="label form-label col-form-label col-xl-2 col-lg-3"
               for="blueprintId"
             >
               Registry Id
             </label>
             <div
-              class="col-lg-9"
+              class="col-xl-10 col-lg-9"
             >
               <input
                 class="form-control"
@@ -87,16 +87,16 @@ exports[`renders modal 1`] = `
             </div>
           </div>
           <div
-            class="horizontalFormGroup form-group row"
+            class="formGroup form-group row"
           >
             <label
-              class="horizontalLabel form-label col-form-label col-lg-3"
+              class="label form-label col-form-label col-xl-2 col-lg-3"
               for="description"
             >
               Description
             </label>
             <div
-              class="col-lg-9"
+              class="col-xl-10 col-lg-9"
             >
               <input
                 class="form-control"
