@@ -16,7 +16,7 @@
  */
 
 import { useSelector } from "react-redux";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import { useMemo } from "react";
 import { IExtension } from "@/core";
 

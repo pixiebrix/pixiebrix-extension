@@ -21,7 +21,6 @@ import { useToasts } from "react-toast-notifications";
 import { useFormikContext } from "formik";
 import { useDispatch } from "react-redux";
 import { useModals } from "@/components/ConfirmationModal";
-import { optionsSlice } from "@/options/slices";
 import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
 import { uninstallContextMenu } from "@/background/messenger/api";
@@ -30,6 +29,7 @@ import {
   clearDynamicElements,
   removeActionPanel,
 } from "@/contentScript/messenger/api";
+import extensionsSlice from "@/store/extensionsSlice";
 
 /**
  * Remove the current element from the page and installed extensions
@@ -62,7 +62,7 @@ function useRemove(element: FormState): () => void {
     try {
       // Remove from storage first so it doesn't get re-added by any subsequent steps
       if (values.installed) {
-        dispatch(optionsSlice.actions.removeExtension(ref));
+        dispatch(extensionsSlice.actions.removeExtension(ref));
       }
 
       await Promise.allSettled([

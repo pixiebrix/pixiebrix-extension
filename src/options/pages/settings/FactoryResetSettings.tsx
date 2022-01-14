@@ -19,11 +19,12 @@ import { Button, Card } from "react-bootstrap";
 import browser from "webextension-polyfill";
 import React from "react";
 import { connect } from "react-redux";
-import { optionsSlice, servicesSlice } from "@/options/slices";
 import { useToasts } from "react-toast-notifications";
 import { getErrorMessage } from "@/errors";
+import extensionsSlice from "@/store/extensionsSlice";
+import servicesSlice from "@/store/servicesSlice";
 
-const { resetOptions } = optionsSlice.actions;
+const { resetOptions } = extensionsSlice.actions;
 const { resetServices } = servicesSlice.actions;
 
 const FactoryResetSettings: React.FunctionComponent<{

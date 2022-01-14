@@ -18,17 +18,9 @@
 import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
-import {
-  optionsSlice,
-  servicesSlice,
-  settingsSlice,
-  SettingsState,
-} from "@/options/slices";
 import { editorSlice, EditorState } from "@/devTools/editor/slices/editorSlice";
 import { createLogger } from "redux-logger";
 import { boolean } from "@/utils";
-import { OptionsState, persistOptionsConfig } from "@/store/extensions";
-import { persistServicesConfig } from "@/store/services";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/services/api";
 import {
@@ -46,6 +38,11 @@ import {
   documentBuilderSlice,
   DocumentBuilderState,
 } from "./editor/slices/documentBuilderSlice";
+import { OptionsState } from "@/store/extensionsTypes";
+import settingsSlice, { SettingsState } from "@/store/settingsSlice";
+import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
+import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
+import extensionsSlice from "@/store/extensionsSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -73,7 +70,10 @@ if (process.env.NODE_ENV === "development") {
 
 const store = configureStore({
   reducer: {
-    options: persistReducer(persistOptionsConfig, optionsSlice.reducer),
+    options: persistReducer(
+      persistExtensionOptionsConfig,
+      extensionsSlice.reducer
+    ),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     editor: editorSlice.reducer,

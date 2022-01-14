@@ -17,7 +17,7 @@
 
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { extensionToFormState } from "@/devTools/editor/extensionPoints/adapter";

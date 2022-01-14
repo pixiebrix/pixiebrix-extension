@@ -17,14 +17,14 @@
 
 import { RecipeDefinition } from "@/types/definitions";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
 import { uninstallContextMenu } from "@/background/messenger/api";
-import { optionsSlice } from "@/options/slices";
 import { groupBy, uniq } from "lodash";
 import { IExtension, UUID, RegistryId, UserOptions } from "@/core";
+import extensionsSlice from "@/store/extensionsSlice";
 
-const { installRecipe, removeExtension } = optionsSlice.actions;
+const { installRecipe, removeExtension } = extensionsSlice.actions;
 
 type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
 
