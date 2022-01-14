@@ -18,7 +18,7 @@
 import { zip, zipObject } from "lodash";
 
 interface ParsingOptions {
-  direction?: "rows" | "columns";
+  orientation?: "vertical" | "horizontal" | "infer";
 }
 type Headers = Array<number | string>;
 
@@ -31,11 +31,13 @@ type NormalizedTable = Cell[][];
 
 type Table = Array<Record<string, string>>;
 
-function guessDirection(table: HTMLTableElement): ParsingOptions["direction"] {
+function guessDirection(
+  table: HTMLTableElement
+): ParsingOptions["orientation"] {
   const labelRatio =
     table.rows[0].querySelectorAll("th").length /
     table.querySelectorAll("th").length;
-  return labelRatio < 0.5 ? "columns" : "rows";
+  return labelRatio < 0.5 ? "horizontal" : "vertical";
 }
 
 // TODO: Normalize rowspan and colspan in here as well
@@ -50,10 +52,10 @@ function normalizeTable(table: HTMLTableElement): NormalizedTable {
 
 function getList(
   table: NormalizedTable,
-  direction: ParsingOptions["direction"]
+  orientation: ParsingOptions["orientation"]
 ): List {
-  if (direction === "columns") {
-    // Transpose table so we only deal with one direction
+  if (orientation === "horizontal") {
+    // Transpose table so we only deal with one orientation
     table = zip(...table);
   }
 
@@ -74,11 +76,11 @@ function getList(
 
 export default function parseDomTable(
   table: HTMLTableElement,
-  { direction }: ParsingOptions = {}
+  { orientation = "infer" }: ParsingOptions = {}
 ): Table {
   const { headers, body } = getList(
     normalizeTable(table),
-    direction ?? guessDirection(table)
+    orientation === "infer" ? guessDirection(table) : orientation
   );
 
   return body.map((row) => zipObject(headers, row));
