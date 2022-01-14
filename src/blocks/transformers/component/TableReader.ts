@@ -1,0 +1,64 @@
+/*
+ * Copyright (C) 2021 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { Transformer } from "@/types";
+import { BlockArg, BlockOptions, Schema } from "@/core";
+import { validateRegistryId } from "@/types/helpers";
+import parseDomTable from "@/utils/parseDomTable";
+import { $safeFind } from "@/helpers";
+
+export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
+
+export class TableReader extends Transformer {
+  constructor() {
+    super(TABLE_READER_ID, "Table Reader", "Extract data from table");
+  }
+
+  defaultOutputKey = "table";
+
+  required: ["selector"];
+
+  inputSchema: Schema = {
+    type: "object",
+    required: ["selector"],
+    properties: {
+      orientation: {
+        type: "string",
+        enum: ["infer", "vertical", "horizontal"],
+        default: "infer",
+      },
+      selector: {
+        type: "string",
+        format: "selector",
+        description: "CSS/JQuery selector to select the HTML table element",
+      },
+    },
+  };
+
+  async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
+  async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
+    const $table = $safeFind<HTMLTableElement>(args.selector, root);
+    return parseDomTable($table.get(0), { orientation: args.orientation });
+  }
+}

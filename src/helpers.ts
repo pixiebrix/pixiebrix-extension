@@ -58,9 +58,9 @@ export const IS_BROWSER =
  * @param selector a JQuery selector
  * @param parent parent element to search (default=document)
  */
-export function $safeFind(
+export function $safeFind<Element extends HTMLElement>(
   selector: string,
-  parent: Document | Element | JQuery<HTMLElement | Document> = document
-): JQuery {
-  return $(parent).find(selector);
+  parent: Document | HTMLElement | JQuery<HTMLElement | Document> = document
+): JQuery<Element> {
+  return $(parent).find<Element>(selector);
 }
