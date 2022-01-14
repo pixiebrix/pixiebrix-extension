@@ -41,7 +41,6 @@ export const containsPermissions = browser.permissions
 
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
-export const checkTargetPermissions = getMethod("CHECK_TARGET_PERMISSIONS", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
 export const whoAmI = getMethod("ECHO_SENDER", bg);
 export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);

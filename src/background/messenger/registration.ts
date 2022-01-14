@@ -47,7 +47,6 @@ import { preloadContextMenus } from "@/background/initContextMenus";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
-import { canAccessTab } from "webext-tools";
 import {
   getLoggingConfig,
   recordError,
@@ -80,7 +79,6 @@ declare global {
 
     GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     INJECT_SCRIPT: typeof ensureContentScript;
-    CHECK_TARGET_PERMISSIONS: typeof canAccessTab;
     CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
@@ -142,7 +140,6 @@ registerMethods({
 
   GET_AVAILABLE_VERSION: getAvailableVersion,
   INJECT_SCRIPT: ensureContentScript,
-  CHECK_TARGET_PERMISSIONS: canAccessTab,
   CONTAINS_PERMISSIONS: browser.permissions.contains,
 
   PRELOAD_CONTEXT_MENUS: preloadContextMenus,

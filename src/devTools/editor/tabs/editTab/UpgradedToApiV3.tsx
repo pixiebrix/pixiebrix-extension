@@ -26,10 +26,11 @@ import styles from "./UpgradedToApiV3.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
 import { actions } from "@/devTools/editor/slices/editorSlice";
+import { selectShowV3UpgradeMessageForActiveElement } from "@/devTools/editor/slices/editorSelectors";
 
 const UpgradedToApiV3: React.FC = () => {
   const showMessage = useSelector<RootState, boolean>(
-    (root) => root.editor.showV3UpgradeMessage
+    selectShowV3UpgradeMessageForActiveElement
   );
   const dispatch = useDispatch();
 

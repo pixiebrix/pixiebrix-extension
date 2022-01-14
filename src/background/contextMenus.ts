@@ -70,11 +70,7 @@ async function dispatchMenu(
     throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);
   }
 
-  try {
-    reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
-  } catch (error) {
-    console.warn("Error reporting ContextMenuClick event", { error });
-  }
+  reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
 
   console.time("ensureContentScript");
 
@@ -82,7 +78,7 @@ async function dispatchMenu(
   await pTimeout(
     ensureContentScript(target),
     CONTEXT_SCRIPT_INSTALL_MS,
-    `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}s`
+    `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}ms`
   );
 
   console.timeEnd("ensureContentScript");
