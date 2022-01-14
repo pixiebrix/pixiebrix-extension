@@ -21,9 +21,10 @@ import {
 } from "@/devTools/editor/panes/save/saveHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  extensionPointFactory,
+  recipeDefinitionFactory,
   innerExtensionPointRecipeFactory,
   versionedExtensionPointRecipeFactory,
+  extensionPointFactory,
 } from "@/tests/factories";
 import { optionsSlice } from "@/options/slices";
 import menuItemExtensionAdapter from "@/devTools/editor/extensionPoints/menuItem";
@@ -64,7 +65,7 @@ describe("generatePersonalBrickId", () => {
 
 describe("replaceRecipeExtension round trip", () => {
   test("single extension with versioned extensionPoint", async () => {
-    const extensionPoint = extensionPointFactory();
+    const extensionPoint = recipeDefinitionFactory();
     const recipe = versionedExtensionPointRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
     })();
@@ -104,7 +105,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("does not modify other extension point", async () => {
-    const extensionPoint = extensionPointFactory();
+    const extensionPoint = recipeDefinitionFactory();
 
     const recipe = versionedExtensionPointRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
@@ -307,5 +308,100 @@ describe("replaceRecipeExtension round trip", () => {
         draft.extensionPoints[0].label = "New Label";
       })
     );
+  });
+
+  test("updates Recipe API version with single extension", async () => {
+    const extensionPoint = recipeDefinitionFactory({
+      apiVersion: "v2",
+    });
+
+    const extensionPointId = extensionPoint.metadata.id;
+    const recipe = innerExtensionPointRecipeFactory({
+      extensionPointRef: extensionPointId as any,
+    })({
+      apiVersion: "v2",
+      definitions: {
+        [extensionPointId]: extensionPoint,
+      } as any,
+    });
+
+    const state = optionsSlice.reducer(
+      { extensions: [] },
+      optionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    (lookupExtensionPoint as any).mockResolvedValue(extensionPoint);
+
+    // Call to fromExtension changes extension version from "v2" to "v3"
+    const element = await menuItemExtensionAdapter.fromExtension({
+      ...state.extensions[0],
+      apiVersion: "v3",
+    });
+    element.label = "New Label";
+
+    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+    const newRecipe = replaceRecipeExtension(
+      recipe,
+      { ...recipe.metadata, id: newId },
+      state.extensions,
+      element
+    );
+
+    expect(newRecipe).toStrictEqual(
+      produce(recipe, (draft) => {
+        draft.apiVersion = "v3";
+        draft.metadata.id = newId;
+        draft.definitions[extensionPoint.metadata.id].apiVersion = "v3";
+        // `services` gets normalized from undefined to {}
+        draft.extensionPoints[0].services = {};
+        draft.extensionPoints[0].label = "New Label";
+      })
+    );
+  });
+
+  test("throws when API version mismatch and cannot update recipe", async () => {
+    const extensionPoint = recipeDefinitionFactory();
+    const recipe = versionedExtensionPointRecipeFactory({
+      extensionPointId: extensionPoint.metadata.id,
+    })({
+      apiVersion: "v2",
+      extensionPoints: [
+        extensionPointFactory({
+          id: extensionPoint.metadata.id,
+        }),
+        extensionPointFactory(),
+      ],
+    });
+
+    const state = optionsSlice.reducer(
+      { extensions: [] },
+      optionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    (lookupExtensionPoint as any).mockResolvedValue(extensionPoint);
+
+    const element = await menuItemExtensionAdapter.fromExtension({
+      ...state.extensions[0],
+      apiVersion: "v3",
+    });
+    element.label = "New Label";
+
+    const newId = generateScopeBrickId("@test", recipe.metadata.id);
+    expect(() =>
+      replaceRecipeExtension(
+        recipe,
+        { ...recipe.metadata, id: newId },
+        state.extensions,
+        element
+      )
+    ).toThrow();
   });
 });

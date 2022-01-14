@@ -135,6 +135,26 @@ export function replaceRecipeExtension(
   return produce(sourceRecipe, (draft) => {
     draft.metadata = metadata;
 
+    if (sourceRecipe.apiVersion !== element.apiVersion) {
+      const canUpdateRecipeApiVersion =
+        sourceRecipe.extensionPoints.length <= 1;
+      if (canUpdateRecipeApiVersion) {
+        draft.apiVersion = element.apiVersion;
+
+        const extensionPointId = sourceRecipe.extensionPoints[0]?.id;
+        // eslint-disable-next-line security/detect-object-injection -- getting a property by extension id
+        const extensionPointDefinition = draft.definitions?.[extensionPointId];
+
+        if (extensionPointDefinition?.apiVersion != null) {
+          extensionPointDefinition.apiVersion = element.apiVersion;
+        }
+      } else {
+        throw new Error(
+          `Element's API Version (${element.apiVersion}) does not match recipe's API Version (${sourceRecipe.apiVersion}) and recipe's API Version cannot be updated`
+        );
+      }
+    }
+
     const index = findRecipeIndex(sourceRecipe, installedExtension);
 
     const adapter = ADAPTERS.get(element.type);
