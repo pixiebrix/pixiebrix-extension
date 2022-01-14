@@ -122,6 +122,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
       show
       backdropClassName={styles.backdrop}
       className={styles.modal}
+      dialogClassName={styles.dialog}
       onHide={onClose}
       backdrop="static"
       keyboard={false}
