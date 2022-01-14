@@ -31,7 +31,13 @@ import { CloudExtension } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import AuthContext from "@/auth/AuthContext";
-import { isPersonalBrick } from "@/options/pages/installed/ActiveBricksCard";
+import {
+  isPersonalBlueprint,
+  isPersonalBrick,
+} from "@/options/pages/installed/ActiveBricksCard";
+import BlueprintsList from "@/options/pages/blueprints/BlueprintsList";
+
+type Activatable = {};
 
 const BlueprintsPage: React.FunctionComponent<{
   // TODO: maybe rename this to activeBlueprints or installedBlueprints where appropriate
@@ -79,25 +85,21 @@ const BlueprintsPage: React.FunctionComponent<{
 
   console.log("Resolved extensions:", resolvedExtensions);
 
-  const { personalBlueprints, teamBlueprints } = useMemo(() => {
+  const personalOrTeamBlueprints = useMemo(() => {
     const installedRecipes = new Set(
       extensions.map((extension) => extension._recipe?.id)
     );
 
-    const personalBlueprints = (rawRecipes ?? [])
-      .filter((recipe) => recipe.metadata.id.includes(scope))
+    return (rawRecipes ?? [])
+      .filter(
+        (recipe) =>
+          recipe.metadata.id.includes(scope) ||
+          recipe.sharing.organizations.length > 0
+      )
       .map((recipe) => ({
         ...recipe,
         active: installedRecipes.has(recipe.metadata.id),
       }));
-
-    const teamBlueprints = (rawRecipes ?? [])
-      .filter((recipe) => recipe.sharing.organizations.length > 0)
-      .map((recipe) => ({
-        ...recipe,
-        active: installedRecipes.has(recipe.metadata.id),
-      }));
-    return { personalBlueprints, teamBlueprints };
   }, [extensions, rawRecipes, scope]);
 
   const activeExtensions = useMemo(
@@ -113,22 +115,25 @@ const BlueprintsPage: React.FunctionComponent<{
     if (filter === "all") {
       setFilteredBlueprints([
         ...resolvedExtensions,
-        ...personalBlueprints,
-        ...teamBlueprints,
+        ...personalOrTeamBlueprints,
       ]);
     }
 
     if (filter === "personal") {
       setFilteredBlueprints([
-        ...resolvedExtensions.filter((extension) =>
-          isPersonalBrick(extension, scope)
+        ...resolvedExtensions.filter((extension) => isPersonalBrick(extension)),
+        ...personalOrTeamBlueprints.filter((blueprint) =>
+          blueprint.metadata.id.includes(scope)
         ),
-        ...personalBlueprints,
       ]);
     }
 
     if (filter === "shared") {
-      setFilteredBlueprints(teamBlueprints);
+      setFilteredBlueprints(
+        personalOrTeamBlueprints.filter(
+          (blueprint) => !blueprint.metadata.id.includes(scope)
+        )
+      );
     }
   };
 
@@ -195,21 +200,9 @@ const BlueprintsPage: React.FunctionComponent<{
           </Nav>
         </Col>
         <Col xs={9}>
-          <h3>Active Blueprints</h3>
-          {resolvedExtensions?.length > 0 && (
-            <Card>
-              <Table>
-                {filteredBlueprints.map((extension) => (
-                  <tr key={extension.id}>
-                    <td>
-                      {extension.label
-                        ? extension.label
-                        : extension.metadata.name}
-                    </td>
-                  </tr>
-                ))}
-              </Table>
-            </Card>
+          <h3>Filtered Blueprints</h3>
+          {filteredBlueprints?.length > 0 && (
+            <BlueprintsList blueprints={filteredBlueprints} />
           )}
         </Col>
       </Row>

@@ -61,8 +61,10 @@ const hasOrganization = (extension: ResolvedExtension) =>
 export const isPersonalBrick = (extension: ResolvedExtension) =>
   !extension._recipe && !extension._deployment;
 
-const isPersonalBlueprint = (extension: ResolvedExtension, scope: string) =>
-  scope && extension._recipe?.id.startsWith(scope + "/");
+export const isPersonalBlueprint = (
+  extension: ResolvedExtension,
+  scope: string
+) => scope && extension._recipe?.id.startsWith(scope + "/");
 
 const groupExtensions = (extensions: ResolvedExtension[], scope: string) => {
   const personal: {
