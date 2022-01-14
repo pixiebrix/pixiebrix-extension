@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,20 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension } from "@/core";
-import { OptionsState } from "@/store/extensions";
+import { createSlice } from "@reduxjs/toolkit";
 
-export function selectExtensions({
-  options,
-}: {
-  options: OptionsState;
-}): IExtension[] {
-  if (!Array.isArray(options.extensions)) {
-    console.warn("state migration has not been applied yet", {
-      options,
-    });
-    throw new TypeError("state migration has not been applied yet");
-  }
+type InstallMode = "local" | "remote";
 
-  return options.extensions;
+export interface SettingsState {
+  mode: InstallMode;
 }
+
+const initialSettingsState = {
+  mode: "remote",
+};
+
+const settingsSlice = createSlice({
+  name: "settings",
+  initialState: initialSettingsState,
+  reducers: {
+    setMode(state, { payload: { mode } }) {
+      state.mode = mode;
+    },
+  },
+});
+
+export default settingsSlice;

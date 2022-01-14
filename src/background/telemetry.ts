@@ -23,7 +23,7 @@ import browser from "webextension-polyfill";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
 import { Data, UUID } from "@/core";
-import { loadOptions } from "@/options/loader";
+import { loadOptions } from "@/store/extensionsStorage";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,

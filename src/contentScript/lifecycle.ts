@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { loadOptions } from "@/options/loader";
+import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import * as context from "@/contentScript/context";

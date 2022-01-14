@@ -17,7 +17,6 @@
 
 import { connect, useSelector } from "react-redux";
 import React, { useCallback, useContext } from "react";
-import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link, Redirect, Route } from "react-router-dom";
@@ -32,8 +31,7 @@ import { reportError } from "@/telemetry/logging";
 import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
 import { Dispatch } from "redux";
-import { selectExtensions } from "@/options/selectors";
-import { OptionsState } from "@/store/extensions";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import { getLinkedApiClient } from "@/services/apiClient";
@@ -49,8 +47,10 @@ import { RootState } from "@/options/store";
 import { LogsContext } from "./installedPageSlice";
 import { selectShowLogsContext } from "./installedPageSelectors";
 import OnboardingPage from "@/options/pages/installed/OnboardingPage";
+import extensionsSlice from "@/store/extensionsSlice";
+import { OptionsState } from "@/store/extensionsTypes";
 
-const { removeExtension } = optionsSlice.actions;
+const { removeExtension } = extensionsSlice.actions;
 
 export const _InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];

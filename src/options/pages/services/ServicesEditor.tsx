@@ -17,7 +17,7 @@
 
 import React, { useCallback, useState } from "react";
 import { connect } from "react-redux";
-import { servicesSlice } from "@/options/slices";
+import servicesSlice from "@/store/servicesSlice";
 import Page from "@/layout/Page";
 import { Card, Col, Row } from "react-bootstrap";
 import { push } from "connected-react-router";

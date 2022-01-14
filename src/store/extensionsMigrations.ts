@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,49 +16,20 @@
  */
 
 import { MigrationManifest, PersistedState } from "redux-persist/es/types";
-import { localStorage } from "redux-persist-webextension-storage";
-import { createMigrate } from "redux-persist";
-import { boolean } from "@/utils";
-import { IExtension, PersistedExtension } from "@/core";
+import { PersistedExtension } from "@/core";
+import {
+  ExtensionOptionsState,
+  LegacyExtensionObjectShapeState,
+  LegacyExtensionObjectState,
+  OptionsState,
+} from "@/store/extensionsTypes";
 
-const migrations: MigrationManifest = {
+export const migrations: MigrationManifest = {
   1: (state: PersistedState & OptionsState) => migrateExtensionsShape(state),
   2: (state: PersistedState & OptionsState) =>
     migrateActiveExtensions(
       state as PersistedState & LegacyExtensionObjectState
     ),
-};
-
-export const persistOptionsConfig = {
-  key: "extensionOptions",
-  storage: localStorage,
-  version: 2,
-  // https://github.com/rt2zz/redux-persist#migrations
-  migrate: createMigrate(migrations, { debug: boolean(process.env.DEBUG) }),
-};
-
-/**
- * @deprecated use PersistedOptionsState - this is only used in the migration
- */
-type LegacyExtensionObjectShapeState = {
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
-  extensions: {
-    // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
-    [extensionPointId: string]: {
-      [extensionId: string]: IExtension;
-    };
-  };
-};
-
-/**
- * @deprecated use ExtensionOptionsState - this is only used in a migration
- */
-export type LegacyExtensionObjectState = {
-  extensions: IExtension[];
-};
-
-export type ExtensionOptionsState = {
-  extensions: PersistedExtension[];
 };
 
 // Putting here because it was causing circular dependencies
@@ -102,20 +73,4 @@ export function migrateActiveExtensions<T>(
         (x as Partial<PersistedExtension>).updateTimestamp ?? timestamp,
     })),
   };
-}
-
-export type OptionsState =
-  | LegacyExtensionObjectShapeState
-  | LegacyExtensionObjectState
-  | ExtensionOptionsState;
-
-/**
- * Throw a `TypeError` if the Redux state has not been migrated.
- */
-export function requireLatestState(
-  state: OptionsState
-): asserts state is LegacyExtensionObjectState | ExtensionOptionsState {
-  if (!Array.isArray(state.extensions)) {
-    throw new TypeError("redux state has not been migrated");
-  }
 }

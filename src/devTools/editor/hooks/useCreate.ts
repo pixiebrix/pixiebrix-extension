@@ -18,7 +18,6 @@
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
-import { optionsSlice } from "@/options/slices";
 import { AddToast, useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import blockRegistry from "@/blocks/registry";
@@ -38,8 +37,9 @@ import {
 } from "@/devTools/editor/extensionPoints/base";
 import { useGetEditablePackagesQuery } from "@/services/api";
 import { UnknownObject } from "@/types";
+import extensionsSlice from "@/store/extensionsSlice";
 
-const { saveExtension } = optionsSlice.actions;
+const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
 
 async function upsertConfig(

@@ -20,7 +20,7 @@ import {
   ContextMenuConfig,
   ContextMenuExtensionPoint,
 } from "@/extensionPoints/contextMenu";
-import { loadOptions } from "@/options/loader";
+import { loadOptions } from "@/store/extensionsStorage";
 import { IExtension, ResolvedExtension } from "@/core";
 import { resolveDefinitions } from "@/registry/internal";
 import { allSettledValues } from "@/utils";
