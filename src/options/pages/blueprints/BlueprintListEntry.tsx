@@ -23,65 +23,61 @@ import moment from "moment";
 import { Button } from "react-bootstrap";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 
+type Installable = RecipeDefinition | ResolvedExtension;
+
+const isExtension = (blueprint: Installable): blueprint is ResolvedExtension =>
+  "_recipe" in blueprint;
+
 const BlueprintListEntry: React.FunctionComponent<{
   blueprint: ResolvedExtension | RecipeDefinition;
-}> = ({ blueprint }) => (
-  <tr>
-    <td className="text-wrap">
-      <span className="text-wrap">
-        {"label" in blueprint ? blueprint.label : blueprint.metadata.name}
-      </span>
-      <br />
-      <span className="text-muted text-wrap">
-        {"_recipe" in blueprint && blueprint._recipe && (
-          <>{blueprint._recipe.description}</>
+}> = ({ blueprint }) => {
+  const { label, packageId, description, updated_at, active } = isExtension(
+    blueprint
+  )
+    ? {
+        label: blueprint.label,
+        description: blueprint._recipe?.description,
+        packageId: blueprint._recipe?.id,
+        updated_at: blueprint._recipe?.updated_at ?? blueprint.updateTimestamp,
+        active: blueprint.active,
+      }
+    : {
+        label: blueprint.metadata.name,
+        description: blueprint.metadata.description,
+        packageId: blueprint.metadata.id,
+        updated_at: blueprint.updated_at,
+        active: blueprint.active,
+      };
+
+  return (
+    <tr>
+      <td className="text-wrap">
+        <span className="text-wrap">{label}</span>
+        <br />
+        <span className="text-muted text-wrap">{description}</span>
+      </td>
+      <td>
+        <div className={styles.sharing}>
+          {packageId && <code className="p-0 small">{packageId}</code>}
+        </div>
+      </td>
+      <td className="text-wrap">
+        <span className="small">
+          Last updated: {moment.utc(updated_at).fromNow()}
+        </span>
+      </td>
+      <td>
+        {active ? (
+          "Active"
+        ) : (
+          <Button size="sm" variant="info">
+            Activate
+          </Button>
         )}
-        {"metadata" in blueprint && blueprint.metadata && (
-          <>{blueprint.metadata.description}</>
-        )}
-      </span>
-    </td>
-    <td>
-      <div className={styles.sharing}>
-        {"_recipe" in blueprint && blueprint._recipe && (
-          <>
-            <code className="p-0 small">{blueprint._recipe.id}</code>
-          </>
-        )}
-        {"metadata" in blueprint && blueprint.metadata && (
-          <>
-            <code className="p-0 small">{blueprint.metadata.id}</code>
-          </>
-        )}
-      </div>
-    </td>
-    <td className="text-wrap">
-      <span className="small">
-        Last updated:{" "}
-        {"updated_at" in blueprint &&
-          //moment.utc(blueprint.updated_at).format("MMMM Do YYYY, h:mm:ss a")
-          moment.utc(blueprint.updated_at).fromNow()}
-        {"_recipe" in blueprint &&
-          blueprint._recipe &&
-          //moment.utc(blueprint._recipe.updated_at).format("MMMM Do YYYY, h:mm:ss a")
-          moment.utc(blueprint._recipe.updated_at).fromNow()}
-        {"_recipe" in blueprint &&
-          !blueprint._recipe &&
-          //moment.utc(blueprint.updateTimestamp).format("MMMM Do YYYY, h:mm:ss a")
-          moment.utc(blueprint.updateTimestamp).fromNow()}
-      </span>
-    </td>
-    <td>
-      {blueprint.active ? (
-        "Active"
-      ) : (
-        <Button size="sm" variant="info">
-          Activate
-        </Button>
-      )}
-    </td>
-    <td>{blueprint.active && <EllipsisMenu items={[]} />}</td>
-  </tr>
-);
+      </td>
+      <td>{active && <EllipsisMenu items={[]} />}</td>
+    </tr>
+  );
+};
 
 export default BlueprintListEntry;

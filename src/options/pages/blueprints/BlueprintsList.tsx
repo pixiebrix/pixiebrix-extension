@@ -25,13 +25,17 @@ import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
 const BlueprintsList: React.FunctionComponent<{
   blueprints: ResolvedExtension[] | RecipeDefinition[];
 }> = ({ blueprints }) => {
+  const getUniqueId = (blueprint: ResolvedExtension | RecipeDefinition) => {
+    return "id" in blueprint ? blueprint.id : blueprint.metadata.id;
+  };
+
   return (
     <Card className={styles.root}>
       <Table>
         <tbody>
           {blueprints.map((blueprint) => (
             <BlueprintListEntry
-              key={"id" in blueprint ? blueprint.id : blueprint.metadata.id}
+              key={getUniqueId(blueprint)}
               blueprint={blueprint}
             />
           ))}
