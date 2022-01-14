@@ -116,11 +116,16 @@ export default function useLogEntries({
     return [pageEntries, Math.ceil(filteredEntries.length / perPage)];
   }, [perPage, page, filteredEntries]);
 
+  let checkingNewEntries = false;
   const checkNewEntries = useCallback(async () => {
-    if (!initialized) {
-      // Wait for the initial set of logs before starting to check for updates
+    if (!initialized || checkingNewEntries) {
+      // Wait for the initial set of logs or the previous check to complete
+      // before running another check for updates
       return;
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- we can neglect the loss of the value on re-render for the sake of simplicity
+    checkingNewEntries = true;
 
     const newEntries = await getLog(context);
     const filteredNewEntries = (newEntries ?? []).filter(
@@ -129,6 +134,7 @@ export default function useLogEntries({
     );
     setUnread(newEntries.filter((x) => Number(x.timestamp) > lastTimestamp));
     setNumNew(Math.max(0, filteredNewEntries.length - filteredEntries.length));
+    checkingNewEntries = false;
   }, [
     lastTimestamp,
     setUnread,
