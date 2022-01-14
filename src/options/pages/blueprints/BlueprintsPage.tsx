@@ -15,136 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useTitle } from "@/hooks/title";
 import Page from "@/layout/Page";
 import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
-import { Button, Card, Col, ListGroup, Nav, Row, Table } from "react-bootstrap";
+import { Button, Col, Nav, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { OptionsState } from "@/store/extensions";
-import { selectExtensions } from "@/options/selectors";
-import { connect } from "react-redux";
-import { IExtension, UUID } from "@/core";
-import useFetch from "@/hooks/useFetch";
-import { RecipeDefinition } from "@/types/definitions";
-import { CloudExtension } from "@/types/contract";
-import { useAsyncState } from "@/hooks/common";
-import { resolveDefinitions } from "@/registry/internal";
-import AuthContext from "@/auth/AuthContext";
-import {
-  isPersonalBlueprint,
-  isPersonalBrick,
-} from "@/options/pages/installed/ActiveBricksCard";
 import BlueprintsList from "@/options/pages/blueprints/BlueprintsList";
+import useActivateables from "@/options/pages/blueprints/useActivateables";
 
-type Activatable = {};
-
-const BlueprintsPage: React.FunctionComponent<{
-  // TODO: maybe rename this to activeBlueprints or installedBlueprints where appropriate
-  extensions: IExtension[];
-}> = ({ extensions }) => {
+const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");
-  const { scope } = useContext(AuthContext);
 
-  const [filteredBlueprints, setFilteredBlueprints] = useState([]);
+  const [filterCategory, setFilterCategory] = useState("");
+  const { blueprints, isLoading, error } = useActivateables();
 
-  const { data: rawRecipes, isLoading: isRecipesLoading } = useFetch<
-    RecipeDefinition[]
-  >("/api/recipes/");
-  const {
-    data: cloudExtensions,
-    isLoading: isCloudExtensionsLoading,
-  } = useFetch<CloudExtension[]>("/api/extensions");
-  const installedExtensions = new Set<UUID>(
-    extensions.map((extension) => extension.id)
-  );
-
-  console.log("Extensions:", extensions);
-  console.log("Cloud extensions:", cloudExtensions);
-
-  const [allExtensions, , cloudError] = useAsyncState(
-    async () => {
-      const inactiveExtensions = cloudExtensions
-        .filter((x) => !installedExtensions.has(x.id))
-        .map((x) => ({ ...x, active: false }));
-
-      return [...extensions, ...inactiveExtensions];
-    },
-    [extensions, cloudExtensions],
-    extensions ?? []
-  );
-
-  const [resolvedExtensions, , resolveError] = useAsyncState(
-    async () =>
-      Promise.all(
-        allExtensions.map(async (extension) => resolveDefinitions(extension))
-      ),
-    [allExtensions],
-    []
-  );
-
-  console.log("Resolved extensions:", resolvedExtensions);
-
-  const personalOrTeamBlueprints = useMemo(() => {
-    const installedRecipes = new Set(
-      extensions.map((extension) => extension._recipe?.id)
-    );
-
-    return (rawRecipes ?? [])
-      .filter(
-        (recipe) =>
-          recipe.metadata.id.includes(scope) ||
-          recipe.sharing.organizations.length > 0
-      )
-      .map((recipe) => ({
-        ...recipe,
-        active: installedRecipes.has(recipe.metadata.id),
-      }));
-  }, [extensions, rawRecipes, scope]);
-
-  const activeExtensions = useMemo(
-    () => resolvedExtensions?.filter((extension) => extension.active),
-    [resolvedExtensions]
-  );
-
-  const filterBlueprints = (filter: string) => {
-    if (filter === "active") {
-      setFilteredBlueprints(activeExtensions);
-    }
-
-    if (filter === "all") {
-      setFilteredBlueprints([
-        ...resolvedExtensions,
-        ...personalOrTeamBlueprints,
-      ]);
-    }
-
-    if (filter === "personal") {
-      setFilteredBlueprints([
-        ...resolvedExtensions.filter((extension) => isPersonalBrick(extension)),
-        ...personalOrTeamBlueprints.filter((blueprint) =>
-          blueprint.metadata.id.includes(scope)
-        ),
-      ]);
-    }
-
-    if (filter === "shared") {
-      setFilteredBlueprints(
-        personalOrTeamBlueprints.filter(
-          (blueprint) => !blueprint.metadata.id.includes(scope)
-        )
-      );
-    }
+  const categoryLabels = {
+    active: "Active Blueprints",
+    all: "All Blueprints",
+    personal: "Personal Blueprints",
+    shared: "Shared with Me",
   };
-
-  // Guard race condition with load when visiting the URL directly
-  const noExtensions =
-    extensions.length === 0 &&
-    allExtensions != null &&
-    allExtensions.length === 0;
-
-  const isLoading =
-    noExtensions || isRecipesLoading || isCloudExtensionsLoading;
 
   return (
     <Page
@@ -159,7 +50,7 @@ const BlueprintsPage: React.FunctionComponent<{
         </Button>
       }
       isPending={isLoading}
-      error={cloudError ?? resolveError}
+      error={error}
     >
       <Row>
         <Col xs={3}>
@@ -168,41 +59,24 @@ const BlueprintsPage: React.FunctionComponent<{
             variant="pills"
             defaultActiveKey="active"
           >
-            <Nav.Item>
-              <Nav.Link
-                eventKey="active"
-                onClick={() => filterBlueprints("active")}
-              >
-                Active Blueprints
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="all" onClick={() => filterBlueprints("all")}>
-                All Blueprints
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                eventKey="shared"
-                onClick={() => filterBlueprints("shared")}
-              >
-                Shared with Me
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                eventKey="personal"
-                onClick={() => filterBlueprints("personal")}
-              >
-                Personal Blueprints
-              </Nav.Link>
-            </Nav.Item>
+            {Object.keys(blueprints).map((filter) => (
+              <Nav.Item key={filter}>
+                <Nav.Link
+                  eventKey={filter}
+                  onClick={() => {
+                    setFilterCategory(filter);
+                  }}
+                >
+                  {categoryLabels[filter]}
+                </Nav.Link>
+              </Nav.Item>
+            ))}
           </Nav>
         </Col>
         <Col xs={9}>
           <h3>Filtered Blueprints</h3>
-          {filteredBlueprints?.length > 0 && (
-            <BlueprintsList blueprints={filteredBlueprints} />
+          {blueprints[filterCategory]?.length > 0 && (
+            <BlueprintsList blueprints={blueprints[filterCategory]} />
           )}
         </Col>
       </Row>
@@ -210,8 +84,4 @@ const BlueprintsPage: React.FunctionComponent<{
   );
 };
 
-const mapStateToProps = (state: { options: OptionsState }) => ({
-  extensions: selectExtensions(state),
-});
-
-export default connect(mapStateToProps)(BlueprintsPage);
+export default BlueprintsPage;
