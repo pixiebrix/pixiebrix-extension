@@ -260,10 +260,17 @@ export abstract class Effect extends Block {
   abstract effect(inputs: BlockArg, env?: BlockOptions): Promise<void>;
 
   async run(value: BlockArg, options: BlockOptions): Promise<void> {
-    recordLogBkg(options.logger.context, "debug", "Running effect bkg", {
-      id: this.id,
-      name: this.name,
-    });
+    for (let i = 0; i !== 100; i++) {
+      recordLogBkg(
+        options.logger.context,
+        "debug",
+        `Running effect bkg, ${i}`,
+        {
+          id: this.id,
+          name: this.name,
+        }
+      );
+    }
 
     return this.effect(value, options);
   }
@@ -312,6 +319,17 @@ export abstract class Renderer extends Block {
   }
 
   async run(value: BlockArg, options: BlockOptions): Promise<RendererOutput> {
+    for (let i = 0; i !== 100; i++) {
+      recordLogBkg(
+        options.logger.context,
+        "debug",
+        `Running renderer bkg, ${i}`,
+        {
+          id: this.id,
+          name: this.name,
+        }
+      );
+    }
     return this.render(value, options);
   }
 }
