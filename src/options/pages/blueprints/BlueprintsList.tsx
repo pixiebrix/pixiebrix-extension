@@ -19,9 +19,8 @@ import { Button, Card, Table } from "react-bootstrap";
 import React from "react";
 import { RecipeDefinition } from "@/types/definitions";
 import { ResolvedExtension } from "@/core";
-import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import styles from "./BlueprintsList.module.scss";
-import moment from "moment";
+import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
 
 const BlueprintsList: React.FunctionComponent<{
   blueprints: ResolvedExtension[] | RecipeDefinition[];
@@ -31,64 +30,10 @@ const BlueprintsList: React.FunctionComponent<{
       <Table>
         <tbody>
           {blueprints.map((blueprint) => (
-            <tr key={"id" in blueprint ? blueprint.id : blueprint.metadata.id}>
-              <td className="text-wrap">
-                <span className="text-wrap">
-                  {"label" in blueprint
-                    ? blueprint.label
-                    : blueprint.metadata.name}
-                </span>
-                <br />
-                <span className="text-muted text-wrap">
-                  {"_recipe" in blueprint && blueprint._recipe && (
-                    <>{blueprint._recipe.description}</>
-                  )}
-                  {"metadata" in blueprint && blueprint.metadata && (
-                    <>{blueprint.metadata.description}</>
-                  )}
-                </span>
-              </td>
-              <td>
-                <div className={styles.sharing}>
-                  {"_recipe" in blueprint && blueprint._recipe && (
-                    <>
-                      <code className="p-0 small">{blueprint._recipe.id}</code>
-                    </>
-                  )}
-                  {"metadata" in blueprint && blueprint.metadata && (
-                    <>
-                      <code className="p-0 small">{blueprint.metadata.id}</code>
-                    </>
-                  )}
-                </div>
-              </td>
-              <td className="text-wrap">
-                <span className="small">
-                  Last updated:{" "}
-                  {"updated_at" in blueprint &&
-                    //moment.utc(blueprint.updated_at).format("MMMM Do YYYY, h:mm:ss a")
-                    moment.utc(blueprint.updated_at).fromNow()}
-                  {"_recipe" in blueprint &&
-                    blueprint._recipe &&
-                    //moment.utc(blueprint._recipe.updated_at).format("MMMM Do YYYY, h:mm:ss a")
-                    moment.utc(blueprint._recipe.updated_at).fromNow()}
-                  {"_recipe" in blueprint &&
-                    !blueprint._recipe &&
-                    //moment.utc(blueprint.updateTimestamp).format("MMMM Do YYYY, h:mm:ss a")
-                    moment.utc(blueprint.updateTimestamp).fromNow()}
-                </span>
-              </td>
-              <td>
-                {blueprint.active ? (
-                  "Active"
-                ) : (
-                  <Button size="sm" variant="info">
-                    Activate
-                  </Button>
-                )}
-              </td>
-              <td>{blueprint.active && <EllipsisMenu items={[]} />}</td>
-            </tr>
+            <BlueprintListEntry
+              key={"id" in blueprint ? blueprint.id : blueprint.metadata.id}
+              blueprint={blueprint}
+            />
           ))}
         </tbody>
       </Table>

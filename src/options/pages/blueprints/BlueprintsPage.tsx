@@ -24,18 +24,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlueprintsList from "@/options/pages/blueprints/BlueprintsList";
 import useActivateables from "@/options/pages/blueprints/useActivateables";
 
+// Should this go in useActivateables hook?
+const categoryLabels = {
+  active: "Active Blueprints",
+  all: "All Blueprints",
+  personal: "Personal Blueprints",
+  shared: "Shared with Me",
+};
+
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");
 
-  const [filterCategory, setFilterCategory] = useState("");
+  const [filterCategory, setFilterCategory] = useState("active");
   const { blueprints, isLoading, error } = useActivateables();
-
-  const categoryLabels = {
-    active: "Active Blueprints",
-    all: "All Blueprints",
-    personal: "Personal Blueprints",
-    shared: "Shared with Me",
-  };
 
   return (
     <Page
@@ -74,7 +75,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
           </Nav>
         </Col>
         <Col xs={9}>
-          <h3>Filtered Blueprints</h3>
+          <h3>{categoryLabels[filterCategory]}</h3>
           {blueprints[filterCategory]?.length > 0 && (
             <BlueprintsList blueprints={blueprints[filterCategory]} />
           )}
