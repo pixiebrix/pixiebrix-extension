@@ -36,7 +36,7 @@ import { expectContext } from "@/utils/expectContext";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
-const DB_VERSION_NUMBER = 5;
+const DB_VERSION_NUMBER = 3;
 
 export type MessageLevel = "trace" | "debug" | "info" | "warn" | "error";
 
@@ -169,8 +169,6 @@ export async function getLog(
 
   const match = makeMatchEntry(context);
   const matches = entries.filter((entry) => match(entry));
-
-  console.log("getLog", { context, entries, matches });
 
   // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
   return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
