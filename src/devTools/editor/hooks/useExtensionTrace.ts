@@ -54,7 +54,13 @@ function useExtensionTrace() {
   const extensionId = useSelector(selectActiveExtensionId);
   const extensionTrace = useSelector(selectExtensionTrace);
 
+  let checkingNewEntries = false;
   const refreshTrace = async () => {
+    if (checkingNewEntries) {
+      return;
+    }
+
+    checkingNewEntries = true;
     const lastRun = await getLatestRunByExtensionId(extensionId);
     // Keep the Redux log clean. Don't setExtensionTrace unless we have to
     if (
@@ -65,6 +71,8 @@ function useExtensionTrace() {
     ) {
       dispatch(setExtensionTrace({ extensionId, records: lastRun }));
     }
+
+    checkingNewEntries = false;
   };
 
   useInterval(refreshTrace, TRACE_RELOAD_MILLIS);
