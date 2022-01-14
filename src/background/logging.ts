@@ -148,8 +148,6 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
 export async function getLog(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
-  const start = performance.now();
-
   const db = await getDB();
   const objectStore = db
     .transaction(ENTRY_OBJECT_STORE, "readonly")
@@ -169,20 +167,8 @@ export async function getLog(
     entries = await objectStore.getAll();
   }
 
-  const entriesTime = performance.now();
-
   const match = makeMatchEntry(context);
   const matches = entries.filter((entry) => match(entry));
-
-  const end = performance.now();
-  console.log("getLog", {
-    context,
-    entries: entries.length,
-    matches: matches.length,
-    entriesTime: entriesTime - start,
-    matchingTime: end - entriesTime,
-    totalTime: end - start,
-  });
 
   // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
   return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
