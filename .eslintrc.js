@@ -14,6 +14,10 @@ module.exports = {
     // TODO: Import extended config from app, after improving it
     "@typescript-eslint/naming-convention": "off",
 
+    // The rule is unreasonably slow (90 sec lint -> 5 minutes)
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/1080
+    "import/no-cycle": "off",
+
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/restrict-template-expressions": "warn",
