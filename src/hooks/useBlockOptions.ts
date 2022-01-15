@@ -30,7 +30,7 @@ interface BlockState {
   error?: string | null;
 }
 
-export function useBlockOptions(
+function useBlockOptions(
   id: RegistryId
 ): [BlockState, React.FunctionComponent<BlockOptionProps>] {
   const [{ block, error }, setBlock] = useState<BlockState>({
