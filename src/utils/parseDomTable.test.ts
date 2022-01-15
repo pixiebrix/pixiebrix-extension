@@ -30,10 +30,13 @@ describe("parseDomTable", () => {
       <tr><td>Luigi<td>39
     `);
 
-    const expected = [
-      { Name: "Mario", Age: "42" },
-      { Name: "Luigi", Age: "39" },
-    ];
+    const expected = {
+      fieldNames: ["Name", "Age"],
+      records: [
+        { Name: "Mario", Age: "42" },
+        { Name: "Luigi", Age: "39" },
+      ],
+    };
 
     const actual = parseDomTable(table);
 
@@ -46,10 +49,13 @@ describe("parseDomTable", () => {
       <tr><td>Luigi<td>39
     `);
 
-    const expected = [
-      { 0: "Mario", 1: "42" },
-      { 0: "Luigi", 1: "39" },
-    ];
+    const expected = {
+      fieldNames: [0, 1],
+      records: [
+        { 0: "Mario", 1: "42" },
+        { 0: "Luigi", 1: "39" },
+      ],
+    };
 
     const actual = parseDomTable(table);
 
@@ -63,10 +69,13 @@ describe("parseDomTable", () => {
       <tr><th>Height<td>5' 6"<td>5' 8"
     `);
 
-    const expected = [
-      { Name: "Mario", Age: "42", Height: "5' 6\"" },
-      { Name: "Luigi", Age: "39", Height: "5' 8\"" },
-    ];
+    const expected = {
+      fieldNames: ["Name", "Age", "Height"],
+      records: [
+        { Name: "Mario", Age: "42", Height: "5' 6\"" },
+        { Name: "Luigi", Age: "39", Height: "5' 8\"" },
+      ],
+    };
 
     const actual = parseDomTable(table);
 
