@@ -22,8 +22,7 @@ import styles from "@/options/pages/blueprints/BlueprintsList.module.scss";
 import moment from "moment";
 import { Button } from "react-bootstrap";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
-
-type Installable = RecipeDefinition | ResolvedExtension;
+import { Installable } from "@/options/pages/blueprints/useInstallables";
 
 const isExtension = (blueprint: Installable): blueprint is ResolvedExtension =>
   "_recipe" in blueprint;

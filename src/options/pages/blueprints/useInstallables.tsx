@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
+import { ResolvedExtension, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { useContext, useMemo } from "react";
 import AuthContext from "@/auth/AuthContext";
@@ -27,7 +27,9 @@ import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import { isPersonalBrick } from "@/options/pages/installed/ActiveBricksCard";
 
-function useActivateables() {
+export type Installable = RecipeDefinition | ResolvedExtension;
+
+function useInstallables() {
   const { scope } = useContext(AuthContext);
   const unresolvedExtensions = useSelector(selectExtensions);
 
@@ -111,4 +113,4 @@ function useActivateables() {
   };
 }
 
-export default useActivateables;
+export default useInstallables;

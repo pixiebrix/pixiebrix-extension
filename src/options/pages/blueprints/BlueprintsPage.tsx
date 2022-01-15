@@ -22,9 +22,9 @@ import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Nav, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlueprintsList from "@/options/pages/blueprints/BlueprintsList";
-import useActivateables from "@/options/pages/blueprints/useActivateables";
+import useInstallables from "@/options/pages/blueprints/useInstallables";
 
-// Should this go in useActivateables hook?
+// Should this go in useInstallables hook?
 const categoryLabels = {
   active: "Active Blueprints",
   all: "All Blueprints",
@@ -36,7 +36,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");
 
   const [filterCategory, setFilterCategory] = useState("active");
-  const { blueprints, isLoading, error } = useActivateables();
+  const { blueprints, isLoading, error } = useInstallables();
 
   return (
     <Page
