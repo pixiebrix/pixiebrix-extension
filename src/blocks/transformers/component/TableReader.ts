@@ -49,6 +49,26 @@ export class TableReader extends Transformer {
     },
   };
 
+  outputSchema: Schema = {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    properties: {
+      records: {
+        description:
+          "The records in the table (rows or columns, depending on orientation)",
+        type: "array",
+        items: { type: "object" },
+      },
+      fieldNames: {
+        description: "The field names in the table",
+        type: "array",
+        items: { type: "string" },
+      },
+    },
+    required: ["records", "fieldNames"],
+    additionalProperties: false,
+  };
+
   async isRootAware(): Promise<boolean> {
     return true;
   }

@@ -20,16 +20,26 @@ import { zip, zipObject } from "lodash";
 interface ParsingOptions {
   orientation?: "vertical" | "horizontal" | "infer";
 }
-type Headers = Array<number | string>;
 
-interface List {
-  headers: Headers;
+type Cell = { type: "value" | "header"; value: string };
+
+type FieldNames = Array<number | string>;
+type Records = Array<Record<string, string>>;
+
+/** Flattened data extracted from table */
+type RawTableContent = Cell[][];
+
+/** Normalized data extracted from table, after transposition, if required */
+interface NormalizedData {
+  fieldNames: FieldNames;
   body: string[][];
 }
-type Cell = { type: "value" | "header"; value: string };
-type NormalizedTable = Cell[][];
 
-type Table = Array<Record<string, string>>;
+/** Final parsed records and field names */
+interface ParsedTable {
+  fieldNames: FieldNames;
+  records: Records;
+}
 
 function guessDirection(
   table: HTMLTableElement
@@ -41,7 +51,7 @@ function guessDirection(
 }
 
 // TODO: Normalize rowspan and colspan in here as well
-function normalizeTable(table: HTMLTableElement): NormalizedTable {
+function flattenTableContent(table: HTMLTableElement): RawTableContent {
   return [...table.rows].map((row) =>
     [...row.cells].map((cell) => ({
       type: cell.tagName === "TH" ? "header" : "value",
@@ -50,10 +60,10 @@ function normalizeTable(table: HTMLTableElement): NormalizedTable {
   );
 }
 
-function getList(
-  table: NormalizedTable,
+function extractData(
+  table: RawTableContent,
   orientation: ParsingOptions["orientation"]
-): List {
+): NormalizedData {
   if (orientation === "horizontal") {
     // Transpose table so we only deal with one orientation
     table = zip(...table);
@@ -67,21 +77,22 @@ function getList(
   const textTable = table.map((row) => row.map((cell) => cell.value));
   if (hasHeader) {
     const [headers, ...body] = textTable;
-    return { headers, body };
+    return { fieldNames: headers, body };
   }
 
   // If it has no headers, use a 0-based index as header
-  return { headers: [...(firstRow ?? []).keys()], body: textTable };
+  return { fieldNames: [...(firstRow ?? []).keys()], body: textTable };
 }
 
 export default function parseDomTable(
   table: HTMLTableElement,
   { orientation = "infer" }: ParsingOptions = {}
-): Table {
-  const { headers, body } = getList(
-    normalizeTable(table),
+): ParsedTable {
+  const { fieldNames, body } = extractData(
+    flattenTableContent(table),
     orientation === "infer" ? guessDirection(table) : orientation
   );
 
-  return body.map((row) => zipObject(headers, row));
+  const records = body.map((row) => zipObject(fieldNames, row));
+  return { records, fieldNames };
 }
