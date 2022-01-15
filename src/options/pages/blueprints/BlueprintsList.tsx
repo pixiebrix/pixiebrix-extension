@@ -36,7 +36,7 @@ const BlueprintsList: React.FunctionComponent<{
           {blueprints.map((blueprint) => (
             <BlueprintListEntry
               key={getUniqueId(blueprint)}
-              blueprint={blueprint}
+              installable={blueprint}
             />
           ))}
         </tbody>

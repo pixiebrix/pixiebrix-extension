@@ -16,37 +16,29 @@
  */
 
 import React from "react";
-import { ResolvedExtension } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
 import styles from "@/options/pages/blueprints/BlueprintsList.module.scss";
 import moment from "moment";
 import { Button } from "react-bootstrap";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
-import { Installable } from "@/options/pages/blueprints/useInstallables";
-
-const isExtension = (blueprint: Installable): blueprint is ResolvedExtension =>
-  "_recipe" in blueprint;
+import {
+  getInstallableInfo,
+  Installable,
+  isExtension,
+} from "@/options/pages/blueprints/installableUtils";
+import useSharing from "@/options/pages/blueprints/useSharing";
+import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 
 const BlueprintListEntry: React.FunctionComponent<{
-  blueprint: ResolvedExtension | RecipeDefinition;
-}> = ({ blueprint }) => {
-  const { label, packageId, description, updated_at, active } = isExtension(
-    blueprint
-  )
-    ? {
-        label: blueprint.label,
-        description: blueprint._recipe?.description,
-        packageId: blueprint._recipe?.id,
-        updated_at: blueprint._recipe?.updated_at ?? blueprint.updateTimestamp,
-        active: blueprint.active,
-      }
-    : {
-        label: blueprint.metadata.name,
-        description: blueprint.metadata.description,
-        packageId: blueprint.metadata.id,
-        updated_at: blueprint.updated_at,
-        active: blueprint.active,
-      };
+  installable: Installable;
+}> = ({ installable }) => {
+  const {
+    label,
+    packageId,
+    description,
+    updated_at,
+    active,
+  } = getInstallableInfo(installable);
+  const sharingType = useSharing(installable);
 
   return (
     <tr>
@@ -57,7 +49,9 @@ const BlueprintListEntry: React.FunctionComponent<{
       </td>
       <td>
         <div className={styles.sharing}>
-          {packageId && <code className="p-0 small">{packageId}</code>}
+          {packageId && <code className="p-0">{packageId}</code>}
+          <br />
+          <SharingLabel installable={installable} />
         </div>
       </td>
       <td className="text-wrap">

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ResolvedExtension, UUID } from "@/core";
+import { UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { useContext, useMemo } from "react";
 import AuthContext from "@/auth/AuthContext";
@@ -26,10 +26,21 @@ import { CloudExtension } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import { isPersonalBrick } from "@/options/pages/installed/ActiveBricksCard";
+import {
+  Installable,
+  isPersonal,
+} from "@/options/pages/blueprints/installableUtils";
 
-export type Installable = RecipeDefinition | ResolvedExtension;
-
-function useInstallables() {
+function useInstallables(): {
+  blueprints: {
+    active: Installable[];
+    all: Installable[];
+    personal: Installable[];
+    shared: Installable[];
+  };
+  isLoading: boolean;
+  error: unknown;
+} {
   const { scope } = useContext(AuthContext);
   const unresolvedExtensions = useSelector(selectExtensions);
 
@@ -95,7 +106,7 @@ function useInstallables() {
       all: [...(resolvedExtensions ?? []), ...personalOrTeamBlueprints],
       personal: [
         ...(resolvedExtensions ?? []).filter((extension) =>
-          isPersonalBrick(extension)
+          isPersonal(extension)
         ),
         ...personalOrTeamBlueprints.filter((blueprint) =>
           blueprint.metadata.id.includes(scope)

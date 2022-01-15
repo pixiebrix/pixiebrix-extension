@@ -15,37 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ResolvedExtension, UUID } from "@/core";
+import { UUID } from "@/core";
 import { useContext, useMemo } from "react";
 import AuthContext from "@/auth/AuthContext";
-import { RecipeDefinition } from "@/types/definitions";
 import { useGetOrganizationsQuery } from "@/services/api";
-import { Installable } from "@/options/pages/blueprints/useInstallables";
+import {
+  getSharing,
+  Installable,
+  isDeployment,
+  isPersonal,
+  isPublic,
+} from "@/options/pages/blueprints/installableUtils";
 
-const isPublic = (extension: ResolvedExtension) =>
-  extension._recipe?.sharing?.public;
-
-const hasOrganization = (extension: ResolvedExtension) =>
-  extension._recipe?.sharing?.organizations.length > 0;
-
-const isPersonalBrick = (extension: ResolvedExtension) =>
-  !extension._recipe && !extension._deployment;
-
-const isPersonalBlueprint = (extension: ResolvedExtension, scope: string) =>
-  scope && extension._recipe?.id.startsWith(scope + "/");
-
-const isExtension = (blueprint: Installable): blueprint is ResolvedExtension =>
-  "_recipe" in blueprint;
-
-function useSharing(blueprint: ResolvedExtension | RecipeDefinition) {
+function useSharing(
+  installable: Installable
+): {
+  type: "Personal" | "Public" | "Team" | "Deployment";
+  label: string;
+} {
   const { scope } = useContext(AuthContext);
   const { data: organizations = [] } = useGetOrganizationsQuery();
-  const sharing = isExtension(blueprint)
-    ? blueprint._recipe?.sharing
-    : blueprint.sharing;
+  const sharing = getSharing(installable);
 
+  // this is the same problem as BrickIcon, in that tens of renders
+  // make too many queries
   const organization = useMemo(() => {
-    if (sharing.organizations.length === 0) {
+    if (!sharing || sharing.organizations.length === 0) {
       return null;
     }
 
@@ -53,7 +48,32 @@ function useSharing(blueprint: ResolvedExtension | RecipeDefinition) {
     return organizations.find((org) =>
       sharing.organizations.includes(org.id as UUID)
     );
-  }, [organizations, sharing.organizations]);
+  }, [organizations, sharing]);
+
+  const sharingType = useMemo(() => {
+    if (isPersonal(installable, scope)) {
+      return "Personal";
+    }
+
+    if (isDeployment(installable)) {
+      return "Deployment";
+    }
+
+    if (organization) {
+      return "Team";
+    }
+
+    if (isPublic(installable)) {
+      return "Public";
+    }
+  }, []);
+
+  return {
+    type: sharingType,
+    label: ["Team", "Deployment"].includes(sharingType)
+      ? organization.name
+      : sharingType,
+  };
 }
 
 export default useSharing;
