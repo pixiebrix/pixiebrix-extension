@@ -391,9 +391,9 @@ describe("SchemaField", () => {
       userEvent.click(toggle);
 
       await waitFor(() => {
-        const testIds = [...container.querySelectorAll("a.dropdown-item")].map(
-          (x) => x.dataset.testid
-        );
+        const testIds = [
+          ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
+        ].map((x) => x.dataset.testid);
         expect(testIds).toEqual(uniq(testIds));
       });
     }
@@ -419,9 +419,9 @@ describe("SchemaField", () => {
       userEvent.click(toggle);
 
       await waitFor(() => {
-        const testIds = [...container.querySelectorAll("a.dropdown-item")].map(
-          (x) => x.dataset.testid
-        );
+        const testIds = [
+          ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
+        ].map((x) => x.dataset.testid);
         if (testIds.includes("omit")) {
           expect(testIds[testIds.length - 1]).toEqual("omit");
         }
