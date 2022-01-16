@@ -512,7 +512,7 @@ export function inferSelectors(
   element: HTMLElement,
   root: Element | null = null
 ): string[] {
-  const makeSelector = (allowed: CssSelectorType[]) => {
+  const makeSelector = (allowed?: CssSelectorType[]) => {
     try {
       return safeCssSelector(element, allowed, root);
     } catch (error) {
@@ -532,7 +532,7 @@ export function inferSelectors(
         makeSelector(["tag", "class", "attribute", "nthchild"]),
         makeSelector(["id", "tag", "attribute", "nthchild"]),
         makeSelector(["id", "tag", "attribute"]),
-        makeSelector(undefined),
+        makeSelector(),
       ])
     ).filter((x) => (x ?? "").trim() !== ""),
     (x) => x.length

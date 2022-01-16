@@ -100,8 +100,11 @@ async function ensureReaders(
         );
       }
 
-      return (await ensureBlock(definitions, definition as RawConfig<"reader">))
-        .id;
+      const block = await ensureBlock(
+        definitions,
+        definition as RawConfig<"reader">
+      );
+      return block.id;
     }
 
     // Assume it's a reader config

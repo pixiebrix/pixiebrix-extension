@@ -72,7 +72,6 @@ export type NormalizedAvailability = {
 
 export type ReaderConfig =
   | RegistryId
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
   | { [key: string]: ReaderConfig }
   | ReaderConfig[];
 

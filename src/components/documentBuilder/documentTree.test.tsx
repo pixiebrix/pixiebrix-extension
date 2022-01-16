@@ -290,7 +290,7 @@ describe("When rendered in panel", () => {
       ctxt: { "@input": {}, "@options": {} },
     });
     (contentScriptAPI.runMapArgs as jest.Mock).mockImplementationOnce(
-      async (inputConfig) => Promise.resolve(inputConfig)
+      async (inputConfig) => inputConfig
     );
 
     const yamlConfig = `

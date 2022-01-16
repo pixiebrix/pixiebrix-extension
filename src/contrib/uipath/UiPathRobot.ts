@@ -19,5 +19,4 @@ import { UiPathRobot } from "@uipath/robot";
 
 UiPathRobot.settings.disableTelemetry = true;
 
-// eslint-disable-next-line unicorn/prefer-export-from -- Not necessary
 export default UiPathRobot;

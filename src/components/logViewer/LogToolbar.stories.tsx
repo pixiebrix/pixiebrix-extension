@@ -25,7 +25,6 @@ const promiseAction = (name: string) => {
   const actionFn = action(name);
   return async (...args: unknown[]) => {
     actionFn(...args);
-    return Promise.resolve();
   };
 };
 
