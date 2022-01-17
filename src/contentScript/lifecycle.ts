@@ -152,7 +152,7 @@ export function clearDynamic(
       traces.clear(extensionId);
     }
   } else {
-    for (const [, extensionPoint] of _dynamic.entries()) {
+    for (const extensionPoint of _dynamic.values()) {
       try {
         extensionPoint.uninstall({ global: true });
         actionPanel.removeExtensionPoint(extensionPoint.id);

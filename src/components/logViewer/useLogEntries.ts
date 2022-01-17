@@ -131,7 +131,6 @@ export default function useLogEntries({
       return;
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- we can neglect the loss of the value on re-render for the sake of simplicity
     checkingNewEntriesRef.current = true;
 
     const newEntries = await getLog(context);
