@@ -184,13 +184,6 @@ export async function getLog(
   const match = makeMatchEntry(context);
   const matches = entries.filter((entry) => match(entry));
 
-  console.log("getLog", {
-    context,
-    indexKey,
-    entries: entries.length,
-    matches: matches.length,
-  });
-
   // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
   return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
 }
