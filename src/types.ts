@@ -40,6 +40,7 @@ import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
 import { Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
+import { recordLog } from "./background/messenger/api";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
@@ -259,6 +260,13 @@ export abstract class Effect extends Block {
   abstract effect(inputs: BlockArg, env?: BlockOptions): Promise<void>;
 
   async run(value: BlockArg, options: BlockOptions): Promise<void> {
+    for (let i = 0; i !== 100; i++) {
+      recordLog(options.logger.context, "debug", "Running effect", {
+        name: this.name,
+        index: i,
+      });
+    }
+
     return this.effect(value, options);
   }
 }
@@ -306,6 +314,13 @@ export abstract class Renderer extends Block {
   }
 
   async run(value: BlockArg, options: BlockOptions): Promise<RendererOutput> {
+    for (let i = 0; i !== 100; i++) {
+      recordLog(options.logger.context, "debug", "Running renderer", {
+        name: this.name,
+        index: i,
+      });
+    }
+
     return this.render(value, options);
   }
 }
