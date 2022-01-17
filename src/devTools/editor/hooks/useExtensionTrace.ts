@@ -27,6 +27,7 @@ import runtimeSlice from "@/devTools/editor/slices/runtimeSlice";
 import { selectActiveExtensionId } from "@/devTools/editor/slices/editorSelectors";
 import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
 import { isEqual } from "lodash";
+import { useRef } from "react";
 
 const { setExtensionTrace } = runtimeSlice.actions;
 
@@ -54,13 +55,13 @@ function useExtensionTrace() {
   const extensionId = useSelector(selectActiveExtensionId);
   const extensionTrace = useSelector(selectExtensionTrace);
 
-  let checkingNewEntries = false;
+  const checkingNewEntriesRef = useRef(false);
   const refreshTrace = async () => {
-    if (checkingNewEntries) {
+    if (checkingNewEntriesRef.current) {
       return;
     }
 
-    checkingNewEntries = true;
+    checkingNewEntriesRef.current = true;
     const lastRun = await getLatestRunByExtensionId(extensionId);
     // Keep the Redux log clean. Don't setExtensionTrace unless we have to
     if (
@@ -72,7 +73,7 @@ function useExtensionTrace() {
       dispatch(setExtensionTrace({ extensionId, records: lastRun }));
     }
 
-    checkingNewEntries = false;
+    checkingNewEntriesRef.current = false;
   };
 
   useInterval(refreshTrace, TRACE_RELOAD_MILLIS);
