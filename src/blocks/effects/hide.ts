@@ -38,6 +38,7 @@ export class HideEffect extends Effect {
       mode: {
         type: "string",
         enum: ["hide", "remove"],
+        default: "hide",
       },
     },
     ["selector"]
