@@ -227,7 +227,7 @@
     "csp-parse": "0.0.2",
     "css-loader": "^6.2.0",
     "data-urls": "^3.0.0",
-    "dotenv": "^10.0.0",
+    "dotenv": "^14.1.0",
     "esbuild-loader": "^2.16.0",
     "eslint": "^8.0.0",
     "eslint-config-pixiebrix": "^0.14.1",
