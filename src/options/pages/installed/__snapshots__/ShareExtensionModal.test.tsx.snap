@@ -102,7 +102,7 @@ exports[`renders modal 1`] = `
                 class="form-control"
                 id="description"
                 name="description"
-                value=""
+                value="Created with the PixieBrix Page Editor"
               />
               <small
                 class="text-muted form-text"
@@ -136,35 +136,39 @@ exports[`renders modal 1`] = `
             </div>
           </div>
           <div
-            class="form-group row"
+            class="horizontalFormGroup form-group row"
           >
             <div
               class="col-sm-3"
             >
               <div
-                class="switch btn on btn-primary"
+                class="root"
               >
                 <div
-                  class="switch-group"
+                  class="switch btn off btn-light"
                 >
-                  <span
-                    class="switch-on btn btn-primary"
+                  <div
+                    class="switch-group"
                   >
-                     
-                  </span>
-                  <span
-                    class="switch-off btn btn-light"
-                  >
-                     
-                  </span>
-                  <span
-                    class="switch-handle btn btn-light"
-                  />
+                    <span
+                      class="switch-on btn btn-primary"
+                    >
+                       
+                    </span>
+                    <span
+                      class="switch-off btn btn-light"
+                    >
+                       
+                    </span>
+                    <span
+                      class="switch-handle btn btn-light"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
             <label
-              class="col-sm-9"
+              class="horizontalLabel form-label col-form-label col-sm-9"
               for="public"
             >
               <span>
@@ -184,14 +188,6 @@ exports[`renders modal 1`] = `
                   />
                 </svg>
                  Public
-                 
-                <span
-                  class="text-primary"
-                >
-                  <i>
-                     – visible to all PixieBrix users
-                  </i>
-                </span>
               </span>
             </label>
           </div>
@@ -209,7 +205,7 @@ exports[`renders modal 1`] = `
             class="btn btn-primary"
             type="submit"
           >
-            Share
+            Convert
           </button>
         </div>
       </form>
