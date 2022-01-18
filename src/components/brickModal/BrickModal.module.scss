@@ -24,7 +24,7 @@ $bootstrapPadding: 15px;
   & > :first-child {
     margin: 20px auto;
     width: 89vw;
-    max-width: 1220px;
+    max-width: 1220px; // Fits 3 "recommended bricks" columns
   }
 }
 
