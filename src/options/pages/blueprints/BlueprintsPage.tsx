@@ -109,7 +109,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
         <Col xs={9}>
           <h3>{categoryLabels[filterCategory]}</h3>
           {blueprints[filterCategory]?.length > 0 && (
-            <BlueprintsList blueprints={blueprints[filterCategory]} />
+            <BlueprintsList installables={blueprints[filterCategory]} />
           )}
         </Col>
       </Row>

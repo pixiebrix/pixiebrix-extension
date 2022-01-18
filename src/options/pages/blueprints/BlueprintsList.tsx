@@ -15,28 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Card, Table } from "react-bootstrap";
+import { Card, Table } from "react-bootstrap";
 import React from "react";
-import { RecipeDefinition } from "@/types/definitions";
-import { ResolvedExtension } from "@/core";
 import styles from "./BlueprintsList.module.scss";
 import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
+import {
+  getUniqueId,
+  groupByRecipe,
+  Installable,
+} from "@/options/pages/blueprints/installableUtils";
 
 const BlueprintsList: React.FunctionComponent<{
-  blueprints: ResolvedExtension[] | RecipeDefinition[];
-}> = ({ blueprints }) => {
-  const getUniqueId = (blueprint: ResolvedExtension | RecipeDefinition) => {
-    return "id" in blueprint ? blueprint.id : blueprint.metadata.id;
-  };
-
+  installables: Installable[];
+}> = ({ installables }) => {
   return (
     <Card className={styles.root}>
       <Table>
         <tbody>
-          {blueprints.map((blueprint) => (
+          {installables.map((installable) => (
             <BlueprintListEntry
-              key={getUniqueId(blueprint)}
-              installable={blueprint}
+              key={getUniqueId(installable)}
+              installable={installable}
             />
           ))}
         </tbody>

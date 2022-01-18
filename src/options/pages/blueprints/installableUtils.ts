@@ -17,6 +17,7 @@
 
 import { RecipeDefinition } from "@/types/definitions";
 import { RegistryId, ResolvedExtension } from "@/core";
+import { groupBy } from "lodash";
 
 export type Installable = RecipeDefinition | ResolvedExtension;
 
@@ -28,6 +29,15 @@ export type InstallableInfo = {
   active: boolean;
 };
 
+export const groupByRecipe = (installables: Installable[]): Installable[][] =>
+  Object.values(
+    groupBy(installables, (installable) =>
+      isExtension(installable)
+        ? installable._recipe?.id ?? installable.id
+        : installable.metadata.id
+    )
+  );
+
 export const isExtension = (
   installable: Installable
 ): installable is ResolvedExtension => "_recipe" in installable;
@@ -38,6 +48,10 @@ export const isExtensionFromRecipe = (installable: Installable) =>
 export const isBlueprint = (
   installable: Installable
 ): installable is RecipeDefinition => !isExtension(installable);
+
+export const getUniqueId = (installable: Installable) => {
+  return isExtension(installable) ? installable.id : installable.metadata.id;
+};
 
 // TODO: instead, make these access methods like getLabel() on an
 //  installable class?
