@@ -55,8 +55,7 @@ function useBlockOptions(
   );
 
   const BlockOptions = useMemo(() => {
-    // Only return the BlockOptions if the block is available
-    // and it is actually the block with the requested id.
+    // Only return the BlockOptions if 1) the block is available, 2) and it is actually the block with the requested id.
     // Must not return the BlockOptions for the previous block (when id has changed but the state hasn't been updated yet),
     // or the config parameters of the past block will become part of the configuration of the new block.
     if (id === block?.id) {

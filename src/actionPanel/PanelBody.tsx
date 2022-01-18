@@ -35,6 +35,7 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
     }
 
     if ("error" in payload) {
+      // Have useAsyncState return the error. PanelBody already knows how to render an error received from useAsyncState
       const { error } = payload;
       throw error;
     }
