@@ -35,10 +35,9 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
     }
 
     if ("error" in payload) {
+      // Have useAsyncState return the error. PanelBody already knows how to render an error received from useAsyncState
       const { error } = payload;
-      return (
-        <div className="text-danger p-3">Error running panel: {error}</div>
-      );
+      throw error;
     }
 
     // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/1939
