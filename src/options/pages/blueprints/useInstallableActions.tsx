@@ -29,6 +29,8 @@ import {
 } from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
 import { optionsSlice } from "@/options/slices";
+import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
+import { selectExtensionContext } from "@/extensionPoints/helpers";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -57,6 +59,19 @@ function useInstallableActions(installable: Installable) {
     reactivateEveryTab();
   };
 
-  return { share, remove };
+  const viewLogs = () => {
+    if (!isExtension(installable)) {
+      return;
+    }
+
+    dispatch(
+      installedPageSlice.actions.setLogsContext({
+        title: installable.label,
+        messageContext: selectExtensionContext(installable),
+      })
+    );
+  };
+
+  return { share, remove, viewLogs };
 }
 export default useInstallableActions;

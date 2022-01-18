@@ -23,6 +23,11 @@ import { Button, Col, Nav, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlueprintsList from "@/options/pages/blueprints/BlueprintsList";
 import useInstallables from "@/options/pages/blueprints/useInstallables";
+import ExtensionLogsModal from "@/options/pages/installed/ExtensionLogsModal";
+import { useSelector } from "react-redux";
+import { RootState } from "@/options/store";
+import { LogsContext } from "@/options/pages/installed/installedPageSlice";
+import { selectShowLogsContext } from "@/options/pages/installed/installedPageSelectors";
 
 // Should this go in useInstallables hook?
 const categoryLabels = {
@@ -37,6 +42,11 @@ const BlueprintsPage: React.FunctionComponent = () => {
 
   const [filterCategory, setFilterCategory] = useState("active");
   const { blueprints, isLoading, error } = useInstallables();
+
+  // todo: move
+  const showLogsContext = useSelector<RootState, LogsContext>(
+    selectShowLogsContext
+  );
 
   return (
     <Page
@@ -53,6 +63,13 @@ const BlueprintsPage: React.FunctionComponent = () => {
       isPending={isLoading}
       error={error}
     >
+      {" "}
+      {showLogsContext && (
+        <ExtensionLogsModal
+          title={showLogsContext.title}
+          context={showLogsContext.messageContext}
+        />
+      )}
       <Row>
         <Col xs={3}>
           <Nav
