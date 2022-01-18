@@ -141,7 +141,11 @@ const InstalledExtensionRow: React.FunctionComponent<{
               ),
               hide: _recipe != null || scope == null,
               action: () => {
-                dispatch(push(`/installed/share/${extensionId}`));
+                dispatch(
+                  installedPageSlice.actions.setShareContext({
+                    extension,
+                  })
+                );
               },
             },
             {

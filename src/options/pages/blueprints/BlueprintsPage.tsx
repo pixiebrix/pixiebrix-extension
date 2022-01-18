@@ -82,13 +82,11 @@ const BlueprintsPage: React.FunctionComponent = () => {
         />
       )}
       {showShareContext && (
-        <ShareExtensionModal
-          extension={showShareContext.extension}
-          onCancel={() => {}}
-        />
+        <ShareExtensionModal extension={showShareContext.extension} />
       )}
       <Row>
         <Col xs={3}>
+          <h5>Category Filters</h5>
           <Nav
             className="flex-column"
             variant="pills"

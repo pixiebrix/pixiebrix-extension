@@ -46,8 +46,11 @@ import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import { push } from "connected-react-router";
 import ExtensionLogsModal from "./ExtensionLogsModal";
 import { RootState } from "@/options/store";
-import { LogsContext } from "./installedPageSlice";
-import { selectShowLogsContext } from "./installedPageSelectors";
+import { LogsContext, ShareContext } from "./installedPageSlice";
+import {
+  selectShowLogsContext,
+  selectShowShareContext,
+} from "./installedPageSelectors";
 import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 
 const { removeExtension } = optionsSlice.actions;
@@ -89,6 +92,11 @@ export const _InstalledPage: React.FunctionComponent<{
     selectShowLogsContext
   );
 
+  // todo: move
+  const showShareContext = useSelector<RootState, ShareContext>(
+    selectShowShareContext
+  );
+
   const notify = useNotifications();
 
   const onExportBlueprint = useCallback(
@@ -121,31 +129,10 @@ export const _InstalledPage: React.FunctionComponent<{
       icon={faCubes}
       error={cloudError ?? resolveError}
     >
-      <Route
-        exact
-        path="/installed/share/:extensionId"
-        render={(routeProps) => {
-          // Avoid race condition with load when visiting the URL directly
-          if (!allExtensions) {
-            return null;
-          }
+      {showShareContext && (
+        <ShareExtensionModal extension={showShareContext.extension} />
+      )}
 
-          const toShare = allExtensions.find(
-            (x) => x.id === routeProps.match.params.extensionId
-          );
-
-          return toShare ? (
-            <ShareExtensionModal
-              extension={toShare}
-              onCancel={() => {
-                push("/installed");
-              }}
-            />
-          ) : (
-            <Redirect to="/installed" />
-          );
-        }}
-      />
       {showLogsContext && (
         <ExtensionLogsModal
           title={showLogsContext.title}

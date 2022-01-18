@@ -26,6 +26,7 @@ import {
 } from "@/options/pages/blueprints/installableUtils";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
+import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 
 const BlueprintListEntry: React.FunctionComponent<{
   installable: Installable;
@@ -37,6 +38,8 @@ const BlueprintListEntry: React.FunctionComponent<{
     updated_at,
     active,
   } = getInstallableInfo(installable);
+
+  const { activate } = useInstallableActions(installable);
 
   return (
     <tr>
@@ -64,7 +67,7 @@ const BlueprintListEntry: React.FunctionComponent<{
         {active ? (
           "Active"
         ) : (
-          <Button size="sm" variant="info">
+          <Button size="sm" variant="info" onClick={activate}>
             Activate
           </Button>
         )}

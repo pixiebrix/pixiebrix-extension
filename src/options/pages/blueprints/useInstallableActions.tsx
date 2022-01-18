@@ -20,8 +20,6 @@ import {
   isExtension,
 } from "@/options/pages/blueprints/installableUtils";
 import { useDispatch } from "react-redux";
-import { push } from "connected-react-router";
-import { ResolvedExtension, UUID } from "@/core";
 import { reportEvent } from "@/telemetry/events";
 import {
   reactivateEveryTab,
@@ -32,14 +30,23 @@ import { optionsSlice } from "@/options/slices";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { useCallback } from "react";
-import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";
 import useNotifications from "@/hooks/useNotifications";
+import { push } from "connected-react-router";
 
 const { removeExtension } = optionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const notify = useNotifications();
+
+  const activate = () => {
+    console.log("here");
+    if (!isExtension(installable)) {
+      return;
+    }
+
+    dispatch(push(`/extensions/install/${installable.id}`));
+  };
 
   const viewShare = () => {
     if (!isExtension(installable)) {
@@ -95,6 +102,12 @@ function useInstallableActions(installable: Installable) {
     exportBlueprint(extension);
   }, [installable, notify]);
 
-  return { viewShare, remove, viewLogs, exportBlueprint };
+  return {
+    viewShare,
+    remove,
+    viewLogs,
+    exportBlueprint,
+    activate,
+  };
 }
 export default useInstallableActions;
