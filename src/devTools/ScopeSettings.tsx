@@ -125,7 +125,6 @@ const ScopeSettings: React.FunctionComponent = () => {
             <Form noValidate onSubmit={handleSubmit} className="mt-2">
               <ConnectedFieldTemplate
                 name="scope"
-                layout="horizontal"
                 label="Account Alias"
                 placeholder="@peter-parker"
                 description="Your @alias for publishing bricks, e.g., @peter-parker"

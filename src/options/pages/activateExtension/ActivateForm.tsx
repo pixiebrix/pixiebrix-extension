@@ -21,13 +21,13 @@ import { CloudExtension } from "@/types/contract";
 import { Form, Formik, FormikProps } from "formik";
 import { useDispatch } from "react-redux";
 import { push } from "connected-react-router";
-import { optionsSlice } from "@/options/slices";
 import useNotifications from "@/hooks/useNotifications";
 import ServicesCard from "@/options/pages/activateExtension/ServicesCard";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
 import ActivateCard from "@/options/pages/activateExtension/ActivateCard";
+import extensionsSlice from "@/store/extensionsSlice";
 
-const { actions } = optionsSlice;
+const { actions } = extensionsSlice;
 
 const ActivateForm: React.FunctionComponent<{
   extension: CloudExtension;

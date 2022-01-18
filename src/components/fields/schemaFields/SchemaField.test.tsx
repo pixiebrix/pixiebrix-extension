@@ -29,9 +29,7 @@ async function expectToggleOptions(container: HTMLElement, expected: string[]) {
   // React Bootstrap dropdown does not render children items unless toggled
   userEvent.click(container.querySelector("button"));
   const actual = new Set(
-    [...container.querySelectorAll("a")].map((x) =>
-      x.getAttribute("data-testid")
-    )
+    [...container.querySelectorAll("a")].map((x) => x.dataset.testid)
   );
   await waitFor(() => {
     expect(actual).toEqual(new Set(expected));
@@ -364,8 +362,8 @@ describe("SchemaField", () => {
 
       await waitFor(() => {
         const testIds = [
-          ...container.querySelectorAll("a.dropdown-item"),
-        ].map((x) => x.getAttribute("data-testid"));
+          ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
+        ].map((x) => x.dataset.testid);
         expect(testIds).toEqual(uniq(testIds));
       });
     }
@@ -392,8 +390,8 @@ describe("SchemaField", () => {
 
       await waitFor(() => {
         const testIds = [
-          ...container.querySelectorAll("a.dropdown-item"),
-        ].map((x) => x.getAttribute("data-testid"));
+          ...container.querySelectorAll<HTMLElement>("a.dropdown-item"),
+        ].map((x) => x.dataset.testid);
         if (testIds.includes("omit")) {
           expect(testIds[testIds.length - 1]).toEqual("omit");
         }

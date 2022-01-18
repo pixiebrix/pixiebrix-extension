@@ -30,7 +30,7 @@ import { Button } from "react-bootstrap";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { servicesSlice } from "@/options/slices";
+import servicesSlice from "@/store/servicesSlice";
 import useNotifications from "@/hooks/useNotifications";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 

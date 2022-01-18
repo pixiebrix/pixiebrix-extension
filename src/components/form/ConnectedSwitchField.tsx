@@ -16,27 +16,29 @@
  */
 
 import React from "react";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { Tab } from "react-bootstrap";
-import RunLogCard from "./RunLogCard";
-import { useFormikContext } from "formik";
+import { ConnectedFieldProps } from "@/components/form/ConnectedFieldTemplate";
+import { connect, getIn } from "formik";
+import { FieldProps } from "@/components/form/FieldTemplate";
+import SwitchField from "@/components/form/SwitchField";
 
-export const LOGS_EVENT_KEY = "logs";
-
-const LogsTab: React.FunctionComponent<{
-  eventKey: string;
-}> = ({ eventKey = LOGS_EVENT_KEY }) => {
-  const { values } = useFormikContext<FormState>();
+const FormikSwitchField = <Values,>({
+  formik,
+  ...fieldProps
+}: ConnectedFieldProps<Values>) => {
+  const error = getIn(formik.errors, fieldProps.name);
+  const touched = getIn(formik.touched, fieldProps.name);
+  const value = getIn(formik.values, fieldProps.name);
 
   return (
-    <Tab.Pane eventKey={eventKey} mountOnEnter unmountOnExit className="h-100">
-      <RunLogCard
-        extensionId={values.uuid}
-        initialLevel="debug"
-        refreshInterval={750}
-      />
-    </Tab.Pane>
+    <SwitchField
+      value={value}
+      error={error}
+      touched={touched}
+      onChange={formik.handleChange}
+      onBlur={formik.handleBlur}
+      {...fieldProps}
+    />
   );
 };
 
-export default LogsTab;
+export default connect<FieldProps>(FormikSwitchField);

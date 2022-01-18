@@ -18,7 +18,7 @@
 import React, { useCallback } from "react";
 import { faCheck, faLink } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row, Card, Button, ListGroup } from "react-bootstrap";
-import { settingsSlice } from "@/options/slices";
+import settingsSlice from "@/store/settingsSlice";
 import { useDispatch } from "react-redux";
 import { getBaseURL } from "@/services/baseService";
 import browser from "webextension-polyfill";

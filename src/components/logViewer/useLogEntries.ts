@@ -15,7 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   clearLog,
   getLog,
@@ -116,11 +123,15 @@ export default function useLogEntries({
     return [pageEntries, Math.ceil(filteredEntries.length / perPage)];
   }, [perPage, page, filteredEntries]);
 
+  const checkingNewEntriesRef = useRef(false);
   const checkNewEntries = useCallback(async () => {
-    if (!initialized) {
-      // Wait for the initial set of logs before starting to check for updates
+    if (!initialized || checkingNewEntriesRef.current) {
+      // Wait for the initial set of logs or the previous check to complete
+      // before running another check for updates
       return;
     }
+
+    checkingNewEntriesRef.current = true;
 
     const newEntries = await getLog(context);
     const filteredNewEntries = (newEntries ?? []).filter(
@@ -129,6 +140,7 @@ export default function useLogEntries({
     );
     setUnread(newEntries.filter((x) => Number(x.timestamp) > lastTimestamp));
     setNumNew(Math.max(0, filteredNewEntries.length - filteredEntries.length));
+    checkingNewEntriesRef.current = false;
   }, [
     lastTimestamp,
     setUnread,

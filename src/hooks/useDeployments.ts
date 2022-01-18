@@ -21,8 +21,7 @@ import { useAsyncState } from "@/hooks/common";
 import { blueprintPermissions, ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
-import { optionsSlice } from "@/options/slices";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 import { getUID } from "@/background/telemetry";
@@ -37,8 +36,9 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { satisfies } from "semver";
 import { compact } from "lodash";
 import chromeP from "webext-polyfill-kinda";
+import extensionsSlice from "@/store/extensionsSlice";
 
-const { actions } = optionsSlice;
+const { actions } = extensionsSlice;
 
 async function selectDeploymentPermissions(
   deployments: Deployment[]

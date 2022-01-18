@@ -21,8 +21,10 @@
   &:not(:first-child) {
     border-top: 1px solid rgba(0, 0, 0, 0.125);
   }
+  padding-top: 0.5em !important;
+  padding-bottom: 0.5em !important;
 }
 
 .cardBody {
-  padding: 0.5em;
+  padding: 0.5em 0.75em;
 }

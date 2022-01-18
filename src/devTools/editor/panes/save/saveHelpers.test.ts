@@ -26,7 +26,6 @@ import {
   versionedExtensionPointRecipeFactory,
   extensionPointFactory,
 } from "@/tests/factories";
-import { optionsSlice } from "@/options/slices";
 import menuItemExtensionAdapter from "@/devTools/editor/extensionPoints/menuItem";
 import { UnknownObject } from "@/types";
 import { lookupExtensionPoint } from "@/devTools/editor/extensionPoints/base";
@@ -35,6 +34,7 @@ import { makeInternalId } from "@/registry/internal";
 import { cloneDeep } from "lodash";
 import { InnerDefinitionRef } from "@/core";
 import { MenuDefinition } from "@/extensionPoints/menuItemExtension";
+import extensionsSlice from "@/store/extensionsSlice";
 
 jest.mock("@/background/initContextMenus");
 jest.mock("@/background/messenger/api");
@@ -70,9 +70,9 @@ describe("replaceRecipeExtension round trip", () => {
       extensionPointId: extensionPoint.metadata.id,
     })();
 
-    const state = optionsSlice.reducer(
+    const state = extensionsSlice.reducer(
       { extensions: [] },
-      optionsSlice.actions.installRecipe({
+      extensionsSlice.actions.installRecipe({
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
@@ -116,9 +116,9 @@ describe("replaceRecipeExtension round trip", () => {
       label: "Other Extension",
     });
 
-    const state = optionsSlice.reducer(
+    const state = extensionsSlice.reducer(
       { extensions: [] },
-      optionsSlice.actions.installRecipe({
+      extensionsSlice.actions.installRecipe({
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
@@ -153,9 +153,9 @@ describe("replaceRecipeExtension round trip", () => {
   test("single extension point with innerDefinition", async () => {
     const recipe = innerExtensionPointRecipeFactory()();
 
-    const state = optionsSlice.reducer(
+    const state = extensionsSlice.reducer(
       { extensions: [] },
-      optionsSlice.actions.installRecipe({
+      extensionsSlice.actions.installRecipe({
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
@@ -205,9 +205,9 @@ describe("replaceRecipeExtension round trip", () => {
       label: "Other Extension",
     });
 
-    const state = optionsSlice.reducer(
+    const state = extensionsSlice.reducer(
       { extensions: [] },
-      optionsSlice.actions.installRecipe({
+      extensionsSlice.actions.installRecipe({
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
@@ -266,9 +266,9 @@ describe("replaceRecipeExtension round trip", () => {
       label: "Other Extension",
     });
 
-    const state = optionsSlice.reducer(
+    const state = extensionsSlice.reducer(
       { extensions: [] },
-      optionsSlice.actions.installRecipe({
+      extensionsSlice.actions.installRecipe({
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
@@ -325,9 +325,9 @@ describe("replaceRecipeExtension round trip", () => {
       } as any,
     });
 
-    const state = optionsSlice.reducer(
+    const state = extensionsSlice.reducer(
       { extensions: [] },
-      optionsSlice.actions.installRecipe({
+      extensionsSlice.actions.installRecipe({
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,
@@ -377,9 +377,9 @@ describe("replaceRecipeExtension round trip", () => {
       ],
     });
 
-    const state = optionsSlice.reducer(
+    const state = extensionsSlice.reducer(
       { extensions: [] },
-      optionsSlice.actions.installRecipe({
+      extensionsSlice.actions.installRecipe({
         recipe,
         services: {},
         extensionPoints: recipe.extensionPoints,

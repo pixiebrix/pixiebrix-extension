@@ -21,9 +21,9 @@ import { compact } from "lodash";
 import GenericMarketplacePage from "@/pages/marketplace/MarketplacePage";
 import { push } from "connected-react-router";
 import { RecipeDefinition } from "@/types/definitions";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import { RegistryId } from "@/core";
-import { OptionsState } from "@/store/extensions";
+import { OptionsState } from "@/store/extensionsTypes";
 import { useTitle } from "@/hooks/title";
 
 interface MarketplaceProps {
