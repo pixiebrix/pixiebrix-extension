@@ -18,27 +18,25 @@
 import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
-import {
-  optionsSlice,
-  servicesSlice,
-  ServicesState,
-  settingsSlice,
-  SettingsState,
-  workshopSlice,
-  WorkshopState,
-} from "./slices";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
 import { boolean } from "@/utils";
-import { OptionsState, persistOptionsConfig } from "@/store/extensions";
-import { persistServicesConfig } from "@/store/services";
+import { OptionsState } from "@/store/extensionsTypes";
+import servicesSlice, {
+  persistServicesConfig,
+  ServicesState,
+} from "@/store/servicesSlice";
 import {
   installedPageSlice,
   InstalledPageState,
 } from "./pages/installed/installedPageSlice";
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
+import extensionsSlice from "@/store/extensionsSlice";
+import settingsSlice, { SettingsState } from "@/store/settingsSlice";
+import workshopSlice, { WorkshopState } from "@/store/workshopSlice";
+import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -67,7 +65,10 @@ if (process.env.NODE_ENV === "development") {
 const store = configureStore({
   reducer: {
     router: connectRouter(hashHistory),
-    options: persistReducer(persistOptionsConfig, optionsSlice.reducer),
+    options: persistReducer(
+      persistExtensionOptionsConfig,
+      extensionsSlice.reducer
+    ),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),

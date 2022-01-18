@@ -43,7 +43,7 @@ import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprint
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
 import { getAuth } from "@/hooks/auth";
 import useRefresh from "@/hooks/useRefresh";
-import { SettingsState } from "@/options/slices";
+import { SettingsState } from "@/store/settingsSlice";
 import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
 import { AuthState } from "@/core";

@@ -34,7 +34,6 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { makeBlueprint } from "@/options/pages/installed/exportBlueprint";
 import { useDispatch } from "react-redux";
-import { optionsSlice } from "@/options/slices";
 import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
@@ -54,8 +53,9 @@ import { useGetOrganizationsQuery } from "@/services/api";
 import { PackageUpsertResponse } from "@/types/contract";
 import ConnectedSwitchField from "@/components/form/ConnectedSwitchField";
 import SwitchField from "@/components/form/SwitchField";
+import extensionsSlice from "@/store/extensionsSlice";
 
-const { attachExtension } = optionsSlice.actions;
+const { attachExtension } = extensionsSlice.actions;
 
 type FormState = {
   blueprintId: RegistryId;

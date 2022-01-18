@@ -29,11 +29,11 @@ import {
 } from "@/background/messenger/api";
 import { collectPermissions } from "@/permissions";
 import { push } from "connected-react-router";
-import { optionsSlice } from "@/options/slices";
 import { resolveRecipe } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import extensionsSlice from "@/store/extensionsSlice";
 
-const { installRecipe } = optionsSlice.actions;
+const { installRecipe } = extensionsSlice.actions;
 
 type InstallRecipe = (
   values: WizardValues,

@@ -55,7 +55,6 @@ type Result =
   | null
   | undefined
   | Result[]
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- can't use Record for recursive signature
   | { [key: string]: Result };
 
 export interface JQueryConfig {

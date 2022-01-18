@@ -4,7 +4,7 @@ import {
   WizardValues,
 } from "@/options/pages/marketplace/wizardTypes";
 import { useSelector } from "react-redux";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import React, { useMemo } from "react";
 import { selectAuths, selectOptions } from "@/pages/marketplace/useReinstall";
 import { isEmpty, mapValues, uniq } from "lodash";

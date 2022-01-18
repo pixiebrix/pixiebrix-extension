@@ -18,7 +18,7 @@
 import React, { useMemo, useRef } from "react";
 import { RegistryId } from "@/core";
 import { getIn, useFormikContext } from "formik";
-import { useBlockOptions } from "@/hooks/useBlockOptions";
+import useBlockOptions from "@/hooks/useBlockOptions";
 import { Card } from "react-bootstrap";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverrides";

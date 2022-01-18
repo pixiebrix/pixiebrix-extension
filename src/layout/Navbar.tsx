@@ -33,7 +33,7 @@ import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import { isLinked } from "@/auth/token";
 import { useSelector } from "react-redux";
-import { SettingsState } from "@/options/slices";
+import { SettingsState } from "@/store/settingsSlice";
 import { toggleSidebar } from "./toggleSidebar";
 
 const Navbar: React.FunctionComponent = () => {

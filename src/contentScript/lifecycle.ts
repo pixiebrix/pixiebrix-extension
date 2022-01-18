@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { loadOptions } from "@/options/loader";
+import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import * as context from "@/contentScript/context";
@@ -152,11 +152,7 @@ export function clearDynamic(
       traces.clear(extensionId);
     }
   } else {
-    for (const [extensionId, extensionPoint] of _dynamic.entries()) {
-      if (clearTrace) {
-        traces.clear(extensionId);
-      }
-
+    for (const extensionPoint of _dynamic.values()) {
       try {
         extensionPoint.uninstall({ global: true });
         actionPanel.removeExtensionPoint(extensionPoint.id);
@@ -164,6 +160,10 @@ export function clearDynamic(
       } catch (error) {
         reportError(error);
       }
+    }
+
+    if (clearTrace) {
+      traces.clearAll();
     }
 
     _dynamic.clear();

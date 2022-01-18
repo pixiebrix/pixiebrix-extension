@@ -22,7 +22,7 @@ import workshopImage from "@img/workshop.svg";
 import { Col, Container, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 
 const OnboardingContent: React.FunctionComponent = () => (
   <Container>

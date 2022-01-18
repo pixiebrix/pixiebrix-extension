@@ -25,17 +25,13 @@ import { reportError } from "@/telemetry/logging";
 import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
 import { getErrorMessage } from "@/errors";
-import { getCurrentURL, thisTab } from "@/devTools/utils";
+import { thisTab } from "@/devTools/utils";
 import { Except } from "type-fest";
 import { detectFrameworks } from "@/contentScript/messenger/api";
-import {
-  checkTargetPermissions,
-  ensureContentScript,
-} from "@/background/messenger/api";
-import { runInMillis } from "@/utils";
+import { ensureContentScript } from "@/background/messenger/api";
+import { canAccessTab } from "webext-tools";
 
 interface FrameMeta {
-  url: string;
   frameworks: FrameworkMeta[];
 }
 
@@ -98,39 +94,35 @@ class PermissionsError extends Error {
 }
 
 async function connectToFrame(): Promise<FrameMeta> {
-  // TODO: drop the next few lines and just let ensureScript throw
+  console.debug("connectToFrame: ensuring contentScript");
+  try {
+    await pTimeout(
+      ensureContentScript(thisTab),
+      4000,
+      "The Page Editor could not establish a connection to the page"
+    );
+  } catch (error) {
+    // If it's not a permission error, then throw error as is
+    if (await canAccessTab(thisTab)) {
+      throw error;
+    }
 
-  const [hasPermissions, url] = await Promise.all([
-    checkTargetPermissions(thisTab),
-    getCurrentURL(),
-  ]);
-  if (!hasPermissions) {
-    console.debug(`connectToFrame: no access to ${url}`);
-    throw new PermissionsError(`No access to URL: ${url}`);
+    console.debug("connectToFrame: no access to host");
+    throw new PermissionsError("No access to URL");
   }
-
-  console.debug(`connectToFrame: ensuring contentScript for ${url}`);
-  await pTimeout(
-    ensureContentScript(thisTab),
-    4000,
-    "contentScript not ready in 4s"
-  );
 
   let frameworks: FrameworkMeta[] = [];
   try {
-    console.debug(`connectToFrame: detecting frameworks on ${url}`);
-    frameworks = await runInMillis(
-      async () => detectFrameworks(thisTab, null),
-      500
-    );
+    console.debug("connectToFrame: detecting frameworks");
+    frameworks = await pTimeout(detectFrameworks(thisTab, null), 500);
   } catch (error) {
-    console.debug(`connectToFrame: error detecting frameworks ${url}`, {
+    console.debug("connectToFrame: error detecting frameworks", {
       error,
     });
   }
 
-  console.debug(`connectToFrame: finished for ${url}`);
-  return { frameworks, url };
+  console.debug("connectToFrame: finished");
+  return { frameworks };
 }
 
 export function useDevConnection(): Context {
@@ -150,9 +142,7 @@ export function useDevConnection(): Context {
       console.debug(`useDevConnection.connect: connecting for ${uuid}`);
       setConnecting(true);
       const meta = await connectToFrame();
-      console.debug(
-        `useDevConnection.connect: replacing tabState for ${uuid}: ${meta.url}`
-      );
+      console.debug(`useDevConnection.connect: replacing tabState for ${uuid}`);
       setCurrent({
         ...common,
         hasPermissions: true,

@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { loadOptions, saveOptions } from "@/options/loader";
 import { Deployment } from "@/types/contract";
 import browser from "webextension-polyfill";
 import { partition, uniqBy } from "lodash";
@@ -24,23 +23,24 @@ import { reportError } from "@/telemetry/logging";
 import { getUID } from "@/background/telemetry";
 import { getExtensionVersion } from "@/chrome";
 import { isLinked } from "@/auth/token";
-import { optionsSlice } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import {
   uninstallContextMenu,
   containsPermissions,
 } from "@/background/messenger/api";
 import { deploymentPermissions } from "@/permissions";
 import { IExtension, UUID, RegistryId } from "@/core";
-import { ExtensionOptionsState } from "@/store/extensions";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "./util";
 import { parse as parseSemVer, satisfies, SemVer } from "semver";
+import { ExtensionOptionsState } from "@/store/extensionsTypes";
+import extensionsSlice from "@/store/extensionsSlice";
+import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 
-const { reducer, actions } = optionsSlice;
+const { reducer, actions } = extensionsSlice;
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 

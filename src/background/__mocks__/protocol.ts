@@ -31,16 +31,16 @@ import { deserializeError } from "serialize-error";
 const MESSAGE_PREFIX = "@@pixiebrix/background-mock/";
 
 export function liftBackground<
-  TArguments extends unknown[],
+  Arguments extends unknown[],
   R extends SerializableResponse
 >(
   type: string,
-  method: (...args: TArguments) => Promise<R>,
+  method: (...args: Arguments) => Promise<R>,
   { asyncResponse = true }: HandlerOptions = {}
-): (...args: TArguments) => Promise<R> {
+): (...args: Arguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
-  return async (...args: TArguments) => {
+  return async (...args: Arguments) => {
     console.debug(`running fake ${fullType}`, { fullType, args });
 
     if (!asyncResponse) {

@@ -41,7 +41,6 @@ export const containsPermissions = browser.permissions
 
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
-export const checkTargetPermissions = getMethod("CHECK_TARGET_PERMISSIONS", bg);
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
 export const whoAmI = getMethod("ECHO_SENDER", bg);
 export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
@@ -116,6 +115,7 @@ export const traces = {
   addEntry: getNotifier("ADD_TRACE_ENTRY", bg),
   addExit: getNotifier("ADD_TRACE_EXIT", bg),
   clear: getNotifier("CLEAR_TRACES", bg),
+  clearAll: getNotifier("CLEAR_ALL_TRACES", bg),
 };
 
 export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);

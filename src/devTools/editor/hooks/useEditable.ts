@@ -28,9 +28,8 @@ function useEditable(): Set<string> {
   const { knownEditable } = useSelector(selectEditor);
 
   const [initialEditable] = useAsyncState(async () => {
-    const { data } = await (await getLinkedApiClient()).get<EditablePackage[]>(
-      "api/bricks/"
-    );
+    const client = await getLinkedApiClient();
+    const { data } = await client.get<EditablePackage[]>("api/bricks/");
     return new Set(data.map((x) => x.name));
   }, []);
 

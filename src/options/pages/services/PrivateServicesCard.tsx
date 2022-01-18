@@ -24,7 +24,7 @@ import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
 import { deleteCachedAuthData } from "@/background/messenger/api";
-import { ServicesState } from "@/options/slices";
+import { ServicesState } from "@/store/servicesSlice";
 import useNotifications from "@/hooks/useNotifications";
 import styles from "./PrivateServicesCard.module.scss";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";

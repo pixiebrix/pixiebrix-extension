@@ -19,17 +19,17 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { optionsSlice } from "@/options/slices";
 import { extensionFactory } from "@/tests/factories";
-import { ExtensionOptionsState } from "@/store/extensions";
+import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import { PersistedExtension } from "@/core";
 import DefaultActionPanel from "./DefaultActionPanel";
+import extensionsSlice from "@/store/extensionsSlice";
 
 jest.unmock("react-redux");
 
 function optionsStore(initialState?: ExtensionOptionsState) {
   return configureStore({
-    reducer: { options: optionsSlice.reducer },
+    reducer: { options: extensionsSlice.reducer },
     preloadedState: initialState ? { options: initialState } : undefined,
   });
 }

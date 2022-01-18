@@ -31,7 +31,6 @@ const LogsTab: React.FunctionComponent<{
   return (
     <Tab.Pane eventKey={eventKey} mountOnEnter unmountOnExit className="h-100">
       <RunLogCard
-        extensionPointId={values.extensionPoint.metadata.id}
         extensionId={values.uuid}
         initialLevel="debug"
         refreshInterval={750}

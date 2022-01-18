@@ -19,7 +19,7 @@ import Sidebar from "@/devTools/editor/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
 import { DevToolsContext } from "@/devTools/context";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import PermissionsPane from "@/devTools/editor/panes/PermissionsPane";
 import BetaPane from "@/devTools/editor/panes/BetaPane";
 import InsertMenuItemPane from "@/devTools/editor/panes/insert/InsertMenuItemPane";
