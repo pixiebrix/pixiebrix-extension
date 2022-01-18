@@ -49,6 +49,7 @@ import { selectShowLogsContext } from "./installedPageSelectors";
 import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 import extensionsSlice from "@/store/extensionsSlice";
 import { OptionsState } from "@/store/extensionsTypes";
+import ShareLinkModal from "./ShareLinkModal";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -134,7 +135,7 @@ export const _InstalledPage: React.FunctionComponent<{
             (x) => x.id === routeProps.match.params.extensionId
           );
 
-          return toShare ? (
+          return toShare && !flags.includes("restricted-marketplace") ? (
             <ShareExtensionModal
               extension={toShare}
               onCancel={() => {
