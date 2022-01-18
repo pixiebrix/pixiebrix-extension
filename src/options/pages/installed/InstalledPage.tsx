@@ -147,6 +147,11 @@ export const _InstalledPage: React.FunctionComponent<{
           );
         }}
       />
+      <Route
+        exact
+        path="/installed/link/:blueprintId"
+        component={ShareLinkModal}
+      />
       {showLogsContext && (
         <ExtensionLogsModal
           title={showLogsContext.title}

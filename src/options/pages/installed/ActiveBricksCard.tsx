@@ -32,7 +32,9 @@ import { isDeploymentActive } from "@/options/deploymentUtils";
 import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import AuthContext from "@/auth/AuthContext";
 import { RecipeDefinition } from "@/types/definitions";
+import { push } from "connected-react-router";
 import * as semver from "semver";
+import { useDispatch } from "react-redux";
 
 const groupByRecipe = (
   extensions: ResolvedExtension[]
@@ -147,6 +149,7 @@ const ActiveBricksCard: React.FunctionComponent<{
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
+  const dispatch = useDispatch();
   const { data: organizations = [] } = useGetOrganizationsQuery();
   const { scope } = useContext(AuthContext);
   const {
@@ -221,11 +224,20 @@ const ActiveBricksCard: React.FunctionComponent<{
                         key={sourceRecipeMeta.id}
                         label={sourceRecipeMeta.name}
                         extensions={extensions}
+                        groupMessageContext={messageContext}
                         hasUpdate={updateAvailable(
                           availableRecipes,
                           sourceRecipeMeta
                         )}
-                        groupMessageContext={messageContext}
+                        onShare={() => {
+                          dispatch(
+                            push(
+                              `/installed/link/${encodeURIComponent(
+                                sourceRecipeMeta.id
+                              )}`
+                            )
+                          );
+                        }}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
