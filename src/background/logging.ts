@@ -36,7 +36,7 @@ import { expectContext } from "@/utils/expectContext";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
-const DB_VERSION_NUMBER = 2;
+const DB_VERSION_NUMBER = 3;
 
 export type MessageLevel = "trace" | "debug" | "info" | "warn" | "error";
 
@@ -63,24 +63,22 @@ interface LogDB extends DBSchema {
     value: LogEntry;
     key: string;
     indexes: {
-      extensionPointId: string;
       extensionId: string;
       blueprintId: string;
       blockId: string;
+      extensionPointId: string;
       serviceId: string;
       authId: string;
-      context: [string, string, string, string, string, string];
     };
   };
 }
 
-const indexKeys: Array<
-  keyof Except<MessageContext, "deploymentId" | "label">
-> = [
-  "extensionPointId",
+type IndexKey = keyof Except<MessageContext, "deploymentId" | "label">;
+const indexKeys: IndexKey[] = [
   "extensionId",
   "blueprintId",
   "blockId",
+  "extensionPointId",
   "serviceId",
   "authId",
 ];
@@ -104,19 +102,12 @@ async function getDB() {
       const store = db.createObjectStore(ENTRY_OBJECT_STORE, {
         keyPath: "uuid",
       });
-      // Create individual indexes
-      for (const indexKey of indexKeys) {
-        store.createIndex(indexKey, `context.${indexKey}`, {
+
+      for (const key of indexKeys) {
+        store.createIndex(key, `context.${key}`, {
           unique: false,
         });
       }
-
-      // Create the joint index
-      store.createIndex(
-        "context",
-        indexKeys.map((x) => `context.${x}`),
-        { unique: false }
-      );
     },
   });
 }
@@ -167,15 +158,31 @@ export async function getLog(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
   const db = await getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
-  const match = makeMatchEntry(context);
+  const objectStore = db
+    .transaction(ENTRY_OBJECT_STORE, "readonly")
+    .objectStore(ENTRY_OBJECT_STORE);
 
-  const matches = [];
-  for await (const cursor of tx.store) {
-    if (match(cursor.value)) {
-      matches.push(cursor.value);
+  let indexKey: IndexKey;
+  for (const key of indexKeys) {
+    // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
+    if (context[key] != null) {
+      indexKey = key;
+      break;
     }
   }
+
+  if (!indexKey) {
+    throw new Error(
+      "At least one of the known index keys must be set in the context to get logs"
+    );
+  }
+
+  // We use the index to do an initial filter on the IndexedDB level, and then makeMatchEntry to apply the full filter in JS.
+  // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
+  const entries = await objectStore.index(indexKey).getAll(context[indexKey]);
+
+  const match = makeMatchEntry(context);
+  const matches = entries.filter((entry) => match(entry));
 
   // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
   return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));

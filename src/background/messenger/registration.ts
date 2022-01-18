@@ -57,6 +57,7 @@ import {
   addTraceEntry,
   addTraceExit,
   clearExtensionTraces,
+  clearTraces,
 } from "@/telemetry/trace";
 import {
   initTelemetry,
@@ -121,6 +122,7 @@ declare global {
     ADD_TRACE_ENTRY: typeof addTraceEntry;
     ADD_TRACE_EXIT: typeof addTraceExit;
     CLEAR_TRACES: typeof clearExtensionTraces;
+    CLEAR_ALL_TRACES: typeof clearTraces;
 
     INIT_TELEMETRY: typeof initTelemetry;
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
@@ -183,6 +185,7 @@ registerMethods({
   ADD_TRACE_ENTRY: addTraceEntry,
   ADD_TRACE_EXIT: addTraceExit,
   CLEAR_TRACES: clearExtensionTraces,
+  CLEAR_ALL_TRACES: clearTraces,
 
   INIT_TELEMETRY: initTelemetry,
   SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
