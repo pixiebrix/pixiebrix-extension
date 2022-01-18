@@ -16,7 +16,7 @@
  */
 
 import pDefer from "p-defer";
-import browser from "webextension-polyfill";
+import browser, { Tabs } from "webextension-polyfill";
 import { executeFunction, injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
@@ -161,11 +161,15 @@ export async function showErrorInOptions(
   });
 }
 
+async function getAllTabsWithPermissions(): Promise<Tabs.Tab[]> {
+  const { origins } = await browser.permissions.getAll();
+  return browser.tabs.query({ url: origins });
+}
+
 export async function forEachTab<
   TCallback extends (target: { tabId: number }) => void
 >(callback: TCallback): Promise<void> {
-  // TODO: Only include PixieBrix tabs, this will reduce the chance of errors
-  for (const tab of await browser.tabs.query({})) {
+  for (const tab of await getAllTabsWithPermissions()) {
     callback({ tabId: tab.id });
   }
 }
