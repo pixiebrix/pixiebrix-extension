@@ -20,6 +20,7 @@ import {
   isBlueprint,
   isExtension,
   isExtensionFromRecipe,
+  isPersonal,
 } from "@/options/pages/blueprints/installableUtils";
 import { useDispatch } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
@@ -31,16 +32,18 @@ import { reportError } from "@/telemetry/logging";
 import { optionsSlice } from "@/options/slices";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
 import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";
+import AuthContext from "@/auth/AuthContext";
 
 const { removeExtension } = optionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const notify = useNotifications();
+  const { scope } = useContext(AuthContext);
 
   const reinstall = () => {
     if (!isExtension(installable) || !installable._recipe) {
@@ -124,7 +127,7 @@ function useInstallableActions(installable: Installable) {
   }, [installable, notify]);
 
   return {
-    viewShare,
+    viewShare: isPersonal(installable, scope) ? viewShare : null,
     remove,
     viewLogs,
     onExportBlueprint,

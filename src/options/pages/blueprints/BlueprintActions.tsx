@@ -47,15 +47,19 @@ const BlueprintActions: React.FunctionComponent<{
     <>
       <EllipsisMenu
         items={[
-          {
-            title: (
-              <>
-                <FontAwesomeIcon icon={faShare} /> Share
-              </>
-            ),
-            hide: !isExtension(installable),
-            action: viewShare,
-          },
+          ...(viewShare
+            ? [
+                {
+                  title: (
+                    <>
+                      <FontAwesomeIcon icon={faShare} /> Share
+                    </>
+                  ),
+                  hide: !isExtension(installable),
+                  action: viewShare,
+                },
+              ]
+            : []),
           {
             title: (
               <>
