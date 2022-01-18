@@ -32,6 +32,10 @@ export const isExtension = (
   installable: Installable
 ): installable is ResolvedExtension => "_recipe" in installable;
 
+export const isBlueprint = (
+  installable: Installable
+): installable is RecipeDefinition => !isExtension(installable);
+
 // TODO: instead, make these access methods like getLabel() on an
 //  installable class?
 export const getInstallableInfo: InstallableInfo = (

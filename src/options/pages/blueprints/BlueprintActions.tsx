@@ -25,6 +25,7 @@ import {
   faDownload,
   faList,
   faShare,
+  faSyncAlt,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
@@ -36,8 +37,10 @@ const BlueprintActions: React.FunctionComponent<{
   const {
     remove,
     viewLogs,
-    exportBlueprint,
+    // TODO: consistent naming
+    onExportBlueprint,
     viewShare,
+    reinstall,
   } = useInstallableActions(installable);
 
   return (
@@ -59,7 +62,7 @@ const BlueprintActions: React.FunctionComponent<{
                 <FontAwesomeIcon icon={faDownload} /> Export
               </>
             ),
-            action: exportBlueprint,
+            action: onExportBlueprint,
           },
           {
             title: (
@@ -69,6 +72,21 @@ const BlueprintActions: React.FunctionComponent<{
             ),
             action: viewLogs,
           },
+          ...(reinstall
+            ? [
+                {
+                  title: (
+                    <>
+                      {/* TODO: add update */}
+                      <FontAwesomeIcon icon={faSyncAlt} /> Reactivate
+                    </>
+                  ),
+                  action: reinstall,
+                  // Managed extensions are updated via the deployment banner
+                  // hide: managed,
+                },
+              ]
+            : []),
           {
             title: (
               <>

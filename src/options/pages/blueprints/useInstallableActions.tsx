@@ -17,6 +17,7 @@
 
 import {
   Installable,
+  isBlueprint,
   isExtension,
 } from "@/options/pages/blueprints/installableUtils";
 import { useDispatch } from "react-redux";
@@ -32,13 +33,25 @@ import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { useCallback } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
-import { RecipeDefinition } from "@/types/definitions";
+import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";
 
 const { removeExtension } = optionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const notify = useNotifications();
+
+  const reinstall = () => {
+    if (isBlueprint(installable)) {
+      dispatch(
+        push(
+          `marketplace/activate/${encodeURIComponent(
+            installable.metadata.id
+          )}?reinstall=1`
+        )
+      );
+    }
+  };
 
   const activate = () => {
     if (!isExtension(installable)) {
@@ -96,7 +109,7 @@ function useInstallableActions(installable: Installable) {
   };
 
   // todo: use that callback & notify hook
-  const exportBlueprint = useCallback(() => {
+  const onExportBlueprint = useCallback(() => {
     const extension = isExtension(installable) ? installable : null;
 
     if (extension == null) {
@@ -111,8 +124,9 @@ function useInstallableActions(installable: Installable) {
     viewShare,
     remove,
     viewLogs,
-    exportBlueprint,
+    onExportBlueprint,
     activate,
+    reinstall,
   };
 }
 export default useInstallableActions;
