@@ -138,8 +138,10 @@ const ShareExtensionModal: React.FC<{
             recipeMetadata: selectSourceRecipeMetadata(recipe),
           })
         );
-        dispatch(push("/installed"));
         notify.success("Converted/shared brick");
+        dispatch(
+          push(`/installed/link/${encodeURIComponent(recipe.metadata.id)}`)
+        );
       } catch (error) {
         if (isAxiosError(error) && error.response.data.config) {
           helpers.setStatus(error.response.data.config);
