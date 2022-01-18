@@ -19,6 +19,7 @@ import React, { useContext, useMemo } from "react";
 import {
   MessageContext,
   RecipeMetadata,
+  RegistryId,
   ResolvedExtension,
   UUID,
 } from "@/core";
@@ -188,6 +189,10 @@ const ActiveBricksCard: React.FunctionComponent<{
 
   const deploymentExtensionGroups = groupByRecipe(groupedExtensions.deployment);
 
+  const showShareLinkModal = (blueprintId: RegistryId) => {
+    dispatch(push(`/installed/link/${encodeURIComponent(blueprintId)}`));
+  };
+
   // Sharing was added to _recipe recently (see the RecipeMetadata type and optionsSlice)
   // We still want to display extensions that do not have this information yet
   const otherExtensionGroups = groupByRecipe(groupedExtensions.other);
@@ -230,13 +235,7 @@ const ActiveBricksCard: React.FunctionComponent<{
                           sourceRecipeMeta
                         )}
                         onShare={() => {
-                          dispatch(
-                            push(
-                              `/installed/link/${encodeURIComponent(
-                                sourceRecipeMeta.id
-                              )}`
-                            )
-                          );
+                          showShareLinkModal(sourceRecipeMeta.id);
                         }}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
@@ -265,6 +264,9 @@ const ActiveBricksCard: React.FunctionComponent<{
                           availableRecipes,
                           sourceRecipeMeta
                         )}
+                        onShare={() => {
+                          showShareLinkModal(sourceRecipeMeta.id);
+                        }}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
@@ -292,6 +294,9 @@ const ActiveBricksCard: React.FunctionComponent<{
                           availableRecipes,
                           sourceRecipeMeta
                         )}
+                        onShare={() => {
+                          showShareLinkModal(sourceRecipeMeta.id);
+                        }}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
@@ -324,6 +329,9 @@ const ActiveBricksCard: React.FunctionComponent<{
                           availableRecipes,
                           sourceRecipeMeta
                         )}
+                        onShare={() => {
+                          showShareLinkModal(sourceRecipeMeta.id);
+                        }}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
@@ -353,6 +361,9 @@ const ActiveBricksCard: React.FunctionComponent<{
                         hasUpdate={false}
                         paused={!isDeploymentActive(extensions[0])}
                         groupMessageContext={messageContext}
+                        onShare={() => {
+                          showShareLinkModal(recipe.id);
+                        }}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
