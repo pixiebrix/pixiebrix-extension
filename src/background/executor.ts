@@ -24,7 +24,7 @@ import { asyncLoop } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
 import { MessengerMeta } from "webext-messenger";
-import { linkChildTab, runBrick } from "@/contentScript/messenger/api";
+import { runBrick } from "@/contentScript/messenger/api";
 import { Target } from "@/types";
 import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
@@ -121,7 +121,7 @@ export async function openTab(
   createProperties: Tabs.CreateCreatePropertiesType
 ): Promise<void> {
   // Natively links the new tab to its opener + opens it right next to it
-  const openerTabId = this.trace[0].tab.id;
+  const openerTabId = this.trace[0].tab?.id;
   const tab = await browser.tabs.create({ ...createProperties, openerTabId });
 
   // FIXME: include frame information here
@@ -133,7 +133,6 @@ async function linkTabListener(tab: Tabs.Tab): Promise<void> {
   if (tab.openerTabId) {
     tabToOpener.set(tab.id, tab.openerTabId);
     tabToTarget.set(tab.openerTabId, tab.id);
-    linkChildTab({ tabId: tab.openerTabId }, tab.id);
   }
 }
 
