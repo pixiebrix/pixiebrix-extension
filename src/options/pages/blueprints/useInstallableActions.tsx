@@ -32,6 +32,7 @@ import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { useCallback } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
+import { RecipeDefinition } from "@/types/definitions";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -40,8 +41,12 @@ function useInstallableActions(installable: Installable) {
   const notify = useNotifications();
 
   const activate = () => {
-    console.log("here");
     if (!isExtension(installable)) {
+      dispatch(
+        push(
+          `/marketplace/activate/${encodeURIComponent(installable.metadata.id)}`
+        )
+      );
       return;
     }
 
