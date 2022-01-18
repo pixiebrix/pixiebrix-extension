@@ -31,11 +31,15 @@ import { reportError } from "@/telemetry/logging";
 import { optionsSlice } from "@/options/slices";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { useCallback } from "react";
+import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";
+import useNotifications from "@/hooks/useNotifications";
 
 const { removeExtension } = optionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
+  const notify = useNotifications();
 
   // todo: rename
   const share = (path: string) => {
@@ -72,6 +76,18 @@ function useInstallableActions(installable: Installable) {
     );
   };
 
-  return { share, remove, viewLogs };
+  // todo: use that callback & notify hook
+  const exportBlueprint = useCallback(() => {
+    const extension = isExtension(installable) ? installable : null;
+
+    if (extension == null) {
+      notify.error("Error exporting as blueprint: extension not found.");
+      return;
+    }
+
+    exportBlueprint(extension);
+  }, [installable, notify]);
+
+  return { share, remove, viewLogs, exportBlueprint };
 }
 export default useInstallableActions;

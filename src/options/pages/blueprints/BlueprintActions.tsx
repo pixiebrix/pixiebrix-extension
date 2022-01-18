@@ -18,24 +18,29 @@
 import { Installable } from "@/options/pages/blueprints/installableUtils";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faList, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faList, faTimes } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
-import ExtensionLogsModal from "@/options/pages/installed/ExtensionLogsModal";
-import { useSelector } from "react-redux";
-import { RootState } from "@/options/store";
-import { LogsContext } from "@/options/pages/installed/installedPageSlice";
-import { selectShowLogsContext } from "@/options/pages/installed/installedPageSelectors";
 
 const BlueprintActions: React.FunctionComponent<{
   installable: Installable;
 }> = ({ installable }) => {
-  const { remove, viewLogs } = useInstallableActions(installable);
+  const { remove, viewLogs, exportBlueprint } = useInstallableActions(
+    installable
+  );
 
   return (
     <>
       <EllipsisMenu
         items={[
+          {
+            title: (
+              <>
+                <FontAwesomeIcon icon={faDownload} /> Export
+              </>
+            ),
+            action: exportBlueprint,
+          },
           {
             title: (
               <>
