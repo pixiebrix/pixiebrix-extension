@@ -48,10 +48,11 @@ import Form, {
   RenderBody,
   RenderSubmit,
 } from "@/components/form/Form";
-import FieldTemplate from "@/components/form/FieldTemplate";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useGetOrganizationsQuery } from "@/services/api";
 import { PackageUpsertResponse } from "@/types/contract";
+import ConnectedSwitchField from "@/components/form/ConnectedSwitchField";
+import SwitchField from "@/components/form/SwitchField";
 import extensionsSlice from "@/store/extensionsSlice";
 
 const { attachExtension } = extensionsSlice.actions;
@@ -162,13 +163,11 @@ const ShareExtensionModal: React.FC<{
     <Modal.Body>
       <ConnectedFieldTemplate
         name="name"
-        layout="horizontal"
         label="Name"
         description="A name for the blueprint"
       />
       <ConnectedFieldTemplate
         name="blueprintId"
-        layout="horizontal"
         label="Registry Id"
         description={
           <span>
@@ -179,7 +178,6 @@ const ShareExtensionModal: React.FC<{
       />
       <ConnectedFieldTemplate
         name="description"
-        layout="horizontal"
         label="Description"
         description="A short description of the blueprint"
       />
@@ -191,9 +189,8 @@ const ShareExtensionModal: React.FC<{
         </Col>
       </BootstrapForm.Group>
 
-      <ConnectedFieldTemplate
+      <ConnectedSwitchField
         name="public"
-        layout="switch"
         label={
           values.public ? (
             <span>
@@ -214,10 +211,9 @@ const ShareExtensionModal: React.FC<{
         (organization) => {
           const checked = values.organizations.includes(organization.id);
           return (
-            <FieldTemplate
+            <SwitchField
               key={organization.id}
               name={organization.id}
-              layout="switch"
               label={organization.name}
               value={checked}
               onChange={() => {

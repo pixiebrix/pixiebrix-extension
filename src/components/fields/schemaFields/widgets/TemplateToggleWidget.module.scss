@@ -24,6 +24,13 @@
   width: auto;
   flex-grow: 0;
   flex-shrink: 0;
+
+  > button {
+    // React-bootstrap Button defaults to 0.75rem horizontal
+    // and 0.375rem vertical padding; we don't need that much
+    // on the field toggle buttons
+    padding: 0.25rem !important;
+  }
 }
 
 .field {
@@ -33,5 +40,5 @@
 
 .symbol {
   display: inline-block;
-  width: 38px;
+  width: 30px;
 }

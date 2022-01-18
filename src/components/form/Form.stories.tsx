@@ -28,6 +28,7 @@ import { Form as BootstrapForm } from "react-bootstrap";
 import { CustomFieldWidget } from "./FieldTemplate";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { range } from "lodash";
+import ConnectedSwitchField from "@/components/form/ConnectedSwitchField";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",
@@ -55,54 +56,19 @@ const initialValues = {
   age: "",
 };
 
-export const WithFormikHorizontalField: ComponentStory<typeof Form> = (
-  args
-) => (
+export const WithFormikField: ComponentStory<typeof Form> = (args) => (
   <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
-    <ConnectedFieldTemplate
-      name="title"
-      layout="horizontal"
-      placeholder="Title"
-    />
+    <ConnectedFieldTemplate name="title" placeholder="Title" />
     <ConnectedFieldTemplate
       name="name"
-      layout="horizontal"
       placeholder="Title"
       label="Name"
       description="A name"
     />
-    <ConnectedFieldTemplate
-      name="age"
-      layout="horizontal"
-      label="Age"
-      description="Your age"
-    />
+    <ConnectedFieldTemplate name="age" label="Age" description="Your age" />
   </Form>
 );
-WithFormikHorizontalField.storyName = "With Horizontal FormikField";
-
-export const WithFormikVerticalField: ComponentStory<typeof Form> = (args) => (
-  <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
-    <ConnectedFieldTemplate
-      name="title"
-      layout="vertical"
-      placeholder="Title"
-    />
-    <ConnectedFieldTemplate
-      name="name"
-      layout="vertical"
-      label="Name"
-      description="A name"
-    />
-    <ConnectedFieldTemplate
-      name="age"
-      layout="vertical"
-      label="Age"
-      description="Your age"
-    />
-  </Form>
-);
-WithFormikVerticalField.storyName = "With Vertical FormikField";
+WithFormikField.storyName = "With FormikField";
 
 export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
   <Form
@@ -111,11 +77,7 @@ export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
     {...args}
     renderSubmit={() => <button type="submit">Click to submit</button>}
   >
-    <ConnectedFieldTemplate
-      name="title"
-      layout="horizontal"
-      placeholder="Title"
-    />
+    <ConnectedFieldTemplate name="title" placeholder="Title" />
     <ConnectedFieldTemplate name="name" label="Name" description="A name" />
     <ConnectedFieldTemplate name="age" label="Age" description="Your age" />
   </Form>
@@ -149,15 +111,9 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
     initialValues={allFieldsInitialValues}
     {...args}
   >
-    <ConnectedFieldTemplate
-      name="name"
-      layout="horizontal"
-      label="Name"
-      description="A name"
-    />
+    <ConnectedFieldTemplate name="name" label="Name" description="A name" />
     <ConnectedFieldTemplate
       name="story"
-      layout="horizontal"
       label="Story"
       as="textarea"
       description="Tell me your story"
@@ -165,7 +121,6 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
     />
     <ConnectedFieldTemplate
       name="select"
-      layout="horizontal"
       label="Select"
       description="Demonstration dropdown"
       as={SelectWidget}
@@ -174,7 +129,6 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
     />
     <ConnectedFieldTemplate
       name="select-add-new"
-      layout="horizontal"
       label="Select with Add New"
       description="Creatable"
       as={SelectWidget}
@@ -184,9 +138,8 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
         MenuList: createMenuListWithAddButton(action("onAddNew clicked")),
       }}
     />
-    <ConnectedFieldTemplate
+    <ConnectedSwitchField
       name="public"
-      layout="switch"
       label={
         <span>
           <FontAwesomeIcon icon={faGlobe} /> This is a boolean field
@@ -195,7 +148,6 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
     />
     <ConnectedFieldTemplate
       name="bsCustomFormControl"
-      layout="horizontal"
       label="BS Form Control as Custom Widget"
       as={BootstrapFormControlWidget}
       description="You can use a FormControl as a wrapped Widget"

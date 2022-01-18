@@ -86,17 +86,19 @@ const EditorNodeConfigPanel: React.FC<{
         </Row>
       )}
       <Row className={styles.topRow}>
-        <Col lg>
+        <Col xl>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.label`}
             label="Step Name"
+            fitLabelWidth
             placeholder={blockInfo?.block.name}
           />
         </Col>
-        <Col lg>
+        <Col xl>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.outputKey`}
             label={outputKeyLabel}
+            fitLabelWidth
             disabled={isOutputDisabled}
             as={KeyNameWidget}
           />
