@@ -150,7 +150,8 @@ export async function activateTab(this: MessengerMeta): Promise<void> {
 }
 
 export async function closeTab(this: MessengerMeta): Promise<void> {
-  await browser.tabs.remove(this.trace[0].tab.id);
+  // Allow `closeTab` to return before closing the tab or else the Messenger won't be able to respond #2051
+  setTimeout(async () => browser.tabs.remove(this.trace[0].tab.id), 100);
 }
 
 export async function whoAmI(
