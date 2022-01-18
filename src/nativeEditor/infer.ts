@@ -21,6 +21,10 @@ import { isNullOrBlank, mostCommonElement } from "@/utils";
 import { BusinessError } from "@/errors";
 import { CssSelectorType } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
+import { EXTENSION_POINT_DATA_ATTR } from "@/extensionPoints/helpers";
+import { PIXIEBRIX_DATA_ATTR } from "@/extensionPoints/panelExtension";
+import { PANEL_FRAME_ID } from "@/actionPanel/native";
+import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -45,6 +49,12 @@ const ATTR_EXCLUDE_PATTERNS = [
   /^id$/,
   /^name$/,
   /^data([\w-]*)-test([\w-]*)$/,
+
+  /* eslint-disable security/detect-non-literal-regexp -- Our variables */
+  new RegExp(`^${EXTENSION_POINT_DATA_ATTR}$`),
+  new RegExp(`^${PIXIEBRIX_DATA_ATTR}$`),
+  new RegExp(`^${PIXIEBRIX_READY_ATTRIBUTE}$`),
+
   // Cypress attributes
   /^data-cy$/,
   // Angular attributes
@@ -59,6 +69,8 @@ const ATTR_EXCLUDE_PATTERNS = [
 
 const VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
   ["class", [/^ember-view$/]],
+  /* eslint-disable security/detect-non-literal-regexp -- Our variables */
+  ["id", [new RegExp(`^${PANEL_FRAME_ID}$`)]],
 ]);
 
 class SkipElement extends Error {}

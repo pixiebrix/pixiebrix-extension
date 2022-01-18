@@ -67,7 +67,7 @@ export type PanelConfig = {
 const RENDER_LOOP_THRESHOLD = 25;
 const RENDER_LOOP_WINDOW_MS = 500;
 
-const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
+export const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
 
 /**
  * Prevent panel render from entering an infinite loop

@@ -34,7 +34,7 @@ import { MAX_Z_INDEX } from "@/common";
 import pDefer from "p-defer";
 
 const SIDEBAR_WIDTH_PX = 400;
-const PANEL_FRAME_ID = "pixiebrix-extension";
+export const PANEL_FRAME_ID = "pixiebrix-extension";
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
 export const PANEL_HIDING_EVENT = "pixiebrix:hideActionPanel";
 
