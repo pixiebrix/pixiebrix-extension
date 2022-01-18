@@ -120,9 +120,9 @@ const ShareExtensionModal: React.FC<{
       "/"
     ) as RegistryId,
     name: extension.label,
-    description: "",
+    description: "Created with the PixieBrix Page Editor",
     organizations: [],
-    public: true,
+    public: false,
   };
 
   const handleShare: OnSubmit = useCallback(
