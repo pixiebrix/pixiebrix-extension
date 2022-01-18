@@ -19,6 +19,7 @@ import { RecipeDefinition } from "@/types/definitions";
 import { RegistryId, ResolvedExtension } from "@/core";
 
 export type Installable = RecipeDefinition | ResolvedExtension;
+
 export type InstallableInfo = {
   label: string;
   description?: string;
@@ -31,7 +32,8 @@ export const isExtension = (
   installable: Installable
 ): installable is ResolvedExtension => "_recipe" in installable;
 
-// TODO: instead, make these access methods like getLabel()?
+// TODO: instead, make these access methods like getLabel() on an
+//  installable class?
 export const getInstallableInfo: InstallableInfo = (
   installable: Installable
 ) => {

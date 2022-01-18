@@ -25,7 +25,6 @@ import useFetch from "@/hooks/useFetch";
 import { CloudExtension } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
-import { isPersonalBrick } from "@/options/pages/installed/ActiveBricksCard";
 import {
   Installable,
   isPersonal,

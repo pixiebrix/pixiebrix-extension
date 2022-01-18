@@ -23,10 +23,9 @@ import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import {
   getInstallableInfo,
   Installable,
-  isExtension,
 } from "@/options/pages/blueprints/installableUtils";
-import useSharing from "@/options/pages/blueprints/useSharing";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
+import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 
 const BlueprintListEntry: React.FunctionComponent<{
   installable: Installable;
@@ -38,19 +37,21 @@ const BlueprintListEntry: React.FunctionComponent<{
     updated_at,
     active,
   } = getInstallableInfo(installable);
-  const sharingType = useSharing(installable);
 
   return (
     <tr>
       <td className="text-wrap">
-        <span className="text-wrap">{label}</span>
-        <br />
+        <h5 className="text-wrap m-0">{label}</h5>
         <span className="text-muted text-wrap">{description}</span>
       </td>
       <td>
         <div className={styles.sharing}>
-          {packageId && <code className="p-0">{packageId}</code>}
-          <br />
+          {packageId && (
+            <>
+              <code className="p-0">{packageId}</code>
+              <br />
+            </>
+          )}
           <SharingLabel installable={installable} />
         </div>
       </td>
@@ -68,7 +69,7 @@ const BlueprintListEntry: React.FunctionComponent<{
           </Button>
         )}
       </td>
-      <td>{active && <EllipsisMenu items={[]} />}</td>
+      <td>{active && <BlueprintActions installable={installable} />}</td>
     </tr>
   );
 };
