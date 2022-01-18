@@ -51,9 +51,9 @@ import Form, {
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useGetOrganizationsQuery } from "@/services/api";
 import { PackageUpsertResponse } from "@/types/contract";
-import ConnectedSwitchField from "@/components/form/ConnectedSwitchField";
-import SwitchField from "@/components/form/SwitchField";
 import extensionsSlice from "@/store/extensionsSlice";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import FieldTemplate from "@/components/form/FieldTemplate";
 
 const { attachExtension } = extensionsSlice.actions;
 
@@ -189,21 +189,17 @@ const ShareExtensionModal: React.FC<{
         </Col>
       </BootstrapForm.Group>
 
-      <ConnectedSwitchField
+      <ConnectedFieldTemplate
         name="public"
+        as={SwitchButtonWidget}
+        description={
+          // \u00A0 stands for &nbsp;
+          values.public ? <i>Visible to all PixieBrix users</i> : "\u00A0"
+        }
         label={
-          values.public ? (
-            <span>
-              <FontAwesomeIcon icon={faGlobe} /> Public{" "}
-              <span className="text-primary">
-                <i> &ndash; visible to all PixieBrix users</i>
-              </span>
-            </span>
-          ) : (
-            <span>
-              <FontAwesomeIcon icon={faGlobe} /> Public
-            </span>
-          )
+          <span>
+            <FontAwesomeIcon icon={faGlobe} /> Public
+          </span>
         }
       />
 
@@ -211,9 +207,10 @@ const ShareExtensionModal: React.FC<{
         (organization) => {
           const checked = values.organizations.includes(organization.id);
           return (
-            <SwitchField
+            <FieldTemplate
               key={organization.id}
               name={organization.id}
+              as={SwitchButtonWidget}
               label={organization.name}
               value={checked}
               onChange={() => {
