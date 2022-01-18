@@ -15,17 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  .results {
-    // use capital M to get the CSS method instead of SASS method
-    // https://css-tricks.com/when-sass-and-new-css-features-collide/#the-solution
-    max-height: Min(calc(100vh - 100px), 600px);
-    height: calc(100vh - 100px);
-  }
+$maxHeight: calc(100vh - 50px);
+$bootstrapPadding: 15px;
 
-  .brickDetail {
-    // 54px to match height of BlockModal results above
-    max-height: Min(calc(100vh - 54px), 600px);
-    overflow-y: scroll;
+.root {
+  display: grid;
+  place-content: center center;
+  & > :first-child {
+    margin: 20px auto;
+    width: 89vw;
+    max-width: 1220px;
   }
+}
+
+.body {
+  padding: 0;
+}
+
+.results {
+  height: $maxHeight;
+  display: grid;
+  grid-template-rows: min-content 1fr;
+  padding-top: $bootstrapPadding;
+  gap: $bootstrapPadding;
+}
+
+.brickDetail {
+  height: $maxHeight;
+  padding-top: $bootstrapPadding;
+  padding-bottom: $bootstrapPadding;
+  overflow: auto;
 }
