@@ -32,6 +32,9 @@ export const isExtension = (
   installable: Installable
 ): installable is ResolvedExtension => "_recipe" in installable;
 
+export const isExtensionFromRecipe = (installable: Installable) =>
+  isExtension(installable) && Boolean(installable._recipe);
+
 export const isBlueprint = (
   installable: Installable
 ): installable is RecipeDefinition => !isExtension(installable);

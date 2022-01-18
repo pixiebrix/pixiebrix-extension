@@ -19,6 +19,7 @@ import {
   Installable,
   isBlueprint,
   isExtension,
+  isExtensionFromRecipe,
 } from "@/options/pages/blueprints/installableUtils";
 import { useDispatch } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
@@ -42,15 +43,17 @@ function useInstallableActions(installable: Installable) {
   const notify = useNotifications();
 
   const reinstall = () => {
-    if (isBlueprint(installable)) {
-      dispatch(
-        push(
-          `marketplace/activate/${encodeURIComponent(
-            installable.metadata.id
-          )}?reinstall=1`
-        )
-      );
+    if (!isExtension(installable) || !installable._recipe) {
+      return;
     }
+
+    dispatch(
+      push(
+        `marketplace/activate/${encodeURIComponent(
+          installable._recipe.id
+        )}?reinstall=1`
+      )
+    );
   };
 
   const activate = () => {
@@ -126,7 +129,8 @@ function useInstallableActions(installable: Installable) {
     viewLogs,
     onExportBlueprint,
     activate,
-    reinstall,
+    reinstall: isExtensionFromRecipe(installable) ? reinstall : null,
   };
 }
+
 export default useInstallableActions;
