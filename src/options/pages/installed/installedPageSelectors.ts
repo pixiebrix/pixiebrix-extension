@@ -19,3 +19,6 @@ import { RootState } from "@/options/store";
 
 export const selectShowLogsContext = ({ installedPage }: RootState) =>
   installedPage.showLogsContext;
+
+export const selectShowShareContext = ({ installedPage }: RootState) =>
+  installedPage.showShareContext;

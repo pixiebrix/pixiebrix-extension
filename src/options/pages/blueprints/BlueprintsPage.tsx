@@ -26,8 +26,15 @@ import useInstallables from "@/options/pages/blueprints/useInstallables";
 import ExtensionLogsModal from "@/options/pages/installed/ExtensionLogsModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/options/store";
-import { LogsContext } from "@/options/pages/installed/installedPageSlice";
-import { selectShowLogsContext } from "@/options/pages/installed/installedPageSelectors";
+import {
+  LogsContext,
+  ShareContext,
+} from "@/options/pages/installed/installedPageSlice";
+import {
+  selectShowLogsContext,
+  selectShowShareContext,
+} from "@/options/pages/installed/installedPageSelectors";
+import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 
 // Should this go in useInstallables hook?
 const categoryLabels = {
@@ -48,6 +55,11 @@ const BlueprintsPage: React.FunctionComponent = () => {
     selectShowLogsContext
   );
 
+  // todo: move
+  const showShareContext = useSelector<RootState, ShareContext>(
+    selectShowShareContext
+  );
+
   return (
     <Page
       icon={faScroll}
@@ -63,11 +75,16 @@ const BlueprintsPage: React.FunctionComponent = () => {
       isPending={isLoading}
       error={error}
     >
-      {" "}
       {showLogsContext && (
         <ExtensionLogsModal
           title={showLogsContext.title}
           context={showLogsContext.messageContext}
+        />
+      )}
+      {showShareContext && (
+        <ShareExtensionModal
+          extension={showShareContext.extension}
+          onCancel={() => {}}
         />
       )}
       <Row>

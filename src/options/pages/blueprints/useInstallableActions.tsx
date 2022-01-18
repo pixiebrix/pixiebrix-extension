@@ -41,9 +41,16 @@ function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const notify = useNotifications();
 
-  // todo: rename
-  const share = (path: string) => {
-    dispatch(push(path));
+  const viewShare = () => {
+    if (!isExtension(installable)) {
+      return;
+    }
+
+    dispatch(
+      installedPageSlice.actions.setShareContext({
+        extension: installable,
+      })
+    );
   };
 
   const remove = () => {
@@ -88,6 +95,6 @@ function useInstallableActions(installable: Installable) {
     exportBlueprint(extension);
   }, [installable, notify]);
 
-  return { share, remove, viewLogs, exportBlueprint };
+  return { viewShare, remove, viewLogs, exportBlueprint };
 }
 export default useInstallableActions;
