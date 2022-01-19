@@ -22,7 +22,6 @@ import {
   inferSelectors,
   safeCssSelector,
 } from "@/nativeEditor/infer";
-import * as assert from "assert";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";
@@ -358,15 +357,14 @@ describe("inferSelectors", () => {
 
   test.each([["data-testid"], ["data-cy"], ["data-test"]])(
     "infer test attribute: %s",
-    (attr: string) => {
-      document.body.innerHTML =
-        "<div>" + `<input ${attr}='a' />` + `<input ${attr}='b' />` + "</div>";
+    (attribute: string) => {
+      document.body.innerHTML = `<div><input ${attribute}='a' /><input ${attribute}='b' /></div>`;
 
       const selector = inferSelectors(
-        document.body.querySelector(`input[${attr}='a']`)
+        document.body.querySelector(`input[${attribute}='a']`)
       );
 
-      expect(selector).toStrictEqual([`[${attr}='a']`]);
+      expect(selector).toStrictEqual([`[${attribute}='a']`]);
     }
   );
 });
