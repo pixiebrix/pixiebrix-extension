@@ -111,10 +111,14 @@ const groupExtensions = (extensions: ResolvedExtension[], scope: string) => {
   return { personal, marketplace, team, deployment, other };
 };
 
-function updateAvailable(
+export function updateAvailable(
   availableRecipes: RecipeDefinition[],
   sourceRecipeMeta: RecipeMetadata | undefined
 ): boolean {
+  if (!sourceRecipeMeta) {
+    return false;
+  }
+
   const availableRecipe = availableRecipes?.find(
     (recipe) => recipe.metadata.id === sourceRecipeMeta.id
   );

@@ -88,6 +88,8 @@ export const _InstalledPage: React.FunctionComponent<{
     []
   );
 
+  console.log("resolved extensions:", resolvedExtensions);
+
   const showLogsContext = useSelector<RootState, LogsContext>(
     selectShowLogsContext
   );

@@ -90,8 +90,8 @@ const isPersonalBrick = (extension: ResolvedExtension) =>
 const isPersonalBlueprint = (extension: ResolvedExtension, scope: string) =>
   scope && extension._recipe?.id.startsWith(scope + "/");
 
-const isPersonalRecipe = (installable: Installable, scope: string) => {
-  return installable.metadata.id.includes(scope);
+const isPersonalRecipe = (recipe: RecipeDefinition, scope: string) => {
+  return recipe.metadata ? recipe.metadata.id.includes(scope) : false;
 };
 
 export const isPersonal = (installable: Installable, scope: string) => {

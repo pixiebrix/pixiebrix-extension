@@ -28,16 +28,20 @@ import {
 const BlueprintsList: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
+  console.log("Installables", installables);
+
   return (
     <Card className={styles.root}>
       <Table>
         <tbody>
-          {installables.map((installable) => (
-            <BlueprintListEntry
-              key={getUniqueId(installable)}
-              installable={installable}
-            />
-          ))}
+          {installables.map((installable) => {
+            return (
+              <BlueprintListEntry
+                key={getUniqueId(installable)}
+                installable={installable}
+              />
+            );
+          })}
         </tbody>
       </Table>
     </Card>

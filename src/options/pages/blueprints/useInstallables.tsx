@@ -29,6 +29,7 @@ import {
   Installable,
   isPersonal,
 } from "@/options/pages/blueprints/installableUtils";
+import { updateAvailable } from "@/options/pages/installed/ActiveBricksCard";
 
 function useInstallables(): {
   blueprints: {
@@ -78,8 +79,14 @@ function useInstallables(): {
   );
 
   const activeExtensions = useMemo(
-    () => resolvedExtensions?.filter((extension) => extension.active),
-    [resolvedExtensions]
+    () =>
+      resolvedExtensions
+        ?.filter((extension) => extension.active)
+        .map((extension) => ({
+          ...extension,
+          hasUpdate: updateAvailable(rawRecipes, extension._recipe),
+        })),
+    [rawRecipes, resolvedExtensions]
   );
 
   const personalOrTeamBlueprints = useMemo(() => {
@@ -105,7 +112,7 @@ function useInstallables(): {
       all: [...(resolvedExtensions ?? []), ...personalOrTeamBlueprints],
       personal: [
         ...(resolvedExtensions ?? []).filter((extension) =>
-          isPersonal(extension)
+          isPersonal(extension, scope)
         ),
         ...personalOrTeamBlueprints.filter((blueprint) =>
           blueprint.metadata.id.includes(scope)
