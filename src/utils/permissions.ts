@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser, { Manifest, Permissions } from "webextension-polyfill";
+import browser, { Permissions } from "webextension-polyfill";
 import { uniq } from "lodash";
 import {
   containsPermissions,
@@ -24,15 +24,11 @@ import {
 import { isScriptableUrl } from "webext-content-scripts";
 
 /** Filters out any permissions that are not part of `optional_permissions` */
-export function selectOptionalPermissions(
-  permissions: string[]
-): Manifest.OptionalPermission[] {
-  const { optional_permissions } = chrome.runtime.getManifest();
+export function selectOptionalPermissions(permissions: string[]): string[] {
+  const { optional_permissions } = browser.runtime.getManifest();
   return permissions.filter((requestedPermission) =>
-    optional_permissions.includes(
-      requestedPermission as chrome.runtime.ManifestPermissions
-    )
-  ) as Manifest.OptionalPermission[];
+    optional_permissions.includes(requestedPermission)
+  );
 }
 
 /** Merge a list of permissions into a single permissions object */
