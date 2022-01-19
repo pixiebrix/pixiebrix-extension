@@ -6,7 +6,7 @@ exports[`renders 1`] = `
     action="#"
   >
     <div
-      class="card card"
+      class="card"
     >
       <div
         class="cardHeader card-header"
@@ -14,19 +14,19 @@ exports[`renders 1`] = `
         Input
       </div>
       <div
-        class="card-body"
+        class="cardBody card-body"
       >
         <div
-          class="horizontalFormGroup form-group row"
+          class="formGroup form-group row"
         >
           <label
-            class="horizontalLabel form-label col-form-label col-lg-3"
+            class="label form-label col-form-label col-xl-2 col-lg-3"
             for="extension.blockPipeline[0].config.message"
           >
             message
           </label>
           <div
-            class="col-lg-9"
+            class="col-xl-10 col-lg-9"
           >
             <div
               class="root"
@@ -65,17 +65,13 @@ exports[`renders 1`] = `
           </div>
         </div>
       </div>
-    </div>
-    <div
-      class="card card"
-    >
       <div
         class="cardHeader card-header"
       >
         Advanced Options
       </div>
       <div
-        class="card-body"
+        class="cardBody card-body"
       >
         <small
           class="text-muted font-italic"

@@ -17,12 +17,10 @@
 
 .RecommendationContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fit, 200px);
-  grid-gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2rem;
 
   .RecommendationCard {
-    max-width: 200px;
-
     &:hover {
       cursor: pointer;
       background-color: #ececff;

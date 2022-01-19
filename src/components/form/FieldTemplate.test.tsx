@@ -18,7 +18,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import FieldTemplate, { CustomFieldWidget, FieldProps } from "./FieldTemplate";
-import styles from "./FieldTemplate.module.scss";
 import { fireTextInput } from "@/tests/formHelpers";
 
 const testLabel = "Test label";
@@ -28,22 +27,6 @@ const renderFieldTemplate = (partialProps?: Partial<FieldProps>) =>
   render(
     <FieldTemplate name={"testName"} onChange={jest.fn()} {...partialProps} />
   );
-test("renders horizontal layout by default", () => {
-  const { container } = renderFieldTemplate();
-  expect(container.firstChild).toHaveClass(styles.horizontalFormGroup);
-});
-test("renders horizontal layout", () => {
-  const { container } = renderFieldTemplate({
-    layout: "horizontal",
-  });
-  expect(container.firstChild).toHaveClass(styles.horizontalFormGroup);
-});
-test("renders vertical layout", () => {
-  const { container } = renderFieldTemplate({
-    layout: "vertical",
-  });
-  expect(container.firstChild).toHaveClass(styles.verticalFormGroup);
-});
 
 test.each([
   ["BS FormControl", undefined],
