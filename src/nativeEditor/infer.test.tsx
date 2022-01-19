@@ -16,7 +16,13 @@
  */
 
 import { $safeFind } from "@/helpers";
-import { inferButtonHTML, inferPanelHTML } from "@/nativeEditor/infer";
+import {
+  inferButtonHTML,
+  inferPanelHTML,
+  inferSelectors,
+  safeCssSelector,
+} from "@/nativeEditor/infer";
+import * as assert from "assert";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";
@@ -315,5 +321,52 @@ test("infer header structure mismatch", () => {
 
   expect(inferred).toBe(
     "<section><h2>{{{ heading }}}</h2><div>{{{ body }}}</div></section>"
+  );
+});
+
+describe("safeCssSelector", () => {
+  test("infer aria-label", () => {
+    document.body.innerHTML =
+      "<div>" +
+      "<input aria-label='foo'/>" +
+      "<input aria-label='bar'/>" +
+      "</div>";
+
+    const selector = safeCssSelector(
+      document.body.querySelector("input[aria-label='foo']"),
+      null
+    );
+
+    expect(selector).toBe("[aria-label='foo']");
+  });
+});
+
+describe("inferSelectors", () => {
+  test("infer aria-label", () => {
+    document.body.innerHTML =
+      "<div>" +
+      "<input aria-label='foo'/>" +
+      "<input aria-label='bar'/>" +
+      "</div>";
+
+    const selector = inferSelectors(
+      document.body.querySelector("input[aria-label='foo']")
+    );
+
+    expect(selector).toStrictEqual(["[aria-label='foo']"]);
+  });
+
+  test.each([["data-testid"], ["data-cy"], ["data-test"]])(
+    "infer test attribute: %s",
+    (attr: string) => {
+      document.body.innerHTML =
+        "<div>" + `<input ${attr}='a' />` + `<input ${attr}='b' />` + "</div>";
+
+      const selector = inferSelectors(
+        document.body.querySelector(`input[${attr}='a']`)
+      );
+
+      expect(selector).toStrictEqual([`[${attr}='a']`]);
+    }
   );
 });
