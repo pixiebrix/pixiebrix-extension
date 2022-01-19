@@ -136,10 +136,10 @@ exports[`renders modal 1`] = `
             </div>
           </div>
           <div
-            class="horizontalFormGroup form-group row"
+            class="formGroup form-group row"
           >
             <label
-              class="horizontalLabel form-label col-form-label col-lg-3"
+              class="label form-label col-form-label col-xl-2 col-lg-3"
               for="public"
             >
               <span>
@@ -162,7 +162,7 @@ exports[`renders modal 1`] = `
               </span>
             </label>
             <div
-              class="col-lg-9"
+              class="col-xl-10 col-lg-9"
             >
               <div
                 class="root"

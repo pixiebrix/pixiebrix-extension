@@ -16,5 +16,8 @@
  */
 
 .root {
-  margin-top: 6px;
+  // Aligning the switch button with the label
+  // Height of a Bootstrap input is 2.875rem, plus border of 1px. Height of the switch button is 35px.
+  // We get half of the difference between the two plus 1 px for the border.
+  margin-top: calc(1.4375rem - 18px);
 }
