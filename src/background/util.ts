@@ -16,7 +16,7 @@
  */
 
 import pDefer from "p-defer";
-import browser, { Tabs } from "webextension-polyfill";
+import browser from "webextension-polyfill";
 import { executeFunction, injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
@@ -165,7 +165,7 @@ export async function showErrorInOptions(
 export async function forEachTab<
   TCallback extends (target: { tabId: number }) => void
 >(callback: TCallback): Promise<void> {
-  for (const tab of await getTabsWithAccess()) {
-    callback({ tabId: tab.id });
+  for (const tabId of await getTabsWithAccess()) {
+    callback({ tabId });
   }
 }

@@ -2,15 +2,16 @@
 
 // eslint-disable-next-line filenames/match-exported
 import { safeParseUrl } from "@/utils";
+import { canReceiveContentScript } from "@/utils/permissions";
 
 type TabId = number;
 type Origin = string;
 export const possiblyActiveTabs = new Map<TabId, Origin>();
 
 function track(tab: chrome.tabs.Tab): void {
-  try {
+  if (tab.url && canReceiveContentScript(tab.url)) {
     possiblyActiveTabs.set(tab.id, new URL(tab.url).origin);
-  } catch {}
+  }
 }
 
 export default function initActiveTabTracking() {
