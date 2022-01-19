@@ -81,8 +81,15 @@ const BlueprintActions: React.FunctionComponent<{
                 {
                   title: (
                     <>
-                      {/* TODO: add update */}
-                      <FontAwesomeIcon icon={faSyncAlt} /> Reactivate
+                      {installable.hasUpdate ? (
+                        <span className="text-info">
+                          <FontAwesomeIcon icon={faSyncAlt} /> Update
+                        </span>
+                      ) : (
+                        <>
+                          <FontAwesomeIcon icon={faSyncAlt} /> Reactivate
+                        </>
+                      )}
                     </>
                   ),
                   action: reinstall,

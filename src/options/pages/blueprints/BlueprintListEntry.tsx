@@ -38,7 +38,7 @@ const BlueprintListEntry: React.FunctionComponent<{
     active,
   } = getInstallableInfo(installable);
 
-  const { activate } = useInstallableActions(installable);
+  const { activate, reinstall } = useInstallableActions(installable);
 
   return (
     <tr>
@@ -64,7 +64,15 @@ const BlueprintListEntry: React.FunctionComponent<{
       </td>
       <td>
         {active ? (
-          "Active"
+          <>
+            {installable.hasUpdate ? (
+              <Button size="sm" variant="warning" onClick={reinstall}>
+                Update
+              </Button>
+            ) : (
+              "Active"
+            )}
+          </>
         ) : (
           <Button size="sm" variant="info" onClick={activate}>
             Activate
