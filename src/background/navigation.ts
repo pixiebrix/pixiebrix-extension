@@ -19,13 +19,14 @@
 import browser, { WebNavigation } from "webextension-polyfill";
 import { handleNavigate, reactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/util";
+import { doesTabHaveAccess } from "@/background/activeTab";
 
 async function onHistoryUpdate({
   tabId,
   frameId,
   url,
 }: WebNavigation.OnHistoryStateUpdatedDetailsType): Promise<void> {
-  if (await browser.permissions.contains({ origins: [url] })) {
+  if (await doesTabHaveAccess({ tabId, url })) {
     handleNavigate({ tabId, frameId });
   }
 }

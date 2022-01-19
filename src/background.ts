@@ -44,6 +44,7 @@ import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deployment";
 import initFirefoxCompat from "@/background/firefoxCompat";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
+import initActiveTabTracking from "@/background/activeTab";
 
 initNavigation();
 initExecutor();
@@ -54,3 +55,4 @@ initBrowserCommands();
 initDeploymentUpdater();
 void initFirefoxCompat();
 activateBrowserActionIcon();
+initActiveTabTracking();

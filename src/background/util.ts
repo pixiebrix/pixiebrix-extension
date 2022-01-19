@@ -25,6 +25,7 @@ import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
+import { getTabsWithAccess } from "./activeTab";
 
 /** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
@@ -161,15 +162,10 @@ export async function showErrorInOptions(
   });
 }
 
-async function getAllTabsWithPermissions(): Promise<Tabs.Tab[]> {
-  const { origins } = await browser.permissions.getAll();
-  return browser.tabs.query({ url: origins });
-}
-
 export async function forEachTab<
   TCallback extends (target: { tabId: number }) => void
 >(callback: TCallback): Promise<void> {
-  for (const tab of await getAllTabsWithPermissions()) {
+  for (const tab of await getTabsWithAccess()) {
     callback({ tabId: tab.id });
   }
 }
