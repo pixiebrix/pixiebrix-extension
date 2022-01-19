@@ -24,6 +24,7 @@ import {
   faCheck,
   faList,
   faPause,
+  faShare,
   faSyncAlt,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
@@ -65,6 +66,7 @@ const ExtensionGroup: React.FunctionComponent<{
   hasUpdate: boolean;
   startExpanded?: boolean;
   groupMessageContext: MessageContext;
+  onShare?: () => void;
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({
@@ -74,6 +76,7 @@ const ExtensionGroup: React.FunctionComponent<{
   paused = false,
   startExpanded,
   groupMessageContext,
+  onShare,
   onRemove,
   onExportBlueprint,
   hasUpdate,
@@ -184,6 +187,15 @@ const ExtensionGroup: React.FunctionComponent<{
 
   const actionOptions = useMemo(
     () => [
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faShare} /> Share
+          </>
+        ),
+        hide: onShare == null,
+        action: onShare,
+      },
       {
         title: (
           <>
