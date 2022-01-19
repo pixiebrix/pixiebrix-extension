@@ -437,24 +437,28 @@ exports[`FormEditor renders simple schema 1`] = `
           class="col-xl-10 col-lg-9"
         >
           <div
-            class="switch btn off btn-light"
+            class="root"
           >
             <div
-              class="switch-group"
+              class="switch btn off btn-light"
             >
-              <span
-                class="switch-on btn btn-primary"
+              <div
+                class="switch-group"
               >
-                 
-              </span>
-              <span
-                class="switch-off btn btn-light"
-              >
-                 
-              </span>
-              <span
-                class="switch-handle btn btn-light"
-              />
+                <span
+                  class="switch-on btn btn-primary"
+                >
+                   
+                </span>
+                <span
+                  class="switch-off btn btn-light"
+                >
+                   
+                </span>
+                <span
+                  class="switch-handle btn btn-light"
+                />
+              </div>
             </div>
           </div>
         </div>

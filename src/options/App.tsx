@@ -137,14 +137,6 @@ const Layout = () => {
                     />
                   )}
 
-                  {!flags.includes("restricted-marketplace") && (
-                    <Route
-                      exact
-                      path="/installed/share/:extensionId"
-                      component={InstalledPage}
-                    />
-                  )}
-
                   <Route component={InstalledPage} />
                 </Switch>
               </ErrorBoundary>

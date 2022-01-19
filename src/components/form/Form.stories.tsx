@@ -28,7 +28,7 @@ import { Form as BootstrapForm } from "react-bootstrap";
 import { CustomFieldWidget } from "./FieldTemplate";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { range } from "lodash";
-import ConnectedSwitchField from "@/components/form/ConnectedSwitchField";
+import SwitchButtonWidget from "./widgets/switchButton/SwitchButtonWidget";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",
@@ -138,8 +138,9 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
         MenuList: createMenuListWithAddButton(action("onAddNew clicked")),
       }}
     />
-    <ConnectedSwitchField
+    <ConnectedFieldTemplate
       name="public"
+      as={SwitchButtonWidget}
       label={
         <span>
           <FontAwesomeIcon icon={faGlobe} /> This is a boolean field

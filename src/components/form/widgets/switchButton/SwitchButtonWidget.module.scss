@@ -15,25 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { FieldProps } from "@/components/form/FieldTemplate";
-import { Col, Form as BootstrapForm, Row } from "react-bootstrap";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-
-const SwitchField: React.FC<FieldProps> = ({
-  name,
-  label,
-  onChange,
-  value,
-}) => (
-  <BootstrapForm.Group as={Row} controlId={name}>
-    <Col sm="3">
-      <SwitchButtonWidget name={name} onChange={onChange} value={value} />
-    </Col>
-    <Col sm="9" as="label" htmlFor={name}>
-      {label}
-    </Col>
-  </BootstrapForm.Group>
-);
-
-export default SwitchField;
+.root {
+  // Aligning the switch button with the label
+  // Height of a Bootstrap input is 2.875rem, plus border of 1px. Height of the switch button is 35px.
+  // We get half of the difference between the two plus 1 px for the border.
+  margin-top: calc(1.4375rem - 18px);
+}
