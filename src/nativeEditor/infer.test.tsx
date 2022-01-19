@@ -22,9 +22,7 @@ import {
   inferSelectors,
   safeCssSelector,
 } from "@/nativeEditor/infer";
-import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
-import { PIXIEBRIX_DATA_ATTR } from "@/extensionPoints/panelExtension";
-import { EXTENSION_POINT_DATA_ATTR } from "@/extensionPoints/helpers";
+import { PIXIEBRIX_DATA_ATTR, EXTENSION_POINT_DATA_ATTR } from "@/common";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";

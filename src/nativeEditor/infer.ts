@@ -21,10 +21,12 @@ import { isNullOrBlank, mostCommonElement } from "@/utils";
 import { BusinessError } from "@/errors";
 import { CssSelectorType } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
-import { EXTENSION_POINT_DATA_ATTR } from "@/extensionPoints/helpers";
-import { PIXIEBRIX_DATA_ATTR } from "@/extensionPoints/panelExtension";
-import { PANEL_FRAME_ID } from "@/actionPanel/native";
-import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
+import {
+  EXTENSION_POINT_DATA_ATTR,
+  PANEL_FRAME_ID,
+  PIXIEBRIX_DATA_ATTR,
+  PIXIEBRIX_READY_ATTRIBUTE,
+} from "@/common";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
