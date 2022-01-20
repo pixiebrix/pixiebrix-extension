@@ -21,8 +21,6 @@ import { useCallback, useContext, useMemo } from "react";
 import AuthContext from "@/auth/AuthContext";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/options/selectors";
-import useFetch from "@/hooks/useFetch";
-import { CloudExtension } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import {
@@ -103,6 +101,8 @@ function useInstallables(): {
     [recipes.data, scope, installedRecipeIds]
   );
 
+  // Restructures ResolvedExtension | RecipeDefinition into an Installable type
+  // TODO: handle "duplicates" i.e. when the recipe and active extension both occur in this list
   const installables = useMemo(
     () =>
       [...resolvedExtensions, ...personalOrTeamBlueprints].map(
