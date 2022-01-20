@@ -20,23 +20,17 @@
   flex-direction: row;
 }
 
-// React-bootstrap Button defaults to 0.75rem horizontal
-// and 0.375rem vertical padding; we don't need that much
-// on the field toggle buttons
-$button-padding: 0.25rem !important;
-
 .dropdown {
   width: auto;
   flex-grow: 0;
   flex-shrink: 0;
 
   > button {
-    padding: $button-padding;
+    // React-bootstrap Button defaults to 0.75rem horizontal
+    // and 0.375rem vertical padding; we don't need that much
+    // on the field toggle buttons
+    padding: 0.25rem !important;
   }
-}
-
-.button {
-  padding: $button-padding;
 }
 
 .field {

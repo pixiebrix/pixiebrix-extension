@@ -18,7 +18,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { Expression } from "@/core";
-import { Button, Dropdown, DropdownButton } from "react-bootstrap";
+import { Dropdown, DropdownButton } from "react-bootstrap";
 import { UnknownObject } from "@/types";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { JSONSchema7Array } from "json-schema";
@@ -151,42 +151,29 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
       <div className={styles.field}>
         <Widget {...widgetProps} />
       </div>
-      {inputModeOptions.length > 1 ? (
-        <DropdownButton
-          title={
-            <span className={styles.symbol}>
-              {selectedOption?.symbol ?? ""}
-            </span>
-          }
-          variant="link"
-          alignRight
-          onSelect={onModeChange}
-          className={styles.dropdown}
-          data-testid={`toggle-${schemaFieldProps.name}`}
-          data-test-selected={selectedOption?.label ?? ""}
-        >
-          {inputModeOptions.map((option) => (
-            <Dropdown.Item
-              key={option.value}
-              eventKey={option.value}
-              data-testid={option.value}
-            >
-              <span className={styles.symbol}>{option.symbol}</span>{" "}
-              {option.label}
-            </Dropdown.Item>
-          ))}
-        </DropdownButton>
-      ) : (
-        <Button
-          disabled
-          variant="link"
-          className={styles.button}
-          data-testid={`toggle-${schemaFieldProps.name}`}
-          data-test-selected={selectedOption?.label ?? ""}
-        >
+      <DropdownButton
+        title={
           <span className={styles.symbol}>{selectedOption?.symbol ?? ""}</span>
-        </Button>
-      )}
+        }
+        variant="link"
+        disabled={inputModeOptions.length < 2}
+        alignRight
+        onSelect={onModeChange}
+        className={styles.dropdown}
+        data-testid={`toggle-${schemaFieldProps.name}`}
+        data-test-selected={selectedOption?.label ?? ""}
+      >
+        {inputModeOptions.map((option) => (
+          <Dropdown.Item
+            key={option.value}
+            eventKey={option.value}
+            data-testid={option.value}
+          >
+            <span className={styles.symbol}>{option.symbol}</span>{" "}
+            {option.label}
+          </Dropdown.Item>
+        ))}
+      </DropdownButton>
     </div>
   );
 };
