@@ -27,6 +27,7 @@ import FieldRuntimeContext, {
 // supports). But we still want to get our SchemaField support for enums, etc.
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: "v2",
+  allowExpressions: false,
 };
 
 const OptionsBody: React.FunctionComponent<{

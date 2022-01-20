@@ -144,7 +144,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
           },
         }
       : schemaFieldProps;
-  }, [focusInput, inputMode, onModeChange, schemaFieldProps]);
+  }, [focusInput, inputMode, inputModeOptions, onModeChange, schemaFieldProps]);
 
   return (
     <div className={styles.root}>
