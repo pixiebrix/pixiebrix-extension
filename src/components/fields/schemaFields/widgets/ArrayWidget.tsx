@@ -87,7 +87,7 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
         <>
           <ul className="list-group">
             {(field.value ?? []).map((item: unknown, index: number) => (
-              <li className="list-group-item pb-0" key={index}>
+              <li className="list-group-item py-1" key={index}>
                 <SchemaField
                   key={index}
                   name={joinName(name, String(index))}

@@ -19,12 +19,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <!-- Open all links in new tab, never in the frame #851 -->
+    <base target="_blank" />
     <title>PixieBrix</title>
-    <script defer src="vendors.js"></script>
-    <script defer src="ephemeralForm.js"></script>
     <link rel="stylesheet" href="ephemeralForm.css" />
   </head>
   <body>
     <div id="container"></div>
+    <script src="vendors.js"></script>
+    <script src="ephemeralForm.js"></script>
   </body>
 </html>

@@ -23,7 +23,7 @@ import { useMemo } from "react";
 import { sortBy } from "lodash";
 import registry from "@/services/registry";
 import { useAsyncState } from "@/hooks/common";
-import { ServicesState } from "@/options/slices";
+import { ServicesState } from "@/store/servicesSlice";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 interface ServiceDefinitions {

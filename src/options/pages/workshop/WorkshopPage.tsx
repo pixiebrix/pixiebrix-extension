@@ -25,7 +25,7 @@ import AuthContext from "@/auth/AuthContext";
 import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
 import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
-import { workshopSlice, WorkshopState } from "@/options/slices";
+import workshopSlice, { WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
 import "./WorkshopPage.scss";

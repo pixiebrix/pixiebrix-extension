@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,12 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  migrateExtensionsShape,
-  migrateActiveExtensions,
-  ExtensionOptionsState,
-} from "@/store/extensions";
 import { readReduxStorage, ReduxStorageKey, setReduxStorage } from "@/chrome";
+import { localStorage } from "redux-persist-webextension-storage";
+import { createMigrate } from "redux-persist";
+import { boolean } from "@/utils";
+import {
+  migrateActiveExtensions,
+  migrateExtensionsShape,
+  migrations,
+} from "@/store/extensionsMigrations";
+import { ExtensionOptionsState } from "./extensionsTypes";
 
 const STORAGE_KEY = "persist:extensionOptions" as ReduxStorageKey;
 
@@ -59,3 +63,11 @@ export async function saveOptions(state: ExtensionOptionsState): Promise<void> {
     extensions: JSON.stringify(state.extensions),
   });
 }
+
+export const persistExtensionOptionsConfig = {
+  key: "extensionOptions",
+  storage: localStorage,
+  version: 2,
+  // https://github.com/rt2zz/redux-persist#migrations
+  migrate: createMigrate(migrations, { debug: boolean(process.env.DEBUG) }),
+};

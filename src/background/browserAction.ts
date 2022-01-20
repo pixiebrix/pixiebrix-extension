@@ -19,9 +19,9 @@ import { isBackground } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import browser, { Tabs } from "webextension-polyfill";
-import { safeParseUrl } from "@/utils";
 import { toggleActionPanel } from "@/contentScript/messenger/api";
 import { updateDevTools } from "@/devTools/messenger/api";
+import { isScriptableUrl } from "webext-content-scripts";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAME_NOTIFICATION`;
@@ -29,15 +29,14 @@ export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAM
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
 
-const webstores = ["chrome.google.com", "addons.mozilla.org"];
 async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
-  const { protocol, hostname } = safeParseUrl(tab.url);
-  if (webstores.includes(hostname)) {
+  const url = String(tab.url);
+  if (!isScriptableUrl(url)) {
     void showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE_WEBSTORE", tab.index);
     return;
   }
 
-  if (!protocol.startsWith("http")) {
+  if (!url.startsWith("http")) {
     // Page not supported. Open the options page instead
     void browser.runtime.openOptionsPage();
     return;

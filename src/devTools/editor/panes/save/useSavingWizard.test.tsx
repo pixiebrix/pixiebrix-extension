@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { optionsSlice } from "@/options/slices";
 import { configureStore, Store } from "@reduxjs/toolkit";
 import { renderHook, act } from "@testing-library/react-hooks";
 import React from "react";
@@ -43,6 +42,7 @@ import { uuidv4 } from "@/types/helpers";
 import menuItem from "@/devTools/editor/extensionPoints/menuItem";
 import pDefer from "p-defer";
 import { pick } from "lodash";
+import extensionsSlice from "@/store/extensionsSlice";
 
 jest.unmock("react-redux");
 
@@ -66,7 +66,7 @@ jest.mock("@/services/api", () => ({
 const createStore = (initialState?: any) =>
   configureStore({
     reducer: {
-      options: optionsSlice.reducer,
+      options: extensionsSlice.reducer,
       editor: editorSlice.reducer,
       savingExtension: savingExtensionSlice.reducer,
     },

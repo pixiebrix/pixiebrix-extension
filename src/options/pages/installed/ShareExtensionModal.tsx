@@ -34,7 +34,6 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { makeBlueprint } from "@/options/pages/installed/exportBlueprint";
 import { useDispatch } from "react-redux";
-import { optionsSlice } from "@/options/slices";
 import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
@@ -49,13 +48,15 @@ import Form, {
   RenderBody,
   RenderSubmit,
 } from "@/components/form/Form";
-import FieldTemplate from "@/components/form/FieldTemplate";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useGetOrganizationsQuery } from "@/services/api";
 import { PackageUpsertResponse } from "@/types/contract";
+import extensionsSlice from "@/store/extensionsSlice";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 
-const { attachExtension } = optionsSlice.actions;
+const { attachExtension } = extensionsSlice.actions;
 
 type FormState = {
   blueprintId: RegistryId;
@@ -123,9 +124,9 @@ const ShareExtensionModal: React.FC<{
       "/"
     ) as RegistryId,
     name: extension.label,
-    description: "",
+    description: "Created with the PixieBrix Page Editor",
     organizations: [],
-    public: true,
+    public: false,
   };
 
   const handleShare: OnSubmit = useCallback(
@@ -141,8 +142,10 @@ const ShareExtensionModal: React.FC<{
             recipeMetadata: selectSourceRecipeMetadata(recipe),
           })
         );
-        dispatch(push("/installed"));
         notify.success("Converted/shared brick");
+        dispatch(
+          push(`/installed/link/${encodeURIComponent(recipe.metadata.id)}`)
+        );
       } catch (error) {
         if (isAxiosError(error) && error.response.data.config) {
           helpers.setStatus(error.response.data.config);
@@ -166,13 +169,11 @@ const ShareExtensionModal: React.FC<{
     <Modal.Body>
       <ConnectedFieldTemplate
         name="name"
-        layout="horizontal"
         label="Name"
         description="A name for the blueprint"
       />
       <ConnectedFieldTemplate
         name="blueprintId"
-        layout="horizontal"
         label="Registry Id"
         description={
           <span>
@@ -183,7 +184,6 @@ const ShareExtensionModal: React.FC<{
       />
       <ConnectedFieldTemplate
         name="description"
-        layout="horizontal"
         label="Description"
         description="A short description of the blueprint"
       />
@@ -197,20 +197,15 @@ const ShareExtensionModal: React.FC<{
 
       <ConnectedFieldTemplate
         name="public"
-        layout="switch"
+        as={SwitchButtonWidget}
+        description={
+          // \u00A0 stands for &nbsp;
+          values.public ? <i>Visible to all PixieBrix users</i> : "\u00A0"
+        }
         label={
-          values.public ? (
-            <span>
-              <FontAwesomeIcon icon={faGlobe} /> Public{" "}
-              <span className="text-primary">
-                <i> &ndash; visible to all PixieBrix users</i>
-              </span>
-            </span>
-          ) : (
-            <span>
-              <FontAwesomeIcon icon={faGlobe} /> Public
-            </span>
-          )
+          <span>
+            <FontAwesomeIcon icon={faGlobe} /> Public
+          </span>
         }
       />
 
@@ -221,7 +216,7 @@ const ShareExtensionModal: React.FC<{
             <FieldTemplate
               key={organization.id}
               name={organization.id}
-              layout="switch"
+              as={SwitchButtonWidget}
               label={organization.name}
               value={checked}
               onChange={() => {

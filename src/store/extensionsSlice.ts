@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -14,162 +14,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { CloudExtension, Deployment } from "@/types/contract";
+import { reportEvent } from "@/telemetry/events";
+import { selectEventData } from "@/telemetry/deployments";
+import { contextMenus, traces } from "@/background/messenger/api";
 import {
   DeploymentContext,
   IExtension,
   OutputKey,
   PersistedExtension,
-  RawServiceConfiguration,
   RecipeMetadata,
   RegistryId,
   UserOptions,
   UUID,
 } from "@/core";
-import { orderBy, pick } from "lodash";
-import { reportEvent } from "@/telemetry/events";
-import { contextMenus, traces } from "@/background/messenger/api";
-import { selectEventData } from "@/telemetry/deployments";
-import { uuidv4 } from "@/types/helpers";
-import { ExtensionOptionsState, requireLatestState } from "@/store/extensions";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
-import { CloudExtension, Deployment } from "@/types/contract";
+import { uuidv4 } from "@/types/helpers";
+import { pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
 import { reportError } from "@/telemetry/logging";
+import {
+  ExtensionOptionsState,
+  LegacyExtensionObjectState,
+  OptionsState,
+} from "@/store/extensionsTypes";
 
-type InstallMode = "local" | "remote";
-
-export interface SettingsState {
-  mode: InstallMode;
-}
-
-const initialSettingsState = {
-  mode: "remote",
-};
-
-export const settingsSlice = createSlice({
-  name: "settings",
-  initialState: initialSettingsState,
-  reducers: {
-    setMode(state, { payload: { mode } }) {
-      state.mode = mode;
-    },
-  },
-});
-
-export interface ServicesState {
-  configured: Record<string, RawServiceConfiguration>;
-}
-
-const initialServicesState: ServicesState = {
-  configured: {},
-};
-
-type RecentBrick = {
-  id: string;
-  timestamp: number;
-};
-
-export type WorkshopState = {
-  recent: RecentBrick[];
-  maxRecent: number;
-
-  filters: {
-    scopes: string[];
-    collections: string[];
-    kinds: string[];
-  };
-};
-
-const initialWorkshopState: WorkshopState = {
-  recent: [],
-  // Only track the 10 most recent bricks accessed, since that's how many are shown on the workspace page
-  maxRecent: 10,
-
-  filters: {
-    scopes: [],
-    collections: [],
-    kinds: [],
-  },
-};
-
-const initialOptionsState: ExtensionOptionsState = {
+const initialExtensionsState: ExtensionOptionsState = {
   extensions: [],
 };
-
-export const workshopSlice = createSlice({
-  name: "workshop",
-  initialState: initialWorkshopState,
-  reducers: {
-    setScopes(state, { payload: scopes }) {
-      state.filters.scopes = scopes;
-    },
-    setCollections(state, { payload: collections }) {
-      state.filters.collections = collections;
-    },
-    setKinds(state, { payload: kinds }) {
-      state.filters.kinds = kinds;
-    },
-    clearFilters(state) {
-      state.filters = {
-        scopes: [],
-        collections: [],
-        kinds: [],
-      };
-    },
-    touchBrick(state, { payload: { id } }) {
-      if (id) {
-        state.recent = state.recent.filter((x) => x.id !== id);
-        state.recent.push({
-          id,
-          timestamp: Date.now(),
-        });
-        state.recent = orderBy(
-          state.recent,
-          [(x) => x.timestamp],
-          ["desc"]
-        ).slice(0, state.maxRecent);
-      }
-    },
-  },
-});
-
-export const servicesSlice = createSlice({
-  /* The object access in servicesSlice and optionsSlice should be safe because type-checker enforced UUID */
-  /* eslint-disable security/detect-object-injection */
-
-  name: "services",
-  initialState: initialServicesState,
-  reducers: {
-    deleteServiceConfig(
-      state,
-      { payload: { id } }: PayloadAction<{ id: UUID }>
-    ) {
-      if (!state.configured[id]) {
-        throw new Error(`Service configuration ${id} does not exist`);
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- type-checked as UUID
-      delete state.configured[id];
-      return state;
-    },
-    updateServiceConfig(state, { payload: { id, serviceId, label, config } }) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- branding with nominal type
-      state.configured[id] = {
-        id,
-        serviceId,
-        label,
-        config,
-      } as RawServiceConfiguration;
-    },
-    resetServices(state) {
-      state.configured = {};
-    },
-  },
-
-  /* eslint-enable security/detect-object-injection */
-});
 
 function selectDeploymentContext(
   deployment: Deployment
@@ -183,9 +56,9 @@ function selectDeploymentContext(
   }
 }
 
-export const optionsSlice = createSlice({
-  name: "options",
-  initialState: initialOptionsState,
+const extensionsSlice = createSlice({
+  name: "extensions",
+  initialState: initialExtensionsState,
   reducers: {
     resetOptions(state) {
       state.extensions = [];
@@ -411,4 +284,15 @@ export const optionsSlice = createSlice({
   },
 });
 
-export const { actions } = optionsSlice;
+/**
+ * Throw a `TypeError` if the Redux state has not been migrated.
+ */
+export function requireLatestState(
+  state: OptionsState
+): asserts state is LegacyExtensionObjectState | ExtensionOptionsState {
+  if (!Array.isArray(state.extensions)) {
+    throw new TypeError("redux state has not been migrated");
+  }
+}
+
+export default extensionsSlice;

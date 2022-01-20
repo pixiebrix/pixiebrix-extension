@@ -29,3 +29,11 @@ export const selectActiveElement = (state: RootState) => {
   const elements = selectElements(state);
   return elements.find((x) => x.uuid === activeElementId);
 };
+
+export const selectShowV3UpgradeMessageForActiveElement = (
+  state: RootState
+) => {
+  const activeElementId = selectActiveExtensionId(state);
+  // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
+  return state.editor.showV3UpgradeMessageByElement[activeElementId] ?? false;
+};

@@ -29,12 +29,12 @@ import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
 import { reportError } from "@/telemetry/logging";
 import { useTitle } from "@/hooks/title";
-import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
+import styles from "./ServiceEditorModal.module.scss";
 
 export type OwnProps = {
   configuration: RawServiceConfiguration;
@@ -45,12 +45,8 @@ export type OwnProps = {
 };
 
 // Use "v2" because the service configuration form expects literal values for everything. (I.e., expressions are not
-// supports). But we still want to get our SchemaField support for enums, etc.
+// supported). But we still want to get our SchemaField support for enums, etc.
 const FORM_RUNTIME_CONTEXT: RuntimeContext = { apiVersion: "v2" };
-
-const formTheme: ThemeProps = {
-  layout: "vertical",
-};
 
 const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   configuration: originalConfiguration,
@@ -123,8 +119,10 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
 
   return (
     <Modal
-      style={{ zIndex: 9999 }}
       show
+      backdropClassName={styles.backdrop}
+      className={styles.modal}
+      dialogClassName={styles.dialog}
       onHide={onClose}
       backdrop="static"
       keyboard={false}
@@ -142,23 +140,21 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
           <Form noValidate onSubmit={handleSubmit}>
             <Modal.Body>
               <FieldRuntimeContext.Provider value={FORM_RUNTIME_CONTEXT}>
-                <FormTheme.Provider value={formTheme}>
-                  <ConnectedFieldTemplate
-                    name="label"
-                    label="Label"
-                    description="A label to help identify this integration"
-                    blankValue=""
-                  />
-                  <FieldTemplate
-                    label="Integration"
-                    name="service"
-                    type="text"
-                    plaintext
-                    readOnly
-                    value={service.id}
-                  />
-                  <Editor name="config" />
-                </FormTheme.Provider>
+                <ConnectedFieldTemplate
+                  name="label"
+                  label="Label"
+                  description="A label to help identify this integration"
+                  blankValue=""
+                />
+                <FieldTemplate
+                  label="Integration"
+                  name="service"
+                  type="text"
+                  plaintext
+                  readOnly
+                  value={service.id}
+                />
+                <Editor name="config" />
               </FieldRuntimeContext.Provider>
             </Modal.Body>
             <Modal.Footer>

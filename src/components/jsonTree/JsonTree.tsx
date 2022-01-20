@@ -97,7 +97,6 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
           value={query}
           name="traceSearch"
           label="Search"
-          layout="horizontal"
           placeholder="Search for a property or value"
           onChange={onChangeQuery}
         />

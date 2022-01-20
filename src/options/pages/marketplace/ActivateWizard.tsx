@@ -30,14 +30,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import { useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import { uninstallContextMenu } from "@/background/messenger/api";
-import { optionsSlice } from "@/options/slices";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 import useWizard from "@/options/pages/marketplace/useWizard";
+import extensionsSlice from "@/store/extensionsSlice";
 
-const { removeExtension } = optionsSlice.actions;
+const { removeExtension } = extensionsSlice.actions;
 
 interface OwnProps {
   blueprint: RecipeDefinition;

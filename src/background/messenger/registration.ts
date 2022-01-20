@@ -47,7 +47,6 @@ import { preloadContextMenus } from "@/background/initContextMenus";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
-import { canAccessTab } from "webext-tools";
 import {
   getLoggingConfig,
   recordError,
@@ -58,6 +57,7 @@ import {
   addTraceEntry,
   addTraceExit,
   clearExtensionTraces,
+  clearTraces,
 } from "@/telemetry/trace";
 import {
   initTelemetry,
@@ -80,7 +80,6 @@ declare global {
 
     GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     INJECT_SCRIPT: typeof ensureContentScript;
-    CHECK_TARGET_PERMISSIONS: typeof canAccessTab;
     CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
@@ -123,6 +122,7 @@ declare global {
     ADD_TRACE_ENTRY: typeof addTraceEntry;
     ADD_TRACE_EXIT: typeof addTraceExit;
     CLEAR_TRACES: typeof clearExtensionTraces;
+    CLEAR_ALL_TRACES: typeof clearTraces;
 
     INIT_TELEMETRY: typeof initTelemetry;
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
@@ -142,7 +142,6 @@ registerMethods({
 
   GET_AVAILABLE_VERSION: getAvailableVersion,
   INJECT_SCRIPT: ensureContentScript,
-  CHECK_TARGET_PERMISSIONS: canAccessTab,
   CONTAINS_PERMISSIONS: browser.permissions.contains,
 
   PRELOAD_CONTEXT_MENUS: preloadContextMenus,
@@ -186,6 +185,7 @@ registerMethods({
   ADD_TRACE_ENTRY: addTraceEntry,
   ADD_TRACE_EXIT: addTraceExit,
   CLEAR_TRACES: clearExtensionTraces,
+  CLEAR_ALL_TRACES: clearTraces,
 
   INIT_TELEMETRY: initTelemetry,
   SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,

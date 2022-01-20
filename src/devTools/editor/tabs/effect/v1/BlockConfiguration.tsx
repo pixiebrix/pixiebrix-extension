@@ -18,13 +18,12 @@
 import React, { useRef } from "react";
 import { RegistryId, TemplateEngine } from "@/core";
 import { getIn, useFormikContext } from "formik";
-import { useBlockOptions } from "@/hooks/useBlockOptions";
+import useBlockOptions from "@/hooks/useBlockOptions";
 import { Card } from "react-bootstrap";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverrides";
 import GridLoader from "react-spinners/GridLoader";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import styles from "@/devTools/editor/tabs/effect/BlockConfiguration.module.scss";
 import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
@@ -36,6 +35,7 @@ import AdvancedLinks, {
   DEFAULT_TEMPLATE_ENGINE_VALUE,
   DEFAULT_WINDOW_VALUE,
 } from "@/devTools/editor/tabs/effect/AdvancedLinks";
+import FieldSection from "@/devTools/editor/fields/FieldSection";
 
 const templateEngineDescription = (
   <p>
@@ -97,32 +97,25 @@ const BlockConfiguration: React.FunctionComponent<{
     <>
       <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
 
-      <Card className={styles.card}>
-        <Card.Header className={styles.cardHeader}>Input</Card.Header>
-        <Card.Body>
-          <>
-            <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
-              {blockErrors?.id && (
-                <div className="invalid-feedback d-block mb-4">
-                  Unknown block {blockId}
-                </div>
-              )}
-              {BlockOptions ? (
-                <BlockOptions name={name} configKey="config" />
-              ) : error ? (
-                <div className="invalid-feedback d-block mb-4">{error}</div>
-              ) : (
-                <GridLoader />
-              )}
-            </SchemaFieldContext.Provider>
-          </>
-        </Card.Body>
-      </Card>
-      <Card className={styles.card}>
-        <Card.Header className={styles.cardHeader}>
-          Advanced Options
-        </Card.Header>
-        <Card.Body ref={advancedOptionsRef}>
+      <Card>
+        <FieldSection title="Input">
+          <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
+            {blockErrors?.id && (
+              <div className="invalid-feedback d-block mb-4">
+                Unknown block {blockId}
+              </div>
+            )}
+            {BlockOptions ? (
+              <BlockOptions name={name} configKey="config" />
+            ) : error ? (
+              <div className="invalid-feedback d-block mb-4">{error}</div>
+            ) : (
+              <GridLoader />
+            )}
+          </SchemaFieldContext.Provider>
+        </FieldSection>
+
+        <FieldSection title="Advanced Options" bodyRef={advancedOptionsRef}>
           <ConnectedFieldTemplate
             name={configName("templateEngine")}
             label="Template engine"
@@ -166,7 +159,7 @@ const BlockConfiguration: React.FunctionComponent<{
               />
             </>
           )}
-        </Card.Body>
+        </FieldSection>
       </Card>
     </>
   );

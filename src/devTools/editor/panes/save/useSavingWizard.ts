@@ -38,7 +38,7 @@ import {
 } from "@/core";
 import { UnsavedRecipeDefinition } from "@/types/definitions";
 import useNotifications from "@/hooks/useNotifications";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import {
   useCreateRecipeMutation,
   useGetEditablePackagesQuery,
@@ -46,10 +46,12 @@ import {
   useUpdateRecipeMutation,
 } from "@/services/api";
 import { replaceRecipeExtension } from "./saveHelpers";
-import { actions as optionsActions } from "@/options/slices";
+import extensionsSlice from "@/store/extensionsSlice";
 import pDefer, { DeferredPromise } from "p-defer";
 import { PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
+
+const { actions: optionsActions } = extensionsSlice;
 
 export type RecipeConfiguration = {
   id: RegistryId;
