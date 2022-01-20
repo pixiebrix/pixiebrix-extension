@@ -34,6 +34,7 @@ import UnsupportedWidget from "@/components/fields/schemaFields/widgets/Unsuppor
 import TemplateToggleWidget, {
   getOptionForInputMode,
   InputModeOption,
+  OmitOption,
   StringOption,
 } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
@@ -78,6 +79,20 @@ const varOption: StringOption = {
   },
 };
 
+const removeOption: OmitOption = {
+  label: "Remove",
+  value: "omit",
+  symbol: <OptionIcon icon="exclude" />,
+  Widget: OmitFieldWidget,
+};
+
+const excludeOption: OmitOption = {
+  label: "Exclude",
+  value: "omit",
+  symbol: <OptionIcon icon="exclude" />,
+  Widget: OmitFieldWidget,
+};
+
 type ToggleOptionInputs = {
   fieldSchema: Schema;
   isRequired: boolean;
@@ -115,6 +130,40 @@ function getToggleOptions({
         });
       }
     }
+  }
+
+  const textOption: StringOption = {
+    label: "Text",
+    value: "string",
+    symbol: <OptionIcon icon="text" />,
+    Widget: TextWidget,
+    interpretValue: (oldValue: unknown) => {
+      let newValue =
+        typeof fieldSchema.default === "string" ? fieldSchema.default : "";
+      if (typeof oldValue === "string" && oldValue.length > 0) {
+        newValue = oldValue;
+      } else if (typeof oldValue === "number" && oldValue > 0) {
+        newValue = String(oldValue);
+      } else if (
+        isTemplateExpression(oldValue) &&
+        oldValue.__value__.length > 0
+      ) {
+        newValue = oldValue.__value__;
+      }
+
+      return allowExpressions
+        ? {
+            // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
+            // Typescript treats the return value as string and doesn't unify it with unknown)
+            __type__: "nunjucks" as ExpressionType,
+            __value__: newValue,
+          }
+        : newValue;
+    },
+  };
+
+  if (isKeyStringField(fieldSchema)) {
+    return [textOption, excludeOption];
   }
 
   for (const mode of customToggleModes) {
@@ -217,35 +266,7 @@ function getToggleOptions({
   }
 
   if (fieldSchema.type === "string" || anyType) {
-    pushOptions({
-      label: "Text",
-      value: "string",
-      symbol: <OptionIcon icon="text" />,
-      Widget: TextWidget,
-      interpretValue: (oldValue: unknown) => {
-        let newValue =
-          typeof fieldSchema.default === "string" ? fieldSchema.default : "";
-        if (typeof oldValue === "string" && oldValue.length > 0) {
-          newValue = oldValue;
-        } else if (typeof oldValue === "number" && oldValue > 0) {
-          newValue = String(oldValue);
-        } else if (
-          isTemplateExpression(oldValue) &&
-          oldValue.__value__.length > 0
-        ) {
-          newValue = oldValue.__value__;
-        }
-
-        return allowExpressions
-          ? {
-              // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
-              // Typescript treats the return value as string and doesn't unify it with unknown)
-              __type__: "nunjucks" as ExpressionType,
-              __value__: newValue,
-            }
-          : newValue;
-      },
-    });
+    pushOptions(textOption);
     if (allowExpressions) {
       pushOptions(varOption);
     }
@@ -335,19 +356,9 @@ function getToggleOptions({
 
   if (!isRequired) {
     if (isArrayItem) {
-      pushOptions({
-        label: "Remove",
-        value: "omit",
-        symbol: <OptionIcon icon="exclude" />,
-        Widget: OmitFieldWidget,
-      });
+      pushOptions(removeOption);
     } else {
-      pushOptions({
-        label: "Exclude",
-        value: "omit",
-        symbol: <OptionIcon icon="exclude" />,
-        Widget: OmitFieldWidget,
-      });
+      pushOptions(excludeOption);
     }
   }
 
@@ -366,6 +377,10 @@ export function schemaSupportsTemplates(schema: Schema): boolean {
   return options.some(
     (option) => option.value === "string" && option.label === "Text"
   );
+}
+
+export function isKeyStringField(schema: Schema): boolean {
+  return schema.$ref === "https://app.pixiebrix.com/schemas/key#";
 }
 
 const BasicSchemaField: SchemaFieldComponent = (props) => {

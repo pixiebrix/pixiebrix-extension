@@ -29,7 +29,10 @@ import fitTextarea from "fit-textarea";
 import { TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
-import { schemaSupportsTemplates } from "@/components/fields/schemaFields/BasicSchemaField";
+import {
+  isKeyStringField,
+  schemaSupportsTemplates,
+} from "@/components/fields/schemaFields/BasicSchemaField";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 
 function isVarValue(value: string): boolean {
@@ -53,7 +56,10 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   const [{ value, ...restInputProps }, { error }, { setValue }] = useField(
     name
   );
-  const { allowExpressions } = useContext(FieldRuntimeContext);
+  const { allowExpressions: allowExpressionsContext } = useContext(
+    FieldRuntimeContext
+  );
+  const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);
 
   const textAreaRef = useRef<HTMLTextAreaElement>();
 
