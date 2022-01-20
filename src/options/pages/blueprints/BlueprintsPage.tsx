@@ -36,7 +36,8 @@ import {
 } from "@/options/pages/installed/installedPageSelectors";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 
-// Should this go in useInstallables hook?
+type CategoryFilter = "active" | "all" | "personal" | "shared";
+
 const categoryLabels = {
   active: "Active Blueprints",
   all: "All Blueprints",
@@ -47,15 +48,17 @@ const categoryLabels = {
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");
 
-  const [filterCategory, setFilterCategory] = useState("active");
-  const { blueprints, isLoading, error } = useInstallables();
+  const [filterCategory, setFilterCategory] = useState<CategoryFilter>(
+    "active"
+  );
+  const { installables, isLoading, error } = useInstallables();
 
-  // todo: move
+  // TODO: move
   const showLogsContext = useSelector<RootState, LogsContext>(
     selectShowLogsContext
   );
 
-  // todo: move
+  // TODO: move
   const showShareContext = useSelector<RootState, ShareContext>(
     selectShowShareContext
   );
@@ -92,7 +95,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
             variant="pills"
             defaultActiveKey="active"
           >
-            {Object.keys(blueprints).map((filter) => (
+            {Object.keys(installables).map((filter: CategoryFilter) => (
               <Nav.Item key={filter}>
                 <Nav.Link
                   eventKey={filter}
@@ -100,6 +103,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
                     setFilterCategory(filter);
                   }}
                 >
+                  {/* eslint-disable-next-line security/detect-object-injection */}
                   {categoryLabels[filter]}
                 </Nav.Link>
               </Nav.Item>
@@ -107,9 +111,12 @@ const BlueprintsPage: React.FunctionComponent = () => {
           </Nav>
         </Col>
         <Col xs={9}>
+          {/* eslint-disable-next-line security/detect-object-injection */}
           <h3>{categoryLabels[filterCategory]}</h3>
-          {blueprints[filterCategory]?.length > 0 && (
-            <BlueprintsList installables={blueprints[filterCategory]} />
+          {/* eslint-disable-next-line security/detect-object-injection */}
+          {installables[filterCategory]?.length > 0 && (
+            // eslint-disable-next-line security/detect-object-injection
+            <BlueprintsList installables={installables[filterCategory]} />
           )}
         </Col>
       </Row>

@@ -20,7 +20,10 @@ import styles from "@/options/pages/blueprints/BlueprintsList.module.scss";
 import moment from "moment";
 import { Button } from "react-bootstrap";
 import {
-  getInstallableInfo,
+  getDescription,
+  getLabel,
+  getPackageId,
+  getUpdatedAt,
   Installable,
 } from "@/options/pages/blueprints/installableUtils";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
@@ -30,27 +33,21 @@ import useInstallableActions from "@/options/pages/blueprints/useInstallableActi
 const BlueprintListEntry: React.FunctionComponent<{
   installable: Installable;
 }> = ({ installable }) => {
-  const {
-    label,
-    packageId,
-    description,
-    updated_at,
-    active,
-  } = getInstallableInfo(installable);
-
   const { activate, reinstall } = useInstallableActions(installable);
 
   return (
     <tr>
       <td className="text-wrap">
-        <h5 className="text-wrap m-0">{label}</h5>
-        <span className="text-muted text-wrap">{description}</span>
+        <h5 className="text-wrap m-0">{getLabel(installable)}</h5>
+        <span className="text-muted text-wrap">
+          {getDescription(installable)}
+        </span>
       </td>
       <td>
         <div className={styles.sharing}>
-          {packageId && (
+          {getPackageId(installable) && (
             <>
-              <code className="p-0">{packageId}</code>
+              <code className="p-0">{getPackageId(installable)}</code>
               <br />
             </>
           )}
@@ -59,11 +56,11 @@ const BlueprintListEntry: React.FunctionComponent<{
       </td>
       <td className="text-wrap">
         <span className="small">
-          Last updated: {moment.utc(updated_at).fromNow()}
+          Last updated: {moment.utc(getUpdatedAt(installable)).fromNow()}
         </span>
       </td>
       <td>
-        {active ? (
+        {installable.active ? (
           <>
             {installable.hasUpdate ? (
               <Button size="sm" variant="warning" onClick={reinstall}>

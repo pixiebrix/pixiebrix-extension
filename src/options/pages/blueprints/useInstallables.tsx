@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
+import { ResolvedExtension, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
-import { useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import AuthContext from "@/auth/AuthContext";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/options/selectors";
@@ -28,11 +28,11 @@ import { resolveDefinitions } from "@/registry/internal";
 import {
   Installable,
   isPersonal,
+  updateAvailable,
 } from "@/options/pages/blueprints/installableUtils";
-import { updateAvailable } from "@/options/pages/installed/ActiveBricksCard";
 
 function useInstallables(): {
-  blueprints: {
+  installables: {
     active: Installable[];
     all: Installable[];
     personal: Installable[];
@@ -56,18 +56,25 @@ function useInstallables(): {
     error: cloudError,
   } = useFetch<CloudExtension[]>("/api/extensions");
 
-  const allExtensions = useMemo(() => {
-    const installedExtensionIds = new Set<UUID>(
-      unresolvedExtensions.map((extension) => extension.id)
-    );
+  const installedExtensionIds = useMemo(
+    () => new Set<UUID>(unresolvedExtensions.map((extension) => extension.id)),
+    [unresolvedExtensions]
+  );
 
+  const installedRecipeIds = useMemo(
+    () =>
+      new Set(unresolvedExtensions.map((extension) => extension._recipe?.id)),
+    [unresolvedExtensions]
+  );
+
+  const allExtensions = useMemo(() => {
     const inactiveExtensions =
       cloudExtensions
         ?.filter((x) => !installedExtensionIds.has(x.id))
         .map((x) => ({ ...x, active: false })) ?? [];
 
     return [...unresolvedExtensions, ...inactiveExtensions];
-  }, [cloudExtensions, unresolvedExtensions]);
+  }, [cloudExtensions, installedExtensionIds, unresolvedExtensions]);
 
   const [resolvedExtensions, , resolveError] = useAsyncState(
     async () =>
@@ -75,51 +82,59 @@ function useInstallables(): {
         allExtensions.map(async (extension) => resolveDefinitions(extension))
       ),
     [allExtensions],
-    null
+    []
   );
 
-  const activeExtensions = useMemo(
+  const isActive = useCallback(
+    (extensionOrRecipe: RecipeDefinition | ResolvedExtension) => {
+      if ("_recipe" in extensionOrRecipe) {
+        return installedExtensionIds.has(extensionOrRecipe.id);
+      }
+
+      return installedRecipeIds.has(extensionOrRecipe.metadata.id);
+    },
+    [installedExtensionIds, installedRecipeIds]
+  );
+
+  const personalOrTeamBlueprints = useMemo(
     () =>
-      resolvedExtensions
-        ?.filter((extension) => extension.active)
-        .map((extension) => ({
-          ...extension,
-          hasUpdate: updateAvailable(rawRecipes, extension._recipe),
+      (rawRecipes ?? [])
+        .filter(
+          (recipe) =>
+            recipe.metadata.id.includes(scope) ||
+            recipe.sharing.organizations.length > 0
+        )
+        .map((recipe) => ({
+          ...recipe,
+          active: installedRecipeIds.has(recipe.metadata.id),
         })),
-    [rawRecipes, resolvedExtensions]
+    [rawRecipes, scope, installedRecipeIds]
   );
 
-  const personalOrTeamBlueprints = useMemo(() => {
-    const installedRecipes = new Set(
-      unresolvedExtensions.map((extension) => extension._recipe?.id)
-    );
-
-    return (rawRecipes ?? [])
-      .filter(
-        (recipe) =>
-          recipe.metadata.id.includes(scope) ||
-          recipe.sharing.organizations.length > 0
-      )
-      .map((recipe) => ({
-        ...recipe,
-        active: installedRecipes.has(recipe.metadata.id),
-      }));
-  }, [unresolvedExtensions, rawRecipes, scope]);
+  const installables = useMemo(
+    () =>
+      [...resolvedExtensions, ...personalOrTeamBlueprints].map(
+        (extensionOrRecipe) => ({
+          ...extensionOrRecipe,
+          active: isActive(extensionOrRecipe),
+          hasUpdate:
+            "_recipe" in extensionOrRecipe
+              ? updateAvailable(rawRecipes, extensionOrRecipe)
+              : false,
+        })
+      ),
+    [isActive, personalOrTeamBlueprints, rawRecipes, resolvedExtensions]
+  );
 
   return {
-    blueprints: {
-      active: activeExtensions,
-      all: [...(resolvedExtensions ?? []), ...personalOrTeamBlueprints],
-      personal: [
-        ...(resolvedExtensions ?? []).filter((extension) =>
-          isPersonal(extension, scope)
-        ),
-        ...personalOrTeamBlueprints.filter((blueprint) =>
-          blueprint.metadata.id.includes(scope)
-        ),
-      ],
-      shared: personalOrTeamBlueprints.filter(
-        (blueprint) => !blueprint.metadata.id.includes(scope)
+    installables: {
+      active: installables.filter((installable) => installable.active),
+      all: installables,
+      personal: installables.filter((installable) =>
+        isPersonal(installable, scope)
+      ),
+      shared: installables.filter(
+        (installable) => !isPersonal(installable, scope)
       ),
     },
     isLoading:

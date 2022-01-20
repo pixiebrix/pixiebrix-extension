@@ -39,12 +39,12 @@ export const SidebarLink: React.FunctionComponent<LinkProps> = ({
 }) => {
   const location = useLocation();
   const rootPathname = location.pathname.split("/")[1];
-  const rootRouteName = route.split("/")[1];
+  const rootRoute = route.split("/")[1];
 
   return (
     <li
       className={cx("nav-item", {
-        active: rootPathname === rootRouteName || isActive?.(null, location),
+        active: rootPathname === rootRoute || isActive?.(null, location),
       })}
     >
       <NavLink
