@@ -20,7 +20,7 @@ import { RecipeDefinition } from "@/types/definitions";
 import { useCallback, useContext, useMemo } from "react";
 import AuthContext from "@/auth/AuthContext";
 import { useSelector } from "react-redux";
-import { selectExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import {

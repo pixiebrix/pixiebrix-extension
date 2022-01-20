@@ -28,7 +28,6 @@ import {
   uninstallContextMenu,
 } from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
-import { optionsSlice } from "@/options/slices";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { useCallback, useContext } from "react";
@@ -36,8 +35,9 @@ import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
 import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";
 import AuthContext from "@/auth/AuthContext";
+import extensionsSlice from "@/store/extensionsSlice";
 
-const { removeExtension } = optionsSlice.actions;
+const { removeExtension } = extensionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
