@@ -37,8 +37,8 @@ function useSharing(
   const { data: organizations = [] } = useGetOrganizationsQuery();
   const sharing = getSharing(installable);
 
-  // this is the same problem as BrickIcon, in that tens of renders
-  // make too many queries
+  // This is the same problem as BrickIcon, in that tens of renders
+  // make too many queries. TODO: maybe this can get preprocessed somewhere?
   const organization = useMemo(() => {
     if (!sharing || sharing.organizations.length === 0) {
       return null;
@@ -66,7 +66,7 @@ function useSharing(
     if (isPublic(installable)) {
       return "Public";
     }
-  }, []);
+  }, [installable, organization, scope]);
 
   return {
     type: sharingType,

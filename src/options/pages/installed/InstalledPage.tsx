@@ -20,7 +20,7 @@ import React, { useCallback, useContext } from "react";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
-import { Link, Redirect, Route } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
@@ -43,7 +43,6 @@ import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
 import useNotifications from "@/hooks/useNotifications";
 import { exportBlueprint } from "./exportBlueprint";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
-import { push } from "connected-react-router";
 import ExtensionLogsModal from "./ExtensionLogsModal";
 import { RootState } from "@/options/store";
 import { LogsContext, ShareContext } from "./installedPageSlice";
@@ -57,9 +56,8 @@ const { removeExtension } = optionsSlice.actions;
 
 export const _InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
-  push: (path: string) => void;
   onRemove: RemoveAction;
-}> = ({ extensions, onRemove, push }) => {
+}> = ({ extensions, onRemove }) => {
   const { flags } = useContext(AuthContext);
 
   const [allExtensions, , cloudError] = useAsyncState(
@@ -88,13 +86,10 @@ export const _InstalledPage: React.FunctionComponent<{
     []
   );
 
-  console.log("resolved extensions:", resolvedExtensions);
-
   const showLogsContext = useSelector<RootState, LogsContext>(
     selectShowLogsContext
   );
 
-  // todo: move
   const showShareContext = useSelector<RootState, ShareContext>(
     selectShowShareContext
   );
@@ -201,10 +196,6 @@ const mapStateToProps = (state: { options: OptionsState }) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  // IntelliJ doesn't detect use in the props
-  push: (path: string) => {
-    dispatch(push(path));
-  },
   onRemove: ({ extensionId }: { extensionId: UUID }) => {
     reportEvent("ExtensionRemove", {
       extensionId,

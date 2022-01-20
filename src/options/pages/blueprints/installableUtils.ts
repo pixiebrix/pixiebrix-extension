@@ -55,7 +55,7 @@ export const getPackageId = (installable: Installable): RegistryId =>
 
 export const getUpdatedAt = (installable: Installable): string =>
   isExtension(installable)
-    ? installable._recipe?.updated_at ?? installable.updateTimestamp
+    ? installable._recipe?.updated_at
     : installable.updated_at;
 
 export const getSharing = (installable: Installable) =>
@@ -92,7 +92,7 @@ export const isDeployment = (installable: Installable) => {
 };
 
 // TODO: keeping this even though unused, will be useful for future grouping features
-const groupByRecipe = (installables: Installable[]): Installable[][] =>
+export const groupByRecipe = (installables: Installable[]): Installable[][] =>
   Object.values(
     groupBy(installables, (installable) => getPackageId(installable))
   );
