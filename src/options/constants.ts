@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,25 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
 import { ApiVersion } from "@/core";
 
-export type RuntimeContext = {
-  apiVersion: ApiVersion;
-  allowExpressions: boolean;
-};
-
-const defaultValue: RuntimeContext = {
-  apiVersion: "v3",
-  allowExpressions: true,
-};
-
-/**
- * A context to control whether v1 or v3 SchemaField. Introduced to that apiVersion doesn't have to be
- * tracked explicitly on the Formik form as a top-level field.
- * @see useApiVersionAtLeast
- * @see SchemaField
- */
-const FieldRuntimeContext = React.createContext<RuntimeContext>(defaultValue);
-
-export default FieldRuntimeContext;
+export const OPTIONS_DEFAULT_RUNTIME_API_VERSION: ApiVersion = "v3";

@@ -22,18 +22,14 @@ import { SafeString, Schema } from "@/core";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty } from "lodash";
 import { useField, useFormikContext } from "formik";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import { freshIdentifier } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { UnknownObject } from "@/types";
 
 type PropertyRowProps = {
   name: string;
-  showActions?: boolean;
   readOnly: boolean;
   schema: Schema;
   onDelete?: () => void;
@@ -53,11 +49,10 @@ type RowProps = {
 const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   name,
   schema,
-  showActions,
   isRequired,
 }) => (
   <tr>
-    <td colSpan={showActions ? 3 : 2}>
+    <td colSpan={2}>
       <SchemaField
         hideLabel
         isObjectProperty
@@ -73,7 +68,6 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   readOnly,
   onDelete,
   onRename,
-  showActions,
   schema,
   isRequired,
   ...props
@@ -108,15 +102,6 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
           isRequired={isRequired}
         />
       </td>
-      {showActions && (
-        <td>
-          {onDelete && (
-            <Button variant="danger" onClick={onDelete}>
-              <FontAwesomeIcon icon={faTrash} />
-            </Button>
-          )}
-        </td>
-      )}
     </tr>
   );
 };
@@ -129,18 +114,15 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
   onDelete,
   onRename,
 }) => {
-  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
-
   const propertySchema: Schema = useMemo(() => {
     // As of v3, we allow object props of any type, not just string
-    const defaultSchema: Schema = isApiAtLeastV3 ? {} : { type: "string" };
+    const defaultSchema: Schema = {};
     const rawSchema = defined
       ? parentSchema.properties[property]
       : parentSchema.additionalProperties ?? defaultSchema;
 
     return typeof rawSchema === "boolean" ? defaultSchema : rawSchema;
   }, [
-    isApiAtLeastV3,
     defined,
     parentSchema.properties,
     parentSchema.additionalProperties,
@@ -164,19 +146,12 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
     [property, onRename]
   );
 
-  const showActions =
-    // Don't show action on v3 or above
-    !isApiAtLeastV3 &&
-    (parentSchema.additionalProperties === true ||
-      typeof parentSchema.additionalProperties === "object");
-
   return (
     <PropertyRowComponent
       key={property}
       name={name}
       readOnly={defined}
       schema={propertySchema}
-      showActions={showActions}
       onDelete={defined ? undefined : deleteProp}
       onRename={defined ? undefined : renameProp}
       isRequired={isRequired}
@@ -204,10 +179,6 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
 
   // Allow additional properties for empty schema (empty schema allows shape)
   const additionalProperties = isEmpty(schema) || schema.additionalProperties;
-
-  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
-  // Don't show action on v3 or above
-  const showAction = !isApiAtLeastV3 && additionalProperties;
 
   // Helpers.setValue changes on every render, so use setFieldValue instead
   // https://github.com/formium/formik/issues/2268
@@ -284,7 +255,6 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
           <tr>
             <th scope="col">Property</th>
             <th scope="col">Value</th>
-            {showAction && <th scope="col">Action</th>}
           </tr>
         </thead>
         <tbody>

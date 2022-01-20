@@ -18,7 +18,7 @@
 import React from "react";
 import { SanitizedServiceConfiguration, Schema } from "@/core";
 import useDependency from "@/services/useDependency";
-import ServiceField from "@/components/fields/schemaFields/v1/ServiceField";
+import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import { Button } from "react-bootstrap";
 import { extractServiceIds } from "@/services/serviceUtils";
 

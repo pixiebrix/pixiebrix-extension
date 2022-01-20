@@ -29,9 +29,7 @@ import {
   NodeId,
 } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
-import { produceExcludeUnusedDependencies as produceExcludeUnusedDependenciesV3 } from "@/components/fields/schemaFields/v3/ServiceField";
-import { produceExcludeUnusedDependencies as produceExcludeUnusedDependenciesV1 } from "@/components/fields/schemaFields/v1/ServiceField";
-import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
 
@@ -53,11 +51,6 @@ function useBlockPipelineActions(
   ) => void,
   setActiveNodeId: (nodeId: NodeId) => void
 ): BlockPipelineActions {
-  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
-  const produceExcludeUnusedDependencies = isApiAtLeastV3
-    ? produceExcludeUnusedDependenciesV3
-    : produceExcludeUnusedDependenciesV1;
-
   const dispatch = useDispatch();
 
   const addBlock = useCallback(

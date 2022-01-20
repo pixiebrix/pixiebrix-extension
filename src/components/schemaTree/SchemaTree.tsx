@@ -26,7 +26,7 @@ import {
   faCaretRight,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
-import { isServiceField } from "@/components/fields/schemaFields/v1/ServiceField";
+import { isServiceField } from "@/components/fields/schemaFields/ServiceField";
 import styles from "./SchemaTree.module.scss";
 import cx from "classnames";
 

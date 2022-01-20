@@ -188,7 +188,7 @@ function expressionValue<T extends TemplateEngine>(
 
 describe("SchemaField", () => {
   test.each([["v1"], ["v2"]])(
-    "don't show toggle widget for %s",
+    "show toggle widget for %s",
     (version: ApiVersion) => {
       const { container } = render(
         <Formik
@@ -208,7 +208,7 @@ describe("SchemaField", () => {
 
       // Renders text entry HTML element
       expect(container.querySelector("textarea")).not.toBeNull();
-      expect(container.querySelector("button")).toBeNull();
+      expect(container.querySelector("button")).not.toBeNull();
     }
   );
 
@@ -333,36 +333,6 @@ describe("SchemaField", () => {
     // Renders number entry HTML element because current value is a number
     expect(container.querySelector("input[type='number']")).not.toBeNull();
     await expectToggleOptions(container, ["string", "number", "var", "omit"]);
-  });
-
-  test("v2 field oneOf type priority shows text", () => {
-    const FormikTemplate = createFormikTemplate({ apiVersion: "v2" });
-    const schema: Schema = {
-      oneOf: [{ type: "boolean" }, { type: "string" }, { type: "number" }],
-    };
-    const { container } = render(
-      <FormikTemplate>
-        <SchemaField name="myField" schema={schema} />
-      </FormikTemplate>
-    );
-
-    // Should render textarea for anything that includes text
-    expect(container.querySelector("textarea")).not.toBeNull();
-  });
-
-  test("v2 field type array shows text", () => {
-    const FormikTemplate = createFormikTemplate({ apiVersion: "v2" });
-    const schema: Schema = {
-      type: ["boolean", "number", "string"],
-    };
-    const { container } = render(
-      <FormikTemplate>
-        <SchemaField name="myField" schema={schema} />
-      </FormikTemplate>
-    );
-
-    // Should render textarea for anything that includes text
-    expect(container.querySelector("textarea")).not.toBeNull();
   });
 
   test.each(schemaTestCases)(

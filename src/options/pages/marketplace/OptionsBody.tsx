@@ -22,11 +22,11 @@ import genericOptionsFactory from "@/components/fields/schemaFields/genericOptio
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
+import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/options/constants";
 
-// Use "v2" because the service configuration form expects literal values for everything. (I.e., expressions are not
-// supports). But we still want to get our SchemaField support for enums, etc.
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
-  apiVersion: "v2",
+  apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,
+  allowExpressions: false,
 };
 
 const OptionsBody: React.FunctionComponent<{

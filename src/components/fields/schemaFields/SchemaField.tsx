@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,24 +17,26 @@
 
 import React from "react";
 import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
-import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
-import SchemaFieldV1 from "@/components/fields/schemaFields/v1/SchemaField";
-import SchemaFieldV3 from "@/components/fields/schemaFields/v3/SchemaField";
+import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
+import ServiceField, {
+  isServiceField,
+} from "@/components/fields/schemaFields/ServiceField";
+import AppServiceField, {
+  isAppServiceField,
+} from "@/components/fields/schemaFields/AppServiceField";
 
-/**
- * A schema-based field that automatically determines its layout/widget based on the schema and uiSchema.
- *
- * @see SchemaFieldContext
- * @see getDefaultField
- */
 const SchemaField: SchemaFieldComponent = (props) => {
-  const apiAtLeastV3 = useApiVersionAtLeast("v3");
+  const { schema } = props;
 
-  return apiAtLeastV3 ? (
-    <SchemaFieldV3 {...props} />
-  ) : (
-    <SchemaFieldV1 {...props} />
-  );
+  if (isAppServiceField(schema)) {
+    return <AppServiceField {...props} />;
+  }
+
+  if (isServiceField(schema)) {
+    return <ServiceField {...props} />;
+  }
+
+  return <BasicSchemaField {...props} />;
 };
 
 export default SchemaField;
