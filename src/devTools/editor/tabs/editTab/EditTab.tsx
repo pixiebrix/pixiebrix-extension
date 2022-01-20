@@ -235,7 +235,7 @@ const EditTab: React.FC<{
       : null;
 
   const { flags } = useContext(AuthContext);
-  const showVersionField = flags.includes("page-editor-beta");
+  const showVersionField = flags.includes("page-editor-runtime-version");
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
