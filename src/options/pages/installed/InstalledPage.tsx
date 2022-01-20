@@ -19,7 +19,7 @@ import { connect, useSelector } from "react-redux";
 import React, { useCallback, useContext } from "react";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, Route } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
@@ -137,6 +137,12 @@ export const _InstalledPage: React.FunctionComponent<{
           context={showLogsContext.messageContext}
         />
       )}
+
+      <Route
+        exact
+        path="/installed/link/:blueprintId"
+        component={ShareLinkModal}
+      />
       <Row>
         <Col>
           <div className="pb-4">

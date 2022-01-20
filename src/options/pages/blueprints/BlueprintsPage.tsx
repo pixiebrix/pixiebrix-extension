@@ -42,6 +42,7 @@ const categoryLabels = {
   active: "Active Blueprints",
   all: "All Blueprints",
   personal: "Personal Blueprints",
+  // TODO: break this up into team category filters
   shared: "Shared with Me",
 };
 
