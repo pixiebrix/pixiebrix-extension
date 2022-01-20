@@ -20,10 +20,12 @@ import { ApiVersion } from "@/core";
 
 export type RuntimeContext = {
   apiVersion: ApiVersion;
+  allowExpressions: boolean;
 };
 
 const defaultValue: RuntimeContext = {
   apiVersion: "v2",
+  allowExpressions: true,
 };
 
 /**

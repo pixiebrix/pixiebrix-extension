@@ -52,6 +52,7 @@ import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 
 const varOption: StringOption = {
   label: "Variable",
@@ -83,6 +84,7 @@ type ToggleOptionInputs = {
   customToggleModes: CustomFieldToggleMode[];
   isObjectProperty: boolean;
   isArrayItem: boolean;
+  allowExpressions: boolean;
 };
 
 function getToggleOptions({
@@ -91,6 +93,7 @@ function getToggleOptions({
   customToggleModes,
   isObjectProperty,
   isArrayItem,
+  allowExpressions,
 }: ToggleOptionInputs): InputModeOption[] {
   let options: InputModeOption[] = [];
 
@@ -138,6 +141,7 @@ function getToggleOptions({
         customToggleModes,
         isObjectProperty,
         isArrayItem,
+        allowExpressions,
       });
       pushOptions(...optionSet);
     }
@@ -147,17 +151,17 @@ function getToggleOptions({
     // Don't allow editing array fields nested inside objects/arrays
     const Widget =
       isObjectProperty || isArrayItem ? ComplexObjectWidget : ArrayWidget;
-    pushOptions(
-      {
-        label: "Array items",
-        value: "array",
-        symbol: <OptionIcon icon="array" />,
-        Widget,
-        interpretValue: () =>
-          Array.isArray(fieldSchema.default) ? fieldSchema.default : [],
-      },
-      varOption
-    );
+    pushOptions({
+      label: "Array items",
+      value: "array",
+      symbol: <OptionIcon icon="array" />,
+      Widget,
+      interpretValue: () =>
+        Array.isArray(fieldSchema.default) ? fieldSchema.default : [],
+    });
+    if (allowExpressions) {
+      pushOptions(varOption);
+    }
   }
 
   if (
@@ -170,35 +174,33 @@ function getToggleOptions({
   ) {
     // Don't allow editing objects inside other objects
     const Widget = isObjectProperty ? ComplexObjectWidget : ObjectWidget;
-    pushOptions(
-      {
-        label: "Object properties",
-        value: "object",
-        symbol: <OptionIcon icon="object" />,
-        Widget,
-        interpretValue: () =>
-          (typeof fieldSchema.default === "object"
-            ? fieldSchema.default
-            : {}) as UnknownObject,
-      },
-      varOption
-    );
+    pushOptions({
+      label: "Object properties",
+      value: "object",
+      symbol: <OptionIcon icon="object" />,
+      Widget,
+      interpretValue: () =>
+        (typeof fieldSchema.default === "object"
+          ? fieldSchema.default
+          : {}) as UnknownObject,
+    });
+    if (allowExpressions) {
+      pushOptions(varOption);
+    }
   }
 
   if (fieldSchema.type === "boolean" || anyType) {
-    pushOptions(
-      {
-        label: "Toggle",
-        value: "boolean",
-        symbol: <OptionIcon icon="toggle" />,
-        Widget: BooleanWidget,
-        interpretValue: () =>
-          typeof fieldSchema.default === "boolean"
-            ? fieldSchema.default
-            : false,
-      },
-      varOption
-    );
+    pushOptions({
+      label: "Toggle",
+      value: "boolean",
+      symbol: <OptionIcon icon="toggle" />,
+      Widget: BooleanWidget,
+      interpretValue: () =>
+        typeof fieldSchema.default === "boolean" ? fieldSchema.default : false,
+    });
+    if (allowExpressions) {
+      pushOptions(varOption);
+    }
   }
 
   if (isSelectField(fieldSchema)) {
@@ -215,97 +217,99 @@ function getToggleOptions({
   }
 
   if (fieldSchema.type === "string" || anyType) {
-    pushOptions(
-      {
-        label: "Text",
-        value: "string",
-        symbol: <OptionIcon icon="text" />,
-        Widget: TextWidget,
-        interpretValue: (oldValue: unknown) => {
-          let newValue =
-            typeof fieldSchema.default === "string" ? fieldSchema.default : "";
-          if (typeof oldValue === "string" && oldValue.length > 0) {
-            newValue = oldValue;
-          } else if (typeof oldValue === "number" && oldValue > 0) {
-            newValue = String(oldValue);
-          } else if (
-            isTemplateExpression(oldValue) &&
-            oldValue.__value__.length > 0
-          ) {
-            newValue = oldValue.__value__;
-          }
+    pushOptions({
+      label: "Text",
+      value: "string",
+      symbol: <OptionIcon icon="text" />,
+      Widget: TextWidget,
+      interpretValue: (oldValue: unknown) => {
+        let newValue =
+          typeof fieldSchema.default === "string" ? fieldSchema.default : "";
+        if (typeof oldValue === "string" && oldValue.length > 0) {
+          newValue = oldValue;
+        } else if (typeof oldValue === "number" && oldValue > 0) {
+          newValue = String(oldValue);
+        } else if (
+          isTemplateExpression(oldValue) &&
+          oldValue.__value__.length > 0
+        ) {
+          newValue = oldValue.__value__;
+        }
 
-          return {
-            // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
-            // Typescript treats the return value as string and doesn't unify it with unknown)
-            __type__: "nunjucks" as ExpressionType,
-            __value__: newValue,
-          };
-        },
+        return allowExpressions
+          ? {
+              // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
+              // Typescript treats the return value as string and doesn't unify it with unknown)
+              __type__: "nunjucks" as ExpressionType,
+              __value__: newValue,
+            }
+          : newValue;
       },
-      varOption
-    );
+    });
+    if (allowExpressions) {
+      pushOptions(varOption);
+    }
   }
 
   // Don't include integer for "anyType", only include number, which can also accept integers
   if (fieldSchema.type === "integer") {
-    pushOptions(
-      {
-        label: "Whole number",
-        value: "number",
-        symbol: <OptionIcon icon="number" />,
-        Widget: IntegerWidget,
-        interpretValue: (oldValue: unknown) => {
-          let int = Number.NaN;
-          if (typeof oldValue === "string") {
-            int = Number.parseInt(oldValue, 10);
-          }
+    pushOptions({
+      label: "Whole number",
+      value: "number",
+      symbol: <OptionIcon icon="number" />,
+      Widget: IntegerWidget,
+      interpretValue: (oldValue: unknown) => {
+        let int = Number.NaN;
+        if (typeof oldValue === "string") {
+          int = Number.parseInt(oldValue, 10);
+        }
 
-          if (isTemplateExpression(oldValue)) {
-            int = Number.parseInt(oldValue.__value__, 10);
-          }
+        if (isTemplateExpression(oldValue)) {
+          int = Number.parseInt(oldValue.__value__, 10);
+        }
 
-          if (!Number.isNaN(int)) {
-            return int;
-          }
+        if (!Number.isNaN(int)) {
+          return int;
+        }
 
-          return typeof fieldSchema.default === "number"
-            ? fieldSchema.default
-            : 0;
-        },
+        return typeof fieldSchema.default === "number"
+          ? fieldSchema.default
+          : 0;
       },
-      varOption
-    );
+    });
+    if (allowExpressions) {
+      pushOptions(varOption);
+    }
   }
 
   if (fieldSchema.type === "number" || anyType) {
-    pushOptions(
-      {
-        label: "Number",
-        value: "number",
-        symbol: <OptionIcon icon="number" />,
-        Widget: NumberWidget,
-        interpretValue: (oldValue: unknown) => {
-          let float = Number.NaN;
-          if (typeof oldValue === "string") {
-            float = Number.parseFloat(oldValue);
-          }
+    pushOptions({
+      label: "Number",
+      value: "number",
+      symbol: <OptionIcon icon="number" />,
+      Widget: NumberWidget,
+      interpretValue: (oldValue: unknown) => {
+        let float = Number.NaN;
+        if (typeof oldValue === "string") {
+          float = Number.parseFloat(oldValue);
+        }
 
-          if (isTemplateExpression(oldValue)) {
-            float = Number.parseFloat(oldValue.__value__);
-          }
+        if (isTemplateExpression(oldValue)) {
+          float = Number.parseFloat(oldValue.__value__);
+        }
 
-          if (!Number.isNaN(float)) {
-            return float;
-          }
+        if (!Number.isNaN(float)) {
+          return float;
+        }
 
-          return typeof fieldSchema.default === "number"
-            ? fieldSchema.default
-            : 0;
-        },
+        return typeof fieldSchema.default === "number"
+          ? fieldSchema.default
+          : 0;
       },
-      varOption
-    );
+    });
+    if (allowExpressions) {
+      pushOptions(varOption);
+    }
   }
 
   const multiOptions = multiSchemas.flatMap((subSchema) => {
@@ -319,6 +323,7 @@ function getToggleOptions({
       customToggleModes,
       isObjectProperty,
       isArrayItem,
+      allowExpressions,
     }).map((option) => {
       option.description = subSchema.description;
       return option;
@@ -356,6 +361,7 @@ export function schemaSupportsTemplates(schema: Schema): boolean {
     customToggleModes: [],
     isObjectProperty: false,
     isArrayItem: false,
+    allowExpressions: true,
   });
   return options.some(
     (option) => option.value === "string" && option.label === "Text"
@@ -389,6 +395,7 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
   );
 
   const { customToggleModes } = useContext(SchemaFieldContext);
+  const { allowExpressions } = useContext(FieldRuntimeContext);
 
   const normalizedSchema = useMemo(() => {
     const isObjectType =
@@ -420,13 +427,15 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
         customToggleModes,
         isObjectProperty,
         isArrayItem,
+        allowExpressions,
       }),
     [
-      customToggleModes,
-      isArrayItem,
-      isObjectProperty,
-      isRequired,
       normalizedSchema,
+      isRequired,
+      customToggleModes,
+      isObjectProperty,
+      isArrayItem,
+      allowExpressions,
     ]
   );
 
