@@ -69,8 +69,8 @@ function useInstallables(): {
   const [
     resolvedExtensions,
     resolvedExtensionsIsLoading,
-    ,
     resolveError,
+    ,
   ] = useAsyncState(
     async () =>
       Promise.all(
