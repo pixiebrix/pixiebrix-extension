@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import BasicSchemaField from "@/components/fields/schemaFields/v3/BasicSchemaField";
+import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
 import { Schema } from "@/core";
 import { Formik } from "formik";
 import { fireTextInput } from "@/tests/formHelpers";

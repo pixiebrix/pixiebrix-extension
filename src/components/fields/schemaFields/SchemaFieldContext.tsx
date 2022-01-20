@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,7 +23,7 @@ import {
 } from "@/components/fields/schemaFields/propTypes";
 import ServiceField, {
   isServiceField,
-} from "@/components/fields/schemaFields/v1/ServiceField";
+} from "@/components/fields/schemaFields/ServiceField";
 import {
   booleanPredicate,
   findOneOf,
@@ -32,7 +32,7 @@ import {
 import BooleanField from "@/components/fields/schemaFields/BooleanField";
 import { isEmpty } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import TextWidget from "@/components/fields/schemaFields/widgets/v1/TextWidget";
+import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import { InputModeOption } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
