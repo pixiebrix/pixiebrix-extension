@@ -163,7 +163,7 @@ function getToggleOptions({
   };
 
   if (isKeyStringField(fieldSchema)) {
-    return [textOption, excludeOption];
+    return isRequired ? [textOption] : [textOption, excludeOption];
   }
 
   for (const mode of customToggleModes) {
