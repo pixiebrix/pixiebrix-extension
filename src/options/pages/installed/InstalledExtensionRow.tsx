@@ -36,7 +36,6 @@ import useExtensionPermissions from "@/options/pages/installed/useExtensionPermi
 import useNotifications from "@/hooks/useNotifications";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
-import { push } from "connected-react-router";
 import { useDispatch } from "react-redux";
 import AuthContext from "@/auth/AuthContext";
 import { selectExtensionContext } from "@/extensionPoints/helpers";

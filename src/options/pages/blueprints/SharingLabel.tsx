@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import { Installable } from "@/options/pages/blueprints/installableUtils";
 import useSharing from "@/options/pages/blueprints/useSharing";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

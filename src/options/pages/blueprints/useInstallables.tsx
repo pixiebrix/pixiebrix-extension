@@ -66,7 +66,12 @@ function useInstallables(): {
     return [...unresolvedExtensions, ...inactiveExtensions];
   }, [cloudExtensions.data, installedExtensionIds, unresolvedExtensions]);
 
-  const [resolvedExtensions, , resolveError] = useAsyncState(
+  const [
+    resolvedExtensions,
+    resolvedExtensionsIsLoading,
+    ,
+    resolveError,
+  ] = useAsyncState(
     async () =>
       Promise.all(
         allExtensions.map(async (extension) => resolveDefinitions(extension))
@@ -132,7 +137,7 @@ function useInstallables(): {
     isLoading:
       recipes.isLoading ||
       cloudExtensions.isLoading ||
-      resolvedExtensions === null,
+      resolvedExtensionsIsLoading,
     error: cloudExtensions.error ?? recipes.error ?? resolveError,
   };
 }

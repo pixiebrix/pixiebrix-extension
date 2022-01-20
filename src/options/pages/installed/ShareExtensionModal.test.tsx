@@ -34,7 +34,6 @@ test("renders modal", async () => {
       extension={extensionFactory({
         label: "testExtension",
       })}
-      onCancel={jest.fn()}
     />
   );
   await waitForEffect();
@@ -48,7 +47,6 @@ test("prints 'Convert' when not Public (default)", async () => {
       extension={extensionFactory({
         label: "testExtension",
       })}
-      onCancel={jest.fn()}
     />
   );
   await waitForEffect();
@@ -66,7 +64,6 @@ test("prints 'Share' when Public", async () => {
       extension={extensionFactory({
         label: "testExtension",
       })}
-      onCancel={jest.fn()}
     />
   );
   await waitForEffect();

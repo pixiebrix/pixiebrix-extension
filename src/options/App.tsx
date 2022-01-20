@@ -100,24 +100,13 @@ const Layout = () => {
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
-                  {/*{flags.includes("blueprints-page") ? (*/}
-                  {/*  <Route*/}
-                  {/*    exact*/}
-                  {/*    path="/blueprints"*/}
-                  {/*    component={BlueprintsPage}*/}
-                  {/*  />*/}
-                  {/*) : (*/}
-                  {/*  <Route*/}
-                  {/*    exact*/}
-                  {/*    path="/blueprints"*/}
-                  {/*    component={MarketplacePage}*/}
-                  {/*  />*/}
-                  {/*)}*/}
-                  <Route
-                    exact
-                    path="/blueprints-page"
-                    component={BlueprintsPage}
-                  />
+                  {flags.includes("blueprints-page") && (
+                    <Route
+                      exact
+                      path="/blueprints-page"
+                      component={BlueprintsPage}
+                    />
+                  )}
                   <Route exact path="/blueprints" component={MarketplacePage} />
                   <Route
                     exact

@@ -115,11 +115,9 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         reactivateEveryTab();
 
         if (flags.includes("blueprints-page")) {
-          dispatch(push("/blueprints"));
-        } else {
-          // TODO: uncomment me before merging
-          //dispatch(push("/installed"));
           dispatch(push("/blueprints-page"));
+        } else {
+          dispatch(push("/blueprints"));
         }
       } catch (error) {
         notify.error(`Error installing ${recipe.metadata.name}`, {

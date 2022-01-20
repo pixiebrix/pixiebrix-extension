@@ -91,7 +91,7 @@ export const isDeployment = (installable: Installable) => {
   }
 };
 
-// TODO: keeping this even though unused, will be useful for future grouping features
+// TODO: keeping this even though unused atm, will be useful for future grouping features
 export const groupByRecipe = (installables: Installable[]): Installable[][] =>
   Object.values(
     groupBy(installables, (installable) => getPackageId(installable))
