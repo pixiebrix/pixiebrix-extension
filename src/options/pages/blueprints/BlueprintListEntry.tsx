@@ -17,7 +17,6 @@
 
 import React from "react";
 import styles from "@/options/pages/blueprints/BlueprintsList.module.scss";
-import moment from "moment";
 import { Button } from "react-bootstrap";
 import {
   getDescription,
@@ -29,11 +28,14 @@ import {
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
+import { timeSince } from "@/utils/timeUtils";
 
 const BlueprintListEntry: React.FunctionComponent<{
   installable: Installable;
 }> = ({ installable }) => {
   const { activate, reinstall } = useInstallableActions(installable);
+  // TODO: fix the parsing (timezone, some not being parsed)
+  const lastUpdated = timeSince(new Date(getUpdatedAt(installable)).getTime());
 
   return (
     <tr>
@@ -55,9 +57,7 @@ const BlueprintListEntry: React.FunctionComponent<{
         </div>
       </td>
       <td className="text-wrap">
-        <span className="small">
-          Last updated: {moment.utc(getUpdatedAt(installable)).fromNow()}
-        </span>
+        <span className="small">Last updated: {lastUpdated}</span>
       </td>
       <td>
         {installable.active ? (

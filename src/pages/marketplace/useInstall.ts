@@ -117,7 +117,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         if (flags.includes("blueprints-page")) {
           dispatch(push("/blueprints-page"));
         } else {
-          dispatch(push("/blueprints"));
+          dispatch(push("/installed"));
         }
       } catch (error) {
         notify.error(`Error installing ${recipe.metadata.name}`, {

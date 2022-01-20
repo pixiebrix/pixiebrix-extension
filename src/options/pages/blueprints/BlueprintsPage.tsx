@@ -16,7 +16,6 @@
  */
 
 import React, { useState } from "react";
-import { useTitle } from "@/hooks/title";
 import Page from "@/layout/Page";
 import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Nav, Row } from "react-bootstrap";
@@ -38,17 +37,17 @@ import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 
 type CategoryFilter = "active" | "all" | "personal" | "shared";
 
-const categoryLabels = {
-  active: "Active Blueprints",
-  all: "All Blueprints",
-  personal: "Personal Blueprints",
-  // TODO: break this up into team category filters
-  shared: "Shared with Me",
-};
+const categoryLabels = new Map<CategoryFilter, string>(
+  Object.entries({
+    active: "Active Blueprints",
+    all: "All Blueprints",
+    personal: "Personal Blueprints",
+    // TODO: break this up into team category filters
+    shared: "Shared with Me",
+  }) as Array<[CategoryFilter, string]>
+);
 
 const BlueprintsPage: React.FunctionComponent = () => {
-  useTitle("Blueprints");
-
   const [filterCategory, setFilterCategory] = useState<CategoryFilter>(
     "active"
   );
@@ -67,10 +66,8 @@ const BlueprintsPage: React.FunctionComponent = () => {
   return (
     <Page
       icon={faScroll}
-      title={"Blueprints"}
-      description={
-        "Here you can find personal blueprints and blueprints shared with you to activate."
-      }
+      title="Blueprints"
+      description="Here you can find personal blueprints and blueprints shared with you to activate."
       toolbar={
         <Button variant="info">
           <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Public Marketplace
@@ -104,19 +101,17 @@ const BlueprintsPage: React.FunctionComponent = () => {
                     setFilterCategory(filter);
                   }}
                 >
-                  {/* eslint-disable-next-line security/detect-object-injection */}
-                  {categoryLabels[filter]}
+                  {categoryLabels.get(filter)}
                 </Nav.Link>
               </Nav.Item>
             ))}
           </Nav>
         </Col>
         <Col xs={9}>
-          {/* eslint-disable-next-line security/detect-object-injection */}
-          <h3>{categoryLabels[filterCategory]}</h3>
-          {/* eslint-disable-next-line security/detect-object-injection */}
+          <h3>{categoryLabels.get(filterCategory)}</h3>
+          {/* eslint-disable-next-line security/detect-object-injection -- is FilterCategory */}
           {installables[filterCategory]?.length > 0 && (
-            // eslint-disable-next-line security/detect-object-injection
+            // eslint-disable-next-line security/detect-object-injection -- is FilterCategory
             <BlueprintsList installables={installables[filterCategory]} />
           )}
         </Col>

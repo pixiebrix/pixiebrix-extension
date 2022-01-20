@@ -87,7 +87,6 @@
     "kbar": "^0.1.0-beta.23",
     "lodash-es": "^4.17.21",
     "marked": "^4.0.3",
-    "moment": "^2.29.1",
     "mustache": "^4.2.0",
     "nunjucks": "^3.2.3",
     "object-hash": "^2.2.0",

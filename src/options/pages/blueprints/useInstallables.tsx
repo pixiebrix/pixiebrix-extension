@@ -30,7 +30,7 @@ import {
 } from "@/options/pages/blueprints/installableUtils";
 import { useGetCloudExtensionsQuery, useGetRecipesQuery } from "@/services/api";
 
-function useInstallables(): {
+type InstallablesState = {
   installables: {
     active: Installable[];
     all: Installable[];
@@ -39,7 +39,9 @@ function useInstallables(): {
   };
   isLoading: boolean;
   error: unknown;
-} {
+};
+
+function useInstallables(): InstallablesState {
   const { scope } = useContext(AuthContext);
   const unresolvedExtensions = useSelector(selectExtensions);
 
@@ -70,7 +72,6 @@ function useInstallables(): {
     resolvedExtensions,
     resolvedExtensionsIsLoading,
     resolveError,
-    ,
   ] = useAsyncState(
     async () =>
       Promise.all(
