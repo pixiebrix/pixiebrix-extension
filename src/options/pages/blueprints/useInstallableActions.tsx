@@ -17,7 +17,6 @@
 
 import {
   Installable,
-  isBlueprint,
   isExtension,
   isExtensionFromRecipe,
   isPersonal,
@@ -114,7 +113,7 @@ function useInstallableActions(installable: Installable) {
     );
   };
 
-  // todo: use that callback & notify hook
+  // TODO: refactor with that callback & notify hook
   const onExportBlueprint = useCallback(() => {
     const extension = isExtension(installable) ? installable : null;
 

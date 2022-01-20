@@ -30,6 +30,7 @@ import {
   isPersonal,
   updateAvailable,
 } from "@/options/pages/blueprints/installableUtils";
+import { useGetCloudExtensionsQuery, useGetRecipesQuery } from "@/services/api";
 
 function useInstallables(): {
   installables: {
@@ -44,17 +45,8 @@ function useInstallables(): {
   const { scope } = useContext(AuthContext);
   const unresolvedExtensions = useSelector(selectExtensions);
 
-  const {
-    data: rawRecipes,
-    isLoading: isRecipesLoading,
-    error: recipeError,
-  } = useFetch<RecipeDefinition[]>("/api/recipes/");
-
-  const {
-    data: cloudExtensions,
-    isLoading: isCloudExtensionsLoading,
-    error: cloudError,
-  } = useFetch<CloudExtension[]>("/api/extensions");
+  const recipes = useGetRecipesQuery();
+  const cloudExtensions = useGetCloudExtensionsQuery();
 
   const installedExtensionIds = useMemo(
     () => new Set<UUID>(unresolvedExtensions.map((extension) => extension.id)),
@@ -69,12 +61,12 @@ function useInstallables(): {
 
   const allExtensions = useMemo(() => {
     const inactiveExtensions =
-      cloudExtensions
+      cloudExtensions.data
         ?.filter((x) => !installedExtensionIds.has(x.id))
         .map((x) => ({ ...x, active: false })) ?? [];
 
     return [...unresolvedExtensions, ...inactiveExtensions];
-  }, [cloudExtensions, installedExtensionIds, unresolvedExtensions]);
+  }, [cloudExtensions.data, installedExtensionIds, unresolvedExtensions]);
 
   const [resolvedExtensions, , resolveError] = useAsyncState(
     async () =>
@@ -98,7 +90,7 @@ function useInstallables(): {
 
   const personalOrTeamBlueprints = useMemo(
     () =>
-      (rawRecipes ?? [])
+      (recipes.data ?? [])
         .filter(
           (recipe) =>
             recipe.metadata.id.includes(scope) ||
@@ -108,7 +100,7 @@ function useInstallables(): {
           ...recipe,
           active: installedRecipeIds.has(recipe.metadata.id),
         })),
-    [rawRecipes, scope, installedRecipeIds]
+    [recipes.data, scope, installedRecipeIds]
   );
 
   const installables = useMemo(
@@ -119,11 +111,11 @@ function useInstallables(): {
           active: isActive(extensionOrRecipe),
           hasUpdate:
             "_recipe" in extensionOrRecipe
-              ? updateAvailable(rawRecipes, extensionOrRecipe)
+              ? updateAvailable(recipes.data, extensionOrRecipe)
               : false,
         })
       ),
-    [isActive, personalOrTeamBlueprints, rawRecipes, resolvedExtensions]
+    [isActive, personalOrTeamBlueprints, recipes.data, resolvedExtensions]
   );
 
   return {
@@ -138,10 +130,10 @@ function useInstallables(): {
       ),
     },
     isLoading:
-      isRecipesLoading ||
-      isCloudExtensionsLoading ||
+      recipes.isLoading ||
+      cloudExtensions.isLoading ||
       resolvedExtensions === null,
-    error: cloudError ?? recipeError ?? resolveError,
+    error: cloudExtensions.error ?? recipes.error ?? resolveError,
   };
 }
 
