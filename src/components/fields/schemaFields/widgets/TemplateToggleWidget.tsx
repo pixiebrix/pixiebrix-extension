@@ -134,7 +134,13 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
       ? {
           ...schemaFieldProps,
           onClick: () => {
-            onModeChange("var");
+            if (inputModeOptions.some((option) => option.value === "var")) {
+              onModeChange("var");
+            }
+
+            if (inputModeOptions.some((option) => option.value === "string")) {
+              onModeChange("string");
+            }
           },
         }
       : schemaFieldProps;
