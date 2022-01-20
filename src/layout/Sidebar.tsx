@@ -40,6 +40,14 @@ const Sidebar: React.FunctionComponent = () => {
     <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
       <nav className="sidebar sidebar-offcanvas" id={SIDEBAR_ID}>
         <ul className="nav">
+          {flags.includes("blueprints-page") && (
+            <SidebarLink
+              route="/blueprints-page"
+              title="Blueprints"
+              icon={faScroll}
+            />
+          )}
+
           <SidebarLink
             route="/installed"
             title="Active Bricks"
@@ -50,7 +58,6 @@ const Sidebar: React.FunctionComponent = () => {
               location.pathname.startsWith("/extensions/")
             }
           />
-
           <SidebarLink
             route="/blueprints"
             title="My Blueprints"
