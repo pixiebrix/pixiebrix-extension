@@ -55,7 +55,8 @@ export const getPackageId = (installable: Installable): RegistryId =>
 
 export const getUpdatedAt = (installable: Installable): string =>
   isExtension(installable)
-    ? installable._recipe?.updated_at ?? installable.updateTimestamp
+    ? // @ts-ignore -- need to figure out why updateTimestamp isn't included on IExtension here
+      installable._recipe?.updated_at ?? installable.updateTimestamp
     : installable.updated_at;
 
 export const getSharing = (installable: Installable) =>
