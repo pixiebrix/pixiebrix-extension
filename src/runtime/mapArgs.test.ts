@@ -45,17 +45,23 @@ describe("renderExplicit", () => {
     });
   });
 
-  test("doesn't fail on empty template", async () => {
-    const rendered = await renderExplicit(
-      { foo: { __type__: "nunjucks", __value__: undefined } },
-      {},
-      apiVersionOptions("v3")
-    );
+  test.each([
+    ["mustache", { foo: "" }],
+    ["nunjucks", { foo: "" }],
+    ["handlebars", { foo: "" }],
+    ["var", {}],
+  ])(
+    "doesn't fail on empty %s template",
+    async (templateType, expectedValue) => {
+      const rendered = await renderExplicit(
+        { foo: { __type__: templateType, __value__: undefined } },
+        {},
+        apiVersionOptions("v3")
+      );
 
-    expect(rendered).toEqual({
-      foo: "",
-    });
-  });
+      expect(rendered).toEqual(expectedValue);
+    }
+  );
 });
 
 describe("renderImplicit", () => {
