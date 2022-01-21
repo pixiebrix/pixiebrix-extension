@@ -49,6 +49,7 @@ import {
 } from "@/blocks/types";
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { UnknownObject } from "@/types";
+import { isExpression } from "@/runtime/mapArgs";
 
 export interface WizardStep {
   step: string;
@@ -346,11 +347,12 @@ export function extensionWithInnerDefinitions(
 // eslint-disable-next-line @typescript-eslint/ban-types -- support interfaces that don't have index types
 export function removeEmptyValues<T extends object>(obj: T): T {
   // Technically the return type is Partial<T> (with recursive partials). However, we'll trust that the PageEditor
-  // requires the user to set values that actually need to be set. (They'll also get caught by input validation in
+  // requires the user to set values that actually need to be set. They'll also get caught by input validation
   // when the bricks are run.
   return deepPickBy(
     obj,
-    (x: unknown) => typeof x !== "undefined" && x !== ""
+    (value: unknown, parent: unknown) =>
+      isExpression(parent) || (typeof value !== "undefined" && value !== "")
   ) as T;
 }
 
