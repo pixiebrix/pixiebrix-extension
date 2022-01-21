@@ -88,6 +88,16 @@ export function isTemplateExpression(
 }
 
 /**
+ * Returns true if value represents an explicit template engine expression
+ * @see isExpression
+ */
+export function isVarExpression(
+  value: unknown
+): value is Expression<string, "var"> {
+  return isExpression(value) && (value as Expression).__type__ === "var";
+}
+
+/**
  * Recursively render values
  * @since 1.5.0
  */
@@ -97,6 +107,12 @@ export async function renderExplicit(
   options: RendererOptions
 ): Promise<unknown> {
   if (isTemplateExpression(config)) {
+    // This check is added to prevent exceptions when rendering a faulty template
+    // see https://github.com/pixiebrix/pixiebrix-extension/issues/2413
+    if (config.__value__ == null) {
+      return isVarExpression(config) ? null : "";
+    }
+
     const render = await engineRenderer(config.__type__, options);
     return render(config.__value__, ctxt);
   }
