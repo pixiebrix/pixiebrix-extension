@@ -69,9 +69,14 @@ const BlueprintsPage: React.FunctionComponent = () => {
       title="Blueprints"
       description="Here you can find personal blueprints and blueprints shared with you to activate."
       toolbar={
-        <Button variant="info">
+        <a
+          href="https://www.pixiebrix.com/marketplace"
+          className="btn btn-info"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Public Marketplace
-        </Button>
+        </a>
       }
       isPending={isLoading}
       error={error}

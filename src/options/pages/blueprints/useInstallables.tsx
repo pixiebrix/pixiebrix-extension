@@ -41,6 +41,14 @@ type InstallablesState = {
   error: unknown;
 };
 
+// type ExtensionGroup = Installable[];
+//
+// const groupInstallables = (installables: Installable[]): (ExtensionGroup | Installable)[] => {
+//   return groupByRecipe(installables).map(installableGroup => {
+//     return installableGroup.length === 1 ? installableGroup[0] : installableGroup
+//   });
+// };
+
 function useInstallables(): InstallablesState {
   const { scope } = useContext(AuthContext);
   const unresolvedExtensions = useSelector(selectExtensions);
@@ -97,12 +105,15 @@ function useInstallables(): InstallablesState {
       (recipes.data ?? [])
         .filter(
           (recipe) =>
-            recipe.metadata.id.includes(scope) ||
-            recipe.sharing.organizations.length > 0
+            (recipe.metadata.id.includes(scope) ||
+              recipe.sharing.organizations.length > 0) &&
+            // Removes duplicate Installable entries for Active extension
+            // and Recipe pairs
+            !installedRecipeIds.has(recipe.metadata.id)
         )
         .map((recipe) => ({
           ...recipe,
-          active: installedRecipeIds.has(recipe.metadata.id),
+          active: false,
         })),
     [recipes.data, scope, installedRecipeIds]
   );
