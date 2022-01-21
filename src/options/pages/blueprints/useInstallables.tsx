@@ -24,6 +24,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import {
+  groupByRecipe,
   Installable,
   isPersonal,
   updateAvailable,
@@ -40,14 +41,6 @@ type InstallablesState = {
   isLoading: boolean;
   error: unknown;
 };
-
-// type ExtensionGroup = Installable[];
-//
-// const groupInstallables = (installables: Installable[]): (ExtensionGroup | Installable)[] => {
-//   return groupByRecipe(installables).map(installableGroup => {
-//     return installableGroup.length === 1 ? installableGroup[0] : installableGroup
-//   });
-// };
 
 function useInstallables(): InstallablesState {
   const { scope } = useContext(AuthContext);
@@ -107,7 +100,7 @@ function useInstallables(): InstallablesState {
           (recipe) =>
             (recipe.metadata.id.includes(scope) ||
               recipe.sharing.organizations.length > 0) &&
-            // Removes duplicate Installable entries for Active extension
+            // Remove duplicate Installable entries for Active extension
             // and Recipe pairs
             !installedRecipeIds.has(recipe.metadata.id)
         )
