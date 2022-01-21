@@ -37,7 +37,6 @@ import "@/background/browserAction";
 
 import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";
-import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
 import initContextMenus from "@/background/initContextMenus";
 import initBrowserCommands from "@/background/initBrowserCommands";
@@ -46,7 +45,6 @@ import initFirefoxCompat from "@/background/firefoxCompat";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 import initActiveTabTracking from "@/background/activeTab";
 
-initNavigation();
 initExecutor();
 initGoogle();
 initFrames();

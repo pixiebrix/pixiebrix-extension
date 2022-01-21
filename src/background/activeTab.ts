@@ -3,6 +3,7 @@
 // eslint-disable-next-line filenames/match-exported
 import { safeParseUrl } from "@/utils";
 import { canReceiveContentScript } from "@/utils/permissions";
+import browser from "webextension-polyfill";
 
 type TabId = number;
 type Origin = string;
@@ -10,6 +11,7 @@ export const possiblyActiveTabs = new Map<TabId, Origin>();
 
 function track(tab: chrome.tabs.Tab): void {
   if (tab.url && canReceiveContentScript(tab.url)) {
+    console.debug("ActiveTab added:", tab.id, tab.url);
     possiblyActiveTabs.set(tab.id, new URL(tab.url).origin);
   }
 }
@@ -26,6 +28,7 @@ export default function initActiveTabTracking() {
   });
 
   chrome.tabs.onRemoved.addListener((tabId) => {
+    console.debug("ActiveTab removed:", tabId);
     possiblyActiveTabs.delete(tabId);
   });
 }
