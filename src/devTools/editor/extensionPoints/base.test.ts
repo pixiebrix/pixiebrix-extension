@@ -24,19 +24,27 @@ describe("removeEmptyValues()", () => {
     ).toStrictEqual({ baz: null });
   });
 
-  test("doesn't remove empty expression values", () => {
+  test("doesn't remove null and empty string expression values", () => {
     expect(
       removeEmptyValues({
         foo: { __type__: "var", __value__: "" },
-        bar: { __type__: "nunjucks", __value__: undefined },
+        bar: { __type__: "mustache", __value__: "" },
         baz: { __type__: "var", __value__: null },
-        quux: { __type__: "mustache", __value__: "" },
       })
     ).toStrictEqual({
       foo: { __type__: "var", __value__: "" },
-      bar: { __type__: "nunjucks", __value__: null },
+      bar: { __type__: "mustache", __value__: "" },
       baz: { __type__: "var", __value__: null },
-      quux: { __type__: "mustache", __value__: "" },
+    });
+  });
+
+  test("convert undefined to null in expression values", () => {
+    expect(
+      removeEmptyValues({
+        foo: { __type__: "nunjucks", __value__: undefined },
+      })
+    ).toStrictEqual({
+      foo: { __type__: "nunjucks", __value__: null },
     });
   });
 
