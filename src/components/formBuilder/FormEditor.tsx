@@ -42,12 +42,14 @@ import LayoutWidget from "@/components/LayoutWidget";
 
 export type FormEditorProps = {
   name: string;
+  showFormTitle?: boolean;
   activeField?: string;
   setActiveField: SetActiveField;
 };
 
 const FormEditor: React.FC<FormEditorProps> = ({
   name,
+  showFormTitle = true,
   activeField,
   setActiveField,
 }) => {
@@ -60,7 +62,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
     joinName(name, "uiSchema", UI_ORDER)
   );
 
-  const { schema, uiSchema } = rjsfSchema;
+  const { schema, uiSchema } = rjsfSchema ?? {};
 
   useEffect(() => {
     // Set default values if needed
@@ -83,7 +85,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
         return;
       }
 
-      const firstInProperties = Object.keys(schema?.properties || {})[0];
+      const firstInProperties = Object.keys(schema?.properties ?? {})[0];
       if (firstInProperties && firstInProperties !== activeField) {
         setActiveField(firstInProperties);
       }
@@ -112,7 +114,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   const addProperty = () => {
     const propertyName = generateNewPropertyName(
-      Object.keys(schema.properties || {})
+      Object.keys(schema.properties ?? {})
     );
     const newProperty: Schema = {
       title: propertyName,
@@ -174,10 +176,13 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   return (
     <>
-      <SchemaField {...titleFieldProps} />
-      <SchemaField {...descriptionFieldProps} />
-      <hr />
-
+      {showFormTitle && (
+        <>
+          <SchemaField {...titleFieldProps} />
+          <SchemaField {...descriptionFieldProps} />
+          <hr />
+        </>
+      )}
       <Row className={styles.addRow}>
         <Col>
           <Button onClick={addProperty} variant="primary" size="sm">

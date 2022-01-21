@@ -53,7 +53,7 @@ const Editor: React.FunctionComponent = () => {
     selectionSeq,
     inserting,
     elements,
-    activeElement,
+    activeElement: activeElementId,
     error,
     beta,
   } = useSelector(selectEditor);
@@ -140,7 +140,7 @@ const Editor: React.FunctionComponent = () => {
       <Sidebar
         installed={installed}
         elements={elements}
-        activeElement={activeElement}
+        activeElement={activeElementId}
         isInsertingElement={Boolean(inserting)}
       />
       {body}

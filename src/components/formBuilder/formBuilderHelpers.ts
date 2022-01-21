@@ -289,7 +289,8 @@ export const produceSchemaOnUiTypeChange = (
 export const updateRjsfSchemaWithDefaultsIfNeeded = (
   rjsfSchema: RJSFSchema
 ) => {
-  const { schema, uiSchema } = rjsfSchema;
+  const { schema, uiSchema } = rjsfSchema ?? {};
+
   // eslint-disable-next-line security/detect-object-injection -- UI_ORDER is a known property
   const uiOrder = uiSchema?.[UI_ORDER];
   const needToUpdateRequired =
@@ -298,9 +299,7 @@ export const updateRjsfSchemaWithDefaultsIfNeeded = (
     !Array.isArray(schema.required);
 
   if (!schema || !uiSchema || !uiOrder?.includes("*") || needToUpdateRequired) {
-    return produce(rjsfSchema, (draft) => {
-      // Relying on Immer to protect against object injections
-      /* eslint-disable security/detect-object-injection */
+    return produce(rjsfSchema ?? ({} as RJSFSchema), (draft) => {
       if (!draft.schema) {
         draft.schema = MINIMAL_SCHEMA;
       }
@@ -309,17 +308,19 @@ export const updateRjsfSchemaWithDefaultsIfNeeded = (
         draft.uiSchema = MINIMAL_UI_SCHEMA;
       }
 
+      // Relying on Immer to protect against object injections
+      /* eslint-disable security/detect-object-injection */
       if (!draft.uiSchema[UI_ORDER]) {
         const propertyKeys = Object.keys(draft.schema.properties || {});
         draft.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
       } else if (!draft.uiSchema[UI_ORDER].includes("*")) {
         draft.uiSchema[UI_ORDER].push("*");
       }
+      /* eslint-enable security/detect-object-injection */
 
       if (needToUpdateRequired) {
         draft.schema.required = [];
       }
-      /* eslint-enable security/detect-object-injection */
     });
   }
 
