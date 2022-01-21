@@ -21,6 +21,20 @@ test("can remove empty values", () => {
   expect(
     removeEmptyValues({ foo: "", bar: undefined, baz: null })
   ).toStrictEqual({ baz: null });
+
+  expect(
+    removeEmptyValues({
+      foo: { __type__: "var", __value__: "" },
+      bar: { __type__: "nunjucks", __value__: undefined },
+      baz: { __type__: "var", __value__: null },
+      quux: { __type__: "mustache", __value__: "" },
+    })
+  ).toStrictEqual({
+    foo: { __type__: "var", __value__: "" },
+    bar: { __type__: "nunjucks", __value__: null },
+    baz: { __type__: "var", __value__: null },
+    quux: { __type__: "mustache", __value__: "" },
+  });
 });
 
 test("can remove empty nested values", () => {
