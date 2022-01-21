@@ -17,36 +17,40 @@
 
 import { removeEmptyValues } from "./base";
 
-test("can remove empty values", () => {
-  expect(
-    removeEmptyValues({ foo: "", bar: undefined, baz: null })
-  ).toStrictEqual({ baz: null });
+describe("removeEmptyValues()", () => {
+  test("removes empty non-expression values", () => {
+    expect(
+      removeEmptyValues({ foo: "", bar: undefined, baz: null })
+    ).toStrictEqual({ baz: null });
+  });
 
-  expect(
-    removeEmptyValues({
+  test("doesn't remove empty expression values", () => {
+    expect(
+      removeEmptyValues({
+        foo: { __type__: "var", __value__: "" },
+        bar: { __type__: "nunjucks", __value__: undefined },
+        baz: { __type__: "var", __value__: null },
+        quux: { __type__: "mustache", __value__: "" },
+      })
+    ).toStrictEqual({
       foo: { __type__: "var", __value__: "" },
-      bar: { __type__: "nunjucks", __value__: undefined },
+      bar: { __type__: "nunjucks", __value__: null },
       baz: { __type__: "var", __value__: null },
       quux: { __type__: "mustache", __value__: "" },
-    })
-  ).toStrictEqual({
-    foo: { __type__: "var", __value__: "" },
-    bar: { __type__: "nunjucks", __value__: null },
-    baz: { __type__: "var", __value__: null },
-    quux: { __type__: "mustache", __value__: "" },
+    });
   });
-});
 
-test("can remove empty nested values", () => {
-  expect(
-    removeEmptyValues({
+  test("removes empty nested values", () => {
+    expect(
+      removeEmptyValues({
+        extension: {
+          action: [{ id: "@pixiebrix/jq", config: { data: "", filter: "." } }],
+        },
+      })
+    ).toStrictEqual({
       extension: {
-        action: [{ id: "@pixiebrix/jq", config: { data: "", filter: "." } }],
+        action: [{ id: "@pixiebrix/jq", config: { filter: "." } }],
       },
-    })
-  ).toStrictEqual({
-    extension: {
-      action: [{ id: "@pixiebrix/jq", config: { filter: "." } }],
-    },
+    });
   });
 });
