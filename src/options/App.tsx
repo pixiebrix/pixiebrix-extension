@@ -27,6 +27,7 @@ import ServicesEditor from "@/options/pages/services/ServicesEditor";
 import BrickCreatePage from "@/options/pages/brickEditor/CreatePage";
 import BrickEditPage from "@/options/pages/brickEditor/EditPage";
 import MarketplacePage from "@/options/pages/MarketplacePage";
+import BlueprintsPage from "@/options/pages/blueprints/BlueprintsPage";
 import SettingsPage from "@/options/pages/settings/SettingsPage";
 import Navbar from "@/layout/Navbar";
 import Footer from "@/layout/Footer";
@@ -34,7 +35,6 @@ import Sidebar from "@/layout/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import { ToastProvider } from "react-toast-notifications";
-import "@/vendors/theme/app/app.scss";
 import AuthContext from "@/auth/AuthContext";
 import { useAsyncState } from "@/hooks/common";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
@@ -100,6 +100,13 @@ const Layout = () => {
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
+                  {flags.includes("blueprints-page") && (
+                    <Route
+                      exact
+                      path="/blueprints-page"
+                      component={BlueprintsPage}
+                    />
+                  )}
                   <Route exact path="/blueprints" component={MarketplacePage} />
                   <Route
                     exact
@@ -135,14 +142,6 @@ const Layout = () => {
                       exact
                       path="/workshop/bricks/:id/"
                       component={BrickEditPage}
-                    />
-                  )}
-
-                  {!flags.includes("restricted-marketplace") && (
-                    <Route
-                      exact
-                      path="/installed/share/:extensionId"
-                      component={InstalledPage}
                     />
                   )}
 

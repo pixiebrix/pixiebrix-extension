@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import { Form, FormControlProps } from "react-bootstrap";
@@ -23,7 +29,11 @@ import fitTextarea from "fit-textarea";
 import { TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
-import { schemaSupportsTemplates } from "@/components/fields/schemaFields/v3/BasicSchemaField";
+import {
+  isKeyStringField,
+  schemaSupportsTemplates,
+} from "@/components/fields/schemaFields/BasicSchemaField";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 
 function isVarValue(value: string): boolean {
   return value.startsWith("@") && !value.includes(" ");
@@ -46,6 +56,10 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   const [{ value, ...restInputProps }, { error }, { setValue }] = useField(
     name
   );
+  const { allowExpressions: allowExpressionsContext } = useContext(
+    FieldRuntimeContext
+  );
+  const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);
 
   const textAreaRef = useRef<HTMLTextAreaElement>();
 
@@ -127,8 +141,14 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     }
 
     const fieldValue = typeof value === "string" ? value : "";
-    return [fieldValue, onChangeForTemplate("nunjucks")];
-  }, [onChangeForTemplate, value]);
+    const onChange: React.ChangeEventHandler<HTMLInputElement> = allowExpressions
+      ? onChangeForTemplate("nunjucks")
+      : (event) => {
+          setValue(event.target.value);
+        };
+
+    return [fieldValue, onChange];
+  }, [allowExpressions, onChangeForTemplate, setValue, value]);
 
   if (
     value !== null &&

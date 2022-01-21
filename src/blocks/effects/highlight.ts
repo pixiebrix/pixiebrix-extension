@@ -16,9 +16,10 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { boolean } from "@/utils";
+import { $safeFind } from "@/helpers";
 
 type ColorRule =
   | string
@@ -49,15 +50,16 @@ export class HighlightEffect extends Effect {
       },
       rootSelector: {
         type: "string",
-        description: "Optional root selector to find the elements within",
+        description: "Optional root selector to find the elements within.",
         format: "selector",
       },
       condition: {
         anyOf: [{ type: "string" }, { type: "boolean" }, { type: "number" }],
-        description: "Whether or not to apply the highlighting rule",
+        description: "Whether or not to apply the highlighting rule.",
       },
       elements: {
         type: "array",
+        description: "An array of highlighting sub-rules",
         items: {
           oneOf: [
             {
@@ -96,18 +98,25 @@ export class HighlightEffect extends Effect {
     []
   );
 
-  async effect({
-    condition,
-    backgroundColor = "#FFFF00",
-    rootSelector,
-    elements,
-  }: BlockArg<{
-    condition: string | number | boolean;
-    backgroundColor: string;
-    rootSelector: string | undefined;
-    elements: ColorRule[];
-  }>): Promise<void> {
-    const $roots = rootSelector ? $(rootSelector) : $(document);
+  async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
+  async effect(
+    {
+      condition,
+      backgroundColor = "#FFFF00",
+      rootSelector,
+      elements,
+    }: BlockArg<{
+      condition: string | number | boolean;
+      backgroundColor: string;
+      rootSelector: string | undefined;
+      elements: ColorRule[];
+    }>,
+    { root }: BlockOptions
+  ): Promise<void> {
+    const $roots = rootSelector ? $safeFind(rootSelector, root) : $(root);
 
     if (condition !== undefined && !boolean(condition)) {
       return;

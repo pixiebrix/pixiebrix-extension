@@ -19,7 +19,7 @@ import { connect, useSelector } from "react-redux";
 import React, { useCallback, useContext } from "react";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
-import { Link, Redirect, Route } from "react-router-dom";
+import { Link, Route } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
@@ -41,22 +41,24 @@ import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
 import useNotifications from "@/hooks/useNotifications";
 import { exportBlueprint } from "./exportBlueprint";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
-import { push } from "connected-react-router";
 import ExtensionLogsModal from "./ExtensionLogsModal";
 import { RootState } from "@/options/store";
-import { LogsContext } from "./installedPageSlice";
-import { selectShowLogsContext } from "./installedPageSelectors";
+import { LogsContext, ShareContext } from "./installedPageSlice";
+import {
+  selectShowLogsContext,
+  selectShowShareContext,
+} from "./installedPageSelectors";
 import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 import extensionsSlice from "@/store/extensionsSlice";
 import { OptionsState } from "@/store/extensionsTypes";
+import ShareLinkModal from "./ShareLinkModal";
 
 const { removeExtension } = extensionsSlice.actions;
 
 export const _InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
-  push: (path: string) => void;
   onRemove: RemoveAction;
-}> = ({ extensions, onRemove, push }) => {
+}> = ({ extensions, onRemove }) => {
   const { flags } = useContext(AuthContext);
 
   const [allExtensions, , cloudError] = useAsyncState(
@@ -87,6 +89,10 @@ export const _InstalledPage: React.FunctionComponent<{
 
   const showLogsContext = useSelector<RootState, LogsContext>(
     selectShowLogsContext
+  );
+
+  const showShareContext = useSelector<RootState, ShareContext>(
+    selectShowShareContext
   );
 
   const notify = useNotifications();
@@ -121,37 +127,22 @@ export const _InstalledPage: React.FunctionComponent<{
       icon={faCubes}
       error={cloudError ?? resolveError}
     >
-      <Route
-        exact
-        path="/installed/share/:extensionId"
-        render={(routeProps) => {
-          // Avoid race condition with load when visiting the URL directly
-          if (!allExtensions) {
-            return null;
-          }
+      {showShareContext && (
+        <ShareExtensionModal extension={showShareContext.extension} />
+      )}
 
-          const toShare = allExtensions.find(
-            (x) => x.id === routeProps.match.params.extensionId
-          );
-
-          return toShare ? (
-            <ShareExtensionModal
-              extension={toShare}
-              onCancel={() => {
-                push("/installed");
-              }}
-            />
-          ) : (
-            <Redirect to="/installed" />
-          );
-        }}
-      />
       {showLogsContext && (
         <ExtensionLogsModal
           title={showLogsContext.title}
           context={showLogsContext.messageContext}
         />
       )}
+
+      <Route
+        exact
+        path="/installed/link/:blueprintId"
+        component={ShareLinkModal}
+      />
       <Row>
         <Col>
           <div className="pb-4">
@@ -212,10 +203,6 @@ const mapStateToProps = (state: { options: OptionsState }) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  // IntelliJ doesn't detect use in the props
-  push: (path: string) => {
-    dispatch(push(path));
-  },
   onRemove: ({ extensionId }: { extensionId: UUID }) => {
     reportEvent("ExtensionRemove", {
       extensionId,

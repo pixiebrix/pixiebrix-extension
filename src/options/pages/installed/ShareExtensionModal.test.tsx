@@ -34,7 +34,6 @@ test("renders modal", async () => {
       extension={extensionFactory({
         label: "testExtension",
       })}
-      onCancel={jest.fn()}
     />
   );
   await waitForEffect();
@@ -42,22 +41,38 @@ test("renders modal", async () => {
   expect(dialogRoot).toMatchSnapshot();
 });
 
-test("prints 'Convert' when not Public", async () => {
+test("prints 'Convert' when not Public (default)", async () => {
   render(
     <ShareExtensionModal
       extension={extensionFactory({
         label: "testExtension",
       })}
-      onCancel={jest.fn()}
     />
   );
   await waitForEffect();
   const dialogRoot = screen.getByRole("dialog");
+  const publicSwitch = dialogRoot.querySelector(
+    ".form-group:nth-child(5) .switch.btn"
+  );
+  expect(publicSwitch).toHaveClass("off");
   const submitButton = dialogRoot.querySelector('.btn[type="submit"]');
-  expect(submitButton.textContent).toBe("Share");
+  expect(submitButton.textContent).toBe("Convert");
+});
+test("prints 'Share' when Public", async () => {
+  render(
+    <ShareExtensionModal
+      extension={extensionFactory({
+        label: "testExtension",
+      })}
+    />
+  );
+  await waitForEffect();
+  const dialogRoot = screen.getByRole("dialog");
   const publicSwitch = dialogRoot.querySelector(
     ".form-group:nth-child(5) .switch.btn"
   );
   userEvent.click(publicSwitch);
-  expect(submitButton.textContent).toBe("Convert");
+  expect(publicSwitch).toHaveClass("on");
+  const submitButton = dialogRoot.querySelector('.btn[type="submit"]');
+  expect(submitButton.textContent).toBe("Share");
 });

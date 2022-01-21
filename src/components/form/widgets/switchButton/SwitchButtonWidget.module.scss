@@ -1,5 +1,5 @@
-/*!
- * Copyright (C) 2022 PixieBrix, Inc.
+/*
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,16 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.modal {
-  // 990 because the Google File Picker iframe is 1000; backdrop is 980 (see below)
-  z-index: 990 !important;
-}
-
-.backdrop {
-  // Modal is 980
-  z-index: 980 !important;
-}
-
-.dialog {
-  max-width: 700px;
+.root {
+  // Aligning the switch button with the label
+  // Height of a Bootstrap input is 2.875rem, plus border of 1px. Height of the switch button is 35px.
+  // We get half of the difference between the two plus 1 px for the border.
+  margin-top: calc(1.4375rem - 18px);
 }

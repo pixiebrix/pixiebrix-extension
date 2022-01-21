@@ -15,17 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode, useContext } from "react";
+import React, { ReactNode } from "react";
 import {
   Col,
+  ColProps,
   Form as BootstrapForm,
   FormControlProps,
+  FormLabelProps,
   Row,
 } from "react-bootstrap";
-import { Except } from "type-fest";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import styles from "./FieldTemplate.module.scss";
-import FormTheme from "@/components/form/FormTheme";
 import { getErrorMessage } from "@/errors";
 import cx from "classnames";
 import { isPlainObject } from "lodash";
@@ -35,8 +34,8 @@ export type FieldProps<
 > = FormControlProps &
   React.ComponentProps<As> & {
     name: string;
-    layout?: "horizontal" | "vertical" | "switch";
     label?: ReactNode;
+    fitLabelWidth?: boolean;
     description?: ReactNode;
     error?: string;
     touched?: boolean;
@@ -68,12 +67,10 @@ export type CustomFieldWidget<
   > = CustomFieldWidgetProps<TValue, TInputElement>
 > = React.ComponentType<TFieldWidgetProps>;
 
-type FieldRenderProps = Except<FieldProps, "layout">;
-
-const RenderedField: React.FC<FieldProps> = ({
+const FieldTemplate: React.FC<FieldProps> = ({
   name,
-  layout,
   label,
+  fitLabelWidth,
   description,
   error,
   touched,
@@ -135,42 +132,34 @@ const RenderedField: React.FC<FieldProps> = ({
     </AsControl>
   );
 
-  return layout === "vertical" ? (
-    <BootstrapForm.Group className={cx(styles.verticalFormGroup, className)}>
+  const labelProps: FormLabelProps = {
+    column: true,
+    className: styles.label,
+    htmlFor: controlId,
+  };
+
+  if (fitLabelWidth) {
+    labelProps.lg = "auto";
+  } else {
+    labelProps.lg = "3";
+    labelProps.xl = "2";
+  }
+
+  const colProps: ColProps = {};
+
+  if (fitLabelWidth) {
+    colProps.lg = true;
+  } else {
+    colProps.lg = label ? "9" : "12";
+    colProps.xl = label ? "10" : "12";
+  }
+
+  return (
+    <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
       {label && (
-        <BootstrapForm.Label
-          className={styles.verticalFormLabel}
-          htmlFor={controlId}
-        >
-          {label}
-        </BootstrapForm.Label>
+        <BootstrapForm.Label {...labelProps}>{label}</BootstrapForm.Label>
       )}
-      {formControl}
-      {description && (
-        <BootstrapForm.Text className="text-muted">
-          {description}
-        </BootstrapForm.Text>
-      )}
-      {isInvalid && (
-        <div className={styles.invalidMessage}>{getErrorMessage(error)}</div>
-      )}
-    </BootstrapForm.Group>
-  ) : (
-    <BootstrapForm.Group
-      as={Row}
-      className={cx(styles.horizontalFormGroup, className)}
-    >
-      {label && (
-        <BootstrapForm.Label
-          column
-          lg="3"
-          className={styles.horizontalLabel}
-          htmlFor={controlId}
-        >
-          {label}
-        </BootstrapForm.Label>
-      )}
-      <Col lg={label ? "9" : "12"}>
+      <Col {...colProps}>
         {formControl}
         {description && (
           <BootstrapForm.Text className="text-muted">
@@ -183,33 +172,6 @@ const RenderedField: React.FC<FieldProps> = ({
       </Col>
     </BootstrapForm.Group>
   );
-};
-
-const RenderedSwitch: React.FC<FieldRenderProps> = ({
-  name,
-  label,
-  onChange,
-  value,
-}) => (
-  <BootstrapForm.Group as={Row} controlId={name}>
-    <Col sm="3">
-      <SwitchButtonWidget name={name} onChange={onChange} value={value} />
-    </Col>
-    <Col sm="9" as="label" htmlFor={name}>
-      {label}
-    </Col>
-  </BootstrapForm.Group>
-);
-
-const FieldTemplate: React.FC<FieldProps> = ({ layout, ...restProps }) => {
-  const theme = useContext(FormTheme);
-
-  switch (layout ?? theme.layout) {
-    case "switch":
-      return <RenderedSwitch {...restProps} />;
-    default:
-      return <RenderedField layout={layout} {...restProps} />;
-  }
 };
 
 export default React.memo(FieldTemplate);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,16 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createContext } from "react";
+import { ApiVersion } from "@/core";
 
-export type ThemeProps = {
-  layout: "horizontal" | "vertical";
-};
-
-const defaultTheme: ThemeProps = {
-  layout: "horizontal",
-};
-
-const FormTheme = createContext(defaultTheme);
-
-export default FormTheme;
+export const OPTIONS_DEFAULT_RUNTIME_API_VERSION: ApiVersion = "v3";

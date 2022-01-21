@@ -29,7 +29,6 @@ import { UnknownObject } from "@/types";
 import { defaultBlockConfig } from "@/blocks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
-import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 
 // Empty value for text fields for the Formik state
 const EMPTY_TEXT_VALUE = "";
@@ -77,17 +76,13 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
     [schema.items]
   );
 
-  const apiVersionAtLeastV3 = useApiVersionAtLeast("v3");
-  // Show explicit remove button before v3
-  const showRemove = !apiVersionAtLeastV3;
-
   return (
     <FieldArray name={name}>
-      {({ handleRemove, push }) => (
+      {({ push }) => (
         <>
           <ul className="list-group">
             {(field.value ?? []).map((item: unknown, index: number) => (
-              <li className="list-group-item pb-0" key={index}>
+              <li className="list-group-item py-1" key={index}>
                 <SchemaField
                   key={index}
                   name={joinName(name, String(index))}
@@ -95,15 +90,6 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
                   hideLabel
                   isArrayItem
                 />
-                {showRemove && (
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={handleRemove(index)}
-                  >
-                    Remove Item
-                  </Button>
-                )}
               </li>
             ))}
           </ul>

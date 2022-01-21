@@ -19,6 +19,7 @@ import React, { useContext, useMemo } from "react";
 import {
   MessageContext,
   RecipeMetadata,
+  RegistryId,
   ResolvedExtension,
   UUID,
 } from "@/core";
@@ -32,7 +33,9 @@ import { isDeploymentActive } from "@/options/deploymentUtils";
 import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import AuthContext from "@/auth/AuthContext";
 import { RecipeDefinition } from "@/types/definitions";
+import { push } from "connected-react-router";
 import * as semver from "semver";
+import { useDispatch } from "react-redux";
 
 const groupByRecipe = (
   extensions: ResolvedExtension[]
@@ -58,11 +61,13 @@ const isPublic = (extension: ResolvedExtension) =>
 const hasOrganization = (extension: ResolvedExtension) =>
   extension._recipe?.sharing?.organizations.length > 0;
 
-const isPersonalBrick = (extension: ResolvedExtension) =>
+export const isPersonalBrick = (extension: ResolvedExtension) =>
   !extension._recipe && !extension._deployment;
 
-const isPersonalBlueprint = (extension: ResolvedExtension, scope: string) =>
-  scope && extension._recipe?.id.startsWith(scope + "/");
+export const isPersonalBlueprint = (
+  extension: ResolvedExtension,
+  scope: string
+) => scope && extension._recipe?.id.startsWith(scope + "/");
 
 const groupExtensions = (extensions: ResolvedExtension[], scope: string) => {
   const personal: {
@@ -109,10 +114,14 @@ const groupExtensions = (extensions: ResolvedExtension[], scope: string) => {
   return { personal, marketplace, team, deployment, other };
 };
 
-function updateAvailable(
+export function updateAvailable(
   availableRecipes: RecipeDefinition[],
   sourceRecipeMeta: RecipeMetadata | undefined
 ): boolean {
+  if (!sourceRecipeMeta) {
+    return false;
+  }
+
   const availableRecipe = availableRecipes?.find(
     (recipe) => recipe.metadata.id === sourceRecipeMeta.id
   );
@@ -147,6 +156,7 @@ const ActiveBricksCard: React.FunctionComponent<{
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
+  const dispatch = useDispatch();
   const { data: organizations = [] } = useGetOrganizationsQuery();
   const { scope } = useContext(AuthContext);
   const {
@@ -185,6 +195,10 @@ const ActiveBricksCard: React.FunctionComponent<{
 
   const deploymentExtensionGroups = groupByRecipe(groupedExtensions.deployment);
 
+  const showShareLinkModal = (blueprintId: RegistryId) => {
+    dispatch(push(`/installed/link/${encodeURIComponent(blueprintId)}`));
+  };
+
   // Sharing was added to _recipe recently (see the RecipeMetadata type and optionsSlice)
   // We still want to display extensions that do not have this information yet
   const otherExtensionGroups = groupByRecipe(groupedExtensions.other);
@@ -221,11 +235,14 @@ const ActiveBricksCard: React.FunctionComponent<{
                         key={sourceRecipeMeta.id}
                         label={sourceRecipeMeta.name}
                         extensions={extensions}
+                        groupMessageContext={messageContext}
                         hasUpdate={updateAvailable(
                           availableRecipes,
                           sourceRecipeMeta
                         )}
-                        groupMessageContext={messageContext}
+                        onShare={() => {
+                          showShareLinkModal(sourceRecipeMeta.id);
+                        }}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
@@ -253,6 +270,9 @@ const ActiveBricksCard: React.FunctionComponent<{
                           availableRecipes,
                           sourceRecipeMeta
                         )}
+                        onShare={() => {
+                          showShareLinkModal(sourceRecipeMeta.id);
+                        }}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
@@ -280,6 +300,9 @@ const ActiveBricksCard: React.FunctionComponent<{
                           availableRecipes,
                           sourceRecipeMeta
                         )}
+                        onShare={() => {
+                          showShareLinkModal(sourceRecipeMeta.id);
+                        }}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
@@ -312,6 +335,9 @@ const ActiveBricksCard: React.FunctionComponent<{
                           availableRecipes,
                           sourceRecipeMeta
                         )}
+                        onShare={() => {
+                          showShareLinkModal(sourceRecipeMeta.id);
+                        }}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
@@ -341,6 +367,9 @@ const ActiveBricksCard: React.FunctionComponent<{
                         hasUpdate={false}
                         paused={!isDeploymentActive(extensions[0])}
                         groupMessageContext={messageContext}
+                        onShare={() => {
+                          showShareLinkModal(recipe.id);
+                        }}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />

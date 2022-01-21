@@ -226,63 +226,56 @@ function ActualModal<T extends IBrick>({
     <Modal
       className={cx(styles.root, modalClassName)}
       show
+      centered
       size="xl"
       onHide={close}
       backdrop
       keyboard={false}
     >
-      <Modal.Body>
-        <Container>
+      <Modal.Body className={styles.body}>
+        <Container fluid>
           <Row>
-            <Col xs={5}>
-              <Row>
-                <Col>
-                  <Form>
-                    <InputGroup className="mb-2 mr-sm-2">
-                      <InputGroup.Prepend>
-                        <InputGroup.Text>Search</InputGroup.Text>
-                      </InputGroup.Prepend>
-                      <Form.Control
-                        ref={searchInput}
-                        placeholder="Start typing to find results"
-                        value={query}
-                        onChange={({ target }) => {
-                          setQuery(target.value);
-                        }}
-                      />
-                    </InputGroup>
-                  </Form>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <div className={cx(styles.results)}>
-                    <AutoSizer>
-                      {({ height, width }) => (
-                        <LazyList
-                          height={height}
-                          width={width}
-                          itemCount={searchResults.length}
-                          itemSize={brickResultSizePx}
-                          itemKey={itemKey}
-                          itemData={
-                            {
-                              searchResults,
-                              setDetailBrick,
-                              activeBrick: detailBrick,
-                              selectCaption,
-                              onSelect,
-                              close,
-                            } as ItemType
-                          }
-                        >
-                          {ItemRenderer}
-                        </LazyList>
-                      )}
-                    </AutoSizer>
-                  </div>
-                </Col>
-              </Row>
+            <Col xs={5} className={styles.results}>
+              <Form>
+                <InputGroup>
+                  <InputGroup.Prepend>
+                    <InputGroup.Text>Search</InputGroup.Text>
+                  </InputGroup.Prepend>
+                  <Form.Control
+                    ref={searchInput}
+                    placeholder="Start typing to find results"
+                    value={query}
+                    onChange={({ target }) => {
+                      setQuery(target.value);
+                    }}
+                  />
+                </InputGroup>
+              </Form>
+              <div>
+                <AutoSizer>
+                  {({ height, width }) => (
+                    <LazyList
+                      height={height}
+                      width={width}
+                      itemCount={searchResults.length}
+                      itemSize={brickResultSizePx}
+                      itemKey={itemKey}
+                      itemData={
+                        {
+                          searchResults,
+                          setDetailBrick,
+                          activeBrick: detailBrick,
+                          selectCaption,
+                          onSelect,
+                          close,
+                        } as ItemType
+                      }
+                    >
+                      {ItemRenderer}
+                    </LazyList>
+                  )}
+                </AutoSizer>
+              </div>
             </Col>
             <Col
               xs={7}

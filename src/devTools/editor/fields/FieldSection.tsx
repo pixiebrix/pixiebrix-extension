@@ -21,10 +21,15 @@ import styles from "./FieldSection.module.scss";
 /**
  * A Page Editor edit tab field section.
  */
-const FieldSection: React.FC<{ title: string }> = ({ title, children }) => (
+const FieldSection: React.FC<{
+  title: string;
+  bodyRef?: React.MutableRefObject<HTMLDivElement>;
+}> = ({ title, bodyRef, children }) => (
   <>
     <Card.Header className={styles.cardHeader}>{title}</Card.Header>
-    <Card.Body className={styles.cardBody}>{children}</Card.Body>
+    <Card.Body className={styles.cardBody} ref={bodyRef}>
+      {children}
+    </Card.Body>
   </>
 );
 

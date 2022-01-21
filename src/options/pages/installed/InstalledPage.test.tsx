@@ -58,7 +58,7 @@ describe("InstalledPage", () => {
     mockOnboarding();
     const { container } = render(
       <StaticRouter>
-        <_InstalledPage extensions={[]} push={jest.fn()} onRemove={jest.fn()} />
+        <_InstalledPage extensions={[]} onRemove={jest.fn()} />
       </StaticRouter>
     );
     expect(container.querySelector(".ActiveBricksCard")).toBeNull();

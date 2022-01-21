@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.verticalFormGroup,
-.horizontalFormGroup {
+.formGroup {
+  align-items: center;
   // Prevents long urls in Field descriptions from overflowing containing element
   // https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
   overflow-wrap: break-word;
@@ -24,21 +24,7 @@
   hyphens: auto;
 }
 
-.verticalFormGroup {
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.verticalFormLabel {
-  padding-bottom: 0.25rem;
-  width: 100%;
-}
-
-.horizontalFormGroup {
-  align-items: center;
-}
-
-.horizontalLabel {
+.label {
   align-self: stretch;
 }
 

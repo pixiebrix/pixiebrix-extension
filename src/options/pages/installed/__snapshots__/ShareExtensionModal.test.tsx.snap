@@ -31,16 +31,16 @@ exports[`renders modal 1`] = `
           class="modal-body"
         >
           <div
-            class="horizontalFormGroup form-group row"
+            class="formGroup form-group row"
           >
             <label
-              class="horizontalLabel form-label col-form-label col-lg-3"
+              class="label form-label col-form-label col-xl-2 col-lg-3"
               for="name"
             >
               Name
             </label>
             <div
-              class="col-lg-9"
+              class="col-xl-10 col-lg-9"
             >
               <input
                 class="form-control"
@@ -56,16 +56,16 @@ exports[`renders modal 1`] = `
             </div>
           </div>
           <div
-            class="horizontalFormGroup form-group row"
+            class="formGroup form-group row"
           >
             <label
-              class="horizontalLabel form-label col-form-label col-lg-3"
+              class="label form-label col-form-label col-xl-2 col-lg-3"
               for="blueprintId"
             >
               Registry Id
             </label>
             <div
-              class="col-lg-9"
+              class="col-xl-10 col-lg-9"
             >
               <input
                 class="form-control"
@@ -87,22 +87,22 @@ exports[`renders modal 1`] = `
             </div>
           </div>
           <div
-            class="horizontalFormGroup form-group row"
+            class="formGroup form-group row"
           >
             <label
-              class="horizontalLabel form-label col-form-label col-lg-3"
+              class="label form-label col-form-label col-xl-2 col-lg-3"
               for="description"
             >
               Description
             </label>
             <div
-              class="col-lg-9"
+              class="col-xl-10 col-lg-9"
             >
               <input
                 class="form-control"
                 id="description"
                 name="description"
-                value=""
+                value="Created with the PixieBrix Page Editor"
               />
               <small
                 class="text-muted form-text"
@@ -136,35 +136,10 @@ exports[`renders modal 1`] = `
             </div>
           </div>
           <div
-            class="form-group row"
+            class="formGroup form-group row"
           >
-            <div
-              class="col-sm-3"
-            >
-              <div
-                class="switch btn on btn-primary"
-              >
-                <div
-                  class="switch-group"
-                >
-                  <span
-                    class="switch-on btn btn-primary"
-                  >
-                     
-                  </span>
-                  <span
-                    class="switch-off btn btn-light"
-                  >
-                     
-                  </span>
-                  <span
-                    class="switch-handle btn btn-light"
-                  />
-                </div>
-              </div>
-            </div>
             <label
-              class="col-sm-9"
+              class="label form-label col-form-label col-xl-2 col-lg-3"
               for="public"
             >
               <span>
@@ -184,16 +159,42 @@ exports[`renders modal 1`] = `
                   />
                 </svg>
                  Public
-                 
-                <span
-                  class="text-primary"
-                >
-                  <i>
-                     – visible to all PixieBrix users
-                  </i>
-                </span>
               </span>
             </label>
+            <div
+              class="col-xl-10 col-lg-9"
+            >
+              <div
+                class="root"
+              >
+                <div
+                  class="switch btn off btn-light"
+                >
+                  <div
+                    class="switch-group"
+                  >
+                    <span
+                      class="switch-on btn btn-primary"
+                    >
+                       
+                    </span>
+                    <span
+                      class="switch-off btn btn-light"
+                    >
+                       
+                    </span>
+                    <span
+                      class="switch-handle btn btn-light"
+                    />
+                  </div>
+                </div>
+              </div>
+              <small
+                class="text-muted form-text"
+              >
+                 
+              </small>
+            </div>
           </div>
         </div>
         <div
@@ -209,7 +210,7 @@ exports[`renders modal 1`] = `
             class="btn btn-primary"
             type="submit"
           >
-            Share
+            Convert
           </button>
         </div>
       </form>

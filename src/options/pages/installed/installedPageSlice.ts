@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessageContext } from "@/core";
+import { IExtension, MessageContext } from "@/core";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface LogsContext {
@@ -23,12 +23,18 @@ export interface LogsContext {
   messageContext: MessageContext;
 }
 
+export interface ShareContext {
+  extension: IExtension;
+}
+
 export interface InstalledPageState {
   showLogsContext: LogsContext;
+  showShareContext: ShareContext;
 }
 
 const initialState: InstalledPageState = {
   showLogsContext: null,
+  showShareContext: null,
 };
 
 export const installedPageSlice = createSlice({
@@ -37,6 +43,9 @@ export const installedPageSlice = createSlice({
   reducers: {
     setLogsContext: (state, action: PayloadAction<LogsContext>) => {
       state.showLogsContext = action.payload;
+    },
+    setShareContext: (state, action: PayloadAction<ShareContext>) => {
+      state.showShareContext = action.payload;
     },
   },
 });

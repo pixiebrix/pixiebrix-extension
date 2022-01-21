@@ -15,28 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
-import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
-import ServiceField, {
-  isServiceField,
-} from "@/components/fields/schemaFields/ServiceField";
-import AppServiceField, {
-  isAppServiceField,
-} from "@/components/fields/schemaFields/AppServiceField";
+export function timeSince(date: number): string {
+  // Adapted from: https://stackoverflow.com/a/3177838/402560
+  const seconds = Math.floor((Date.now() - date) / 1000);
 
-const SchemaField: SchemaFieldComponent = (props) => {
-  const { schema } = props;
+  let interval = seconds / 31_536_000;
 
-  if (isAppServiceField(schema)) {
-    return <AppServiceField {...props} />;
+  if (interval > 1) {
+    return `${Math.floor(interval)} years`;
   }
 
-  if (isServiceField(schema)) {
-    return <ServiceField {...props} />;
+  interval = seconds / 2_592_000;
+  if (interval > 1) {
+    return `${Math.floor(interval)} months`;
   }
 
-  return <BasicSchemaField {...props} />;
-};
+  interval = seconds / 86_400;
+  if (interval > 1) {
+    return `${Math.floor(interval)} days`;
+  }
 
-export default SchemaField;
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return `${Math.floor(interval)} hours`;
+  }
+
+  interval = seconds / 60;
+  if (interval > 1) {
+    return `${Math.floor(interval)} minutes`;
+  }
+
+  return `${Math.floor(seconds)} seconds`;
+}

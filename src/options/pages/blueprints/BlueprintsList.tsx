@@ -15,28 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Card, Table } from "react-bootstrap";
 import React from "react";
-import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
-import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
-import ServiceField, {
-  isServiceField,
-} from "@/components/fields/schemaFields/ServiceField";
-import AppServiceField, {
-  isAppServiceField,
-} from "@/components/fields/schemaFields/AppServiceField";
+import styles from "./BlueprintsList.module.scss";
+import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
+import {
+  getUniqueId,
+  Installable,
+} from "@/options/pages/blueprints/installableUtils";
 
-const SchemaField: SchemaFieldComponent = (props) => {
-  const { schema } = props;
+const BlueprintsList: React.FunctionComponent<{
+  installables: Installable[];
+}> = ({ installables }) => (
+  <Card className={styles.root}>
+    <Table>
+      <tbody>
+        {installables.map((installable) => (
+          <BlueprintListEntry
+            key={getUniqueId(installable)}
+            installable={installable}
+          />
+        ))}
+      </tbody>
+    </Table>
+  </Card>
+);
 
-  if (isAppServiceField(schema)) {
-    return <AppServiceField {...props} />;
-  }
-
-  if (isServiceField(schema)) {
-    return <ServiceField {...props} />;
-  }
-
-  return <BasicSchemaField {...props} />;
-};
-
-export default SchemaField;
+export default BlueprintsList;

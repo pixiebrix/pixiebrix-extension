@@ -15,23 +15,57 @@ exports[`Marketplace Activate Wizard OptionsBody renders text field 1`] = `
     class="OptionsBody p-3 card-body"
   >
     <div
-      class="horizontalFormGroup form-group row"
+      class="formGroup form-group row"
     >
       <label
-        class="horizontalLabel form-label col-form-label col-lg-3"
+        class="label form-label col-form-label col-xl-2 col-lg-3"
         for="optionsArgs.textField"
       >
         Text Field
       </label>
       <div
-        class="col-lg-9"
+        class="col-xl-10 col-lg-9"
       >
-        <textarea
-          class="form-control"
-          id="optionsArgs.textField"
-          name="optionsArgs.textField"
-          rows="1"
-        />
+        <div
+          class="root"
+        >
+          <div
+            class="field"
+          >
+            <div
+              role="button"
+              tabindex="0"
+            >
+              <input
+                class="form-control"
+                disabled=""
+                id="optionsArgs.textField"
+                name="optionsArgs.textField"
+                value=""
+              />
+            </div>
+          </div>
+          <div
+            class="dropdown dropdown"
+            data-test-selected="Exclude"
+            data-testid="toggle-optionsArgs.textField"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-link"
+              type="button"
+            >
+              <span
+                class="symbol"
+              >
+                <svg
+                  class="root"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

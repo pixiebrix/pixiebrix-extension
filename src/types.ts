@@ -252,7 +252,7 @@ export abstract class Effect extends Block {
   }
 
   async isRootAware(): Promise<boolean> {
-    // Most transformers don't use the root, so have them opt-in
+    // Most effects don't use the root, so have them opt-in
     return false;
   }
 
