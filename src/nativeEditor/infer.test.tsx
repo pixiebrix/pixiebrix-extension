@@ -22,6 +22,9 @@ import {
   inferSelectors,
   safeCssSelector,
 } from "@/nativeEditor/infer";
+import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
+import { PIXIEBRIX_DATA_ATTR } from "@/extensionPoints/panelExtension";
+import { EXTENSION_POINT_DATA_ATTR } from "@/extensionPoints/helpers";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";
@@ -365,6 +368,24 @@ describe("inferSelectors", () => {
       );
 
       expect(selector).toStrictEqual([`[${attribute}='a']`]);
+    }
+  );
+
+  test.each([[PIXIEBRIX_DATA_ATTR], [EXTENSION_POINT_DATA_ATTR]])(
+    "don't infer pixiebrix attribute: %s",
+    (attribute: string) => {
+      document.body.innerHTML =
+        "<div>" +
+        `<input ${attribute}='foo'/>` +
+        `<input ${attribute}='bar'/>` +
+        "</div>";
+
+      const selector = inferSelectors(
+        document.body.querySelector(`input[${attribute}='foo']`)
+      );
+
+      // FIXME: put the real value here. Currently both tests are returning the deny-listed attribute
+      expect(selector).toStrictEqual(["[aria-label='foo']"]);
     }
   );
 });

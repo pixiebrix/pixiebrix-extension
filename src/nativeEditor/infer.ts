@@ -498,6 +498,11 @@ export function safeCssSelector(
       "[data-aura-rendered-by]",
       // Vuejs component tracking
       "[data-v-*]",
+      // Our attributes
+      // FIXME: what is the syntax supposed to be for these?
+      `[${EXTENSION_POINT_DATA_ATTR}]`,
+      PIXIEBRIX_DATA_ATTR,
+      `[${PIXIEBRIX_READY_ATTRIBUTE}]`,
     ],
     whitelist: [
       // Data attributes people use in automated tests are unlikely to change frequently
