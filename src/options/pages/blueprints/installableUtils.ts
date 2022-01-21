@@ -19,10 +19,13 @@ import { RecipeDefinition } from "@/types/definitions";
 import { RegistryId, ResolvedExtension } from "@/core";
 import { groupBy } from "lodash";
 import * as semver from "semver";
+import { Organization } from "@/types/contract";
 
 export type InstallStatus = {
-  hasUpdate?: boolean;
+  hasUpdate: boolean;
   active: boolean;
+  // TODO: perhaps put this somewhere else
+  organization: Organization;
 };
 
 export type Installable = (RecipeDefinition | ResolvedExtension) &

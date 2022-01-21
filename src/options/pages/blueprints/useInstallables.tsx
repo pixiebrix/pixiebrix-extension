@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ResolvedExtension, UUID } from "@/core";
+import { ResolvedExtension, Sharing, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { useCallback, useContext, useMemo } from "react";
 import AuthContext from "@/auth/AuthContext";
@@ -24,11 +24,32 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import {
+  getSharing,
   Installable,
   isPersonal,
   updateAvailable,
 } from "@/options/pages/blueprints/installableUtils";
-import { useGetCloudExtensionsQuery, useGetRecipesQuery } from "@/services/api";
+import {
+  useGetCloudExtensionsQuery,
+  useGetOrganizationsQuery,
+  useGetRecipesQuery,
+} from "@/services/api";
+import { Organization } from "@/types/contract";
+
+type InstallableGroup = {
+  groupName: string;
+  installables: Installable[];
+};
+
+type GroupedInstallables = InstallableGroup[];
+
+type GroupByFunction = (installables: Installable[]) => GroupedInstallables;
+
+type GroupByUtilities = {
+  team: GroupByFunction;
+  scope: GroupByFunction;
+  active: GroupByFunction;
+};
 
 type InstallablesState = {
   installables: {
@@ -37,8 +58,25 @@ type InstallablesState = {
     personal: Installable[];
     shared: Installable[];
   };
+  // groupByUtilities: GroupByUtilities;
   isLoading: boolean;
   error: unknown;
+};
+
+const getOrganization = (
+  extensionOrRecipe: ResolvedExtension | RecipeDefinition,
+  organizations: Organization[]
+) => {
+  const sharing = getSharing(extensionOrRecipe);
+
+  if (!sharing || sharing.organizations.length === 0) {
+    return null;
+  }
+
+  // If more than one sharing organization, use the first
+  return organizations.find((org) =>
+    sharing.organizations.includes(org.id as UUID)
+  );
 };
 
 function useInstallables(): InstallablesState {
@@ -47,6 +85,7 @@ function useInstallables(): InstallablesState {
 
   const recipes = useGetRecipesQuery();
   const cloudExtensions = useGetCloudExtensionsQuery();
+  const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const installedExtensionIds = useMemo(
     () => new Set<UUID>(unresolvedExtensions.map((extension) => extension.id)),
@@ -94,17 +133,12 @@ function useInstallables(): InstallablesState {
 
   const personalOrTeamBlueprints = useMemo(
     () =>
-      (recipes.data ?? [])
-        .filter(
-          (recipe) =>
-            recipe.metadata.id.includes(scope) ||
-            recipe.sharing.organizations.length > 0
-        )
-        .map((recipe) => ({
-          ...recipe,
-          active: installedRecipeIds.has(recipe.metadata.id),
-        })),
-    [recipes.data, scope, installedRecipeIds]
+      (recipes.data ?? []).filter(
+        (recipe) =>
+          recipe.metadata.id.includes(scope) ||
+          recipe.sharing.organizations.length > 0
+      ),
+    [recipes.data, scope]
   );
 
   // Restructures ResolvedExtension | RecipeDefinition into an Installable type
@@ -119,9 +153,16 @@ function useInstallables(): InstallablesState {
             "_recipe" in extensionOrRecipe
               ? updateAvailable(recipes.data, extensionOrRecipe)
               : false,
+          organization: getOrganization(extensionOrRecipe, organizations),
         })
       ),
-    [isActive, personalOrTeamBlueprints, recipes.data, resolvedExtensions]
+    [
+      isActive,
+      organizations,
+      personalOrTeamBlueprints,
+      recipes.data,
+      resolvedExtensions,
+    ]
   );
 
   return {

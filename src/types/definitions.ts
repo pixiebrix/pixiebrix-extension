@@ -25,6 +25,7 @@ import {
   RecipeMetadata,
   RegistryId,
   Schema,
+  Sharing,
   TemplateEngine,
   Timestamp,
   UUID,
@@ -152,7 +153,7 @@ export interface RecipeDefinition extends UnsavedRecipeDefinition {
    * Who the recipe is shared with. NOTE: does not appear in the recipe's YAML/JSON config -- the API endpoint's
    * serializer adds it to the response.
    */
-  sharing: SharingDefinition;
+  sharing: Sharing;
 
   /**
    * When the recipe was last updated. Can be used to detect updates where the version number of the recipe was

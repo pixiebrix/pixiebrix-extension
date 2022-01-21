@@ -34,6 +34,7 @@ import {
   selectShowShareContext,
 } from "@/options/pages/installed/installedPageSelectors";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
+import Select from "react-select";
 
 type CategoryFilter = "active" | "all" | "personal" | "shared";
 
@@ -62,6 +63,8 @@ const BlueprintsPage: React.FunctionComponent = () => {
   const showShareContext = useSelector<RootState, ShareContext>(
     selectShowShareContext
   );
+
+  console.log("Installables:", installables);
 
   return (
     <Page
@@ -108,7 +111,15 @@ const BlueprintsPage: React.FunctionComponent = () => {
           </Nav>
         </Col>
         <Col xs={9}>
-          <h3>{categoryLabels.get(filterCategory)}</h3>
+          <div className="d-flex justify-content-between align-items-center">
+            <h3 className="my-3">{categoryLabels.get(filterCategory)}</h3>
+            <span className="d-flex align-items-center">
+              <span>Group by:</span>
+              <Select isMulti placeholder="Group by" options={[]} />
+              <span>Sort by:</span>
+              <Select isMulti placeholder="Sort by" options={[]} />
+            </span>
+          </div>
           {/* eslint-disable-next-line security/detect-object-injection -- is FilterCategory */}
           {installables[filterCategory]?.length > 0 && (
             // eslint-disable-next-line security/detect-object-injection -- is FilterCategory
