@@ -27,6 +27,7 @@ import { AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
 import {
+  CloudExtension,
   Database,
   Group,
   MarketplaceListing,
@@ -78,6 +79,7 @@ export const appApi = createApi({
     "Recipes",
     "EditablePackages",
     "Invitations",
+    "CloudExtensions",
   ],
   endpoints: (builder) => ({
     getDatabases: builder.query<Database[], void>({
@@ -188,6 +190,10 @@ export const appApi = createApi({
       query: () => ({ url: "/api/recipes/", method: "get" }),
       providesTags: ["Recipes"],
     }),
+    getCloudExtensions: builder.query<CloudExtension[], void>({
+      query: () => ({ url: "/api/extensions/", method: "get" }),
+      providesTags: ["CloudExtensions"],
+    }),
     createRecipe: builder.mutation<
       PackageUpsertResponse,
       {
@@ -247,6 +253,7 @@ export const {
   useGetOrganizationsQuery,
   useGetGroupsQuery,
   useGetRecipesQuery,
+  useGetCloudExtensionsQuery,
   useGetEditablePackagesQuery,
   useCreateRecipeMutation,
   useUpdateRecipeMutation,

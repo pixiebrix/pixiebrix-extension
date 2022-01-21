@@ -54,6 +54,7 @@ import { PackageUpsertResponse } from "@/types/contract";
 import extensionsSlice from "@/store/extensionsSlice";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
+import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 
 const { attachExtension } = extensionsSlice.actions;
 
@@ -105,10 +106,13 @@ async function convertAndShare(
 
 const ShareExtensionModal: React.FC<{
   extension: IExtension;
-  onCancel: () => void;
-}> = ({ extension, onCancel }) => {
+}> = ({ extension }) => {
   const notify = useNotifications();
   const dispatch = useDispatch();
+
+  const onCancel = () => {
+    dispatch(installedPageSlice.actions.setShareContext(null));
+  };
 
   // If loading the URL directly, there's a race condition if scope will be populated when the modal is mounted.
   // Not a priority to fix because user will general come to the modal via the "Share" button on the main page
