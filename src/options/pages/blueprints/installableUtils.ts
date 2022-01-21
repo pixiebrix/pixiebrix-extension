@@ -20,11 +20,12 @@ import { RegistryId, ResolvedExtension } from "@/core";
 import { groupBy } from "lodash";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
+import { useMemo } from "react";
 
 export type InstallStatus = {
   hasUpdate: boolean;
   active: boolean;
-  // TODO: perhaps put this somewhere else
+  // TODO: not sure if there is a better way to do this
   organization: Organization;
 };
 
