@@ -18,7 +18,7 @@
 import React, { useState } from "react";
 import Page from "@/layout/Page";
 import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
-import { Button, Col, Nav, Row } from "react-bootstrap";
+import { Col, Nav, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlueprintsList from "@/options/pages/blueprints/BlueprintsList";
 import useInstallables from "@/options/pages/blueprints/useInstallables";

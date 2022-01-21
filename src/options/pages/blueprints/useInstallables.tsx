@@ -24,7 +24,6 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import {
-  groupByRecipe,
   Installable,
   isPersonal,
   updateAvailable,
