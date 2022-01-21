@@ -49,6 +49,7 @@ describe("renderExplicit", () => {
     ["mustache", { foo: "" }],
     ["nunjucks", { foo: "" }],
     ["handlebars", { foo: "" }],
+    // `foo` gets stripped out because the renderExplicit drops entries with nullish values
     ["var", {}],
   ])(
     "doesn't fail on empty %s template",

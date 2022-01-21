@@ -93,7 +93,7 @@ export function isTemplateExpression(
  */
 export function isVarExpression(
   value: unknown
-): value is Expression<string, TemplateEngine> {
+): value is Expression<string, "var"> {
   return isExpression(value) && (value as Expression).__type__ === "var";
 }
 
