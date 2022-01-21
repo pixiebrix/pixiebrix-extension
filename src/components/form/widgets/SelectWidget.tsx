@@ -19,6 +19,7 @@ import React, { ChangeEvent } from "react";
 import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import Select, { GroupBase, SelectComponentsConfig } from "react-select";
 import { getErrorMessage } from "@/errors";
+import { isExpression } from "@/runtime/mapArgs";
 
 // Type of the Select options
 export type Option<TValue = string> = {
@@ -61,7 +62,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
   isLoading,
   loadError,
   disabled,
-  value,
+  value: inputValue,
   onChange,
   name,
   components,
@@ -81,6 +82,7 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
     } as ChangeEvent<SelectLike<TOption>>);
   };
 
+  const value = isExpression(inputValue) ? inputValue.__value__ : inputValue;
   // Pass null instead of undefined if options is not defined
   const selectValue =
     options?.find((option: TOption) => value === option.value) ?? null;

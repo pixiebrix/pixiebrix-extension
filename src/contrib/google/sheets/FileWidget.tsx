@@ -29,6 +29,8 @@ import { Form, InputGroup } from "react-bootstrap";
 import useNotifications from "@/hooks/useNotifications";
 import { getErrorMessage } from "@/errors";
 import AsyncButton from "@/components/AsyncButton";
+import { isExpression } from "@/runtime/mapArgs";
+import { Expression } from "@/core";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
@@ -43,7 +45,10 @@ type FileWidgetProps = {
 const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
   const notify = useNotifications();
 
-  const [field, , helpers] = useField<string>(props);
+  const [field, , helpers] = useField<string | Expression>(props);
+  const spreadsheetId = isExpression(field.value)
+    ? field.value.__value__
+    : field.value;
   const [sheetError, setSheetError] = useState(null);
 
   useEffect(
@@ -60,18 +65,16 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
 
   useAsyncEffect(
     async (isMounted) => {
-      const spreadsheetId = field.value;
-
       if (doc?.id === spreadsheetId) {
         // Already up to date
         return;
       }
 
       try {
-        if (!isNullOrBlank(field.value) && doc?.id !== spreadsheetId) {
+        if (!isNullOrBlank(spreadsheetId) && doc?.id !== spreadsheetId) {
           setSheetError(null);
 
-          const properties = await sheets.getSheetProperties(field.value);
+          const properties = await sheets.getSheetProperties(spreadsheetId);
           if (!isMounted()) return;
           onSelect({ id: spreadsheetId, name: properties.title });
         } else {
@@ -86,7 +89,7 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
         });
       }
     },
-    [doc?.id, field.value, onSelect, setSheetError]
+    [doc?.id, spreadsheetId, onSelect, setSheetError]
   );
 
   const showPicker = useCallback(async () => {
@@ -153,14 +156,14 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
         <Form.Control
           type="text"
           disabled
-          value={doc.name ?? field.value ?? ""}
+          value={doc.name ?? spreadsheetId ?? ""}
         />
       ) : (
         <Form.Control
           type="text"
           disabled
           {...field}
-          value={field.value ?? ""}
+          value={spreadsheetId ?? ""}
         />
       )}
       <InputGroup.Append>

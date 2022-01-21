@@ -24,11 +24,16 @@ import { sheets } from "@/background/messenger/api";
 import { compact, uniq } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
+import { Expression } from "@/core";
+import { isExpression } from "@/runtime/mapArgs";
 
 const TabField: React.FunctionComponent<
   SchemaFieldProps & { doc: SheetMeta | null }
 > = ({ name, doc }) => {
-  const [field] = useField<string>(name);
+  const [field] = useField<string | Expression>(name);
+  const tabName = isExpression(field.value)
+    ? field.value.__value__
+    : field.value;
 
   const [tabNames, tabsPending, tabsError] = useAsyncState(async () => {
     if (doc?.id) {
@@ -40,11 +45,11 @@ const TabField: React.FunctionComponent<
 
   const sheetOptions = useMemo(
     () =>
-      uniq(compact([...(tabNames ?? []), field.value])).map((value) => ({
+      uniq(compact([...(tabNames ?? []), tabName])).map((value) => ({
         label: value,
         value,
       })),
-    [tabNames, field.value]
+    [tabNames, tabName]
   );
 
   // TODO: re-add info message that tab will be created
