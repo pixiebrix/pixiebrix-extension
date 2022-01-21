@@ -97,6 +97,12 @@ export async function renderExplicit(
   options: RendererOptions
 ): Promise<unknown> {
   if (isTemplateExpression(config)) {
+    // This check is added to prevent exceptions when rendering a faulty template
+    // see https://github.com/pixiebrix/pixiebrix-extension/issues/2413
+    if (config.__value__ == null) {
+      return "";
+    }
+
     const render = await engineRenderer(config.__type__, options);
     return render(config.__value__, ctxt);
   }

@@ -44,6 +44,18 @@ describe("renderExplicit", () => {
       foo: "bar!",
     });
   });
+
+  test("doesn't fail on empty template", async () => {
+    const rendered = await renderExplicit(
+      { foo: { __type__: "nunjucks", __value__: undefined } },
+      {},
+      apiVersionOptions("v3")
+    );
+
+    expect(rendered).toEqual({
+      foo: "",
+    });
+  });
 });
 
 describe("renderImplicit", () => {
