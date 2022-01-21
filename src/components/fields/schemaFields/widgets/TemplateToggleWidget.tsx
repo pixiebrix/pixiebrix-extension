@@ -134,11 +134,17 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
       ? {
           ...schemaFieldProps,
           onClick: () => {
-            onModeChange("var");
+            if (inputModeOptions.some((option) => option.value === "var")) {
+              onModeChange("var");
+            }
+
+            if (inputModeOptions.some((option) => option.value === "string")) {
+              onModeChange("string");
+            }
           },
         }
       : schemaFieldProps;
-  }, [focusInput, inputMode, onModeChange, schemaFieldProps]);
+  }, [focusInput, inputMode, inputModeOptions, onModeChange, schemaFieldProps]);
 
   return (
     <div className={styles.root}>
@@ -150,6 +156,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
           <span className={styles.symbol}>{selectedOption?.symbol ?? ""}</span>
         }
         variant="link"
+        disabled={inputModeOptions.length < 2}
         alignRight
         onSelect={onModeChange}
         className={styles.dropdown}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,25 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { FieldProps } from "@/components/form/FieldTemplate";
-import { Col, Form as BootstrapForm, Row } from "react-bootstrap";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import { ApiVersion } from "@/core";
 
-const SwitchField: React.FC<FieldProps> = ({
-  name,
-  label,
-  onChange,
-  value,
-}) => (
-  <BootstrapForm.Group as={Row} controlId={name}>
-    <Col sm="3">
-      <SwitchButtonWidget name={name} onChange={onChange} value={value} />
-    </Col>
-    <Col sm="9" as="label" htmlFor={name}>
-      {label}
-    </Col>
-  </BootstrapForm.Group>
-);
-
-export default SwitchField;
+export const OPTIONS_DEFAULT_RUNTIME_API_VERSION: ApiVersion = "v3";

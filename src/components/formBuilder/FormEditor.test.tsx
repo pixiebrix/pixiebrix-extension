@@ -18,7 +18,7 @@
 import { Schema, UiSchema } from "@/core";
 import { waitForEffect } from "@/tests/testHelpers";
 import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { Except } from "type-fest";
 import {
@@ -34,6 +34,7 @@ import {
   initRenamingCases,
 } from "./formEditor.testCases";
 import selectEvent from "react-select-event";
+import userEvent from "@testing-library/user-event";
 
 const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
@@ -302,17 +303,42 @@ describe("FormEditor", () => {
       </FormikTemplate>
     );
 
+    await waitForEffect();
+
+    const fieldToggleButton = screen
+      .getByTestId(
+        `toggle-${RJSF_SCHEMA_PROPERTY_NAME}.schema.properties.${fieldName}.default`
+      )
+      .querySelector("button");
+    expect(fieldToggleButton).not.toBeNull();
+    userEvent.click(fieldToggleButton);
+    const textOption = screen.getByTestId("string");
+    expect(textOption).not.toBeNull();
+    await waitFor(() => {
+      userEvent.click(textOption);
+    });
+
     const defaultValue = "Initial default value";
     const defaultValueInput = screen.getByLabelText("Default value");
+    expect(defaultValueInput).not.toBeNull();
     fireTextInput(defaultValueInput, defaultValue);
 
     await fireFormSubmit();
 
-    expect(
-      // eslint-disable-next-line security/detect-object-injection
-      ((onSubmitMock.mock.calls[0][0][RJSF_SCHEMA_PROPERTY_NAME] as RJSFSchema)
-        .schema.properties[fieldName] as Schema).default
-    ).toBe(defaultValue);
+    expect(onSubmitMock).toHaveBeenLastCalledWith({
+      [RJSF_SCHEMA_PROPERTY_NAME]: expect.objectContaining({
+        schema: expect.objectContaining({
+          properties: {
+            [fieldName]: expect.objectContaining({
+              default: {
+                __type__: "nunjucks",
+                __value__: defaultValue,
+              },
+            }),
+          },
+        }),
+      }),
+    });
 
     await selectEvent.select(screen.getByLabelText("Input Type"), "File");
 

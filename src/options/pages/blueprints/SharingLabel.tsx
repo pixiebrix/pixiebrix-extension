@@ -16,27 +16,32 @@
  */
 
 import React from "react";
-import { SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
-import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
-import ServiceField, {
-  isServiceField,
-} from "@/components/fields/schemaFields/ServiceField";
-import AppServiceField, {
-  isAppServiceField,
-} from "@/components/fields/schemaFields/AppServiceField";
+import { Installable } from "@/options/pages/blueprints/installableUtils";
+import useSharing from "@/options/pages/blueprints/useSharing";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEyeSlash,
+  faGlobe,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 
-const SchemaField: SchemaFieldComponent = (props) => {
-  const { schema } = props;
-
-  if (isAppServiceField(schema)) {
-    return <AppServiceField {...props} />;
-  }
-
-  if (isServiceField(schema)) {
-    return <ServiceField {...props} />;
-  }
-
-  return <BasicSchemaField {...props} />;
+const sharingIcons = {
+  Personal: faEyeSlash,
+  Team: faUsers,
+  Public: faGlobe,
+  Deployment: faUsers,
 };
 
-export default SchemaField;
+const SharingLabel: React.FunctionComponent<{
+  installable: Installable;
+}> = ({ installable }) => {
+  const sharing = useSharing(installable);
+
+  return (
+    <span>
+      <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
+    </span>
+  );
+};
+
+export default SharingLabel;

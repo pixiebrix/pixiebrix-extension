@@ -21,12 +21,10 @@ import { useField, useFormikContext } from "formik";
 import { Expression, OutputKey, ServiceKeyVar } from "@/core";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import {
-  keyToFieldValue as keyToFieldValueV1,
+  keyToFieldValue,
   ServiceSlice,
-} from "@/components/fields/schemaFields/v1/ServiceField";
-import { keyToFieldValue as keyToFieldValueV3 } from "@/components/fields/schemaFields/v3/ServiceField";
+} from "@/components/fields/schemaFields/ServiceField";
 import { produce } from "immer";
-import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 
@@ -57,11 +55,6 @@ const AppServiceField: React.FunctionComponent<SchemaFieldProps> = ({
   const [{ value }, , helpers] = useField<
     ServiceKeyVar | Expression<ServiceKeyVar>
   >(props);
-
-  const isApiAtLeastV3 = useApiVersionAtLeast("v3");
-  const keyToFieldValue = isApiAtLeastV3
-    ? keyToFieldValueV3
-    : keyToFieldValueV1;
 
   useEffect(
     () => {

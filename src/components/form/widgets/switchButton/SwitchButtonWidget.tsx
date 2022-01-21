@@ -18,6 +18,7 @@
 import React, { ChangeEvent } from "react";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import styles from "./SwitchButtonWidget.module.scss";
 
 export type CheckBoxLike = {
   name: string;
@@ -36,12 +37,14 @@ const SwitchButtonWidget: CustomFieldWidget<boolean, CheckBoxLike> = ({
   };
 
   return (
-    <BootstrapSwitchButton
-      onlabel=" "
-      offlabel=" "
-      checked={value}
-      onChange={patchedOnChange}
-    />
+    <div className={styles.root}>
+      <BootstrapSwitchButton
+        onlabel=" "
+        offlabel=" "
+        checked={value}
+        onChange={patchedOnChange}
+      />
+    </div>
   );
 };
 

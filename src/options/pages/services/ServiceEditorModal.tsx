@@ -35,6 +35,7 @@ import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import styles from "./ServiceEditorModal.module.scss";
+import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/options/constants";
 
 export type OwnProps = {
   configuration: RawServiceConfiguration;
@@ -44,9 +45,10 @@ export type OwnProps = {
   onSave: (config: RawServiceConfiguration) => Promise<void>;
 };
 
-// Use "v2" because the service configuration form expects literal values for everything. (I.e., expressions are not
-// supported). But we still want to get our SchemaField support for enums, etc.
-const FORM_RUNTIME_CONTEXT: RuntimeContext = { apiVersion: "v2" };
+const FORM_RUNTIME_CONTEXT: RuntimeContext = {
+  apiVersion: OPTIONS_DEFAULT_RUNTIME_API_VERSION,
+  allowExpressions: false,
+};
 
 const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   configuration: originalConfiguration,

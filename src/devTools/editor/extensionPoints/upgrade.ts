@@ -21,7 +21,7 @@ import { inputProperties } from "@/helpers";
 import { UnknownObject } from "@/types";
 import { Expression, SchemaDefinition, TemplateEngine } from "@/core";
 import { cloneDeep } from "lodash";
-import { isSelectField } from "@/components/fields/schemaFields/widgets/v3/SchemaSelectWidget";
+import { isSelectField } from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 
 export function stringToExpression(
   value: unknown,
