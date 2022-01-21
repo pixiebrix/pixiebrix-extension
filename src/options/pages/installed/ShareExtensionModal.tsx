@@ -55,6 +55,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
+import styles from "./ShareExtensionModal.module.scss";
 
 const { attachExtension } = extensionsSlice.actions;
 
@@ -246,7 +247,13 @@ const ShareExtensionModal: React.FC<{
   );
 
   return (
-    <Modal show onHide={onCancel}>
+    <Modal
+      show
+      onHide={onCancel}
+      backdropClassName={styles.backdrop}
+      className={styles.modal}
+      dialogClassName={styles.dialog}
+    >
       <Modal.Header>
         <Modal.Title>Share as Blueprint</Modal.Title>
       </Modal.Header>
