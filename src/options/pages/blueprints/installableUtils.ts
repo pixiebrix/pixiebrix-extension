@@ -58,7 +58,8 @@ export const getPackageId = (installable: Installable): RegistryId =>
 
 export const getUpdatedAt = (installable: Installable): string =>
   isExtension(installable)
-    ? installable._recipe?.updated_at
+    ? // @ts-expect-error -- need to figure out why updateTimestamp isn't included on IExtension here
+      installable._recipe?.updated_at ?? installable.updateTimestamp
     : installable.updated_at;
 
 export const getSharing = (installable: Installable) =>
@@ -97,7 +98,10 @@ export const isDeployment = (installable: Installable) => {
 // TODO: keeping this even though unused atm, will be useful for future grouping features
 export const groupByRecipe = (installables: Installable[]): Installable[][] =>
   Object.values(
-    groupBy(installables, (installable) => getPackageId(installable))
+    groupBy(
+      installables,
+      (installable) => getPackageId(installable) ?? getUniqueId(installable)
+    )
   );
 
 export function updateAvailable(
