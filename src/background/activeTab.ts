@@ -1,7 +1,6 @@
 /** @file It's possible that some of these tabs might lose the permission in the meantime, we can't track that exactly */
 
 // eslint-disable-next-line filenames/match-exported
-import { safeParseUrl } from "@/utils";
 import { canReceiveContentScript } from "@/utils/permissions";
 import browser from "webextension-polyfill";
 
@@ -31,20 +30,6 @@ export default function initActiveTabTracking() {
     console.debug("ActiveTab removed:", tabId);
     possiblyActiveTabs.delete(tabId);
   });
-}
-
-export async function doesTabHaveAccess({
-  tabId,
-  url,
-}: {
-  tabId?: TabId;
-  url?: Origin;
-}): Promise<boolean> {
-  const { origin } = safeParseUrl(url);
-  return (
-    possiblyActiveTabs.get(tabId) === origin ||
-    browser.permissions.contains({ origins: [url] })
-  );
 }
 
 export async function getTabsWithAccess(): Promise<TabId[]> {

@@ -19,7 +19,7 @@ import browser, { WebNavigation } from "webextension-polyfill";
 import { navigationEvent } from "@/background/devtools/external";
 import { handleNavigate, resetTab } from "@/contentScript/messenger/api";
 import { thisTab } from "./utils";
-import { doesTabHaveAccess } from "@/background/activeTab";
+import { canAccessTab } from "webext-tools";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
@@ -30,7 +30,6 @@ export function updateDevTools() {
 async function onNavigation({
   tabId,
   frameId,
-  url,
 }:
   | WebNavigation.OnHistoryStateUpdatedDetailsType
   | WebNavigation.OnDOMContentLoadedDetailsType): Promise<void> {
@@ -39,7 +38,7 @@ async function onNavigation({
     tabId === browser.devtools.inspectedWindow.tabId
   ) {
     updateDevTools();
-    if (await doesTabHaveAccess({ tabId, url })) {
+    if (await canAccessTab({ tabId, frameId })) {
       handleNavigate({ tabId, frameId });
     }
   }
