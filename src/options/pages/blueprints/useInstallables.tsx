@@ -97,12 +97,15 @@ function useInstallables(): InstallablesState {
       (recipes.data ?? [])
         .filter(
           (recipe) =>
-            recipe.metadata.id.includes(scope) ||
-            recipe.sharing.organizations.length > 0
+            (recipe.metadata.id.includes(scope) ||
+              recipe.sharing.organizations.length > 0) &&
+            // Remove duplicate Installable entries for Active extension
+            // and Recipe pairs
+            !installedRecipeIds.has(recipe.metadata.id)
         )
         .map((recipe) => ({
           ...recipe,
-          active: installedRecipeIds.has(recipe.metadata.id),
+          active: false,
         })),
     [recipes.data, scope, installedRecipeIds]
   );
