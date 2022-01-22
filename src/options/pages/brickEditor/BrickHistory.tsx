@@ -29,21 +29,24 @@ export interface PackageVersionOption {
   created_at: string;
 }
 
-const CustomSingleValue: React.FunctionComponent<{
-  data: PackageVersionOption;
-}> = ({ data }) => (
-  <div className="d-flex align-items-center">
-    <span>{data.label}&nbsp;</span>{" "}
-    <span className="small text-muted">{data.created_at}</span>
-  </div>
+const { Option, SingleValue } = components;
+
+const CustomSingleValue: React.FunctionComponent = (
+  props: OptionProps<PackageVersionOption>
+) => (
+  <SingleValue {...props}>
+    <div className="d-flex align-items-center">
+      <span>{props.data.label}&nbsp;</span>{" "}
+      <span className="small text-muted">{props.data.created_at}</span>
+    </div>
+  </SingleValue>
 );
 
-const { Option } = components;
 const CustomSingleOption: React.FunctionComponent = (
-  props: OptionProps<never, never>
+  props: OptionProps<PackageVersionOption>
 ) => (
   <Option {...props}>
-    <CustomSingleValue data={props.data} />
+    <CustomSingleValue {...props} />
   </Option>
 );
 
