@@ -34,8 +34,24 @@ const VARIABLE_REGEX = /^@\S+$/;
  * Brick to fieldName mapping of fields that should be kept as a literal if it's a literal.
  */
 const PRESERVE_LITERAL_VALUES = new Map<RegistryId, Set<string>>(
+  // Things we've skipped here:
+  // "@pixiebrix/form" - form builder handles
+  // "@pixiebrix/form-modal" - form builder handles
+  // "@pixiebrix/document" - document builder handles
   Object.entries({
     "@pixiebrix/google/sheets-append": new Set(["spreadsheetId", "tabName"]),
+    "@pixiebrix/google/sheets-lookup": new Set([
+      "spreadsheetId",
+      "tabName",
+      "header",
+    ]),
+    "@pixiebrix/zapier/push-data": new Set(["pushKey"]),
+    "@pixiebrix/uipath/process": new Set(["releaseKey"]),
+    "@pixiebrix/uipath/local-process": new Set(["releaseKey"]),
+    "@pixiebrix/automation-anywhere/run-bot": new Set(["fileId", "deviceId"]),
+    "@pixiebrix/data/get": new Set(["databaseId"]),
+    "@pixiebrix/data/put": new Set(["databaseId"]),
+    "@pixiebrix/component-reader": new Set(["framework"]),
   }) as Array<[RegistryId, Set<string>]>
 );
 
@@ -325,7 +341,7 @@ async function upgradeValue({
     PRESERVE_LITERAL_VALUES.get(blockId)?.has(fieldName) &&
     !isTemplateString(value)
   ) {
-    // NOP: there's some custom options we want to support literals for. See PRESERVE_LITERALS
+    // NOP: there's some custom options we want to support literals for. See PRESERVE_LITERAL_VALUES
   } else if (
     (fieldSchema?.type === "string" && fieldSchema?.format === "selector") ||
     (fieldSchema && isSelectField(fieldSchema))
