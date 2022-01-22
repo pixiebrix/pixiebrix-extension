@@ -41,7 +41,9 @@ function isVarValue(value: string): boolean {
 }
 
 function isMustacheOnly(value: string): boolean {
-  return /{{[!#&>^]/g.test(value);
+  // Mustache-specific syntax: {{{, {{!, {{#, {{&, {{>, {{^
+  // All but the first one also support whitespace between the brackets and symbols
+  return /{{{/g.test(value) || /{{\s*[!#&>^]/g.test(value);
 }
 
 const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
@@ -144,6 +146,8 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     if (isTemplateExpression(value)) {
       return [
         value.__value__,
+        // Convert mustache templates to nunjucks if possible, because the page editor only
+        // supports nunjucks, and it doesn't show the template engine anywhere to the user anymore
         isMustacheOnly(value.__value__)
           ? onChangeForTemplate(value.__type__)
           : onChangeForTemplate("nunjucks"),
