@@ -512,3 +512,27 @@ export async function asyncLoop<Item>(
 ): Promise<void> {
   await Promise.all([...iterable].map(unary(iteratee)));
 }
+
+/**
+ * Overridable selection getter. Useful to allow the QuickBar to preserve the selection
+ * https://github.com/pixiebrix/pixiebrix-extension/issues/2443
+ */
+let selectionOverride: Range | undefined;
+export const selection = {
+  save(): void {
+    selectionOverride = getSelection().getRangeAt(0);
+  },
+  restore() {
+    if (!selectionOverride) {
+      return;
+    }
+
+    const native = getSelection();
+    native.removeAllRanges();
+    native.addRange(selectionOverride);
+    selectionOverride = undefined;
+  },
+  get(): string {
+    return (selectionOverride ?? getSelection()).toString();
+  },
+};

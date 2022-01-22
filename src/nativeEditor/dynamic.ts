@@ -41,6 +41,7 @@ import {
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { $safeFind } from "@/helpers";
 import { TriggerDefinition } from "@/extensionPoints/triggerExtension";
+import { selection } from "@/utils";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
@@ -97,8 +98,7 @@ const contextMenuReaderShim = {
 
     return {
       mediaType,
-      // https://developer.mozilla.org/en-US/docs/Web/API/Window/getSelection#return_value
-      selectionText: document.getSelection()?.toString(),
+      selectionText: selection.get(),
       srcUrl: activeElement?.getAttribute("src"),
       documentUrl: document.location.href,
       ...linkProps,

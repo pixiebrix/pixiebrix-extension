@@ -28,7 +28,7 @@ import {
 } from "@/runtime/reducePipeline";
 import { ApiVersion, BlockArgContext, IReader, RegistryId } from "@/core";
 import { selectedElement } from "@/devTools/getSelectedElement";
-import { isNullOrBlank, resolveObj } from "@/utils";
+import { isNullOrBlank, resolveObj, selection } from "@/utils";
 import { BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/tests/ConsoleLogger";
@@ -139,7 +139,7 @@ export async function runReaderBlock({
     }
 
     return {
-      selectionText: window.getSelection().toString(),
+      selectionText: selection.get(),
       documentUrl: document.location.href,
     };
   }
