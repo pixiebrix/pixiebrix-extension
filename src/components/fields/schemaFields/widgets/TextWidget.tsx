@@ -34,6 +34,8 @@ import {
   schemaSupportsTemplates,
 } from "@/components/fields/schemaFields/BasicSchemaField";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
+import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
+import { isMustacheOnly } from "@/components/fields/fieldUtils";
 
 function isVarValue(value: string): boolean {
   return value.startsWith("@") && !value.includes(" ");
@@ -137,7 +139,14 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
 
   const [fieldInputValue, fieldOnChange] = useMemo(() => {
     if (isTemplateExpression(value)) {
-      return [value.__value__, onChangeForTemplate(value.__type__)];
+      return [
+        value.__value__,
+        // Convert mustache templates to nunjucks if possible, because the page editor only
+        // supports nunjucks, and it doesn't show the template engine anywhere to the user anymore
+        isMustacheOnly(value.__value__)
+          ? onChangeForTemplate(value.__type__)
+          : onChangeForTemplate("nunjucks"),
+      ];
     }
 
     const fieldValue = typeof value === "string" ? value : "";
@@ -149,6 +158,10 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
 
     return [fieldValue, onChange];
   }, [allowExpressions, onChangeForTemplate, setValue, value]);
+
+  if (isTemplateExpression(value) && isMustacheOnly(value.__value__)) {
+    return <ComplexObjectWidget />;
+  }
 
   if (
     value !== null &&
