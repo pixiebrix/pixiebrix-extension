@@ -27,6 +27,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import { PersistedExtension } from "@/core";
 
+jest.unmock("react-redux");
 jest.mock("@/hooks/useNotifications");
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
@@ -36,17 +37,15 @@ const extension = extensionFactory({
   label: "testExtension",
 });
 
-function optionsStore() {
-  return configureStore({
-    reducer: { options: extensionsSlice.reducer },
-    preloadedState: {
-      options: { extensions: [extension as PersistedExtension] },
-    },
-  });
-}
+const extensionsStore = configureStore({
+  reducer: { options: extensionsSlice.reducer },
+  preloadedState: {
+    options: { extensions: [extension as PersistedExtension] },
+  },
+});
 
 const TestWrapper: React.FC = ({ children }) => (
-  <Provider store={optionsStore()}>{children}</Provider>
+  <Provider store={extensionsStore}>{children}</Provider>
 );
 
 test("renders modal", async () => {
