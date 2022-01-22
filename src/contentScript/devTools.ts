@@ -28,7 +28,7 @@ import {
 } from "@/runtime/reducePipeline";
 import { ApiVersion, BlockArgContext, IReader, RegistryId } from "@/core";
 import { selectedElement } from "@/devTools/getSelectedElement";
-import { isNullOrBlank, resolveObj, selection } from "@/utils";
+import { isNullOrBlank, resolveObj } from "@/utils";
 import { BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/tests/ConsoleLogger";
@@ -38,6 +38,7 @@ import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/nativeEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
+import selection from "@/utils/selectionController";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {

@@ -41,7 +41,7 @@ import {
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { $safeFind } from "@/helpers";
 import { TriggerDefinition } from "@/extensionPoints/triggerExtension";
-import { selection } from "@/utils";
+import selection from "@/utils/selectionController";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,

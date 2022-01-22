@@ -38,7 +38,7 @@ import { once } from "lodash";
 import { NOFICATIONS_Z_INDEX } from "@/common";
 import { useEventListener } from "@/hooks/useEventListener";
 import { Stylesheet } from "@/components/Stylesheet";
-import { selection } from "@/utils";
+import selection from "@/utils/selectionController";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
