@@ -374,15 +374,14 @@ describe("inferSelectors", () => {
     (attribute: string) => {
       document.body.innerHTML =
         "<div>" +
-        `<input ${attribute}='foo'/>` +
-        `<input ${attribute}='bar'/>` +
+        `<input ${attribute}='foo' aria-label='foo'/>` +
+        `<input ${attribute}='bar' aria-label='bar'/>` +
         "</div>";
 
       const selector = inferSelectors(
         document.body.querySelector(`input[${attribute}='foo']`)
       );
 
-      // FIXME: put the real value here. Currently both tests are returning the deny-listed attribute
       expect(selector).toStrictEqual(["[aria-label='foo']"]);
     }
   );
