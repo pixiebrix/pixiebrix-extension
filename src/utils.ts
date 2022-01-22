@@ -522,7 +522,7 @@ export const selection = {
   save(): void {
     selectionOverride = getSelection().getRangeAt(0);
   },
-  restore() {
+  restore(): void {
     if (!selectionOverride) {
       return;
     }
