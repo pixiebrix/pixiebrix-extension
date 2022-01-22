@@ -35,15 +35,10 @@ import {
 } from "@/components/fields/schemaFields/BasicSchemaField";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
+import { isMustacheOnly } from "@/components/fields/fieldUtils";
 
 function isVarValue(value: string): boolean {
   return value.startsWith("@") && !value.includes(" ");
-}
-
-function isMustacheOnly(value: string): boolean {
-  // Mustache-specific syntax: {{{, {{!, {{#, {{&, {{>, {{^
-  // All but the first one also support whitespace between the brackets and symbols
-  return /{{{/g.test(value) || /{{\s*[!#&>^]/g.test(value);
 }
 
 const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
