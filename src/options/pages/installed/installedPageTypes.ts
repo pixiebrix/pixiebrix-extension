@@ -19,3 +19,4 @@ import { UUID } from "@/core";
 
 export type RemoveAction = (identifier: { extensionId: UUID }) => void;
 export type ExportBlueprintAction = (extensionIdToExport: UUID) => void;
+export type ShareAction = (extensionId: UUID) => void;

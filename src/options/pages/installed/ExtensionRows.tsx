@@ -30,9 +30,9 @@ const ExtensionRows: React.FunctionComponent<{
   <>
     {sortBy(
       extensions,
-      (x) => (x.active ? 0 : 1),
-      (x) => x.label ?? "",
-      (x) => x.id
+      (extension) => (extension.active ? 0 : 1),
+      (extension) => extension.label ?? "",
+      (extension) => extension.id
     ).map((extension) =>
       extension.active ? (
         <InstalledExtensionRow

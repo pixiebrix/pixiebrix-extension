@@ -34,7 +34,6 @@ import BrickIcon from "@/components/BrickIcon";
 import { isNullOrBlank } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
-import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 import usePipelineField, {
@@ -49,6 +48,7 @@ import useBlockPipelineActions from "@/devTools/editor/tabs/editTab/useBlockPipe
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 import UnsupportedApiV1 from "@/devTools/editor/tabs/editTab/UnsupportedApiV1";
 import UpgradedToApiV3 from "@/devTools/editor/tabs/editTab/UpgradedToApiV3";
+import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 
 const EditTab: React.FC<{
   eventKey: string;

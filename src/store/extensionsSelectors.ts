@@ -1,11 +1,11 @@
 import { OptionsState } from "@/store/extensionsTypes";
-import { IExtension } from "@/core";
+import { UnresolvedExtension } from "@/core";
 
 export function selectExtensions({
   options,
 }: {
   options: OptionsState;
-}): IExtension[] {
+}): UnresolvedExtension[] {
   if (!Array.isArray(options.extensions)) {
     console.warn("state migration has not been applied yet", {
       options,
