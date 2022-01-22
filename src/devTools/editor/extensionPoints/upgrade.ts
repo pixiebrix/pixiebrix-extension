@@ -132,44 +132,44 @@ function selectSchema(
   const schemaArray =
     fieldSchema.anyOf ?? fieldSchema.allOf ?? fieldSchema.oneOf;
 
-  if (schemaArray) {
-    // This logic should work pretty well in practice because our bricks are either one type or another. There aren't
-    // different alternatives of the same type in practice.
-
-    if (Array.isArray(value)) {
-      return schemaArray.find(
-        (schema) => typeof schema !== "boolean" && schema.type === "array"
-      );
-    }
-
-    if (typeof value === "object") {
-      return schemaArray.find(
-        (schema) => typeof schema !== "boolean" && schema.type === "object"
-      );
-    }
-
-    if (typeof value === "string") {
-      return schemaArray.find(
-        (schema) => typeof schema !== "boolean" && schema.type === "string"
-      );
-    }
-
-    if (typeof value === "number") {
-      return schemaArray.find(
-        (schema) => typeof schema !== "boolean" && schema.type === "number"
-      );
-    }
-
-    if (typeof value === "boolean") {
-      return schemaArray.find(
-        (schema) => typeof schema !== "boolean" && schema.type === "boolean"
-      );
-    }
-
-    throw new Error("value did not match subschema");
+  if (schemaArray == null) {
+    return fieldSchema;
   }
 
-  return fieldSchema;
+  // This logic should work pretty well in practice because our bricks are either one type or another. There aren't
+  // different alternatives of the same type in practice.
+
+  if (Array.isArray(value)) {
+    return schemaArray.find(
+      (schema) => typeof schema !== "boolean" && schema.type === "array"
+    );
+  }
+
+  if (typeof value === "object") {
+    return schemaArray.find(
+      (schema) => typeof schema !== "boolean" && schema.type === "object"
+    );
+  }
+
+  if (typeof value === "string") {
+    return schemaArray.find(
+      (schema) => typeof schema !== "boolean" && schema.type === "string"
+    );
+  }
+
+  if (typeof value === "number") {
+    return schemaArray.find(
+      (schema) => typeof schema !== "boolean" && schema.type === "number"
+    );
+  }
+
+  if (typeof value === "boolean") {
+    return schemaArray.find(
+      (schema) => typeof schema !== "boolean" && schema.type === "boolean"
+    );
+  }
+
+  throw new Error("value did not match any subschema");
 }
 
 async function upgradeValue({
