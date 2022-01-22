@@ -38,21 +38,17 @@ const ShareLinkModal = () => {
 
   const notify = useNotifications();
 
-  const copyLink = () => {
-    copy(installationLink);
-    notify.success("Copied link to clipboard");
-    hideModal();
-  };
-
   return (
     <Modal show onHide={hideModal}>
       <Modal.Header closeButton>
-        <Modal.Title>Share</Modal.Title>
+        <Modal.Title>Share Activation Link</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Form.Group>
-          <Form.Label>Copy the activation link to share</Form.Label>
+          <Form.Label className="pb-2">
+            Click to copy the activation link to the clipboard
+          </Form.Label>
           <InputGroup>
             <Form.Control
               type="text"
@@ -60,7 +56,14 @@ const ShareLinkModal = () => {
               defaultValue={installationLink}
             />
             <InputGroup.Append>
-              <Button variant="info" onClick={copyLink}>
+              <Button
+                variant="info"
+                onClick={() => {
+                  copy(installationLink);
+                  // Don't close the modal - that allows the user to re-copy the link and verify the link works
+                  notify.success("Copied activation link to clipboard");
+                }}
+              >
                 <FontAwesomeIcon icon={faCopy} />
               </Button>
             </InputGroup.Append>
