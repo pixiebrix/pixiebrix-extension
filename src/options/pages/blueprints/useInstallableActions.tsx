@@ -78,7 +78,7 @@ function useInstallableActions(installable: Installable) {
 
     dispatch(
       installedPageSlice.actions.setShareContext({
-        extension: installable,
+        extensionId: installable.id,
       })
     );
   };
