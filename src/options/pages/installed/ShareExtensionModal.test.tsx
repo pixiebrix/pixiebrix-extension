@@ -22,19 +22,38 @@ import { extensionFactory } from "@/tests/factories";
 import { waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { Organization } from "@/types/contract";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import extensionsSlice from "@/store/extensionsSlice";
+import { PersistedExtension } from "@/core";
 
 jest.mock("@/hooks/useNotifications");
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
 }));
 
+const extension = extensionFactory({
+  label: "testExtension",
+});
+
+function optionsStore() {
+  return configureStore({
+    reducer: { options: extensionsSlice.reducer },
+    preloadedState: {
+      options: { extensions: [extension as PersistedExtension] },
+    },
+  });
+}
+
+const TestWrapper: React.FC = ({ children }) => (
+  <Provider store={optionsStore()}>{children}</Provider>
+);
+
 test("renders modal", async () => {
   render(
-    <ShareExtensionModal
-      extension={extensionFactory({
-        label: "testExtension",
-      })}
-    />
+    <TestWrapper>
+      <ShareExtensionModal extensionId={extension.id} />
+    </TestWrapper>
   );
   await waitForEffect();
   const dialogRoot = screen.getByRole("dialog");
@@ -43,11 +62,9 @@ test("renders modal", async () => {
 
 test("prints 'Convert' when not Public (default)", async () => {
   render(
-    <ShareExtensionModal
-      extension={extensionFactory({
-        label: "testExtension",
-      })}
-    />
+    <TestWrapper>
+      <ShareExtensionModal extensionId={extension.id} />
+    </TestWrapper>
   );
   await waitForEffect();
   const dialogRoot = screen.getByRole("dialog");
@@ -60,11 +77,9 @@ test("prints 'Convert' when not Public (default)", async () => {
 });
 test("prints 'Share' when Public", async () => {
   render(
-    <ShareExtensionModal
-      extension={extensionFactory({
-        label: "testExtension",
-      })}
-    />
+    <TestWrapper>
+      <ShareExtensionModal extensionId={extension.id} />
+    </TestWrapper>
   );
   await waitForEffect();
   const dialogRoot = screen.getByRole("dialog");

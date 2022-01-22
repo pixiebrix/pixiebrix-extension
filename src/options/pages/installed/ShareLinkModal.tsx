@@ -24,6 +24,7 @@ import useNotifications from "@/hooks/useNotifications";
 import { useDispatch } from "react-redux";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { RegistryId } from "@/core";
 
 const ShareLinkModal = () => {
   const dispatch = useDispatch();
@@ -31,14 +32,15 @@ const ShareLinkModal = () => {
     dispatch(push("/installed"));
   };
 
-  const { blueprintId } = useParams<{ blueprintId: string }>();
+  const { blueprintId } = useParams<{ blueprintId: RegistryId }>();
 
   const installationLink = `https://app.pixiebrix.com/activate?id=${blueprintId}`;
 
   const notify = useNotifications();
+
   const copyLink = () => {
     copy(installationLink);
-    notify.success("Link copied to clipboard");
+    notify.success("Copied link to clipboard");
     hideModal();
   };
 
