@@ -50,12 +50,22 @@ export class HighlightEffect extends Effect {
       },
       rootSelector: {
         type: "string",
-        description: "Optional root selector to find the elements within.",
+        description: "Optional root selector to find the elements within",
         format: "selector",
+      },
+      rootMode: {
+        type: "string",
+        enum: ["document", "inherit"],
+        description:
+          "Deprecated: configure root mode on common brick options instead",
+        // The correct behavior going forward is "inherit". To maintain backward compatability, the brick implementation
+        // will default rootMode to "document" if the rootMode argument is not passed in.
+        default: "inherit",
       },
       condition: {
         anyOf: [{ type: "string" }, { type: "boolean" }, { type: "number" }],
-        description: "Whether or not to apply the highlighting rule.",
+        description:
+          "Deprecated: configure condition on common brick options instead",
       },
       elements: {
         type: "array",
@@ -108,7 +118,11 @@ export class HighlightEffect extends Effect {
       backgroundColor = "#FFFF00",
       rootSelector,
       elements,
+      // Default to "document" for backward compatability. New bricks configured in the Page Editor will have
+      // rootMode = "inherit" by default (see JSON Schema above)
+      rootMode = "document",
     }: BlockArg<{
+      rootMode: "document" | "inherit";
       condition: string | number | boolean;
       backgroundColor: string;
       rootSelector: string | undefined;
@@ -116,25 +130,33 @@ export class HighlightEffect extends Effect {
     }>,
     { root }: BlockOptions
   ): Promise<void> {
-    const $roots = rootSelector ? $safeFind(rootSelector, root) : $(root);
+    let $roots: JQuery<HTMLElement | Document>;
+
+    if (rootMode === "document") {
+      $roots = rootSelector ? $safeFind(rootSelector) : $(document);
+    } else {
+      $roots = rootSelector ? $safeFind(rootSelector, root) : $(root);
+    }
 
     if (condition !== undefined && !boolean(condition)) {
       return;
     }
 
     $roots.each(function () {
+      const $root = $(this);
+
       if (elements == null) {
-        $(this).css({ backgroundColor });
+        $root.css({ backgroundColor });
       } else {
         for (const element of elements) {
           if (typeof element === "string") {
-            $(this).find(element).css({ backgroundColor });
+            $safeFind(element, $root).css({ backgroundColor });
           } else if (element.condition && boolean(condition)) {
             const {
               selector,
               backgroundColor: elementColor = backgroundColor,
             } = element;
-            $(this).find(selector).css({ backgroundColor: elementColor });
+            $safeFind(selector, $root).css({ backgroundColor: elementColor });
           }
         }
       }
