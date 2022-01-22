@@ -31,9 +31,9 @@ export interface PackageVersionOption {
 
 const { Option, SingleValue } = components;
 
-const CustomSingleValue: React.FunctionComponent = (
-  props: OptionProps<PackageVersionOption>
-) => (
+const CustomSingleValue: React.FunctionComponent<
+  OptionProps<PackageVersionOption>
+> = (props) => (
   <SingleValue {...props}>
     <div className="d-flex align-items-center">
       <span>{props.data.label}&nbsp;</span>{" "}
@@ -42,9 +42,9 @@ const CustomSingleValue: React.FunctionComponent = (
   </SingleValue>
 );
 
-const CustomSingleOption: React.FunctionComponent = (
-  props: OptionProps<PackageVersionOption>
-) => (
+const CustomSingleOption: React.FunctionComponent<
+  OptionProps<PackageVersionOption>
+> = (props) => (
   <Option {...props}>
     <CustomSingleValue {...props} />
   </Option>
