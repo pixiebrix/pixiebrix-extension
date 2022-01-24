@@ -223,7 +223,7 @@
     "compass-mixins": "^0.12.10",
     "concurrently": "^6.2.1",
     "cooky-cutter": "^1.5.4",
-    "copy-webpack-plugin": "^9.0.1",
+    "copy-webpack-plugin": "^10.2.1",
     "csp-parse": "0.0.2",
     "css-loader": "^6.2.0",
     "data-urls": "^3.0.0",
