@@ -44,9 +44,9 @@ import { RecipeDefinition } from "@/types/definitions";
 const InstalledEntry: React.FunctionComponent<{
   extension: IExtension;
   recipes: RecipeDefinition[];
-  activeElement: UUID | null;
+  active: boolean;
   available: boolean;
-}> = ({ extension, recipes, available, activeElement }) => {
+}> = ({ extension, recipes, available, active }) => {
   const dispatch = useDispatch();
   const [type] = useAsyncState(async () => selectType(extension), [
     extension.extensionPointId,
@@ -94,7 +94,7 @@ const InstalledEntry: React.FunctionComponent<{
     <ListGroup.Item
       className={styles.root}
       action
-      active={extension.id === activeElement}
+      active={active}
       key={`installed-${extension.id}`}
       onClick={async () => selectHandler(extension)}
     >

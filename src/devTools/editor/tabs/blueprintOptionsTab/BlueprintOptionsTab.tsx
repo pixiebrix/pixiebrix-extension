@@ -26,6 +26,7 @@ import GridLoader from "react-spinners/GridLoader";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const BlueprintOptionsTab: React.VoidFunctionComponent<{
   eventKey: string;
@@ -40,8 +41,6 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
     }),
     [formState.apiVersion]
   );
-
-  console.log("BlueprintOptionsTab", { formState });
 
   if (formState.optionsDefinition == null) {
     return (
@@ -65,28 +64,31 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
     <Tab.Pane eventKey={eventKey} className={styles.root}>
       <Container>
         <Row>
-          <Col md="8">
-            <div>
-              Editing Options for Blueprint &quot;{formState.recipe.name}&quot;
-            </div>
-            {!hasOptions && <div>No options defined for this Blueprint</div>}
-            <FieldRuntimeContext.Provider value={formRuntimeContext}>
-              <FormEditor
-                name="optionsDefinition"
-                showFormTitle={false}
+          <ErrorBoundary>
+            <Col md="8">
+              <div>
+                Editing Options for Blueprint &quot;{formState.recipe.name}
+                &quot;
+              </div>
+              {!hasOptions && <div>No options defined for this Blueprint</div>}
+              <FieldRuntimeContext.Provider value={formRuntimeContext}>
+                <FormEditor
+                  name="optionsDefinition"
+                  showFormTitle={false}
+                  activeField={activeField}
+                  setActiveField={setActiveField}
+                />
+              </FieldRuntimeContext.Provider>
+            </Col>
+            <Col md="4">
+              <div>Preview</div>
+              <FormPreview
+                rjsfSchema={formState.optionsDefinition as RJSFSchema}
                 activeField={activeField}
                 setActiveField={setActiveField}
               />
-            </FieldRuntimeContext.Provider>
-          </Col>
-          <Col md="4">
-            <div>Preview</div>
-            <FormPreview
-              rjsfSchema={formState.optionsDefinition as RJSFSchema}
-              activeField={activeField}
-              setActiveField={setActiveField}
-            />
-          </Col>
+            </Col>
+          </ErrorBoundary>
         </Row>
       </Container>
     </Tab.Pane>

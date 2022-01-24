@@ -22,9 +22,6 @@ import genericOptionsFactory from "@/components/fields/schemaFields/genericOptio
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import JsonSchemaForm from "@rjsf/bootstrap-4";
-import { Schema } from "@/core";
-import { useField } from "formik";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/options/constants";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
@@ -44,14 +41,6 @@ const OptionsBody: React.FunctionComponent<{
     [blueprint.options.schema, blueprint.options.uiSchema]
   );
 
-  const schema: Schema = {
-    type: "object",
-    properties: blueprint.options.schema,
-  };
-  const uiSchema = blueprint.options.uiSchema;
-
-  const [{ value }, , { setValue }] = useField("optionsArgs");
-
   return (
     <>
       <Card.Body className="px-3 py-3">
@@ -61,21 +50,6 @@ const OptionsBody: React.FunctionComponent<{
         <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
           <OptionsGroup name="optionsArgs" />
         </FieldRuntimeContext.Provider>
-      </Card.Body>
-      <Card.Body>
-        <JsonSchemaForm
-          tagName="div"
-          schema={schema}
-          uiSchema={uiSchema}
-          formData={value}
-          onChange={({ formData }) => {
-            setValue(formData);
-          }}
-        >
-          <div>
-            {/* This <div/> prevents JsonSchemaForm from rendering a Submit button */}
-          </div>
-        </JsonSchemaForm>
       </Card.Body>
     </>
   );

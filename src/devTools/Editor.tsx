@@ -145,7 +145,7 @@ const Editor: React.FunctionComponent = () => {
         installed={installed}
         elements={elements}
         recipes={recipes}
-        activeElement={activeElementId}
+        activeElementId={activeElementId}
         isInsertingElement={Boolean(inserting)}
         isLoadingItems={loadingRecipes}
       />

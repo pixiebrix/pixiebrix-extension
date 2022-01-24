@@ -54,7 +54,7 @@ import AuthContext from "@/auth/AuthContext";
 import { RecipeDefinition } from "@/types/definitions";
 import { GridLoader } from "react-spinners";
 
-const DropdownEntry: React.FunctionComponent<{
+const DropdownEntry: React.VoidFunctionComponent<{
   caption: string;
   icon: IconProp;
   onClick: () => void;
@@ -74,26 +74,26 @@ const DropdownEntry: React.FunctionComponent<{
   </Dropdown.Item>
 );
 
-const Logo: React.FunctionComponent = () => (
+const Logo: React.VoidFunctionComponent = () => (
   <img src={logoUrl} alt="PixiBrix logo" className={styles.logo} />
 );
 
 type SidebarProps = {
   isInsertingElement: boolean;
-  activeElement: UUID | null;
+  activeElementId: UUID | null;
   readonly elements: FormState[];
   installed: IExtension[];
   recipes: RecipeDefinition[];
   isLoadingItems: boolean;
 };
 
-const SidebarExpanded: React.FunctionComponent<
+const SidebarExpanded: React.VoidFunctionComponent<
   SidebarProps & {
     collapseSidebar: () => void;
   }
 > = ({
   isInsertingElement,
-  activeElement,
+  activeElementId,
   installed,
   elements,
   recipes,
@@ -131,7 +131,7 @@ const SidebarExpanded: React.FunctionComponent<
           (formState) =>
             showAll ||
             availableDynamicIds?.has(formState.uuid) ||
-            activeElement === formState.uuid
+            activeElementId === formState.uuid
         ),
         ...installed.filter(
           (extension) =>
@@ -148,7 +148,7 @@ const SidebarExpanded: React.FunctionComponent<
       availableDynamicIds,
       showAll,
       availableInstalledIds,
-      activeElement,
+      activeElementId,
     ]
   );
 
@@ -248,7 +248,7 @@ const SidebarExpanded: React.FunctionComponent<
                   key={`installed-${entry.id}`}
                   extension={entry}
                   recipes={recipes}
-                  activeElement={activeElement}
+                  active={activeElementId === entry.id}
                   available={
                     !availableInstalledIds ||
                     availableInstalledIds.has(entry.id)
@@ -258,10 +258,10 @@ const SidebarExpanded: React.FunctionComponent<
                 <DynamicEntry
                   key={`dynamic-${entry.uuid}`}
                   item={entry}
+                  active={activeElementId === entry.uuid}
                   available={
                     !availableDynamicIds || availableDynamicIds.has(entry.uuid)
                   }
-                  activeElement={activeElement}
                 />
               )
             )}
@@ -273,7 +273,7 @@ const SidebarExpanded: React.FunctionComponent<
   );
 };
 
-const SidebarCollapsed: React.FunctionComponent<{
+const SidebarCollapsed: React.VoidFunctionComponent<{
   expandSidebar: () => void;
 }> = ({ expandSidebar }) => (
   <div className={cx(styles.root, styles.collapsed)}>
