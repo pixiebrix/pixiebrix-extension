@@ -31,14 +31,20 @@ export interface PackageVersionOption {
 
 const { Option, SingleValue } = components;
 
+const Content: React.FunctionComponent<{
+  data: PackageVersionOption;
+}> = ({ data }) => (
+  <div className="d-flex align-items-center">
+    <span>{data.label}&nbsp;</span>{" "}
+    <span className="small text-muted">{data.created_at}</span>
+  </div>
+);
+
 const CustomSingleValue: React.FunctionComponent<
   OptionProps<PackageVersionOption>
 > = (props) => (
   <SingleValue {...props}>
-    <div className="d-flex align-items-center">
-      <span>{props.data.label}&nbsp;</span>{" "}
-      <span className="small text-muted">{props.data.created_at}</span>
-    </div>
+    <Content data={props.data} />
   </SingleValue>
 );
 
@@ -46,7 +52,7 @@ const CustomSingleOption: React.FunctionComponent<
   OptionProps<PackageVersionOption>
 > = (props) => (
   <Option {...props}>
-    <CustomSingleValue {...props} />
+    <Content data={props.data} />
   </Option>
 );
 
