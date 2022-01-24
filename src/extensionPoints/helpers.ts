@@ -20,8 +20,7 @@ import initialize from "@/vendors/initialize";
 import { sleep, waitAnimationFrame } from "@/utils";
 import { MessageContext, ResolvedExtension } from "@/core";
 import { $safeFind } from "@/helpers";
-
-export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
+import { EXTENSION_POINT_DATA_ATTR } from "@/common";
 
 export function isHost(hostname: string): boolean {
   return (

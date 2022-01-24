@@ -55,6 +55,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
+import { PIXIEBRIX_DATA_ATTR } from "@/common";
 
 export type PanelConfig = {
   heading?: string;
@@ -66,8 +67,6 @@ export type PanelConfig = {
 
 const RENDER_LOOP_THRESHOLD = 25;
 const RENDER_LOOP_WINDOW_MS = 500;
-
-const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
 
 /**
  * Prevent panel render from entering an infinite loop

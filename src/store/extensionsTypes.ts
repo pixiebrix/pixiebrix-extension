@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, PersistedExtension } from "@/core";
+import { PersistedExtension, UnresolvedExtension } from "@/core";
 
 export type OptionsState =
   | LegacyExtensionObjectShapeState
@@ -34,7 +34,7 @@ export type LegacyExtensionObjectShapeState = {
   extensions: {
     // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
     [extensionPointId: string]: {
-      [extensionId: string]: IExtension;
+      [extensionId: string]: UnresolvedExtension;
     };
   };
 };
@@ -43,5 +43,5 @@ export type LegacyExtensionObjectShapeState = {
  * @deprecated use ExtensionOptionsState - this is only used in a migration
  */
 export type LegacyExtensionObjectState = {
-  extensions: IExtension[];
+  extensions: UnresolvedExtension[];
 };
