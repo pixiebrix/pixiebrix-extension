@@ -17,7 +17,7 @@
 
 import styles from "./Entry.module.scss";
 import React, { useCallback } from "react";
-import { IExtension, UUID } from "@/core";
+import { IExtension, Schema } from "@/core";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -70,10 +70,12 @@ const InstalledEntry: React.FunctionComponent<{
             };
           } else {
             state.optionsDefinition = {
-              schema: {
-                type: "object",
-                properties: recipe.options.schema,
-              },
+              schema: recipe.options.schema.properties
+                ? recipe.options.schema
+                : ({
+                    type: "object",
+                    properties: recipe.options.schema,
+                  } as Schema),
               uiSchema: recipe.options.uiSchema,
             };
           }

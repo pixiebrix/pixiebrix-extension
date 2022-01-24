@@ -156,10 +156,7 @@ export function replaceRecipeExtension(
     }
 
     if (element.optionsDefinition?.schema?.properties != null) {
-      draft.options = {
-        schema: element.optionsDefinition.schema.properties,
-        uiSchema: element.optionsDefinition?.uiSchema,
-      };
+      draft.options = element.optionsDefinition;
     }
 
     const index = findRecipeIndex(sourceRecipe, installedExtension);

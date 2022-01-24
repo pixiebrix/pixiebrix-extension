@@ -24,23 +24,9 @@
       "type": "object",
       "properties": {
         "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "description": "JSON schema for options to show user during activation",
-          "type": "object",
-          "additionalProperties": {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": ["boolean", "number", "string"]
-              },
-              "format": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              }
-            }
-          }
+          "type": "object"
         }
       }
     },
