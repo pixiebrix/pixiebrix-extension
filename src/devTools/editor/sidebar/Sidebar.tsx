@@ -51,6 +51,8 @@ import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 import AuthContext from "@/auth/AuthContext";
+import { RecipeDefinition } from "@/types/definitions";
+import { GridLoader } from "react-spinners";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -81,6 +83,8 @@ type SidebarProps = {
   activeElement: UUID | null;
   readonly elements: FormState[];
   installed: IExtension[];
+  recipes: RecipeDefinition[];
+  isLoadingItems: boolean;
 };
 
 const SidebarExpanded: React.FunctionComponent<
@@ -92,6 +96,8 @@ const SidebarExpanded: React.FunctionComponent<
   activeElement,
   installed,
   elements,
+  recipes,
+  isLoadingItems,
   collapseSidebar,
 }) => {
   const context = useContext(DevToolsContext);
@@ -232,29 +238,35 @@ const SidebarExpanded: React.FunctionComponent<
         ) : null}
       </div>
       <div className={styles.extensions}>
-        <ListGroup>
-          {entries.map((entry) =>
-            isExtension(entry) ? (
-              <InstalledEntry
-                key={`installed-${entry.id}`}
-                extension={entry}
-                activeElement={activeElement}
-                available={
-                  !availableInstalledIds || availableInstalledIds.has(entry.id)
-                }
-              />
-            ) : (
-              <DynamicEntry
-                key={`dynamic-${entry.uuid}`}
-                item={entry}
-                available={
-                  !availableDynamicIds || availableDynamicIds.has(entry.uuid)
-                }
-                activeElement={activeElement}
-              />
-            )
-          )}
-        </ListGroup>
+        {isLoadingItems ? (
+          <GridLoader />
+        ) : (
+          <ListGroup>
+            {entries.map((entry) =>
+              isExtension(entry) ? (
+                <InstalledEntry
+                  key={`installed-${entry.id}`}
+                  extension={entry}
+                  recipes={recipes}
+                  activeElement={activeElement}
+                  available={
+                    !availableInstalledIds ||
+                    availableInstalledIds.has(entry.id)
+                  }
+                />
+              ) : (
+                <DynamicEntry
+                  key={`dynamic-${entry.uuid}`}
+                  item={entry}
+                  available={
+                    !availableDynamicIds || availableDynamicIds.has(entry.uuid)
+                  }
+                  activeElement={activeElement}
+                />
+              )
+            )}
+          </ListGroup>
+        )}
       </div>
       <Footer />
     </div>
@@ -289,7 +301,7 @@ const transitionProps: CSSTransitionProps = {
   mountOnEnter: true,
 };
 
-const Sidebar: React.FunctionComponent<SidebarProps> = (props) => {
+const Sidebar: React.VoidFunctionComponent<SidebarProps> = (props) => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   return (
     <>

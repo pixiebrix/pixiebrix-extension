@@ -14,20 +14,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { useField, useFormikContext } from "formik";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useFormikContext } from "formik";
+import React, { useMemo, useState } from "react";
 import { Col, Container, Row, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import styles from "./BlueprintOptionsTab.module.scss";
-import { useGetRecipesQuery } from "@/services/api";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor from "@/components/formBuilder/FormEditor";
 import FormPreview from "@/components/formBuilder/FormPreview";
 import GridLoader from "react-spinners/GridLoader";
-import {
-  MINIMAL_SCHEMA,
-  MINIMAL_UI_SCHEMA,
-} from "@/components/formBuilder/formBuilderHelpers";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
@@ -36,9 +31,7 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
   eventKey: string;
 }> = ({ eventKey }) => {
   const [activeField, setActiveField] = useState<string>();
-  const { data: recipes, isLoading: recipesLoading } = useGetRecipesQuery();
-
-  const { values: formState, setFieldValue } = useFormikContext<FormState>();
+  const { values: formState } = useFormikContext<FormState>();
 
   const formRuntimeContext = useMemo<RuntimeContext>(
     () => ({
@@ -47,32 +40,6 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
     }),
     [formState.apiVersion]
   );
-
-  useEffect(() => {
-    if (formState.optionsDefinition != null || recipesLoading) {
-      return;
-    }
-
-    // ToDo: create selector or refactor RTK query here and in useSavingWizard
-    const recipe = recipes?.find((x) => x.metadata.id === formState.recipe.id);
-    console.log("BlueprintOptionsTab", { recipe });
-    // ToDo: move setFieldValue to a function and markSaved the extension if it wasn't dirty
-    if (recipe?.options == null) {
-      setFieldValue("optionsDefinition", {
-        schema: MINIMAL_SCHEMA,
-        uiSchema: MINIMAL_UI_SCHEMA,
-      });
-      return;
-    }
-
-    setFieldValue("optionsDefinition", {
-      schema: {
-        type: "object",
-        properties: recipe.options.schema,
-      },
-      uiSchema: recipe.options.uiSchema,
-    });
-  }, [recipes]);
 
   console.log("BlueprintOptionsTab", { formState });
 

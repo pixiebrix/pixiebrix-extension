@@ -33,7 +33,10 @@ import useEscapeHandler from "@/devTools/editor/hooks/useEscapeHandler";
 import GenericInsertPane from "@/devTools/editor/panes/insert/GenericInsertPane";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/slices/editorSlice";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import {
+  useGetMarketplaceListingsQuery,
+  useGetRecipesQuery,
+} from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
 import styles from "./Editor.module.scss";
@@ -44,6 +47,7 @@ const selectEditor = ({ editor }: RootState) => editor;
 const Editor: React.FunctionComponent = () => {
   const { tabState, connecting } = useContext(DevToolsContext);
   const installed = useSelector(selectExtensions);
+  const { data: recipes, isLoading: loadingRecipes } = useGetRecipesQuery();
   const dispatch = useDispatch();
 
   // Async fetch marketplace content to the Redux so it's pre-fetched for rendering in the Brick Selection modal
@@ -140,8 +144,10 @@ const Editor: React.FunctionComponent = () => {
       <Sidebar
         installed={installed}
         elements={elements}
+        recipes={recipes}
         activeElement={activeElementId}
         isInsertingElement={Boolean(inserting)}
+        isLoadingItems={loadingRecipes}
       />
       {body}
     </div>

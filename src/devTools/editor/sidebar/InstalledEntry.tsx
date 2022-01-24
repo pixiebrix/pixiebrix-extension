@@ -31,6 +31,11 @@ import {
   NotAvailableIcon,
   ExtensionIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
+import {
+  MINIMAL_SCHEMA,
+  MINIMAL_UI_SCHEMA,
+} from "@/components/formBuilder/formBuilderHelpers";
+import { RecipeDefinition } from "@/types/definitions";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
@@ -38,9 +43,10 @@ import {
  */
 const InstalledEntry: React.FunctionComponent<{
   extension: IExtension;
+  recipes: RecipeDefinition[];
   activeElement: UUID | null;
   available: boolean;
-}> = ({ extension, available, activeElement }) => {
+}> = ({ extension, recipes, available, activeElement }) => {
   const dispatch = useDispatch();
   const [type] = useAsyncState(async () => selectType(extension), [
     extension.extensionPointId,
@@ -50,6 +56,29 @@ const InstalledEntry: React.FunctionComponent<{
     async (extension: IExtension) => {
       try {
         const state = await extensionToFormState(extension);
+
+        // If the extension is a part of a recipe, we need to add the recipe options to the form state
+        if (state.recipe?.id) {
+          const recipe = recipes?.find(
+            (x) => x.metadata.id === state.recipe.id
+          );
+
+          if (recipe?.options == null) {
+            state.optionsDefinition = {
+              schema: MINIMAL_SCHEMA,
+              uiSchema: MINIMAL_UI_SCHEMA,
+            };
+          } else {
+            state.optionsDefinition = {
+              schema: {
+                type: "object",
+                properties: recipe.options.schema,
+              },
+              uiSchema: recipe.options.uiSchema,
+            };
+          }
+        }
+
         // FIXME: is where we need to uninstall the extension because it will now be a dynamic element? Or should it
         //  be getting handled by lifecycle.ts? Need to add some logging to figure out how other ones work
         dispatch(actions.selectInstalled(state));
@@ -58,7 +87,7 @@ const InstalledEntry: React.FunctionComponent<{
         dispatch(actions.adapterError({ uuid: extension.id, error }));
       }
     },
-    [dispatch]
+    [dispatch, recipes]
   );
 
   return (

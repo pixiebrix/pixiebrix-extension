@@ -24,7 +24,6 @@ import {
 } from "@/core";
 import {
   EditablePackage,
-  OptionsDefinition,
   RecipeDefinition,
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
