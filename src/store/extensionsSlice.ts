@@ -39,6 +39,8 @@ import {
   LegacyExtensionObjectState,
   OptionsState,
 } from "@/store/extensionsTypes";
+import { Except } from "type-fest";
+import { assertExtensionNotResolved } from "@/runtime/runtimeUtils";
 
 const initialExtensionsState: ExtensionOptionsState = {
   extensions: [],
@@ -137,7 +139,10 @@ const extensionsSlice = createSlice({
           throw new Error("sharing is required");
         }
 
-        const extension: PersistedExtension = {
+        const extension: Except<
+          PersistedExtension,
+          "_unresolvedExtensionBrand"
+        > = {
           id: extensionId,
           // Default to `v1` for backward compatability
           apiVersion: recipe.apiVersion ?? "v1",
@@ -165,6 +170,8 @@ const extensionsSlice = createSlice({
           createTimestamp: timestamp,
           updateTimestamp: timestamp,
         };
+
+        assertExtensionNotResolved(extension);
 
         reportEvent("ExtensionActivate", selectEventData(extension));
 
@@ -218,7 +225,10 @@ const extensionsSlice = createSlice({
         throw new Error("extensionPointId is required");
       }
 
-      const extension: PersistedExtension = {
+      const extension: Except<
+        PersistedExtension,
+        "_unresolvedExtensionBrand"
+      > = {
         id,
         apiVersion,
         extensionPointId,
@@ -233,6 +243,8 @@ const extensionsSlice = createSlice({
         updateTimestamp: timestamp,
         active: true,
       };
+
+      assertExtensionNotResolved(extension);
 
       if (pushToCloud && !_deployment) {
         // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface

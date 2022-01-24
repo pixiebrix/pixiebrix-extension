@@ -21,6 +21,12 @@ import { isNullOrBlank, mostCommonElement } from "@/utils";
 import { BusinessError } from "@/errors";
 import { CssSelectorType } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
+import {
+  EXTENSION_POINT_DATA_ATTR,
+  PANEL_FRAME_ID,
+  PIXIEBRIX_DATA_ATTR,
+  PIXIEBRIX_READY_ATTRIBUTE,
+} from "@/common";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -39,12 +45,22 @@ const ATTR_SKIP_ELEMENT_PATTERNS = [
 ];
 
 /**
- * Attribute names to exclude
+ * Attribute names to exclude from button/panel template inference.
+ *
+ * NOTE: This is a different list than what we use for inferring selectors in safeCssSelector
+ *
+ * @see commonAttribute
  */
-const ATTR_EXCLUDE_PATTERNS = [
+const TEMPLATE_ATTR_EXCLUDE_PATTERNS = [
   /^id$/,
   /^name$/,
   /^data([\w-]*)-test([\w-]*)$/,
+
+  /* eslint-disable security/detect-non-literal-regexp -- Our variables */
+  new RegExp(`^${EXTENSION_POINT_DATA_ATTR}$`),
+  new RegExp(`^${PIXIEBRIX_DATA_ATTR}$`),
+  new RegExp(`^${PIXIEBRIX_READY_ATTRIBUTE}$`),
+
   // Cypress attributes
   /^data-cy$/,
   // Angular attributes
@@ -57,8 +73,10 @@ const ATTR_EXCLUDE_PATTERNS = [
   /^aria-(?!role).*$/,
 ];
 
-const VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
+const TEMPLATE_VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
   ["class", [/^ember-view$/]],
+  /* eslint-disable security/detect-non-literal-regexp -- Our variables */
+  ["id", [new RegExp(`^${PANEL_FRAME_ID}$`)]],
 ]);
 
 class SkipElement extends Error {}
@@ -102,7 +120,7 @@ function commonAttribute($items: JQuery, attribute: string) {
     return null;
   }
 
-  const exclude = VALUE_EXCLUDE_PATTERNS.get(attribute) ?? [];
+  const exclude = TEMPLATE_VALUE_EXCLUDE_PATTERNS.get(attribute) ?? [];
 
   const filtered = unfiltered.filter(
     (value) => !exclude.some((regex) => regex.test(value))
@@ -116,7 +134,7 @@ function setCommonAttributes($common: JQuery, $items: JQuery) {
 
   // Find the common attributes between the elements
   for (const { name } of attributes) {
-    if (ATTR_EXCLUDE_PATTERNS.some((x) => x.test(name))) {
+    if (TEMPLATE_ATTR_EXCLUDE_PATTERNS.some((x) => x.test(name))) {
       continue;
     }
 
@@ -482,6 +500,10 @@ export function safeCssSelector(
       "[data-aura-rendered-by]",
       // Vuejs component tracking
       "[data-v-*]",
+      // Our attributes
+      `[${EXTENSION_POINT_DATA_ATTR}='*']`,
+      `[${PIXIEBRIX_DATA_ATTR}='*']`,
+      `[${PIXIEBRIX_READY_ATTRIBUTE}='*']`,
     ],
     whitelist: [
       // Data attributes people use in automated tests are unlikely to change frequently

@@ -48,14 +48,15 @@ function useInstallables(): InstallablesState {
   const recipes = useGetRecipesQuery();
   const cloudExtensions = useGetCloudExtensionsQuery();
 
-  const installedExtensionIds = useMemo(
-    () => new Set<UUID>(unresolvedExtensions.map((extension) => extension.id)),
-    [unresolvedExtensions]
-  );
-
-  const installedRecipeIds = useMemo(
-    () =>
-      new Set(unresolvedExtensions.map((extension) => extension._recipe?.id)),
+  const { installedExtensionIds, installedRecipeIds } = useMemo(
+    () => ({
+      installedExtensionIds: new Set<UUID>(
+        unresolvedExtensions.map((extension) => extension.id)
+      ),
+      installedRecipeIds: new Set(
+        unresolvedExtensions.map((extension) => extension._recipe?.id)
+      ),
+    }),
     [unresolvedExtensions]
   );
 

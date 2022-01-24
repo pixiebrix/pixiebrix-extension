@@ -88,7 +88,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
         />
       )}
       {showShareContext && (
-        <ShareExtensionModal extension={showShareContext.extension} />
+        <ShareExtensionModal extensionId={showShareContext.extensionId} />
       )}
       <Row>
         <Col xs={3}>

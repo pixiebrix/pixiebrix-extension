@@ -128,7 +128,7 @@ export const _InstalledPage: React.FunctionComponent<{
       error={cloudError ?? resolveError}
     >
       {showShareContext && (
-        <ShareExtensionModal extension={showShareContext.extension} />
+        <ShareExtensionModal extensionId={showShareContext.extensionId} />
       )}
 
       {showLogsContext && (

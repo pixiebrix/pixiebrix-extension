@@ -27,8 +27,8 @@ import pTimeout from "p-timeout";
 import oneMutation from "one-mutation";
 import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
-import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
 import { expectContext, forbidContext } from "@/utils/expectContext";
+import { PIXIEBRIX_READY_ATTRIBUTE } from "@/common";
 
 // Context for this protocol:
 // - Implemented and explained in https://github.com/pixiebrix/pixiebrix-extension/pull/1019
