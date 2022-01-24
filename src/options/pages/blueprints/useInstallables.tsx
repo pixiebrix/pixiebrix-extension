@@ -36,21 +36,6 @@ import {
 } from "@/services/api";
 import { Organization } from "@/types/contract";
 
-type InstallableGroup = {
-  groupName: string;
-  installables: Installable[];
-};
-
-type GroupedInstallables = InstallableGroup[];
-
-type GroupByFunction = (installables: Installable[]) => GroupedInstallables;
-
-type GroupByUtilities = {
-  team: GroupByFunction;
-  scope: GroupByFunction;
-  active: GroupByFunction;
-};
-
 type InstallablesState = {
   installables: {
     active: Installable[];
@@ -58,7 +43,6 @@ type InstallablesState = {
     personal: Installable[];
     shared: Installable[];
   };
-  // groupByUtilities: GroupByUtilities;
   isLoading: boolean;
   error: unknown;
 };
@@ -144,8 +128,6 @@ function useInstallables(): InstallablesState {
     [recipes.data, scope, installedRecipeIds]
   );
 
-  // Restructures ResolvedExtension | RecipeDefinition into an Installable type
-  // TODO: handle "duplicates" i.e. when the recipe and active extension both occur in this list
   const installables = useMemo(
     () =>
       [...resolvedExtensions, ...personalOrTeamBlueprints].map(

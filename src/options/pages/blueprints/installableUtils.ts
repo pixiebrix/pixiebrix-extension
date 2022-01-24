@@ -20,13 +20,39 @@ import { RegistryId, ResolvedExtension } from "@/core";
 import { groupBy } from "lodash";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
-import { useMemo } from "react";
 
 export type InstallStatus = {
   hasUpdate: boolean;
   active: boolean;
   // TODO: not sure if there is a better way to do this
   organization: Organization;
+};
+
+export const getSharingType = (installable: Installable, scope: string) => {
+  const sharingType = "Public";
+
+  if (isPersonal(installable, scope)) {
+    return "Personal";
+  }
+
+  if (isDeployment(installable)) {
+    return "Deployment";
+  }
+
+  if (installable.organization) {
+    return "Team";
+  }
+
+  if (isPublic(installable)) {
+    return "Public";
+  }
+
+  return {
+    type: sharingType,
+    label: ["Team", "Deployment"].includes(sharingType)
+      ? installable.organization.name
+      : sharingType,
+  };
 };
 
 export type Installable = (RecipeDefinition | ResolvedExtension) &

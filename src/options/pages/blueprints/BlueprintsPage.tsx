@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import Page from "@/layout/Page";
 import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
 import { Col, Nav, Row } from "react-bootstrap";
@@ -35,6 +35,14 @@ import {
 } from "@/options/pages/installed/installedPageSelectors";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import Select from "react-select";
+import {
+  getDescription,
+  getLabel,
+  getPackageId,
+  getSharingType,
+  getUpdatedAt,
+} from "@/options/pages/blueprints/installableUtils";
+import AuthContext from "@/auth/AuthContext";
 
 type CategoryFilter = "active" | "all" | "personal" | "shared";
 
@@ -116,15 +124,6 @@ const BlueprintsPage: React.FunctionComponent = () => {
           </Nav>
         </Col>
         <Col xs={9}>
-          <div className="d-flex justify-content-between align-items-center">
-            <h3 className="my-3">{categoryLabels.get(filterCategory)}</h3>
-            <span className="d-flex align-items-center">
-              <span>Group by:</span>
-              <Select isMulti placeholder="Group by" options={[]} />
-              <span>Sort by:</span>
-              <Select isMulti placeholder="Sort by" options={[]} />
-            </span>
-          </div>
           {/* eslint-disable-next-line security/detect-object-injection -- is FilterCategory */}
           {installables[filterCategory]?.length > 0 && (
             // eslint-disable-next-line security/detect-object-injection -- is FilterCategory
