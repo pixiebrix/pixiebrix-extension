@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { ResolvedExtension } from "@/core";
 import {
   ExtensionValidationResult,
@@ -67,17 +67,26 @@ const InstalledExtensionRow: React.FunctionComponent<{
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({ extension, onRemove, onExportBlueprint }) => {
+  const dispatch = useDispatch();
+
   const { id: extensionId, label, _recipe } = extension;
+
   const notify = useNotifications();
-  const { scope } = useContext(AuthContext);
+  const { scope: userScope } = useContext(AuthContext);
 
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extension
   );
 
-  const dispatch = useDispatch();
-
   const [validation] = useExtensionValidator(extension);
+
+  const shareExtension = useCallback(() => {
+    dispatch(
+      installedPageSlice.actions.setShareContext({
+        extensionId,
+      })
+    );
+  }, [dispatch, extensionId]);
 
   const statusElt = useMemo(() => {
     if (hasPermissions == null || validation == null) {
@@ -138,14 +147,8 @@ const InstalledExtensionRow: React.FunctionComponent<{
                   <FontAwesomeIcon icon={faShare} /> Share
                 </>
               ),
-              hide: _recipe != null || scope == null,
-              action: () => {
-                dispatch(
-                  installedPageSlice.actions.setShareContext({
-                    extension,
-                  })
-                );
-              },
+              hide: _recipe != null || userScope == null,
+              action: shareExtension,
             },
             {
               title: (

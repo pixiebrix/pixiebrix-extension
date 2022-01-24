@@ -71,3 +71,9 @@ export function getPreviewValues<TObj = UnknownObject>(obj: TObj): TObj {
     unwrapTemplateExpressions(draft);
   });
 }
+
+export function isMustacheOnly(value: string): boolean {
+  // Mustache-specific syntax: {{{, {{!, {{#, {{&, {{>, {{^
+  // All but the first one also support whitespace between the brackets and symbols
+  return /{{{/g.test(value) || /{{\s*[!#&=>^]/g.test(value);
+}

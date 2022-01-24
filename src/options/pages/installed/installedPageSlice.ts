@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, MessageContext } from "@/core";
+import { MessageContext, UUID } from "@/core";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface LogsContext {
+export type LogsContext = {
   title: string;
   messageContext: MessageContext;
-}
+};
 
-export interface ShareContext {
-  extension: IExtension;
-}
+export type ShareContext = {
+  extensionId: UUID;
+};
 
-export interface InstalledPageState {
+export type InstalledPageState = {
   showLogsContext: LogsContext;
   showShareContext: ShareContext;
-}
+};
 
 const initialState: InstalledPageState = {
   showLogsContext: null,
@@ -43,9 +43,11 @@ export const installedPageSlice = createSlice({
   reducers: {
     setLogsContext: (state, action: PayloadAction<LogsContext>) => {
       state.showLogsContext = action.payload;
+      state.showShareContext = null;
     },
-    setShareContext: (state, action: PayloadAction<ShareContext>) => {
+    setShareContext: (state, action: PayloadAction<ShareContext | null>) => {
       state.showShareContext = action.payload;
+      state.showLogsContext = null;
     },
   },
 });

@@ -16,6 +16,7 @@
  */
 
 import {
+  isTemplateString,
   stringToExpression,
   upgradePipelineToV3,
 } from "@/devTools/editor/extensionPoints/upgrade";
@@ -47,6 +48,23 @@ function defineBlock(schema: Schema): RegistryId {
 
   return block.id;
 }
+
+describe("isTemplateString", () => {
+  test.each([["@input.foo"], ["@outputKey"]])(
+    "detects variable: %s",
+    (value: string) => {
+      expect(isTemplateString(value)).toBe(true);
+    }
+  );
+
+  test.each([
+    ["{{ @input.foo }}!!"],
+    ["{{ & @outputKey }}!!"],
+    ["{% if @outputKey %}foo{% endif %}"],
+  ])("detects variable: %s", (value: string) => {
+    expect(isTemplateString(value)).toBe(true);
+  });
+});
 
 describe("stringToExpression tests", () => {
   test("convert var to expression", () => {
@@ -612,6 +630,146 @@ describe("upgradePipelineToV3 tests", () => {
               __value__: "four",
             },
           ],
+        },
+      },
+    ]);
+  });
+});
+
+describe("upgrade overrides", () => {
+  test("test append to google sheets as object", async () => {
+    // Import dynamically to avoid circular dependence
+    // eslint-disable-next-line import/dynamic-import-chunkname -- test code
+    const { GoogleSheetsAppend } = await import(
+      "@/contrib/google/sheets/append"
+    );
+
+    const block = new GoogleSheetsAppend();
+    blockRegistry.register(block);
+
+    const upgraded = await upgradePipelineToV3([
+      {
+        id: block.id,
+        config: {
+          spreadsheetId: "12345",
+          tabName: "tab name",
+          rowValues: {
+            literal: "literal",
+            variable: "@variable",
+            template: "{{ @template }}",
+          },
+        },
+      },
+    ]);
+
+    expect(upgraded).toStrictEqual([
+      {
+        id: block.id,
+        config: {
+          spreadsheetId: "12345",
+          tabName: "tab name",
+          rowValues: {
+            // This is not a special-cased field, so it gets converted
+            literal: {
+              __type__: "mustache",
+              __value__: "literal",
+            },
+            variable: {
+              __type__: "var",
+              __value__: "@variable",
+            },
+            template: {
+              __type__: "mustache",
+              __value__: "{{ @template }}",
+            },
+          },
+        },
+      },
+    ]);
+  });
+
+  test("test append to google sheets as array", async () => {
+    // Import dynamically to avoid circular dependence
+    // eslint-disable-next-line import/dynamic-import-chunkname -- test code
+    const { GoogleSheetsAppend } = await import(
+      "@/contrib/google/sheets/append"
+    );
+
+    const block = new GoogleSheetsAppend();
+    blockRegistry.register(block);
+
+    const upgraded = await upgradePipelineToV3([
+      {
+        id: block.id,
+        config: {
+          spreadsheetId: "12345",
+          tabName: "tab name",
+          rowValues: [
+            {
+              literal: "literal",
+              variable: "@variable",
+              template: "{{ @template }}",
+            },
+          ],
+        },
+      },
+    ]);
+
+    expect(upgraded).toStrictEqual([
+      {
+        id: block.id,
+        config: {
+          spreadsheetId: "12345",
+          tabName: "tab name",
+          rowValues: [
+            {
+              // This is not a special-cased field, so it gets converted
+              literal: {
+                __type__: "mustache",
+                __value__: "literal",
+              },
+              variable: {
+                __type__: "var",
+                __value__: "@variable",
+              },
+              template: {
+                __type__: "mustache",
+                __value__: "{{ @template }}",
+              },
+            },
+          ],
+        },
+      },
+    ]);
+  });
+
+  test("don't convert framework to expression", async () => {
+    // Import dynamically to avoid circular dependence
+    // eslint-disable-next-line import/dynamic-import-chunkname -- test code
+    const { ComponentReader } = await import(
+      "@/blocks/transformers/component/ComponentReader"
+    );
+
+    const block = new ComponentReader();
+    blockRegistry.register(block);
+
+    const upgraded = await upgradePipelineToV3([
+      {
+        id: block.id,
+        config: {
+          framework: "react",
+          selector: "body",
+        },
+      },
+    ]);
+
+    expect(upgraded).toStrictEqual([
+      {
+        id: block.id,
+        config: {
+          framework: "react",
+          // Don't convert because it's a selector
+          selector: "body",
         },
       },
     ]);

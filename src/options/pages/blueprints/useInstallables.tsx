@@ -48,14 +48,15 @@ function useInstallables(): InstallablesState {
   const recipes = useGetRecipesQuery();
   const cloudExtensions = useGetCloudExtensionsQuery();
 
-  const installedExtensionIds = useMemo(
-    () => new Set<UUID>(unresolvedExtensions.map((extension) => extension.id)),
-    [unresolvedExtensions]
-  );
-
-  const installedRecipeIds = useMemo(
-    () =>
-      new Set(unresolvedExtensions.map((extension) => extension._recipe?.id)),
+  const { installedExtensionIds, installedRecipeIds } = useMemo(
+    () => ({
+      installedExtensionIds: new Set<UUID>(
+        unresolvedExtensions.map((extension) => extension.id)
+      ),
+      installedRecipeIds: new Set(
+        unresolvedExtensions.map((extension) => extension._recipe?.id)
+      ),
+    }),
     [unresolvedExtensions]
   );
 
@@ -97,12 +98,15 @@ function useInstallables(): InstallablesState {
       (recipes.data ?? [])
         .filter(
           (recipe) =>
-            recipe.metadata.id.includes(scope) ||
-            recipe.sharing.organizations.length > 0
+            (recipe.metadata.id.includes(scope) ||
+              recipe.sharing.organizations.length > 0) &&
+            // Remove duplicate Installable entries for Active extension
+            // and Recipe pairs
+            !installedRecipeIds.has(recipe.metadata.id)
         )
         .map((recipe) => ({
           ...recipe,
-          active: installedRecipeIds.has(recipe.metadata.id),
+          active: false,
         })),
     [recipes.data, scope, installedRecipeIds]
   );

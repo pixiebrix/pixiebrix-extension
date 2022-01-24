@@ -16,7 +16,7 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import { RegistryId, ResolvedExtension } from "@/core";
+import { IExtension, RegistryId, ResolvedExtension } from "@/core";
 import { groupBy } from "lodash";
 import * as semver from "semver";
 
@@ -25,6 +25,7 @@ export type InstallStatus = {
   active: boolean;
 };
 
+// XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
 export type Installable = (RecipeDefinition | ResolvedExtension) &
   InstallStatus;
 
@@ -55,7 +56,8 @@ export const getPackageId = (installable: Installable): RegistryId =>
 
 export const getUpdatedAt = (installable: Installable): string =>
   isExtension(installable)
-    ? installable._recipe?.updated_at
+    ? // @ts-expect-error -- need to figure out why updateTimestamp isn't included on IExtension here
+      installable._recipe?.updated_at ?? installable.updateTimestamp
     : installable.updated_at;
 
 export const getSharing = (installable: Installable) =>
@@ -66,35 +68,36 @@ export const isPublic = (installable: Installable): boolean =>
     ? installable._recipe?.sharing?.public
     : installable.sharing.public;
 
-const isPersonalBrick = (extension: ResolvedExtension) =>
+const isPersonalExtension = (extension: IExtension) =>
   !extension._recipe && !extension._deployment;
 
-const isPersonalBlueprint = (extension: ResolvedExtension, scope: string) =>
+const hasSourceRecipeWithScope = (extension: IExtension, scope: string) =>
   scope && extension._recipe?.id.startsWith(scope + "/");
 
-const isPersonalRecipe = (recipe: RecipeDefinition, scope: string) =>
-  recipe.metadata ? recipe.metadata.id.includes(scope) : false;
+const hasRecipeScope = (recipe: RecipeDefinition, scope: string) =>
+  Boolean(recipe.metadata?.id.startsWith(scope + "/"));
 
-export const isPersonal = (installable: Installable, scope: string) => {
+export const isPersonal = (installable: Installable, userScope: string) => {
   if (isExtension(installable)) {
     return (
-      isPersonalBrick(installable) || isPersonalBlueprint(installable, scope)
+      isPersonalExtension(installable) ||
+      hasSourceRecipeWithScope(installable, userScope)
     );
   }
 
-  return isPersonalRecipe(installable, scope);
+  return hasRecipeScope(installable, userScope);
 };
 
-export const isDeployment = (installable: Installable) => {
-  if (isExtension(installable)) {
-    return Boolean(installable._deployment);
-  }
-};
+export const isDeployment = (installable: Installable) =>
+  isExtension(installable) && Boolean(installable._deployment);
 
 // TODO: keeping this even though unused atm, will be useful for future grouping features
 export const groupByRecipe = (installables: Installable[]): Installable[][] =>
   Object.values(
-    groupBy(installables, (installable) => getPackageId(installable))
+    groupBy(
+      installables,
+      (installable) => getPackageId(installable) ?? getUniqueId(installable)
+    )
   );
 
 export function updateAvailable(

@@ -19,7 +19,6 @@ import {
   ApiVersion,
   EmptyConfig,
   IExtension,
-  InnerDefinitionRef,
   Metadata,
   RegistryId,
   SafeString,
@@ -49,6 +48,8 @@ import {
 } from "@/blocks/types";
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { UnknownObject } from "@/types";
+import { isExpression } from "@/runtime/mapArgs";
+import { INNER_SCOPE, isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 
 export interface WizardStep {
   step: string;
@@ -69,14 +70,6 @@ export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v3";
  * Default definition entry for the inner definition of the extensionPoint for the extension
  */
 const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
-
-const INNER_SCOPE = "@internal";
-
-export function isInnerExtensionPoint(
-  id: RegistryId | InnerDefinitionRef
-): boolean {
-  return id.startsWith(INNER_SCOPE + "/");
-}
 
 export function makeIsAvailable(url: string): NormalizedAvailability {
   return {
@@ -175,7 +168,7 @@ export function makeInitialBaseState(
 
 /**
  * Create metadata for a temporary extension point definition. When the extension point is saved, it will be moved
- * into the definitions section of the extension.
+ * into the `definitions` section of the extension.
  */
 export function internalExtensionPointMetaFactory(): Metadata {
   return {
@@ -346,11 +339,12 @@ export function extensionWithInnerDefinitions(
 // eslint-disable-next-line @typescript-eslint/ban-types -- support interfaces that don't have index types
 export function removeEmptyValues<T extends object>(obj: T): T {
   // Technically the return type is Partial<T> (with recursive partials). However, we'll trust that the PageEditor
-  // requires the user to set values that actually need to be set. (They'll also get caught by input validation in
+  // requires the user to set values that actually need to be set. They'll also get caught by input validation
   // when the bricks are run.
   return deepPickBy(
     obj,
-    (x: unknown) => typeof x !== "undefined" && x !== ""
+    (value: unknown, parent: unknown) =>
+      isExpression(parent) || (typeof value !== "undefined" && value !== "")
   ) as T;
 }
 

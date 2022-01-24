@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import {
   Button,
   Modal,
@@ -33,7 +33,7 @@ import slugify from "slugify";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { makeBlueprint } from "@/options/pages/installed/exportBlueprint";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
@@ -46,6 +46,7 @@ import { faGlobe, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Form, {
   OnSubmit,
   RenderBody,
+  RenderStatus,
   RenderSubmit,
 } from "@/components/form/Form";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -55,6 +56,8 @@ import extensionsSlice from "@/store/extensionsSlice";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
+import styles from "./ShareExtensionModal.module.scss";
+import { selectExtensions } from "@/store/extensionsSelectors";
 
 const { attachExtension } = extensionsSlice.actions;
 
@@ -104,18 +107,29 @@ async function convertAndShare(
   };
 }
 
+// XXX: this is a connected component. To simplify testing split out the presentational component
 const ShareExtensionModal: React.FC<{
-  extension: IExtension;
-}> = ({ extension }) => {
+  extensionId: UUID;
+}> = ({ extensionId }) => {
+  const extensions = useSelector(selectExtensions);
   const notify = useNotifications();
   const dispatch = useDispatch();
+
+  const extension = useMemo(() => {
+    const extension = extensions.find((x) => x.id === extensionId);
+    if (extension == null) {
+      throw new Error(`No persisted extension exists with id: ${extensionId}`);
+    }
+
+    return extension;
+  }, [extensions, extensionId]);
 
   const onCancel = () => {
     dispatch(installedPageSlice.actions.setShareContext(null));
   };
 
   // If loading the URL directly, there's a race condition if scope will be populated when the modal is mounted.
-  // Not a priority to fix because user will general come to the modal via the "Share" button on the main page
+  // Not a priority to fix because user will, in general, come to the modal via the "Share" button on the main page
   const { scope } = useContext(AuthContext);
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
@@ -143,6 +157,10 @@ const ShareExtensionModal: React.FC<{
           })
         );
         notify.success("Converted/shared brick");
+
+        // Hide the share modal
+        dispatch(installedPageSlice.actions.setShareContext(null));
+
         dispatch(
           push(`/installed/link/${encodeURIComponent(recipe.metadata.id)}`)
         );
@@ -166,7 +184,7 @@ const ShareExtensionModal: React.FC<{
   );
 
   const renderBody: RenderBody = ({ values, setFieldValue }) => (
-    <Modal.Body>
+    <div>
       <ConnectedFieldTemplate
         name="name"
         label="Name"
@@ -231,7 +249,7 @@ const ShareExtensionModal: React.FC<{
           );
         }
       )}
-    </Modal.Body>
+    </div>
   );
 
   const renderSubmit: RenderSubmit = ({ isSubmitting, isValid, values }) => (
@@ -245,18 +263,31 @@ const ShareExtensionModal: React.FC<{
     </Modal.Footer>
   );
 
+  const renderStatus: RenderStatus = ({ status }) => (
+    <div className="text-danger mb-3">{status}</div>
+  );
+
   return (
-    <Modal show onHide={onCancel}>
+    <Modal
+      show
+      onHide={onCancel}
+      backdropClassName={styles.backdrop}
+      className={styles.modal}
+      dialogClassName={styles.dialog}
+    >
       <Modal.Header>
         <Modal.Title>Share as Blueprint</Modal.Title>
       </Modal.Header>
-      <Form
-        validationSchema={ShareSchema}
-        initialValues={initialValues}
-        onSubmit={handleShare}
-        renderBody={renderBody}
-        renderSubmit={renderSubmit}
-      />
+      <Modal.Body>
+        <Form
+          validationSchema={ShareSchema}
+          initialValues={initialValues}
+          onSubmit={handleShare}
+          renderStatus={renderStatus}
+          renderBody={renderBody}
+          renderSubmit={renderSubmit}
+        />
+      </Modal.Body>
     </Modal>
   );
 };
