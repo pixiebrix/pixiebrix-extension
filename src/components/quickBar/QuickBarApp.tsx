@@ -221,9 +221,9 @@ const KBarToggle: React.FC = (props) => {
 
   if (showing) {
     selection.save();
-    console.log("Saving last selection:", selection.get());
+    console.debug("Saving last selection:", selection.get());
   } else {
-    console.log("Restoring last selection:", selection.get());
+    console.debug("Restoring last selection:", selection.get());
     selection.restore();
   }
 

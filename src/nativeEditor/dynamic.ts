@@ -34,14 +34,12 @@ import {
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { resolveDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
-import {
-  ContextMenuExtensionPoint,
-  ContextMenuReader,
-} from "@/extensionPoints/contextMenu";
+import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { $safeFind } from "@/helpers";
 import { TriggerDefinition } from "@/extensionPoints/triggerExtension";
 import selection from "@/utils/selectionController";
+import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,

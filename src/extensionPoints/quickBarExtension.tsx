@@ -46,10 +46,10 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { makeServiceContext } from "@/services/serviceUtils";
-import { guessSelectedElement } from "@/extensionPoints/contextMenu";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
+import { guessSelectedElement } from "@/utils/selectionController";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 
