@@ -22,6 +22,7 @@ import {
   inferSelectors,
   safeCssSelector,
 } from "@/nativeEditor/infer";
+import { PIXIEBRIX_DATA_ATTR, EXTENSION_POINT_DATA_ATTR } from "@/common";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";
@@ -365,6 +366,23 @@ describe("inferSelectors", () => {
       );
 
       expect(selector).toStrictEqual([`[${attribute}='a']`]);
+    }
+  );
+
+  test.each([[PIXIEBRIX_DATA_ATTR], [EXTENSION_POINT_DATA_ATTR]])(
+    "don't infer pixiebrix attribute: %s",
+    (attribute: string) => {
+      document.body.innerHTML =
+        "<div>" +
+        `<input ${attribute}='foo' aria-label='foo'/>` +
+        `<input ${attribute}='bar' aria-label='bar'/>` +
+        "</div>";
+
+      const selector = inferSelectors(
+        document.body.querySelector(`input[${attribute}='foo']`)
+      );
+
+      expect(selector).toStrictEqual(["[aria-label='foo']"]);
     }
   );
 });
