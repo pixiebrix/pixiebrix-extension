@@ -359,6 +359,13 @@ export function getImplicitReader(type: ElementType): SingleLayerReaderConfig {
     ]);
   }
 
+  if (type === "quickBar") {
+    return readerTypeHack([
+      validateRegistryId("@pixiebrix/document-metadata"),
+      validateRegistryId("@pixiebrix/selection"),
+    ]);
+  }
+
   // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by
   // the contextMenu extension point.
   return [validateRegistryId("@pixiebrix/document-metadata")];
