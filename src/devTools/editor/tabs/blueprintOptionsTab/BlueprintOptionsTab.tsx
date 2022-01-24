@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { useField, useFormikContext } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Col, Container, Row, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import styles from "./BlueprintOptionsTab.module.scss";
@@ -28,8 +28,10 @@ import {
   MINIMAL_SCHEMA,
   MINIMAL_UI_SCHEMA,
 } from "@/components/formBuilder/formBuilderHelpers";
+import FieldRuntimeContext, {
+  RuntimeContext,
+} from "@/components/fields/schemaFields/FieldRuntimeContext";
 
-// ToDo tab fails with exception
 const BlueprintOptionsTab: React.VoidFunctionComponent<{
   eventKey: string;
 }> = ({ eventKey }) => {
@@ -37,6 +39,14 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
   const { data: recipes, isLoading: recipesLoading } = useGetRecipesQuery();
 
   const { values: formState, setFieldValue } = useFormikContext<FormState>();
+
+  const formRuntimeContext = useMemo<RuntimeContext>(
+    () => ({
+      apiVersion: formState.apiVersion,
+      allowExpressions: false,
+    }),
+    [formState.apiVersion]
+  );
 
   useEffect(() => {
     if (formState.optionsDefinition != null || recipesLoading) {
@@ -81,6 +91,7 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
   }
 
   const hasOptions =
+    formState.optionsDefinition?.schema?.properties &&
     Object.keys(formState.optionsDefinition.schema.properties).length > 0;
 
   return (
@@ -88,14 +99,18 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
       <Container>
         <Row>
           <Col md="8">
-            <div>Editing Options for Blueprint "{formState.recipe.name}"</div>
+            <div>
+              Editing Options for Blueprint &quot;{formState.recipe.name}&quot;
+            </div>
             {!hasOptions && <div>No options defined for this Blueprint</div>}
-            <FormEditor
-              name="optionsDefinition"
-              showFormTitle={false}
-              activeField={activeField}
-              setActiveField={setActiveField}
-            />
+            <FieldRuntimeContext.Provider value={formRuntimeContext}>
+              <FormEditor
+                name="optionsDefinition"
+                showFormTitle={false}
+                activeField={activeField}
+                setActiveField={setActiveField}
+              />
+            </FieldRuntimeContext.Provider>
           </Col>
           <Col md="4">
             <div>Preview</div>

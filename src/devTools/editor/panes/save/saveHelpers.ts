@@ -24,6 +24,7 @@ import {
 } from "@/core";
 import {
   EditablePackage,
+  OptionsDefinition,
   RecipeDefinition,
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
@@ -153,6 +154,13 @@ export function replaceRecipeExtension(
           `Element's API Version (${element.apiVersion}) does not match recipe's API Version (${sourceRecipe.apiVersion}) and recipe's API Version cannot be updated`
         );
       }
+    }
+
+    if (element.optionsDefinition?.schema?.properties != null) {
+      draft.options = {
+        schema: element.optionsDefinition.schema.properties,
+        uiSchema: element.optionsDefinition?.uiSchema,
+      };
     }
 
     const index = findRecipeIndex(sourceRecipe, installedExtension);
