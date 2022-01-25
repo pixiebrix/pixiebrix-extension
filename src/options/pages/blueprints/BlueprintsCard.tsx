@@ -138,7 +138,7 @@ const BlueprintsCard: React.FunctionComponent<{
 
   const {
     rows,
-    headerGroups,
+    flatHeaders,
     // @ts-expect-error -- for some reason, react-table index.d.ts UseGroupByInstanceProps
     // doesn't have setGroupBy?
     setGroupBy,
@@ -150,14 +150,14 @@ const BlueprintsCard: React.FunctionComponent<{
   const isGrouped = useMemo(() => groupBy.length > 0, [groupBy]);
   const isSorted = useMemo(() => sortBy.length > 0, [sortBy]);
 
-  const groupByOptions = headerGroups[0].headers
+  const groupByOptions = flatHeaders
     .filter((column) => column.canGroupBy)
     .map((column) => ({
       label: column.Header,
       value: column.id,
     }));
 
-  const sortByOptions = headerGroups[0].headers
+  const sortByOptions = flatHeaders
     .filter((column) => column.canSort)
     .map((column) => ({
       label: column.Header,
@@ -165,13 +165,13 @@ const BlueprintsCard: React.FunctionComponent<{
     }));
 
   const teamFilters = useMemo(() => {
-    const sharingColumn = headerGroups[0].headers.find(
+    const sharingColumn = flatHeaders.find(
       (header) => header.id === "sharing.source.label"
     );
     return getFilterOptions(sharingColumn).filter(
       (option) => !["Personal", "Public"].includes(option as string)
     ) as string[];
-  }, [headerGroups]);
+  }, [flatHeaders]);
 
   return (
     <BootstrapRow>

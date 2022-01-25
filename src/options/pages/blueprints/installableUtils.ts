@@ -35,21 +35,15 @@ export const getSharingType = (
   type: string;
   label: string;
 } => {
-  let sharingType = "Public";
+  let sharingType = "";
 
   if (isPersonal(installable, scope)) {
     sharingType = "Personal";
-  }
-
-  if (isDeployment(installable)) {
+  } else if (isDeployment(installable)) {
     sharingType = "Deployment";
-  }
-
-  if (installable.organization) {
+  } else if (installable.organization) {
     sharingType = "Team";
-  }
-
-  if (isPublic(installable)) {
+  } else if (isPublic(installable)) {
     sharingType = "Public";
   }
 
