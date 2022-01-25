@@ -21,7 +21,7 @@ import SavingExtensionModal from "./SavingExtensionModal";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { define } from "cooky-cutter";
 import {
-  extensionPointFactory,
+  extensionPointConfigFactory,
   installedRecipeMetadataFactory,
   recipeFactory,
   recipeMetadataFactory,
@@ -141,7 +141,10 @@ test("doesn't render recipe buttons when extension API is not compatible with re
   const recipe = recipeFactory({
     apiVersion: "v2",
     definitions: null,
-    extensionPoints: [extensionPointFactory(), extensionPointFactory()],
+    extensionPoints: [
+      extensionPointConfigFactory(),
+      extensionPointConfigFactory(),
+    ],
   });
   const element = simpleElementFactory({
     apiVersion: "v3",
