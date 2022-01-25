@@ -37,7 +37,13 @@ export const MINIMAL_UI_SCHEMA: UiSchema = {
 
 export const DEFAULT_FIELD_TYPE = "string";
 
-export const parseUiType = (value: string) => {
+export type UiType = {
+  propertyType: SchemaPropertyType;
+  uiWidget: string | undefined;
+  propertyFormat: string | undefined;
+};
+
+export const parseUiType = (value: string): UiType => {
   const [propertyType, uiWidget, propertyFormat] = value.split(":");
   return {
     propertyType: propertyType as SchemaPropertyType,

@@ -32,6 +32,7 @@ import {
   produceSchemaOnUiTypeChange,
   replaceStringInArray,
   stringifyUiType,
+  UiType,
   validateNextPropertyName,
 } from "./formBuilderHelpers";
 import { Schema, SchemaPropertyType } from "@/core";
@@ -147,7 +148,7 @@ const FieldEditor: React.FC<{
 
     const selected = fieldTypes.find((option) => option.value === uiType);
 
-    return selected === null
+    return selected == null
       ? {
           label: "unknown",
           value: null,
@@ -197,13 +198,26 @@ const FieldEditor: React.FC<{
     },
     label: "Field Description",
   };
-  const defaultFieldProps: SchemaFieldProps = {
-    name: getFullFieldName("default"),
-    schema: {
-      type: parseUiType(selectedUiTypeOption.value).propertyType,
-    },
-    label: "Default value",
-  };
+
+  const uiType: UiType =
+    selectedUiTypeOption.value == null
+      ? {
+          propertyType: "null",
+          uiWidget: undefined,
+          propertyFormat: undefined,
+        }
+      : parseUiType(selectedUiTypeOption.value);
+
+  const defaultFieldProps: SchemaFieldProps =
+    selectedUiTypeOption.value == null
+      ? null
+      : {
+          name: getFullFieldName("default"),
+          schema: {
+            type: uiType.propertyType,
+          },
+          label: "Default value",
+        };
 
   return (
     <div className={styles.root}>
@@ -230,7 +244,7 @@ const FieldEditor: React.FC<{
         onChange={onUiTypeChange}
       />
 
-      {parseUiType(selectedUiTypeOption.value).uiWidget === "imageCrop" && (
+      {uiType.uiWidget === "imageCrop" && (
         <SchemaField
           label="Image source"
           name={`${name}.uiSchema.${propertyName}.source`}
@@ -238,9 +252,10 @@ const FieldEditor: React.FC<{
         />
       )}
 
-      {!FIELD_TYPES_WITHOUT_DEFAULT.includes(selectedUiTypeOption.value) && (
-        <SchemaField {...defaultFieldProps} />
-      )}
+      {defaultFieldProps &&
+        !FIELD_TYPES_WITHOUT_DEFAULT.includes(selectedUiTypeOption.value) && (
+          <SchemaField {...defaultFieldProps} />
+        )}
 
       {propertySchema.enum && (
         <ConnectedFieldTemplate

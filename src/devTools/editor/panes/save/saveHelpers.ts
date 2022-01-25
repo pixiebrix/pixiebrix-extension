@@ -30,7 +30,7 @@ import {
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick } from "lodash";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { nothing, produce } from "immer";
+import { produce } from "immer";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
 import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
