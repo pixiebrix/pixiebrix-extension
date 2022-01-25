@@ -20,7 +20,7 @@ import Page from "@/layout/Page";
 import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
 import { Col, Nav, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import BlueprintsList from "@/options/pages/blueprints/BlueprintsList";
+import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import useInstallables from "@/options/pages/blueprints/useInstallables";
 import ExtensionLogsModal from "@/options/pages/installed/ExtensionLogsModal";
 import { useSelector } from "react-redux";
@@ -102,7 +102,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
         <ShareExtensionModal extension={showShareContext.extension} />
       )}
       {installables.length > 0 && (
-        <BlueprintsList installables={installables} />
+        <BlueprintsCard installables={installables} />
       )}
     </Page>
   );
