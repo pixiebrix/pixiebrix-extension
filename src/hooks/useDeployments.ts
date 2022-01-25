@@ -293,7 +293,7 @@ function useDeployments(): DeploymentState {
     isLoading,
     error: fetchError,
     snooze,
-    isSnoozed: hide,
+    isSnoozed: true || hide,
   };
 }
 
