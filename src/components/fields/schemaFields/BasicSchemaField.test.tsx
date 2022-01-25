@@ -82,4 +82,47 @@ describe("option mode switching", () => {
 
     expectToggleMode(container, "Text");
   });
+
+  test("automatically switches to var when @ is typed", async () => {
+    const { container } = renderSchemaField(
+      "test",
+      { type: "string" },
+      {
+        test: {
+          __type__: "nunjucks",
+          __value__: "",
+        },
+      }
+    );
+
+    expectToggleMode(container, "Text");
+
+    const inputElement = screen.getByLabelText("test");
+    fireTextInput(inputElement, "@data.foo");
+    await waitForEffect();
+
+    expectToggleMode(container, "Variable");
+  });
+
+  test("automatically wraps vars in braces when typing a space after a var", async () => {
+    const { container } = renderSchemaField(
+      "test",
+      { type: "string" },
+      {
+        test: {
+          __type__: "var",
+          __value__: "@data.foo",
+        },
+      }
+    );
+
+    expectToggleMode(container, "Variable");
+
+    const inputElement: HTMLInputElement = screen.getByLabelText("test");
+    fireTextInput(inputElement, "@data.foo ");
+    await waitForEffect();
+
+    expectToggleMode(container, "Text");
+    expect(inputElement.value).toStrictEqual("{{@data.foo}} ");
+  });
 });
