@@ -88,7 +88,7 @@ function uninstallExtension(
 /**
  * Uninstall all deployments by uninstalling all extensions associated with the deployment.
  */
-async function uninstallAllDeployments(): Promise<void> {
+export async function uninstallAllDeployments(): Promise<void> {
   let state = await loadOptions();
   const installed = selectExtensions({ options: state });
 
@@ -277,6 +277,9 @@ export async function updateDeployments(): Promise<void> {
   ]);
 
   if (!linked) {
+    // If the Browser extension is unlinked (it doesn't have the API key), just NOP. If it's an enterprise user, it's
+    // likely they just need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any
+    // deployments installed anyway.
     return;
   }
 

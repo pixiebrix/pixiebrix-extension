@@ -46,13 +46,18 @@ import menuItem, {
 } from "@/devTools/editor/extensionPoints/menuItem";
 import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { RecipeDefinition, ExtensionPointConfig } from "@/types/definitions";
+import {
+  RecipeDefinition,
+  ExtensionPointConfig,
+  SharingDefinition,
+} from "@/types/definitions";
 import { ExtensionPointConfig as ExtensionPointDefinition } from "@/extensionPoints/types";
 import {
   Context as DevtoolsContextType,
   FrameConnectionState,
 } from "@/devTools/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
+import { Deployment } from "@/types/contract";
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
@@ -61,13 +66,18 @@ export const recipeMetadataFactory = define<Metadata>({
   version: "1.0.0",
 });
 
+export const sharingFactory = define<SharingDefinition>({
+  public: false,
+  organizations: [],
+});
+
 export const installedRecipeMetadataFactory = define<RecipeMetadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),
   name: (n: number) => `Recipe ${n}`,
   description: "Recipe generated from factory",
   version: "1.0.0",
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
-  sharing: { public: false, organizations: [] },
+  sharing: sharingFactory(),
 });
 
 const tabStateFactory = define<FrameConnectionState>({
@@ -198,7 +208,20 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
 
-export const recipeDefinitionFactory = define<ExtensionPointDefinition>({
+export const recipeDefinitionFactory = define<RecipeDefinition>({
+  kind: "recipe",
+  apiVersion: "v3",
+  metadata: (n: number) =>
+    recipeMetadataFactory({
+      id: validateRegistryId(`test/extension-point-${n}`),
+      name: `Extension Point ${n}`,
+    }),
+  updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
+  sharing: sharingFactory(),
+  extensionPoints: [],
+});
+
+export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>({
   kind: "extensionPoint",
   apiVersion: "v3",
   metadata: (n: number) =>
@@ -300,6 +323,24 @@ export const innerExtensionPointRecipeFactory = ({
  */
 export const recipeFactory = innerExtensionPointRecipeFactory();
 
+export const deploymentFactory = define<Deployment>({
+  id: () => uuidv4(),
+  name: (n: number) => `Deployment ${n}`,
+  created_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
+  updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
+  active: true,
+  bindings: [],
+  package_version: "1.0.0",
+  services: [],
+  package: {
+    id: validateRegistryId("@test/recipe"),
+    name: "Deployment Package",
+    package_id: uuidv4(),
+    version: "1.0.0",
+    config: recipeDefinitionFactory() as any,
+  },
+});
+
 const internalFormStateFactory = define<FormState>({
   apiVersion: "v3" as ApiVersion,
   uuid: () => uuidv4(),
@@ -311,7 +352,7 @@ const internalFormStateFactory = define<FormState>({
   type: "panel" as ElementType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
-  extensionPoint: recipeDefinitionFactory,
+  extensionPoint: extensionPointDefinitionFactory,
 } as any);
 
 export const formStateFactory = (

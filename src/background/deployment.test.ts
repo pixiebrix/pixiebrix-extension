@@ -15,9 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { loadOptions, saveOptions } from "@/store/extensionsStorage";
+import {
+  deploymentFactory,
+  extensionFactory,
+  installedRecipeMetadataFactory,
+} from "@/tests/factories";
+import { uuidv4 } from "@/types/helpers";
+import { PersistedExtension } from "@/core";
+import MockAdapter from "axios-mock-adapter";
+import axios from "axios";
 import { updateDeployments } from "@/background/deployment";
 
-jest.mock("@/contentScript/messenger/api");
+const axiosMock = new MockAdapter(axios);
+
+jest.mock("@/hooks/useRefresh", () => ({
+  refreshRegistries: jest.fn(),
+}));
+
+jest.mock("@/background/util", () => ({
+  // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
+  forEachTab: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock("webext-messenger");
+
+jest.mock("@/telemetry/events", () => ({
+  reportEvent: jest.fn(),
+}));
+
+jest.mock("@/background/messenger/api", () => ({
+  // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
+  uninstallContextMenu: jest.fn().mockResolvedValue(undefined),
+  containsPermissions: jest.fn().mockResolvedValue(true),
+  traces: {
+    // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
+    clear: jest.fn().mockResolvedValue(undefined),
+  },
+}));
 
 jest.mock("@/background/telemetry", () => ({
   getUID: async () => "UID",
@@ -25,12 +60,15 @@ jest.mock("@/background/telemetry", () => ({
 
 jest.mock("@/auth/token", () => ({
   getExtensionToken: async () => "TESTTOKEN",
-  readAuthData: async () => ({
+  readAuthData: jest.fn().mockResolvedValue({
     organizationId: "00000000-00000000-00000000-00000000",
   }),
-  isLinked: async () => true,
+  isLinked: jest.fn().mockResolvedValue(true),
 }));
-import { isLinked, readAuthData } from "@/auth/token";
+
+beforeEach(() => {
+  jest.resetModules();
+});
 
 jest.mock("webext-detect-page", () => ({
   isBackground: () => true,
@@ -38,41 +76,95 @@ jest.mock("webext-detect-page", () => ({
   isExtensionContext: () => false,
 }));
 
-jest.mock("webextension-polyfill", () => ({
-  __esModule: true,
-  default: {
-    runtime: {
-      getManifest: () => ({
-        version: "1.5.2",
-      }),
+jest.mock("webextension-polyfill", () => {
+  const mock = jest.requireActual("webextension-polyfill");
+
+  return {
+    __esModule: true,
+    default: {
+      // Keep the existing local storage mock
+      ...mock,
+      runtime: {
+        getManifest: jest.fn().mockReturnValue({
+          version: "1.5.2",
+        }),
+      },
     },
-  },
-}));
+  };
+});
+
+import browser from "webextension-polyfill";
+import { isLinked, readAuthData } from "@/auth/token";
+import { containsPermissions } from "@/background/messenger/api";
+
+const isLinkedMock = isLinked as jest.Mock;
+const readAuthDataMock = readAuthData as jest.Mock;
+const getManifestMock = browser.runtime.getManifest as jest.Mock;
+const containsPermissionsMock = containsPermissions as jest.Mock;
 
 afterEach(() => {
-  (isLinked as any).mockClear();
-  (readAuthData as any).mockClear();
+  isLinkedMock.mockClear();
+  readAuthDataMock.mockClear();
+  getManifestMock.mockClear();
+  containsPermissionsMock.mockClear();
 });
 
 describe("updateDeployments", () => {
-  test("can update deployments", async () => {
-    (isLinked as any).mockResolvedValue(async () => true);
+  test("can add deployment from empty state if deployment has permissions", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    containsPermissionsMock.mockResolvedValue(true);
+
+    const deployment = deploymentFactory();
+
+    axiosMock.onAny().reply(201, [deployment]);
 
     await updateDeployments();
   });
 
-  test("skip if not linked", async () => {
-    (isLinked as any).mockResolvedValue(async () => false);
-    (readAuthData as any).mockResolvedValue(
-      async () => ({ organizationId: null } as any)
-    );
+  test("skip update and uninstall if not linked", async () => {
+    isLinkedMock.mockResolvedValue(false);
+    readAuthDataMock.mockResolvedValue({} as any);
+
+    jest.doMock("@/background/deployment", () => ({
+      uninstallAllDeployments: jest.fn(),
+    }));
+
+    // eslint-disable-next-line import/dynamic-import-chunkname -- test code
+    const { uninstallAllDeployments } = await import("@/background/deployment");
 
     await updateDeployments();
+
+    expect((uninstallAllDeployments as jest.Mock).mock.calls.length).toBe(0);
+    expect(getManifestMock.mock.calls.length).toBe(0);
   });
 
   test("can uninstall all deployments", async () => {
-    (isLinked as any).mockResolvedValue(async () => true);
+    const personalExtension = extensionFactory() as PersistedExtension;
+
+    const recipeExtension = extensionFactory({
+      _recipe: installedRecipeMetadataFactory(),
+    }) as PersistedExtension;
+
+    const deploymentExtension = extensionFactory({
+      _deployment: { id: uuidv4(), timestamp: "2021-10-07T12:52:16.189Z" },
+      _recipe: installedRecipeMetadataFactory(),
+    }) as PersistedExtension;
+
+    await saveOptions({
+      extensions: [personalExtension, deploymentExtension, recipeExtension],
+    });
+
+    isLinkedMock.mockResolvedValue(true);
+    readAuthDataMock.mockResolvedValue({} as any);
 
     await updateDeployments();
+
+    const { extensions } = await loadOptions();
+
+    expect(extensions.length).toBe(2);
+
+    const installedIds = extensions.map((x) => x.id);
+    expect(installedIds).toContain(personalExtension.id);
+    expect(installedIds).toContain(recipeExtension.id);
   });
 });
