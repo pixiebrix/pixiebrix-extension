@@ -23,9 +23,10 @@ import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { timeSince } from "@/utils/timeUtils";
 import { Row } from "react-table";
+import { InstallableRow } from "@/options/pages/blueprints/BlueprintsCard";
 
 const BlueprintTableRow: React.FunctionComponent<{
-  installableRow: Row;
+  installableRow: Row<InstallableRow>;
 }> = ({ installableRow }) => {
   const {
     name,

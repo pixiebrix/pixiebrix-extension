@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Col, Nav, Row } from "react-bootstrap";
+import { Button, Col, Nav, Row as BootstrapRow } from "react-bootstrap";
 import React, { useContext, useEffect, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -28,6 +28,8 @@ import {
 } from "@/options/pages/blueprints/installableUtils";
 import AuthContext from "@/auth/AuthContext";
 import {
+  Column,
+  Row,
   ColumnInstance,
   useFilters,
   useGroupBy,
@@ -51,8 +53,8 @@ const getFilterOptions = (column: ColumnInstance) => {
   return [...options.values()];
 };
 
-// Reshaped installable to easily filter, sort, and group installables
-type InstallableRow = {
+// Reshaped Installable to easily filter, sort, and group Installables
+export type InstallableRow = {
   name: string;
   description: string;
   sharing: {
@@ -78,14 +80,7 @@ const getInstallableRows = (
       description: getDescription(installable),
       sharing: {
         packageId: getPackageId(installable),
-        source: {
-          type: getSharingType(installable, scope),
-          label: ["Team", "Deployment"].includes(
-            getSharingType(installable, scope) as string
-          )
-            ? installable.organization.name
-            : getSharingType(installable, scope),
-        },
+        source: getSharingType(installable, scope),
       },
       updatedAt: getUpdatedAt(installable),
       status: installable.active ? "Active" : "Uninstalled",
@@ -96,7 +91,7 @@ const getInstallableRows = (
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, and filtering utilities
 // (and eventually pagination & global searching) on InstallableRows
-const columns = [
+const columns: Array<Column<InstallableRow>> = [
   {
     Header: "Name",
     accessor: "name",
@@ -105,6 +100,7 @@ const columns = [
   },
   {
     Header: "Sharing",
+    // @ts-expect-error -- react-table allows nested accessors
     accessor: "sharing.source.label",
   },
   {
@@ -123,13 +119,14 @@ const BlueprintsCard: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { scope } = useContext(AuthContext);
-  const data = useMemo(() => getInstallableRows(installables, scope), [
-    installables,
-    scope,
-  ]);
+  const data: InstallableRow[] = useMemo(
+    () => getInstallableRows(installables, scope),
+    [installables, scope]
+  );
 
   useEffect(() => {
     setAllFilters([{ id: "status", value: "Active" }]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on first mount
   }, []);
 
   const tableInstance = useTable(
@@ -172,12 +169,12 @@ const BlueprintsCard: React.FunctionComponent<{
       (header) => header.id === "sharing.source.label"
     );
     return getFilterOptions(sharingColumn).filter(
-      (option) => !["Personal", "Public"].includes(option)
-    );
+      (option) => !["Personal", "Public"].includes(option as string)
+    ) as string[];
   }, [headerGroups]);
 
   return (
-    <Row>
+    <BootstrapRow>
       <Col xs={3}>
         <h5>Category Filters</h5>
         <Nav className="flex-column" variant="pills" defaultActiveKey="active">
@@ -227,22 +224,20 @@ const BlueprintsCard: React.FunctionComponent<{
             </Nav.Link>
           </Nav.Item>
           {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
-          {teamFilters.map((filter) => {
-            return (
-              <Nav.Item key={filter}>
-                <Nav.Link
-                  eventKey={filter}
-                  onClick={() => {
-                    setAllFilters([
-                      { id: "sharing.source.label", value: filter },
-                    ]);
-                  }}
-                >
-                  {filter} Blueprints
-                </Nav.Link>
-              </Nav.Item>
-            );
-          })}
+          {teamFilters.map((filter) => (
+            <Nav.Item key={filter}>
+              <Nav.Link
+                eventKey={filter}
+                onClick={() => {
+                  setAllFilters([
+                    { id: "sharing.source.label", value: filter },
+                  ]);
+                }}
+              >
+                {filter} Blueprints
+              </Nav.Link>
+            </Nav.Item>
+          ))}
         </Nav>
       </Col>
       <Col xs={9}>
@@ -309,16 +304,19 @@ const BlueprintsCard: React.FunctionComponent<{
                 <h5 className="text-muted mt-3">{row.groupByVal}</h5>
                 <BlueprintTableList
                   tableInstance={tableInstance}
-                  rows={row.subRows}
+                  rows={row.subRows as Array<Row<InstallableRow>>}
                 />
               </>
             ))}
           </>
         ) : (
-          <BlueprintTableList tableInstance={tableInstance} rows={rows} />
+          <BlueprintTableList
+            tableInstance={tableInstance}
+            rows={rows as Array<Row<InstallableRow>>}
+          />
         )}
       </Col>
-    </Row>
+    </BootstrapRow>
   );
 };
 

@@ -24,6 +24,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import {
+  getOrganization,
   Installable,
   updateAvailable,
 } from "@/options/pages/blueprints/installableUtils";
@@ -32,32 +33,11 @@ import {
   useGetOrganizationsQuery,
   useGetRecipesQuery,
 } from "@/services/api";
-import { Organization } from "@/types/contract";
 
 type InstallablesState = {
   installables: Installable[];
   isLoading: boolean;
   error: unknown;
-};
-
-const getOrganization = (
-  extensionOrRecipe: ResolvedExtension | RecipeDefinition,
-  organizations: Organization[]
-) => {
-  const sharing =
-    "_recipe" in extensionOrRecipe
-      ? extensionOrRecipe._recipe?.sharing
-      : extensionOrRecipe.sharing;
-
-  if (!sharing || sharing.organizations.length === 0) {
-    return null;
-  }
-
-  // If more than one sharing organization, use the first.
-  // This is an uncommon scenario.
-  return organizations.find((org) =>
-    sharing.organizations.includes(org.id as UUID)
-  );
 };
 
 function useInstallables(): InstallablesState {

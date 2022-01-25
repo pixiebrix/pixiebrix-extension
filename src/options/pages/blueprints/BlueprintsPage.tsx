@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React from "react";
 import Page from "@/layout/Page";
 import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
-import { Col, Nav, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import useInstallables from "@/options/pages/blueprints/useInstallables";
@@ -34,27 +33,6 @@ import {
   selectShowShareContext,
 } from "@/options/pages/installed/installedPageSelectors";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
-import Select from "react-select";
-import {
-  getDescription,
-  getLabel,
-  getPackageId,
-  getSharingType,
-  getUpdatedAt,
-} from "@/options/pages/blueprints/installableUtils";
-import AuthContext from "@/auth/AuthContext";
-
-type CategoryFilter = "active" | "all" | "personal" | "shared";
-
-const categoryLabels = new Map<CategoryFilter, string>(
-  Object.entries({
-    active: "Active Blueprints",
-    all: "All Blueprints",
-    personal: "Personal Blueprints",
-    // TODO: break this up into team category filters
-    shared: "Shared with Me",
-  }) as Array<[CategoryFilter, string]>
-);
 
 const BlueprintsPage: React.FunctionComponent = () => {
   const { installables, isLoading, error } = useInstallables();

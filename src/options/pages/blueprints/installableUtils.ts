@@ -16,7 +16,7 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import { RegistryId, ResolvedExtension } from "@/core";
+import { RegistryId, ResolvedExtension, UUID } from "@/core";
 import { groupBy } from "lodash";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
@@ -28,23 +28,29 @@ export type InstallStatus = {
   organization: Organization;
 };
 
-export const getSharingType = (installable: Installable, scope: string) => {
-  const sharingType = "Public";
+export const getSharingType = (
+  installable: Installable,
+  scope: string
+): {
+  type: string;
+  label: string;
+} => {
+  let sharingType = "Public";
 
   if (isPersonal(installable, scope)) {
-    return "Personal";
+    sharingType = "Personal";
   }
 
   if (isDeployment(installable)) {
-    return "Deployment";
+    sharingType = "Deployment";
   }
 
   if (installable.organization) {
-    return "Team";
+    sharingType = "Team";
   }
 
   if (isPublic(installable)) {
-    return "Public";
+    sharingType = "Public";
   }
 
   return {
@@ -167,3 +173,23 @@ export function updateAvailable(
 
   return false;
 }
+
+export const getOrganization = (
+  extensionOrRecipe: ResolvedExtension | RecipeDefinition,
+  organizations: Organization[]
+) => {
+  const sharing =
+    "_recipe" in extensionOrRecipe
+      ? extensionOrRecipe._recipe?.sharing
+      : extensionOrRecipe.sharing;
+
+  if (!sharing || sharing.organizations.length === 0) {
+    return null;
+  }
+
+  // If more than one sharing organization, use the first.
+  // This is an uncommon scenario.
+  return organizations.find((org) =>
+    sharing.organizations.includes(org.id as UUID)
+  );
+};
