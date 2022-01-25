@@ -15,29 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Card, Col, Nav, Row, Table } from "react-bootstrap";
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import styles from "./BlueprintsList.module.scss";
-import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
+import { Button, Col, Nav, Row } from "react-bootstrap";
+import React, { useContext, useEffect, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getDescription,
   getLabel,
   getPackageId,
   getSharingType,
-  getUniqueId,
   getUpdatedAt,
   Installable,
 } from "@/options/pages/blueprints/installableUtils";
 import AuthContext from "@/auth/AuthContext";
 import { useFilters, useGroupBy, useSortBy, useTable } from "react-table";
 import Select from "react-select";
-import cx from "classnames";
 import {
   faSortAmountDownAlt,
   faSortAmountUpAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import BlueprintsList from "@/options/pages/blueprints/BlueprintsList";
+import { RegistryId } from "@/core";
 
 function CategoryFilterNavItem({ setAllFilters, column }) {
   const options = React.useMemo(() => {
@@ -68,13 +65,28 @@ function CategoryFilterNavItem({ setAllFilters, column }) {
   );
 }
 
-const BlueprintsCard: React.FunctionComponent<{
-  installables: Installable[];
-}> = ({ installables }) => {
-  const { scope } = useContext(AuthContext);
+type InstallableRow = {
+  name: string;
+  description: string;
+  sharing: {
+    packageId: RegistryId;
+    source: {
+      type: string;
+      label: string;
+    };
+  };
+  updatedAt: string;
+  status: "Active" | "Uninstalled";
+  // Used to get Installable actions from useInstallableActions
+  installable: Installable;
+};
 
-  const data = useMemo(() => {
-    return installables.map((installable) => ({
+const getInstallableRows = (
+  installables: Installable[],
+  scope: string
+): InstallableRow[] =>
+  installables.map(
+    (installable): InstallableRow => ({
       name: getLabel(installable),
       description: getDescription(installable),
       sharing: {
@@ -91,41 +103,47 @@ const BlueprintsCard: React.FunctionComponent<{
       updatedAt: getUpdatedAt(installable),
       status: installable.active ? "Active" : "Uninstalled",
       installable,
-    }));
-  }, [installables, scope]);
-
-  const columns = useMemo(
-    () => [
-      {
-        Header: "Name",
-        accessor: "name",
-        disableGroupBy: true,
-        disableFilters: true,
-      },
-      {
-        Header: "Sharing",
-        accessor: "sharing.source.label",
-      },
-      {
-        Header: "Last modified",
-        accessor: "updatedAt",
-        disableGroupBy: true,
-        disableFilters: true,
-      },
-      {
-        Header: "Status",
-        accessor: "status",
-      },
-      {
-        Header: "Actions",
-        accessor: "installable",
-        disableGroupBy: true,
-        disableFilters: true,
-        disableSortBy: true,
-      },
-    ],
-    []
+    })
   );
+
+const columns = [
+  {
+    Header: "Name",
+    accessor: "name",
+    disableGroupBy: true,
+    disableFilters: true,
+  },
+  {
+    Header: "Sharing",
+    accessor: "sharing.source.label",
+  },
+  {
+    Header: "Last modified",
+    accessor: "updatedAt",
+    disableGroupBy: true,
+    disableFilters: true,
+  },
+  {
+    Header: "Status",
+    accessor: "status",
+  },
+  {
+    Header: "Actions",
+    accessor: "installable",
+    disableGroupBy: true,
+    disableFilters: true,
+    disableSortBy: true,
+  },
+];
+
+const BlueprintsCard: React.FunctionComponent<{
+  installables: Installable[];
+}> = ({ installables }) => {
+  const { scope } = useContext(AuthContext);
+  const data = useMemo(() => getInstallableRows(installables, scope), [
+    installables,
+    scope,
+  ]);
 
   const tableInstance = useTable(
     { columns, data },
@@ -149,7 +167,7 @@ const BlueprintsCard: React.FunctionComponent<{
     setFilter,
     setAllFilters,
     setSortBy,
-    state: { groupBy, sortBy },
+    state: { groupBy, sortBy, filters },
   } = tableInstance;
 
   const isGrouped = useMemo(() => groupBy.length > 0, [groupBy]);
@@ -229,7 +247,9 @@ const BlueprintsCard: React.FunctionComponent<{
         </Col>
         <Col xs={9}>
           <div className="d-flex justify-content-between align-items-center">
-            <h3 className="my-3">Filtered Blueprints</h3>
+            <h3 className="my-3">
+              {filters.length > 0 ? filters[0].value : "All"} Blueprints
+            </h3>
             <span className="d-flex align-items-center">
               <span>Group by:</span>
               <Select

@@ -19,8 +19,7 @@ import { Card, Table } from "react-bootstrap";
 import styles from "@/options/pages/blueprints/BlueprintsList.module.scss";
 import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
 import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
-import React, { useMemo } from "react";
-import cx from "classnames";
+import React from "react";
 
 const BlueprintsList: React.FunctionComponent<{
   tableInstance;
