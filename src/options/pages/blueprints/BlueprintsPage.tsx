@@ -57,22 +57,13 @@ const categoryLabels = new Map<CategoryFilter, string>(
 );
 
 const BlueprintsPage: React.FunctionComponent = () => {
-  const [filterCategory, setFilterCategory] = useState<CategoryFilter>(
-    "active"
-  );
   const { installables, isLoading, error } = useInstallables();
-
-  // TODO: move
   const showLogsContext = useSelector<RootState, LogsContext>(
     selectShowLogsContext
   );
-
-  // TODO: move
   const showShareContext = useSelector<RootState, ShareContext>(
     selectShowShareContext
   );
-
-  console.log("Installables:", installables);
 
   return (
     <Page

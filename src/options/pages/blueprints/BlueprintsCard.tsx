@@ -36,40 +36,12 @@ import {
 import BlueprintTableList from "@/options/pages/blueprints/BlueprintTableList";
 import { RegistryId } from "@/core";
 
-function CategoryFilterNavItem({ setAllFilters, column }) {
-  const options = React.useMemo(() => {
-    const options = new Set();
-    column.preFilteredRows.forEach((row) => {
-      options.add(row.values[column.id]);
-    });
-    return [...options.values()];
-  }, [column]);
-
-  return (
-    <>
-      {options.map((option) => {
-        return (
-          <Nav.Item key={option}>
-            <Nav.Link
-              eventKey={option}
-              onClick={() => {
-                setAllFilters([{ id: column.id, value: option }]);
-              }}
-            >
-              {option} Blueprints
-            </Nav.Link>
-          </Nav.Item>
-        );
-      })}
-    </>
-  );
-}
-
-const getFilterOptions = (column): string[] => {
+const getFilterOptions = (column) => {
   const options = new Set();
-  column.preFilteredRows.forEach((row) => {
+  for (const row of column.preFilteredRows) {
     options.add(row.values[column.id]);
-  });
+  }
+
   return [...options.values()];
 };
 
@@ -116,8 +88,8 @@ const getInstallableRows = (
   );
 
 // React-table columns that aren't rendered as column headings,
-// but used to expose grouping, sorting, and filtering utilities on
-// InstallableRows
+// but used to expose grouping, sorting, and filtering utilities
+// (and eventually pagination & global searching) on InstallableRows
 const columns = [
   {
     Header: "Name",
@@ -150,6 +122,10 @@ const BlueprintsCard: React.FunctionComponent<{
     scope,
   ]);
 
+  useEffect(() => {
+    setAllFilters([{ id: "status", value: "Active" }]);
+  }, []);
+
   const tableInstance = useTable(
     { columns, data },
     useFilters,
@@ -157,19 +133,12 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  useEffect(() => {
-    setAllFilters([{ id: "status", value: "Active" }]);
-  }, []);
-
   const {
-    getTableProps,
-    getTableBodyProps,
     rows,
-    prepareRow,
     headerGroups,
-    toggleGroupBy,
+    // @ts-expect-error -- for some reason, react-table index.d.ts UseGroupByInstanceProps
+    // doesn't have setGroupBy? But it's in the documentation?
     setGroupBy,
-    setFilter,
     setAllFilters,
     setSortBy,
     state: { groupBy, sortBy, filters },
@@ -201,8 +170,6 @@ const BlueprintsCard: React.FunctionComponent<{
     );
   }, [headerGroups]);
 
-  console.log("teamFilters", teamFilters);
-
   return (
     <Row>
       <Col xs={3}>
@@ -228,7 +195,7 @@ const BlueprintsCard: React.FunctionComponent<{
               All Blueprints
             </Nav.Link>
           </Nav.Item>
-          <h5 className="mt-3">My Collection</h5>
+          <h5 className="mt-3">My Collections</h5>
           <Nav.Item>
             <Nav.Link
               eventKey="personal"
