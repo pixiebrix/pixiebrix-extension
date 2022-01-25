@@ -64,3 +64,15 @@ export function $safeFind<Element extends HTMLElement>(
 ): JQuery<Element> {
   return $(parent).find<Element>(selector);
 }
+
+/**
+ * Pseudos act as filters on the current selection so, given an element, we ensure
+ * it’s what the specified labelSelector points to.
+ * @usage $("input:labelledby(label:contains('Name'))")
+ * @usage $(":labelledby(:contains('Name'))") // Poor performance
+ */
+$.expr.pseudos.labelledby = $.expr.createPseudo((labelSelector) => (element) =>
+  $<HTMLLabelElement>(labelSelector)
+    .get()
+    .some((labelElement) => labelElement.htmlFor === element.id)
+);
