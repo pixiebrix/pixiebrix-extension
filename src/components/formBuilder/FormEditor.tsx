@@ -18,7 +18,11 @@
 /* eslint-disable security/detect-object-injection */
 import { useField } from "formik";
 import React, { useEffect, useMemo } from "react";
-import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
+import {
+  RJSFSchema,
+  SelectStringOption,
+  SetActiveField,
+} from "./formBuilderTypes";
 import { Button, Col, Row } from "react-bootstrap";
 import FieldEditor from "./FieldEditor";
 import {
@@ -45,6 +49,7 @@ export type FormEditorProps = {
   showFormTitle?: boolean;
   activeField?: string;
   setActiveField: SetActiveField;
+  fieldTypes?: SelectStringOption[];
 };
 
 const FormEditor: React.FC<FormEditorProps> = ({
@@ -52,6 +57,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
   showFormTitle = true,
   activeField,
   setActiveField,
+  fieldTypes,
 }) => {
   const [
     { value: rjsfSchema = {} as RJSFSchema },
@@ -214,6 +220,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
           name={name}
           propertyName={activeField}
           setActiveField={setActiveField}
+          fieldTypes={fieldTypes}
         />
       )}
 

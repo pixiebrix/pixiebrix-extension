@@ -28,6 +28,11 @@ import FieldRuntimeContext, {
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { isEmpty } from "lodash";
+import { FIELD_TYPE_OPTIONS } from "@/components/formBuilder/formBuilderHelpers";
+
+const fieldTypes = FIELD_TYPE_OPTIONS.filter((type) =>
+  ["Single line text", "Number", "Checkbox"].includes(type.label)
+);
 
 const BlueprintOptionsTab: React.VoidFunctionComponent<{
   eventKey: string;
@@ -76,6 +81,7 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
                   showFormTitle={false}
                   activeField={activeField}
                   setActiveField={setActiveField}
+                  fieldTypes={fieldTypes}
                 />
               </FieldRuntimeContext.Provider>
             </Col>
