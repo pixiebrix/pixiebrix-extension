@@ -25,7 +25,6 @@ import {
   innerExtensionPointRecipeFactory,
   versionedExtensionPointRecipeFactory,
   extensionPointConfigFactory,
-  extensionPointFactory,
   recipeFactory,
 } from "@/tests/factories";
 import menuItemExtensionAdapter from "@/devTools/editor/extensionPoints/menuItem";

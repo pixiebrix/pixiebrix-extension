@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import { useFormikContext } from "formik";
 import React, { useMemo, useState } from "react";
 import { Alert, Col, Container, Row, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import styles from "./BlueprintOptionsTab.module.scss";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor from "@/components/formBuilder/FormEditor";
 import FormPreview from "@/components/formBuilder/FormPreview";
@@ -56,7 +56,7 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
 
   if (formState.optionsDefinition == null) {
     return (
-      <Tab.Pane eventKey={eventKey} className={styles.root}>
+      <Tab.Pane eventKey={eventKey}>
         <Container>
           <Row>
             <Col>
@@ -71,7 +71,7 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
   const noOptions = isEmpty(formState.optionsDefinition?.schema?.properties);
 
   return (
-    <Tab.Pane eventKey={eventKey} className={styles.root}>
+    <Tab.Pane eventKey={eventKey}>
       <Container className="pt-3">
         <Row>
           <ErrorBoundary>
