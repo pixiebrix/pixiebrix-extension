@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Card, Col, Nav, Row, Table } from "react-bootstrap";
-import React, { useContext, useMemo } from "react";
+import { Button, Card, Col, Nav, Row, Table } from "react-bootstrap";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import styles from "./BlueprintsList.module.scss";
 import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getDescription,
   getLabel,
@@ -32,11 +33,18 @@ import AuthContext from "@/auth/AuthContext";
 import { useFilters, useGroupBy, useSortBy, useTable } from "react-table";
 import Select from "react-select";
 import cx from "classnames";
+import {
+  faSortAmountDown,
+  faSortAmountDownAlt,
+  faSortAmountUp,
+  faSortAmountUpAlt,
+} from "@fortawesome/free-solid-svg-icons";
 
 const BlueprintsList: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { scope } = useContext(AuthContext);
+  const [sortDesc, setSortDesc] = useState(false);
 
   const data = useMemo(() => {
     return installables.map((installable) => ({
@@ -100,6 +108,10 @@ const BlueprintsList: React.FunctionComponent<{
     useSortBy
   );
 
+  useEffect(() => {
+    setAllFilters([{ id: "status", value: "Active" }]);
+  }, []);
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -111,10 +123,11 @@ const BlueprintsList: React.FunctionComponent<{
     setFilter,
     setAllFilters,
     setSortBy,
-    state: { groupBy },
+    state: { groupBy, sortBy },
   } = tableInstance;
 
   const isGrouped = useMemo(() => groupBy.length > 0, [groupBy]);
+  const isSorted = useMemo(() => sortBy.length > 0, [sortBy]);
 
   console.log("Header groups: ", headerGroups);
 
@@ -208,6 +221,26 @@ const BlueprintsList: React.FunctionComponent<{
                   setSortBy([{ id: option.value, desc: false }]);
                 }}
               />
+              {isSorted && (
+                <Button
+                  variant="link"
+                  size="sm"
+                  onClick={() => {
+                    setSortBy(
+                      sortBy.map((sort) => {
+                        sort.desc = !sort.desc;
+                        return sort;
+                      })
+                    );
+                  }}
+                >
+                  {sortBy[0].desc ? (
+                    <FontAwesomeIcon icon={faSortAmountUpAlt} size="lg" />
+                  ) : (
+                    <FontAwesomeIcon icon={faSortAmountDownAlt} size="lg" />
+                  )}
+                </Button>
+              )}
             </span>
           </div>
           {isGrouped ? (
