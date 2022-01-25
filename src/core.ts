@@ -27,7 +27,6 @@ import { ErrorObject } from "serialize-error";
 import { Permissions } from "webextension-polyfill";
 import { pick } from "lodash";
 import React from "react";
-import { Organization } from "@/types/contract";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
