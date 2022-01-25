@@ -27,7 +27,13 @@ import {
   Installable,
 } from "@/options/pages/blueprints/installableUtils";
 import AuthContext from "@/auth/AuthContext";
-import { useFilters, useGroupBy, useSortBy, useTable } from "react-table";
+import {
+  ColumnInstance,
+  useFilters,
+  useGroupBy,
+  useSortBy,
+  useTable,
+} from "react-table";
 import Select from "react-select";
 import {
   faSortAmountDownAlt,
@@ -36,7 +42,7 @@ import {
 import BlueprintTableList from "@/options/pages/blueprints/BlueprintTableList";
 import { RegistryId } from "@/core";
 
-const getFilterOptions = (column) => {
+const getFilterOptions = (column: ColumnInstance) => {
   const options = new Set();
   for (const row of column.preFilteredRows) {
     options.add(row.values[column.id]);
@@ -87,7 +93,7 @@ const getInstallableRows = (
     })
   );
 
-// React-table columns that aren't rendered as column headings,
+// These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, and filtering utilities
 // (and eventually pagination & global searching) on InstallableRows
 const columns = [
@@ -137,7 +143,7 @@ const BlueprintsCard: React.FunctionComponent<{
     rows,
     headerGroups,
     // @ts-expect-error -- for some reason, react-table index.d.ts UseGroupByInstanceProps
-    // doesn't have setGroupBy? But it's in the documentation?
+    // doesn't have setGroupBy?
     setGroupBy,
     setAllFilters,
     setSortBy,
