@@ -54,7 +54,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
   setActiveField,
 }) => {
   const [
-    { value: rjsfSchema },
+    { value: rjsfSchema = {} as RJSFSchema },
     ,
     { setValue: setRjsfSchema },
   ] = useField<RJSFSchema>(name);
@@ -62,7 +62,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
     joinName(name, "uiSchema", UI_ORDER)
   );
 
-  const { schema, uiSchema } = rjsfSchema ?? {};
+  const { schema, uiSchema } = rjsfSchema;
 
   useEffect(() => {
     // Set default values if needed

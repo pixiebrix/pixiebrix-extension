@@ -28,7 +28,7 @@ import {
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
-import { compact, isEqual, pick } from "lodash";
+import { compact, isEmpty, isEqual, pick } from "lodash";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { produce } from "immer";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
@@ -155,7 +155,11 @@ export function replaceRecipeExtension(
       }
     }
 
-    if (element.optionsDefinition?.schema?.properties != null) {
+    // TODO test this (add, edit, delete)
+    if (
+      draft.options != null &&
+      !isEmpty(element.optionsDefinition?.schema?.properties)
+    ) {
       draft.options = element.optionsDefinition;
     }
 

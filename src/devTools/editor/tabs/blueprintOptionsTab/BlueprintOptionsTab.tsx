@@ -27,6 +27,7 @@ import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { isEmpty } from "lodash";
 
 const BlueprintOptionsTab: React.VoidFunctionComponent<{
   eventKey: string;
@@ -56,9 +57,7 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
     );
   }
 
-  const hasOptions =
-    formState.optionsDefinition?.schema?.properties &&
-    Object.keys(formState.optionsDefinition.schema.properties).length > 0;
+  const noOptions = isEmpty(formState.optionsDefinition?.schema?.properties);
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.root}>
@@ -70,7 +69,7 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
                 Editing Options for Blueprint &quot;{formState.recipe.name}
                 &quot;
               </div>
-              {!hasOptions && <div>No options defined for this Blueprint</div>}
+              {noOptions && <div>No options defined for this Blueprint</div>}
               <FieldRuntimeContext.Provider value={formRuntimeContext}>
                 <FormEditor
                   name="optionsDefinition"
