@@ -68,7 +68,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
         />
       )}
       {showShareContext && (
-        <ShareExtensionModal extension={showShareContext.extension} />
+        <ShareExtensionModal extensionId={showShareContext.extensionId} />
       )}
       {installables.length > 0 && (
         <BlueprintsCard installables={installables} />

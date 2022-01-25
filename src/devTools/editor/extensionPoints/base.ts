@@ -19,7 +19,6 @@ import {
   ApiVersion,
   EmptyConfig,
   IExtension,
-  InnerDefinitionRef,
   Metadata,
   RegistryId,
   SafeString,
@@ -50,6 +49,7 @@ import {
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
+import { INNER_SCOPE, isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 
 export interface WizardStep {
   step: string;
@@ -70,14 +70,6 @@ export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v3";
  * Default definition entry for the inner definition of the extensionPoint for the extension
  */
 const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
-
-const INNER_SCOPE = "@internal";
-
-export function isInnerExtensionPoint(
-  id: RegistryId | InnerDefinitionRef
-): boolean {
-  return id.startsWith(INNER_SCOPE + "/");
-}
 
 export function makeIsAvailable(url: string): NormalizedAvailability {
   return {
@@ -176,7 +168,7 @@ export function makeInitialBaseState(
 
 /**
  * Create metadata for a temporary extension point definition. When the extension point is saved, it will be moved
- * into the definitions section of the extension.
+ * into the `definitions` section of the extension.
  */
 export function internalExtensionPointMetaFactory(): Metadata {
   return {
@@ -364,6 +356,13 @@ export function getImplicitReader(type: ElementType): SingleLayerReaderConfig {
     return readerTypeHack([
       validateRegistryId("@pixiebrix/document-metadata"),
       { element: validateRegistryId("@pixiebrix/html/element") },
+    ]);
+  }
+
+  if (type === "quickBar") {
+    return readerTypeHack([
+      validateRegistryId("@pixiebrix/document-metadata"),
+      validateRegistryId("@pixiebrix/selection"),
     ]);
   }
 
