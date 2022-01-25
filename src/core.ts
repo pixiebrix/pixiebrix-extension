@@ -318,7 +318,6 @@ export interface Metadata {
 
 export interface Sharing {
   readonly public: boolean;
-  // TODO: look at the effects of this decision
   readonly organizations: UUID[];
 }
 
