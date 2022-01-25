@@ -33,7 +33,7 @@ import { lookupExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 import { produce } from "immer";
 import { makeInternalId } from "@/registry/internal";
 import { cloneDeep } from "lodash";
-import { InnerDefinitionRef, Schema } from "@/core";
+import { InnerDefinitionRef } from "@/core";
 import { MenuDefinition } from "@/extensionPoints/menuItemExtension";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
