@@ -94,6 +94,7 @@ jest.mock("webextension-polyfill", () => {
       // Keep the existing local storage mock
       ...mock,
       runtime: {
+        openOptionsPage: jest.fn(),
         getManifest: jest.fn().mockReturnValue({
           version: "1.5.2",
         }),
@@ -109,6 +110,7 @@ import { containsPermissions } from "@/background/messenger/api";
 const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;
 const getManifestMock = browser.runtime.getManifest as jest.Mock;
+const openOptionsPageMock = browser.runtime.openOptionsPage as jest.Mock;
 const containsPermissionsMock = containsPermissions as jest.Mock;
 
 afterEach(() => {
@@ -132,6 +134,22 @@ describe("updateDeployments", () => {
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
+  });
+
+  test("opens options page if deployment does not have permissions", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    containsPermissionsMock.mockResolvedValue(false);
+
+    const deployment = deploymentFactory();
+
+    axiosMock.onAny().reply(201, [deployment]);
+
+    await updateDeployments();
+
+    const { extensions } = await loadOptions();
+
+    expect(extensions.length).toBe(0);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
 
   test("skip update and uninstall if not linked", async () => {

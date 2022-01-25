@@ -23,6 +23,10 @@ import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import Banner from "@/components/banner/Banner";
 
+/**
+ * Banner to install deployments. Always is displayed even if used has snoozed deployment installation.
+ * @see DeploymentModal
+ */
 const DeploymentBanner: React.FunctionComponent = () => {
   const { hasUpdate, update, extensionUpdateRequired } = useDeployments();
 

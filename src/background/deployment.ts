@@ -298,6 +298,9 @@ export async function updateDeployments(): Promise<void> {
   const { version: extensionVersionString } = browser.runtime.getManifest();
   const extensionVersion = parseSemVer(extensionVersionString);
 
+  // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment installed.
+  // Now we're always sending in order to help team admins understand any gaps between number of registered users
+  // and amount of activity when using deployments
   const linkedClient = await getLinkedApiClient();
   const { data: deployments } = await linkedClient.post<Deployment[]>(
     "/api/deployments/",
