@@ -38,6 +38,7 @@ import { once } from "lodash";
 import { NOFICATIONS_Z_INDEX } from "@/common";
 import { useEventListener } from "@/hooks/useEventListener";
 import { Stylesheet } from "@/components/Stylesheet";
+import selection from "@/utils/selectionController";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -217,6 +218,14 @@ const KBarToggle: React.FC = (props) => {
   const { showing } = useKBar((state) => ({
     showing: state.visualState !== VisualState.hidden,
   }));
+
+  if (showing) {
+    selection.save();
+    console.debug("Saving last selection:", selection.get());
+  } else {
+    console.debug("Restoring last selection:", selection.get());
+    selection.restore();
+  }
 
   if (!showing) {
     return null;

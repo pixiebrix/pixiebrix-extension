@@ -16,23 +16,22 @@
  */
 
 import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
-import { ExtensionPoint, Reader } from "@/types";
+import { ExtensionPoint } from "@/types";
 import {
   IBlock,
   IExtensionPoint,
   IReader,
-  ReaderOutput,
   ResolvedExtension,
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { Menus, Permissions, Manifest } from "webextension-polyfill";
+import { Manifest, Menus, Permissions } from "webextension-polyfill";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { castArray, uniq, compact, cloneDeep, isEmpty } from "lodash";
+import { castArray, cloneDeep, compact, isEmpty, uniq } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import {
   ensureContextMenu,
@@ -40,7 +39,6 @@ import {
 } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
-import { getCommonAncestor } from "@/nativeEditor/infer";
 import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
@@ -52,6 +50,8 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { makeServiceContext } from "@/services/serviceUtils";
+import { guessSelectedElement } from "@/utils/selectionController";
+import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -82,23 +82,6 @@ function setActiveElement(event: MouseEvent): void {
   }
 }
 
-export function guessSelectedElement(): HTMLElement | null {
-  const selection = document.getSelection();
-  if (selection?.rangeCount) {
-    const start = selection.getRangeAt(0).startContainer.parentNode;
-    const end = selection.getRangeAt(selection.rangeCount - 1).endContainer
-      .parentNode;
-    const node = getCommonAncestor(start, end);
-    if (node instanceof HTMLElement) {
-      return node;
-    }
-
-    return null;
-  }
-
-  return null;
-}
-
 function installMouseHandlerOnce(): void {
   if (!selectionHandlerInstalled) {
     selectionHandlerInstalled = true;
@@ -110,61 +93,6 @@ function installMouseHandlerOnce(): void {
       passive: true,
     });
   }
-}
-
-export class ContextMenuReader extends Reader {
-  constructor() {
-    super(
-      "@pixiebrix/context-menu-data",
-      "Context menu reader",
-      "Data from a context menu event"
-    );
-  }
-
-  async isAvailable(): Promise<boolean> {
-    return true;
-  }
-
-  async read(): Promise<ReaderOutput> {
-    // The actual field is set by the extension point, not the reader, because it's made available
-    // by the browser API in the menu handler
-    throw new Error("ContextMenuReader.read() should not be called directly");
-  }
-
-  outputSchema: Schema = {
-    type: "object",
-    properties: {
-      mediaType: {
-        type: "string",
-        description:
-          "One of 'image', 'video', or 'audio' if the context menu was activated on one of these types of elements.",
-        enum: ["image", "video", "audio"],
-      },
-      linkText: {
-        type: "string",
-        description: "If the element is a link, the text of that link.",
-      },
-      linkUrl: {
-        type: "string",
-        description: "If the element is a link, the URL it points to.",
-        format: "uri",
-      },
-      srcUrl: {
-        type: "string",
-        description: "Will be present for elements with a 'src' URL.",
-        format: "uri",
-      },
-      selectionText: {
-        type: "string",
-        description: "The text for the context selection, if any.",
-      },
-      documentUrl: {
-        type: "string",
-        description: "The URL of the page where the context menu was activated",
-        format: "uri",
-      },
-    },
-  };
 }
 
 /**

@@ -27,8 +27,9 @@ import { PageMetadataReader } from "./PageMetadataReader";
 import { PageSemanticReader } from "./PageSemanticReader";
 import { BlankReader } from "./BlankReader";
 import { ImageReader } from "./ImageReader";
-import { ImageExifReader } from "@/blocks/readers/ImageExifReader";
-import { ElementReader } from "@/blocks/readers/ElementReader";
+import { SelectionReader } from "./SelectionReader";
+import { ImageExifReader } from "./ImageExifReader";
+import { ElementReader } from "./ElementReader";
 import { registerFactory } from "@/blocks/readers/factory";
 import { frameworkReadFactory } from "@/blocks/readers/frameworkReader";
 import { readJQuery } from "@/blocks/readers/jquery";
@@ -48,6 +49,7 @@ function registerReaders(): void {
   registerBlock(new ImageExifReader());
   registerBlock(new ElementReader());
   registerBlock(new HtmlReader());
+  registerBlock(new SelectionReader());
 
   // Framework readers
   registerFactory("angularjs", frameworkReadFactory("angularjs"));
