@@ -29,7 +29,8 @@ const BlueprintListEntry: React.FunctionComponent<{
   installableRow: Row;
 }> = ({ installableRow }) => {
   const {
-    label,
+    name,
+    description,
     sharing,
     updatedAt,
     status,
@@ -42,8 +43,8 @@ const BlueprintListEntry: React.FunctionComponent<{
   return (
     <tr>
       <td className="text-wrap">
-        <h5 className="text-wrap m-0">{label.name}</h5>
-        <span className="text-muted text-wrap">{label.description}</span>
+        <h5 className="text-wrap m-0">{name}</h5>
+        <span className="text-muted text-wrap">{description}</span>
       </td>
       <td>
         <div className={styles.sharing}>

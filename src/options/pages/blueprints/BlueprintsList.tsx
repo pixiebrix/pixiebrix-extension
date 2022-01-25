@@ -29,7 +29,7 @@ import {
   Installable,
 } from "@/options/pages/blueprints/installableUtils";
 import AuthContext from "@/auth/AuthContext";
-import { useFilters, useGroupBy, useTable } from "react-table";
+import { useFilters, useGroupBy, useSortBy, useTable } from "react-table";
 import Select from "react-select";
 import cx from "classnames";
 
@@ -40,10 +40,8 @@ const BlueprintsList: React.FunctionComponent<{
 
   const data = useMemo(() => {
     return installables.map((installable) => ({
-      label: {
-        name: getLabel(installable),
-        description: getDescription(installable),
-      },
+      name: getLabel(installable),
+      description: getDescription(installable),
       sharing: {
         packageId: getPackageId(installable),
         // TODO: move this along with scope above
@@ -66,7 +64,7 @@ const BlueprintsList: React.FunctionComponent<{
     () => [
       {
         Header: "Name",
-        accessor: "label",
+        accessor: "name",
         disableGroupBy: true,
         disableFilters: true,
       },
@@ -89,12 +87,18 @@ const BlueprintsList: React.FunctionComponent<{
         accessor: "installable",
         disableGroupBy: true,
         disableFilters: true,
+        disableSortBy: true,
       },
     ],
     []
   );
 
-  const tableInstance = useTable({ columns, data }, useFilters, useGroupBy);
+  const tableInstance = useTable(
+    { columns, data },
+    useFilters,
+    useGroupBy,
+    useSortBy
+  );
 
   const {
     getTableProps,
@@ -106,6 +110,7 @@ const BlueprintsList: React.FunctionComponent<{
     setGroupBy,
     setFilter,
     setAllFilters,
+    setSortBy,
     state: { groupBy },
   } = tableInstance;
 
@@ -115,6 +120,13 @@ const BlueprintsList: React.FunctionComponent<{
 
   const groupByOptions = headerGroups[0].headers
     .filter((column) => column.canGroupBy)
+    .map((column) => ({
+      label: column.Header,
+      value: column.id,
+    }));
+
+  const sortByOptions = headerGroups[0].headers
+    .filter((column) => column.canSort)
     .map((column) => ({
       label: column.Header,
       value: column.id,
@@ -134,7 +146,7 @@ const BlueprintsList: React.FunctionComponent<{
               <Nav.Link
                 eventKey="active"
                 onClick={() => {
-                  setFilter("status", "Active");
+                  setAllFilters([{ id: "status", value: "Active" }]);
                 }}
               >
                 Active Blueprints
@@ -154,7 +166,9 @@ const BlueprintsList: React.FunctionComponent<{
               <Nav.Link
                 eventKey="personal"
                 onClick={() => {
-                  setFilter("sharing.source.label", "Personal");
+                  setAllFilters([
+                    { id: "sharing.source.label", value: "Personal" },
+                  ]);
                 }}
               >
                 Personal Blueprints
@@ -177,11 +191,23 @@ const BlueprintsList: React.FunctionComponent<{
                     return;
                   }
 
-                  toggleGroupBy(option.value);
+                  setGroupBy([option.value]);
                 }}
               />
               <span>Sort by:</span>
-              <Select placeholder="Sort by" options={[]} />
+              <Select
+                isClearable
+                placeholder="Sort by"
+                options={sortByOptions}
+                onChange={(option, { action }) => {
+                  if (action === "clear") {
+                    setSortBy([]);
+                    return;
+                  }
+
+                  setSortBy([{ id: option.value, desc: false }]);
+                }}
+              />
             </span>
           </div>
           {isGrouped ? (
