@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Card, Table } from "react-bootstrap";
+import { Card, Col, Nav, Row, Table } from "react-bootstrap";
 import React, { useContext, useMemo } from "react";
 import styles from "./BlueprintsList.module.scss";
 import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
@@ -29,7 +29,7 @@ import {
   Installable,
 } from "@/options/pages/blueprints/installableUtils";
 import AuthContext from "@/auth/AuthContext";
-import { useGroupBy, useTable } from "react-table";
+import { useFilters, useGroupBy, useTable } from "react-table";
 import Select from "react-select";
 import cx from "classnames";
 
@@ -68,6 +68,7 @@ const BlueprintsList: React.FunctionComponent<{
         Header: "Name",
         accessor: "label",
         disableGroupBy: true,
+        disableFilters: true,
       },
       {
         Header: "Sharing",
@@ -77,6 +78,7 @@ const BlueprintsList: React.FunctionComponent<{
         Header: "Last modified",
         accessor: "updatedAt",
         disableGroupBy: true,
+        disableFilters: true,
       },
       {
         Header: "Status",
@@ -86,12 +88,13 @@ const BlueprintsList: React.FunctionComponent<{
         Header: "Actions",
         accessor: "installable",
         disableGroupBy: true,
+        disableFilters: true,
       },
     ],
     []
   );
 
-  const tableInstance = useTable({ columns, data }, useGroupBy);
+  const tableInstance = useTable({ columns, data }, useFilters, useGroupBy);
 
   const {
     getTableProps,
@@ -100,10 +103,15 @@ const BlueprintsList: React.FunctionComponent<{
     prepareRow,
     headerGroups,
     toggleGroupBy,
+    setGroupBy,
+    setFilter,
+    setAllFilters,
     state: { groupBy },
   } = tableInstance;
 
   const isGrouped = useMemo(() => groupBy.length > 0, [groupBy]);
+
+  console.log("Header groups: ", headerGroups);
 
   const groupByOptions = headerGroups[0].headers
     .filter((column) => column.canGroupBy)
@@ -114,68 +122,117 @@ const BlueprintsList: React.FunctionComponent<{
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center">
-        <h3 className="my-3">Filtered Blueprints</h3>
-        <span className="d-flex align-items-center">
-          <span>Group by:</span>
-          <Select
-            placeholder="Group by"
-            options={groupByOptions}
-            onChange={(option) => {
-              toggleGroupBy(option.value);
-            }}
-          />
-          <span>Sort by:</span>
-          <Select placeholder="Sort by" options={[]} />
-        </span>
-      </div>
-      {isGrouped ? (
-        <>
-          {rows.map((row) => {
-            prepareRow(row);
+      <Row>
+        <Col xs={3}>
+          <h5>Category Filters</h5>
+          <Nav
+            className="flex-column"
+            variant="pills"
+            defaultActiveKey="active"
+          >
+            <Nav.Item>
+              <Nav.Link
+                eventKey="active"
+                onClick={() => {
+                  setFilter("status", "Active");
+                }}
+              >
+                Active Blueprints
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="all"
+                onClick={() => {
+                  setAllFilters([]);
+                }}
+              >
+                All Blueprints
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="personal"
+                onClick={() => {
+                  setFilter("sharing.source.label", "Personal");
+                }}
+              >
+                Personal Blueprints
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
+        </Col>
+        <Col xs={9}>
+          <div className="d-flex justify-content-between align-items-center">
+            <h3 className="my-3">Filtered Blueprints</h3>
+            <span className="d-flex align-items-center">
+              <span>Group by:</span>
+              <Select
+                isClearable
+                placeholder="Group by"
+                options={groupByOptions}
+                onChange={(option, { action }) => {
+                  if (action === "clear") {
+                    setGroupBy([]);
+                    return;
+                  }
 
-            if (row.isGrouped) {
-              return (
-                <>
-                  <h5 className="text-muted">{row.groupByVal}</h5>
-                  <Card className={cx(styles.root, "mb-3")}>
-                    <Table {...getTableProps()}>
-                      <tbody {...getTableBodyProps()}>
-                        {row.subRows.map((subRow) => {
-                          console.log("Subrow:", subRow);
-                          return (
-                            <BlueprintListEntry
-                              key={getUniqueId(subRow.values.installable)}
-                              installableRow={subRow}
-                            />
-                          );
-                        })}
-                      </tbody>
-                    </Table>
-                  </Card>
-                </>
-              );
-            }
-          })}
-        </>
-      ) : (
-        <Card className={styles.root}>
-          <Table {...getTableProps()}>
-            <tbody {...getTableBodyProps()}>
+                  toggleGroupBy(option.value);
+                }}
+              />
+              <span>Sort by:</span>
+              <Select placeholder="Sort by" options={[]} />
+            </span>
+          </div>
+          {isGrouped ? (
+            <>
               {rows.map((row) => {
                 prepareRow(row);
 
-                return (
-                  <BlueprintListEntry
-                    key={getUniqueId(row.values.installable)}
-                    installableRow={row}
-                  />
-                );
+                if (row.isGrouped) {
+                  return (
+                    <>
+                      <h5 className="text-muted">{row.groupByVal}</h5>
+                      <Card className={cx(styles.root, "mb-3")}>
+                        <Table {...getTableProps()}>
+                          <tbody {...getTableBodyProps()}>
+                            {row.subRows.map((subRow) => {
+                              console.log("Subrow:", subRow);
+                              return (
+                                <BlueprintListEntry
+                                  key={getUniqueId(subRow.values.installable)}
+                                  installableRow={subRow}
+                                />
+                              );
+                            })}
+                          </tbody>
+                        </Table>
+                      </Card>
+                    </>
+                  );
+                }
               })}
-            </tbody>
-          </Table>
-        </Card>
-      )}
+            </>
+          ) : (
+            <Card className={styles.root}>
+              <Table {...getTableProps()}>
+                <tbody {...getTableBodyProps()}>
+                  {rows.map((row) => {
+                    prepareRow(row);
+
+                    return (
+                      <BlueprintListEntry
+                        key={getUniqueId(row.values.installable)}
+                        installableRow={row}
+                      />
+                    );
+                  })}
+                </tbody>
+              </Table>
+            </Card>
+          )}
+        </Col>
+      </Row>
     </>
   );
 };

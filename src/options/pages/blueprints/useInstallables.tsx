@@ -37,12 +37,7 @@ import {
 import { Organization } from "@/types/contract";
 
 type InstallablesState = {
-  installables: {
-    active: Installable[];
-    all: Installable[];
-    personal: Installable[];
-    shared: Installable[];
-  };
+  installables: Installable[];
   isLoading: boolean;
   error: unknown;
 };
@@ -151,16 +146,7 @@ function useInstallables(): InstallablesState {
   );
 
   return {
-    installables: {
-      active: installables.filter((installable) => installable.active),
-      all: installables,
-      personal: installables.filter((installable) =>
-        isPersonal(installable, scope)
-      ),
-      shared: installables.filter(
-        (installable) => !isPersonal(installable, scope)
-      ),
-    },
+    installables,
     isLoading:
       recipes.isLoading ||
       cloudExtensions.isLoading ||

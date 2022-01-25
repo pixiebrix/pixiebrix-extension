@@ -101,36 +101,9 @@ const BlueprintsPage: React.FunctionComponent = () => {
       {showShareContext && (
         <ShareExtensionModal extension={showShareContext.extension} />
       )}
-      <Row>
-        <Col xs={3}>
-          <h5>Category Filters</h5>
-          <Nav
-            className="flex-column"
-            variant="pills"
-            defaultActiveKey="active"
-          >
-            {Object.keys(installables).map((filter: CategoryFilter) => (
-              <Nav.Item key={filter}>
-                <Nav.Link
-                  eventKey={filter}
-                  onClick={() => {
-                    setFilterCategory(filter);
-                  }}
-                >
-                  {categoryLabels.get(filter)}
-                </Nav.Link>
-              </Nav.Item>
-            ))}
-          </Nav>
-        </Col>
-        <Col xs={9}>
-          {/* eslint-disable-next-line security/detect-object-injection -- is FilterCategory */}
-          {installables[filterCategory]?.length > 0 && (
-            // eslint-disable-next-line security/detect-object-injection -- is FilterCategory
-            <BlueprintsList installables={installables[filterCategory]} />
-          )}
-        </Col>
-      </Row>
+      {installables.length > 0 && (
+        <BlueprintsList installables={installables} />
+      )}
     </Page>
   );
 };
