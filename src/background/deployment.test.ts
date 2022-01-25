@@ -40,6 +40,12 @@ jest.mock("@/background/util", () => ({
 
 jest.mock("webext-messenger");
 
+jest.mock("@/permissions", () => ({
+  deploymentPermissions: jest
+    .fn()
+    .mockResolvedValue({ permissions: [], origins: [] }),
+}));
+
 jest.mock("@/telemetry/events", () => ({
   reportEvent: jest.fn(),
 }));
@@ -51,6 +57,9 @@ jest.mock("@/background/messenger/api", () => ({
   traces: {
     // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
     clear: jest.fn().mockResolvedValue(undefined),
+  },
+  contextMenus: {
+    preload: jest.fn(),
   },
 }));
 
@@ -119,6 +128,10 @@ describe("updateDeployments", () => {
     axiosMock.onAny().reply(201, [deployment]);
 
     await updateDeployments();
+
+    const { extensions } = await loadOptions();
+
+    expect(extensions.length).toBe(1);
   });
 
   test("skip update and uninstall if not linked", async () => {

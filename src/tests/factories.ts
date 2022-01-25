@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define, FactoryConfig } from "cooky-cutter";
+import { define, array, FactoryConfig } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { getType } from "@/blocks/util";
 import {
@@ -30,6 +30,7 @@ import {
   UserOptions,
   Metadata,
   RecipeMetadata,
+  UUID,
 } from "@/core";
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
@@ -66,9 +67,9 @@ export const recipeMetadataFactory = define<Metadata>({
   version: "1.0.0",
 });
 
-export const sharingFactory = define<SharingDefinition>({
+export const sharingDefinitionFactory = define<SharingDefinition>({
   public: false,
-  organizations: [],
+  organizations: () => [] as UUID[],
 });
 
 export const installedRecipeMetadataFactory = define<RecipeMetadata>({
@@ -77,7 +78,7 @@ export const installedRecipeMetadataFactory = define<RecipeMetadata>({
   description: "Recipe generated from factory",
   version: "1.0.0",
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
-  sharing: sharingFactory(),
+  sharing: sharingDefinitionFactory,
 });
 
 const tabStateFactory = define<FrameConnectionState>({
@@ -208,6 +209,15 @@ export const baseExtensionStateFactory = define<BaseExtensionState>({
   blockPipeline: () => pipelineFactory(),
 });
 
+export const extensionPointConfigFactory = define<ExtensionPointConfig>({
+  id: "extensionPoint" as InnerDefinitionRef,
+  label: (n: number) => `Test Extension ${n}`,
+  config: () => ({
+    caption: "Button",
+    action: [] as BlockPipeline,
+  }),
+});
+
 export const recipeDefinitionFactory = define<RecipeDefinition>({
   kind: "recipe",
   apiVersion: "v3",
@@ -217,8 +227,8 @@ export const recipeDefinitionFactory = define<RecipeDefinition>({
       name: `Extension Point ${n}`,
     }),
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
-  sharing: sharingFactory(),
-  extensionPoints: [],
+  sharing: sharingDefinitionFactory,
+  extensionPoints: array(extensionPointConfigFactory, 1),
 });
 
 export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>({
@@ -258,7 +268,7 @@ export const versionedExtensionPointRecipeFactory = ({
       description: "Recipe generated from factory",
       version: "1.0.0",
     }),
-    sharing: { public: false, organizations: [] },
+    sharing: sharingDefinitionFactory,
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
     definitions: undefined,
     options: undefined,
@@ -277,15 +287,6 @@ export const versionedExtensionPointRecipeFactory = ({
 type InnerExtensionPointParams = {
   extensionPointRef?: InnerDefinitionRef;
 };
-
-export const extensionPointFactory = define<ExtensionPointConfig>({
-  id: "extensionPoint" as InnerDefinitionRef,
-  label: (n: number) => `Test Extension ${n}`,
-  config: {
-    caption: "Button",
-    action: [] as BlockPipeline,
-  },
-});
 
 /**
  * Factory to create a factory that creates a RecipeDefinition that refers to a versioned extensionPoint
@@ -315,7 +316,9 @@ export const innerExtensionPointRecipeFactory = ({
       },
     },
     options: undefined,
-    extensionPoints: () => [extensionPointFactory({ id: extensionPointRef })],
+    extensionPoints: () => [
+      extensionPointConfigFactory({ id: extensionPointRef }),
+    ],
   });
 
 /**
@@ -323,22 +326,24 @@ export const innerExtensionPointRecipeFactory = ({
  */
 export const recipeFactory = innerExtensionPointRecipeFactory();
 
+const deploymentPackageFactory = define<Deployment["package"]>({
+  id: validateRegistryId("@test/recipe"),
+  name: "Deployment Package",
+  package_id: uuidv4(),
+  version: "1.0.0",
+  config: recipeDefinitionFactory as any,
+});
+
 export const deploymentFactory = define<Deployment>({
   id: () => uuidv4(),
   name: (n: number) => `Deployment ${n}`,
   created_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   active: true,
-  bindings: [],
   package_version: "1.0.0",
-  services: [],
-  package: {
-    id: validateRegistryId("@test/recipe"),
-    name: "Deployment Package",
-    package_id: uuidv4(),
-    version: "1.0.0",
-    config: recipeDefinitionFactory() as any,
-  },
+  bindings: () => [] as Deployment["bindings"],
+  services: () => [] as Deployment["services"],
+  package: deploymentPackageFactory,
 });
 
 const internalFormStateFactory = define<FormState>({

@@ -24,7 +24,7 @@ import {
   extensionPointDefinitionFactory,
   innerExtensionPointRecipeFactory,
   versionedExtensionPointRecipeFactory,
-  extensionPointFactory,
+  extensionPointConfigFactory,
 } from "@/tests/factories";
 import menuItemExtensionAdapter from "@/devTools/editor/extensionPoints/menuItem";
 import { UnknownObject } from "@/types";
@@ -369,10 +369,10 @@ describe("replaceRecipeExtension round trip", () => {
     })({
       apiVersion: "v2",
       extensionPoints: [
-        extensionPointFactory({
+        extensionPointConfigFactory({
           id: extensionPoint.metadata.id,
         }),
-        extensionPointFactory(),
+        extensionPointConfigFactory(),
       ],
     });
 
