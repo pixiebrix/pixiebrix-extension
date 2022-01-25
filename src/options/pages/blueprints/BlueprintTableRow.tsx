@@ -23,9 +23,8 @@ import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { timeSince } from "@/utils/timeUtils";
 import { Row } from "react-table";
-import { getPackageId } from "@/options/pages/blueprints/installableUtils";
 
-const BlueprintListEntry: React.FunctionComponent<{
+const BlueprintTableRow: React.FunctionComponent<{
   installableRow: Row;
 }> = ({ installableRow }) => {
   const {
@@ -33,9 +32,9 @@ const BlueprintListEntry: React.FunctionComponent<{
     description,
     sharing,
     updatedAt,
-    status,
     installable,
-  } = installableRow.values;
+  } = installableRow.original;
+
   const { activate, reinstall } = useInstallableActions(installable);
   // TODO: fix the parsing (timezone, some not being parsed)
   const lastUpdated = timeSince(new Date(updatedAt).getTime());
@@ -48,9 +47,9 @@ const BlueprintListEntry: React.FunctionComponent<{
       </td>
       <td>
         <div className={styles.sharing}>
-          {getPackageId(installable) && (
+          {sharing.packageId && (
             <>
-              <code className="p-0">{getPackageId(installable)}</code>
+              <code className="p-0">{sharing.packageId}</code>
               <br />
             </>
           )}
@@ -84,4 +83,4 @@ const BlueprintListEntry: React.FunctionComponent<{
   );
 };
 
-export default BlueprintListEntry;
+export default BlueprintTableRow;

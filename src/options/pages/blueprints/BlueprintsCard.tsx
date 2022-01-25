@@ -33,7 +33,7 @@ import {
   faSortAmountDownAlt,
   faSortAmountUpAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import BlueprintsList from "@/options/pages/blueprints/BlueprintsList";
+import BlueprintTableList from "@/options/pages/blueprints/BlueprintTableList";
 import { RegistryId } from "@/core";
 
 function CategoryFilterNavItem({ setAllFilters, column }) {
@@ -65,6 +65,15 @@ function CategoryFilterNavItem({ setAllFilters, column }) {
   );
 }
 
+const getFilterOptions = (column): string[] => {
+  const options = new Set();
+  column.preFilteredRows.forEach((row) => {
+    options.add(row.values[column.id]);
+  });
+  return [...options.values()];
+};
+
+// Reshaped installable to easily filter, sort, and group installables
 type InstallableRow = {
   name: string;
   description: string;
@@ -106,6 +115,9 @@ const getInstallableRows = (
     })
   );
 
+// React-table columns that aren't rendered as column headings,
+// but used to expose grouping, sorting, and filtering utilities on
+// InstallableRows
 const columns = [
   {
     Header: "Name",
@@ -126,13 +138,6 @@ const columns = [
   {
     Header: "Status",
     accessor: "status",
-  },
-  {
-    Header: "Actions",
-    accessor: "installable",
-    disableGroupBy: true,
-    disableFilters: true,
-    disableSortBy: true,
   },
 ];
 
@@ -187,138 +192,160 @@ const BlueprintsCard: React.FunctionComponent<{
       value: column.id,
     }));
 
+  const teamFilters = useMemo(() => {
+    const sharingColumn = headerGroups[0].headers.find(
+      (header) => header.id === "sharing.source.label"
+    );
+    return getFilterOptions(sharingColumn).filter(
+      (option) => !["Personal", "Public"].includes(option)
+    );
+  }, [headerGroups]);
+
+  console.log("teamFilters", teamFilters);
+
   return (
-    <>
-      <Row>
-        <Col xs={3}>
-          <h5>Category Filters</h5>
-          <Nav
-            className="flex-column"
-            variant="pills"
-            defaultActiveKey="active"
-          >
-            <Nav.Item>
-              <Nav.Link
-                eventKey="active"
-                onClick={() => {
-                  setAllFilters([{ id: "status", value: "Active" }]);
-                }}
-              >
-                Active Blueprints
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                eventKey="all"
-                onClick={() => {
-                  setAllFilters([]);
-                }}
-              >
-                All Blueprints
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                eventKey="personal"
-                onClick={() => {
-                  setAllFilters([
-                    { id: "sharing.source.label", value: "Personal" },
-                  ]);
-                }}
-              >
-                Personal Blueprints
-              </Nav.Link>
-            </Nav.Item>
-            <h5>Shared with Me</h5>
-            {headerGroups[0].headers.map((header) => {
-              if (!header.canFilter || header.id !== "sharing.source.label") {
-                return null;
-              }
-
-              return (
-                <CategoryFilterNavItem
-                  key={header.id}
-                  setAllFilters={setAllFilters}
-                  column={header}
-                />
-              );
-            })}
-          </Nav>
-        </Col>
-        <Col xs={9}>
-          <div className="d-flex justify-content-between align-items-center">
-            <h3 className="my-3">
-              {filters.length > 0 ? filters[0].value : "All"} Blueprints
-            </h3>
-            <span className="d-flex align-items-center">
-              <span>Group by:</span>
-              <Select
-                isClearable
-                placeholder="Group by"
-                options={groupByOptions}
-                onChange={(option, { action }) => {
-                  if (action === "clear") {
-                    setGroupBy([]);
-                    return;
-                  }
-
-                  setGroupBy([option.value]);
-                }}
-              />
-              <span>Sort by:</span>
-              <Select
-                isClearable
-                placeholder="Sort by"
-                options={sortByOptions}
-                onChange={(option, { action }) => {
-                  if (action === "clear") {
-                    setSortBy([]);
-                    return;
-                  }
-
-                  setSortBy([{ id: option.value, desc: false }]);
-                }}
-              />
-              {isSorted && (
-                <Button
-                  variant="link"
-                  size="sm"
+    <Row>
+      <Col xs={3}>
+        <h5>Category Filters</h5>
+        <Nav className="flex-column" variant="pills" defaultActiveKey="active">
+          <Nav.Item>
+            <Nav.Link
+              eventKey="active"
+              onClick={() => {
+                setAllFilters([{ id: "status", value: "Active" }]);
+              }}
+            >
+              Active Blueprints
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="all"
+              onClick={() => {
+                setAllFilters([]);
+              }}
+            >
+              All Blueprints
+            </Nav.Link>
+          </Nav.Item>
+          <h5 className="mt-3">My Collection</h5>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="personal"
+              onClick={() => {
+                setAllFilters([
+                  { id: "sharing.source.label", value: "Personal" },
+                ]);
+              }}
+            >
+              Personal Blueprints
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="public"
+              onClick={() => {
+                setAllFilters([
+                  { id: "sharing.source.label", value: "Public" },
+                ]);
+              }}
+            >
+              Public Marketplace Blueprints
+            </Nav.Link>
+          </Nav.Item>
+          {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
+          {teamFilters.map((filter) => {
+            return (
+              <Nav.Item key={filter}>
+                <Nav.Link
+                  eventKey={filter}
                   onClick={() => {
-                    setSortBy(
-                      sortBy.map((sort) => {
-                        sort.desc = !sort.desc;
-                        return sort;
-                      })
-                    );
+                    setAllFilters([
+                      { id: "sharing.source.label", value: filter },
+                    ]);
                   }}
                 >
-                  {sortBy[0].desc ? (
-                    <FontAwesomeIcon icon={faSortAmountUpAlt} size="lg" />
-                  ) : (
-                    <FontAwesomeIcon icon={faSortAmountDownAlt} size="lg" />
-                  )}
-                </Button>
-              )}
-            </span>
-          </div>
-          {isGrouped ? (
-            <>
-              {rows.map((row) => (
-                <>
-                  <h5 className="text-muted mt-3">{row.groupByVal}</h5>
-                  <BlueprintsList
-                    tableInstance={tableInstance}
-                    rows={row.subRows}
-                  />
-                </>
-              ))}
-            </>
-          ) : (
-            <BlueprintsList tableInstance={tableInstance} rows={rows} />
-          )}
-        </Col>
-      </Row>
-    </>
+                  {filter} Blueprints
+                </Nav.Link>
+              </Nav.Item>
+            );
+          })}
+        </Nav>
+      </Col>
+      <Col xs={9}>
+        <div className="d-flex justify-content-between align-items-center">
+          <h3 className="my-3">
+            {filters.length > 0 ? filters[0].value : "All"} Blueprints
+          </h3>
+          <span className="d-flex align-items-center">
+            <span>Group by:</span>
+            <Select
+              isClearable
+              placeholder="Group by"
+              options={groupByOptions}
+              onChange={(option, { action }) => {
+                if (action === "clear") {
+                  setGroupBy([]);
+                  return;
+                }
+
+                setGroupBy([option.value]);
+              }}
+            />
+            <span>Sort by:</span>
+            <Select
+              isClearable
+              placeholder="Sort by"
+              options={sortByOptions}
+              onChange={(option, { action }) => {
+                if (action === "clear") {
+                  setSortBy([]);
+                  return;
+                }
+
+                setSortBy([{ id: option.value, desc: false }]);
+              }}
+            />
+            {isSorted && (
+              <Button
+                variant="link"
+                size="sm"
+                onClick={() => {
+                  setSortBy(
+                    sortBy.map((sort) => {
+                      sort.desc = !sort.desc;
+                      return sort;
+                    })
+                  );
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={
+                    sortBy[0].desc ? faSortAmountUpAlt : faSortAmountDownAlt
+                  }
+                  size="lg"
+                />
+              </Button>
+            )}
+          </span>
+        </div>
+        {isGrouped ? (
+          <>
+            {rows.map((row) => (
+              <>
+                <h5 className="text-muted mt-3">{row.groupByVal}</h5>
+                <BlueprintTableList
+                  tableInstance={tableInstance}
+                  rows={row.subRows}
+                />
+              </>
+            ))}
+          </>
+        ) : (
+          <BlueprintTableList tableInstance={tableInstance} rows={rows} />
+        )}
+      </Col>
+    </Row>
   );
 };
 

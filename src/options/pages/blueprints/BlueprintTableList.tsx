@@ -17,30 +17,33 @@
 
 import { Card, Table } from "react-bootstrap";
 import styles from "@/options/pages/blueprints/BlueprintsList.module.scss";
-import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
+import BlueprintTableRow from "@/options/pages/blueprints/BlueprintTableRow";
 import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 import React from "react";
 
-const BlueprintsList: React.FunctionComponent<{
+const BlueprintTableList: React.FunctionComponent<{
   tableInstance;
   rows;
-}> = ({ tableInstance, rows }) => (
-  <Card className={styles.root}>
-    <Table {...tableInstance.getTableProps()}>
-      <tbody {...tableInstance.getTableBodyProps()}>
-        {rows.map((row) => {
-          tableInstance.prepareRow(row);
+}> = ({ tableInstance, rows }) => {
+  console.log("Rows:", rows);
+  return (
+    <Card className={styles.root}>
+      <Table {...tableInstance.getTableProps()}>
+        <tbody {...tableInstance.getTableBodyProps()}>
+          {rows.map((row) => {
+            tableInstance.prepareRow(row);
 
-          return (
-            <BlueprintListEntry
-              key={getUniqueId(row.values.installable)}
-              installableRow={row}
-            />
-          );
-        })}
-      </tbody>
-    </Table>
-  </Card>
-);
+            return (
+              <BlueprintTableRow
+                key={getUniqueId(row.original.installable)}
+                installableRow={row}
+              />
+            );
+          })}
+        </tbody>
+      </Table>
+    </Card>
+  );
+};
 
-export default BlueprintsList;
+export default BlueprintTableList;
