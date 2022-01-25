@@ -21,9 +21,10 @@ import {
 } from "@/devTools/editor/panes/save/saveHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  recipeDefinitionFactory,
+  extensionPointDefinitionFactory,
   innerExtensionPointRecipeFactory,
   versionedExtensionPointRecipeFactory,
+  extensionPointConfigFactory,
   extensionPointFactory,
   recipeFactory,
 } from "@/tests/factories";
@@ -71,7 +72,7 @@ describe("generatePersonalBrickId", () => {
 
 describe("replaceRecipeExtension round trip", () => {
   test("single extension with versioned extensionPoint", async () => {
-    const extensionPoint = recipeDefinitionFactory();
+    const extensionPoint = extensionPointDefinitionFactory();
     const recipe = versionedExtensionPointRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
     })();
@@ -111,7 +112,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("does not modify other extension point", async () => {
-    const extensionPoint = recipeDefinitionFactory();
+    const extensionPoint = extensionPointDefinitionFactory();
 
     const recipe = versionedExtensionPointRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
@@ -317,7 +318,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("updates Recipe API version with single extension", async () => {
-    const extensionPoint = recipeDefinitionFactory({
+    const extensionPoint = extensionPointDefinitionFactory({
       apiVersion: "v2",
     });
 
@@ -369,16 +370,16 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("throws when API version mismatch and cannot update recipe", async () => {
-    const extensionPoint = recipeDefinitionFactory();
+    const extensionPoint = extensionPointDefinitionFactory();
     const recipe = versionedExtensionPointRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
     })({
       apiVersion: "v2",
       extensionPoints: [
-        extensionPointFactory({
+        extensionPointConfigFactory({
           id: extensionPoint.metadata.id,
         }),
-        extensionPointFactory(),
+        extensionPointConfigFactory(),
       ],
     });
 
