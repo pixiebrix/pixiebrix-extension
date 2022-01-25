@@ -84,8 +84,18 @@ msobservers.initialize = function (selector, callback, options) {
   );
   this.push(msobserver);
 
+  var isMatchinInProgress = false;
   // The MutationObserver watches for when new elements are added to the DOM.
   var observer = new MutationObserver(function (mutations) {
+    // Avoid loop caused by Sizzle changing attributes while querying
+    // https://github.com/pie6k/jquery.initialize/issues/29
+    // https://github.com/jquery/sizzle/blob/20390f05731af380833b5aa805db97de0b91268a/src/sizzle.js#L344
+    if (isMatchinInProgress) {
+      return;
+    }
+
+    isMatchinInProgress = true;
+
     var matches = [];
 
     // For each mutation.
@@ -139,6 +149,8 @@ msobservers.initialize = function (selector, callback, options) {
     // For each match, call the callback using jQuery.each() to initialize the element (once only.)
     for (var i = 0; i < matches.length; i++)
       $(matches[i]).each(msobserver.callback);
+
+    isMatchinInProgress = false;
   });
 
   // Observe the target element.
