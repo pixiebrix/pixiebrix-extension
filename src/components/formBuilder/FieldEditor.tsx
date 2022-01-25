@@ -16,7 +16,7 @@
  */
 
 import { useField } from "formik";
-import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import styles from "./FieldEditor.module.scss";
 import {
   RJSFSchema,
