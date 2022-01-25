@@ -52,7 +52,7 @@ import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import "@/contrib/editors";
-import DeploymentModal from "@/options/pages/deployments/DeploymentBanner";
+import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import WorkshopPage from "./pages/workshop/WorkshopPage";
 import InvitationBanner from "@/options/pages/InvitationBanner";
@@ -95,7 +95,7 @@ const Layout = () => {
             <ErrorModal />
             <EnvironmentBanner />
             <UpdateBanner />
-            <DeploymentModal />
+            <DeploymentBanner />
             <InvitationBanner />
             <div className="content-wrapper">
               <ErrorBoundary>

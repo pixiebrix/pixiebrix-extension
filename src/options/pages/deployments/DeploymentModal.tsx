@@ -15,65 +15,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
-import useDeployments from "@/hooks/useDeployments";
+import React from "react";
+import { DeploymentState } from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
-import { Modal, Dropdown } from "react-bootstrap";
-import { useRouteMatch } from "react-router";
-import browser from "webextension-polyfill";
-import chromeP from "webext-polyfill-kinda";
+import { DropdownButton, Dropdown, Modal } from "react-bootstrap";
 
+const FIFTEEN_MINUTES_MILLIS = 900_000;
 const ONE_HOUR_MILLIS = 3_600_000;
 const ONE_DAY_MILLIS = 86_400_000;
 
-const SnoozeButton: React.FC = () => {
-  // FIXME: how does this interact with our onboarding modals? Does it?
-
-  const snooze = useCallback(async (timeMillis: number) => {
-    // NOP
-  }, []);
-
-  return (
-    <Dropdown>
-      <Dropdown.Toggle variant="info" id="dropdown-snooze">
-        Remind Me Later
-      </Dropdown.Toggle>
-
-      <Dropdown.Menu>
-        <Dropdown.Item onClick={async () => snooze(ONE_HOUR_MILLIS)}>
-          One Hour
-        </Dropdown.Item>
-        <Dropdown.Item onClick={async () => snooze(ONE_DAY_MILLIS)}>
-          Tomorrow
-        </Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
-  );
-};
+const SnoozeButton: React.FC<{ snooze: DeploymentState["snooze"] }> = ({
+  snooze,
+}) => (
+  <DropdownButton variant="info" id="dropdown-snooze" title="Remind Me Later">
+    <Dropdown.Item onClick={async () => snooze(FIFTEEN_MINUTES_MILLIS)}>
+      15 Minutes
+    </Dropdown.Item>
+    <Dropdown.Item onClick={async () => snooze(ONE_HOUR_MILLIS)}>
+      1 Hour
+    </Dropdown.Item>
+    <Dropdown.Item onClick={async () => snooze(ONE_DAY_MILLIS)}>
+      1 Day
+    </Dropdown.Item>
+  </DropdownButton>
+);
 
 /**
  * Modal to install deployments. Can be snoozed
  * @see DeploymentBanner
  */
-const DeploymentModal: React.FunctionComponent = () => {
-  const { hasUpdate, update, extensionUpdateRequired } = useDeployments();
+const DeploymentModal: React.FC<DeploymentState> = ({
+  extensionUpdateRequired,
+  isSnoozed,
+  snooze,
+  updateExtension,
+  update,
+}) => {
+  // FIXME: how does this interact with our onboarding modals? Does it?
 
-  // Only show on certain pages where the user expects to see a top-level install button. It's especially confusing
-  // to show the banner on other pages with an activate button (e.g., the marketplace wizard, in the workshop, etc.)
-  const matchRoot = useRouteMatch({ path: "/", exact: true });
-  const matchInstalled = useRouteMatch({ path: "/installed", exact: true });
-  const matchMarketplace = useRouteMatch({ path: "/blueprints", exact: true });
-
-  const updateExtension = useCallback(async () => {
-    await chromeP.runtime.requestUpdateCheck();
-    browser.runtime.reload();
-  }, []);
-
-  if (!hasUpdate) {
-    return null;
-  }
-
-  if (!(matchRoot || matchInstalled || matchMarketplace)) {
+  if (isSnoozed) {
     return null;
   }
 
@@ -81,19 +61,15 @@ const DeploymentModal: React.FunctionComponent = () => {
     return (
       <Modal show>
         <Modal.Header>
-          <Modal.Title className="text-danger">Update Available</Modal.Title>
+          <Modal.Title>Update Available</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Update the PixieBrix extension to activate team deployments
+          Update the PixieBrix Browser Extension to activate team deployments
         </Modal.Body>
         <Modal.Footer>
-          <SnoozeButton />
+          <SnoozeButton snooze={snooze} />
 
-          <AsyncButton
-            className="info ml-3"
-            size="sm"
-            onClick={updateExtension}
-          >
+          <AsyncButton variant="primary" onClick={updateExtension}>
             Update
           </AsyncButton>
         </Modal.Footer>
@@ -104,16 +80,13 @@ const DeploymentModal: React.FunctionComponent = () => {
   return (
     <Modal show>
       <Modal.Header>
-        <Modal.Title className="text-danger">
-          Team Deployments Available
-        </Modal.Title>
+        <Modal.Title>Team Deployments Available</Modal.Title>
       </Modal.Header>
       <Modal.Body>Team deployments are ready to activate</Modal.Body>
       <Modal.Footer>
-        <SnoozeButton />
-
-        <AsyncButton className="info ml-3" size="sm" onClick={update}>
-          Update
+        <SnoozeButton snooze={snooze} />
+        <AsyncButton variant="primary" onClick={update}>
+          Activate
         </AsyncButton>
       </Modal.Footer>
     </Modal>

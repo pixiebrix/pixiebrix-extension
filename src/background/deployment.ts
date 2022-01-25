@@ -32,7 +32,7 @@ import {
 } from "@/background/messenger/api";
 import { deploymentPermissions } from "@/permissions";
 import { IExtension, UUID, RegistryId } from "@/core";
-import { getLinkedApiClient } from "@/services/apiClient";
+import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "./util";
 import { parse as parseSemVer, satisfies, SemVer } from "semver";
@@ -301,8 +301,12 @@ export async function updateDeployments(): Promise<void> {
   // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment installed.
   // Now we're always sending in order to help team admins understand any gaps between number of registered users
   // and amount of activity when using deployments
-  const linkedClient = await getLinkedApiClient();
-  const { data: deployments } = await linkedClient.post<Deployment[]>(
+  const client = await maybeGetLinkedApiClient();
+  if (client == null) {
+    return;
+  }
+
+  const { data: deployments } = await client.post<Deployment[]>(
     "/api/deployments/",
     {
       uid: await getUID(),
