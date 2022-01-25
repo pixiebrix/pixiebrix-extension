@@ -35,7 +35,7 @@ export interface AuthData extends UserData {
   token: string;
 }
 
-async function readAuthData(): Promise<AuthData | Partial<AuthData>> {
+export async function readAuthData(): Promise<AuthData | Partial<AuthData>> {
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 

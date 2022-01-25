@@ -18,11 +18,11 @@
 
 import { Deployment } from "@/types/contract";
 import browser from "webextension-polyfill";
-import { partition, uniqBy } from "lodash";
+import { isEmpty, partition, uniqBy } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import { getUID } from "@/background/telemetry";
 import { getExtensionVersion } from "@/chrome";
-import { isLinked } from "@/auth/token";
+import { isLinked, readAuthData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -39,6 +39,7 @@ import { parse as parseSemVer, satisfies, SemVer } from "semver";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
+import { expectContext } from "@/utils/expectContext";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -68,8 +69,93 @@ export function selectInstalledDeployments(
   );
 }
 
-export function queueReactivateEveryTab(): void {
-  void forEachTab(queueReactivateTab);
+async function setExtensionsState(state: ExtensionOptionsState): Promise<void> {
+  await saveOptions(state);
+  await forEachTab(queueReactivateTab);
+}
+
+function uninstallExtension(
+  state: ExtensionOptionsState,
+  extensionId: UUID
+): ExtensionOptionsState {
+  const extensionRef = {
+    extensionId,
+  };
+  void uninstallContextMenu(extensionRef).catch(reportError);
+  return reducer(state, actions.removeExtension(extensionRef));
+}
+
+/**
+ * Uninstall all deployments by uninstalling all extensions associated with the deployment.
+ */
+async function uninstallAllDeployments(): Promise<void> {
+  let state = await loadOptions();
+  const installed = selectExtensions({ options: state });
+
+  const toUninstall = installed.filter(
+    (extension) => !isEmpty(extension._deployment)
+  );
+
+  if (toUninstall.length === 0) {
+    return;
+  }
+
+  // Uninstall existing versions of the extensions
+  for (const extension of toUninstall) {
+    state = uninstallExtension(state, extension.id);
+  }
+
+  await setExtensionsState(state);
+
+  reportEvent("DeploymentDeactivateAll", {
+    auto: true,
+  });
+}
+
+async function uninstallUnmatchedDeployments(
+  deployments: Deployment[]
+): Promise<void> {
+  let state = await loadOptions();
+  const installed = selectExtensions({ options: state });
+
+  const recipeIds = new Set(
+    deployments.map((x) => x.package.package_id as RegistryId)
+  );
+  const toUninstall = installed.filter(
+    (extension) =>
+      !isEmpty(extension._deployment) && !recipeIds.has(extension._recipe.id)
+  );
+
+  if (toUninstall.length === 0) {
+    return;
+  }
+
+  for (const extension of toUninstall) {
+    state = uninstallExtension(state, extension.id);
+  }
+
+  await setExtensionsState(state);
+
+  reportEvent("DeploymentDeactivateAll", {
+    auto: true,
+  });
+}
+
+function uninstallRecipe(
+  state: ExtensionOptionsState,
+  recipeId: RegistryId
+): ExtensionOptionsState {
+  let returnState = state;
+  const installed = selectExtensions({ options: state });
+
+  // Uninstall existing versions of the extensions
+  for (const extension of installed) {
+    if (extension._recipe.id === recipeId) {
+      returnState = uninstallExtension(returnState, extension.id);
+    }
+  }
+
+  return returnState;
 }
 
 function installDeployment(
@@ -77,20 +163,12 @@ function installDeployment(
   deployment: Deployment
 ): ExtensionOptionsState {
   let returnState = state;
-  const installed = selectExtensions({ options: state });
 
   // Uninstall existing versions of the extensions
-  for (const extension of installed) {
-    if (extension._recipe.id === deployment.package.package_id) {
-      const extensionRef = {
-        extensionId: extension.id,
-      };
-
-      void uninstallContextMenu(extensionRef).catch(reportError);
-
-      returnState = reducer(returnState, actions.removeExtension(extensionRef));
-    }
-  }
+  returnState = uninstallRecipe(
+    returnState,
+    deployment.package.package_id as RegistryId
+  );
 
   // Install the deployment's blueprint with the service definition
   returnState = reducer(
@@ -115,7 +193,22 @@ function installDeployment(
   return returnState;
 }
 
-function makeDeploymentTimestampLookup(extensions: IExtension[]) {
+/**
+ * Install all deployments
+ * @param deployments deployments that PixieBrix already has permission to run
+ */
+async function installDeployments(deployments: Deployment[]): Promise<void> {
+  let state = await loadOptions();
+  for (const deployment of deployments) {
+    state = installDeployment(state, deployment);
+  }
+
+  await setExtensionsState(state);
+}
+
+function makeDeploymentTimestampLookup(
+  extensions: IExtension[]
+): Map<string, Date> {
   const timestamps = new Map<string, Date>();
 
   for (const extension of extensions) {
@@ -130,6 +223,12 @@ function makeDeploymentTimestampLookup(extensions: IExtension[]) {
   return timestamps;
 }
 
+type DeploymentConstraint = {
+  deployment: Deployment;
+  hasPermissions: boolean;
+  extensionVersion: SemVer;
+};
+
 /**
  * Return true if the deployment can be automatically installed
  */
@@ -137,11 +236,7 @@ function canAutomaticallyInstall({
   deployment,
   hasPermissions,
   extensionVersion,
-}: {
-  deployment: Deployment;
-  hasPermissions: boolean;
-  extensionVersion: SemVer;
-}): boolean {
+}: DeploymentConstraint): boolean {
   if (!hasPermissions) {
     return false;
   }
@@ -150,40 +245,69 @@ function canAutomaticallyInstall({
   return !requiredRange || satisfies(extensionVersion, requiredRange);
 }
 
-async function updateDeployments() {
-  if (!(await isLinked())) {
+async function selectUpdatedDeployments(
+  deployments: Deployment[]
+): Promise<Deployment[]> {
+  // Always get the freshest options slice from the local storage
+  const { extensions } = await loadOptions();
+
+  const timestamps = makeDeploymentTimestampLookup(extensions);
+
+  // This check also detects changes to the `active` flag of the deployment, because the updated_at is bumped whenever
+  // the active flag changes
+  return deployments.filter(
+    (deployment) =>
+      !timestamps.has(deployment.id) ||
+      new Date(deployment.updated_at) > timestamps.get(deployment.id)
+  );
+}
+
+/**
+ * Sync local deployments with provisioned deployments.
+ *
+ * If PixieBrix does not have the permissions required to automatically activate a deployment, opens the Options page
+ * so the user can click to activate the deployments.
+ */
+export async function updateDeployments(): Promise<void> {
+  expectContext("background");
+
+  const [linked, { organizationId }] = await Promise.all([
+    isLinked(),
+    readAuthData(),
+  ]);
+
+  if (!linked) {
+    return;
+  }
+
+  if (organizationId == null) {
+    // One of the three scenarios hold:
+    // 1) has never been a member of an organization,
+    // 2) has left their organization,
+    // 3) linked their extension to a non-organization profile
+    await uninstallAllDeployments();
     return;
   }
 
   // Always get the freshest options slice from the local storage
   const { extensions } = await loadOptions();
 
-  // For a user has to go to the Active Bricks page to activate their first deployment
-  if (!extensions.some((x) => x._deployment?.id)) {
-    console.debug("No deployments installed");
-    return;
-  }
-
   const { version: extensionVersionString } = browser.runtime.getManifest();
   const extensionVersion = parseSemVer(extensionVersionString);
 
-  const { data: deployments } = await (await getLinkedApiClient()).post<
-    Deployment[]
-  >("/api/deployments/", {
-    uid: await getUID(),
-    version: await getExtensionVersion(),
-    active: selectInstalledDeployments(extensions),
-  });
-
-  const timestamps = makeDeploymentTimestampLookup(extensions);
-
-  // This check also detects changes to the `active` flag of the deployment, because the updated_at is bumped whenever
-  // the active flag changes
-  const updatedDeployments = deployments.filter(
-    (deployment) =>
-      !timestamps.has(deployment.id) ||
-      new Date(deployment.updated_at) > timestamps.get(deployment.id)
+  const linkedClient = await getLinkedApiClient();
+  const { data: deployments } = await linkedClient.post<Deployment[]>(
+    "/api/deployments/",
+    {
+      uid: await getUID(),
+      version: await getExtensionVersion(),
+      active: selectInstalledDeployments(extensions),
+    }
   );
+
+  await uninstallUnmatchedDeployments(deployments);
+
+  const updatedDeployments = await selectUpdatedDeployments(deployments);
 
   if (updatedDeployments.length === 0) {
     console.debug("No deployment updates found");
@@ -214,40 +338,19 @@ async function updateDeployments() {
     canAutomaticallyInstall({ ...x, extensionVersion })
   );
 
-  let automaticError: unknown;
+  let automaticError: boolean;
 
   if (automatic.length > 0) {
-    console.debug(
-      `Applying automatic updates for ${automatic.length} deployment(s)`
-    );
-
     try {
-      let currentOptions = await loadOptions();
-      for (const { deployment } of automatic) {
-        // Clear existing installs of the blueprint
-        currentOptions = installDeployment(currentOptions, deployment);
-      }
-
-      await saveOptions(currentOptions);
-      queueReactivateEveryTab();
-      console.info(
-        `Applied automatic updates for ${automatic.length} deployment(s)`
-      );
+      await installDeployments(automatic.map((x) => x.deployment));
     } catch (error) {
       reportError(error);
-      automaticError = error;
+      automaticError = true;
     }
   }
 
   // We only want to call openOptionsPage a single time
-  if (manual.length > 0 || automaticError != null) {
-    console.debug(
-      "Opening options page for user to manually activate updated deployment(s)",
-      {
-        manual,
-        automaticError,
-      }
-    );
+  if (manual.length > 0 || automaticError) {
     await browser.runtime.openOptionsPage();
   }
 }
