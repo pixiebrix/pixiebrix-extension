@@ -136,6 +136,7 @@ export class TablesReader extends Transformer {
   }
 
   async transform(_: BlockArg, { root }: BlockOptions): Promise<unknown> {
-    return { tables: Object.fromEntries(getAllTables(root).entries()) };
+    const tables = Object.fromEntries(getAllTables(root).entries());
+    return { tables: Object.keys(tables).length === 0 ? undefined : tables };
   }
 }
