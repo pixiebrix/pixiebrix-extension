@@ -29,8 +29,10 @@ import { sheets } from "@/background/messenger/api";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getErrorMessage } from "@/errors";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/lookup";
+import { isEmpty } from "lodash";
+import { isTemplateExpression } from "@/runtime/mapArgs";
 
-const DEFAULT_HEADER_SCHEMA = {
+const DEFAULT_HEADER_SCHEMA: Schema = {
   type: "string",
 };
 
@@ -39,20 +41,34 @@ const HeaderField: React.FunctionComponent<{
   doc: SheetMeta | null;
   tabName: string;
 }> = ({ name, tabName, doc }) => {
-  const [headerSchema, , headersError] = useAsyncState(async () => {
-    if (doc?.id && tabName) {
-      const headers = await sheets.getHeaders({
-        spreadsheetId: doc.id,
-        tabName,
-      });
-      return {
-        type: "string",
-        enum: headers ?? [],
-      };
-    }
+  const [{ value }, , { setValue }] = useField(name);
 
-    return DEFAULT_HEADER_SCHEMA;
-  }, [doc?.id, tabName]);
+  const [headerSchema, , headersError] = useAsyncState<Schema>(
+    async () => {
+      if (doc?.id && tabName) {
+        const headers = await sheets.getHeaders({
+          spreadsheetId: doc.id,
+          tabName,
+        });
+        if (
+          !isEmpty(headers) &&
+          isTemplateExpression(value) &&
+          isEmpty(value.__value__)
+        ) {
+          setValue(null);
+        }
+
+        return {
+          type: "string",
+          enum: headers ?? [],
+        };
+      }
+
+      return DEFAULT_HEADER_SCHEMA;
+    },
+    [doc?.id, tabName],
+    DEFAULT_HEADER_SCHEMA
+  );
 
   return (
     <SchemaField
@@ -65,7 +81,7 @@ const HeaderField: React.FunctionComponent<{
           </span>
         ) : null
       }
-      schema={(headerSchema ?? DEFAULT_HEADER_SCHEMA) as Schema}
+      schema={headerSchema}
       isRequired
     />
   );
