@@ -37,7 +37,7 @@ class OverlayRect {
     Object.assign(this.node.style, {
       borderColor: overlayStyles.margin,
       pointerEvents: "none",
-      position: "fixed",
+      position: "absolute",
     });
 
     this.node.style.zIndex = "10000000";
@@ -77,8 +77,8 @@ class OverlayRect {
     });
 
     Object.assign(this.node.style, {
-      top: box.top - dims.marginTop + "px",
-      left: box.left - dims.marginLeft + "px",
+      top: box.top - dims.marginTop + window.scrollY + "px",
+      left: box.left - dims.marginLeft + window.scrollX + "px",
     });
   }
 }
@@ -100,7 +100,7 @@ class OverlayTip {
       fontWeight: "bold",
       padding: "3px 5px",
       pointerEvents: "none",
-      position: "fixed",
+      position: "absolute",
       fontSize: "12px",
       whiteSpace: "nowrap",
     });
@@ -174,6 +174,9 @@ function findTipPos(dims: any, bounds: any, tipSize: any) {
   if (dims.left + tipWidth > bounds.left + bounds.width) {
     left = bounds.left + bounds.width - tipWidth - margin;
   }
+
+  top += window.scrollY;
+  left += window.scrollX;
 
   top += "px";
   left += "px";
