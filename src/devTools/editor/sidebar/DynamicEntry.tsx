@@ -48,7 +48,7 @@ const DynamicEntry: React.FunctionComponent<{
   );
 
   const showOverlay = useCallback(async (uuid: UUID) => {
-    await enableOverlay(thisTab, `[data-uuid="${uuid}"]`);
+    await enableOverlay(thisTab, `[data-pb-uuid="${uuid}"]`);
   }, []);
 
   const hideOverlay = useCallback(async () => {
