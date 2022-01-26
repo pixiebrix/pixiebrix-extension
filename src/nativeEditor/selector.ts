@@ -51,6 +51,14 @@ export async function userSelectElement({
   return new Promise<HTMLElement[]>((resolve, reject) => {
     const targets = new Set<HTMLElement>();
 
+    if (!overlay) {
+      overlay = new Overlay();
+    }
+
+    if (filter) {
+      overlay.inspect([...document.querySelectorAll<HTMLElement>(filter)]);
+    }
+
     function findExpectedTarget(target: EventTarget): HTMLElement | void {
       if (!(target instanceof HTMLElement)) {
         return;
@@ -121,15 +129,9 @@ export async function userSelectElement({
       event.stopPropagation();
       const target = findExpectedTarget(event.target);
 
-      if (!target) {
-        return;
+      if (target) {
+        overlay.inspect([target]);
       }
-
-      if (overlay == null) {
-        overlay = new Overlay();
-      }
-
-      overlay.inspect([target]);
     }
 
     function onPointerLeave() {
@@ -155,8 +157,12 @@ export async function userSelectElement({
       window.addEventListener("mouseover", noopMouseHandler, true);
       window.addEventListener("mouseup", noopMouseHandler, true);
       window.addEventListener("pointerdown", onPointerDown, true);
-      window.addEventListener("pointerover", onPointerOver, true);
-      window.document.addEventListener("pointerleave", onPointerLeave, true);
+
+      if (!filter) {
+        window.addEventListener("pointerover", onPointerOver, true);
+        window.document.addEventListener("pointerleave", onPointerLeave, true);
+      }
+
       window.addEventListener("pointerup", noopMouseHandler, true);
       window.addEventListener("keyup", escape, true);
     }
