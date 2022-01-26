@@ -98,18 +98,29 @@ export default function parseDomTable(
   return { records, fieldNames };
 }
 
+function getAriaDescription(element: HTMLElement): string | undefined {
+  const describedBy = element.getAttribute("aria-describedby");
+  if (describedBy) {
+    return element.ownerDocument.querySelector("#" + describedBy)?.textContent;
+  }
+}
+
 export function getAllTables(
   root: HTMLElement | Document = document
 ): Map<string, ParsedTable> {
   const tables = new Map();
   for (const table of $<HTMLTableElement>("table", root)) {
     const parsedTable = parseDomTable(table);
+
+    // Uses || instead of ?? to exclude empty strings
     const tableName =
-      table.querySelector("caption")?.textContent ??
+      table.querySelector("caption")?.textContent ||
+      getAriaDescription(table) ||
+      table.getAttribute("aria-label") ||
+      // TODO: Exclude random identifiers #2498
+      table.id ||
       parsedTable.fieldNames.join("-");
-    if (tableName) {
-      tables.set(slugify(tableName, { lower: true }), parsedTable);
-    }
+    tables.set(slugify(tableName, { lower: true }), parsedTable);
   }
 
   return tables;
