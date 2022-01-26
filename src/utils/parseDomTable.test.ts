@@ -38,6 +38,67 @@ function getDocument(...elements: Node[]): Document {
   return window.document;
 }
 
+describe("parseDomTable", () => {
+  test("parse simple table", () => {
+    const table = getTable(`
+      <tr><th>Name<th>Age
+      <tr><td>Mario<td>42
+      <tr><td>Luigi<td>39
+    `);
+
+    const expected = {
+      fieldNames: ["Name", "Age"],
+      records: [
+        { Name: "Mario", Age: "42" },
+        { Name: "Luigi", Age: "39" },
+      ],
+    };
+
+    const actual = parseDomTable(table);
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  test("parse header-less table", () => {
+    const table = getTable(`
+      <tr><td>Mario<td>42
+      <tr><td>Luigi<td>39
+    `);
+
+    const expected = {
+      fieldNames: [0, 1],
+      records: [
+        { 0: "Mario", 1: "42" },
+        { 0: "Luigi", 1: "39" },
+      ],
+    };
+
+    const actual = parseDomTable(table);
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  test("parse horizontal table", () => {
+    const table = getTable(`
+      <tr><th>Name<td>Mario<td>Luigi
+      <tr><th>Age<td>42<td>39
+      <tr><th>Height<td>5' 6"<td>5' 8"
+    `);
+
+    const expected = {
+      fieldNames: ["Name", "Age", "Height"],
+      records: [
+        { Name: "Mario", Age: "42", Height: "5' 6\"" },
+        { Name: "Luigi", Age: "39", Height: "5' 8\"" },
+      ],
+    };
+
+    const actual = parseDomTable(table);
+
+    expect(actual).toStrictEqual(expected);
+  });
+});
+
 describe("getAllTables", () => {
   test("use caption as name", () => {
     const table1 = getTable(`
@@ -130,67 +191,6 @@ describe("getAllTables", () => {
       ["name-age", parseDomTable(table1)],
       ["0-1", parseDomTable(table2)],
     ]);
-
-    expect(actual).toStrictEqual(expected);
-  });
-});
-
-describe("parseDomTable", () => {
-  test("parse simple table", () => {
-    const table = getTable(`
-      <tr><th>Name<th>Age
-      <tr><td>Mario<td>42
-      <tr><td>Luigi<td>39
-    `);
-
-    const expected = {
-      fieldNames: ["Name", "Age"],
-      records: [
-        { Name: "Mario", Age: "42" },
-        { Name: "Luigi", Age: "39" },
-      ],
-    };
-
-    const actual = parseDomTable(table);
-
-    expect(actual).toStrictEqual(expected);
-  });
-
-  test("parse header-less table", () => {
-    const table = getTable(`
-      <tr><td>Mario<td>42
-      <tr><td>Luigi<td>39
-    `);
-
-    const expected = {
-      fieldNames: [0, 1],
-      records: [
-        { 0: "Mario", 1: "42" },
-        { 0: "Luigi", 1: "39" },
-      ],
-    };
-
-    const actual = parseDomTable(table);
-
-    expect(actual).toStrictEqual(expected);
-  });
-
-  test("parse horizontal table", () => {
-    const table = getTable(`
-      <tr><th>Name<td>Mario<td>Luigi
-      <tr><th>Age<td>42<td>39
-      <tr><th>Height<td>5' 6"<td>5' 8"
-    `);
-
-    const expected = {
-      fieldNames: ["Name", "Age", "Height"],
-      records: [
-        { Name: "Mario", Age: "42", Height: "5' 6\"" },
-        { Name: "Luigi", Age: "39", Height: "5' 8\"" },
-      ],
-    };
-
-    const actual = parseDomTable(table);
 
     expect(actual).toStrictEqual(expected);
   });
