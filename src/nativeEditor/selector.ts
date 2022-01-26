@@ -38,11 +38,30 @@ function noopMouseHandler(event: MouseEvent) {
   event.stopPropagation();
 }
 
-export async function userSelectElement(
-  root?: HTMLElement
-): Promise<HTMLElement[]> {
+interface UserSelection {
+  root?: HTMLElement;
+  /** CSS selector to limit the selection to */
+  filter?: string;
+}
+
+export async function userSelectElement({
+  root,
+  filter,
+}: UserSelection = {}): Promise<HTMLElement[]> {
   return new Promise<HTMLElement[]>((resolve, reject) => {
     const targets: HTMLElement[] = [];
+
+    function findExpectedTarget(target: EventTarget): HTMLElement | void {
+      if (!(target instanceof HTMLElement)) {
+        return;
+      }
+
+      if (!filter) {
+        return target;
+      }
+
+      return target.closest<HTMLElement>(filter);
+    }
 
     function startInspectingNative() {
       _cancelSelect = cancel;
@@ -58,6 +77,7 @@ export async function userSelectElement(
     }
 
     function onClick(event: MouseEvent) {
+      const target = findExpectedTarget(event.target);
       if (event.altKey) {
         return;
       }
@@ -66,18 +86,18 @@ export async function userSelectElement(
       event.stopPropagation();
 
       if (event.shiftKey) {
-        if (event.target) {
-          const index = targets.indexOf(event.target as HTMLElement);
+        if (target) {
+          const index = targets.indexOf(target);
           if (index >= 0) {
             targets.splice(index, 1);
           } else {
-            targets.push(event.target as HTMLElement);
+            targets.push(target);
           }
         }
       } else {
         try {
-          if (event.target) {
-            const result = uniq([...targets, event.target as HTMLElement]);
+          if (target) {
+            const result = uniq([...targets, target]);
             if (root && result.some((x) => !root.contains(x))) {
               throw new Error(
                 "One or more selected elements are not contained with the root container"
@@ -102,12 +122,17 @@ export async function userSelectElement(
     function onPointerOver(event: MouseEvent) {
       event.preventDefault();
       event.stopPropagation();
+      const target = findExpectedTarget(event.target);
+
+      if (!target) {
+        return;
+      }
 
       if (overlay == null) {
         overlay = new Overlay();
       }
 
-      overlay.inspect([event.target as HTMLElement], null);
+      overlay.inspect([target]);
     }
 
     function onPointerLeave(event: MouseEvent) {
@@ -212,7 +237,7 @@ export async function selectElement({
   root?: string;
 }) {
   const rootElement = root == null ? undefined : requireSingleElement(root);
-  const elements = await userSelectElement(rootElement);
+  const elements = await userSelectElement({ root: rootElement });
 
   switch (mode) {
     case "container": {

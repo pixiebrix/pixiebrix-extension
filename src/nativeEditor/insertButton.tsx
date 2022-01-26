@@ -46,18 +46,7 @@ export type ButtonSelectionResult = {
 };
 
 export async function insertButton(): Promise<ButtonSelectionResult> {
-  let selected = await userSelectElement();
-
-  // Anchor is an inline element, so if the structure in a > span, the user has no way of
-  // selecting the outer anchor unless there's padding/margin involved.
-  //
-  // if the parent is BUTTON, the user probably just selected the wrong thing
-  if (
-    selected.length === 1 &&
-    ["A", "BUTTON"].includes(selected[0].parentElement?.tagName)
-  ) {
-    selected = [selected[0].parentElement];
-  }
+  const selected = await userSelectElement({ filter: "a, button" });
 
   const { container, selectors: containerSelectors } = findContainer(selected);
 
