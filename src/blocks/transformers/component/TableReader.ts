@@ -20,7 +20,6 @@ import { BlockArg, BlockOptions, Schema } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import parseDomTable, { getAllTables } from "@/utils/parseDomTable";
 import { $safeFind } from "@/helpers";
-import slugify from "slugify";
 
 export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
 export const TABLES_READER_ID = validateRegistryId("@pixiebrix/tables-reader");
