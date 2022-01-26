@@ -132,10 +132,8 @@ export async function userSelectElement({
       overlay.inspect([target]);
     }
 
-    function onPointerLeave(event: MouseEvent) {
-      if (event.target === window.document) {
-        hideOverlay();
-      }
+    function onPointerLeave() {
+      hideOverlay();
     }
 
     function escape(event: KeyboardEvent) {
