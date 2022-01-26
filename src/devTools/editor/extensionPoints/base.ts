@@ -22,6 +22,7 @@ import {
   Metadata,
   RegistryId,
   SafeString,
+  Schema,
   UUID,
 } from "@/core";
 import { castArray, cloneDeep, isEmpty, omit } from "lodash";
@@ -50,6 +51,11 @@ import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
 import { INNER_SCOPE, isInnerExtensionPoint } from "@/runtime/runtimeUtils";
+import { RecipeDefinition } from "@/types/definitions";
+import {
+  MINIMAL_SCHEMA,
+  MINIMAL_UI_SCHEMA,
+} from "@/components/formBuilder/formBuilderHelpers";
 
 export interface WizardStep {
   step: string;
@@ -122,6 +128,33 @@ export function baseFromExtension<T extends ElementType>(
     type,
     recipe: config._recipe,
   };
+}
+
+// Add the recipe options to the form state if the extension is a part of a recipe
+export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
+  element: TElement,
+  recipes: RecipeDefinition[]
+) {
+  if (element.recipe?.id) {
+    const recipe = recipes?.find((x) => x.metadata.id === element.recipe.id);
+
+    if (recipe?.options == null) {
+      element.optionsDefinition = {
+        schema: MINIMAL_SCHEMA,
+        uiSchema: MINIMAL_UI_SCHEMA,
+      };
+    } else {
+      element.optionsDefinition = {
+        schema: recipe.options.schema.properties
+          ? recipe.options.schema
+          : ({
+              type: "object",
+              properties: recipe.options.schema,
+            } as Schema),
+        uiSchema: recipe.options.uiSchema,
+      };
+    }
+  }
 }
 
 export function baseSelectExtension({

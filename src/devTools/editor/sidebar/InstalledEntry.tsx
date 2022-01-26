@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
 
 import styles from "./Entry.module.scss";
 import React, { useCallback } from "react";
-import { IExtension, Schema } from "@/core";
+import { IExtension } from "@/core";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -31,11 +31,8 @@ import {
   NotAvailableIcon,
   ExtensionIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
-import {
-  MINIMAL_SCHEMA,
-  MINIMAL_UI_SCHEMA,
-} from "@/components/formBuilder/formBuilderHelpers";
 import { RecipeDefinition } from "@/types/definitions";
+import { initRecipeOptionsIfNeeded } from "@/devTools/editor/extensionPoints/base";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
@@ -56,30 +53,7 @@ const InstalledEntry: React.FunctionComponent<{
     async (extension: IExtension) => {
       try {
         const state = await extensionToFormState(extension);
-
-        // If the extension is a part of a recipe, we need to add the recipe options to the form state
-        if (state.recipe?.id) {
-          const recipe = recipes?.find(
-            (x) => x.metadata.id === state.recipe.id
-          );
-
-          if (recipe?.options == null) {
-            state.optionsDefinition = {
-              schema: MINIMAL_SCHEMA,
-              uiSchema: MINIMAL_UI_SCHEMA,
-            };
-          } else {
-            state.optionsDefinition = {
-              schema: recipe.options.schema.properties
-                ? recipe.options.schema
-                : ({
-                    type: "object",
-                    properties: recipe.options.schema,
-                  } as Schema),
-              uiSchema: recipe.options.uiSchema,
-            };
-          }
-        }
+        initRecipeOptionsIfNeeded(state, recipes);
 
         // FIXME: is where we need to uninstall the extension because it will now be a dynamic element? Or should it
         //  be getting handled by lifecycle.ts? Need to add some logging to figure out how other ones work
