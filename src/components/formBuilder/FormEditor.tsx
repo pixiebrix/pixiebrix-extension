@@ -201,8 +201,9 @@ const FormEditor: React.FC<FormEditorProps> = ({
     Boolean(activeField) &&
     (uiOrder?.length === propertyKeys.length + 1
       ? uiOrder[uiOrder.length - 2] !== activeField
-      : findLast(propertyKeys, (key) => !uiOrder.includes(key)) !==
-        activeField);
+      : Array.isArray(uiOrder) &&
+        findLast(propertyKeys, (key) => !uiOrder.includes(key)) !==
+          activeField);
 
   return (
     <>
