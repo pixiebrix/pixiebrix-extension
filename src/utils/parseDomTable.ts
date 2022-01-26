@@ -16,6 +16,7 @@
  */
 
 import { zip, zipObject } from "lodash";
+import slugify from "slugify";
 
 interface ParsingOptions {
   orientation?: "vertical" | "horizontal" | "infer";
@@ -95,4 +96,21 @@ export default function parseDomTable(
 
   const records = body.map((row) => zipObject(fieldNames, row));
   return { records, fieldNames };
+}
+
+export function getAllTables(
+  root: HTMLElement | Document = document
+): Map<string, ParsedTable> {
+  const tables = new Map();
+  for (const table of $<HTMLTableElement>("table", root)) {
+    const parsedTable = parseDomTable(table);
+    const tableName =
+      table.querySelector("caption")?.textContent ??
+      parsedTable.fieldNames.join("-");
+    if (tableName) {
+      tables.set(slugify(tableName, { lower: true }), parsedTable);
+    }
+  }
+
+  return tables;
 }

@@ -18,7 +18,7 @@
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
-import parseDomTable from "@/utils/parseDomTable";
+import parseDomTable, { getAllTables } from "@/utils/parseDomTable";
 import { $safeFind } from "@/helpers";
 import slugify from "slugify";
 
@@ -137,17 +137,6 @@ export class TablesReader extends Transformer {
   }
 
   async transform(_: BlockArg, { root }: BlockOptions): Promise<unknown> {
-    const tables = new Map();
-    for (const table of $<HTMLTableElement>("table", root)) {
-      const parsedTable = parseDomTable(table);
-      const tableName =
-        table.querySelector("caption")?.textContent ??
-        parsedTable.fieldNames.join("-");
-      if (tableName) {
-        tables.set(slugify(tableName, { lower: true }), parsedTable);
-      }
-    }
-
-    return { tables: Object.fromEntries(tables.entries()) };
+    return { tables: Object.fromEntries(getAllTables(root).entries()) };
   }
 }
