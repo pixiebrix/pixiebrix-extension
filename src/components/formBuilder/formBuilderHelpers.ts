@@ -293,9 +293,9 @@ export const produceSchemaOnUiTypeChange = (
 };
 
 export const updateRjsfSchemaWithDefaultsIfNeeded = (
-  rjsfSchema: RJSFSchema
+  rjsfSchema: RJSFSchema = {} as RJSFSchema
 ) => {
-  const { schema, uiSchema } = rjsfSchema ?? {};
+  const { schema, uiSchema } = rjsfSchema;
 
   // eslint-disable-next-line security/detect-object-injection -- UI_ORDER is a known property
   const uiOrder = uiSchema?.[UI_ORDER];
@@ -305,7 +305,7 @@ export const updateRjsfSchemaWithDefaultsIfNeeded = (
     !Array.isArray(schema.required);
 
   if (!schema || !uiSchema || !uiOrder?.includes("*") || needToUpdateRequired) {
-    return produce(rjsfSchema ?? ({} as RJSFSchema), (draft) => {
+    return produce(rjsfSchema, (draft) => {
       if (!draft.schema) {
         draft.schema = MINIMAL_SCHEMA;
       }
@@ -331,4 +331,20 @@ export const updateRjsfSchemaWithDefaultsIfNeeded = (
   }
 
   return null;
+};
+
+export const normalizeUiOrder = (propertyKeys: string[], uiOrder: string[]) => {
+  // A naive check to see if all property keys are presenter in uiOrder
+  if (
+    propertyKeys.length === uiOrder.length - 1 &&
+    uiOrder[uiOrder.length - 1] === "*"
+  ) {
+    return uiOrder;
+  }
+
+  return [
+    ...uiOrder.filter((key) => propertyKeys.includes(key)),
+    ...propertyKeys.filter((key) => !uiOrder.includes(key)),
+    "*",
+  ];
 };

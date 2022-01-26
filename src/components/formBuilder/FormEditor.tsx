@@ -29,6 +29,7 @@ import {
   DEFAULT_FIELD_TYPE,
   generateNewPropertyName,
   moveStringInArray,
+  normalizeUiOrder,
   replaceStringInArray,
   updateRjsfSchemaWithDefaultsIfNeeded,
 } from "./formBuilderHelpers";
@@ -43,6 +44,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import LayoutWidget from "@/components/LayoutWidget";
+import { findLast } from "lodash";
 
 export type FormEditorProps = {
   name: string;
@@ -118,17 +120,27 @@ const FormEditor: React.FC<FormEditorProps> = ({
     return null;
   }
 
+  const propertyKeys = Object.keys(schema.properties ?? {});
+
   const addProperty = () => {
-    const propertyName = generateNewPropertyName(
-      Object.keys(schema.properties ?? {})
-    );
+    const propertyName = generateNewPropertyName(propertyKeys);
     const newProperty: Schema = {
       title: propertyName,
       type: DEFAULT_FIELD_TYPE,
     };
     const nextUiOrder = activeField
-      ? replaceStringInArray(uiOrder, activeField, activeField, propertyName)
-      : replaceStringInArray(uiOrder, "*", propertyName, "*");
+      ? replaceStringInArray(
+          normalizeUiOrder(propertyKeys, uiOrder),
+          activeField,
+          activeField,
+          propertyName
+        )
+      : replaceStringInArray(
+          normalizeUiOrder(propertyKeys, uiOrder),
+          "*",
+          propertyName,
+          "*"
+        );
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
       draft.uiSchema[UI_ORDER] = nextUiOrder;
@@ -143,13 +155,20 @@ const FormEditor: React.FC<FormEditorProps> = ({
   };
 
   const moveProperty = (direction: "up" | "down") => {
-    const nextUiOrder = moveStringInArray(uiOrder, activeField, direction);
+    const nextUiOrder = moveStringInArray(
+      normalizeUiOrder(propertyKeys, uiOrder),
+      activeField,
+      direction
+    );
     setUiOrder(nextUiOrder);
   };
 
   const removeProperty = () => {
     const propertyToRemove = activeField;
-    const nextUiOrder = replaceStringInArray(uiOrder, propertyToRemove);
+    const nextUiOrder = replaceStringInArray(
+      normalizeUiOrder(propertyKeys, uiOrder),
+      propertyToRemove
+    );
     const nextActiveField = nextUiOrder.length > 1 ? nextUiOrder[0] : undefined;
 
     setActiveField(nextActiveField);
@@ -174,11 +193,16 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   // There's always at least 1 item in uiOrder array, "*".
   const canMoveUp =
-    Boolean(activeField) && uiOrder?.length > 2 && uiOrder[0] !== activeField;
+    Boolean(activeField) &&
+    (uiOrder?.length > 2
+      ? uiOrder[0] !== activeField
+      : propertyKeys[0] !== activeField);
   const canMoveDown =
     Boolean(activeField) &&
-    uiOrder?.length > 2 &&
-    uiOrder[uiOrder.length - 2] !== activeField;
+    (uiOrder?.length === propertyKeys.length + 1
+      ? uiOrder[uiOrder.length - 2] !== activeField
+      : findLast(propertyKeys, (key) => !uiOrder.includes(key)) !==
+        activeField);
 
   return (
     <>

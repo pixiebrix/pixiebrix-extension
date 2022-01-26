@@ -32,6 +32,7 @@ import { FIELD_TYPE_OPTIONS } from "@/components/formBuilder/formBuilderHelpers"
 import { useGetRecipesQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import styles from "./BlueprintOptionsTab.module.scss";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter((type) =>
   ["Single line text", "Number", "Checkbox"].includes(type.label)
@@ -71,53 +72,51 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
   const noOptions = isEmpty(formState.optionsDefinition?.schema?.properties);
 
   return (
-    <Tab.Pane eventKey={eventKey}>
-      <Container className="pt-3">
-        <Row>
+    <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
+      <div className={styles.paneContent}>
+        <div className={styles.configPanel}>
           <ErrorBoundary>
-            <Col md="8">
-              <h5 className="mb-3">
-                Editing Options for Blueprint &quot;{formState.recipe.name}
-                &quot;
-              </h5>
+            <h5 className="mb-3">
+              Editing Options for Blueprint &quot;{formState.recipe.name}
+              &quot;
+            </h5>
 
-              {countOfExtensionsInRecipe > 1 && (
-                <Alert variant="warning">
-                  <FontAwesomeIcon icon={faExclamationTriangle} />
-                  This options are shared with{" "}
-                  {countOfExtensionsInRecipe > 2
-                    ? `other ${countOfExtensionsInRecipe - 1} extensions`
-                    : "another extension"}{" "}
-                  in the blueprint.
-                </Alert>
-              )}
+            {countOfExtensionsInRecipe > 1 && (
+              <Alert variant="warning">
+                <FontAwesomeIcon icon={faExclamationTriangle} />
+                This options are shared with{" "}
+                {countOfExtensionsInRecipe > 2
+                  ? `other ${countOfExtensionsInRecipe - 1} extensions`
+                  : "another extension"}{" "}
+                in the blueprint.
+              </Alert>
+            )}
 
-              {noOptions && (
-                <div className="mb-3">
-                  No options defined for this Blueprint
-                </div>
-              )}
-              <FieldRuntimeContext.Provider value={formRuntimeContext}>
-                <FormEditor
-                  name="optionsDefinition"
-                  showFormTitle={false}
-                  activeField={activeField}
-                  setActiveField={setActiveField}
-                  fieldTypes={fieldTypes}
-                />
-              </FieldRuntimeContext.Provider>
-            </Col>
-            <Col md="4">
-              <h5 className="mb-3">Preview</h5>
-              <FormPreview
-                rjsfSchema={formState.optionsDefinition as RJSFSchema}
+            {noOptions && (
+              <div className="mb-3">No options defined for this Blueprint</div>
+            )}
+            <FieldRuntimeContext.Provider value={formRuntimeContext}>
+              <FormEditor
+                name="optionsDefinition"
+                showFormTitle={false}
                 activeField={activeField}
                 setActiveField={setActiveField}
+                fieldTypes={fieldTypes}
               />
-            </Col>
+            </FieldRuntimeContext.Provider>
           </ErrorBoundary>
-        </Row>
-      </Container>
+        </div>
+        <div className={styles.dataPanel}>
+          <h5 className="mb-3">Preview</h5>
+          <ErrorBoundary>
+            <FormPreview
+              rjsfSchema={formState.optionsDefinition as RJSFSchema}
+              activeField={activeField}
+              setActiveField={setActiveField}
+            />
+          </ErrorBoundary>
+        </div>
+      </div>
     </Tab.Pane>
   );
 };
