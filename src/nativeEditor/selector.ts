@@ -49,7 +49,7 @@ export async function userSelectElement({
   filter,
 }: UserSelection = {}): Promise<HTMLElement[]> {
   return new Promise<HTMLElement[]>((resolve, reject) => {
-    const targets: HTMLElement[] = [];
+    const targets = new Set<HTMLElement>();
 
     function findExpectedTarget(target: EventTarget): HTMLElement | void {
       if (!(target instanceof HTMLElement)) {
@@ -78,7 +78,7 @@ export async function userSelectElement({
 
     function onClick(event: MouseEvent) {
       const target = findExpectedTarget(event.target);
-      if (event.altKey) {
+      if (event.altKey || !target) {
         return;
       }
 
@@ -86,29 +86,26 @@ export async function userSelectElement({
       event.stopPropagation();
 
       if (event.shiftKey) {
-        if (target) {
-          const index = targets.indexOf(target);
-          if (index >= 0) {
-            targets.splice(index, 1);
-          } else {
-            targets.push(target);
-          }
+        if (targets.has(target)) {
+          targets.delete(target);
+        } else {
+          targets.add(target);
         }
-      } else {
-        try {
-          if (target) {
-            const result = uniq([...targets, target]);
-            if (root && result.some((x) => !root.contains(x))) {
-              throw new Error(
-                "One or more selected elements are not contained with the root container"
-              );
-            }
 
-            resolve(result);
-          }
-        } finally {
-          stopInspectingNative();
+        return;
+      }
+
+      try {
+        const result = uniq([...targets, target]);
+        if (root && result.some((x) => !root.contains(x))) {
+          throw new Error(
+            "One or more selected elements are not contained with the root container"
+          );
         }
+
+        resolve(result);
+      } finally {
+        stopInspectingNative();
       }
     }
 
