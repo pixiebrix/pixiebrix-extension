@@ -38,7 +38,7 @@ import { ParseCsv } from "./parseCsv";
 import { ParseDataUrl } from "./parseDataUrl";
 import { ParseDate } from "@/blocks/transformers/parseDate";
 import { ScreenshotTab } from "@/blocks/transformers/screenshotTab";
-import { TableReader } from "./component/TableReader";
+import { TableReader, TablesReader } from "./component/TableReader";
 
 function registerTransformers() {
   registerBlock(new JQTransformer());
@@ -60,6 +60,7 @@ function registerTransformers() {
   registerBlock(new JQueryReader());
   registerBlock(new ComponentReader());
   registerBlock(new TableReader());
+  registerBlock(new TablesReader());
   registerBlock(new ParseCsv());
   registerBlock(new ParseDataUrl());
   registerBlock(new ParseDate());

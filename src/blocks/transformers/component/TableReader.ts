@@ -20,8 +20,10 @@ import { BlockArg, BlockOptions, Schema } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import parseDomTable from "@/utils/parseDomTable";
 import { $safeFind } from "@/helpers";
+import slugify from "slugify";
 
 export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
+export const TABLES_READER_ID = validateRegistryId("@pixiebrix/tables-reader");
 
 export class TableReader extends Transformer {
   constructor() {
@@ -80,5 +82,72 @@ export class TableReader extends Transformer {
   async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
     const $table = $safeFind<HTMLTableElement>(args.selector, root);
     return parseDomTable($table.get(0), { orientation: args.orientation });
+  }
+}
+
+export class TablesReader extends Transformer {
+  constructor() {
+    super(
+      TABLES_READER_ID,
+      "Tables Reader",
+      "Extract data from all the tables"
+    );
+  }
+
+  defaultOutputKey = "tables";
+
+  inputSchema: Schema = {
+    type: "object",
+    properties: {},
+  };
+
+  outputSchema: Schema = {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    properties: {
+      tables: {
+        description: "The tables found on the page",
+        type: "object",
+        additionalProperties: {
+          type: "object",
+          properties: {
+            records: {
+              description:
+                "The records in the table (rows or columns, depending on orientation)",
+              type: "array",
+              items: { type: "object" },
+            },
+            fieldNames: {
+              description: "The field names in the table",
+              type: "array",
+              items: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+  };
+
+  async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
+  async transform(_: BlockArg, { root }: BlockOptions): Promise<unknown> {
+    const tables = new Map();
+    for (const table of $<HTMLTableElement>("table", root)) {
+      const parsedTable = parseDomTable(table);
+      const tableName =
+        table.querySelector("caption")?.textContent ??
+        parsedTable.fieldNames.join("-");
+      if (tableName) {
+        tables.set(slugify(tableName, { lower: true }), parsedTable);
+      }
+    }
+
+    return { tables: Object.fromEntries(tables.entries()) };
   }
 }
