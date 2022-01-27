@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Col, Nav, Row as BootstrapRow } from "react-bootstrap";
+import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
 import React, { useContext, useEffect, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -43,6 +43,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import BlueprintTableList from "@/options/pages/blueprints/BlueprintTableList";
 import { RegistryId } from "@/core";
+import ListFilters from "./ListFilters";
 
 const getFilterOptions = (column: ColumnInstance) => {
   const options = new Set();
@@ -175,78 +176,14 @@ const BlueprintsCard: React.FunctionComponent<{
 
   return (
     <BootstrapRow>
-      <Col xs={3}>
-        <h5>Category Filters</h5>
-        <Nav className="flex-column" variant="pills" defaultActiveKey="active">
-          <Nav.Item>
-            <Nav.Link
-              eventKey="active"
-              onClick={() => {
-                setAllFilters([{ id: "status", value: "Active" }]);
-              }}
-            >
-              Active Blueprints
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="all"
-              onClick={() => {
-                setAllFilters([]);
-              }}
-            >
-              All Blueprints
-            </Nav.Link>
-          </Nav.Item>
-          <h5 className="mt-3">My Collections</h5>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="personal"
-              onClick={() => {
-                setAllFilters([
-                  { id: "sharing.source.label", value: "Personal" },
-                ]);
-              }}
-            >
-              Personal Blueprints
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="public"
-              onClick={() => {
-                setAllFilters([
-                  { id: "sharing.source.label", value: "Public" },
-                ]);
-              }}
-            >
-              Public Marketplace Blueprints
-            </Nav.Link>
-          </Nav.Item>
-          {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
-          {teamFilters.map((filter) => (
-            <Nav.Item key={filter}>
-              <Nav.Link
-                eventKey={filter}
-                onClick={() => {
-                  setAllFilters([
-                    { id: "sharing.source.label", value: filter },
-                  ]);
-                }}
-              >
-                {filter} Blueprints
-              </Nav.Link>
-            </Nav.Item>
-          ))}
-        </Nav>
-      </Col>
+      <ListFilters setAllFilters={setAllFilters} teamFilters={teamFilters} />
       <Col xs={9}>
         <div className="d-flex justify-content-between align-items-center">
           <h3 className="my-3">
             {filters.length > 0 ? filters[0].value : "All"} Blueprints
           </h3>
           <span className="d-flex align-items-center">
-            <span>Group by:</span>
+            <span className="ml-3 mr-2">Group by:</span>
             <Select
               isClearable
               placeholder="Group by"
@@ -260,7 +197,8 @@ const BlueprintsCard: React.FunctionComponent<{
                 setGroupBy([option.value]);
               }}
             />
-            <span>Sort by:</span>
+
+            <span className="ml-3 mr-2">Sort by:</span>
             <Select
               isClearable
               placeholder="Sort by"
@@ -274,6 +212,7 @@ const BlueprintsCard: React.FunctionComponent<{
                 setSortBy([{ id: option.value, desc: false }]);
               }}
             />
+
             {isSorted && (
               <Button
                 variant="link"
