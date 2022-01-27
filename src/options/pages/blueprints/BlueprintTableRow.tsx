@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import styles from "@/options/pages/blueprints/BlueprintsList.module.scss";
 import { Button } from "react-bootstrap";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
@@ -24,6 +23,7 @@ import useInstallableActions from "@/options/pages/blueprints/useInstallableActi
 import { timeSince } from "@/utils/timeUtils";
 import { Row } from "react-table";
 import { InstallableRow } from "@/options/pages/blueprints/BlueprintsCard";
+import styles from "@/options/pages/blueprints/BlueprintTableRow.module.scss";
 
 const BlueprintTableRow: React.FunctionComponent<{
   installableRow: Row<InstallableRow>;
@@ -49,10 +49,7 @@ const BlueprintTableRow: React.FunctionComponent<{
       <td>
         <div className={styles.sharing}>
           {sharing.packageId && (
-            <>
-              <code className="p-0">{sharing.packageId}</code>
-              <br />
-            </>
+            <code className={styles.packageId}>{sharing.packageId}</code>
           )}
           <SharingLabel installable={installable} />
         </div>
