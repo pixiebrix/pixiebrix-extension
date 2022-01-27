@@ -491,7 +491,7 @@ exports[`FormEditor renders simple schema 1`] = `
           <small
             class="text-muted form-text"
           >
-            Explain to the user what this field is used for
+            The user-visible description for the field
           </small>
         </div>
       </div>
@@ -1068,7 +1068,7 @@ exports[`FormEditor renders unknown field format 1`] = `
           <small
             class="text-muted form-text"
           >
-            Explain to the user what this field is used for
+            The user-visible description for the field
           </small>
         </div>
       </div>
