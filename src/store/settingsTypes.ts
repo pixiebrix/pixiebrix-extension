@@ -15,26 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SettingsState } from "@/store/settingsTypes";
+export type InstallMode = "local" | "remote";
 
-const initialSettingsState: SettingsState = {
-  mode: "remote",
-  nextUpdate: null as number,
+export type SettingsState = {
+  /**
+   * Whether the extension is synced to the app for provisioning.*
+   *
+   * NOTE: `local` is broken in many places. The only current valid value is remote.
+   */
+  mode: InstallMode;
+
+  /**
+   * Time to snooze updates until (in milliseconds from the epoch), or null.
+   *
+   * The banners still show, however no modals will be shown for the browser extension or team deployments.
+   */
+  nextUpdate: number | null;
 };
-
-const settingsSlice = createSlice({
-  name: "settings",
-  initialState: initialSettingsState,
-  reducers: {
-    setMode(state, { payload: { mode } }) {
-      state.mode = mode;
-    },
-    snoozeUpdates(state, action: PayloadAction<{ durationMillis: number }>) {
-      const { durationMillis } = action.payload;
-      state.nextUpdate = Date.now() + durationMillis;
-    },
-  },
-});
-
-export default settingsSlice;

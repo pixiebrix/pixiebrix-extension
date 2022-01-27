@@ -15,29 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React from "react";
 import { Button } from "react-bootstrap";
 import browser from "webextension-polyfill";
 import { useAsyncState } from "@/hooks/common";
 import { getAvailableVersion } from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
 import Banner from "@/components/banner/Banner";
+import { gt } from "semver";
 
-const UpdateBanner: React.FunctionComponent = () => {
+// XXX: move this kind of async state to the Redux state.
+export function useUpdateAvailable() {
   const [updateAvailable] = useAsyncState(async () => {
     try {
       const available = await getAvailableVersion();
       const installed = browser.runtime.getManifest().version;
-      return available && installed !== available;
+      return available && installed !== available && gt(available, installed);
     } catch (error) {
       reportError(error);
       return false;
     }
   }, []);
 
-  const update = useCallback(() => {
-    browser.runtime.reload();
-  }, []);
+  return updateAvailable;
+}
+
+const UpdateBanner: React.FunctionComponent = () => {
+  const updateAvailable = useUpdateAvailable();
 
   if (!updateAvailable) {
     return null;
@@ -46,7 +50,13 @@ const UpdateBanner: React.FunctionComponent = () => {
   return (
     <Banner variant="warning">
       An update to PixieBrix is available
-      <Button className="info ml-3" size="sm" onClick={update}>
+      <Button
+        className="info ml-3"
+        size="sm"
+        onClick={() => {
+          browser.runtime.reload();
+        }}
+      >
         Update
       </Button>
     </Banner>
