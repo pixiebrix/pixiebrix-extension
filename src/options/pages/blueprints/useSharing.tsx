@@ -15,12 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
 import { useContext, useMemo } from "react";
 import AuthContext from "@/auth/AuthContext";
-import { useGetOrganizationsQuery } from "@/services/api";
 import {
-  getSharing,
   Installable,
   isDeployment,
   isPersonal,
@@ -34,21 +31,6 @@ function useSharing(
   label: string;
 } {
   const { scope } = useContext(AuthContext);
-  const { data: organizations = [] } = useGetOrganizationsQuery();
-  const sharing = getSharing(installable);
-
-  // This is the same problem as BrickIcon, in that tens of renders or more
-  // make too many queries. TODO: maybe this can get preprocessed somewhere?
-  const organization = useMemo(() => {
-    if (!sharing || sharing.organizations.length === 0) {
-      return null;
-    }
-
-    // If more than one sharing organization, use the first
-    return organizations.find((org) =>
-      sharing.organizations.includes(org.id as UUID)
-    );
-  }, [organizations, sharing]);
 
   const sharingType = useMemo(() => {
     if (isPersonal(installable, scope)) {
@@ -59,19 +41,19 @@ function useSharing(
       return "Deployment";
     }
 
-    if (organization) {
+    if (installable.organization) {
       return "Team";
     }
 
     if (isPublic(installable)) {
       return "Public";
     }
-  }, [installable, organization, scope]);
+  }, [installable, scope]);
 
   return {
     type: sharingType,
     label: ["Team", "Deployment"].includes(sharingType)
-      ? organization.name
+      ? installable.organization.name
       : sharingType,
   };
 }
