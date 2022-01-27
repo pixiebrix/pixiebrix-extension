@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -139,13 +139,15 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
 
   const [fieldInputValue, fieldOnChange] = useMemo(() => {
     if (isTemplateExpression(value)) {
+      // Convert mustache templates to nunjucks if possible, because the page editor only
+      // supports nunjucks, and it doesn't show the template engine anywhere to the user anymore.
+      const shouldChangeToNunjucks =
+        value.__type__ === "mustache" && !isMustacheOnly(value.__value__);
       return [
         value.__value__,
-        // Convert mustache templates to nunjucks if possible, because the page editor only
-        // supports nunjucks, and it doesn't show the template engine anywhere to the user anymore
-        isMustacheOnly(value.__value__)
-          ? onChangeForTemplate(value.__type__)
-          : onChangeForTemplate("nunjucks"),
+        shouldChangeToNunjucks
+          ? onChangeForTemplate("nunjucks")
+          : onChangeForTemplate(value.__type__),
       ];
     }
 

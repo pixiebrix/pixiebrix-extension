@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,10 +21,10 @@ import {
 } from "@/devTools/editor/panes/save/saveHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  recipeDefinitionFactory,
+  extensionPointDefinitionFactory,
   innerExtensionPointRecipeFactory,
   versionedExtensionPointRecipeFactory,
-  extensionPointFactory,
+  extensionPointConfigFactory,
 } from "@/tests/factories";
 import menuItemExtensionAdapter from "@/devTools/editor/extensionPoints/menuItem";
 import { UnknownObject } from "@/types";
@@ -65,7 +65,7 @@ describe("generatePersonalBrickId", () => {
 
 describe("replaceRecipeExtension round trip", () => {
   test("single extension with versioned extensionPoint", async () => {
-    const extensionPoint = recipeDefinitionFactory();
+    const extensionPoint = extensionPointDefinitionFactory();
     const recipe = versionedExtensionPointRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
     })();
@@ -105,7 +105,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("does not modify other extension point", async () => {
-    const extensionPoint = recipeDefinitionFactory();
+    const extensionPoint = extensionPointDefinitionFactory();
 
     const recipe = versionedExtensionPointRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
@@ -311,7 +311,7 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("updates Recipe API version with single extension", async () => {
-    const extensionPoint = recipeDefinitionFactory({
+    const extensionPoint = extensionPointDefinitionFactory({
       apiVersion: "v2",
     });
 
@@ -363,16 +363,16 @@ describe("replaceRecipeExtension round trip", () => {
   });
 
   test("throws when API version mismatch and cannot update recipe", async () => {
-    const extensionPoint = recipeDefinitionFactory();
+    const extensionPoint = extensionPointDefinitionFactory();
     const recipe = versionedExtensionPointRecipeFactory({
       extensionPointId: extensionPoint.metadata.id,
     })({
       apiVersion: "v2",
       extensionPoints: [
-        extensionPointFactory({
+        extensionPointConfigFactory({
           id: extensionPoint.metadata.id,
         }),
-        extensionPointFactory(),
+        extensionPointConfigFactory(),
       ],
     });
 

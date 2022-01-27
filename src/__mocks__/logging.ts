@@ -8,5 +8,7 @@ export function reportError(error: unknown, context?: MessageContext): void {
     context,
   });
 
-  throw new Error(`Error: ${getErrorMessage(error)}`);
+  throw new Error(
+    `Unexpected call to reportError during test: ${getErrorMessage(error)}`
+  );
 }

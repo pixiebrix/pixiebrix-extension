@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import SavingExtensionModal from "./SavingExtensionModal";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { define } from "cooky-cutter";
 import {
-  extensionPointFactory,
+  extensionPointConfigFactory,
   installedRecipeMetadataFactory,
   recipeFactory,
   recipeMetadataFactory,
@@ -141,7 +141,10 @@ test("doesn't render recipe buttons when extension API is not compatible with re
   const recipe = recipeFactory({
     apiVersion: "v2",
     definitions: null,
-    extensionPoints: [extensionPointFactory(), extensionPointFactory()],
+    extensionPoints: [
+      extensionPointConfigFactory(),
+      extensionPointConfigFactory(),
+    ],
   });
   const element = simpleElementFactory({
     apiVersion: "v3",

@@ -43,7 +43,7 @@ export function migrateExtensionsShape<T>(
 
   if (Array.isArray(state.extensions)) {
     // Already migrated
-    console.debug("Redux state already up-to-date");
+    console.debug("Redux extensions state already migrated");
     return state as T & LegacyExtensionObjectState;
   }
 
