@@ -15,26 +15,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import { DeploymentState } from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
 import { DropdownButton, Dropdown, Modal } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { SettingsState } from "@/store/settingsTypes";
+import settingsSlice from "@/store/settingsSlice";
+import useNotifications from "@/hooks/useNotifications";
 
 const FIFTEEN_MINUTES_MILLIS = 900_000;
 const ONE_HOUR_MILLIS = 3_600_000;
 const ONE_DAY_MILLIS = 86_400_000;
 
-const SnoozeButton: React.FC<{ snooze: DeploymentState["snooze"] }> = ({
+const SnoozeButton: React.FC<{ snooze: (durationMillis: number) => void }> = ({
   snooze,
 }) => (
   <DropdownButton variant="info" id="dropdown-snooze" title="Remind Me Later">
-    <Dropdown.Item onClick={async () => snooze(FIFTEEN_MINUTES_MILLIS)}>
+    <Dropdown.Item
+      onClick={() => {
+        snooze(FIFTEEN_MINUTES_MILLIS);
+      }}
+    >
       15 Minutes
     </Dropdown.Item>
-    <Dropdown.Item onClick={async () => snooze(ONE_HOUR_MILLIS)}>
+    <Dropdown.Item
+      onClick={() => {
+        snooze(ONE_HOUR_MILLIS);
+      }}
+    >
       1 Hour
     </Dropdown.Item>
-    <Dropdown.Item onClick={async () => snooze(ONE_DAY_MILLIS)}>
+    <Dropdown.Item
+      onClick={() => {
+        snooze(ONE_DAY_MILLIS);
+      }}
+    >
       1 Day
     </Dropdown.Item>
   </DropdownButton>
@@ -46,14 +62,28 @@ const SnoozeButton: React.FC<{ snooze: DeploymentState["snooze"] }> = ({
  */
 const DeploymentModal: React.FC<DeploymentState> = ({
   extensionUpdateRequired,
-  isSnoozed,
-  snooze,
   updateExtension,
   update,
 }) => {
-  // FIXME: how does this interact with our onboarding modals? Does it?
+  const dispatch = useDispatch();
+  const notify = useNotifications();
 
-  if (isSnoozed) {
+  const nextUpdate = useSelector<{ settings: SettingsState }>(
+    (state) => state.settings.nextUpdate
+  );
+
+  const snooze = useCallback(
+    (durationMillis: number) => {
+      notify.success("Snoozed extensions and deployment updates", {
+        event: "SnoozeUpdates",
+      });
+      dispatch(settingsSlice.actions.snoozeUpdates({ durationMillis }));
+    },
+    [notify, dispatch]
+  );
+
+  if (nextUpdate && nextUpdate > Date.now()) {
+    // Snoozed
     return null;
   }
 

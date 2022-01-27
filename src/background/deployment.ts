@@ -40,6 +40,7 @@ import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
+import { getSettingsSate } from "@/store/settingsStorage";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -271,9 +272,10 @@ async function selectUpdatedDeployments(
 export async function updateDeployments(): Promise<void> {
   expectContext("background");
 
-  const [linked, { organizationId }] = await Promise.all([
+  const [linked, { organizationId }, { nextUpdate }] = await Promise.all([
     isLinked(),
     readAuthData(),
+    getSettingsSate(),
   ]);
 
   if (!linked) {
@@ -303,6 +305,9 @@ export async function updateDeployments(): Promise<void> {
   // and amount of activity when using deployments
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
+    console.debug(
+      "Skipping updateDeployments because the extension is not linked to the PixieBrix service"
+    );
     return;
   }
 
@@ -315,7 +320,13 @@ export async function updateDeployments(): Promise<void> {
     }
   );
 
+  // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
+
+  if (nextUpdate && nextUpdate > Date.now()) {
+    console.debug("Skipping updateDeployments because updates are snoozed");
+    return;
+  }
 
   const updatedDeployments = await selectUpdatedDeployments(deployments);
 

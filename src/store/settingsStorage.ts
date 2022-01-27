@@ -15,26 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { localStorage } from "redux-persist-webextension-storage";
+import { readReduxStorage, ReduxStorageKey } from "@/chrome";
 import { SettingsState } from "@/store/settingsTypes";
 
-const initialSettingsState: SettingsState = {
-  mode: "remote",
-  nextUpdate: null as number,
+const SETTINGS_STORAGE_KEY = "settings" as ReduxStorageKey;
+
+/**
+ * Read settings from local storage (without going through redux-persistor).
+ */
+export async function getSettingsSate(): Promise<SettingsState> {
+  console.debug("Loading raw settings from storage");
+  return (await readReduxStorage(SETTINGS_STORAGE_KEY, {})) as SettingsState;
+}
+
+export const persistSettingsConfig = {
+  key: SETTINGS_STORAGE_KEY,
+  storage: localStorage,
 };
-
-const settingsSlice = createSlice({
-  name: "settings",
-  initialState: initialSettingsState,
-  reducers: {
-    setMode(state, { payload: { mode } }) {
-      state.mode = mode;
-    },
-    snoozeUpdates(state, action: PayloadAction<{ durationMillis: number }>) {
-      const { durationMillis } = action.payload;
-      state.nextUpdate = Date.now() + durationMillis;
-    },
-  },
-});
-
-export default settingsSlice;

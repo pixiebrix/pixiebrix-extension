@@ -17,7 +17,6 @@
 
 import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
-import { localStorage } from "redux-persist-webextension-storage";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
@@ -34,18 +33,15 @@ import {
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
-import settingsSlice, { SettingsState } from "@/store/settingsSlice";
+import settingsSlice from "@/store/settingsSlice";
 import workshopSlice, { WorkshopState } from "@/store/workshopSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
+import { persistSettingsConfig } from "@/store/settingsStorage";
+import { SettingsState } from "@/store/settingsTypes";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
 export const hashHistory = createHashHistory({ hashType: "slash" });
-
-const persistSettingsConfig = {
-  key: "settings",
-  storage: localStorage,
-};
 
 export interface RootState {
   options: OptionsState;

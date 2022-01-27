@@ -16,7 +16,7 @@
  */
 
 import { Deployment } from "@/types/contract";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { blueprintPermissions, ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
@@ -128,11 +128,6 @@ function activateDeployments(
 
 export type DeploymentState = {
   /**
-   * True iff deployment and update notifications are snoozed
-   */
-  isSnoozed: boolean;
-
-  /**
    * `true` iff one or more new deployments/deployment updates are available
    */
   hasUpdate: boolean;
@@ -141,12 +136,6 @@ export type DeploymentState = {
    * Callback to update the deployments (will prompt the user for permissions if required)
    */
   update: () => Promise<void>;
-
-  /**
-   * Snooze deployment notifications for an amount of time.
-   * @param snoozeMillis
-   */
-  snooze: (snoozeMillis: number) => Promise<void>;
 
   /**
    * `true` iff the user needs to update their PixieBrix browser extension version to use the deployment
@@ -194,8 +183,6 @@ function checkExtensionUpdateRequired(deployments: Deployment[]): boolean {
 }
 
 function useDeployments(): DeploymentState {
-  const [hide, setHide] = useState(false);
-
   const notify = useNotifications();
   const dispatch = useDispatch();
   const installedExtensions = useSelector(selectExtensions);
@@ -267,18 +254,11 @@ function useDeployments(): DeploymentState {
       activateDeployments(dispatch, deployments, installedExtensions);
       notify.success("Activated team deployments");
     } catch (error) {
-      setHide(true);
       notify.error("Error activating team deployments", {
         error,
       });
     }
-  }, [deployments, dispatch, notify, installedExtensions, setHide]);
-
-  const snooze = useCallback(() => {
-    // Track inside hook so we don't have to refetch state from storage
-    setHide(true);
-    throw new Error("Snooze not implemented");
-  }, [setHide]);
+  }, [deployments, dispatch, notify, installedExtensions]);
 
   const updateExtension = useCallback(async () => {
     await chromeP.runtime.requestUpdateCheck();
@@ -292,8 +272,6 @@ function useDeployments(): DeploymentState {
     extensionUpdateRequired,
     isLoading,
     error: fetchError,
-    snooze,
-    isSnoozed: true || hide,
   };
 }
 
