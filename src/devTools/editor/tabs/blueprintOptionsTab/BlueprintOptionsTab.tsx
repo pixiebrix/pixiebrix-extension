@@ -36,8 +36,8 @@ import cx from "classnames";
 import styles from "./BlueprintOptionsTab.module.scss";
 import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
 
-const fieldTypes = FIELD_TYPE_OPTIONS.filter((type) =>
-  ["Single line text", "Number", "Checkbox"].includes(type.label)
+const fieldTypes = FIELD_TYPE_OPTIONS.filter(
+  (type) => !["File", "Image crop"].includes(type.label)
 );
 
 const BlueprintOptionsTab: React.VoidFunctionComponent<{
