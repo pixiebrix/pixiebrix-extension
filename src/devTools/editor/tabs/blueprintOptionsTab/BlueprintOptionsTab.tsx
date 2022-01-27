@@ -32,6 +32,7 @@ import { FIELD_TYPE_OPTIONS } from "@/components/formBuilder/formBuilderHelpers"
 import { useGetRecipesQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
 import styles from "./BlueprintOptionsTab.module.scss";
 import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
 
@@ -119,7 +120,10 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
               <Tab.Content className={dataPanelStyles.tabContent}>
                 <Tab.Pane
                   eventKey="preview"
-                  className={dataPanelStyles.tabPane}
+                  className={cx(
+                    dataPanelStyles.tabPane,
+                    dataPanelStyles.selectablePreviewContainer
+                  )}
                 >
                   <ErrorBoundary>
                     <FormPreview

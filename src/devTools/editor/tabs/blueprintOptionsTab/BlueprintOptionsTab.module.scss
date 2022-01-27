@@ -25,14 +25,15 @@
   display: inline-flex;
   flex-direction: row;
   align-items: stretch;
-  padding: 10px 0;
+  padding-top: 10px;
 }
 
 .configPanel {
   flex-grow: 2;
   flex-basis: 0;
   overflow-y: auto;
-  padding: 0 10px;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 .dataPanel {
@@ -40,5 +41,6 @@
   flex-basis: 0;
   overflow-y: auto;
   max-width: 360px;
-  padding: 0 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }

@@ -141,7 +141,7 @@ const ElementWizard: React.FunctionComponent<{
   } = useFormikContext<FormState>();
 
   const wizardSteps = [...wizard];
-  if (formState.recipe?.id && flags.includes("blueprint-options-editor")) {
+  if (formState.recipe?.id && flags.includes("page-editor-beta")) {
     wizardSteps.push(blueprintOptionsStep);
   }
 
