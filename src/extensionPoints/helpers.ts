@@ -17,7 +17,6 @@
 
 import { castArray, noop, once } from "lodash";
 import initialize from "@/vendors/initialize";
-import { sleep, waitAnimationFrame } from "@/utils";
 import { MessageContext, ResolvedExtension } from "@/core";
 import { $safeFind } from "@/helpers";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
@@ -99,7 +98,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
  */
 export function isNativeCssSelector(selector: string): boolean {
   try {
-    document.querySelector(selector);
+    document.body.matches(selector);
     return true;
   } catch {
     return false;
@@ -111,54 +110,6 @@ export class PromiseCancelled extends Error {
     super(message);
     this.name = "PromiseCancelled";
   }
-}
-
-async function _wait<T>(
-  factory: () => T,
-  isCancelled: () => boolean,
-  waitMillis = 100
-): Promise<T> {
-  let value = factory();
-  while (value == null) {
-    if (isCancelled()) {
-      throw new PromiseCancelled("Cancelled waiting for element");
-    }
-
-    if (waitMillis != null) {
-      // eslint-disable-next-line no-await-in-loop -- intentionally running sequentially
-      await sleep(waitMillis);
-    }
-
-    // eslint-disable-next-line no-await-in-loop -- intentionally running sequentially
-    await waitAnimationFrame();
-    value = factory();
-  }
-
-  return value;
-}
-
-function pollSelector(
-  selector: string,
-  target: HTMLElement | Document,
-  waitMillis = 100
-): [Promise<JQuery>, () => void] {
-  console.debug(`Polling for selector ${selector}`);
-  let cancelled = false;
-  const $target = $(target);
-  const promise = _wait<JQuery>(
-    () => {
-      const $elt = $safeFind(selector, $target);
-      return $elt.length > 0 ? $elt : null;
-    },
-    () => cancelled,
-    waitMillis
-  );
-  return [
-    promise,
-    () => {
-      cancelled = true;
-    },
-  ];
 }
 
 function mutationSelector(
@@ -181,18 +132,6 @@ function mutationSelector(
       observer.disconnect();
     },
   ];
-}
-
-function _initialize(
-  selector: string,
-  target: HTMLElement | Document,
-  waitMillis = 100
-): [Promise<JQuery<HTMLElement | Document>>, () => void] {
-  if (isNativeCssSelector(selector)) {
-    return mutationSelector(selector, target);
-  }
-
-  return pollSelector(selector, target, waitMillis);
 }
 
 /**
@@ -232,7 +171,7 @@ export function awaitElementOnce(
       `Selector not immediately found; awaiting selector: ${nextSelector}`
     );
 
-    const [nextElementPromise, cancel] = _initialize(
+    const [nextElementPromise, cancel] = mutationSelector(
       nextSelector,
       $root.get(0)
     );
