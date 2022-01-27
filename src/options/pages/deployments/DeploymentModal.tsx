@@ -23,10 +23,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { SettingsState } from "@/store/settingsTypes";
 import settingsSlice from "@/store/settingsSlice";
 import useNotifications from "@/hooks/useNotifications";
+import { useUpdateAvailable } from "@/options/pages/UpdateBanner";
 
 const FIFTEEN_MINUTES_MILLIS = 900_000;
-const ONE_HOUR_MILLIS = 3_600_000;
-const ONE_DAY_MILLIS = 86_400_000;
+const ONE_HOUR_MILLIS = FIFTEEN_MINUTES_MILLIS * 4;
+const ONE_DAY_MILLIS = ONE_HOUR_MILLIS * 24;
 
 const SnoozeButton: React.FC<{ snooze: (durationMillis: number) => void }> = ({
   snooze,
@@ -53,20 +54,30 @@ const SnoozeButton: React.FC<{ snooze: (durationMillis: number) => void }> = ({
     >
       1 Day
     </Dropdown.Item>
+    <Dropdown.Item
+      onClick={() => {
+        snooze(ONE_DAY_MILLIS * 3);
+      }}
+    >
+      3 Days
+    </Dropdown.Item>
   </DropdownButton>
 );
 
 /**
- * Modal to install deployments. Can be snoozed
+ * Modal to update the browser extension and/or deployments. Can be snoozed
  * @see DeploymentBanner
+ * @see UpdateBanner
  */
-const DeploymentModal: React.FC<DeploymentState> = ({
-  extensionUpdateRequired,
-  updateExtension,
-  update,
-}) => {
+const DeploymentModal: React.FC<
+  Pick<
+    DeploymentState,
+    "extensionUpdateRequired" | "update" | "updateExtension"
+  >
+> = ({ extensionUpdateRequired, updateExtension, update }) => {
   const dispatch = useDispatch();
   const notify = useNotifications();
+  const hasUpdatesAvailable = useUpdateAvailable();
 
   const nextUpdate = useSelector<{ settings: SettingsState }>(
     (state) => state.settings.nextUpdate
@@ -87,6 +98,28 @@ const DeploymentModal: React.FC<DeploymentState> = ({
     return null;
   }
 
+  if (hasUpdatesAvailable) {
+    return (
+      <Modal show>
+        <Modal.Header>
+          <Modal.Title>Update Available</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          An update to the PixieBrix browser extension is available. After
+          updating, you will need need to reload any pages where PixieBrix is
+          running.
+        </Modal.Body>
+        <Modal.Footer>
+          <SnoozeButton snooze={snooze} />
+
+          <AsyncButton variant="primary" onClick={updateExtension}>
+            Update
+          </AsyncButton>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
   if (extensionUpdateRequired) {
     return (
       <Modal show>
@@ -94,7 +127,9 @@ const DeploymentModal: React.FC<DeploymentState> = ({
           <Modal.Title>Update Available</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Update the PixieBrix Browser Extension to activate team deployments
+          Update the PixieBrix Browser Extension to activate team deployments.
+          After updating, you will need need to reload any pages where PixieBrix
+          is running
         </Modal.Body>
         <Modal.Footer>
           <SnoozeButton snooze={snooze} />

@@ -29,12 +29,12 @@ import "webext-dynamic-content-scripts";
 
 import "@/background/messenger/registration";
 import "@/development/autoreload";
-import "@/background/installer";
 import "@/messaging/external";
 import "@/background/locator";
 import "@/background/contextMenus";
 import "@/background/browserAction";
 
+import initInstaller from "@/background/installer";
 import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";
 import initNavigation from "@/background/navigation";
@@ -45,6 +45,7 @@ import initDeploymentUpdater from "@/background/deployment";
 import initFirefoxCompat from "@/background/firefoxCompat";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 
+initInstaller();
 initNavigation();
 initExecutor();
 initGoogle();

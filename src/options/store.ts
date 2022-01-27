@@ -38,6 +38,7 @@ import workshopSlice, { WorkshopState } from "@/store/workshopSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import { SettingsState } from "@/store/settingsTypes";
+import { localStorage } from "redux-persist-webextension-storage";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -50,6 +51,11 @@ export interface RootState {
   workshop: WorkshopState;
   installedPage: InstalledPageState;
 }
+
+export const persistWorkshopConfig = {
+  key: "workshop",
+  storage: localStorage,
+};
 
 const conditionalMiddleware: Middleware[] = [];
 if (process.env.NODE_ENV === "development") {
@@ -68,7 +74,7 @@ const store = configureStore({
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    workshop: persistReducer(persistSettingsConfig, workshopSlice.reducer),
+    workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
     installedPage: installedPageSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },

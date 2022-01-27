@@ -18,18 +18,27 @@
 import { localStorage } from "redux-persist-webextension-storage";
 import { readReduxStorage, ReduxStorageKey } from "@/chrome";
 import { SettingsState } from "@/store/settingsTypes";
+import { mapValues } from "lodash";
 
-const SETTINGS_STORAGE_KEY = "settings" as ReduxStorageKey;
+const SETTINGS_STORAGE_KEY = "persist:settings" as ReduxStorageKey;
 
 /**
  * Read settings from local storage (without going through redux-persistor).
  */
-export async function getSettingsSate(): Promise<SettingsState> {
-  console.debug("Loading raw settings from storage");
-  return (await readReduxStorage(SETTINGS_STORAGE_KEY, {})) as SettingsState;
+export async function getSettingsState(): Promise<SettingsState> {
+  const rawSettings = await readReduxStorage(SETTINGS_STORAGE_KEY, {});
+  const parsedSettings = mapValues(rawSettings, (setting) =>
+    JSON.parse(setting)
+  ) as SettingsState;
+  // `persist` library stores values as stringified values
+  console.debug("Loading persisted settings directly from storage", {
+    rawSettings,
+    parsedSettings,
+  });
+  return parsedSettings;
 }
 
 export const persistSettingsConfig = {
-  key: SETTINGS_STORAGE_KEY,
+  key: "settings",
   storage: localStorage,
 };

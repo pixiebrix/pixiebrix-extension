@@ -106,18 +106,21 @@ jest.mock("webextension-polyfill", () => {
 import browser from "webextension-polyfill";
 import { isLinked, readAuthData } from "@/auth/token";
 import { containsPermissions } from "@/background/messenger/api";
+import { refreshRegistries } from "@/hooks/useRefresh";
 
 const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;
 const getManifestMock = browser.runtime.getManifest as jest.Mock;
 const openOptionsPageMock = browser.runtime.openOptionsPage as jest.Mock;
 const containsPermissionsMock = containsPermissions as jest.Mock;
+const refreshRegistriesMock = refreshRegistries as jest.Mock;
 
 afterEach(() => {
   isLinkedMock.mockClear();
   readAuthDataMock.mockClear();
   getManifestMock.mockClear();
   containsPermissionsMock.mockClear();
+  refreshRegistriesMock.mockClear();
 });
 
 describe("updateDeployments", () => {
@@ -166,7 +169,36 @@ describe("updateDeployments", () => {
     await updateDeployments();
 
     expect((uninstallAllDeployments as jest.Mock).mock.calls.length).toBe(0);
-    expect(getManifestMock.mock.calls.length).toBe(0);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+  });
+
+  test("open options page on update", async () => {
+    jest.doMock("@/background/installer", () => ({
+      getAvailableVersion: jest.fn().mockResolvedValue("1.4.0"),
+    }));
+
+    await updateDeployments();
+
+    expect(openOptionsPageMock.mock.calls.length).toBe(1);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+  });
+
+  test("skip update if snoozed", async () => {
+    const now = Date.now();
+
+    jest.doMock("@/background/deployment", () => ({
+      uninstallAllDeployments: jest.fn(),
+    }));
+
+    jest.doMock("@/store/settingsStorage", () => ({
+      getSettingsState: jest.fn().mockResolvedValue({
+        nextUpdate: now + 1_000_000,
+      }),
+    }));
+
+    await updateDeployments();
+
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
   });
 
   test("can uninstall all deployments", async () => {

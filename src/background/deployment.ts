@@ -40,7 +40,8 @@ import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
-import { getSettingsSate } from "@/store/settingsStorage";
+import { getSettingsState } from "@/store/settingsStorage";
+import { isUpdateAvailable } from "@/background/installer";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -272,10 +273,18 @@ async function selectUpdatedDeployments(
 export async function updateDeployments(): Promise<void> {
   expectContext("background");
 
-  const [linked, { organizationId }, { nextUpdate }] = await Promise.all([
+  const now = Date.now();
+
+  const [
+    linked,
+    extensionUpdateAvailable,
+    { organizationId },
+    { nextUpdate },
+  ] = await Promise.all([
     isLinked(),
+    isUpdateAvailable(),
     readAuthData(),
-    getSettingsSate(),
+    getSettingsState(),
   ]);
 
   if (!linked) {
@@ -323,8 +332,17 @@ export async function updateDeployments(): Promise<void> {
   // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
 
-  if (nextUpdate && nextUpdate > Date.now()) {
-    console.debug("Skipping updateDeployments because updates are snoozed");
+  if (nextUpdate && nextUpdate > now) {
+    console.debug("Skipping updateDeployments because updates are snoozed", {
+      nextUpdate,
+    });
+    return;
+  }
+
+  if (extensionUpdateAvailable) {
+    console.info("Extension update available from the web store");
+    // Have the user update their browser extension. (Since the new version might impact the deployment activation)
+    await browser.runtime.openOptionsPage();
     return;
   }
 
