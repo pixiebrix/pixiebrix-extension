@@ -33,7 +33,7 @@ export type ManualStorageKey = string & {
 };
 
 /**
- * A storage key managed by redux-persist.
+ * A storage key managed by redux-persist. Should begin with the `persist:` prefix
  * @see ManualStorageKey
  */
 export type ReduxStorageKey = string & {

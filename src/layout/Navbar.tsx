@@ -33,8 +33,8 @@ import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import { isLinked } from "@/auth/token";
 import { useSelector } from "react-redux";
-import { SettingsState } from "@/store/settingsSlice";
 import { toggleSidebar } from "./toggleSidebar";
+import { SettingsState } from "@/store/settingsTypes";
 
 const Navbar: React.FunctionComponent = () => {
   const { email, extension } = useContext(AuthContext);
