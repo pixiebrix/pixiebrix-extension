@@ -39,7 +39,7 @@ import TemplateToggleWidget, {
 } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { ExpressionType, Schema } from "@/core";
-import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import IntegerWidget from "@/components/fields/schemaFields/widgets/IntegerWidget";
@@ -199,7 +199,7 @@ function getToggleOptions({
   if (fieldSchema.type === "array" || anyType) {
     // Don't allow editing array fields nested inside objects/arrays
     const Widget =
-      isObjectProperty || isArrayItem ? ComplexObjectWidget : ArrayWidget;
+      isObjectProperty || isArrayItem ? WorkshopMessageWidget : ArrayWidget;
     pushOptions({
       label: "Array items",
       value: "array",
@@ -222,7 +222,7 @@ function getToggleOptions({
     isEmpty(fieldSchema)
   ) {
     // Don't allow editing objects inside other objects
-    const Widget = isObjectProperty ? ComplexObjectWidget : ObjectWidget;
+    const Widget = isObjectProperty ? WorkshopMessageWidget : ObjectWidget;
     pushOptions({
       label: "Object properties",
       value: "object",

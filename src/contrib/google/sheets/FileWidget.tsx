@@ -31,7 +31,7 @@ import { getErrorMessage } from "@/errors";
 import AsyncButton from "@/components/AsyncButton";
 import { Expression } from "@/core";
 import { isExpression } from "@/runtime/mapArgs";
-import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
@@ -155,7 +155,7 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
   }, [notify, helpers, onSelect]);
 
   return isExpression(field.value) ? (
-    <ComplexObjectWidget />
+    <WorkshopMessageWidget />
   ) : (
     <InputGroup>
       {doc ? (

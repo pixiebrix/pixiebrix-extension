@@ -17,7 +17,7 @@
 
 import React, { useMemo } from "react";
 import { useField } from "formik";
-import ComplexObjectValue from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
+import ComplexObjectValue from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import SelectorSelectorWidget, {
   SelectorSelectorProps,
 } from "@/devTools/editor/fields/SelectorSelectorWidget";

@@ -26,7 +26,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { Expression } from "@/core";
 import { isExpression } from "@/runtime/mapArgs";
-import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 const TabField: React.FunctionComponent<
   SchemaFieldProps & { doc: SheetMeta | null }
@@ -61,7 +61,7 @@ const TabField: React.FunctionComponent<
   // )}
 
   return isExpression(field.value) ? (
-    <ComplexObjectWidget />
+    <WorkshopMessageWidget />
   ) : (
     <ConnectedFieldTemplate
       name={name}

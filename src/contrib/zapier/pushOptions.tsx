@@ -36,7 +36,7 @@ import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget"
 import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { isExpression } from "@/runtime/mapArgs";
-import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -131,7 +131,7 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
   }
 
   return isExpression(pushKey) ? (
-    <ComplexObjectWidget />
+    <WorkshopMessageWidget />
   ) : (
     <div>
       <ZapField
