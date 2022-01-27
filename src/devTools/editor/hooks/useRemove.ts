@@ -45,8 +45,9 @@ function useRemove(element: FormState): () => void {
     console.debug(`pageEditor: remove element ${element.uuid}`);
 
     const confirm = await showConfirmation({
-      title: "Remove Brick?",
-      message: "This action cannot be undone",
+      title: "Remove Extension?",
+      message:
+        "You can reactivate extensions and blueprints from the PixieBrix Options page",
       submitCaption: "Remove",
     });
 
