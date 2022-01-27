@@ -16,7 +16,6 @@
  */
 
 import { Card, Table } from "react-bootstrap";
-import styles from "@/options/pages/blueprints/BlueprintsList.module.scss";
 import BlueprintTableRow from "@/options/pages/blueprints/BlueprintTableRow";
 import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 import React from "react";
@@ -27,7 +26,7 @@ const BlueprintTableList: React.FunctionComponent<{
   tableInstance: TableInstance;
   rows: Array<Row<InstallableRow>>;
 }> = ({ tableInstance, rows }) => (
-  <Card className={styles.root}>
+  <Card>
     <Table {...tableInstance.getTableProps()}>
       <tbody {...tableInstance.getTableBodyProps()}>
         {rows.map((row) => {

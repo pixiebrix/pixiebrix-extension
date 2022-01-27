@@ -15,10 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  .sharing {
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.sharing {
+  max-width: 150px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.packageId {
+  padding: 0;
+  margin-bottom: 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
