@@ -194,7 +194,7 @@ const FieldEditor: React.FC<{
     name: getFullFieldName("description"),
     schema: {
       type: "string",
-      description: "Explain to the user what this field is used for",
+      description: "The user-visible description for the field",
     },
     label: "Field Description",
   };

@@ -17,7 +17,7 @@
 
 import { useFormikContext } from "formik";
 import React, { useMemo, useState } from "react";
-import { Alert, Col, Container, Row, Tab } from "react-bootstrap";
+import { Alert, Col, Container, Nav, Row, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor from "@/components/formBuilder/FormEditor";
@@ -33,6 +33,7 @@ import { useGetRecipesQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import styles from "./BlueprintOptionsTab.module.scss";
+import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter((type) =>
   ["Single line text", "Number", "Checkbox"].includes(type.label)
@@ -107,14 +108,30 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
           </ErrorBoundary>
         </div>
         <div className={styles.dataPanel}>
-          <h5 className="mb-3">Preview</h5>
-          <ErrorBoundary>
-            <FormPreview
-              rjsfSchema={formState.optionsDefinition as RJSFSchema}
-              activeField={activeField}
-              setActiveField={setActiveField}
-            />
-          </ErrorBoundary>
+          <Tab.Container activeKey="preview">
+            <div className={dataPanelStyles.tabContainer}>
+              <Nav variant="tabs">
+                <Nav.Item className={dataPanelStyles.tabNav}>
+                  <Nav.Link eventKey="preview">Preview</Nav.Link>
+                </Nav.Item>
+              </Nav>
+
+              <Tab.Content className={dataPanelStyles.tabContent}>
+                <Tab.Pane
+                  eventKey="preview"
+                  className={dataPanelStyles.tabPane}
+                >
+                  <ErrorBoundary>
+                    <FormPreview
+                      rjsfSchema={formState.optionsDefinition as RJSFSchema}
+                      activeField={activeField}
+                      setActiveField={setActiveField}
+                    />
+                  </ErrorBoundary>
+                </Tab.Pane>
+              </Tab.Content>
+            </div>
+          </Tab.Container>
         </div>
       </div>
     </Tab.Pane>

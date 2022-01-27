@@ -37,6 +37,7 @@ import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
+import AuthContext from "@/auth/AuthContext";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -98,6 +99,7 @@ const ElementWizard: React.FunctionComponent<{
   const [step, setStep] = useState(wizard[0].step);
 
   const { refresh: refreshLogs } = useContext(LogContext);
+  const { flags } = useContext(AuthContext);
 
   const availableDefinition = element.extensionPoint.definition.isAvailable;
   const [available] = useAsyncState(
@@ -139,7 +141,7 @@ const ElementWizard: React.FunctionComponent<{
   } = useFormikContext<FormState>();
 
   const wizardSteps = [...wizard];
-  if (formState.recipe?.id) {
+  if (formState.recipe?.id && flags.includes("blueprint-options-editor")) {
     wizardSteps.push(blueprintOptionsStep);
   }
 

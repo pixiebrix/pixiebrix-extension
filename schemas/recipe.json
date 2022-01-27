@@ -24,7 +24,7 @@
       "type": "object",
       "properties": {
         "schema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
+          "$ref": "http://json-schema.org/draft-07/schema#",
           "description": "JSON schema for options to show user during activation",
           "type": "object"
         }
