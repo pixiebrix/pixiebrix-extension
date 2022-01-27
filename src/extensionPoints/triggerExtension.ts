@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +36,6 @@ import { checkAvailable } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
 import { reportEvent } from "@/telemetry/events";
 import {
-  isNativeCssSelector,
   awaitElementOnce,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
@@ -426,12 +425,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     if (this.attachMode === "watch") {
       const selector = this.triggerSelector;
 
-      if (!isNativeCssSelector(selector)) {
-        throw new Error(
-          `Watch attachMode only supports native browser selectors: ${selector}`
-        );
-      }
-
       console.debug("Watching selector: %s", selector);
       const mutationObserver = initialize(
         selector,
@@ -473,12 +466,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
 
     if (watch) {
-      if (!isNativeCssSelector(this.triggerSelector)) {
-        throw new Error(
-          `Watch attachMode only supports native browser selectors: ${this.triggerSelector}`
-        );
-      }
-
       this.cancelWatchNewElements?.();
       this.cancelWatchNewElements = null;
 

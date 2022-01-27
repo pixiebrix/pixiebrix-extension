@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -45,8 +45,9 @@ function useRemove(element: FormState): () => void {
     console.debug(`pageEditor: remove element ${element.uuid}`);
 
     const confirm = await showConfirmation({
-      title: "Remove Brick?",
-      message: "This action cannot be undone",
+      title: "Remove Extension?",
+      message:
+        "You can reactivate extensions and blueprints from the PixieBrix Options page",
       submitCaption: "Remove",
     });
 
