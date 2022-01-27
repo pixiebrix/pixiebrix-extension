@@ -18,38 +18,39 @@
 import React from "react";
 import styles from "@/options/pages/blueprints/BlueprintsList.module.scss";
 import { Button } from "react-bootstrap";
-import {
-  getDescription,
-  getLabel,
-  getPackageId,
-  getUpdatedAt,
-  Installable,
-} from "@/options/pages/blueprints/installableUtils";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { timeSince } from "@/utils/timeUtils";
+import { Row } from "react-table";
+import { InstallableRow } from "@/options/pages/blueprints/BlueprintsCard";
 
-const BlueprintListEntry: React.FunctionComponent<{
-  installable: Installable;
-}> = ({ installable }) => {
+const BlueprintTableRow: React.FunctionComponent<{
+  installableRow: Row<InstallableRow>;
+}> = ({ installableRow }) => {
+  const {
+    name,
+    description,
+    sharing,
+    updatedAt,
+    installable,
+  } = installableRow.original;
+
   const { activate, reinstall } = useInstallableActions(installable);
   // TODO: fix the parsing (timezone, some not being parsed)
-  const lastUpdated = timeSince(new Date(getUpdatedAt(installable)).getTime());
+  const lastUpdated = timeSince(new Date(updatedAt).getTime());
 
   return (
     <tr>
       <td className="text-wrap">
-        <h5 className="text-wrap m-0">{getLabel(installable)}</h5>
-        <span className="text-muted text-wrap">
-          {getDescription(installable)}
-        </span>
+        <h5 className="text-wrap m-0">{name}</h5>
+        <span className="text-muted text-wrap">{description}</span>
       </td>
       <td>
         <div className={styles.sharing}>
-          {getPackageId(installable) && (
+          {sharing.packageId && (
             <>
-              <code className="p-0">{getPackageId(installable)}</code>
+              <code className="p-0">{sharing.packageId}</code>
               <br />
             </>
           )}
@@ -83,4 +84,4 @@ const BlueprintListEntry: React.FunctionComponent<{
   );
 };
 
-export default BlueprintListEntry;
+export default BlueprintTableRow;
