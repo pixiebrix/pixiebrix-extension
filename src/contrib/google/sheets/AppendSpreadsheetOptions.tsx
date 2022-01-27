@@ -41,7 +41,7 @@ const PropertiesField: React.FunctionComponent<{
   doc: SheetMeta | null;
   tabName: string | Expression;
 }> = ({ name, tabName, doc }) => {
-  const [sheetSchema, , schemaError] = useAsyncState(async () => {
+  const [sheetSchema, , schemaError] = useAsyncState<Schema>(async () => {
     if (doc?.id && tabName && !isExpression(tabName)) {
       const headers = await sheets.getHeaders({
         spreadsheetId: doc.id,
@@ -54,7 +54,7 @@ const PropertiesField: React.FunctionComponent<{
             .filter((x) => !isNullOrBlank(x))
             .map((header) => [header, { type: "string" }])
         ),
-      } as Schema;
+      };
     }
 
     return DEFAULT_FIELDS_SCHEMA;
