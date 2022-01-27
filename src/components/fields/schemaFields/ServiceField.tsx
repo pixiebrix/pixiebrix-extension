@@ -40,7 +40,7 @@ import SelectWidget, {
   SelectLike,
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import { castArray, isEmpty } from "lodash";
+import { castArray, isEmpty, isEqual } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import {
   extractServiceIds,
@@ -278,6 +278,19 @@ const ServiceField: React.FunctionComponent<
             target: { value: options[0].value, name: field.name, options },
           } as ChangeEvent<SelectLike<AuthOption>>);
         }
+      } else if (
+        value &&
+        !root.services.some((service) =>
+          isEqual(keyToFieldValue(service.outputKey), value)
+        )
+      ) {
+        // This currently happens when a brick is copy-pasted into a separate extension
+        // that does not yet have root.services configured, but already has the service
+        // key set up in the (copied) BlockConfig. Clearing the value here allows the
+        // preceding if-branch to execute again, which runs the "detectDefault" logic
+        // and then calls the service-select change handler, which in turn will configure
+        // root.services properly for the extension.
+        helpers.setValue(null);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
