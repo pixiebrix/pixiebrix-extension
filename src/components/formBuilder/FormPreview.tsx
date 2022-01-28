@@ -26,6 +26,7 @@ import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
 import ImageCropWidgetPreview from "@/components/formBuilder/ImageCropWidgetPreview";
+import DescriptionField from "./DescriptionField";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -92,6 +93,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   const fields = {
     StringField,
     BooleanField,
+    DescriptionField,
   };
 
   const widgets = {
