@@ -111,7 +111,7 @@ describe("getAllTables", () => {
     const actual = getAllTables(getDocument(table1));
 
     const expected = new Map([
-      ["characters-in-mario-3", parseDomTable(table1)],
+      ["characters_in_mario_3", parseDomTable(table1)],
     ]);
 
     expect(actual).toStrictEqual(expected);
@@ -188,8 +188,8 @@ describe("getAllTables", () => {
     const actual = getAllTables(getDocument(table1, table2));
 
     const expected = new Map([
-      ["name-age", parseDomTable(table1)],
-      ["0-1", parseDomTable(table2)],
+      ["table_c07b8", parseDomTable(table1)],
+      ["table_8af45", parseDomTable(table2)],
     ]);
 
     expect(actual).toStrictEqual(expected);
