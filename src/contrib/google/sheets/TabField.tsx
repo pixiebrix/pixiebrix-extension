@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,11 +24,14 @@ import { sheets } from "@/background/messenger/api";
 import { compact, uniq } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
+import { Expression } from "@/core";
+import { isExpression } from "@/runtime/mapArgs";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 const TabField: React.FunctionComponent<
   SchemaFieldProps & { doc: SheetMeta | null }
 > = ({ name, doc }) => {
-  const [field] = useField<string>(name);
+  const [field] = useField<string | Expression>(name);
 
   const [tabNames, tabsPending, tabsError] = useAsyncState(async () => {
     if (doc?.id) {
@@ -57,7 +60,9 @@ const TabField: React.FunctionComponent<
   //         </span>
   // )}
 
-  return (
+  return isExpression(field.value) ? (
+    <WorkshopMessageWidget />
+  ) : (
     <ConnectedFieldTemplate
       name={name}
       label="Tab Name"

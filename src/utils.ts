@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -172,14 +172,14 @@ export function isPrimitive(value: unknown): value is Primitive {
 }
 
 /**
- * Recursively pick entries that match property
+ * Recursively pick entries that match a predicate
  * @param obj an object
  * @param predicate predicate returns true to include an entry
  * @see pickBy
  */
 export function deepPickBy(
   obj: unknown,
-  predicate: (value: unknown) => boolean
+  predicate: (value: unknown, parent?: unknown) => boolean
 ): unknown {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#typeof_null
   // `typeof null === "object"`, so have to check for it before the "object" check below
@@ -193,7 +193,7 @@ export function deepPickBy(
 
   if (typeof obj === "object") {
     return mapValues(
-      pickBy(obj, (value) => predicate(value)),
+      pickBy(obj, (value) => predicate(value, obj)),
       (value) => deepPickBy(value, predicate)
     );
   }

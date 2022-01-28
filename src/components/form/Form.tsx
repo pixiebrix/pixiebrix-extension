@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -39,12 +39,15 @@ export type RenderSubmit = (state: {
   values: FormikValues;
 }) => ReactElement;
 
+export type RenderStatus = (state: { status: string }) => ReactElement;
+
 type FormProps = {
   initialValues: FormikValues;
   validationSchema: yup.ObjectSchema;
   validateOnMount?: boolean;
   renderBody?: RenderBody;
   renderSubmit?: RenderSubmit;
+  renderStatus?: RenderStatus;
   onSubmit: OnSubmit;
 };
 
@@ -54,6 +57,10 @@ const defaultRenderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
   </Button>
 );
 
+const defaultRenderStatus: RenderStatus = ({ status }) => (
+  <div className={styles.status}>{status}</div>
+);
+
 const Form: React.FC<FormProps> = ({
   initialValues,
   validationSchema,
@@ -61,6 +68,7 @@ const Form: React.FC<FormProps> = ({
   children,
   renderBody,
   renderSubmit = defaultRenderSubmit,
+  renderStatus = defaultRenderStatus,
   onSubmit,
 }) => (
   <Formik
@@ -78,7 +86,7 @@ const Form: React.FC<FormProps> = ({
       setFieldValue,
     }) => (
       <BootstrapForm noValidate onSubmit={handleSubmit}>
-        {status && <div className={styles.status}>{status}</div>}
+        {status && renderStatus({ status })}
         {renderBody ? renderBody({ isValid, values, setFieldValue }) : children}
         {renderSubmit({ isSubmitting, isValid, values })}
       </BootstrapForm>

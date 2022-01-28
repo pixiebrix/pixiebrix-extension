@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,13 +31,11 @@ import { requestPermissions } from "@/utils/permissions";
 import { getErrorMessage, isAxiosError } from "@/errors";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
-import {
-  extensionWithInnerDefinitions,
-  isInnerExtensionPoint,
-} from "@/devTools/editor/extensionPoints/base";
+import { extensionWithInnerDefinitions } from "@/devTools/editor/extensionPoints/base";
 import { useGetEditablePackagesQuery } from "@/services/api";
 import { UnknownObject } from "@/types";
 import extensionsSlice from "@/store/extensionsSlice";
+import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;

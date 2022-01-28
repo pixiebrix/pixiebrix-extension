@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,10 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  .sharing {
-    max-width: 150px;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-  }
-}
+import React from "react";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { Form } from "react-bootstrap";
+
+const WorkshopMessageWidget: React.FC<Partial<SchemaFieldProps>> = () => (
+  <Form.Control
+    className="px-1"
+    plaintext
+    readOnly
+    defaultValue="Use Workshop to edit"
+  />
+);
+
+export default WorkshopMessageWidget;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,6 +27,7 @@ import {
 import { produce } from "immer";
 import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
+import { isEqual } from "lodash";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
 
@@ -49,12 +50,16 @@ const AppServiceField: React.FunctionComponent<SchemaFieldProps> = ({
     values: root,
     setValues: setRootValues,
   } = useFormikContext<ServiceSlice>();
-  // We need this union type to account for v1/v3 runtime config formats
-  //  v1 - ServiceKeyVar
-  //  v3 - Expression<ServiceKeyVar>
-  const [{ value }, , helpers] = useField<
-    ServiceKeyVar | Expression<ServiceKeyVar>
-  >(props);
+  const [{ value }, , helpers] = useField<Expression<ServiceKeyVar>>(props);
+
+  // This currently happens when a brick is copy-pasted into a separate extension
+  // that does not yet have root.services configured, but already has the service
+  // key set up in the (copied) BlockConfig.
+  const isBadValue =
+    value &&
+    !root.services.some((service) =>
+      isEqual(keyToFieldValue(service.outputKey), value)
+    );
 
   useEffect(
     () => {
@@ -90,10 +95,14 @@ const AppServiceField: React.FunctionComponent<SchemaFieldProps> = ({
           );
           helpers.setValue(keyToFieldValue(PIXIEBRIX_OUTPUT_KEY));
         }
+      } else if (isBadValue) {
+        // Clearing this "bad value" value will enable the preceding if-branch to
+        // execute again, and that will configure root.services properly
+        helpers.setValue(null);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run on mount, or if we detect a "bad value" (see comment above)
+    [isBadValue]
   );
 
   return null;

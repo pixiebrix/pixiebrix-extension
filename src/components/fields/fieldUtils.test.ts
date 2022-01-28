@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,10 @@
  */
 
 import { Expression } from "@/core";
-import { getPreviewValues } from "@/components/fields/fieldUtils";
+import {
+  getPreviewValues,
+  isMustacheOnly,
+} from "@/components/fields/fieldUtils";
 
 test("returns value for an expression", () => {
   const expectedValue = "nunjucks template with var {{@data}}";
@@ -90,4 +93,63 @@ test("converts elements of an array", () => {
   expect(array).toHaveLength(2);
   expect(array[0]).toEqual(expectedVar);
   expect(array[1]).toEqual(expectedTemplate);
+});
+
+const testValues = [
+  {
+    value: "a plain string",
+    expectedIsMustacheOnly: false,
+  },
+  {
+    value: "a basic {{variable}}",
+    expectedIsMustacheOnly: false,
+  },
+  {
+    value: "a mustache {{{literal}}}",
+    expectedIsMustacheOnly: true,
+  },
+  {
+    value: "also a mustache {{& literal}} with ampersand",
+    expectedIsMustacheOnly: true,
+  },
+  {
+    value: "mustache set delimiter {{=<% %>=}}",
+    expectedIsMustacheOnly: true,
+  },
+  {
+    value: "{{! a mustache comment}}",
+    expectedIsMustacheOnly: true,
+  },
+  {
+    value: "{{ ! a mustache comment with space}}",
+    expectedIsMustacheOnly: true,
+  },
+  {
+    value: "a mustache {{#foo}} conditional {{/foo}}",
+    expectedIsMustacheOnly: true,
+  },
+  {
+    value: "a {{> mustache}} partial",
+    expectedIsMustacheOnly: true,
+  },
+  {
+    value: "a mustache {{^inverted}} section",
+    expectedIsMustacheOnly: true,
+  },
+];
+
+const testCases: ReadonlyArray<
+  [value: string, expectedIsMustacheOnly: boolean]
+> = testValues.map(({ value, expectedIsMustacheOnly }) => [
+  value,
+  expectedIsMustacheOnly,
+]);
+
+describe("isMustacheOnly()", () => {
+  test.each(testCases)(
+    "'%s' contains mustache-only syntax? %s",
+    (value, expectedIsMustacheOnly) => {
+      expect(isMustacheOnly(value)).toStrictEqual(expectedIsMustacheOnly);
+    }
+  );
 });

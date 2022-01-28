@@ -24,19 +24,18 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import {
+  getOrganization,
   Installable,
-  isPersonal,
   updateAvailable,
 } from "@/options/pages/blueprints/installableUtils";
-import { useGetCloudExtensionsQuery, useGetRecipesQuery } from "@/services/api";
+import {
+  useGetCloudExtensionsQuery,
+  useGetOrganizationsQuery,
+  useGetRecipesQuery,
+} from "@/services/api";
 
 type InstallablesState = {
-  installables: {
-    active: Installable[];
-    all: Installable[];
-    personal: Installable[];
-    shared: Installable[];
-  };
+  installables: Installable[];
   isLoading: boolean;
   error: unknown;
 };
@@ -47,15 +46,17 @@ function useInstallables(): InstallablesState {
 
   const recipes = useGetRecipesQuery();
   const cloudExtensions = useGetCloudExtensionsQuery();
+  const { data: organizations = [] } = useGetOrganizationsQuery();
 
-  const installedExtensionIds = useMemo(
-    () => new Set<UUID>(unresolvedExtensions.map((extension) => extension.id)),
-    [unresolvedExtensions]
-  );
-
-  const installedRecipeIds = useMemo(
-    () =>
-      new Set(unresolvedExtensions.map((extension) => extension._recipe?.id)),
+  const { installedExtensionIds, installedRecipeIds } = useMemo(
+    () => ({
+      installedExtensionIds: new Set<UUID>(
+        unresolvedExtensions.map((extension) => extension.id)
+      ),
+      installedRecipeIds: new Set(
+        unresolvedExtensions.map((extension) => extension._recipe?.id)
+      ),
+    }),
     [unresolvedExtensions]
   );
 
@@ -94,21 +95,17 @@ function useInstallables(): InstallablesState {
 
   const personalOrTeamBlueprints = useMemo(
     () =>
-      (recipes.data ?? [])
-        .filter(
-          (recipe) =>
-            recipe.metadata.id.includes(scope) ||
-            recipe.sharing.organizations.length > 0
-        )
-        .map((recipe) => ({
-          ...recipe,
-          active: installedRecipeIds.has(recipe.metadata.id),
-        })),
+      (recipes.data ?? []).filter(
+        (recipe) =>
+          (recipe.metadata.id.includes(scope) ||
+            recipe.sharing.organizations.length > 0) &&
+          // Remove duplicate Installable entries for Active extension
+          // and Recipe pairs
+          !installedRecipeIds.has(recipe.metadata.id)
+      ),
     [recipes.data, scope, installedRecipeIds]
   );
 
-  // Restructures ResolvedExtension | RecipeDefinition into an Installable type
-  // TODO: handle "duplicates" i.e. when the recipe and active extension both occur in this list
   const installables = useMemo(
     () =>
       [...resolvedExtensions, ...personalOrTeamBlueprints].map(
@@ -119,22 +116,20 @@ function useInstallables(): InstallablesState {
             "_recipe" in extensionOrRecipe
               ? updateAvailable(recipes.data, extensionOrRecipe)
               : false,
+          organization: getOrganization(extensionOrRecipe, organizations),
         })
       ),
-    [isActive, personalOrTeamBlueprints, recipes.data, resolvedExtensions]
+    [
+      isActive,
+      organizations,
+      personalOrTeamBlueprints,
+      recipes.data,
+      resolvedExtensions,
+    ]
   );
 
   return {
-    installables: {
-      active: installables.filter((installable) => installable.active),
-      all: installables,
-      personal: installables.filter((installable) =>
-        isPersonal(installable, scope)
-      ),
-      shared: installables.filter(
-        (installable) => !isPersonal(installable, scope)
-      ),
-    },
+    installables,
     isLoading:
       recipes.isLoading ||
       cloudExtensions.isLoading ||

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,12 +29,11 @@ import {
   RendererError,
 } from "@/actionPanel/actionPanelTypes";
 import { RendererPayload } from "@/runtime/runtimeTypes";
-import { renderPanels, hideForm, showForm } from "@/actionPanel/messenger/api";
-import { MAX_Z_INDEX } from "@/common";
+import { hideForm, renderPanels, showForm } from "@/actionPanel/messenger/api";
+import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 import pDefer from "p-defer";
 
 const SIDEBAR_WIDTH_PX = 400;
-const PANEL_FRAME_ID = "pixiebrix-extension";
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
 export const PANEL_HIDING_EVENT = "pixiebrix:hideActionPanel";
 

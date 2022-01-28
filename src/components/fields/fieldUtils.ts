@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -70,4 +70,10 @@ export function getPreviewValues<TObj = UnknownObject>(obj: TObj): TObj {
   return produce(obj, (draft) => {
     unwrapTemplateExpressions(draft);
   });
+}
+
+export function isMustacheOnly(value: string): boolean {
+  // Mustache-specific syntax: {{{, {{!, {{#, {{&, {{>, {{^
+  // All but the first one also support whitespace between the brackets and symbols
+  return /{{{/g.test(value) || /{{\s*[!#&=>^]/g.test(value);
 }

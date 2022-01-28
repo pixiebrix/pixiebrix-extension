@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -504,13 +504,28 @@ export type IExtension<T extends Config = EmptyConfig> = {
 };
 
 /**
- * An extension that has been saved locally.
+ * An IExtension that is known not to have had its definitions resolved.
+ *
+ * NOTE: it might be the case that the extension does not have a definitions section/inner definitions. This nominal
+ * type is just tracking whether we've passed the instance through resolution yet.
+ *
+ * @see IExtension
+ * @see ResolvedExtension
+ */
+export type UnresolvedExtension<
+  T extends Config = EmptyConfig
+> = IExtension<T> & {
+  _unresolvedExtensionBrand: never;
+};
+
+/**
+ * An extension that has been saved locally
  * @see IExtension
  * @see UserExtension
  */
 export type PersistedExtension<
   T extends Config = EmptyConfig
-> = IExtension<T> & {
+> = UnresolvedExtension<T> & {
   /**
    * True to indicate this extension has been activated on the client.
    */
@@ -519,7 +534,7 @@ export type PersistedExtension<
   /**
    * Creation timestamp in ISO format with timezone.
    *
-   * Currently not used for anything - might be used for sorting, etc. in the future.
+   * Currently, not used for anything - might be used for sorting, etc. in the future.
    */
   createTimestamp: string;
 
@@ -569,6 +584,11 @@ export interface IExtensionPoint extends Metadata {
    * Remove the extension point and installed extensions from the page.
    */
   uninstall(options?: { global?: boolean }): void;
+
+  /**
+   * Remove the extension from the extension point.
+   */
+  removeExtension(extensionId: UUID): void;
 
   /**
    * Register an extension with the extension point. Does not actually install/run the extension.

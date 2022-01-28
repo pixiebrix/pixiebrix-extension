@@ -16,29 +16,32 @@
  */
 
 import { Card, Table } from "react-bootstrap";
+import BlueprintTableRow from "@/options/pages/blueprints/BlueprintTableRow";
+import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 import React from "react";
-import styles from "./BlueprintsList.module.scss";
-import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
-import {
-  getUniqueId,
-  Installable,
-} from "@/options/pages/blueprints/installableUtils";
+import { Row, TableInstance } from "react-table";
+import { InstallableRow } from "@/options/pages/blueprints/BlueprintsCard";
 
-const BlueprintsList: React.FunctionComponent<{
-  installables: Installable[];
-}> = ({ installables }) => (
-  <Card className={styles.root}>
-    <Table>
-      <tbody>
-        {installables.map((installable) => (
-          <BlueprintListEntry
-            key={getUniqueId(installable)}
-            installable={installable}
-          />
-        ))}
+const BlueprintTableList: React.FunctionComponent<{
+  tableInstance: TableInstance;
+  rows: Array<Row<InstallableRow>>;
+}> = ({ tableInstance, rows }) => (
+  <Card>
+    <Table {...tableInstance.getTableProps()}>
+      <tbody {...tableInstance.getTableBodyProps()}>
+        {rows.map((row) => {
+          tableInstance.prepareRow(row);
+
+          return (
+            <BlueprintTableRow
+              key={getUniqueId(row.original.installable)}
+              installableRow={row}
+            />
+          );
+        })}
       </tbody>
     </Table>
   </Card>
 );
 
-export default BlueprintsList;
+export default BlueprintTableList;

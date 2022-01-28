@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,8 +25,11 @@ import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import {
   BlockArgContext,
   IBlock,
+  IExtension,
+  InnerDefinitionRef,
   Logger,
   ReaderRoot,
+  RegistryId,
   RenderedArgs,
 } from "@/core";
 import { isEmpty } from "lodash";
@@ -42,6 +45,11 @@ import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { $safeFind } from "@/helpers";
+
+/**
+ * Scope for inner definitions
+ */
+export const INNER_SCOPE = "@internal";
 
 /**
  * @throws InputValidationError if blockArgs does not match the input schema for block
@@ -180,4 +188,20 @@ export async function resolveBlockConfig(
     block,
     type: await getType(block),
   };
+}
+
+export function isInnerExtensionPoint(
+  id: RegistryId | InnerDefinitionRef
+): boolean {
+  return id.startsWith(INNER_SCOPE + "/");
+}
+
+export function assertExtensionNotResolved<T extends IExtension>(
+  extension: IExtension
+): asserts extension is T & {
+  _unresolvedExtensionBrand: never;
+} {
+  if (isInnerExtensionPoint(extension.extensionPointId)) {
+    throw new Error("Expected UnresolvedExtension");
+  }
 }

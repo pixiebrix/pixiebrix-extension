@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,8 +32,8 @@ import { compact, isEqual, pick } from "lodash";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { produce } from "immer";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 import { freshIdentifier } from "@/utils";
+import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.

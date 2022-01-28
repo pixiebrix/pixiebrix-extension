@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,9 +30,9 @@ const ExtensionRows: React.FunctionComponent<{
   <>
     {sortBy(
       extensions,
-      (x) => (x.active ? 0 : 1),
-      (x) => x.label ?? "",
-      (x) => x.id
+      (extension) => (extension.active ? 0 : 1),
+      (extension) => extension.label ?? "",
+      (extension) => extension.id
     ).map((extension) =>
       extension.active ? (
         <InstalledExtensionRow

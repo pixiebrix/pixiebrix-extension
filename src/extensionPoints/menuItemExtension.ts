@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,6 @@ import {
   awaitElementOnce,
   acquireElement,
   onNodeRemoved,
-  EXTENSION_POINT_DATA_ATTR,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import {
@@ -69,6 +68,7 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { $safeFind } from "@/helpers";
 import sanitize from "@/utils/sanitize";
+import { EXTENSION_POINT_DATA_ATTR } from "@/common";
 
 interface ShadowDOM {
   mode?: "open" | "closed";

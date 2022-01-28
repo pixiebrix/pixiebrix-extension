@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,6 +25,10 @@ import {
 
 export const NOFICATIONS_Z_INDEX = 2_147_483_647;
 export const MAX_Z_INDEX = NOFICATIONS_Z_INDEX - 1; // Let notifications always be higher
+export const PANEL_FRAME_ID = "pixiebrix-extension";
+export const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
+export const PIXIEBRIX_READY_ATTRIBUTE = "data-pb-ready";
+export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
 type ReadSpec = <T extends Record<string, string>>(arg: {
   pathSpec: T;

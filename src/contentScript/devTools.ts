@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,6 +38,7 @@ import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
 import { clearDynamicElements } from "@/nativeEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
+import selection from "@/utils/selectionController";
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
@@ -139,7 +140,7 @@ export async function runReaderBlock({
     }
 
     return {
-      selectionText: window.getSelection().toString(),
+      selectionText: selection.get(),
       documentUrl: document.location.href,
     };
   }

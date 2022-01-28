@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -44,6 +44,25 @@ describe("renderExplicit", () => {
       foo: "bar!",
     });
   });
+
+  test.each([
+    ["mustache", { foo: "" }],
+    ["nunjucks", { foo: "" }],
+    ["handlebars", { foo: "" }],
+    // `foo` gets stripped out because the renderExplicit drops entries with nullish values
+    ["var", {}],
+  ])(
+    "doesn't fail on empty %s template",
+    async (templateType, expectedValue) => {
+      const rendered = await renderExplicit(
+        { foo: { __type__: templateType, __value__: undefined } },
+        {},
+        apiVersionOptions("v3")
+      );
+
+      expect(rendered).toEqual(expectedValue);
+    }
+  );
 });
 
 describe("renderImplicit", () => {

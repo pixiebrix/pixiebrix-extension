@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +23,7 @@ export const resolveForm = getMethod("FORM_RESOLVE");
 export const cancelForm = getMethod("FORM_CANCEL");
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");
+export const removeExtension = getNotifier("REMOVE_EXTENSION");
 export const resetTab = getNotifier("RESET_TAB");
 
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");

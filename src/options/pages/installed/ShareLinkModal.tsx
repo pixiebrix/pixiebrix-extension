@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,7 @@ import useNotifications from "@/hooks/useNotifications";
 import { useDispatch } from "react-redux";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { RegistryId } from "@/core";
 
 const ShareLinkModal = () => {
   const dispatch = useDispatch();
@@ -31,26 +32,23 @@ const ShareLinkModal = () => {
     dispatch(push("/installed"));
   };
 
-  const { blueprintId } = useParams<{ blueprintId: string }>();
+  const { blueprintId } = useParams<{ blueprintId: RegistryId }>();
 
   const installationLink = `https://app.pixiebrix.com/activate?id=${blueprintId}`;
 
   const notify = useNotifications();
-  const copyLink = () => {
-    copy(installationLink);
-    notify.success("Link copied to clipboard");
-    hideModal();
-  };
 
   return (
     <Modal show onHide={hideModal}>
       <Modal.Header closeButton>
-        <Modal.Title>Share</Modal.Title>
+        <Modal.Title>Share Activation Link</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Form.Group>
-          <Form.Label>Copy the activation link to share</Form.Label>
+          <Form.Label className="pb-2">
+            Click to copy the activation link to the clipboard
+          </Form.Label>
           <InputGroup>
             <Form.Control
               type="text"
@@ -58,7 +56,14 @@ const ShareLinkModal = () => {
               defaultValue={installationLink}
             />
             <InputGroup.Append>
-              <Button variant="info" onClick={copyLink}>
+              <Button
+                variant="info"
+                onClick={() => {
+                  copy(installationLink);
+                  // Don't close the modal - that allows the user to re-copy the link and verify the link works
+                  notify.success("Copied activation link to clipboard");
+                }}
+              >
                 <FontAwesomeIcon icon={faCopy} />
               </Button>
             </InputGroup.Append>

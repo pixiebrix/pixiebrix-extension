@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,7 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
+import { PIXIEBRIX_READY_ATTRIBUTE } from "@/common";
 
 export const sessionId = uuidv4();
 export const sessionTimestamp = new Date();
@@ -27,7 +28,6 @@ export let tabId: number;
 export let frameId: number;
 
 const PIXIEBRIX_READY_SYMBOL = Symbol.for("pixiebrix-content-script-ready");
-export const PIXIEBRIX_READY_ATTRIBUTE = "data-pb-ready";
 
 declare global {
   interface Window {
