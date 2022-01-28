@@ -192,7 +192,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   uninstall(): void {
-    console.debug("triggerExtension:uninstall");
+    console.debug("triggerExtension:uninstall", {
+      id: this.id,
+    });
 
     // Clean up observers
     this.cancelInitialWaitElements?.();
@@ -212,7 +214,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       const $currentElements = $safeFind(this.triggerSelector);
 
       console.debug(
-        "Removing %s handler from %d elements",
+        "Removing %s handler from %d element(s)",
         this.trigger,
         $currentElements.length
       );
