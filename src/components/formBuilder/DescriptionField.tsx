@@ -35,11 +35,11 @@ const DescriptionField: React.VoidFunctionComponent<FormPreviewDescriptionFieldP
   }
 
   return typeof description === "string" ? (
-    <p
+    <div
       id={id}
       className="field-description"
       dangerouslySetInnerHTML={{ __html: sanitize(marked(description)) }}
-    ></p>
+    ></div>
   ) : (
     <div id={id} className="field-description">
       {description}
