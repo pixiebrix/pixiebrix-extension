@@ -586,6 +586,11 @@ export interface IExtensionPoint extends Metadata {
   uninstall(options?: { global?: boolean }): void;
 
   /**
+   * Remove the extension from the extension point.
+   */
+  removeExtension(extensionId: UUID): void;
+
+  /**
    * Register an extension with the extension point. Does not actually install/run the extension.
    */
   addExtension(extension: ResolvedExtension): void;
