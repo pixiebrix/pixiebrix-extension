@@ -16,6 +16,7 @@
  */
 
 import { zip, zipObject } from "lodash";
+import objectHash from "object-hash";
 import slugify from "slugify";
 
 interface ParsingOptions {
@@ -106,7 +107,7 @@ function getAriaDescription(element: HTMLElement): string | undefined {
 }
 
 function getNameFromFiels(fields: Array<number | string>): string {
-  return "Table_" + fields.slice(0, 2).join("_");
+  return "Table_" + objectHash(fields);
 }
 
 export function getAllTables(
