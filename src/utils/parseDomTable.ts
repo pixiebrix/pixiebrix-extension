@@ -105,6 +105,10 @@ function getAriaDescription(element: HTMLElement): string | undefined {
   }
 }
 
+function getNameFromFiels(fields: Array<number | string>): string {
+  return "Table_" + fields.slice(0, 2).join("_");
+}
+
 export function getAllTables(
   root: HTMLElement | Document = document
 ): Map<string, ParsedTable> {
@@ -119,8 +123,11 @@ export function getAllTables(
       table.getAttribute("aria-label") ||
       // TODO: Exclude random identifiers #2498
       table.id ||
-      parsedTable.fieldNames.join("-");
-    tables.set(slugify(tableName, { lower: true }), parsedTable);
+      getNameFromFiels(parsedTable.fieldNames);
+    tables.set(
+      slugify(tableName, { replacement: "_", lower: true }),
+      parsedTable
+    );
   }
 
   return tables;
