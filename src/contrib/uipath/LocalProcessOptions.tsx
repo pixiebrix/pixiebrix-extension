@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@
 import React, { useMemo, useState } from "react";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES as REMOTE_UIPATH_PROPERTIES } from "@/contrib/uipath/process";
-import { Schema } from "@/core";
+import { Expression, Schema } from "@/core";
 import { useAsyncEffect } from "use-async-effect";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
@@ -30,6 +30,9 @@ import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import { thisTab } from "@/devTools/utils";
 import { getProcesses, initRobot } from "@/contentScript/messenger/api";
 import { isDevToolsPage } from "webext-detect-page";
+import { useField } from "formik";
+import { isExpression } from "@/runtime/mapArgs";
+import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 
 function useLocalRobot() {
   const [robotAvailable, setRobotAvailable] = useState(false);
@@ -66,6 +69,10 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   const configName = partial(joinName, name, configKey);
 
+  const [{ value: releaseKey }] = useField<string | Expression>(
+    configName("releaseKey")
+  );
+
   const { robotAvailable, consentCode } = useLocalRobot();
   const { selectedRelease } = useSelectedRelease(configName("releaseKey"));
 
@@ -94,7 +101,9 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     );
   }
 
-  return (
+  return isExpression(releaseKey) ? (
+    <WorkshopMessage />
+  ) : (
     <div>
       {consentCode && (
         <span className="text-info">

@@ -16,13 +16,43 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import { IExtension, RegistryId, ResolvedExtension } from "@/core";
+import { IExtension, RegistryId, ResolvedExtension, UUID } from "@/core";
 import { groupBy } from "lodash";
 import * as semver from "semver";
+import { Organization } from "@/types/contract";
 
 export type InstallStatus = {
-  hasUpdate?: boolean;
+  hasUpdate: boolean;
   active: boolean;
+  // TODO: not sure if there is a better way to do this
+  organization: Organization;
+};
+
+export const getSharingType = (
+  installable: Installable,
+  scope: string
+): {
+  type: string;
+  label: string;
+} => {
+  let sharingType = "";
+
+  if (isPersonal(installable, scope)) {
+    sharingType = "Personal";
+  } else if (isDeployment(installable)) {
+    sharingType = "Deployment";
+  } else if (installable.organization) {
+    sharingType = "Team";
+  } else if (isPublic(installable)) {
+    sharingType = "Public";
+  }
+
+  return {
+    type: sharingType,
+    label: ["Team", "Deployment"].includes(sharingType)
+      ? installable.organization.name
+      : sharingType,
+  };
 };
 
 // XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
@@ -136,3 +166,23 @@ export function updateAvailable(
 
   return false;
 }
+
+export const getOrganization = (
+  extensionOrRecipe: ResolvedExtension | RecipeDefinition,
+  organizations: Organization[]
+) => {
+  const sharing =
+    "_recipe" in extensionOrRecipe
+      ? extensionOrRecipe._recipe?.sharing
+      : extensionOrRecipe.sharing;
+
+  if (!sharing || sharing.organizations.length === 0) {
+    return null;
+  }
+
+  // If more than one sharing organization, use the first.
+  // This is an uncommon scenario.
+  return organizations.find((org) =>
+    sharing.organizations.includes(org.id as UUID)
+  );
+};

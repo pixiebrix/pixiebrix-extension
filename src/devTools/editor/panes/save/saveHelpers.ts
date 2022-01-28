@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,7 @@ import {
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
-import { compact, isEqual, pick } from "lodash";
+import { compact, isEmpty, isEqual, pick } from "lodash";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { produce } from "immer";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
@@ -153,6 +153,12 @@ export function replaceRecipeExtension(
           `Element's API Version (${element.apiVersion}) does not match recipe's API Version (${sourceRecipe.apiVersion}) and recipe's API Version cannot be updated`
         );
       }
+    }
+
+    if (isEmpty(element.optionsDefinition?.schema?.properties)) {
+      draft.options = undefined;
+    } else {
+      draft.options = element.optionsDefinition;
     }
 
     const index = findRecipeIndex(sourceRecipe, installedExtension);

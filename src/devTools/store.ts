@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -39,10 +39,11 @@ import {
   DocumentBuilderState,
 } from "./editor/slices/documentBuilderSlice";
 import { OptionsState } from "@/store/extensionsTypes";
-import settingsSlice, { SettingsState } from "@/store/settingsSlice";
+import settingsSlice from "@/store/settingsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 import extensionsSlice from "@/store/extensionsSlice";
+import { SettingsState } from "@/store/settingsTypes";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 

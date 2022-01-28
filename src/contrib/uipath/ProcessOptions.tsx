@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@ import React, { useCallback, useEffect } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
-import { SanitizedServiceConfiguration, Schema } from "@/core";
+import { Expression, SanitizedServiceConfiguration, Schema } from "@/core";
 import { useField } from "formik";
 import { proxyService } from "@/background/messenger/api";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
@@ -33,6 +33,8 @@ import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
 import { useSelectedRelease } from "@/contrib/uipath/uipathHooks";
 import cachePromise from "@/utils/cachePromise";
+import { isExpression } from "@/runtime/mapArgs";
+import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 
 async function fetchRobots(
   config: SanitizedServiceConfiguration
@@ -60,6 +62,10 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     configName("jobsCount")
   );
 
+  const [{ value: releaseKey }] = useField<string | Expression>(
+    configName("releaseKey")
+  );
+
   const { selectedRelease, releasesPromise } = useSelectedRelease(
     configName("releaseKey")
   );
@@ -83,7 +89,9 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     []
   );
 
-  return (
+  return isExpression(releaseKey) ? (
+    <WorkshopMessage />
+  ) : (
     <RequireServiceConfig
       serviceSchema={UIPATH_PROPERTIES.uipath as Schema}
       serviceFieldName={configName("uipath")}

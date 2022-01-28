@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,6 +25,7 @@ import {
   innerExtensionPointRecipeFactory,
   versionedExtensionPointRecipeFactory,
   extensionPointConfigFactory,
+  recipeFactory,
 } from "@/tests/factories";
 import menuItemExtensionAdapter from "@/devTools/editor/extensionPoints/menuItem";
 import { UnknownObject } from "@/types";
@@ -35,6 +36,11 @@ import { cloneDeep } from "lodash";
 import { InnerDefinitionRef } from "@/core";
 import { MenuDefinition } from "@/extensionPoints/menuItemExtension";
 import extensionsSlice from "@/store/extensionsSlice";
+import {
+  MINIMAL_SCHEMA,
+  MINIMAL_UI_SCHEMA,
+} from "@/components/formBuilder/formBuilderHelpers";
+import { OptionsDefinition } from "@/types/definitions";
 
 jest.mock("@/background/initContextMenus");
 jest.mock("@/background/messenger/api");
@@ -402,5 +408,135 @@ describe("replaceRecipeExtension round trip", () => {
         element
       )
     ).toThrow();
+  });
+});
+
+describe("blueprint options", () => {
+  async function runReplaceRecipeExtensions(
+    recipeOptions: OptionsDefinition,
+    elementOptions: OptionsDefinition
+  ) {
+    const recipe = recipeFactory({
+      options: recipeOptions,
+    });
+
+    const state = extensionsSlice.reducer(
+      { extensions: [] },
+      extensionsSlice.actions.installRecipe({
+        recipe,
+        services: {},
+        extensionPoints: recipe.extensionPoints,
+      })
+    );
+
+    const element = await menuItemExtensionAdapter.fromExtension(
+      state.extensions[0]
+    );
+
+    element.optionsDefinition = elementOptions;
+
+    return replaceRecipeExtension(
+      recipe,
+      recipe.metadata,
+      state.extensions,
+      element
+    );
+  }
+
+  test("doesn't add empty schema when blueprint options is empty", async () => {
+    const emptyOptions = {
+      schema: MINIMAL_SCHEMA,
+      uiSchema: MINIMAL_UI_SCHEMA,
+    };
+
+    const updatedRecipe = await runReplaceRecipeExtensions(
+      undefined,
+      emptyOptions
+    );
+
+    expect(updatedRecipe.options).toBeUndefined();
+  });
+
+  test("creates blueprint options", async () => {
+    const elementOptions: OptionsDefinition = {
+      schema: {
+        type: "object",
+        properties: {
+          channels: {
+            type: "string",
+            title: "Channels",
+          },
+        },
+      },
+      uiSchema: MINIMAL_UI_SCHEMA,
+    };
+
+    const updatedRecipe = await runReplaceRecipeExtensions(
+      undefined,
+      elementOptions
+    );
+
+    expect(updatedRecipe.options).toBe(elementOptions);
+  });
+
+  test("updates blueprint options", async () => {
+    const blueprintOptions: OptionsDefinition = {
+      schema: {
+        type: "object",
+        properties: {
+          channels: {
+            type: "string",
+            title: "Channels",
+          },
+        },
+      },
+      uiSchema: MINIMAL_UI_SCHEMA,
+    };
+
+    const elementOptions: OptionsDefinition = {
+      schema: {
+        type: "object",
+        properties: {
+          credentials: {
+            type: "string",
+          },
+        },
+      },
+      uiSchema: MINIMAL_UI_SCHEMA,
+    };
+
+    const updatedRecipe = await runReplaceRecipeExtensions(
+      blueprintOptions,
+      elementOptions
+    );
+
+    expect(updatedRecipe.options).toBe(elementOptions);
+  });
+
+  test("removes blueprint options", async () => {
+    const blueprintOptions: OptionsDefinition = {
+      schema: {
+        type: "object",
+        properties: {
+          channels: {
+            type: "string",
+            title: "Channels",
+          },
+        },
+      },
+      uiSchema: MINIMAL_UI_SCHEMA,
+    };
+
+    const elementOptions: OptionsDefinition = {
+      schema: MINIMAL_SCHEMA,
+      uiSchema: MINIMAL_UI_SCHEMA,
+    };
+
+    const updatedRecipe = await runReplaceRecipeExtensions(
+      blueprintOptions,
+      elementOptions
+    );
+
+    expect(updatedRecipe.options).toBeUndefined();
   });
 });
