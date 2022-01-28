@@ -18,7 +18,7 @@
 import React, { useState } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
-import { Schema } from "@/core";
+import { Expression, Schema } from "@/core";
 import { joinName } from "@/utils";
 import { SheetMeta } from "@/contrib/google/sheets/types";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
@@ -30,7 +30,7 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getErrorMessage } from "@/errors";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/lookup";
 import { isEmpty } from "lodash";
-import { isTemplateExpression } from "@/runtime/mapArgs";
+import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 
 const DEFAULT_HEADER_SCHEMA: Schema = {
   type: "string",
@@ -39,13 +39,13 @@ const DEFAULT_HEADER_SCHEMA: Schema = {
 const HeaderField: React.FunctionComponent<{
   name: string;
   doc: SheetMeta | null;
-  tabName: string;
+  tabName: string | Expression;
 }> = ({ name, tabName, doc }) => {
-  const [{ value }, , { setValue }] = useField(name);
+  const [{ value }, , { setValue }] = useField<string | Expression>(name);
 
   const [headerSchema, , headersError] = useAsyncState<Schema>(
     async () => {
-      if (doc?.id && tabName) {
+      if (doc?.id && tabName && !isExpression(tabName)) {
         const headers = await sheets.getHeaders({
           spreadsheetId: doc.id,
           tabName,
@@ -55,6 +55,9 @@ const HeaderField: React.FunctionComponent<{
           isTemplateExpression(value) &&
           isEmpty(value.__value__)
         ) {
+          // When the current value is an empty expression, we can set
+          // it to null here, instead, to force the field to start on
+          // the select field toggle option
           setValue(null);
         }
 
@@ -95,7 +98,9 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [doc, setDoc] = useState<SheetMeta>(null);
 
-  const [{ value: tabName }] = useField<string>(joinName(basePath, "tabName"));
+  const [{ value: tabName }] = useField<string | Expression>(
+    joinName(basePath, "tabName")
+  );
 
   return (
     <div className="my-2">
