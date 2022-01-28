@@ -206,6 +206,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     // Find the latest set of DOM elements and uninstall handlers
     if (this.triggerSelector) {
+      // NOTE: you might think we could use a WeakSet of HTMLElement to track which elements we've actually attached
+      // DOM events too. However, we can't because WeakSet is not an enumerable collection
+      // https://esdiscuss.org/topic/removal-of-weakmap-weakset-clear
       const $currentElements = $safeFind(this.triggerSelector);
 
       console.debug(
@@ -445,12 +448,17 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     $element: JQuery,
     { watch = false }: { watch?: boolean }
   ): void {
+    // Avoid duplicate events caused by:
+    // 1) Navigation events on SPAs where the element remains on the page
+    // 2) `watch` mode, because the observer will fire the existing elements on the page. (That re-fire will have
+    //  watch: false, see observer handler below.)
     console.debug(
       "Removing existing %s handler for extension point",
       this.trigger
     );
     $element.off(this.trigger, this.boundEventHandler);
 
+    // Install the DOM trigger
     $element.on(this.trigger, this.boundEventHandler);
     this.installedEvents.add(this.trigger);
     console.debug(
@@ -466,9 +474,12 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
 
     if (watch) {
+      // Clear out the existing mutation observer on SPA navigation events.
+      // On mutation events, this watch branch is not executed because the mutation handler below passes `watch: false`
       this.cancelWatchNewElements?.();
       this.cancelWatchNewElements = null;
 
+      // Watch for new elements on the page
       const mutationObserver = initialize(
         this.triggerSelector,
         (index, element) => {
