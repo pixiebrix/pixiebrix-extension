@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { forwardRef, RefObject, useEffect } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -33,19 +33,24 @@ const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
 
-const ModalLayout: React.FC = ({ children }) => (
+const ModalLayout = forwardRef<HTMLDivElement>((props, ref) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
-  <div className="modal-content">
-    <div className="modal-body">{children}</div>
+  <div className="modal-content" ref={ref}>
+    <div className="modal-body">{props.children}</div>
   </div>
-);
+));
+ModalLayout.displayName = "ModalLayout";
 
-const PanelLayout: React.FC = ({ children }) => <div>{children}</div>;
+const PanelLayout = forwardRef<HTMLDivElement>((props, ref) => (
+  <div ref={ref}>{props.children}</div>
+));
+PanelLayout.displayName = "PanelLayout";
 
 /**
  * @see FormTransformer
  */
 const EphemeralForm: React.FC = () => {
+  const form = React.createRef<HTMLDivElement>();
   const params = new URLSearchParams(location.search);
   const nonce = validateUUID(params.get("nonce"));
   const opener = JSON.parse(params.get("opener")) as Target;
@@ -61,6 +66,12 @@ const EphemeralForm: React.FC = () => {
     async () => getFormDefinition(target, nonce),
     [nonce]
   );
+
+  useEffect(() => {
+    form.current
+      ?.querySelector<HTMLInputElement | HTMLSelectElement>("input, select")
+      ?.focus();
+  });
 
   if (isLoading) {
     return (
@@ -79,7 +90,7 @@ const EphemeralForm: React.FC = () => {
   }
 
   return (
-    <FormContainer>
+    <FormContainer ref={form}>
       <JsonSchemaForm
         schema={definition.schema}
         uiSchema={definition.uiSchema}
