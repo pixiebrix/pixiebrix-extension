@@ -25,15 +25,15 @@ const WorkshopMessage: React.FC = () => (
   <Alert variant="info" className={styles.alert}>
     <FontAwesomeIcon icon={faExclamationCircle} size="lg" className="mt-1" />
     <p>
-      This brick contains advanced configurations not yet supported in the page
-      editor, please open this extension in the Workshop if you would like to
-      make changes.{" "}
+      This brick configuration uses advanced features not yet supported in the
+      Page Editor. To make changes, please open the source blueprint in the
+      Workshop.{" "}
       <a
-        href="https://docs.pixiebrix.com/runtime"
+        href="https://docs.pixiebrix.com/developer-guide"
         target="_blank"
         rel="noreferrer"
       >
-        Read more about runtime configurations here.
+        Read more in the Developer Guide
       </a>
     </p>
   </Alert>
