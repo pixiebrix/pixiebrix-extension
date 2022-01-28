@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { forwardRef, RefObject, useEffect } from "react";
+import React, { forwardRef, useEffect } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -68,10 +68,10 @@ const EphemeralForm: React.FC = () => {
   );
 
   useEffect(() => {
-    form.current
+    form?.current
       ?.querySelector<HTMLInputElement | HTMLSelectElement>("input, select")
       ?.focus();
-  });
+  }, [form]);
 
   if (isLoading) {
     return (
