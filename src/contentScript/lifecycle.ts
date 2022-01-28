@@ -106,6 +106,21 @@ export function getInstalledIds(): RegistryId[] {
   return _installedExtensionPoints.map((x) => x.id);
 }
 
+/**
+ * Remove an extension from an extension point on the page
+ */
+export function removeExtension(
+  extensionPointId: RegistryId,
+  extensionId: UUID
+) {
+  const extensionPoint = _installedExtensionPoints.find((x) => x.id);
+  if (extensionPoint) {
+    extensionPoint.removeExtension(extensionId);
+  } else {
+    console.warn("Extension point %s not found", extensionPointId);
+  }
+}
+
 function markUninstalled(id: RegistryId) {
   // Remove from _installedExtensionPoints so they'll be re-added on a call to loadExtensions
   const index = _installedExtensionPoints.findIndex((x) => x.id === id);

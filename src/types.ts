@@ -170,6 +170,10 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     });
   }
 
+  removeExtension(extensionId: UUID) {
+    this.syncExtensions(this.extensions.filter((x) => x.id !== extensionId));
+  }
+
   addExtension(extension: ResolvedExtension<TConfig>): void {
     const index = this.extensions.findIndex((x) => x.id === extension.id);
     if (index >= 0) {

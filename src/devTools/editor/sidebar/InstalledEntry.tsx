@@ -31,6 +31,9 @@ import {
   NotAvailableIcon,
   ExtensionIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
+import { removeExtension } from "@/contentScript/messenger/api";
+import { thisTab } from "@/devTools/utils";
+import { resolveDefinitions } from "@/registry/internal";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
@@ -49,6 +52,11 @@ const InstalledEntry: React.FunctionComponent<{
   const selectHandler = useCallback(
     async (extension: IExtension) => {
       try {
+        // Remove the extension so that we don't get double-actions when editing a trigger.
+        // At this point the extensionPointId can be a
+        const resolved = await resolveDefinitions(extension);
+        removeExtension(thisTab, resolved.extensionPointId, resolved.id);
+
         const state = await extensionToFormState(extension);
         // FIXME: is where we need to uninstall the extension because it will now be a dynamic element? Or should it
         //  be getting handled by lifecycle.ts? Need to add some logging to figure out how other ones work
