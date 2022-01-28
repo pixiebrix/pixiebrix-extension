@@ -107,7 +107,7 @@ function getAriaDescription(element: HTMLElement): string | undefined {
 }
 
 function getNameFromFiels(fields: Array<number | string>): string {
-  return "Table_" + objectHash(fields);
+  return "Table_" + objectHash(fields).slice(0, 5);
 }
 
 export function getAllTables(
