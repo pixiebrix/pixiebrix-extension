@@ -29,6 +29,9 @@ import { Form, InputGroup } from "react-bootstrap";
 import useNotifications from "@/hooks/useNotifications";
 import { getErrorMessage } from "@/errors";
 import AsyncButton from "@/components/AsyncButton";
+import { Expression } from "@/core";
+import { isExpression } from "@/runtime/mapArgs";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
@@ -43,7 +46,7 @@ type FileWidgetProps = {
 const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
   const notify = useNotifications();
 
-  const [field, , helpers] = useField<string>(props);
+  const [field, , helpers] = useField<string | Expression>(props);
   const [sheetError, setSheetError] = useState(null);
 
   useEffect(
@@ -60,6 +63,11 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
 
   useAsyncEffect(
     async (isMounted) => {
+      if (isExpression(field.value)) {
+        // Showing a workshop message for now here
+        return;
+      }
+
       const spreadsheetId = field.value;
 
       if (doc?.id === spreadsheetId) {
@@ -146,7 +154,9 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
     }
   }, [notify, helpers, onSelect]);
 
-  return (
+  return isExpression(field.value) ? (
+    <WorkshopMessageWidget />
+  ) : (
     <InputGroup>
       {doc ? (
         // There's a time when doc.name is blank, so we're getting warnings about controlled/uncontrolled components
