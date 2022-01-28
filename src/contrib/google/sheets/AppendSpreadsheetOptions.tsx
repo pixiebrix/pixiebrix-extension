@@ -19,7 +19,7 @@ import React, { useState } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { sheets } from "@/background/messenger/api";
 import { useField } from "formik";
-import { Schema } from "@/core";
+import { Expression, Schema } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
 import { isNullOrBlank, joinName } from "@/utils";
@@ -29,6 +29,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { getErrorMessage } from "@/errors";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/TabField";
+import { isExpression } from "@/runtime/mapArgs";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
@@ -38,26 +39,30 @@ const DEFAULT_FIELDS_SCHEMA: Schema = {
 const PropertiesField: React.FunctionComponent<{
   name: string;
   doc: SheetMeta | null;
-  tabName: string;
+  tabName: string | Expression;
 }> = ({ name, tabName, doc }) => {
-  const [sheetSchema, , schemaError] = useAsyncState(async () => {
-    if (doc?.id && tabName) {
-      const headers = await sheets.getHeaders({
-        spreadsheetId: doc.id,
-        tabName,
-      });
-      return {
-        type: "object",
-        properties: Object.fromEntries(
-          headers
-            .filter((x) => !isNullOrBlank(x))
-            .map((header) => [header, { type: "string" }])
-        ),
-      } as Schema;
-    }
+  const [sheetSchema, , schemaError] = useAsyncState<Schema>(
+    async () => {
+      if (doc?.id && tabName && !isExpression(tabName)) {
+        const headers = await sheets.getHeaders({
+          spreadsheetId: doc.id,
+          tabName,
+        });
+        return {
+          type: "object",
+          properties: Object.fromEntries(
+            headers
+              .filter((x) => !isNullOrBlank(x))
+              .map((header) => [header, { type: "string" }])
+          ),
+        };
+      }
 
-    return DEFAULT_FIELDS_SCHEMA;
-  }, [doc?.id, tabName]);
+      return DEFAULT_FIELDS_SCHEMA;
+    },
+    [doc?.id, tabName],
+    DEFAULT_FIELDS_SCHEMA
+  );
 
   return (
     <SchemaField
@@ -71,7 +76,7 @@ const PropertiesField: React.FunctionComponent<{
           </span>
         ) : null
       }
-      schema={sheetSchema ?? DEFAULT_FIELDS_SCHEMA}
+      schema={sheetSchema}
     />
   );
 };
@@ -84,7 +89,9 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [doc, setDoc] = useState<SheetMeta>(null);
 
-  const [{ value: tabName }] = useField<string>(joinName(basePath, "tabName"));
+  const [{ value: tabName }] = useField<string | Expression>(
+    joinName(basePath, "tabName")
+  );
 
   return (
     <div className="my-2">

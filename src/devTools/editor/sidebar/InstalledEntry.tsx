@@ -33,6 +33,9 @@ import {
 } from "@/devTools/editor/sidebar/ExtensionIcons";
 import { RecipeDefinition } from "@/types/definitions";
 import { initRecipeOptionsIfNeeded } from "@/devTools/editor/extensionPoints/base";
+import { removeExtension } from "@/contentScript/messenger/api";
+import { thisTab } from "@/devTools/utils";
+import { resolveDefinitions } from "@/registry/internal";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
@@ -52,6 +55,11 @@ const InstalledEntry: React.FunctionComponent<{
   const selectHandler = useCallback(
     async (extension: IExtension) => {
       try {
+        // Remove the extension so that we don't get double-actions when editing a trigger.
+        // At this point the extensionPointId can be a
+        const resolved = await resolveDefinitions(extension);
+        removeExtension(thisTab, resolved.extensionPointId, resolved.id);
+
         const state = await extensionToFormState(extension);
         initRecipeOptionsIfNeeded(state, recipes);
 
