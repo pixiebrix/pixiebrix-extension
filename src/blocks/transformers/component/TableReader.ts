@@ -106,25 +106,16 @@ export class TablesReader extends Transformer {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
-      tables: {
-        description: "The tables found on the page",
-        type: "object",
-        additionalProperties: {
-          type: "object",
-          properties: {
-            records: {
-              description:
-                "The records in the table (rows or columns, depending on orientation)",
-              type: "array",
-              items: { type: "object" },
-            },
-            fieldNames: {
-              description: "The field names in the table",
-              type: "array",
-              items: { type: "string" },
-            },
-          },
-        },
+      records: {
+        description:
+          "The records in the table (rows or columns, depending on orientation)",
+        type: "array",
+        items: { type: "object" },
+      },
+      fieldNames: {
+        description: "The field names in the table",
+        type: "array",
+        items: { type: "string" },
       },
     },
   };
