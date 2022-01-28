@@ -22,7 +22,9 @@ import parseDomTable, { getAllTables } from "@/utils/parseDomTable";
 import { $safeFind } from "@/helpers";
 
 export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
-export const TABLES_READER_ID = validateRegistryId("@pixiebrix/tables-reader");
+export const TABLE_READER_ALL_ID = validateRegistryId(
+  "@pixiebrix/table-reader-all"
+);
 
 export class TableReader extends Transformer {
   constructor() {
@@ -87,9 +89,9 @@ export class TableReader extends Transformer {
 export class TablesReader extends Transformer {
   constructor() {
     super(
-      TABLES_READER_ID,
-      "Tables Reader",
-      "Extract data from all the tables"
+      TABLE_READER_ALL_ID,
+      "Read All Tables",
+      "Extract data from all the tables on the page"
     );
   }
 
