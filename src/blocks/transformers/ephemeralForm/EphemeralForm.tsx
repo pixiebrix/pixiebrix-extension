@@ -28,7 +28,11 @@ import { getErrorMessage } from "@/errors";
 import { Target } from "@/types";
 import { validateUUID } from "@/types/helpers";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
+import DescriptionField from "@/components/formBuilder/DescriptionField";
 
+const fields = {
+  DescriptionField,
+};
 const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
@@ -96,6 +100,7 @@ const EphemeralForm: React.FC = () => {
       <JsonSchemaForm
         schema={definition.schema}
         uiSchema={definition.uiSchema}
+        fields={fields}
         widgets={uiWidgets}
         onSubmit={({ formData: values }) => {
           void resolveForm(target, nonce, values);

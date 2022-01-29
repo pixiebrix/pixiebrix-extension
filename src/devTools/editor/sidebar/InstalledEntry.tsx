@@ -17,7 +17,7 @@
 
 import styles from "./Entry.module.scss";
 import React, { useCallback } from "react";
-import { IExtension, UUID } from "@/core";
+import { IExtension } from "@/core";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -31,6 +31,8 @@ import {
   NotAvailableIcon,
   ExtensionIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
+import { RecipeDefinition } from "@/types/definitions";
+import { initRecipeOptionsIfNeeded } from "@/devTools/editor/extensionPoints/base";
 import { removeExtension } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
 import { resolveDefinitions } from "@/registry/internal";
@@ -41,9 +43,10 @@ import { resolveDefinitions } from "@/registry/internal";
  */
 const InstalledEntry: React.FunctionComponent<{
   extension: IExtension;
-  activeElement: UUID | null;
+  recipes: RecipeDefinition[];
+  active: boolean;
   available: boolean;
-}> = ({ extension, available, activeElement }) => {
+}> = ({ extension, recipes, available, active }) => {
   const dispatch = useDispatch();
   const [type] = useAsyncState(async () => selectType(extension), [
     extension.extensionPointId,
@@ -58,6 +61,8 @@ const InstalledEntry: React.FunctionComponent<{
         removeExtension(thisTab, resolved.extensionPointId, resolved.id);
 
         const state = await extensionToFormState(extension);
+        initRecipeOptionsIfNeeded(state, recipes);
+
         // FIXME: is where we need to uninstall the extension because it will now be a dynamic element? Or should it
         //  be getting handled by lifecycle.ts? Need to add some logging to figure out how other ones work
         dispatch(actions.selectInstalled(state));
@@ -66,14 +71,14 @@ const InstalledEntry: React.FunctionComponent<{
         dispatch(actions.adapterError({ uuid: extension.id, error }));
       }
     },
-    [dispatch]
+    [dispatch, recipes]
   );
 
   return (
     <ListGroup.Item
       className={styles.root}
       action
-      active={extension.id === activeElement}
+      active={active}
       key={`installed-${extension.id}`}
       onClick={async () => selectHandler(extension)}
     >

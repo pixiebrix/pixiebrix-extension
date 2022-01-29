@@ -43,6 +43,8 @@ import menuItem from "@/devTools/editor/extensionPoints/menuItem";
 import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
+import { MINIMAL_UI_SCHEMA } from "@/components/formBuilder/formBuilderHelpers";
+import { OptionsDefinition } from "@/types/definitions";
 
 jest.unmock("react-redux");
 
@@ -144,8 +146,22 @@ test("saves non recipe element", async () => {
 });
 
 describe("saving a Recipe Extension", () => {
+  const recipeOptions: OptionsDefinition = {
+    schema: {
+      type: "object",
+      properties: {
+        channels: {
+          type: "string",
+          title: "Channels",
+        },
+      },
+    },
+    uiSchema: MINIMAL_UI_SCHEMA,
+  };
   const setupMocks = () => {
-    const recipe = recipeFactory();
+    const recipe = recipeFactory({
+      options: recipeOptions,
+    });
     (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
       data: [recipe],
       isLoading: false,
@@ -164,6 +180,7 @@ describe("saving a Recipe Extension", () => {
         updated_at: recipe.updated_at,
         sharing: recipe.sharing,
       },
+      optionsDefinition: recipeOptions,
     });
     const extension = menuItem.selectExtension(element);
     extension._recipe = element.recipe;
@@ -238,7 +255,10 @@ describe("saving a Recipe Extension", () => {
       ...recipe.metadata,
       ...pick(recipe, ["sharing", "updated_at"]),
     });
+    expect(elements[0].optionsDefinition).toStrictEqual(recipeOptions);
+
     expect(elements[1].recipe).toBeUndefined();
+    expect(elements[1].optionsDefinition).toBeUndefined();
 
     // Check the source element is reset
     expect(resetMock).toHaveBeenCalledTimes(1);

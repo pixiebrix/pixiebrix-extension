@@ -16,9 +16,13 @@
  */
 
 import { useField } from "formik";
-import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import styles from "./FieldEditor.module.scss";
-import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
+import {
+  RJSFSchema,
+  SelectStringOption,
+  SetActiveField,
+} from "./formBuilderTypes";
 import { UI_WIDGET } from "./schemaFieldNames";
 import {
   FIELD_TYPES_WITHOUT_DEFAULT,
@@ -28,6 +32,7 @@ import {
   produceSchemaOnUiTypeChange,
   replaceStringInArray,
   stringifyUiType,
+  UiType,
   validateNextPropertyName,
 } from "./formBuilderHelpers";
 import { Schema, SchemaPropertyType } from "@/core";
@@ -55,7 +60,13 @@ const FieldEditor: React.FC<{
   name: string;
   propertyName: string;
   setActiveField: SetActiveField;
-}> = ({ name, propertyName, setActiveField }) => {
+  fieldTypes?: SelectStringOption[];
+}> = ({
+  name,
+  propertyName,
+  setActiveField,
+  fieldTypes = FIELD_TYPE_OPTIONS,
+}) => {
   const [
     { value: rjsfSchema },
     ,
@@ -135,11 +146,9 @@ const FieldEditor: React.FC<{
       propertyFormat,
     });
 
-    const selected = FIELD_TYPE_OPTIONS.find(
-      (option) => option.value === uiType
-    );
+    const selected = fieldTypes.find((option) => option.value === uiType);
 
-    return selected === null
+    return selected == null
       ? {
           label: "unknown",
           value: null,
@@ -173,40 +182,42 @@ const FieldEditor: React.FC<{
 
   const selectedUiTypeOption = getSelectedUiTypeOption();
 
-  const {
-    labelFieldProps,
-    descriptionFieldProps,
-    defaultFieldProps,
-  } = useMemo(() => {
-    const labelFieldProps: SchemaFieldProps = {
-      name: getFullFieldName("title"),
-      schema: {
-        type: "string",
-        description: "The user-visible label for this field",
-      },
-      label: "Label",
-    };
-    const descriptionFieldProps: SchemaFieldProps = {
-      name: getFullFieldName("description"),
-      schema: {
-        type: "string",
-        description: "Explain to the user what this field is used for",
-      },
-      label: "Field Description",
-    };
-    const defaultFieldProps: SchemaFieldProps = {
-      name: getFullFieldName("default"),
-      schema: {
-        type: parseUiType(selectedUiTypeOption.value).propertyType,
-      },
-      label: "Default value",
-    };
-    return {
-      labelFieldProps,
-      descriptionFieldProps,
-      defaultFieldProps,
-    };
-  }, [getFullFieldName, selectedUiTypeOption.value]);
+  const labelFieldProps: SchemaFieldProps = {
+    name: getFullFieldName("title"),
+    schema: {
+      type: "string",
+      description: "The user-visible label for this field",
+    },
+    label: "Label",
+  };
+  const descriptionFieldProps: SchemaFieldProps = {
+    name: getFullFieldName("description"),
+    schema: {
+      type: "string",
+      description: "The user-visible description for the field",
+    },
+    label: "Field Description",
+  };
+
+  const uiType: UiType =
+    selectedUiTypeOption.value == null
+      ? {
+          propertyType: "null",
+          uiWidget: undefined,
+          propertyFormat: undefined,
+        }
+      : parseUiType(selectedUiTypeOption.value);
+
+  const defaultFieldProps: SchemaFieldProps =
+    selectedUiTypeOption.value == null
+      ? null
+      : {
+          name: getFullFieldName("default"),
+          schema: {
+            type: uiType.propertyType,
+          },
+          label: "Default value",
+        };
 
   return (
     <div className={styles.root}>
@@ -228,12 +239,12 @@ const FieldEditor: React.FC<{
         label="Input Type"
         as={SelectWidget}
         blankValue={null}
-        options={FIELD_TYPE_OPTIONS}
+        options={fieldTypes}
         value={selectedUiTypeOption.value}
         onChange={onUiTypeChange}
       />
 
-      {parseUiType(selectedUiTypeOption.value).uiWidget === "imageCrop" && (
+      {uiType.uiWidget === "imageCrop" && (
         <SchemaField
           label="Image source"
           name={`${name}.uiSchema.${propertyName}.source`}
@@ -241,9 +252,10 @@ const FieldEditor: React.FC<{
         />
       )}
 
-      {!FIELD_TYPES_WITHOUT_DEFAULT.includes(selectedUiTypeOption.value) && (
-        <SchemaField {...defaultFieldProps} />
-      )}
+      {defaultFieldProps &&
+        !FIELD_TYPES_WITHOUT_DEFAULT.includes(selectedUiTypeOption.value) && (
+          <SchemaField {...defaultFieldProps} />
+        )}
 
       {propertySchema.enum && (
         <ConnectedFieldTemplate
