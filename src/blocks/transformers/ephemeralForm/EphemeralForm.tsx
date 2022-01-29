@@ -33,17 +33,19 @@ const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
 
-const ModalLayout = forwardRef<HTMLDivElement>((props, ref) => (
-  // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
-  <div className="modal-content" ref={ref}>
-    <div className="modal-body">{props.children}</div>
-  </div>
-));
+const ModalLayout = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>(
+  (props, ref) => (
+    // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
+    <div className="modal-content" ref={ref}>
+      <div className="modal-body">{props.children}</div>
+    </div>
+  )
+);
 ModalLayout.displayName = "ModalLayout";
 
-const PanelLayout = forwardRef<HTMLDivElement>((props, ref) => (
-  <div ref={ref}>{props.children}</div>
-));
+const PanelLayout = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>(
+  (props, ref) => <div ref={ref}>{props.children}</div>
+);
 PanelLayout.displayName = "PanelLayout";
 
 /**
