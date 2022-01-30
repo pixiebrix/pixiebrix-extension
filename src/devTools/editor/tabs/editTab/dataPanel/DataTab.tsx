@@ -19,7 +19,7 @@ import React from "react";
 import { Tab, TabPaneProps } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import styles from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel.module.scss";
+import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
 
 type TabStateProps = {
   isLoading?: boolean;
@@ -59,7 +59,7 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
   }
 
   return (
-    <Tab.Pane {...tabProps} className={styles.tabPane}>
+    <Tab.Pane {...tabProps} className={dataPanelStyles.tabPane}>
       {contents}
     </Tab.Pane>
   );

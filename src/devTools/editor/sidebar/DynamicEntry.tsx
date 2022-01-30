@@ -39,8 +39,8 @@ import cx from "classnames";
 const DynamicEntry: React.FunctionComponent<{
   item: FormState;
   available: boolean;
-  activeElement: string | null;
-}> = ({ item, available, activeElement }) => {
+  active: boolean;
+}> = ({ item, available, active }) => {
   const dispatch = useDispatch();
 
   const isDirty = useSelector<RootState>(
@@ -48,7 +48,7 @@ const DynamicEntry: React.FunctionComponent<{
   );
 
   const showOverlay = useCallback(async (uuid: UUID) => {
-    await enableOverlay(thisTab, `[data-uuid="${uuid}"]`);
+    await enableOverlay(thisTab, `[data-pb-uuid="${uuid}"]`);
   }, []);
 
   const hideOverlay = useCallback(async () => {
@@ -59,7 +59,7 @@ const DynamicEntry: React.FunctionComponent<{
     <ListGroup.Item
       className={styles.root}
       action
-      active={item.uuid === activeElement}
+      active={active}
       key={`dynamic-${item.uuid}`}
       onMouseEnter={async () => showOverlay(item.uuid)}
       onMouseLeave={async () => hideOverlay()}
