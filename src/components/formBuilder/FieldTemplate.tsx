@@ -21,6 +21,7 @@ import { Form, ListGroup } from "react-bootstrap";
 // Named import to get the proper type
 import { DescriptionField } from "./DescriptionField";
 
+// RJSF Bootstrap 4 implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/master/packages/bootstrap-4/src/FieldTemplate/FieldTemplate.tsx
 const FieldTemplate = ({
   id,
   children,
