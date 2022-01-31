@@ -29,6 +29,7 @@ import BootstrapStylesheet from "./BootstrapStylesheet";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
+import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 
 const fields = {
   DescriptionField,
@@ -53,6 +54,7 @@ const CustomFormComponent: React.FunctionComponent<{
       formData={formData}
       fields={fields}
       widgets={uiWidgets}
+      FieldTemplate={FieldTemplate}
       onSubmit={async ({ formData }) => {
         await onSubmit(formData);
       }}
