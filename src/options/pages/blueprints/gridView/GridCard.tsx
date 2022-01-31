@@ -33,14 +33,12 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
 }) => {
   const { name, updatedAt, installable } = installableItem;
 
-  const lastUpdated = timeSince(new Date(updatedAt).getTime());
-
   return (
     <Card className={styles.root}>
       <h5 className={styles.title}>{name}</h5>
       <div>
         <SharingLabel installable={installable} />
-        <Card.Text>Last updated: {lastUpdated}</Card.Text>
+        <Card.Text>Updated: {timeSince(updatedAt)}</Card.Text>
         <div className={styles.actions}>
           <Status installable={installable} />
           <BlueprintActions installable={installable} />

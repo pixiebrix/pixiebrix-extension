@@ -20,8 +20,8 @@ import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 import { timeSince } from "@/utils/timeUtils";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
-import styles from "./TableRow.module.scss";
 import Status from "@/options/pages/blueprints/Status";
+import styles from "./TableRow.module.scss";
 
 const TableRow: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
@@ -33,9 +33,6 @@ const TableRow: React.VoidFunctionComponent<{
     updatedAt,
     installable,
   } = installableItem;
-
-  // TODO: fix the parsing (timezone, some not being parsed)
-  const lastUpdated = timeSince(new Date(updatedAt).getTime());
 
   return (
     <tr>
@@ -52,7 +49,7 @@ const TableRow: React.VoidFunctionComponent<{
         </div>
       </td>
       <td className="text-wrap">
-        <span className="small">Last updated: {lastUpdated}</span>
+        <span className="small">Updated: {timeSince(updatedAt)}</span>
       </td>
       <td>
         <Status installable={installable} />
