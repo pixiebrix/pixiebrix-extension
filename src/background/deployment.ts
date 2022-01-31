@@ -1,6 +1,6 @@
 /* eslint-disable filenames/match-exported */
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,7 @@ import {
 } from "@/background/messenger/api";
 import { deploymentPermissions } from "@/permissions";
 import { IExtension, UUID, RegistryId } from "@/core";
-import { getLinkedApiClient } from "@/services/apiClient";
+import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "./util";
 import { parse as parseSemVer, satisfies, SemVer } from "semver";
@@ -40,6 +40,8 @@ import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
+import { getSettingsState } from "@/store/settingsStorage";
+import { isUpdateAvailable } from "@/background/installer";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -271,9 +273,18 @@ async function selectUpdatedDeployments(
 export async function updateDeployments(): Promise<void> {
   expectContext("background");
 
-  const [linked, { organizationId }] = await Promise.all([
+  const now = Date.now();
+
+  const [
+    linked,
+    extensionUpdateAvailable,
+    { organizationId },
+    { nextUpdate },
+  ] = await Promise.all([
     isLinked(),
+    isUpdateAvailable(),
     readAuthData(),
+    getSettingsState(),
   ]);
 
   if (!linked) {
@@ -298,8 +309,18 @@ export async function updateDeployments(): Promise<void> {
   const { version: extensionVersionString } = browser.runtime.getManifest();
   const extensionVersion = parseSemVer(extensionVersionString);
 
-  const linkedClient = await getLinkedApiClient();
-  const { data: deployments } = await linkedClient.post<Deployment[]>(
+  // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment installed.
+  // Now we're always sending in order to help team admins understand any gaps between number of registered users
+  // and amount of activity when using deployments
+  const client = await maybeGetLinkedApiClient();
+  if (client == null) {
+    console.debug(
+      "Skipping updateDeployments because the extension is not linked to the PixieBrix service"
+    );
+    return;
+  }
+
+  const { data: deployments } = await client.post<Deployment[]>(
     "/api/deployments/",
     {
       uid: await getUID(),
@@ -308,7 +329,22 @@ export async function updateDeployments(): Promise<void> {
     }
   );
 
+  // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
+
+  if (nextUpdate && nextUpdate > now) {
+    console.debug("Skipping updateDeployments because updates are snoozed", {
+      nextUpdate,
+    });
+    return;
+  }
+
+  if (extensionUpdateAvailable) {
+    console.info("Extension update available from the web store");
+    // Have the user update their browser extension. (Since the new version might impact the deployment activation)
+    await browser.runtime.openOptionsPage();
+    return;
+  }
 
   const updatedDeployments = await selectUpdatedDeployments(deployments);
 

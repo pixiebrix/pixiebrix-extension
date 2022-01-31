@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,8 @@ import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { extensionToFormState } from "@/devTools/editor/extensionPoints/adapter";
 import { reportError } from "@/telemetry/logging";
+import { useGetRecipesQuery } from "@/services/api";
+import { initRecipeOptionsIfNeeded } from "@/devTools/editor/extensionPoints/base";
 
 type Config = {
   element: FormState;
@@ -30,6 +32,7 @@ type Config = {
 function useReset(): (useResetConfig: Config) => void {
   const dispatch = useDispatch();
   const installed = useSelector(selectExtensions);
+  const { data: recipes } = useGetRecipesQuery();
   const { showConfirmation } = useModals();
 
   return useCallback(
@@ -49,6 +52,7 @@ function useReset(): (useResetConfig: Config) => void {
       try {
         const extension = installed.find((x) => x.id === element.uuid);
         const state = await extensionToFormState(extension);
+        initRecipeOptionsIfNeeded(state, recipes);
         dispatch(actions.resetInstalled(state));
       } catch (error) {
         reportError(error);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,17 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { Form } from "react-bootstrap";
+export type InstallMode = "local" | "remote";
 
-const ComplexObjectWidget: React.FC<Partial<SchemaFieldProps>> = () => (
-  <Form.Control
-    className="px-1"
-    plaintext
-    readOnly
-    defaultValue="Use Workshop to edit"
-  />
-);
+export type SettingsState = {
+  /**
+   * Whether the extension is synced to the app for provisioning.*
+   *
+   * NOTE: `local` is broken in many places. The only current valid value is remote.
+   */
+  mode: InstallMode;
 
-export default ComplexObjectWidget;
+  /**
+   * Time to snooze updates until (in milliseconds from the epoch), or null.
+   *
+   * The banners still show, however no modals will be shown for the browser extension or team deployments.
+   */
+  nextUpdate: number | null;
+};

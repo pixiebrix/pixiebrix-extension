@@ -1,5 +1,5 @@
-/*!
- * Copyright (C) 2021 PixieBrix, Inc.
+/*
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,30 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.tabContainer {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
+import React from "react";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { Form } from "react-bootstrap";
 
-  :global(.tab-pane) {
-    flex: 1;
-  }
-}
+const WorkshopMessageWidget: React.FC<Partial<SchemaFieldProps>> = () => (
+  <Form.Control
+    className="px-1"
+    plaintext
+    readOnly
+    defaultValue="Use Workshop to edit"
+  />
+);
 
-.tabNav {
-  font-size: small;
-}
-
-.tabContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.selectablePreviewContainer {
-  padding: 4px;
-}
-
-.tabPane {
-  padding-top: 1rem;
-}
+export default WorkshopMessageWidget;

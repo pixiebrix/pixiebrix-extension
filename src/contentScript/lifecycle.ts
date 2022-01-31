@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -104,6 +104,21 @@ async function runExtensionPoint(
 
 export function getInstalledIds(): RegistryId[] {
   return _installedExtensionPoints.map((x) => x.id);
+}
+
+/**
+ * Remove an extension from an extension point on the page
+ */
+export function removeExtension(
+  extensionPointId: RegistryId,
+  extensionId: UUID
+) {
+  const extensionPoint = _installedExtensionPoints.find((x) => x.id);
+  if (extensionPoint) {
+    extensionPoint.removeExtension(extensionId);
+  } else {
+    console.warn("Extension point %s not found", extensionPointId);
+  }
 }
 
 function markUninstalled(id: RegistryId) {

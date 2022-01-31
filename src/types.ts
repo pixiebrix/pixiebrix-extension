@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -168,6 +168,10 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
       after: extensions.map((x) => x.id),
       removed: removed.map((x) => x.id),
     });
+  }
+
+  removeExtension(extensionId: UUID) {
+    this.syncExtensions(this.extensions.filter((x) => x.id !== extensionId));
   }
 
   addExtension(extension: ResolvedExtension<TConfig>): void {

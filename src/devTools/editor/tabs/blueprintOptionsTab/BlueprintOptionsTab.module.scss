@@ -15,30 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Card, Table } from "react-bootstrap";
-import React from "react";
-import styles from "./BlueprintsList.module.scss";
-import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
-import {
-  getUniqueId,
-  Installable,
-} from "@/options/pages/blueprints/installableUtils";
+.tabPane {
+  height: 100%;
+}
 
-const BlueprintsList: React.FunctionComponent<{
-  installables: Installable[];
-}> = ({ installables }) => (
-  <Card className={styles.root}>
-    <Table>
-      <tbody>
-        {installables.map((installable) => (
-          <BlueprintListEntry
-            key={getUniqueId(installable)}
-            installable={installable}
-          />
-        ))}
-      </tbody>
-    </Table>
-  </Card>
-);
+.paneContent {
+  height: 100%;
+  width: 100%;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: stretch;
+  padding-top: 10px;
+}
 
-export default BlueprintsList;
+.configPanel {
+  flex-grow: 2;
+  flex-basis: 0;
+  overflow-y: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.dataPanel {
+  flex-grow: 1;
+  flex-basis: 0;
+  overflow-y: auto;
+  max-width: 360px;
+  padding-left: 10px;
+  padding-right: 10px;
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,11 @@ import { getErrorMessage } from "@/errors";
 import { Target } from "@/types";
 import { validateUUID } from "@/types/helpers";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
+import DescriptionField from "@/components/formBuilder/DescriptionField";
 
+const fields = {
+  DescriptionField,
+};
 const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
@@ -83,6 +87,7 @@ const EphemeralForm: React.FC = () => {
       <JsonSchemaForm
         schema={definition.schema}
         uiSchema={definition.uiSchema}
+        fields={fields}
         widgets={uiWidgets}
         onSubmit={({ formData: values }) => {
           void resolveForm(target, nonce, values);

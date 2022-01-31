@@ -1,6 +1,6 @@
 /* eslint-disable filenames/match-exported */
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,10 +19,9 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact } from "lodash";
-import { Schema } from "@/core";
+import { Expression, Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
-import { fieldLabel } from "@/components/fields/fieldUtils";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Webhook } from "@/contrib/zapier/contract";
 import { pixieServiceFactory } from "@/services/locator";
@@ -35,6 +34,10 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFieldContext";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { isExpression } from "@/runtime/mapArgs";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
+import FieldTemplate from "@/components/form/FieldTemplate";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -59,9 +62,7 @@ function useHooks(): {
 
 export const ZapField: React.FunctionComponent<
   SchemaFieldProps & { hooks: Webhook[]; error: unknown }
-> = ({ label, schema, hooks, error, ...props }) => {
-  const [{ value, ...field }] = useField(props);
-
+> = ({ hooks, error, ...props }) => {
   const options = useMemo(
     () =>
       (hooks ?? []).map((x) => ({
@@ -75,7 +76,7 @@ export const ZapField: React.FunctionComponent<
   return (
     <ConnectedFieldTemplate
       name={props.name}
-      label={label ?? fieldLabel(field.name)}
+      label={makeLabelForSchemaField(props)}
       description="The Zap to run"
       as={SelectWidget}
       blankValue={null}
@@ -100,7 +101,9 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
     []
   );
 
-  const [{ value: pushKey }] = useField<string>(`${basePath}.pushKey`);
+  const [{ value: pushKey }] = useField<string | Expression>(
+    `${basePath}.pushKey`
+  );
 
   const { hooks, error } = useHooks();
 
@@ -128,12 +131,21 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
     );
   }
 
-  return (
+  const schema: Schema = ZAPIER_PROPERTIES.pushKey as Schema;
+
+  return isExpression(pushKey) ? (
+    <FieldTemplate
+      name={`${basePath}.pushKey`}
+      label="Zap"
+      description={schema.description}
+      as={WorkshopMessageWidget}
+    />
+  ) : (
     <div>
       <ZapField
         label="Zap"
         name={`${basePath}.pushKey`}
-        schema={ZAPIER_PROPERTIES.pushKey as Schema}
+        schema={schema}
         hooks={hooks}
         error={error}
       />

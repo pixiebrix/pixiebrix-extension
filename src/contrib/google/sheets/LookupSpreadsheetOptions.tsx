@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@
 import React, { useState } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
-import { Schema } from "@/core";
+import { Expression, Schema } from "@/core";
 import { joinName } from "@/utils";
 import { SheetMeta } from "@/contrib/google/sheets/types";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
@@ -29,30 +29,49 @@ import { sheets } from "@/background/messenger/api";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getErrorMessage } from "@/errors";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/lookup";
+import { isEmpty } from "lodash";
+import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 
-const DEFAULT_HEADER_SCHEMA = {
+const DEFAULT_HEADER_SCHEMA: Schema = {
   type: "string",
 };
 
 const HeaderField: React.FunctionComponent<{
   name: string;
   doc: SheetMeta | null;
-  tabName: string;
+  tabName: string | Expression;
 }> = ({ name, tabName, doc }) => {
-  const [headerSchema, , headersError] = useAsyncState(async () => {
-    if (doc?.id && tabName) {
-      const headers = await sheets.getHeaders({
-        spreadsheetId: doc.id,
-        tabName,
-      });
-      return {
-        type: "string",
-        enum: headers ?? [],
-      };
-    }
+  const [{ value }, , { setValue }] = useField<string | Expression>(name);
 
-    return DEFAULT_HEADER_SCHEMA;
-  }, [doc?.id, tabName]);
+  const [headerSchema, , headersError] = useAsyncState<Schema>(
+    async () => {
+      if (doc?.id && tabName && !isExpression(tabName)) {
+        const headers = await sheets.getHeaders({
+          spreadsheetId: doc.id,
+          tabName,
+        });
+        if (
+          !isEmpty(headers) &&
+          isTemplateExpression(value) &&
+          isEmpty(value.__value__)
+        ) {
+          // When the current value is an empty expression, we can set
+          // it to null here, instead, to force the field to start on
+          // the select field toggle option
+          setValue(null);
+        }
+
+        return {
+          type: "string",
+          enum: headers ?? [],
+        };
+      }
+
+      return DEFAULT_HEADER_SCHEMA;
+    },
+    [doc?.id, tabName],
+    DEFAULT_HEADER_SCHEMA
+  );
 
   return (
     <SchemaField
@@ -65,7 +84,7 @@ const HeaderField: React.FunctionComponent<{
           </span>
         ) : null
       }
-      schema={(headerSchema ?? DEFAULT_HEADER_SCHEMA) as Schema}
+      schema={headerSchema}
       isRequired
     />
   );
@@ -79,7 +98,9 @@ const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [doc, setDoc] = useState<SheetMeta>(null);
 
-  const [{ value: tabName }] = useField<string>(joinName(basePath, "tabName"));
+  const [{ value: tabName }] = useField<string | Expression>(
+    joinName(basePath, "tabName")
+  );
 
   return (
     <div className="my-2">

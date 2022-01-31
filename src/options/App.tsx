@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -43,7 +43,6 @@ import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprint
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
 import { getAuth } from "@/hooks/auth";
 import useRefresh from "@/hooks/useRefresh";
-import { SettingsState } from "@/store/settingsSlice";
 import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
 import { AuthState } from "@/core";
@@ -56,6 +55,7 @@ import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import WorkshopPage from "./pages/workshop/WorkshopPage";
 import InvitationBanner from "@/options/pages/InvitationBanner";
+import { SettingsState } from "@/store/settingsTypes";
 
 // Register the built-in bricks
 registerBuiltinBlocks();

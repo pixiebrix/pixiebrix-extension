@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,11 @@ import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import BootstrapStylesheet from "./BootstrapStylesheet";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
+import DescriptionField from "@/components/formBuilder/DescriptionField";
 
+const fields = {
+  DescriptionField,
+};
 const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
@@ -47,6 +51,7 @@ const CustomFormComponent: React.FunctionComponent<{
       schema={schema}
       uiSchema={uiSchema}
       formData={formData}
+      fields={fields}
       widgets={uiWidgets}
       onSubmit={async ({ formData }) => {
         await onSubmit(formData);
