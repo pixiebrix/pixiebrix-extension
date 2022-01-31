@@ -15,33 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Installable } from "@/options/pages/blueprints/installableUtils";
-import useSharing from "@/options/pages/blueprints/useSharing";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEyeSlash,
-  faGlobe,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
+import { Installable } from "./installableUtils";
+import { RegistryId } from "@/core";
 
-const sharingIcons = {
-  Personal: faEyeSlash,
-  Team: faUsers,
-  Public: faGlobe,
-  Deployment: faUsers,
-};
-
-const SharingLabel: React.FunctionComponent<{
+// Reshaped Installable to easily filter, sort, and group Installables
+export type InstallableRow = {
+  name: string;
+  description: string;
+  sharing: {
+    packageId: RegistryId;
+    source: {
+      type: string;
+      label: string;
+    };
+  };
+  updatedAt: string;
+  status: "Active" | "Uninstalled";
+  // Used to get Installable actions from useInstallableActions
   installable: Installable;
-}> = ({ installable }) => {
-  const sharing = useSharing(installable);
-
-  return (
-    <div>
-      <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
-    </div>
-  );
 };
-
-export default SharingLabel;

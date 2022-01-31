@@ -16,27 +16,24 @@
  */
 
 import React from "react";
-import { Button } from "react-bootstrap";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
-import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { timeSince } from "@/utils/timeUtils";
-import { Row } from "react-table";
-import { InstallableRow } from "@/options/pages/blueprints/BlueprintsCard";
-import styles from "@/options/pages/blueprints/BlueprintTableRow.module.scss";
+import { InstallableRow } from "@/options/pages/blueprints/blueprintsTypes";
+import styles from "./BlueprintTableRow.module.scss";
+import Status from "@/options/pages/blueprints/Status";
 
 const BlueprintTableRow: React.FunctionComponent<{
-  installableRow: Row<InstallableRow>;
-}> = ({ installableRow }) => {
+  installableItem: InstallableRow;
+}> = ({ installableItem }) => {
   const {
     name,
     description,
     sharing,
     updatedAt,
     installable,
-  } = installableRow.original;
+  } = installableItem;
 
-  const { activate, reinstall } = useInstallableActions(installable);
   // TODO: fix the parsing (timezone, some not being parsed)
   const lastUpdated = timeSince(new Date(updatedAt).getTime());
 
@@ -58,21 +55,7 @@ const BlueprintTableRow: React.FunctionComponent<{
         <span className="small">Last updated: {lastUpdated}</span>
       </td>
       <td>
-        {installable.active ? (
-          <>
-            {installable.hasUpdate ? (
-              <Button size="sm" variant="warning" onClick={reinstall}>
-                Update
-              </Button>
-            ) : (
-              "Active"
-            )}
-          </>
-        ) : (
-          <Button size="sm" variant="info" onClick={activate}>
-            Activate
-          </Button>
-        )}
+        <Status installable={installable} />
       </td>
       <td>
         <BlueprintActions installable={installable} />

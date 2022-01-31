@@ -15,33 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Card, Table } from "react-bootstrap";
-import BlueprintTableRow from "@/options/pages/blueprints/BlueprintTableRow";
-import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 import React from "react";
 import { Row, TableInstance } from "react-table";
-import { InstallableRow } from "@/options/pages/blueprints/BlueprintsCard";
+import { InstallableRow } from "@/options/pages/blueprints/blueprintsTypes";
+import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
+import styles from "./GridView.module.scss";
+import GridCard from "./GridCard";
 
-const BlueprintTableList: React.FunctionComponent<{
-  tableInstance: TableInstance;
+type GridViewProps = {
   rows: Array<Row<InstallableRow>>;
-}> = ({ tableInstance, rows }) => (
-  <Card>
-    <Table {...tableInstance.getTableProps()}>
-      <tbody {...tableInstance.getTableBodyProps()}>
-        {rows.map((row) => {
-          tableInstance.prepareRow(row);
+};
 
-          return (
-            <BlueprintTableRow
-              key={getUniqueId(row.original.installable)}
-              installableRow={row}
-            />
-          );
-        })}
-      </tbody>
-    </Table>
-  </Card>
+const GridView: React.VoidFunctionComponent<GridViewProps> = ({ rows }) => (
+  <div className={styles.root}>
+    {rows.map((row) => (
+      <GridCard
+        key={getUniqueId(row.original.installable)}
+        installableItem={row.original}
+      />
+    ))}
+  </div>
 );
 
-export default BlueprintTableList;
+export default GridView;

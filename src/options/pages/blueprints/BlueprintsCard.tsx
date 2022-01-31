@@ -16,7 +16,13 @@
  */
 
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  Fragment,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getDescription,
@@ -43,9 +49,10 @@ import {
   faSortAmountUpAlt,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
-import BlueprintTableList from "@/options/pages/blueprints/BlueprintTableList";
-import { RegistryId } from "@/core";
+import BlueprintTableList from "@/options/pages/blueprints/tableView/BlueprintTableList";
 import ListFilters from "./ListFilters";
+import { InstallableRow } from "./blueprintsTypes";
+import GridView from "./gridView/GridView";
 
 const getFilterOptions = (column: ColumnInstance) => {
   const options = new Set();
@@ -54,23 +61,6 @@ const getFilterOptions = (column: ColumnInstance) => {
   }
 
   return [...options.values()];
-};
-
-// Reshaped Installable to easily filter, sort, and group Installables
-export type InstallableRow = {
-  name: string;
-  description: string;
-  sharing: {
-    packageId: RegistryId;
-    source: {
-      type: string;
-      label: string;
-    };
-  };
-  updatedAt: string;
-  status: "Active" | "Uninstalled";
-  // Used to get Installable actions from useInstallableActions
-  installable: Installable;
 };
 
 const getInstallableRows = (
@@ -139,7 +129,7 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  const [view, setView] = useState<"list" | "grid">("list");
+  const [view, setView] = useState<"list" | "grid">("grid");
 
   const {
     rows,
@@ -152,8 +142,8 @@ const BlueprintsCard: React.FunctionComponent<{
     state: { groupBy, sortBy, filters },
   } = tableInstance;
 
-  const isGrouped = useMemo(() => groupBy.length > 0, [groupBy]);
-  const isSorted = useMemo(() => sortBy.length > 0, [sortBy]);
+  const isGrouped = groupBy.length > 0;
+  const isSorted = sortBy.length > 0;
 
   const groupByOptions = flatHeaders
     .filter((column) => column.canGroupBy)
@@ -177,6 +167,8 @@ const BlueprintsCard: React.FunctionComponent<{
       (option) => !["Personal", "Public"].includes(option as string)
     ) as string[];
   }, [flatHeaders]);
+
+  const ViewComponent = view === "list" ? BlueprintTableList : GridView;
 
   return (
     <BootstrapRow>
@@ -261,17 +253,17 @@ const BlueprintsCard: React.FunctionComponent<{
         {isGrouped ? (
           <>
             {rows.map((row) => (
-              <>
+              <Fragment key={row.groupByVal}>
                 <h5 className="text-muted mt-3">{row.groupByVal}</h5>
-                <BlueprintTableList
+                <ViewComponent
                   tableInstance={tableInstance}
                   rows={row.subRows as Array<Row<InstallableRow>>}
                 />
-              </>
+              </Fragment>
             ))}
           </>
         ) : (
-          <BlueprintTableList
+          <ViewComponent
             tableInstance={tableInstance}
             rows={rows as Array<Row<InstallableRow>>}
           />
