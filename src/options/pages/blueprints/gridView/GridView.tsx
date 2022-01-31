@@ -16,24 +16,26 @@
  */
 
 import React from "react";
-import { Row, TableInstance } from "react-table";
-import { InstallableRow } from "@/options/pages/blueprints/blueprintsTypes";
+import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 import styles from "./GridView.module.scss";
 import GridCard from "./GridCard";
 
-type GridViewProps = {
-  rows: Array<Row<InstallableRow>>;
-};
-
-const GridView: React.VoidFunctionComponent<GridViewProps> = ({ rows }) => (
+const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
+  tableInstance,
+  rows,
+}) => (
   <div className={styles.root}>
-    {rows.map((row) => (
-      <GridCard
-        key={getUniqueId(row.original.installable)}
-        installableItem={row.original}
-      />
-    ))}
+    {rows.map((row) => {
+      tableInstance.prepareRow(row);
+
+      return (
+        <GridCard
+          key={getUniqueId(row.original.installable)}
+          installableItem={row.original}
+        />
+      );
+    })}
   </div>
 );
 

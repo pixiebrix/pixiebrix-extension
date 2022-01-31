@@ -129,7 +129,7 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  const [view, setView] = useState<"list" | "grid">("grid");
+  const [view, setView] = useState<"list" | "grid">("list");
 
   const {
     rows,
@@ -233,6 +233,7 @@ const BlueprintsCard: React.FunctionComponent<{
             <Button
               variant={view === "list" ? "link" : "outline-link"}
               size="sm"
+              className="ml-3"
               onClick={() => {
                 setView("list");
               }}

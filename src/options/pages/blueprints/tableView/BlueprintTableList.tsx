@@ -19,13 +19,12 @@ import React from "react";
 import { Card, Table } from "react-bootstrap";
 import BlueprintTableRow from "./BlueprintTableRow";
 import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
-import { Row, TableInstance } from "react-table";
-import { InstallableRow } from "@/options/pages/blueprints/blueprintsTypes";
+import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 
-const BlueprintTableList: React.VoidFunctionComponent<{
-  tableInstance: TableInstance;
-  rows: Array<Row<InstallableRow>>;
-}> = ({ tableInstance, rows }) => (
+const BlueprintTableList: React.VoidFunctionComponent<BlueprintListViewProps> = ({
+  tableInstance,
+  rows,
+}) => (
   <Card>
     <Table {...tableInstance.getTableProps()}>
       <tbody {...tableInstance.getTableBodyProps()}>

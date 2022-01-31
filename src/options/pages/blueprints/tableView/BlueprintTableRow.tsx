@@ -23,7 +23,7 @@ import { InstallableRow } from "@/options/pages/blueprints/blueprintsTypes";
 import styles from "./BlueprintTableRow.module.scss";
 import Status from "@/options/pages/blueprints/Status";
 
-const BlueprintTableRow: React.FunctionComponent<{
+const BlueprintTableRow: React.VoidFunctionComponent<{
   installableItem: InstallableRow;
 }> = ({ installableItem }) => {
   const {

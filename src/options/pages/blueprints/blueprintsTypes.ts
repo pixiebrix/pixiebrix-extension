@@ -17,6 +17,7 @@
 
 import { Installable } from "./installableUtils";
 import { RegistryId } from "@/core";
+import { Row, TableInstance } from "react-table";
 
 // Reshaped Installable to easily filter, sort, and group Installables
 export type InstallableRow = {
@@ -33,4 +34,9 @@ export type InstallableRow = {
   status: "Active" | "Uninstalled";
   // Used to get Installable actions from useInstallableActions
   installable: Installable;
+};
+
+export type BlueprintListViewProps = {
+  tableInstance: TableInstance;
+  rows: Row<InstallableRow>[];
 };

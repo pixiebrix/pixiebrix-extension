@@ -22,12 +22,15 @@ import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 import { timeSince } from "@/utils/timeUtils";
 import Status from "@/options/pages/blueprints/Status";
 import styles from "./GridCard.module.scss";
+import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 
 type GridCardProps = {
   installableItem: InstallableRow;
 };
 
-const GridCard: React.VFC<GridCardProps> = ({ installableItem }) => {
+const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
+  installableItem,
+}) => {
   const { name, updatedAt, installable } = installableItem;
 
   const lastUpdated = timeSince(new Date(updatedAt).getTime());
@@ -38,7 +41,10 @@ const GridCard: React.VFC<GridCardProps> = ({ installableItem }) => {
       <div>
         <SharingLabel installable={installable} />
         <Card.Text>Last updated: {lastUpdated}</Card.Text>
-        <Status installable={installable} />
+        <div className={styles.actions}>
+          <Status installable={installable} />
+          <BlueprintActions installable={installable} />
+        </div>
       </div>
     </Card>
   );
