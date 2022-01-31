@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  Installable,
-  isExtension,
-} from "@/options/pages/blueprints/installableUtils";
+import { isExtension } from "@/options/pages/blueprints/installableUtils";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -30,6 +27,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
+import { Installable } from "./blueprintsTypes";
 
 const BlueprintActions: React.FunctionComponent<{
   installable: Installable;

@@ -15,35 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function timeSince(date: number): string {
-  // Adapted from: https://stackoverflow.com/a/3177838/402560
-  const seconds = Math.floor((Date.now() - date) / 1000);
+import { DateTime } from "luxon";
 
-  let interval = seconds / 31_536_000;
-
-  if (interval > 1) {
-    return `${Math.floor(interval)} years`;
-  }
-
-  interval = seconds / 2_592_000;
-  if (interval > 1) {
-    return `${Math.floor(interval)} months`;
-  }
-
-  interval = seconds / 86_400;
-  if (interval > 1) {
-    return `${Math.floor(interval)} days`;
-  }
-
-  interval = seconds / 3600;
-  if (interval > 1) {
-    return `${Math.floor(interval)} hours`;
-  }
-
-  interval = seconds / 60;
-  if (interval > 1) {
-    return `${Math.floor(interval)} minutes`;
-  }
-
-  return `${Math.floor(seconds)} seconds`;
+export function timeSince(dateIso: string): string {
+  return DateTime.fromISO(dateIso).toRelative();
 }

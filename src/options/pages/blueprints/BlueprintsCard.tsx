@@ -16,7 +16,13 @@
  */
 
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { useContext, useEffect, useMemo } from "react";
+import React, {
+  Fragment,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getDescription,
@@ -24,12 +30,10 @@ import {
   getPackageId,
   getSharingType,
   getUpdatedAt,
-  Installable,
-} from "@/options/pages/blueprints/installableUtils";
+} from "./installableUtils";
 import AuthContext from "@/auth/AuthContext";
 import {
   Column,
-  Row,
   ColumnInstance,
   useFilters,
   useGroupBy,
@@ -38,12 +42,15 @@ import {
 } from "react-table";
 import Select from "react-select";
 import {
+  faList,
   faSortAmountDownAlt,
   faSortAmountUpAlt,
+  faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
-import BlueprintTableList from "@/options/pages/blueprints/BlueprintTableList";
-import { RegistryId } from "@/core";
+import TableView from "./tableView/TableView";
 import ListFilters from "./ListFilters";
+import { Installable, InstallableViewItem } from "./blueprintsTypes";
+import GridView from "./gridView/GridView";
 
 const getFilterOptions = (column: ColumnInstance) => {
   const options = new Set();
@@ -54,29 +61,12 @@ const getFilterOptions = (column: ColumnInstance) => {
   return [...options.values()];
 };
 
-// Reshaped Installable to easily filter, sort, and group Installables
-export type InstallableRow = {
-  name: string;
-  description: string;
-  sharing: {
-    packageId: RegistryId;
-    source: {
-      type: string;
-      label: string;
-    };
-  };
-  updatedAt: string;
-  status: "Active" | "Uninstalled";
-  // Used to get Installable actions from useInstallableActions
-  installable: Installable;
-};
-
 const getInstallableRows = (
   installables: Installable[],
   scope: string
-): InstallableRow[] =>
+): InstallableViewItem[] =>
   installables.map(
-    (installable): InstallableRow => ({
+    (installable): InstallableViewItem => ({
       name: getLabel(installable),
       description: getDescription(installable),
       sharing: {
@@ -92,7 +82,7 @@ const getInstallableRows = (
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, and filtering utilities
 // (and eventually pagination & global searching) on InstallableRows
-const columns: Array<Column<InstallableRow>> = [
+const columns: Array<Column<InstallableViewItem>> = [
   {
     Header: "Name",
     accessor: "name",
@@ -120,7 +110,7 @@ const BlueprintsCard: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { scope } = useContext(AuthContext);
-  const data: InstallableRow[] = useMemo(
+  const data: InstallableViewItem[] = useMemo(
     () => getInstallableRows(installables, scope),
     [installables, scope]
   );
@@ -130,12 +120,14 @@ const BlueprintsCard: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on first mount
   }, []);
 
-  const tableInstance = useTable(
+  const tableInstance = useTable<InstallableViewItem>(
     { columns, data },
     useFilters,
     useGroupBy,
     useSortBy
   );
+
+  const [view, setView] = useState<"list" | "grid">("list");
 
   const {
     rows,
@@ -148,8 +140,8 @@ const BlueprintsCard: React.FunctionComponent<{
     state: { groupBy, sortBy, filters },
   } = tableInstance;
 
-  const isGrouped = useMemo(() => groupBy.length > 0, [groupBy]);
-  const isSorted = useMemo(() => sortBy.length > 0, [sortBy]);
+  const isGrouped = groupBy.length > 0;
+  const isSorted = sortBy.length > 0;
 
   const groupByOptions = flatHeaders
     .filter((column) => column.canGroupBy)
@@ -173,6 +165,8 @@ const BlueprintsCard: React.FunctionComponent<{
       (option) => !["Personal", "Public"].includes(option as string)
     ) as string[];
   }, [flatHeaders]);
+
+  const BlueprintsView = view === "list" ? TableView : GridView;
 
   return (
     <BootstrapRow>
@@ -234,25 +228,41 @@ const BlueprintsCard: React.FunctionComponent<{
                 />
               </Button>
             )}
+            <Button
+              variant={view === "list" ? "link" : "outline-link"}
+              size="sm"
+              className="ml-3"
+              onClick={() => {
+                setView("list");
+              }}
+            >
+              <FontAwesomeIcon icon={faList} size="lg" />
+            </Button>
+            <Button
+              variant={view === "grid" ? "link" : "outline-link"}
+              size="sm"
+              onClick={() => {
+                setView("grid");
+              }}
+            >
+              <FontAwesomeIcon icon={faThLarge} size="lg" />
+            </Button>
           </span>
         </div>
         {isGrouped ? (
           <>
             {rows.map((row) => (
-              <>
+              <Fragment key={row.groupByVal}>
                 <h5 className="text-muted mt-3">{row.groupByVal}</h5>
-                <BlueprintTableList
+                <BlueprintsView
                   tableInstance={tableInstance}
-                  rows={row.subRows as Array<Row<InstallableRow>>}
+                  rows={row.subRows}
                 />
-              </>
+              </Fragment>
             ))}
           </>
         ) : (
-          <BlueprintTableList
-            tableInstance={tableInstance}
-            rows={rows as Array<Row<InstallableRow>>}
-          />
+          <BlueprintsView tableInstance={tableInstance} rows={rows} />
         )}
       </Col>
     </BootstrapRow>

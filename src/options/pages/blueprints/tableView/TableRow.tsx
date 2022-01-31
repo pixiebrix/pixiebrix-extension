@@ -16,29 +16,23 @@
  */
 
 import React from "react";
-import { Button } from "react-bootstrap";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
-import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { timeSince } from "@/utils/timeUtils";
-import { Row } from "react-table";
-import { InstallableRow } from "@/options/pages/blueprints/BlueprintsCard";
-import styles from "@/options/pages/blueprints/BlueprintTableRow.module.scss";
+import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
+import Status from "@/options/pages/blueprints/Status";
+import styles from "./TableRow.module.scss";
 
-const BlueprintTableRow: React.FunctionComponent<{
-  installableRow: Row<InstallableRow>;
-}> = ({ installableRow }) => {
+const TableRow: React.VoidFunctionComponent<{
+  installableItem: InstallableViewItem;
+}> = ({ installableItem }) => {
   const {
     name,
     description,
     sharing,
     updatedAt,
     installable,
-  } = installableRow.original;
-
-  const { activate, reinstall } = useInstallableActions(installable);
-  // TODO: fix the parsing (timezone, some not being parsed)
-  const lastUpdated = timeSince(new Date(updatedAt).getTime());
+  } = installableItem;
 
   return (
     <tr>
@@ -55,24 +49,10 @@ const BlueprintTableRow: React.FunctionComponent<{
         </div>
       </td>
       <td className="text-wrap">
-        <span className="small">Last updated: {lastUpdated}</span>
+        <span className="small">Updated: {timeSince(updatedAt)}</span>
       </td>
       <td>
-        {installable.active ? (
-          <>
-            {installable.hasUpdate ? (
-              <Button size="sm" variant="warning" onClick={reinstall}>
-                Update
-              </Button>
-            ) : (
-              "Active"
-            )}
-          </>
-        ) : (
-          <Button size="sm" variant="info" onClick={activate}>
-            Activate
-          </Button>
-        )}
+        <Status installable={installable} />
       </td>
       <td>
         <BlueprintActions installable={installable} />
@@ -81,4 +61,4 @@ const BlueprintTableRow: React.FunctionComponent<{
   );
 };
 
-export default BlueprintTableRow;
+export default TableRow;

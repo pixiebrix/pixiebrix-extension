@@ -16,6 +16,8 @@
  */
 
 import { zip, zipObject } from "lodash";
+import objectHash from "object-hash";
+import slugify from "slugify";
 
 interface ParsingOptions {
   orientation?: "vertical" | "horizontal" | "infer";
@@ -95,4 +97,39 @@ export default function parseDomTable(
 
   const records = body.map((row) => zipObject(fieldNames, row));
   return { records, fieldNames };
+}
+
+function getAriaDescription(element: HTMLElement): string | undefined {
+  const describedBy = element.getAttribute("aria-describedby");
+  if (describedBy) {
+    return element.ownerDocument.querySelector("#" + describedBy)?.textContent;
+  }
+}
+
+function getNameFromFields(fields: Array<number | string>): string {
+  return "Table_" + objectHash(fields).slice(0, 5);
+}
+
+export function getAllTables(
+  root: HTMLElement | Document = document
+): Map<string, ParsedTable> {
+  const tables = new Map();
+  for (const table of $<HTMLTableElement>("table", root)) {
+    const parsedTable = parseDomTable(table);
+
+    // Uses || instead of ?? to exclude empty strings
+    const tableName =
+      table.querySelector("caption")?.textContent ||
+      getAriaDescription(table) ||
+      table.getAttribute("aria-label") ||
+      // TODO: Exclude random identifiers #2498
+      table.id ||
+      getNameFromFields(parsedTable.fieldNames);
+    tables.set(
+      slugify(tableName, { replacement: "_", lower: true }),
+      parsedTable
+    );
+  }
+
+  return tables;
 }
