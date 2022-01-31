@@ -15,17 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Card, Table } from "react-bootstrap";
-import BlueprintTableRow from "@/options/pages/blueprints/BlueprintTableRow";
-import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 import React from "react";
-import { Row, TableInstance } from "react-table";
-import { InstallableRow } from "@/options/pages/blueprints/BlueprintsCard";
+import { Card, Table } from "react-bootstrap";
+import TableRow from "./TableRow";
+import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
+import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 
-const BlueprintTableList: React.FunctionComponent<{
-  tableInstance: TableInstance;
-  rows: Array<Row<InstallableRow>>;
-}> = ({ tableInstance, rows }) => (
+const TableView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
+  tableInstance,
+  rows,
+}) => (
   <Card>
     <Table {...tableInstance.getTableProps()}>
       <tbody {...tableInstance.getTableBodyProps()}>
@@ -33,9 +32,9 @@ const BlueprintTableList: React.FunctionComponent<{
           tableInstance.prepareRow(row);
 
           return (
-            <BlueprintTableRow
+            <TableRow
               key={getUniqueId(row.original.installable)}
-              installableRow={row}
+              installableItem={row.original}
             />
           );
         })}
@@ -44,4 +43,4 @@ const BlueprintTableList: React.FunctionComponent<{
   </Card>
 );
 
-export default BlueprintTableList;
+export default TableView;

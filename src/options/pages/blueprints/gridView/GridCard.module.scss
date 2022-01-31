@@ -15,33 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import useSharing from "@/options/pages/blueprints/useSharing";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEyeSlash,
-  faGlobe,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
-import { Installable } from "./blueprintsTypes";
+.root {
+  height: 200px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-const sharingIcons = {
-  Personal: faEyeSlash,
-  Team: faUsers,
-  Public: faGlobe,
-  Deployment: faUsers,
-};
-
-const SharingLabel: React.FunctionComponent<{
-  installable: Installable;
-}> = ({ installable }) => {
-  const sharing = useSharing(installable);
-
-  return (
-    <div>
-      <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
-    </div>
-  );
-};
-
-export default SharingLabel;
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
