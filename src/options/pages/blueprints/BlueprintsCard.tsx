@@ -16,7 +16,7 @@
  */
 
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getDescription,
@@ -38,8 +38,10 @@ import {
 } from "react-table";
 import Select from "react-select";
 import {
+  faList,
   faSortAmountDownAlt,
   faSortAmountUpAlt,
+  faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
 import BlueprintTableList from "@/options/pages/blueprints/BlueprintTableList";
 import { RegistryId } from "@/core";
@@ -136,6 +138,8 @@ const BlueprintsCard: React.FunctionComponent<{
     useGroupBy,
     useSortBy
   );
+
+  const [view, setView] = useState<"list" | "grid">("list");
 
   const {
     rows,
@@ -234,6 +238,24 @@ const BlueprintsCard: React.FunctionComponent<{
                 />
               </Button>
             )}
+            <Button
+              variant={view === "list" ? "link" : "outline-link"}
+              size="sm"
+              onClick={() => {
+                setView("list");
+              }}
+            >
+              <FontAwesomeIcon icon={faList} size="lg" />
+            </Button>
+            <Button
+              variant={view === "grid" ? "link" : "outline-link"}
+              size="sm"
+              onClick={() => {
+                setView("grid");
+              }}
+            >
+              <FontAwesomeIcon icon={faThLarge} size="lg" />
+            </Button>
           </span>
         </div>
         {isGrouped ? (
