@@ -10,6 +10,100 @@ exports[`FormPreview it renders empty schema 1`] = `
 </DocumentFragment>
 `;
 
+exports[`FormPreview it renders markdown in description 1`] = `
+<DocumentFragment>
+  <div
+    class="rjsf"
+  >
+    <div
+      class="form-group"
+    >
+      <div
+        class="my-1"
+      >
+        <h5>
+          A form
+        </h5>
+        <hr
+          class="border-0 bg-secondary"
+          style="height: 1px;"
+        />
+      </div>
+      <div
+        class="field-description"
+        id="root-description"
+      >
+        <p>
+          <em>
+            Form description
+          </em>
+        </p>
+        
+
+      </div>
+      <div
+        class="p-0 container-fluid"
+      >
+        <div
+          class="row"
+          style="margin-bottom: 10px;"
+        >
+          <div
+            class="col-12"
+          >
+             
+            <div
+              class="form-group"
+            >
+              <div
+                class="root root isActive"
+                role="group"
+              >
+                <div
+                  class="mb-0 form-group"
+                >
+                  <label
+                    class="form-label"
+                  >
+                    First name
+                  </label>
+                  <input
+                    class="form-control"
+                    id="root_firstName"
+                    placeholder=""
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div
+                class="field-description text-muted"
+                id="root_firstName"
+              >
+                <p>
+                  <a
+                    href="https://example.com"
+                  >
+                    link
+                  </a>
+                   in 
+                  <strong>
+                    description
+                  </strong>
+                </p>
+                
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div />
+  </div>
+</DocumentFragment>
+`;
+
 exports[`FormPreview it renders simple schema 1`] = `
 <DocumentFragment>
   <div
