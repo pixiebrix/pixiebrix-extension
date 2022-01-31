@@ -38,5 +38,5 @@ export type InstallableRow = {
 
 export type BlueprintListViewProps = {
   tableInstance: TableInstance;
-  rows: Row<InstallableRow>[];
+  rows: Array<Row<InstallableRow>>;
 };
