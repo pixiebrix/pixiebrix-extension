@@ -17,11 +17,11 @@
 
 import React from "react";
 import { Card, Table } from "react-bootstrap";
-import BlueprintTableRow from "./BlueprintTableRow";
+import TableRow from "./TableRow";
 import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 
-const BlueprintTableList: React.VoidFunctionComponent<BlueprintListViewProps> = ({
+const TableView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
   rows,
 }) => (
@@ -32,7 +32,7 @@ const BlueprintTableList: React.VoidFunctionComponent<BlueprintListViewProps> = 
           tableInstance.prepareRow(row);
 
           return (
-            <BlueprintTableRow
+            <TableRow
               key={getUniqueId(row.original.installable)}
               installableItem={row.original}
             />
@@ -43,4 +43,4 @@ const BlueprintTableList: React.VoidFunctionComponent<BlueprintListViewProps> = 
   </Card>
 );
 
-export default BlueprintTableList;
+export default TableView;

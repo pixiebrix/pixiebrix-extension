@@ -25,9 +25,9 @@ import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import {
   getOrganization,
-  Installable,
   updateAvailable,
 } from "@/options/pages/blueprints/installableUtils";
+import { Installable } from "./blueprintsTypes";
 import {
   useGetCloudExtensionsQuery,
   useGetOrganizationsQuery,

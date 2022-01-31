@@ -30,12 +30,10 @@ import {
   getPackageId,
   getSharingType,
   getUpdatedAt,
-  Installable,
-} from "@/options/pages/blueprints/installableUtils";
+} from "./installableUtils";
 import AuthContext from "@/auth/AuthContext";
 import {
   Column,
-  Row,
   ColumnInstance,
   useFilters,
   useGroupBy,
@@ -49,9 +47,9 @@ import {
   faSortAmountUpAlt,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
-import BlueprintTableList from "@/options/pages/blueprints/tableView/BlueprintTableList";
+import TableView from "./tableView/TableView";
 import ListFilters from "./ListFilters";
-import { InstallableRow } from "./blueprintsTypes";
+import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import GridView from "./gridView/GridView";
 
 const getFilterOptions = (column: ColumnInstance) => {
@@ -66,9 +64,9 @@ const getFilterOptions = (column: ColumnInstance) => {
 const getInstallableRows = (
   installables: Installable[],
   scope: string
-): InstallableRow[] =>
+): InstallableViewItem[] =>
   installables.map(
-    (installable): InstallableRow => ({
+    (installable): InstallableViewItem => ({
       name: getLabel(installable),
       description: getDescription(installable),
       sharing: {
@@ -84,7 +82,7 @@ const getInstallableRows = (
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, and filtering utilities
 // (and eventually pagination & global searching) on InstallableRows
-const columns: Array<Column<InstallableRow>> = [
+const columns: Array<Column<InstallableViewItem>> = [
   {
     Header: "Name",
     accessor: "name",
@@ -112,7 +110,7 @@ const BlueprintsCard: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { scope } = useContext(AuthContext);
-  const data: InstallableRow[] = useMemo(
+  const data: InstallableViewItem[] = useMemo(
     () => getInstallableRows(installables, scope),
     [installables, scope]
   );
@@ -122,7 +120,7 @@ const BlueprintsCard: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on first mount
   }, []);
 
-  const tableInstance = useTable(
+  const tableInstance = useTable<InstallableViewItem>(
     { columns, data },
     useFilters,
     useGroupBy,
@@ -168,7 +166,7 @@ const BlueprintsCard: React.FunctionComponent<{
     ) as string[];
   }, [flatHeaders]);
 
-  const ViewComponent = view === "list" ? BlueprintTableList : GridView;
+  const BlueprintsView = view === "list" ? TableView : GridView;
 
   return (
     <BootstrapRow>
@@ -256,18 +254,15 @@ const BlueprintsCard: React.FunctionComponent<{
             {rows.map((row) => (
               <Fragment key={row.groupByVal}>
                 <h5 className="text-muted mt-3">{row.groupByVal}</h5>
-                <ViewComponent
+                <BlueprintsView
                   tableInstance={tableInstance}
-                  rows={row.subRows as Array<Row<InstallableRow>>}
+                  rows={row.subRows}
                 />
               </Fragment>
             ))}
           </>
         ) : (
-          <ViewComponent
-            tableInstance={tableInstance}
-            rows={rows as Array<Row<InstallableRow>>}
-          />
+          <BlueprintsView tableInstance={tableInstance} rows={rows} />
         )}
       </Col>
     </BootstrapRow>

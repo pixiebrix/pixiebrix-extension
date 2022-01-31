@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "react-bootstrap";
-import { Installable } from "./installableUtils";
+import { Installable } from "./blueprintsTypes";
 import useInstallableActions from "./useInstallableActions";
 
 type StatusProps = {

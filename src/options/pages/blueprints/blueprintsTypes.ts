@@ -15,12 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Installable } from "./installableUtils";
-import { RegistryId } from "@/core";
+import { RegistryId, ResolvedExtension } from "@/core";
 import { Row, TableInstance } from "react-table";
+import { Organization } from "@/types/contract";
+import { RecipeDefinition } from "@/types/definitions";
+
+export type InstallStatus = {
+  hasUpdate: boolean;
+  active: boolean;
+  organization: Organization;
+};
+
+// XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
+export type Installable = (RecipeDefinition | ResolvedExtension) &
+  InstallStatus;
 
 // Reshaped Installable to easily filter, sort, and group Installables
-export type InstallableRow = {
+export type InstallableViewItem = {
   name: string;
   description: string;
   sharing: {
@@ -38,5 +49,5 @@ export type InstallableRow = {
 
 export type BlueprintListViewProps = {
   tableInstance: TableInstance;
-  rows: Array<Row<InstallableRow>>;
+  rows: Array<Row<InstallableViewItem>>;
 };

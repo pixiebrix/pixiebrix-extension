@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { InstallableRow } from "@/options/pages/blueprints/blueprintsTypes";
+import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import { Card } from "react-bootstrap";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 import { timeSince } from "@/utils/timeUtils";
@@ -25,7 +25,7 @@ import styles from "./GridCard.module.scss";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 
 type GridCardProps = {
-  installableItem: InstallableRow;
+  installableItem: InstallableViewItem;
 };
 
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({

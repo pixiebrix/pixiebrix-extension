@@ -19,12 +19,12 @@ import React from "react";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 import { timeSince } from "@/utils/timeUtils";
-import { InstallableRow } from "@/options/pages/blueprints/blueprintsTypes";
-import styles from "./BlueprintTableRow.module.scss";
+import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
+import styles from "./TableRow.module.scss";
 import Status from "@/options/pages/blueprints/Status";
 
-const BlueprintTableRow: React.VoidFunctionComponent<{
-  installableItem: InstallableRow;
+const TableRow: React.VoidFunctionComponent<{
+  installableItem: InstallableViewItem;
 }> = ({ installableItem }) => {
   const {
     name,
@@ -64,4 +64,4 @@ const BlueprintTableRow: React.VoidFunctionComponent<{
   );
 };
 
-export default BlueprintTableRow;
+export default TableRow;
