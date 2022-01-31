@@ -28,7 +28,13 @@ import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import BootstrapStylesheet from "./BootstrapStylesheet";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
+// eslint-disable-next-line import/no-named-as-default -- need default export here
+import DescriptionField from "@/components/formBuilder/DescriptionField";
+import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 
+const fields = {
+  DescriptionField,
+};
 const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
@@ -47,7 +53,9 @@ const CustomFormComponent: React.FunctionComponent<{
       schema={schema}
       uiSchema={uiSchema}
       formData={formData}
+      fields={fields}
       widgets={uiWidgets}
+      FieldTemplate={FieldTemplate}
       onSubmit={async ({ formData }) => {
         await onSubmit(formData);
       }}

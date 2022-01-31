@@ -116,7 +116,8 @@ const useSavingWizard = () => {
   const saveElementAsPersonalExtension = async () => {
     dispatch(savingExtensionActions.setSavingInProgress());
 
-    const { recipe, ...rest } = element;
+    // Stripping the recipe-related data from the element
+    const { recipe, optionsDefinition, ...rest } = element;
     const personalElement: FormState = {
       ...rest,
       uuid: uuidv4(),

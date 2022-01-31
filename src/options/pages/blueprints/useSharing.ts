@@ -18,11 +18,11 @@
 import { useContext, useMemo } from "react";
 import AuthContext from "@/auth/AuthContext";
 import {
-  Installable,
   isDeployment,
   isPersonal,
   isPublic,
 } from "@/options/pages/blueprints/installableUtils";
+import { Installable } from "./blueprintsTypes";
 
 function useSharing(
   installable: Installable

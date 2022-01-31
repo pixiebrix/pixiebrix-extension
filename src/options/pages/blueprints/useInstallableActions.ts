@@ -16,11 +16,11 @@
  */
 
 import {
-  Installable,
   isExtension,
   isExtensionFromRecipe,
   isPersonal,
 } from "@/options/pages/blueprints/installableUtils";
+import { Installable } from "./blueprintsTypes";
 import { useDispatch } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import {

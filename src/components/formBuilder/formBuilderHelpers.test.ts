@@ -20,6 +20,7 @@ import {
   DEFAULT_FIELD_TYPE,
   MINIMAL_SCHEMA,
   MINIMAL_UI_SCHEMA,
+  normalizeUiOrder,
   produceSchemaOnPropertyNameChange,
   replaceStringInArray,
   updateRjsfSchemaWithDefaultsIfNeeded,
@@ -180,5 +181,38 @@ describe("validateNextPropertyName", () => {
   ])("Don't allow special names [%s]", (nextPropertyName) => {
     const actual = validateNextPropertyName(schema, "field1", nextPropertyName);
     expect(actual).toBe("Such property name is forbidden.");
+  });
+});
+
+describe("ormalizeUiOrder", () => {
+  test("init uiOrder", () => {
+    const actual = normalizeUiOrder(["propA", "propB"], []);
+    expect(actual).toEqual(["propA", "propB", "*"]);
+  });
+
+  test("adds * at the end", () => {
+    const actual = normalizeUiOrder(["propA", "propB"], ["propA", "propB"]);
+    expect(actual).toEqual(["propA", "propB", "*"]);
+  });
+
+  test("adds a missing property", () => {
+    const actual = normalizeUiOrder(["propA", "propB"], ["propB", "*"]);
+    expect(actual).toEqual(["propB", "propA", "*"]);
+  });
+
+  test("normalize the position of *", () => {
+    const actual = normalizeUiOrder(
+      ["propA", "propB"],
+      ["propA", "*", "propB"]
+    );
+    expect(actual).toEqual(["propA", "propB", "*"]);
+  });
+
+  test("removes missing props", () => {
+    const actual = normalizeUiOrder(
+      ["propA", "propC"],
+      ["propA", "propB", "propC", "*"]
+    );
+    expect(actual).toEqual(["propA", "propC", "*"]);
   });
 });

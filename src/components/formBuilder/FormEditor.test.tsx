@@ -98,6 +98,42 @@ describe("FormEditor", () => {
 
       return options;
     });
+
+    testItRenders(() => {
+      const schema: Schema = {
+        title: "A form",
+        description: "A form example.",
+        type: "object",
+        properties: {
+          unknown: {
+            type: "string",
+            title: "Unknown format",
+            format: "unknown",
+          },
+        },
+      };
+      const uiSchema: UiSchema = {};
+
+      const props: FormEditorProps = {
+        ...defaultProps,
+        activeField: "unknown",
+      };
+
+      const options: ItRendersOptions<FormEditorProps> = {
+        testName: "unknown field format",
+        Component: FormEditor,
+        props,
+        TemplateComponent: createFormikTemplate({
+          [RJSF_SCHEMA_PROPERTY_NAME]: {
+            schema,
+            uiSchema,
+          } as RJSFSchema,
+        }),
+        isAsync: true,
+      };
+
+      return options;
+    });
   });
 
   test("doesn't mark name field as invalid on blur", async () => {

@@ -16,32 +16,27 @@
  */
 
 import React from "react";
-import useSharing from "@/options/pages/blueprints/useSharing";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEyeSlash,
-  faGlobe,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
-import { Installable } from "./blueprintsTypes";
+import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
+import styles from "./GridView.module.scss";
+import GridCard from "./GridCard";
 
-const sharingIcons = {
-  Personal: faEyeSlash,
-  Team: faUsers,
-  Public: faGlobe,
-  Deployment: faUsers,
-};
+const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
+  tableInstance,
+  rows,
+}) => (
+  <div className={styles.root}>
+    {rows.map((row) => {
+      tableInstance.prepareRow(row);
 
-const SharingLabel: React.FunctionComponent<{
-  installable: Installable;
-}> = ({ installable }) => {
-  const sharing = useSharing(installable);
+      return (
+        <GridCard
+          key={getUniqueId(row.original.installable)}
+          installableItem={row.original}
+        />
+      );
+    })}
+  </div>
+);
 
-  return (
-    <div>
-      <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
-    </div>
-  );
-};
-
-export default SharingLabel;
+export default GridView;
