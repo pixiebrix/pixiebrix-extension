@@ -106,7 +106,7 @@ function getAriaDescription(element: HTMLElement): string | undefined {
   }
 }
 
-function getNameFromFiels(fields: Array<number | string>): string {
+function getNameFromFields(fields: Array<number | string>): string {
   return "Table_" + objectHash(fields).slice(0, 5);
 }
 
@@ -124,7 +124,7 @@ export function getAllTables(
       table.getAttribute("aria-label") ||
       // TODO: Exclude random identifiers #2498
       table.id ||
-      getNameFromFiels(parsedTable.fieldNames);
+      getNameFromFields(parsedTable.fieldNames);
     tables.set(
       slugify(tableName, { replacement: "_", lower: true }),
       parsedTable
