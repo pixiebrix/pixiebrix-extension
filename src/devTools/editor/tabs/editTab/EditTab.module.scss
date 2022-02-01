@@ -27,14 +27,15 @@
   align-items: stretch;
 }
 
-.nodeLayout {
+.nodePanel {
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
   height: 100%;
   width: 200px;
-  overflow-y: auto;
   border-right: 1px solid lightgrey;
+  display: flex;
+  flex-direction: column;
 }
 
 .nodeHeader {
@@ -45,6 +46,11 @@
   gap: 0.5rem;
   padding: 0.25rem;
   border-bottom: 1px solid lightgrey;
+}
+
+.nodeLayout {
+  flex-grow: 1;
+  overflow-y: auto;
 }
 
 .copyButton {

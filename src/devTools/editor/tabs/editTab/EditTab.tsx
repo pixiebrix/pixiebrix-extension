@@ -242,7 +242,7 @@ const EditTab: React.FC<{
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
-        <div className={styles.nodeLayout}>
+        <div className={styles.nodePanel}>
           <div className={styles.nodeHeader}>
             <TooltipIconButton
               name="copyNode"
@@ -265,16 +265,18 @@ const EditTab: React.FC<{
               disabled={activeNodeId === FOUNDATION_NODE_ID}
             />
           </div>
-          <EditorNodeLayout
-            nodes={nodes}
-            activeNodeId={activeNodeId}
-            relevantBlocksToAdd={relevantBlocksToAdd}
-            addBlock={addBlock}
-            showAppend={showAppendNode}
-            moveBlockUp={moveBlockUp}
-            moveBlockDown={moveBlockDown}
-            pasteBlock={pasteBlock}
-          />
+          <div className={styles.nodeLayout}>
+            <EditorNodeLayout
+              nodes={nodes}
+              activeNodeId={activeNodeId}
+              relevantBlocksToAdd={relevantBlocksToAdd}
+              addBlock={addBlock}
+              showAppend={showAppendNode}
+              moveBlockUp={moveBlockUp}
+              moveBlockDown={moveBlockDown}
+              pasteBlock={pasteBlock}
+            />
+          </div>
         </div>
         <div className={styles.configPanel}>
           <ErrorBoundary
