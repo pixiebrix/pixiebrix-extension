@@ -53,7 +53,10 @@ function useAddElement(): AddElement {
       }
 
       try {
-        const element = await config.selectNativeElement(thisTab);
+        const element = await config.selectNativeElement(
+          thisTab,
+          flags.includes("page-editor-filtered-picker")
+        );
         const url = await getCurrentURL();
 
         const metadata = internalExtensionPointMetaFactory();
