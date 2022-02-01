@@ -27,11 +27,9 @@ import { isScriptableUrl } from "webext-content-scripts";
 export function selectOptionalPermissions(
   permissions: string[]
 ): Manifest.OptionalPermission[] {
-  const { optional_permissions } = chrome.runtime.getManifest();
+  const { optional_permissions } = browser.runtime.getManifest();
   return permissions.filter((requestedPermission) =>
-    optional_permissions.includes(
-      requestedPermission as chrome.runtime.ManifestPermissions
-    )
+    optional_permissions.includes(requestedPermission)
   ) as Manifest.OptionalPermission[];
 }
 
