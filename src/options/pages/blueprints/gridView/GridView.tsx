@@ -15,10 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { reactivateTab } from "@/contentScript/messenger/api";
-import { forEachTab } from "@/background/util";
+import React from "react";
+import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
+import styles from "./GridView.module.scss";
+import GridCard from "./GridCard";
 
-export function reactivateEveryTab(): void {
-  console.debug("Reactivate all tabs");
-  void forEachTab(reactivateTab);
-}
+const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
+  tableInstance,
+  rows,
+}) => (
+  <div className={styles.root}>
+    {rows.map((row) => {
+      tableInstance.prepareRow(row);
+
+      return (
+        <GridCard
+          key={getUniqueId(row.original.installable)}
+          installableItem={row.original}
+        />
+      );
+    })}
+  </div>
+);
+
+export default GridView;

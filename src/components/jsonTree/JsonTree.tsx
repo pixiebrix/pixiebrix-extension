@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import JSONTree from "react-json-tree";
+import { JSONTree } from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";

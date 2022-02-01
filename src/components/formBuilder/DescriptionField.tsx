@@ -19,29 +19,34 @@ import React from "react";
 import sanitize from "@/utils/sanitize";
 import { marked } from "marked";
 import { Field } from "@rjsf/core";
+import cx from "classnames";
 
 type FormPreviewDescriptionFieldProps = {
   id: string;
   description: string | React.ReactNode;
+  className?: string;
 };
 
 // RJSF implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/master/packages/core/src/components/fields/DescriptionField.js
-const DescriptionField: React.VoidFunctionComponent<FormPreviewDescriptionFieldProps> = ({
+export const DescriptionField: React.VoidFunctionComponent<FormPreviewDescriptionFieldProps> = ({
   id,
   description,
+  className: classNameProp,
 }) => {
   if (!description) {
     return null;
   }
 
+  const className = cx("field-description", classNameProp);
+
   return typeof description === "string" ? (
     <div
       id={id}
-      className="field-description"
+      className={className}
       dangerouslySetInnerHTML={{ __html: sanitize(marked(description)) }}
-    ></div>
+    />
   ) : (
-    <div id={id} className="field-description">
+    <div id={id} className={className}>
       {description}
     </div>
   );

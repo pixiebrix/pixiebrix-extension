@@ -15,10 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { reactivateTab } from "@/contentScript/messenger/api";
-import { forEachTab } from "@/background/util";
+.root {
+  height: 200px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-export function reactivateEveryTab(): void {
-  console.debug("Reactivate all tabs");
-  void forEachTab(reactivateTab);
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

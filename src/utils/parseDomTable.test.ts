@@ -15,11 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import parseDomTable from "./parseDomTable";
+import parseDomTable, { getAllTables } from "./parseDomTable";
 import { JSDOM } from "jsdom";
 
-function getTable(html: string): HTMLTableElement {
-  return JSDOM.fragment("<table>" + html).firstElementChild as HTMLTableElement;
+function getTable(
+  html: string,
+  attributes: Record<string, string> = {}
+): HTMLTableElement {
+  const table = JSDOM.fragment("<table>" + html)
+    .firstElementChild as HTMLTableElement;
+
+  for (const [name, value] of Object.entries(attributes)) {
+    table.setAttribute(name, value);
+  }
+
+  return table;
+}
+
+function getDocument(...elements: Node[]): Document {
+  const { window } = new JSDOM();
+  window.document.body.append(...elements);
+  return window.document;
 }
 
 describe("parseDomTable", () => {
@@ -78,6 +94,103 @@ describe("parseDomTable", () => {
     };
 
     const actual = parseDomTable(table);
+
+    expect(actual).toStrictEqual(expected);
+  });
+});
+
+describe("getAllTables", () => {
+  test("use caption as name", () => {
+    const table1 = getTable(`
+      <caption>Characters in Mario 3</caption>
+      <tr><th>Name<th>Age
+      <tr><td>Mario<td>42
+      <tr><td>Luigi<td>39
+    `);
+
+    const actual = getAllTables(getDocument(table1));
+
+    const expected = new Map([
+      ["characters_in_mario_3", parseDomTable(table1)],
+    ]);
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  test("use id as name", () => {
+    const table1 = getTable(
+      `
+      <tr><th>Name<th>Age
+      <tr><td>Mario<td>42
+      <tr><td>Luigi<td>39
+    `,
+      { id: "Characters" }
+    );
+
+    const actual = getAllTables(getDocument(table1));
+
+    const expected = new Map([["characters", parseDomTable(table1)]]);
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  test("use aria-label as name", () => {
+    const table1 = getTable(
+      `
+      <tr><th>Name<th>Age
+      <tr><td>Mario<td>42
+      <tr><td>Luigi<td>39
+    `,
+      { "aria-label": "Characters" }
+    );
+
+    const actual = getAllTables(getDocument(table1));
+
+    const expected = new Map([["characters", parseDomTable(table1)]]);
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  test("use aria-describedby as name", () => {
+    const table1 = getTable(
+      `
+      <tr><th>Name<th>Age
+      <tr><td>Mario<td>42
+      <tr><td>Luigi<td>39
+    `,
+      { "aria-describedby": "other-element" }
+    );
+
+    const actual = getAllTables(
+      getDocument(
+        table1,
+        JSDOM.fragment("<p id='other-element'>Characters</p>")
+      )
+    );
+
+    const expected = new Map([["characters", parseDomTable(table1)]]);
+
+    expect(actual).toStrictEqual(expected);
+  });
+
+  test("find multiple unnamed tables", () => {
+    const table1 = getTable(`
+      <tr><th>Name<th>Age
+      <tr><td>Mario<td>42
+      <tr><td>Luigi<td>39
+    `);
+
+    const table2 = getTable(`
+      <tr><td>Mario<td>42
+      <tr><td>Luigi<td>39
+    `);
+
+    const actual = getAllTables(getDocument(table1, table2));
+
+    const expected = new Map([
+      ["table_c07b8", parseDomTable(table1)],
+      ["table_8af45", parseDomTable(table2)],
+    ]);
 
     expect(actual).toStrictEqual(expected);
   });

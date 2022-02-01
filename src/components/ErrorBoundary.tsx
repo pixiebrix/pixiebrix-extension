@@ -17,6 +17,7 @@
 
 import React, { Component } from "react";
 import { Button } from "react-bootstrap";
+import { isExtensionContext } from "webext-detect-page";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { reportError } from "@/telemetry/logging";
@@ -52,7 +53,9 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error): void {
-    reportError(error);
+    if (isExtensionContext()) {
+      reportError(error);
+    }
   }
 
   render(): React.ReactNode {
@@ -74,10 +77,14 @@ class ErrorBoundary extends Component<Props, State> {
             </Button>
           </div>
           <pre className="mt-2 small text-secondary">
-            {this.state.stack.replaceAll(
-              `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
-              ""
-            )}
+            {this.state.stack
+              // In the app
+              .replaceAll(location.origin + "/", "")
+              // In the content script
+              .replaceAll(
+                `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
+                ""
+              )}
           </pre>
         </div>
       );

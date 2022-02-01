@@ -17,16 +17,9 @@
 
 import { RecipeDefinition } from "@/types/definitions";
 import { IExtension, RegistryId, ResolvedExtension, UUID } from "@/core";
-import { groupBy } from "lodash";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
-
-export type InstallStatus = {
-  hasUpdate: boolean;
-  active: boolean;
-  // TODO: not sure if there is a better way to do this
-  organization: Organization;
-};
+import { Installable, InstallStatus } from "./blueprintsTypes";
 
 export const getSharingType = (
   installable: Installable,
@@ -54,10 +47,6 @@ export const getSharingType = (
       : sharingType,
   };
 };
-
-// XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
-export type Installable = (RecipeDefinition | ResolvedExtension) &
-  InstallStatus;
 
 export const isExtension = (
   installable: Installable
@@ -121,15 +110,6 @@ export const isPersonal = (installable: Installable, userScope: string) => {
 export const isDeployment = (installable: Installable) =>
   isExtension(installable) && Boolean(installable._deployment);
 
-// TODO: keeping this even though unused atm, will be useful for future grouping features
-export const groupByRecipe = (installables: Installable[]): Installable[][] =>
-  Object.values(
-    groupBy(
-      installables,
-      (installable) => getPackageId(installable) ?? getUniqueId(installable)
-    )
-  );
-
 export function updateAvailable(
   availableRecipes: RecipeDefinition[],
   extension: ResolvedExtension
@@ -152,7 +132,6 @@ export function updateAvailable(
 
   if (semver.eq(availableRecipe.metadata.version, extension._recipe.version)) {
     // Check the updated_at timestamp
-
     if (extension._recipe?.updated_at == null) {
       // Extension was installed prior to us adding updated_at to RecipeMetadata
       return false;

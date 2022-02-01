@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { reactivateTab } from "@/contentScript/messenger/api";
-import { forEachTab } from "@/background/util";
-
-export function reactivateEveryTab(): void {
-  console.debug("Reactivate all tabs");
-  void forEachTab(reactivateTab);
+.root {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
 }

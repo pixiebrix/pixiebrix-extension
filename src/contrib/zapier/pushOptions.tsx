@@ -37,6 +37,7 @@ import { defaultFieldFactory } from "@/components/fields/schemaFields/SchemaFiel
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
+import FieldTemplate from "@/components/form/FieldTemplate";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -130,14 +131,21 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
     );
   }
 
+  const schema: Schema = ZAPIER_PROPERTIES.pushKey as Schema;
+
   return isExpression(pushKey) ? (
-    <WorkshopMessageWidget />
+    <FieldTemplate
+      name={`${basePath}.pushKey`}
+      label="Zap"
+      description={schema.description}
+      as={WorkshopMessageWidget}
+    />
   ) : (
     <div>
       <ZapField
         label="Zap"
         name={`${basePath}.pushKey`}
-        schema={ZAPIER_PROPERTIES.pushKey as Schema}
+        schema={schema}
         hooks={hooks}
         error={error}
       />

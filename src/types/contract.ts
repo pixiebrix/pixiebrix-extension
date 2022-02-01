@@ -82,6 +82,7 @@ export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
   config: SanitizedConfig;
   // XXX: update serializer to include proper metadata child serializer
   service: { config: { metadata: Metadata } };
+  user?: UUID;
 };
 
 export type ConfigurableAuth = components["schemas"]["EditableAuth"] & {

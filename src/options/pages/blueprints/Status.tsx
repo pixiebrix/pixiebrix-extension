@@ -16,32 +16,32 @@
  */
 
 import React from "react";
-import useSharing from "@/options/pages/blueprints/useSharing";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEyeSlash,
-  faGlobe,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
+import { Button } from "react-bootstrap";
 import { Installable } from "./blueprintsTypes";
+import useInstallableActions from "./useInstallableActions";
 
-const sharingIcons = {
-  Personal: faEyeSlash,
-  Team: faUsers,
-  Public: faGlobe,
-  Deployment: faUsers,
+type StatusProps = {
+  installable: Installable;
 };
 
-const SharingLabel: React.FunctionComponent<{
-  installable: Installable;
-}> = ({ installable }) => {
-  const sharing = useSharing(installable);
+const Status: React.VoidFunctionComponent<StatusProps> = ({ installable }) => {
+  const { activate, reinstall } = useInstallableActions(installable);
 
-  return (
-    <div>
-      <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
-    </div>
+  return installable.active ? (
+    <>
+      {installable.hasUpdate ? (
+        <Button size="sm" variant="warning" onClick={reinstall}>
+          Update
+        </Button>
+      ) : (
+        <div className="text-info py-2">Active</div>
+      )}
+    </>
+  ) : (
+    <Button size="sm" variant="info" onClick={activate}>
+      Activate
+    </Button>
   );
 };
 
-export default SharingLabel;
+export default Status;
