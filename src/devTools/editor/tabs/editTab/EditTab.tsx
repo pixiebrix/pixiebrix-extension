@@ -244,6 +244,7 @@ const EditTab: React.FC<{
       <div className={styles.paneContent}>
         <div className={styles.nodePanel}>
           <div className={styles.nodeHeader}>
+            <span className={styles.nodeHeaderTitle}>Brick Actions</span>
             <TooltipIconButton
               name="copyNode"
               icon={faCopy}

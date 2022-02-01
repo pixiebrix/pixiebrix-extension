@@ -43,9 +43,17 @@
   flex-direction: row;
   align-items: stretch;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: 0.25rem;
   padding: 0.25rem;
   border-bottom: 1px solid lightgrey;
+}
+
+.nodeHeaderTitle {
+  flex-grow: 1;
+  padding-top: 0.25rem;
+  padding-bottom: 0.125rem;
+  padding-left: 0.5rem;
+  font-size: 0.875rem;
 }
 
 .nodeLayout {
