@@ -491,7 +491,7 @@ exports[`FormEditor renders simple schema 1`] = `
           <small
             class="text-muted form-text"
           >
-            Explain to the user what this field is used for
+            The user-visible description for the field
           </small>
         </div>
       </div>
@@ -737,6 +737,473 @@ exports[`FormEditor renders simple schema 1`] = `
             </svg>
              Move down
           </button>
+        </div>
+      </div>
+    </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`FormEditor renders unknown field format 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="formGroup form-group row"
+    >
+      <label
+        class="label form-label col-form-label col-xl-2 col-lg-3"
+        for="rjsfSchema.schema.title"
+      >
+        Form Title
+      </label>
+      <div
+        class="col-xl-10 col-lg-9"
+      >
+        <div
+          class="root"
+        >
+          <div
+            class="field"
+          >
+            <textarea
+              class="form-control"
+              id="rjsfSchema.schema.title"
+              name="rjsfSchema.schema.title"
+              rows="1"
+            >
+              A form
+            </textarea>
+          </div>
+          <div
+            class="dropdown dropdown"
+            data-test-selected="Text"
+            data-testid="toggle-rjsfSchema.schema.title"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-link"
+              type="button"
+            >
+              <span
+                class="symbol"
+              >
+                <svg
+                  class="root"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="formGroup form-group row"
+    >
+      <label
+        class="label form-label col-form-label col-xl-2 col-lg-3"
+        for="rjsfSchema.schema.description"
+      >
+        Form Description
+      </label>
+      <div
+        class="col-xl-10 col-lg-9"
+      >
+        <div
+          class="root"
+        >
+          <div
+            class="field"
+          >
+            <textarea
+              class="form-control"
+              id="rjsfSchema.schema.description"
+              name="rjsfSchema.schema.description"
+              rows="1"
+            >
+              A form example.
+            </textarea>
+          </div>
+          <div
+            class="dropdown dropdown"
+            data-test-selected="Text"
+            data-testid="toggle-rjsfSchema.schema.description"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="dropdown-toggle btn btn-link"
+              type="button"
+            >
+              <span
+                class="symbol"
+              >
+                <svg
+                  class="root"
+                />
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr />
+    <div
+      class="addRow row"
+    >
+      <div
+        class="col"
+      >
+        <button
+          class="btn btn-primary btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-plus fa-w-14 "
+            data-icon="plus"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+              fill="currentColor"
+            />
+          </svg>
+           Add new field
+        </button>
+      </div>
+    </div>
+    <div
+      class="currentFieldRow row"
+    >
+      <div
+        class="currentField col-xl-3"
+      >
+        <h6>
+          Current Field
+        </h6>
+      </div>
+      <div
+        class="col-xl"
+      >
+        <button
+          class="btn btn-danger btn-sm"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-trash fa-w-14 "
+            data-icon="trash"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
+              fill="currentColor"
+            />
+          </svg>
+           Remove field
+        </button>
+      </div>
+      <div
+        class="col-xl"
+      >
+        <small
+          class="text-muted"
+        >
+          Use the Preview Tab on the right to select a field to edit ⟶
+        </small>
+      </div>
+    </div>
+    <div
+      class="root"
+    >
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="rjsfSchema.schema.properties.unknown"
+        >
+          Name
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <input
+            class="form-control"
+            id="rjsfSchema.schema.properties.unknown"
+            name="rjsfSchema.schema.properties.unknown"
+            required=""
+            value="unknown"
+          />
+          <small
+            class="text-muted form-text"
+          >
+            Enter a name to refer to this value in the output later
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="rjsfSchema.schema.properties.unknown.title"
+        >
+          Label
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <textarea
+                class="form-control"
+                id="rjsfSchema.schema.properties.unknown.title"
+                name="rjsfSchema.schema.properties.unknown.title"
+                rows="1"
+              >
+                Unknown format
+              </textarea>
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Text"
+              data-testid="toggle-rjsfSchema.schema.properties.unknown.title"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <svg
+                    class="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            The user-visible label for this field
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="rjsfSchema.schema.properties.unknown.description"
+        >
+          Field Description
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <div
+                role="button"
+                tabindex="0"
+              >
+                <input
+                  class="form-control"
+                  disabled=""
+                  id="rjsfSchema.schema.properties.unknown.description"
+                  name="rjsfSchema.schema.properties.unknown.description"
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Exclude"
+              data-testid="toggle-rjsfSchema.schema.properties.unknown.description"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <svg
+                    class="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            The user-visible description for the field
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="rjsfSchema.schema.properties.unknown.uiType"
+        >
+          Input Type
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class=" css-b62m3t-container"
+          >
+            <span
+              class="css-1f43avz-a11yText-A11yText"
+              id="react-select-3-live-region"
+            />
+            <span
+              aria-atomic="false"
+              aria-live="polite"
+              aria-relevant="additions text"
+              class="css-1f43avz-a11yText-A11yText"
+            />
+            <div
+              class=" css-1s2u09g-control"
+            >
+              <div
+                class=" css-319lph-ValueContainer"
+              >
+                <div
+                  class=" css-14el2xx-placeholder"
+                  id="react-select-3-placeholder"
+                >
+                  Select...
+                </div>
+                <div
+                  class=" css-6j8wv5-Input"
+                  data-value=""
+                >
+                  <input
+                    aria-autocomplete="list"
+                    aria-controls="react-select-3-listbox"
+                    aria-describedby="react-select-3-placeholder"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    aria-owns="react-select-3-listbox"
+                    autocapitalize="none"
+                    autocomplete="off"
+                    autocorrect="off"
+                    class=""
+                    id="rjsfSchema.schema.properties.unknown.uiType"
+                    role="combobox"
+                    spellcheck="false"
+                    style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+                    tabindex="0"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div
+                class=" css-1hb7zxy-IndicatorsContainer"
+              >
+                <span
+                  class=" css-1okebmr-indicatorSeparator"
+                />
+                <div
+                  aria-hidden="true"
+                  class=" css-tlfecz-indicatorContainer"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="css-tj5bde-Svg"
+                    focusable="false"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    width="20"
+                  >
+                    <path
+                      d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <input
+              name="rjsfSchema.schema.properties.unknown.uiType"
+              type="hidden"
+              value=""
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group row"
+      >
+        <label
+          class="label form-label col-form-label col-xl-2 col-lg-3"
+          for="rjsfSchema.schema.required"
+        >
+          Required Field?
+        </label>
+        <div
+          class="col-xl-10 col-lg-9"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="switch btn off btn-light"
+            >
+              <div
+                class="switch-group"
+              >
+                <span
+                  class="switch-on btn btn-primary"
+                >
+                   
+                </span>
+                <span
+                  class="switch-off btn btn-light"
+                >
+                   
+                </span>
+                <span
+                  class="switch-handle btn btn-light"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

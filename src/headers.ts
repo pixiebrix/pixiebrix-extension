@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@ import fs from "fs";
 import blockRegistry from "@/blocks/registry";
 
 // Maintaining this number is a simple way to ensure bricks don't accidentally get dropped
-const EXPECTED_HEADER_COUNT = 92;
+const EXPECTED_HEADER_COUNT = 93;
 
 // Import for side-effects (these modules register the blocks)
 // NOTE: we don't need to also include extensionPoints because we got rid of all the legacy hard-coded extension points

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,11 +27,9 @@ import { isScriptableUrl } from "webext-content-scripts";
 export function selectOptionalPermissions(
   permissions: string[]
 ): Manifest.OptionalPermission[] {
-  const { optional_permissions } = chrome.runtime.getManifest();
+  const { optional_permissions } = browser.runtime.getManifest();
   return permissions.filter((requestedPermission) =>
-    optional_permissions.includes(
-      requestedPermission as chrome.runtime.ManifestPermissions
-    )
+    optional_permissions.includes(requestedPermission)
   ) as Manifest.OptionalPermission[];
 }
 

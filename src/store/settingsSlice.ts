@@ -15,16 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { SettingsState } from "@/store/settingsTypes";
 
-type InstallMode = "local" | "remote";
-
-export interface SettingsState {
-  mode: InstallMode;
-}
-
-const initialSettingsState = {
+const initialSettingsState: SettingsState = {
   mode: "remote",
+  nextUpdate: null as number,
 };
 
 const settingsSlice = createSlice({
@@ -33,6 +29,10 @@ const settingsSlice = createSlice({
   reducers: {
     setMode(state, { payload: { mode } }) {
       state.mode = mode;
+    },
+    snoozeUpdates(state, action: PayloadAction<{ durationMillis: number }>) {
+      const { durationMillis } = action.payload;
+      state.nextUpdate = Date.now() + durationMillis;
     },
   },
 });

@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import Page from "@/layout/Page";
 import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
-import { Col, Nav, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import BlueprintsList from "@/options/pages/blueprints/BlueprintsList";
+import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import useInstallables from "@/options/pages/blueprints/useInstallables";
 import ExtensionLogsModal from "@/options/pages/installed/ExtensionLogsModal";
 import { useSelector } from "react-redux";
@@ -35,30 +34,11 @@ import {
 } from "@/options/pages/installed/installedPageSelectors";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 
-type CategoryFilter = "active" | "all" | "personal" | "shared";
-
-const categoryLabels = new Map<CategoryFilter, string>(
-  Object.entries({
-    active: "Active Blueprints",
-    all: "All Blueprints",
-    personal: "Personal Blueprints",
-    // TODO: break this up into team category filters
-    shared: "Shared with Me",
-  }) as Array<[CategoryFilter, string]>
-);
-
 const BlueprintsPage: React.FunctionComponent = () => {
-  const [filterCategory, setFilterCategory] = useState<CategoryFilter>(
-    "active"
-  );
   const { installables, isLoading, error } = useInstallables();
-
-  // TODO: move
   const showLogsContext = useSelector<RootState, LogsContext>(
     selectShowLogsContext
   );
-
-  // TODO: move
   const showShareContext = useSelector<RootState, ShareContext>(
     selectShowShareContext
   );
@@ -90,37 +70,9 @@ const BlueprintsPage: React.FunctionComponent = () => {
       {showShareContext && (
         <ShareExtensionModal extensionId={showShareContext.extensionId} />
       )}
-      <Row>
-        <Col xs={3}>
-          <h5>Category Filters</h5>
-          <Nav
-            className="flex-column"
-            variant="pills"
-            defaultActiveKey="active"
-          >
-            {Object.keys(installables).map((filter: CategoryFilter) => (
-              <Nav.Item key={filter}>
-                <Nav.Link
-                  eventKey={filter}
-                  onClick={() => {
-                    setFilterCategory(filter);
-                  }}
-                >
-                  {categoryLabels.get(filter)}
-                </Nav.Link>
-              </Nav.Item>
-            ))}
-          </Nav>
-        </Col>
-        <Col xs={9}>
-          <h3>{categoryLabels.get(filterCategory)}</h3>
-          {/* eslint-disable-next-line security/detect-object-injection -- is FilterCategory */}
-          {installables[filterCategory]?.length > 0 && (
-            // eslint-disable-next-line security/detect-object-injection -- is FilterCategory
-            <BlueprintsList installables={installables[filterCategory]} />
-          )}
-        </Col>
-      </Row>
+      {installables.length > 0 && (
+        <BlueprintsCard installables={installables} />
+      )}
     </Page>
   );
 };

@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { Installable } from "@/options/pages/blueprints/installableUtils";
 import useSharing from "@/options/pages/blueprints/useSharing";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,6 +23,7 @@ import {
   faGlobe,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
+import { Installable } from "./blueprintsTypes";
 
 const sharingIcons = {
   Personal: faEyeSlash,
@@ -38,9 +38,9 @@ const SharingLabel: React.FunctionComponent<{
   const sharing = useSharing(installable);
 
   return (
-    <span>
+    <div>
       <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
-    </span>
+    </div>
   );
 };
 

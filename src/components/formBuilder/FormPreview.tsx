@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,6 +26,9 @@ import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
 import ImageCropWidgetPreview from "@/components/formBuilder/ImageCropWidgetPreview";
+// eslint-disable-next-line import/no-named-as-default -- need default export here
+import DescriptionField from "./DescriptionField";
+import FieldTemplate from "./FieldTemplate";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -92,6 +95,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   const fields = {
     StringField,
     BooleanField,
+    DescriptionField,
   };
 
   const widgets = {
@@ -107,6 +111,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
       schema={previewSchema}
       uiSchema={uiSchema}
       onChange={onDataChanged}
+      FieldTemplate={FieldTemplate}
     >
       <div>
         {/* This <div/> prevents JsonSchemaForm from rendering a Submit button */}

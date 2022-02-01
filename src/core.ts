@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -586,6 +586,11 @@ export interface IExtensionPoint extends Metadata {
   uninstall(options?: { global?: boolean }): void;
 
   /**
+   * Remove the extension from the extension point.
+   */
+  removeExtension(extensionId: UUID): void;
+
+  /**
    * Register an extension with the extension point. Does not actually install/run the extension.
    */
   addExtension(extension: ResolvedExtension): void;
@@ -790,6 +795,8 @@ export interface IService<
   schema: Schema;
 
   isOAuth2: boolean;
+
+  isAuthorizationGrant: boolean;
 
   isToken: boolean;
 

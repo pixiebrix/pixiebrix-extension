@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -116,7 +116,8 @@ const useSavingWizard = () => {
   const saveElementAsPersonalExtension = async () => {
     dispatch(savingExtensionActions.setSavingInProgress());
 
-    const { recipe, ...rest } = element;
+    // Stripping the recipe-related data from the element
+    const { recipe, optionsDefinition, ...rest } = element;
     const personalElement: FormState = {
       ...rest,
       uuid: uuidv4(),

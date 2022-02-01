@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,23 +29,23 @@ import "webext-dynamic-content-scripts";
 
 import "@/background/messenger/registration";
 import "@/development/autoreload";
-import "@/background/installer";
 import "@/messaging/external";
 import "@/background/locator";
 import "@/background/contextMenus";
 import "@/background/browserAction";
 
+import initInstaller from "@/background/installer";
 import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";
-import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
 import initContextMenus from "@/background/initContextMenus";
 import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deployment";
 import initFirefoxCompat from "@/background/firefoxCompat";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
+import initActiveTabTracking from "@/background/activeTab";
 
-initNavigation();
+initInstaller();
 initExecutor();
 initGoogle();
 initFrames();
@@ -54,3 +54,4 @@ initBrowserCommands();
 initDeploymentUpdater();
 void initFirefoxCompat();
 activateBrowserActionIcon();
+initActiveTabTracking();

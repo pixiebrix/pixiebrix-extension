@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -207,11 +207,19 @@ export interface OAuth2AuthenticationDefinition {
   headers: Record<string, string>;
 }
 
+export interface OAuth2AuthorizationGrantDefinition {
+  oauth2: {
+    grantType: "authorization_code";
+  };
+  headers: Record<string, string>;
+}
+
 export interface ServiceDefinition<
   TAuth =
     | KeyAuthenticationDefinition
     | OAuth2AuthenticationDefinition
     | TokenAuthenticationDefinition
+    | OAuth2AuthorizationGrantDefinition
 > {
   metadata: Metadata;
   inputSchema: Schema;

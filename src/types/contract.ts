@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -82,6 +82,7 @@ export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
   config: SanitizedConfig;
   // XXX: update serializer to include proper metadata child serializer
   service: { config: { metadata: Metadata } };
+  user?: UUID;
 };
 
 export type ConfigurableAuth = components["schemas"]["EditableAuth"] & {

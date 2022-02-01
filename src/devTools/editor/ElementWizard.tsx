@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,13 +36,22 @@ import { useDispatch } from "react-redux";
 import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
+import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
+import AuthContext from "@/auth/AuthContext";
 
+const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
+const BLUEPRINT_OPTIONS_STEP_NAME = "Blueprint Options";
 
 const wizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
+  { step: EDIT_STEP_NAME, Component: EditTab },
   { step: LOG_STEP_NAME, Component: LogsTab },
 ];
+
+const blueprintOptionsStep = {
+  step: BLUEPRINT_OPTIONS_STEP_NAME,
+  Component: BlueprintOptionsTab,
+};
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
@@ -90,6 +99,7 @@ const ElementWizard: React.FunctionComponent<{
   const [step, setStep] = useState(wizard[0].step);
 
   const { refresh: refreshLogs } = useContext(LogContext);
+  const { flags } = useContext(AuthContext);
 
   const availableDefinition = element.extensionPoint.definition.isAvailable;
   const [available] = useAsyncState(
@@ -130,6 +140,11 @@ const ElementWizard: React.FunctionComponent<{
     setValues: setFormState,
   } = useFormikContext<FormState>();
 
+  const wizardSteps = [...wizard];
+  if (formState.recipe?.id && flags.includes("page-editor-beta")) {
+    wizardSteps.push(blueprintOptionsStep);
+  }
+
   const dispatch = useDispatch();
 
   useAsyncEffect(async () => {
@@ -162,7 +177,7 @@ const ElementWizard: React.FunctionComponent<{
           onSelect={selectTabHandler}
           className={styles.nav}
         >
-          {wizard.map((step) => (
+          {wizardSteps.map((step) => (
             <WizardNavItem key={step.step} step={step} />
           ))}
 
@@ -185,7 +200,7 @@ const ElementWizard: React.FunctionComponent<{
 
         {status && <div className="text-danger">{status}</div>}
         <Tab.Content className={styles.tabContent}>
-          {wizard.map(({ Component, step }) => (
+          {wizardSteps.map(({ Component, step }) => (
             <Component
               key={step}
               eventKey={step}

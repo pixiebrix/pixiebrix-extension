@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,6 +38,7 @@ import {
   KeyAuthenticationDefinition,
   OAuth2AuthenticationDefinition,
   TokenAuthenticationDefinition,
+  OAuth2AuthorizationGrantDefinition,
 } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { isAbsoluteUrl } from "@/utils";
@@ -91,6 +92,17 @@ class LocalDefinedService<
     return (
       this._definition.authentication != null &&
       "oauth2" in this._definition.authentication
+    );
+  }
+
+  /**
+   * Return true if service uses OAuth2 authorization grant
+   */
+  get isAuthorizationGrant(): boolean {
+    return (
+      this.isOAuth2 &&
+      (this._definition.authentication as OAuth2AuthorizationGrantDefinition)
+        .oauth2.grantType === "authorization_code"
     );
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,6 +31,7 @@ import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import { Target } from "@/types";
+import { OptionsDefinition } from "@/types/definitions";
 
 export type ElementType =
   | "menuItem"
@@ -118,6 +119,13 @@ export interface BaseFormState<
    * @see IExtension._recipe
    */
   recipe: RecipeMetadata | undefined;
+
+  /**
+   * Information about the recipe (i.e., blueprint) options,
+   * or `undefined` if the extension is not part of a recipe.
+   * @see RecipeDefinition.options
+   */
+  optionsDefinition?: OptionsDefinition;
 }
 
 /**

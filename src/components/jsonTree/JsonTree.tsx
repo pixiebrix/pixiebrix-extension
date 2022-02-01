@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import JSONTree from "react-json-tree";
+import { JSONTree } from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";

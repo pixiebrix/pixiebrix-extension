@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,16 +16,27 @@
  */
 
 import React from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { Form } from "react-bootstrap";
+import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
+import styles from "./GridView.module.scss";
+import GridCard from "./GridCard";
 
-const ComplexObjectWidget: React.FC<Partial<SchemaFieldProps>> = () => (
-  <Form.Control
-    className="px-1"
-    plaintext
-    readOnly
-    defaultValue="Use Workshop to edit"
-  />
+const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
+  tableInstance,
+  rows,
+}) => (
+  <div className={styles.root}>
+    {rows.map((row) => {
+      tableInstance.prepareRow(row);
+
+      return (
+        <GridCard
+          key={getUniqueId(row.original.installable)}
+          installableItem={row.original}
+        />
+      );
+    })}
+  </div>
 );
 
-export default ComplexObjectWidget;
+export default GridView;

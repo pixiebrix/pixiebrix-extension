@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,7 @@ import {
   handleNavigate,
   queueReactivateTab,
   reactivateTab,
+  removeExtension,
 } from "@/contentScript/lifecycle";
 import {
   getFormDefinition,
@@ -34,7 +35,7 @@ import {
   hideActionPanel,
   showActionPanel,
   toggleActionPanel,
-  removeExtension,
+  removeExtension as removeActionPanel,
 } from "@/actionPanel/native";
 import { insertPanel } from "@/nativeEditor/insertPanel";
 import { insertButton } from "@/nativeEditor/insertButton";
@@ -56,7 +57,7 @@ import {
 } from "@/contentScript/devTools";
 import { checkAvailable } from "@/blocks/available";
 import { showNotification } from "@/contentScript/notify";
-import { linkChildTab, runBrick } from "@/contentScript/executor";
+import { runBrick } from "@/contentScript/executor";
 import { cancelSelect, selectElement } from "@/nativeEditor/selector";
 import {
   runEffectPipeline,
@@ -75,6 +76,7 @@ declare global {
 
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
+    REMOVE_EXTENSION: typeof removeExtension;
     RESET_TAB: typeof resetTab;
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
@@ -82,7 +84,7 @@ declare global {
     TOGGLE_ACTION_PANEL: typeof toggleActionPanel;
     SHOW_ACTION_PANEL: typeof showActionPanel;
     HIDE_ACTION_PANEL: typeof hideActionPanel;
-    REMOVE_ACTION_PANEL: typeof removeExtension;
+    REMOVE_ACTION_PANEL: typeof removeActionPanel;
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
 
@@ -105,7 +107,6 @@ declare global {
     CHECK_AVAILABLE: typeof checkAvailable;
     HANDLE_NAVIGATE: typeof handleNavigate;
     SHOW_NOTIFICATION: typeof showNotification;
-    LINK_CHILD_TAB: typeof linkChildTab;
     RUN_BRICK: typeof runBrick;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
@@ -123,6 +124,7 @@ registerMethods({
 
   QUEUE_REACTIVATE_TAB: queueReactivateTab,
   REACTIVATE_TAB: reactivateTab,
+  REMOVE_EXTENSION: removeExtension,
   RESET_TAB: resetTab,
 
   TOGGLE_QUICK_BAR: toggleQuickBar,
@@ -130,7 +132,7 @@ registerMethods({
   TOGGLE_ACTION_PANEL: toggleActionPanel,
   SHOW_ACTION_PANEL: showActionPanel,
   HIDE_ACTION_PANEL: hideActionPanel,
-  REMOVE_ACTION_PANEL: removeExtension,
+  REMOVE_ACTION_PANEL: removeActionPanel,
   INSERT_PANEL: insertPanel,
   INSERT_BUTTON: insertButton,
 
@@ -154,7 +156,6 @@ registerMethods({
   HANDLE_NAVIGATE: handleNavigate,
   SHOW_NOTIFICATION: showNotification,
 
-  LINK_CHILD_TAB: linkChildTab,
   RUN_BRICK: runBrick,
   CANCEL_SELECT_ELEMENT: cancelSelect,
   SELECT_ELEMENT: selectElement,

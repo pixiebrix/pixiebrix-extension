@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,7 +33,7 @@ export type ManualStorageKey = string & {
 };
 
 /**
- * A storage key managed by redux-persist.
+ * A storage key managed by redux-persist. Should begin with the `persist:` prefix
  * @see ManualStorageKey
  */
 export type ReduxStorageKey = string & {

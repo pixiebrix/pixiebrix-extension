@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors"
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
 import { Alert, Button, Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
-import styles from "./DataPanel.module.scss";
+import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockPreview, {
@@ -160,37 +160,37 @@ const DataPanel: React.FC<{
   const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
 
   const popupBoundary = showDocumentPreview
-    ? document.querySelector(`.${styles.tabContent}`)
+    ? document.querySelector(`.${dataPanelStyles.tabContent}`)
     : undefined;
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
-      <div className={styles.tabContainer}>
+      <div className={dataPanelStyles.tabContainer}>
         <Nav variant="tabs">
-          <Nav.Item className={styles.tabNav}>
+          <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="context">Context</Nav.Link>
           </Nav.Item>
           {showDeveloperTabs && (
             <>
-              <Nav.Item className={styles.tabNav}>
+              <Nav.Item className={dataPanelStyles.tabNav}>
                 <Nav.Link eventKey="formik">Formik</Nav.Link>
               </Nav.Item>
-              <Nav.Item className={styles.tabNav}>
+              <Nav.Item className={dataPanelStyles.tabNav}>
                 <Nav.Link eventKey="blockConfig">Raw Block</Nav.Link>
               </Nav.Item>
             </>
           )}
-          <Nav.Item className={styles.tabNav}>
+          <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="rendered">Rendered</Nav.Link>
           </Nav.Item>
-          <Nav.Item className={styles.tabNav}>
+          <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="output">Output</Nav.Link>
           </Nav.Item>
-          <Nav.Item className={styles.tabNav}>
+          <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="preview">Preview</Nav.Link>
           </Nav.Item>
         </Nav>
-        <Tab.Content className={styles.tabContent}>
+        <Tab.Content className={dataPanelStyles.tabContent}>
           <DataTab eventKey="context" isTraceEmpty={!record}>
             {isInputStale && (
               <Alert variant="warning">
@@ -302,7 +302,7 @@ const DataPanel: React.FC<{
             {showFormPreview || showDocumentPreview ? (
               <ErrorBoundary>
                 {showFormPreview ? (
-                  <div className={styles.selectablePreviewContainer}>
+                  <div className={dataPanelStyles.selectablePreviewContainer}>
                     <FormPreview
                       rjsfSchema={block.config as RJSFSchema}
                       activeField={formBuilderActiveField}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -29,13 +29,6 @@ const SheetServiceOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   const [doc, setDoc] = useState<SheetMeta>(null);
 
-  const handleSelect = useCallback(
-    (doc: SheetMeta) => {
-      setDoc(doc);
-    },
-    [doc]
-  );
-
   return (
     <div className="my-2">
       <ConnectedFieldTemplate
@@ -43,7 +36,7 @@ const SheetServiceOptions: React.FunctionComponent<BlockOptionProps> = ({
         description="The ID of the spreadsheet to update."
         label="Google Sheet"
         as={FileWidget}
-        onSelect={handleSelect}
+        onSelect={setDoc}
         doc={doc}
       />
     </div>

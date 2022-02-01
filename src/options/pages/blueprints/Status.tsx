@@ -15,30 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Card, Table } from "react-bootstrap";
 import React from "react";
-import styles from "./BlueprintsList.module.scss";
-import BlueprintListEntry from "@/options/pages/blueprints/BlueprintListEntry";
-import {
-  getUniqueId,
-  Installable,
-} from "@/options/pages/blueprints/installableUtils";
+import { Button } from "react-bootstrap";
+import { Installable } from "./blueprintsTypes";
+import useInstallableActions from "./useInstallableActions";
 
-const BlueprintsList: React.FunctionComponent<{
-  installables: Installable[];
-}> = ({ installables }) => (
-  <Card className={styles.root}>
-    <Table>
-      <tbody>
-        {installables.map((installable) => (
-          <BlueprintListEntry
-            key={getUniqueId(installable)}
-            installable={installable}
-          />
-        ))}
-      </tbody>
-    </Table>
-  </Card>
-);
+type StatusProps = {
+  installable: Installable;
+};
 
-export default BlueprintsList;
+const Status: React.VoidFunctionComponent<StatusProps> = ({ installable }) => {
+  const { activate, reinstall } = useInstallableActions(installable);
+
+  return installable.active ? (
+    <>
+      {installable.hasUpdate ? (
+        <Button size="sm" variant="warning" onClick={reinstall}>
+          Update
+        </Button>
+      ) : (
+        <div className="text-info py-2">Active</div>
+      )}
+    </>
+  ) : (
+    <Button size="sm" variant="info" onClick={activate}>
+      Activate
+    </Button>
+  );
+};
+
+export default Status;

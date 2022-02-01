@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,8 +17,9 @@
 
 import browser, { WebNavigation } from "webextension-polyfill";
 import { navigationEvent } from "@/background/devtools/external";
-import { resetTab } from "@/contentScript/messenger/api";
+import { handleNavigate, resetTab } from "@/contentScript/messenger/api";
 import { thisTab } from "./utils";
+import { canAccessTab } from "webext-tools";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
@@ -26,16 +27,20 @@ export function updateDevTools() {
   navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
 }
 
-function onNavigation(
-  details:
-    | WebNavigation.OnHistoryStateUpdatedDetailsType
-    | WebNavigation.OnDOMContentLoadedDetailsType
-): void {
+async function onNavigation({
+  tabId,
+  frameId,
+}:
+  | WebNavigation.OnHistoryStateUpdatedDetailsType
+  | WebNavigation.OnDOMContentLoadedDetailsType): Promise<void> {
   if (
-    details.frameId === TOP_LEVEL_FRAME_ID &&
-    details.tabId === browser.devtools.inspectedWindow.tabId
+    frameId === TOP_LEVEL_FRAME_ID &&
+    tabId === browser.devtools.inspectedWindow.tabId
   ) {
     updateDevTools();
+    if (await canAccessTab({ tabId, frameId })) {
+      handleNavigate({ tabId, frameId });
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -35,8 +35,6 @@ export interface RunBlock {
   options: RemoteBlockOptions;
 }
 
-const childTabs = new Set<number>();
-
 export async function runBrick(request: RunBlock): Promise<unknown> {
   // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
   const { blockId, blockArgs, options } = request;
@@ -58,8 +56,4 @@ export async function runBrick(request: RunBlock): Promise<unknown> {
     });
     throw error;
   }
-}
-
-export async function linkChildTab(tabId: number): Promise<void> {
-  childTabs.add(tabId);
 }
