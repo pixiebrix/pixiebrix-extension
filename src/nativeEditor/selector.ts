@@ -150,7 +150,7 @@ export async function userSelectElement({
     }
 
     function onPointerLeave() {
-      hideOverlay();
+      overlay.inspect([]);
     }
 
     function escape(event: KeyboardEvent) {
