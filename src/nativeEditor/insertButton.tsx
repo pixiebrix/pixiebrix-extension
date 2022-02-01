@@ -30,6 +30,7 @@ import { html as beautifyHTML } from "js-beautify";
 import type { DynamicDefinition } from "./dynamic";
 import { Except } from "type-fest";
 import { UUID } from "@/core";
+import { PRIVATE_ATTRIBUTES_SELECTOR } from "@/common";
 
 export const DEFAULT_ACTION_CAPTION = "Action";
 
@@ -50,7 +51,9 @@ export async function insertButton(
 ): Promise<ButtonSelectionResult> {
   let selected;
   if (useNewFilter) {
-    selected = await userSelectElement({ filter: "a, button" });
+    selected = await userSelectElement({
+      filter: `:is(a, button):not(${PRIVATE_ATTRIBUTES_SELECTOR})`,
+    });
   } else {
     selected = await userSelectElement();
 
