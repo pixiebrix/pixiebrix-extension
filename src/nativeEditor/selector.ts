@@ -203,6 +203,7 @@ export async function userSelectElement({
           border: solid 10px rgba(182, 109, 255, 0.3);
           position: fixed;
           z-index: 100000000;
+          pointer-events: none;
           inset: 0;
           /* Sine curve to make the pulse smooth */
           animation: 600ms cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate pbGlow;
