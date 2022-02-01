@@ -40,11 +40,21 @@ export const getSharingType = (
     sharingType = "Public";
   }
 
+  let label: string;
+  if (
+    sharingType === "Team" ||
+    // There's a corner case for team deployments of public market bricks. The organization will come through as
+    // nullish here.
+    (sharingType === "Deployment" && installable.organization?.name)
+  ) {
+    label = installable.organization.name;
+  } else {
+    label = sharingType;
+  }
+
   return {
     type: sharingType,
-    label: ["Team", "Deployment"].includes(sharingType)
-      ? installable.organization.name
-      : sharingType,
+    label,
   };
 };
 
