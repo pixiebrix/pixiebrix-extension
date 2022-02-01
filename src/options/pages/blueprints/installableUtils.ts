@@ -40,11 +40,19 @@ export const getSharingType = (
     sharingType = "Public";
   }
 
+  let label: string;
+  if (
+    sharingType === "Team" ||
+    (sharingType === "Deployment" && installable.organization?.name)
+  ) {
+    label = installable.organization.name;
+  } else {
+    label = sharingType;
+  }
+
   return {
     type: sharingType,
-    label: ["Team", "Deployment"].includes(sharingType)
-      ? installable.organization.name
-      : sharingType,
+    label,
   };
 };
 
