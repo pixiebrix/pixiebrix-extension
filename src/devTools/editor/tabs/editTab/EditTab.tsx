@@ -252,7 +252,7 @@ const EditTab: React.FC<{
                 copyBlock(activeNodeId);
               }}
               tooltipText="Copy Brick"
-              buttonClassName={styles.copyButton}
+              buttonClassName={styles.headerButton}
               disabled={activeNodeId === FOUNDATION_NODE_ID}
             />
             <TooltipIconButton
@@ -262,7 +262,7 @@ const EditTab: React.FC<{
                 removeBlock(activeNodeId);
               }}
               tooltipText="Remove Brick"
-              buttonClassName={styles.removeButton}
+              buttonClassName={styles.headerButton}
               disabled={activeNodeId === FOUNDATION_NODE_ID}
             />
           </div>
