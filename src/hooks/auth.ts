@@ -25,6 +25,7 @@ import { readRawConfigurations } from "@/services/registry";
 import { useMemo, useCallback } from "react";
 import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
+import { SanitizedAuth } from "@/types/contract";
 
 interface OrganizationResponse {
   readonly id: string;
@@ -89,6 +90,20 @@ function defaultLabel(label: string): string {
   return normalized === "" ? "Default" : normalized;
 }
 
+function decideRemoteLabel(auth: SanitizedAuth): string {
+  let visibility = "✨ Built-in";
+
+  if (auth.organization?.name) {
+    visibility = auth.organization.name;
+  }
+
+  if (auth.user) {
+    visibility = "Private";
+  }
+
+  return `${defaultLabel(auth.label)} — ${visibility}`;
+}
+
 export function useAuthOptions(): [AuthOption[], () => void] {
   // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
   // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
@@ -121,12 +136,12 @@ export function useAuthOptions(): [AuthOption[], () => void] {
     const sharedOptions = sortBy(
       (remoteAuths ?? []).map((x) => ({
         value: x.id,
-        label: `${defaultLabel(x.label)} — ${
-          x.organization?.name ?? "✨ Built-in"
-        }`,
+        label: decideRemoteLabel(x),
         local: false,
+        user: x.user,
         serviceId: x.service.config.metadata.id,
       })),
+      (x) => (x.user ? 0 : 1),
       (x) => x.label
     );
 

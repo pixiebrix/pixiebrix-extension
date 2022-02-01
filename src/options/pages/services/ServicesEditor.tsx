@@ -36,6 +36,7 @@ import BrickModal from "@/components/brickModal/BrickModal";
 import styles from "@/options/pages/services/PrivateServicesCard.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
+import { getBaseURL } from "@/services/baseService";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -114,7 +115,19 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   );
 
   const handleCreate = useCallback(
-    (service: IService) => {
+    async (service: IService) => {
+      const definition = (serviceDefinitions ?? []).find(
+        (x) => x.id === service.id
+      );
+
+      if (definition.isAuthorizationGrant) {
+        const url = new URL("services/", await getBaseURL());
+        url.searchParams.set("id", service.id);
+        // eslint-disable-next-line security/detect-non-literal-fs-filename -- browser window
+        window.open(url.href);
+        return;
+      }
+
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal tying
       const config = {
         id: uuidv4(),
@@ -124,9 +137,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       } as RawServiceConfiguration;
 
       setNewConfiguration(config);
-      setNewConfigurationService(
-        (serviceDefinitions ?? []).find((x) => x.id === config.serviceId)
-      );
+      setNewConfigurationService(definition);
       navigate(`/services/${encodeURIComponent(config.id)}`);
     },
     [
