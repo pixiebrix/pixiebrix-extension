@@ -55,6 +55,10 @@
   font-size: 0.875rem;
 }
 
+.disabledTitle {
+  color: lightgrey;
+}
+
 .nodeLayout {
   flex-grow: 1;
   overflow-y: auto;

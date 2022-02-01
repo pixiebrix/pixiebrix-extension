@@ -51,6 +51,7 @@ import UpgradedToApiV3 from "@/devTools/editor/tabs/editTab/UpgradedToApiV3";
 import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -244,7 +245,13 @@ const EditTab: React.FC<{
       <div className={styles.paneContent}>
         <div className={styles.nodePanel}>
           <div className={styles.nodeHeader}>
-            <span className={styles.nodeHeaderTitle}>Brick Actions</span>
+            <span
+              className={cx(styles.nodeHeaderTitle, {
+                [styles.disabledTitle]: activeNodeId === FOUNDATION_NODE_ID,
+              })}
+            >
+              Brick Actions
+            </span>
             <TooltipIconButton
               name="copyNode"
               icon={faCopy}
