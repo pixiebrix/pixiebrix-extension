@@ -57,7 +57,7 @@ import {
 } from "@/contentScript/devTools";
 import { checkAvailable } from "@/blocks/available";
 import { showNotification } from "@/contentScript/notify";
-import { linkChildTab, runBrick } from "@/contentScript/executor";
+import { runBrick } from "@/contentScript/executor";
 import { cancelSelect, selectElement } from "@/nativeEditor/selector";
 import {
   runEffectPipeline,
@@ -107,7 +107,6 @@ declare global {
     CHECK_AVAILABLE: typeof checkAvailable;
     HANDLE_NAVIGATE: typeof handleNavigate;
     SHOW_NOTIFICATION: typeof showNotification;
-    LINK_CHILD_TAB: typeof linkChildTab;
     RUN_BRICK: typeof runBrick;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
@@ -157,7 +156,6 @@ registerMethods({
   HANDLE_NAVIGATE: handleNavigate,
   SHOW_NOTIFICATION: showNotification,
 
-  LINK_CHILD_TAB: linkChildTab,
   RUN_BRICK: runBrick,
   CANCEL_SELECT_ELEMENT: cancelSelect,
   SELECT_ELEMENT: selectElement,
