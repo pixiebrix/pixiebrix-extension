@@ -34,7 +34,35 @@
   height: 100%;
   width: 200px;
   overflow-y: auto;
-  padding-top: 10px;
+  border-right: 1px solid lightgrey;
+}
+
+.nodeHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  border-bottom: 1px solid lightgrey;
+}
+
+.copyButton {
+  border: none;
+  background: none;
+  color: var(--blue);
+  &:disabled {
+    color: grey;
+  }
+}
+
+.removeButton {
+  border: none;
+  background: none;
+  color: var(--red);
+  &:disabled {
+    color: grey;
+  }
 }
 
 .configPanel {
