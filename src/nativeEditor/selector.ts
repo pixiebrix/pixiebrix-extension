@@ -55,8 +55,22 @@ export async function userSelectElement({
       overlay = new Overlay();
     }
 
-    if (filter) {
-      overlay.inspect([...document.querySelectorAll<HTMLElement>(filter)]);
+    function prehiglightItems() {
+      let filteredElements: HTMLElement[];
+      if (filter) {
+        filteredElements = [...document.querySelectorAll<HTMLElement>(filter)];
+        const updateOverlay = () => {
+          if (!_cancelSelect) {
+            // The operation has completed
+            return;
+          }
+
+          overlay.inspect(filteredElements);
+          setTimeout(() => requestAnimationFrame(updateOverlay), 30); // Only when the tab is visible
+        };
+
+        updateOverlay();
+      }
     }
 
     function findExpectedTarget(target: EventTarget): HTMLElement | void {
@@ -75,6 +89,7 @@ export async function userSelectElement({
       _cancelSelect = cancel;
       registerListenersOnWindow(window);
       addInspectingModeStyles(window);
+      prehiglightItems();
     }
 
     function stopInspectingNative() {
