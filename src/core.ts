@@ -796,6 +796,8 @@ export interface IService<
 
   isOAuth2: boolean;
 
+  isAuthorizationGrant: boolean;
+
   isToken: boolean;
 
   getOrigins: (serviceConfig: TSanitized) => string[];

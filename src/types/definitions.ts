@@ -207,11 +207,19 @@ export interface OAuth2AuthenticationDefinition {
   headers: Record<string, string>;
 }
 
+export interface OAuth2AuthorizationGrantDefinition {
+  oauth2: {
+    grantType: "authorization_code";
+  };
+  headers: Record<string, string>;
+}
+
 export interface ServiceDefinition<
   TAuth =
     | KeyAuthenticationDefinition
     | OAuth2AuthenticationDefinition
     | TokenAuthenticationDefinition
+    | OAuth2AuthorizationGrantDefinition
 > {
   metadata: Metadata;
   inputSchema: Schema;

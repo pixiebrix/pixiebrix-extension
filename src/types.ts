@@ -68,6 +68,8 @@ export abstract class Service<
 
   abstract get isOAuth2(): boolean;
 
+  abstract get isAuthorizationGrant(): boolean;
+
   abstract get isToken(): boolean;
 
   protected constructor(
