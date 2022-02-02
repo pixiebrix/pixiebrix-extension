@@ -41,11 +41,10 @@ import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
-import { getAuth, useAuth } from "@/hooks/auth";
+import { useAuth } from "@/hooks/auth";
 import useRefresh from "@/hooks/useRefresh";
 import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
-import { AuthState } from "@/core";
 import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
@@ -159,8 +158,6 @@ const Layout = () => {
 
 const App: React.FunctionComponent = () => {
   const authState = useAuth();
-
-  console.log("authState", authState);
 
   useEffect(() => {
     initTelemetry();

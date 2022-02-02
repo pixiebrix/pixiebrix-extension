@@ -34,7 +34,7 @@ import useFetch from "@/hooks/useFetch";
 import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
 import { EnrichedBrick, NavigateProps } from "./workshopTypes";
-import { RequireScope } from "../../../auth/RequireScope";
+import { RequireScope } from "@/auth/RequireScope";
 
 const { actions } = workshopSlice;
 

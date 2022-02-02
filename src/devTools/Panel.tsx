@@ -52,10 +52,6 @@ const PersistLoader: React.FunctionComponent = () => (
   </Centered>
 );
 
-// TODO
-// - Test the panel with useAuth
-// - Pull RequireScope from 2 pages and share it
-// - Check how unscoped users work on Workshop page
 const Panel: React.FunctionComponent = () => {
   const authState = useAuth();
   const context = useDevConnection();
