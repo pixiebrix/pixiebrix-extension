@@ -48,7 +48,9 @@ const blueprintsSlice = createSlice({
     },
     setSortBy(
       state,
-      { payload: sortBy }: PayloadAction<SortingRule<InstallableViewItem>[]>
+      {
+        payload: sortBy,
+      }: PayloadAction<Array<SortingRule<InstallableViewItem>>>
     ) {
       state.sortBy = sortBy;
     },
