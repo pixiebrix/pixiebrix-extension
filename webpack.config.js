@@ -272,6 +272,9 @@ module.exports = (env, options) =>
         "webext-detect-page": path.resolve(
           "src/vendors/webextDetectPage.static.js"
         ),
+
+        // Lighter jQuery version
+        jquery: "jquery/dist/jquery.slim.min.js",
       },
     },
 
