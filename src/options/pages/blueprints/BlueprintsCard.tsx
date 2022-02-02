@@ -46,7 +46,12 @@ import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import GridView from "./gridView/GridView";
 import useReduxState from "@/hooks/useReduxState";
-import { selectGroupBy, selectSortBy, selectView } from "./blueprintsSelectors";
+import {
+  selectFilters,
+  selectGroupBy,
+  selectSortBy,
+  selectView,
+} from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
 
 const getFilterOptions = (column: ColumnInstance) => {
@@ -112,11 +117,6 @@ const BlueprintsCard: React.FunctionComponent<{
     [installables, scope]
   );
 
-  useEffect(() => {
-    setAllFilters([{ id: "status", value: "Active" }]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on first mount
-  }, []);
-
   const [view, setView] = useReduxState(
     selectView,
     blueprintsSlice.actions.setView
@@ -132,6 +132,11 @@ const BlueprintsCard: React.FunctionComponent<{
     blueprintsSlice.actions.setSortBy
   );
 
+  const [filters, setFilters] = useReduxState(
+    selectFilters,
+    blueprintsSlice.actions.setFilters
+  );
+
   const tableInstance = useTable<InstallableViewItem>(
     {
       columns,
@@ -139,6 +144,14 @@ const BlueprintsCard: React.FunctionComponent<{
       initialState: {
         groupBy,
         sortBy,
+        filters,
+      },
+      useControlledState: (state) => {
+        if (state.filters !== filters) {
+          return { ...state, filters };
+        }
+
+        return state;
       },
     },
     useFilters,
@@ -152,46 +165,51 @@ const BlueprintsCard: React.FunctionComponent<{
     // @ts-expect-error -- for some reason, react-table index.d.ts UseGroupByInstanceProps
     // doesn't have setGroupBy?
     setGroupBy: setTableGroupBy,
-    setAllFilters,
     setSortBy: setTableSortBy,
-    state: { groupBy: tableGroupBy, sortBy: tableSortBy, filters },
+    state: {
+      groupBy: tableGroupBy,
+      sortBy: tableSortBy,
+      filters: tableFilters,
+    },
   } = tableInstance;
 
   const isGrouped = tableGroupBy.length > 0;
   const isSorted = tableSortBy.length > 0;
 
-  const groupByOptions = flatHeaders
-    .filter((column) => column.canGroupBy)
-    .map((column) => ({
-      label: column.Header,
-      value: column.id,
-    }));
+  const { groupByOptions, sortByOptions, teamFilters } = useMemo(() => {
+    const groupByOptions = flatHeaders
+      .filter((column) => column.canGroupBy)
+      .map((column) => ({
+        label: column.Header,
+        value: column.id,
+      }));
 
-  const sortByOptions = flatHeaders
-    .filter((column) => column.canSort)
-    .map((column) => ({
-      label: column.Header,
-      value: column.id,
-    }));
+    const sortByOptions = flatHeaders
+      .filter((column) => column.canSort)
+      .map((column) => ({
+        label: column.Header,
+        value: column.id,
+      }));
 
-  const teamFilters = useMemo(() => {
     const sharingColumn = flatHeaders.find(
       (header) => header.id === "sharing.source.label"
     );
-    return getFilterOptions(sharingColumn).filter(
+    const teamFilters = getFilterOptions(sharingColumn).filter(
       (option) => !["Personal", "Public"].includes(option as string)
     ) as string[];
+
+    return { groupByOptions, sortByOptions, teamFilters };
   }, [flatHeaders]);
 
   const BlueprintsView = view === "list" ? TableView : GridView;
 
   return (
     <BootstrapRow>
-      <ListFilters setAllFilters={setAllFilters} teamFilters={teamFilters} />
+      <ListFilters setAllFilters={setFilters} teamFilters={teamFilters} />
       <Col xs={9}>
         <div className="d-flex justify-content-between align-items-center">
           <h3 className="my-3">
-            {filters.length > 0 ? filters[0].value : "All"} Blueprints
+            {tableFilters.length > 0 ? tableFilters[0].value : "All"} Blueprints
           </h3>
           <span className="d-flex align-items-center">
             <span className="ml-3 mr-2">Group by:</span>
@@ -239,13 +257,13 @@ const BlueprintsCard: React.FunctionComponent<{
               >
                 <FontAwesomeIcon
                   icon={
-                    tableSortBy[0].id !== "updatedAt"
+                    tableSortBy[0].id === "updatedAt"
                       ? tableSortBy[0].desc
-                        ? faSortAmountUpAlt
-                        : faSortAmountDownAlt
+                        ? faSortAmountDownAlt
+                        : faSortAmountUpAlt
                       : tableSortBy[0].desc
-                      ? faSortAmountDownAlt
-                      : faSortAmountUpAlt
+                      ? faSortAmountUpAlt
+                      : faSortAmountDownAlt
                   }
                   size="lg"
                 />
