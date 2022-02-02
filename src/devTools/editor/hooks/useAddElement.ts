@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import AuthContext from "@/auth/AuthContext";
@@ -27,14 +27,18 @@ import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { getErrorMessage } from "@/errors";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
+import { SettingsState } from "@/store/settingsTypes";
 
 type AddElement = (config: ElementConfig) => void;
 
 function useAddElement(): AddElement {
   const dispatch = useDispatch();
   const { tabState } = useContext(DevToolsContext);
-  const { scope, flags = [] } = useContext(AuthContext);
+  const { flags = [] } = useContext(AuthContext);
   const { addToast } = useToasts();
+  const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
+    (x) => x.settings.suggestElements
+  );
 
   return useCallback(
     async (config: ElementConfig) => {
@@ -55,7 +59,7 @@ function useAddElement(): AddElement {
       try {
         const element = await config.selectNativeElement(
           thisTab,
-          flags.includes("page-editor-filtered-picker")
+          suggestElements
         );
         const url = await getCurrentURL();
 
@@ -93,7 +97,7 @@ function useAddElement(): AddElement {
         dispatch(actions.toggleInsert(null));
       }
     },
-    [dispatch, tabState.meta?.frameworks, scope, addToast, flags]
+    [dispatch, tabState.meta?.frameworks, addToast, flags, suggestElements]
   );
 }
 

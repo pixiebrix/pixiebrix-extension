@@ -25,6 +25,7 @@ import PermissionsSettings from "@/options/pages/settings/PermissionsSettings";
 import FactoryResetSettings from "@/options/pages/settings/FactoryResetSettings";
 import AdvancedSettings from "@/options/pages/settings/AdvancedSettings";
 import { Col, Row } from "react-bootstrap";
+import ExperimentalSettings from "@/options/pages/settings/ExperimentalSettings";
 
 const Section: React.FunctionComponent = ({ children }) => (
   <Row className="mb-4">
@@ -60,6 +61,12 @@ const SettingsPage: React.FunctionComponent = () => {
       <Section>
         <LoggingSettings />
       </Section>
+
+      {flags.includes("settings-experimental") && (
+        <Section>
+          <ExperimentalSettings />
+        </Section>
+      )}
 
       {!flags.includes("restricted-permissions") && (
         <Section>
