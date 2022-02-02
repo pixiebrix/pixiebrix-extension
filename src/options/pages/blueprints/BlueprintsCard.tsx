@@ -16,13 +16,7 @@
  */
 
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, {
-  Fragment,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { Fragment, useContext, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getDescription,
@@ -34,7 +28,6 @@ import {
 import AuthContext from "@/auth/AuthContext";
 import {
   Column,
-  ColumnInstance,
   useFilters,
   useGroupBy,
   useSortBy,
@@ -51,15 +44,16 @@ import TableView from "./tableView/TableView";
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import GridView from "./gridView/GridView";
-
-const getFilterOptions = (column: ColumnInstance) => {
-  const options = new Set();
-  for (const row of column.preFilteredRows) {
-    options.add(row.values[column.id]);
-  }
-
-  return [...options.values()];
-};
+import useReduxState from "@/hooks/useReduxState";
+import {
+  selectFilters,
+  selectGroupBy,
+  selectSortBy,
+  selectView,
+} from "./blueprintsSelectors";
+import blueprintsSlice from "./blueprintsSlice";
+import { useSelector } from "react-redux";
+import { uniq } from "lodash";
 
 const getInstallableRows = (
   installables: Installable[],
@@ -110,67 +104,85 @@ const BlueprintsCard: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { scope } = useContext(AuthContext);
-  const data: InstallableViewItem[] = useMemo(
-    () => getInstallableRows(installables, scope),
-    [installables, scope]
+  const { data, teamFilters } = useMemo(() => {
+    const data = getInstallableRows(installables, scope);
+    const teamFilters = uniq(
+      data.map((installable) => installable.sharing.source.label)
+    ).filter((label) => label !== "Public" && label !== "Personal");
+    return { data, teamFilters };
+  }, [installables, scope]);
+
+  const [view, setView] = useReduxState(
+    selectView,
+    blueprintsSlice.actions.setView
   );
 
-  useEffect(() => {
-    setAllFilters([{ id: "status", value: "Active" }]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on first mount
-  }, []);
+  const [groupBy, setGroupBy] = useReduxState(
+    selectGroupBy,
+    blueprintsSlice.actions.setGroupBy
+  );
+
+  const [sortBy, setSortBy] = useReduxState(
+    selectSortBy,
+    blueprintsSlice.actions.setSortBy
+  );
+
+  const filters = useSelector(selectFilters);
 
   const tableInstance = useTable<InstallableViewItem>(
-    { columns, data },
+    {
+      columns,
+      data,
+      initialState: {
+        groupBy,
+        sortBy,
+        filters,
+      },
+      useControlledState: (state) =>
+        useMemo(
+          () => ({
+            ...state,
+            groupBy,
+            sortBy,
+            filters,
+          }),
+          // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
+          [state, groupBy, sortBy, filters]
+        ),
+    },
     useFilters,
     useGroupBy,
     useSortBy
   );
 
-  const [view, setView] = useState<"list" | "grid">("list");
-
-  const {
-    rows,
-    flatHeaders,
-    // @ts-expect-error -- for some reason, react-table index.d.ts UseGroupByInstanceProps
-    // doesn't have setGroupBy?
-    setGroupBy,
-    setAllFilters,
-    setSortBy,
-    state: { groupBy, sortBy, filters },
-  } = tableInstance;
+  const { rows, flatHeaders } = tableInstance;
 
   const isGrouped = groupBy.length > 0;
   const isSorted = sortBy.length > 0;
 
-  const groupByOptions = flatHeaders
-    .filter((column) => column.canGroupBy)
-    .map((column) => ({
-      label: column.Header,
-      value: column.id,
-    }));
+  const { groupByOptions, sortByOptions } = useMemo(() => {
+    const groupByOptions = flatHeaders
+      .filter((column) => column.canGroupBy)
+      .map((column) => ({
+        label: column.Header,
+        value: column.id,
+      }));
 
-  const sortByOptions = flatHeaders
-    .filter((column) => column.canSort)
-    .map((column) => ({
-      label: column.Header,
-      value: column.id,
-    }));
+    const sortByOptions = flatHeaders
+      .filter((column) => column.canSort)
+      .map((column) => ({
+        label: column.Header,
+        value: column.id,
+      }));
 
-  const teamFilters = useMemo(() => {
-    const sharingColumn = flatHeaders.find(
-      (header) => header.id === "sharing.source.label"
-    );
-    return getFilterOptions(sharingColumn).filter(
-      (option) => !["Personal", "Public"].includes(option as string)
-    ) as string[];
+    return { groupByOptions, sortByOptions };
   }, [flatHeaders]);
 
   const BlueprintsView = view === "list" ? TableView : GridView;
 
   return (
     <BootstrapRow>
-      <ListFilters setAllFilters={setAllFilters} teamFilters={teamFilters} />
+      <ListFilters teamFilters={teamFilters} />
       <Col xs={9}>
         <div className="d-flex justify-content-between align-items-center">
           <h3 className="my-3">
@@ -183,13 +195,10 @@ const BlueprintsCard: React.FunctionComponent<{
               placeholder="Group by"
               options={groupByOptions}
               onChange={(option, { action }) => {
-                if (action === "clear") {
-                  setGroupBy([]);
-                  return;
-                }
-
-                setGroupBy([option.value]);
+                const value = action === "clear" ? [] : [option.value];
+                setGroupBy(value);
               }}
+              value={groupByOptions.find((opt) => opt.value === groupBy[0])}
             />
 
             <span className="ml-3 mr-2">Sort by:</span>
@@ -198,13 +207,11 @@ const BlueprintsCard: React.FunctionComponent<{
               placeholder="Sort by"
               options={sortByOptions}
               onChange={(option, { action }) => {
-                if (action === "clear") {
-                  setSortBy([]);
-                  return;
-                }
-
-                setSortBy([{ id: option.value, desc: false }]);
+                const value =
+                  action === "clear" ? [] : [{ id: option.value, desc: false }];
+                setSortBy(value);
               }}
+              value={sortByOptions.find((opt) => opt.value === sortBy[0]?.id)}
             />
 
             {isSorted && (
@@ -212,17 +219,19 @@ const BlueprintsCard: React.FunctionComponent<{
                 variant="link"
                 size="sm"
                 onClick={() => {
-                  setSortBy(
-                    sortBy.map((sort) => {
-                      sort.desc = !sort.desc;
-                      return sort;
-                    })
-                  );
+                  const value = [{ id: sortBy[0].id, desc: !sortBy[0].desc }];
+                  setSortBy(value);
                 }}
               >
                 <FontAwesomeIcon
                   icon={
-                    sortBy[0].desc ? faSortAmountUpAlt : faSortAmountDownAlt
+                    sortBy[0].id === "updatedAt"
+                      ? sortBy[0].desc
+                        ? faSortAmountDownAlt
+                        : faSortAmountUpAlt
+                      : sortBy[0].desc
+                      ? faSortAmountUpAlt
+                      : faSortAmountDownAlt
                   }
                   size="lg"
                 />
