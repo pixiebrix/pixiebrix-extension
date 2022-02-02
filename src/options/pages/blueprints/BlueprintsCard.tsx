@@ -28,7 +28,6 @@ import {
 import AuthContext from "@/auth/AuthContext";
 import {
   Column,
-  ColumnInstance,
   useFilters,
   useGroupBy,
   useSortBy,
@@ -54,15 +53,7 @@ import {
 } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
-
-const getFilterOptions = (column: ColumnInstance) => {
-  const options = new Set();
-  for (const row of column.preFilteredRows) {
-    options.add(row.values[column.id]);
-  }
-
-  return [...options.values()];
-};
+import { uniq } from "lodash";
 
 const getInstallableRows = (
   installables: Installable[],
@@ -113,10 +104,16 @@ const BlueprintsCard: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
   const { scope } = useContext(AuthContext);
-  const data: InstallableViewItem[] = useMemo(
-    () => getInstallableRows(installables, scope),
-    [installables, scope]
-  );
+  const { data, teamFilters } = useMemo(() => {
+    const data = getInstallableRows(installables, scope);
+    const teamFilters = uniq(
+      data.map((installable) => installable.sharing.source.label)
+    ).filter((label) => label !== "Public" && label !== "Personal");
+    return { data, teamFilters };
+  }, [installables, scope]);
+
+  const b = uniq(data.map((installable) => installable.sharing.source.label));
+  console.log("sharing", { b });
 
   const [view, setView] = useReduxState(
     selectView,
@@ -166,7 +163,7 @@ const BlueprintsCard: React.FunctionComponent<{
   const isGrouped = groupBy.length > 0;
   const isSorted = sortBy.length > 0;
 
-  const { groupByOptions, sortByOptions, teamFilters } = useMemo(() => {
+  const { groupByOptions, sortByOptions } = useMemo(() => {
     const groupByOptions = flatHeaders
       .filter((column) => column.canGroupBy)
       .map((column) => ({
@@ -181,14 +178,7 @@ const BlueprintsCard: React.FunctionComponent<{
         value: column.id,
       }));
 
-    const sharingColumn = flatHeaders.find(
-      (header) => header.id === "sharing.source.label"
-    );
-    const teamFilters = getFilterOptions(sharingColumn).filter(
-      (option) => !["Personal", "Public"].includes(option as string)
-    ) as string[];
-
-    return { groupByOptions, sortByOptions, teamFilters };
+    return { groupByOptions, sortByOptions };
   }, [flatHeaders]);
 
   const BlueprintsView = view === "list" ? TableView : GridView;

@@ -66,7 +66,10 @@ function ListFilters({ teamFilters }: ListFiltersProps) {
             Public Marketplace Blueprints
           </Nav.Link>
         </Nav.Item>
-        {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
+        <h5 className="mt-3">Shared with Me</h5>
+        {teamFilters.length === 0 && (
+          <span className="text-muted">No shared blueprints</span>
+        )}
         {teamFilters.map((filter) => (
           <Nav.Item key={filter}>
             <Nav.Link
