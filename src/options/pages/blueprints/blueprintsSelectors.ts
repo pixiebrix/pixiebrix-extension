@@ -18,3 +18,5 @@
 import { RootState } from "@/options/store";
 
 export const selectView = (state: RootState) => state.blueprints.view;
+export const selectGroupBy = (state: RootState) => state.blueprints.groupBy;
+export const selectSortBy = (state: RootState) => state.blueprints.sortBy;

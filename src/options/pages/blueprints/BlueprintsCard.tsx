@@ -46,7 +46,7 @@ import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import GridView from "./gridView/GridView";
 import useReduxState from "@/hooks/useReduxState";
-import { selectView } from "./blueprintsSelectors";
+import { selectGroupBy, selectSortBy, selectView } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
 
 const getFilterOptions = (column: ColumnInstance) => {
@@ -117,16 +117,33 @@ const BlueprintsCard: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on first mount
   }, []);
 
-  const tableInstance = useTable<InstallableViewItem>(
-    { columns, data },
-    useFilters,
-    useGroupBy,
-    useSortBy
-  );
-
   const [view, setView] = useReduxState(
     selectView,
     blueprintsSlice.actions.setView
+  );
+
+  const [groupBy, setGroupBy] = useReduxState(
+    selectGroupBy,
+    blueprintsSlice.actions.setGroupBy
+  );
+
+  const [sortBy, setSortBy] = useReduxState(
+    selectSortBy,
+    blueprintsSlice.actions.setSortBy
+  );
+
+  const tableInstance = useTable<InstallableViewItem>(
+    {
+      columns,
+      data,
+      initialState: {
+        groupBy,
+        sortBy,
+      },
+    },
+    useFilters,
+    useGroupBy,
+    useSortBy
   );
 
   const {
@@ -134,14 +151,14 @@ const BlueprintsCard: React.FunctionComponent<{
     flatHeaders,
     // @ts-expect-error -- for some reason, react-table index.d.ts UseGroupByInstanceProps
     // doesn't have setGroupBy?
-    setGroupBy,
+    setGroupBy: setTableGroupBy,
     setAllFilters,
-    setSortBy,
-    state: { groupBy, sortBy, filters },
+    setSortBy: setTableSortBy,
+    state: { groupBy: tableGroupBy, sortBy: tableSortBy, filters },
   } = tableInstance;
 
-  const isGrouped = groupBy.length > 0;
-  const isSorted = sortBy.length > 0;
+  const isGrouped = tableGroupBy.length > 0;
+  const isSorted = tableSortBy.length > 0;
 
   const groupByOptions = flatHeaders
     .filter((column) => column.canGroupBy)
@@ -183,13 +200,13 @@ const BlueprintsCard: React.FunctionComponent<{
               placeholder="Group by"
               options={groupByOptions}
               onChange={(option, { action }) => {
-                if (action === "clear") {
-                  setGroupBy([]);
-                  return;
-                }
-
-                setGroupBy([option.value]);
+                const value = action === "clear" ? [] : [option.value];
+                setGroupBy(value);
+                setTableGroupBy(value);
               }}
+              value={groupByOptions.find(
+                (opt) => opt.value === tableGroupBy[0]
+              )}
             />
 
             <span className="ml-3 mr-2">Sort by:</span>
@@ -198,13 +215,14 @@ const BlueprintsCard: React.FunctionComponent<{
               placeholder="Sort by"
               options={sortByOptions}
               onChange={(option, { action }) => {
-                if (action === "clear") {
-                  setSortBy([]);
-                  return;
-                }
-
-                setSortBy([{ id: option.value, desc: false }]);
+                const value =
+                  action === "clear" ? [] : [{ id: option.value, desc: false }];
+                setSortBy(value);
+                setTableSortBy(value);
               }}
+              value={sortByOptions.find(
+                (opt) => opt.value === tableSortBy[0]?.id
+              )}
             />
 
             {isSorted && (
@@ -212,17 +230,22 @@ const BlueprintsCard: React.FunctionComponent<{
                 variant="link"
                 size="sm"
                 onClick={() => {
-                  setSortBy(
-                    sortBy.map((sort) => {
-                      sort.desc = !sort.desc;
-                      return sort;
-                    })
-                  );
+                  const value = [
+                    { id: tableSortBy[0].id, desc: !tableSortBy[0].desc },
+                  ];
+                  setSortBy(value);
+                  setTableSortBy(value);
                 }}
               >
                 <FontAwesomeIcon
                   icon={
-                    sortBy[0].desc ? faSortAmountUpAlt : faSortAmountDownAlt
+                    tableSortBy[0].id !== "updatedAt"
+                      ? tableSortBy[0].desc
+                        ? faSortAmountUpAlt
+                        : faSortAmountDownAlt
+                      : tableSortBy[0].desc
+                      ? faSortAmountDownAlt
+                      : faSortAmountUpAlt
                   }
                   size="lg"
                 />

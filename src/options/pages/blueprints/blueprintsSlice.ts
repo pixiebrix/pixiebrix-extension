@@ -16,16 +16,22 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { SortingRule } from "react-table";
 import { localStorage } from "redux-persist-webextension-storage";
+import { InstallableViewItem } from "./blueprintsTypes";
 
 type View = "list" | "grid";
 
 export type BlueprintsState = {
   view: View;
+  groupBy: string[];
+  sortBy: SortingRule<InstallableViewItem>[];
 };
 
 const initialState: BlueprintsState = {
   view: "list",
+  groupBy: [],
+  sortBy: [],
 };
 
 const blueprintsSlice = createSlice({
@@ -34,6 +40,15 @@ const blueprintsSlice = createSlice({
   reducers: {
     setView(state, { payload: view }: PayloadAction<View>) {
       state.view = view;
+    },
+    setGroupBy(state, { payload: groupBy }: PayloadAction<string[]>) {
+      state.groupBy = groupBy;
+    },
+    setSortBy(
+      state,
+      { payload: sortBy }: PayloadAction<SortingRule<InstallableViewItem>[]>
+    ) {
+      state.sortBy = sortBy;
     },
   },
 });
