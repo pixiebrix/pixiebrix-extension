@@ -20,7 +20,7 @@ import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { $safeFind } from "@/helpers";
 
-export class DisableEffect extends Effect {
+export class EnableEffect extends Effect {
   constructor() {
     super(
       "@pixiebrix/enable",
