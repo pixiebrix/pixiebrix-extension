@@ -21,6 +21,7 @@ import { SettingsState } from "@/store/settingsTypes";
 const initialSettingsState: SettingsState = {
   mode: "remote",
   nextUpdate: null as number,
+  suggestElements: false,
 };
 
 const settingsSlice = createSlice({
@@ -29,6 +30,14 @@ const settingsSlice = createSlice({
   reducers: {
     setMode(state, { payload: { mode } }) {
       state.mode = mode;
+    },
+    setFlag(
+      state,
+      action: PayloadAction<{ flag: "suggestElements"; value: boolean }>
+    ) {
+      const { flag, value } = action.payload;
+      // eslint-disable-next-line security/detect-object-injection -- type checked
+      state[flag] = value;
     },
     snoozeUpdates(state, action: PayloadAction<{ durationMillis: number }>) {
       const { durationMillis } = action.payload;

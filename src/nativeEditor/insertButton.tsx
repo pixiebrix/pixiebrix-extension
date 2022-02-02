@@ -30,6 +30,7 @@ import { html as beautifyHTML } from "js-beautify";
 import type { DynamicDefinition } from "./dynamic";
 import { Except } from "type-fest";
 import { UUID } from "@/core";
+import { PRIVATE_ATTRIBUTES_SELECTOR } from "@/common";
 
 export const DEFAULT_ACTION_CAPTION = "Action";
 
@@ -45,18 +46,27 @@ export type ButtonSelectionResult = {
   containerInfo: ElementInfo;
 };
 
-export async function insertButton(): Promise<ButtonSelectionResult> {
-  let selected = await userSelectElement();
+export async function insertButton(
+  useNewFilter = false
+): Promise<ButtonSelectionResult> {
+  let selected;
+  if (useNewFilter) {
+    selected = await userSelectElement({
+      filter: `:is(a, button):not(${PRIVATE_ATTRIBUTES_SELECTOR})`,
+    });
+  } else {
+    selected = await userSelectElement();
 
-  // Anchor is an inline element, so if the structure in a > span, the user has no way of
-  // selecting the outer anchor unless there's padding/margin involved.
-  //
-  // if the parent is BUTTON, the user probably just selected the wrong thing
-  if (
-    selected.length === 1 &&
-    ["A", "BUTTON"].includes(selected[0].parentElement?.tagName)
-  ) {
-    selected = [selected[0].parentElement];
+    // Anchor is an inline element, so if the structure in a > span, the user has no way of
+    // selecting the outer anchor unless there's padding/margin involved.
+    //
+    // if the parent is BUTTON, the user probably just selected the wrong thing
+    if (
+      selected.length === 1 &&
+      ["A", "BUTTON"].includes(selected[0].parentElement?.tagName)
+    ) {
+      selected = [selected[0].parentElement];
+    }
   }
 
   const { container, selectors: containerSelectors } = findContainer(selected);

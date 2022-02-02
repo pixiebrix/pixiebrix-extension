@@ -181,7 +181,10 @@ export interface ElementConfig<
    * `undefined` for elements that aren't placed natively in the host page (e.g., context menus)
    * @param target the tab on which to run the function
    */
-  readonly selectNativeElement?: (target: Target) => Promise<TResult>;
+  readonly selectNativeElement?: (
+    target: Target,
+    useNewFilter?: boolean
+  ) => Promise<TResult>;
 
   /**
    * Returns the initial page editor form state for a new element (including new foundation)
