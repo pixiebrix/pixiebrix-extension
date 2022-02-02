@@ -40,8 +40,6 @@ import {
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import { notifyError } from "@/contentScript/notify";
-// @ts-expect-error using jquery for the JQuery.EventHandler type below
-import JQuery from "jquery";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
