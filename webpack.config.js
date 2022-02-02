@@ -28,6 +28,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, compact } = require("lodash");
 const Policy = require("csp-parse");
 const mergeWithShared = require("./webpack.sharedConfig.js");
+const ReactRefreshPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 function parseEnv(value) {
   switch (String(value).toLowerCase()) {
@@ -150,6 +151,7 @@ function customizeManifest(manifest, isProduction) {
     // React Dev Tools app. See https://github.com/pixiebrix/pixiebrix-extension/wiki/Development-commands#react-dev-tools
     policy.add("script-src", "http://localhost:8097");
     policy.add("connect-src", "ws://localhost:8097/");
+    policy.add("connect-src", "ws://localhost:8080/");
     policy.add("img-src", "https://pixiebrix-marketplace-dev.s3.amazonaws.com");
   }
 
@@ -321,6 +323,9 @@ module.exports = (env, options) =>
 
       new NodePolyfillPlugin(),
       new WebExtensionTarget(),
+
+      options.watch && new ReactRefreshPlugin(),
+
       new webpack.ProvidePlugin({
         $: "jquery",
         jQuery: "jquery",
@@ -368,6 +373,9 @@ module.exports = (env, options) =>
         ],
       }),
     ]),
+    devServer: {
+      hot: "only",
+    },
     module: {
       rules: [
         {

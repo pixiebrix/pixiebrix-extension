@@ -19,6 +19,7 @@ const fs = require("fs");
 const path = require("path");
 const JSON5 = require("json5");
 const { mergeWithCustomize, customizeObject } = require("webpack-merge");
+const reactRefreshTypeScript = require("react-refresh-typescript");
 
 const merge = mergeWithCustomize({
   // Webpack resolves aliases in order, so the mocks need to be first
@@ -58,6 +59,9 @@ const shared = {
         exclude: /node_modules/,
         options: {
           transpileOnly: true,
+          getCustomTransformers: () => ({
+            before: [reactRefreshTypeScript()].filter(Boolean),
+          }),
         },
       },
       {
