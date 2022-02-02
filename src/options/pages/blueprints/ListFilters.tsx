@@ -1,11 +1,9 @@
-import { Col, Form, InputGroup, Nav } from "react-bootstrap";
+import { Col, Form, Nav } from "react-bootstrap";
 import React, { useState } from "react";
 import styles from "./ListFilters.module.scss";
 import useReduxState from "@/hooks/useReduxState";
 import { selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 type ListFiltersProps = {
   teamFilters: string[];
@@ -23,23 +21,23 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
 
   return (
     <Col xs={3} className={styles.filtersCol}>
+      <Form className="mb-4 mr-3">
+        <Form.Control
+          id="query"
+          placeholder="Search"
+          size="sm"
+          value={query}
+          onChange={({ target }) => {
+            setQuery(target.value);
+            setGlobalFilter(target.value);
+          }}
+        />
+      </Form>
       <Nav
         className="flex-column"
         variant="pills"
         defaultActiveKey={defaultActiveKey}
       >
-        <Form className="mb-4 mr-3">
-          <Form.Control
-            id="query"
-            placeholder="Search"
-            size="sm"
-            value={query}
-            onChange={({ target }) => {
-              setQuery(target.value);
-              setGlobalFilter(query);
-            }}
-          />
-        </Form>
         <h5>Category Filters</h5>
         <Nav.Item>
           <Nav.Link

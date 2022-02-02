@@ -160,7 +160,7 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  const { rows, flatHeaders, setGlobalFilter } = tableInstance;
+  const { rows, flatHeaders, setGlobalFilter, state } = tableInstance;
 
   const isGrouped = groupBy.length > 0;
   const isSorted = sortBy.length > 0;
@@ -266,6 +266,12 @@ const BlueprintsCard: React.FunctionComponent<{
             </Button>
           </span>
         </div>
+        {state.globalFilter && (
+          <p>
+            {rows.length} results for{" "}
+            <strong>&quot;{state.globalFilter}&quot;</strong> in this category
+          </p>
+        )}
         {isGrouped ? (
           <>
             {rows.map((row) => (
