@@ -29,6 +29,7 @@ import AuthContext from "@/auth/AuthContext";
 import {
   Column,
   useFilters,
+  useGlobalFilter,
   useGroupBy,
   useSortBy,
   useTable,
@@ -87,16 +88,19 @@ const columns: Array<Column<InstallableViewItem>> = [
     Header: "Sharing",
     // @ts-expect-error -- react-table allows nested accessors
     accessor: "sharing.source.label",
+    disableGlobalFilter: true,
   },
   {
     Header: "Last modified",
     accessor: "updatedAt",
     disableGroupBy: true,
     disableFilters: true,
+    disableGlobalFilter: true,
   },
   {
     Header: "Status",
     accessor: "status",
+    disableGlobalFilter: true,
   },
 ];
 
@@ -151,11 +155,12 @@ const BlueprintsCard: React.FunctionComponent<{
         ),
     },
     useFilters,
+    useGlobalFilter,
     useGroupBy,
     useSortBy
   );
 
-  const { rows, flatHeaders } = tableInstance;
+  const { rows, flatHeaders, setGlobalFilter } = tableInstance;
 
   const isGrouped = groupBy.length > 0;
   const isSorted = sortBy.length > 0;
@@ -182,7 +187,10 @@ const BlueprintsCard: React.FunctionComponent<{
 
   return (
     <BootstrapRow>
-      <ListFilters teamFilters={teamFilters} />
+      <ListFilters
+        teamFilters={teamFilters}
+        setGlobalFilter={setGlobalFilter}
+      />
       <Col xs={9}>
         <div className="d-flex justify-content-between align-items-center">
           <h3 className="my-3">
