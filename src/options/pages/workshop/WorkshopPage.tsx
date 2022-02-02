@@ -34,7 +34,7 @@ import useFetch from "@/hooks/useFetch";
 import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
 import { EnrichedBrick, NavigateProps } from "./workshopTypes";
-import { RootState } from "@/options/store";
+import { RequireScope } from "../../../auth/RequireScope";
 
 const { actions } = workshopSlice;
 
@@ -230,56 +230,46 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
   );
 };
 
-const RequireScope: React.FunctionComponent<{
-  scope: string | null;
-  isPending: boolean;
-}> = ({ scope, isPending, children }) => {
-  const mode = useSelector<RootState, string>(({ settings }) => settings.mode);
-
-  // Fetching scope currently performs a network request. Optimistically show the main interface while the scope is being fetched.
-  if (mode !== "local" && !isPending && (scope === "" || !scope)) {
-    // return <ScopeSettings />;
-    return <div>shit happens</div>;
-  }
-
-  return { children };
-};
-
 const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
   const { isLoggedIn, flags, scope, isPending } = useContext(AuthContext);
 
   return (
-    <Page
-      title="Workshop"
-      icon={faHammer}
-      description={
-        <p>
-          Build and attach bricks.{" "}
-          {flags.includes("marketplace") && (
-            <>
-              To activate pre-made blueprints, visit the{" "}
-              <Link to={"/marketplace"}>Marketplace</Link>
-            </>
-          )}
-        </p>
-      }
-      toolbar={
-        isLoggedIn && (
-          <Button
-            variant="info"
-            onClick={() => {
-              navigate("/workshop/create/");
-            }}
-          >
-            <FontAwesomeIcon icon={faPlus} /> Create New Brick
-          </Button>
-        )
-      }
+    <RequireScope
+      scope={scope}
+      isPending={isPending}
+      scopeSettingsTitle="Welcome to the PixieBrix Workshop!"
+      scopeSettingsDescription="To use the Workshop, you must first set an account alias for your PixieBrix account"
     >
-      <RequireScope scope={scope} isPending={isPending}>
+      <Page
+        title="Workshop"
+        icon={faHammer}
+        description={
+          <p>
+            Build and attach bricks.{" "}
+            {flags.includes("marketplace") && (
+              <>
+                To activate pre-made blueprints, visit the{" "}
+                <Link to={"/marketplace"}>Marketplace</Link>
+              </>
+            )}
+          </p>
+        }
+        toolbar={
+          isLoggedIn && (
+            <Button
+              variant="info"
+              onClick={() => {
+                navigate("/workshop/create/");
+              }}
+            >
+              <FontAwesomeIcon icon={faPlus} /> Create New Brick
+            </Button>
+          )
+        }
+      >
         <CustomBricksSection navigate={navigate} />
-      </RequireScope>
-    </Page>
+      </Page>
+    </RequireScope>
   );
 };
 

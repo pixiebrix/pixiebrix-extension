@@ -17,7 +17,7 @@
 
 import React, { useCallback } from "react";
 import { Formik, FormikBag, FormikValues } from "formik";
-import { Alert, Button, Col, Form, Row } from "react-bootstrap";
+import { Alert, Button, Form } from "react-bootstrap";
 import * as Yup from "yup";
 import { castArray, mapValues } from "lodash";
 import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
@@ -28,6 +28,7 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import styles from "./ScopeSettings.module.scss";
 
 interface Profile {
   scope: string | null;
@@ -44,7 +45,15 @@ const VALIDATION_SCHEMA = Yup.object({
     .required(),
 });
 
-const ScopeSettings: React.FunctionComponent = () => {
+type ScopeSettingsProps = {
+  title: string;
+  description: string;
+};
+
+const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
+  title,
+  description,
+}) => {
   const notify = useNotifications();
 
   const submit = useCallback(
@@ -91,52 +100,47 @@ const ScopeSettings: React.FunctionComponent = () => {
   );
 
   return (
-    <Row className="vh-100">
-      <Col md={8} lg={6} className="mx-auto vh-100 overflow-auto">
-        <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
+    <div className={styles.root}>
+      <div className="PaneTitle">{title}</div>
 
-        <div className="font-weight-bold">
-          To create extensions, you must first set an account alias for your
-          PixieBrix account
-        </div>
+      <div className="font-weight-bold">{description}</div>
 
-        <Alert variant="info" className="mt-2">
-          <p>
-            <FontAwesomeIcon icon={faInfo} /> Your account alias is a unique
-            name used to prevent duplicate identifiers between the bricks you
-            create and public/team bricks.
-          </p>
-        </Alert>
+      <Alert variant="info" className="mt-2">
+        <p>
+          <FontAwesomeIcon icon={faInfo} /> Your account alias is a unique name
+          used to prevent duplicate identifiers between the bricks you create
+          and public/team bricks.
+        </p>
+      </Alert>
 
-        <Alert variant="info" className="mt-2">
-          <p>
-            <FontAwesomeIcon icon={faEyeSlash} /> You account alias will not be
-            visible to anyone unless you choose to share a brick or extension.
-          </p>
-        </Alert>
+      <Alert variant="info" className="mt-2">
+        <p>
+          <FontAwesomeIcon icon={faEyeSlash} /> You account alias will not be
+          visible to anyone unless you choose to share a brick or extension.
+        </p>
+      </Alert>
 
-        <Formik
-          onSubmit={submit}
-          enableReinitialize
-          initialValues={{ scope: "" }}
-          validationSchema={VALIDATION_SCHEMA}
-        >
-          {({ handleSubmit, isSubmitting, isValid }) => (
-            <Form noValidate onSubmit={handleSubmit} className="mt-2">
-              <ConnectedFieldTemplate
-                name="scope"
-                label="Account Alias"
-                placeholder="@peter-parker"
-                description="Your @alias for publishing bricks, e.g., @peter-parker"
-              />
-              <Button type="submit" disabled={isSubmitting || !isValid}>
-                Set My Account Alias
-              </Button>
-            </Form>
-          )}
-        </Formik>
-      </Col>
-    </Row>
+      <Formik
+        onSubmit={submit}
+        enableReinitialize
+        initialValues={{ scope: "" }}
+        validationSchema={VALIDATION_SCHEMA}
+      >
+        {({ handleSubmit, isSubmitting, isValid }) => (
+          <Form noValidate onSubmit={handleSubmit} className="mt-2">
+            <ConnectedFieldTemplate
+              name="scope"
+              label="Account Alias"
+              placeholder="@peter-parker"
+              description="Your @alias for publishing bricks, e.g., @peter-parker"
+            />
+            <Button type="submit" disabled={isSubmitting || !isValid}>
+              Set My Account Alias
+            </Button>
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 };
 

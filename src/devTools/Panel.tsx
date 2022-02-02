@@ -22,17 +22,14 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useDevConnection } from "@/devTools/context";
 import GridLoader from "react-spinners/GridLoader";
 import Editor from "@/devTools/Editor";
-import store, { persistor, RootState } from "./store";
+import store, { persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
-import { Provider, useSelector } from "react-redux";
-import { useAsyncState } from "@/hooks/common";
-import { getAuth } from "@/hooks/auth";
+import { Provider } from "react-redux";
+import { useAuth } from "@/hooks/auth";
 import AuthContext from "@/auth/AuthContext";
 import { ToastProvider } from "react-toast-notifications";
 import { useAsyncEffect } from "use-async-effect";
 import blockRegistry from "@/blocks/registry";
-import ScopeSettings from "@/devTools/ScopeSettings";
-import { AuthState } from "@/core";
 import Centered from "@/devTools/editor/components/Centered";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
@@ -42,16 +39,10 @@ import browser from "webextension-polyfill";
 
 // Import custom options widgets/forms for the built-in bricks
 import "@/contrib/editors";
+import { RequireScope } from "@/auth/RequireScope";
 
 registerContribBlocks();
 registerBuiltinBlocks();
-
-const defaultState: AuthState = {
-  isLoggedIn: false,
-  extension: true,
-  isOnboarded: undefined,
-  flags: [],
-};
 
 const PersistLoader: React.FunctionComponent = () => (
   <Centered>
@@ -61,22 +52,12 @@ const PersistLoader: React.FunctionComponent = () => (
   </Centered>
 );
 
-const RequireScope: React.FunctionComponent<{
-  scope: string | null;
-  isPending: boolean;
-}> = ({ scope, isPending, children }) => {
-  const mode = useSelector<RootState, string>(({ settings }) => settings.mode);
-
-  // Fetching scope currently performs a network request. Optimistically show the main interface while the scope is being fetched.
-  if (mode !== "local" && !isPending && (scope === "" || !scope)) {
-    return <ScopeSettings />;
-  }
-
-  return <>{children}</>;
-};
-
+// TODO
+// - Test the panel with useAuth
+// - Pull RequireScope from 2 pages and share it
+// - Check how unscoped users work on Workshop page
 const Panel: React.FunctionComponent = () => {
-  const [authState, authIsPending, authError] = useAsyncState(getAuth);
+  const authState = useAuth();
   const context = useDevConnection();
 
   useAsyncEffect(async () => {
@@ -84,11 +65,12 @@ const Panel: React.FunctionComponent = () => {
   }, []);
 
   const error =
-    (authError && getErrorMessage(authError)) || context.tabState.error;
+    (authState.error && getErrorMessage(authState.error)) ||
+    context.tabState.error;
   if (error) {
     return (
       <Centered vertically>
-        {authError && (
+        {authState.error && (
           <div className="PaneTitle">Error authenticating account</div>
         )}
         <div>{error}</div>
@@ -119,7 +101,7 @@ const Panel: React.FunctionComponent = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={<PersistLoader />} persistor={persistor}>
-        <AuthContext.Provider value={authState ?? defaultState}>
+        <AuthContext.Provider value={authState}>
           <DevToolsContext.Provider value={context}>
             <ToastProvider>
               <ModalProvider>
@@ -128,7 +110,9 @@ const Panel: React.FunctionComponent = () => {
                     <Container fluid className="DevToolsContainer">
                       <RequireScope
                         scope={authState?.scope}
-                        isPending={authIsPending}
+                        isPending={authState.isPending}
+                        scopeSettingsTitle="Welcome to the PixieBrix Page Editor!"
+                        scopeSettingsDescription="To create extensions, you must first set an account alias for your PixieBrix account"
                       >
                         <Editor />
                       </RequireScope>

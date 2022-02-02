@@ -157,15 +157,10 @@ const Layout = () => {
   );
 };
 
-const defaultState: AuthState = {
-  isLoggedIn: false,
-  extension: true,
-  isOnboarded: undefined,
-  flags: [],
-};
-
 const App: React.FunctionComponent = () => {
   const authState = useAuth();
+
+  console.log("authState", authState);
 
   useEffect(() => {
     initTelemetry();
@@ -174,7 +169,7 @@ const App: React.FunctionComponent = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={<GridLoader />} persistor={persistor}>
-        <AuthContext.Provider value={authState ?? defaultState}>
+        <AuthContext.Provider value={authState}>
           <ConnectedRouter history={hashHistory}>
             <ModalProvider>
               <ToastProvider>
