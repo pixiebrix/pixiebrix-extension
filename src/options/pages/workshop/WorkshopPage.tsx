@@ -34,6 +34,7 @@ import useFetch from "@/hooks/useFetch";
 import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
 import { EnrichedBrick, NavigateProps } from "./workshopTypes";
+import { RootState } from "@/options/store";
 
 const { actions } = workshopSlice;
 
@@ -229,8 +230,23 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
   );
 };
 
+const RequireScope: React.FunctionComponent<{
+  scope: string | null;
+  isPending: boolean;
+}> = ({ scope, isPending, children }) => {
+  const mode = useSelector<RootState, string>(({ settings }) => settings.mode);
+
+  // Fetching scope currently performs a network request. Optimistically show the main interface while the scope is being fetched.
+  if (mode !== "local" && !isPending && (scope === "" || !scope)) {
+    // return <ScopeSettings />;
+    return <div>shit happens</div>;
+  }
+
+  return { children };
+};
+
 const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
-  const { isLoggedIn, flags } = useContext(AuthContext);
+  const { isLoggedIn, flags, scope, isPending } = useContext(AuthContext);
 
   return (
     <Page
@@ -260,7 +276,9 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
         )
       }
     >
-      <CustomBricksSection navigate={navigate} />
+      <RequireScope scope={scope} isPending={isPending}>
+        <CustomBricksSection navigate={navigate} />
+      </RequireScope>
     </Page>
   );
 };

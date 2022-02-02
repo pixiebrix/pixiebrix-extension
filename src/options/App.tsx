@@ -41,7 +41,7 @@ import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
-import { getAuth } from "@/hooks/auth";
+import { getAuth, useAuth } from "@/hooks/auth";
 import useRefresh from "@/hooks/useRefresh";
 import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
@@ -165,7 +165,7 @@ const defaultState: AuthState = {
 };
 
 const App: React.FunctionComponent = () => {
-  const [authState] = useAsyncState(getAuth);
+  const authState = useAuth();
 
   useEffect(() => {
     initTelemetry();

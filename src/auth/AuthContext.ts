@@ -16,7 +16,12 @@
  */
 
 import { createContext } from "react";
-import { AuthState } from "@/core";
+import { AuthState as CoreAuthState } from "@/core";
+
+export type AuthState = CoreAuthState & {
+  isPending: boolean;
+  error: null | unknown;
+};
 
 const anonAuthState: AuthState = {
   userId: undefined,
@@ -26,6 +31,8 @@ const anonAuthState: AuthState = {
   extension: false,
   scope: null,
   flags: [],
+  isPending: false,
+  error: null,
 };
 
 const AuthContext = createContext(anonAuthState);
