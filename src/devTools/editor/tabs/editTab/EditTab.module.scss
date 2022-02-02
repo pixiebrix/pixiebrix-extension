@@ -64,7 +64,7 @@
   overflow-y: auto;
 }
 
-.headerButton {
+.copyButton {
   border: none;
   background: none;
   color: grey;
@@ -74,6 +74,26 @@
     background: lightgrey;
   }
   &:disabled {
+    &:hover {
+      background: none;
+    }
+    color: lightgrey;
+  }
+}
+
+.removeButton {
+  border: none;
+  background: none;
+  color: grey;
+  &:focus,
+  &:hover {
+    color: var(--red);
+    background: lightgrey;
+  }
+  &:disabled {
+    &:hover {
+      background: none;
+    }
     color: lightgrey;
   }
 }
