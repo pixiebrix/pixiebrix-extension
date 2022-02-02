@@ -38,16 +38,58 @@ function noopMouseHandler(event: MouseEvent) {
   event.stopPropagation();
 }
 
-export async function userSelectElement(
-  root?: HTMLElement
-): Promise<HTMLElement[]> {
+interface UserSelection {
+  root?: HTMLElement;
+  /** CSS selector to limit the selection to */
+  filter?: string;
+}
+
+export async function userSelectElement({
+  root,
+  filter,
+}: UserSelection = {}): Promise<HTMLElement[]> {
   return new Promise<HTMLElement[]>((resolve, reject) => {
-    const targets: HTMLElement[] = [];
+    const targets = new Set<HTMLElement>();
+
+    if (!overlay) {
+      overlay = new Overlay();
+    }
+
+    function prehiglightItems() {
+      let filteredElements: HTMLElement[];
+      if (filter) {
+        filteredElements = [...document.querySelectorAll<HTMLElement>(filter)];
+        const updateOverlay = () => {
+          if (!_cancelSelect) {
+            // The operation has completed
+            return;
+          }
+
+          overlay.inspect(filteredElements);
+          setTimeout(() => requestAnimationFrame(updateOverlay), 30); // Only when the tab is visible
+        };
+
+        updateOverlay();
+      }
+    }
+
+    function findExpectedTarget(target: EventTarget): HTMLElement | void {
+      if (!(target instanceof HTMLElement)) {
+        return;
+      }
+
+      if (!filter) {
+        return target;
+      }
+
+      return target.closest<HTMLElement>(filter);
+    }
 
     function startInspectingNative() {
       _cancelSelect = cancel;
       registerListenersOnWindow(window);
       addInspectingModeStyles(window);
+      prehiglightItems();
     }
 
     function stopInspectingNative() {
@@ -58,7 +100,8 @@ export async function userSelectElement(
     }
 
     function onClick(event: MouseEvent) {
-      if (event.altKey) {
+      const target = findExpectedTarget(event.target);
+      if (event.altKey || !target) {
         return;
       }
 
@@ -66,29 +109,26 @@ export async function userSelectElement(
       event.stopPropagation();
 
       if (event.shiftKey) {
-        if (event.target) {
-          const index = targets.indexOf(event.target as HTMLElement);
-          if (index >= 0) {
-            targets.splice(index, 1);
-          } else {
-            targets.push(event.target as HTMLElement);
-          }
+        if (targets.has(target)) {
+          targets.delete(target);
+        } else {
+          targets.add(target);
         }
-      } else {
-        try {
-          if (event.target) {
-            const result = uniq([...targets, event.target as HTMLElement]);
-            if (root && result.some((x) => !root.contains(x))) {
-              throw new Error(
-                "One or more selected elements are not contained with the root container"
-              );
-            }
 
-            resolve(result);
-          }
-        } finally {
-          stopInspectingNative();
+        return;
+      }
+
+      try {
+        const result = uniq([...targets, target]);
+        if (root && result.some((x) => !root.contains(x))) {
+          throw new Error(
+            "One or more selected elements are not contained with the root container"
+          );
         }
+
+        resolve(result);
+      } finally {
+        stopInspectingNative();
       }
     }
 
@@ -102,18 +142,15 @@ export async function userSelectElement(
     function onPointerOver(event: MouseEvent) {
       event.preventDefault();
       event.stopPropagation();
+      const target = findExpectedTarget(event.target);
 
-      if (overlay == null) {
-        overlay = new Overlay();
+      if (target) {
+        overlay.inspect([target]);
       }
-
-      overlay.inspect([event.target as HTMLElement], null);
     }
 
-    function onPointerLeave(event: MouseEvent) {
-      if (event.target === window.document) {
-        hideOverlay();
-      }
+    function onPointerLeave() {
+      overlay.inspect([]);
     }
 
     function escape(event: KeyboardEvent) {
@@ -135,8 +172,12 @@ export async function userSelectElement(
       window.addEventListener("mouseover", noopMouseHandler, true);
       window.addEventListener("mouseup", noopMouseHandler, true);
       window.addEventListener("pointerdown", onPointerDown, true);
-      window.addEventListener("pointerover", onPointerOver, true);
-      window.document.addEventListener("pointerleave", onPointerLeave, true);
+
+      if (!filter) {
+        window.addEventListener("pointerover", onPointerOver, true);
+        window.document.addEventListener("pointerleave", onPointerLeave, true);
+      }
+
       window.addEventListener("pointerup", noopMouseHandler, true);
       window.addEventListener("keyup", escape, true);
     }
@@ -162,6 +203,7 @@ export async function userSelectElement(
           border: solid 10px rgba(182, 109, 255, 0.3);
           position: fixed;
           z-index: 100000000;
+          pointer-events: none;
           inset: 0;
           /* Sine curve to make the pulse smooth */
           animation: 600ms cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate pbGlow;
@@ -212,7 +254,7 @@ export async function selectElement({
   root?: string;
 }) {
   const rootElement = root == null ? undefined : requireSingleElement(root);
-  const elements = await userSelectElement(rootElement);
+  const elements = await userSelectElement({ root: rootElement });
 
   switch (mode) {
     case "container": {

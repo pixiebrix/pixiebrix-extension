@@ -42,14 +42,18 @@ body.pixiebrix-modal-open {
 }
 
 /* Overlay.tsx has no classes, so we target each layer by using its hardcoded values */
-[style="z-index: 10000000;"] [style*="rgba(120, 170, 210, 0.7)"],
-[style="z-index: 10000000;"] [style*="rgba(77, 200, 0, 0.3)"],
 [style="z-index: 10000000;"] [style*="rgba(255, 200, 50, 0.3)"] {
-  background: rgba(182, 109, 255, 0.1) !important;
-  border-color: rgba(182, 109, 255, 0.1) !important;
+  border-color: transparent !important;
+  background: linear-gradient(
+    20deg,
+    rgba(182, 109, 255, 0.4),
+    rgba(182, 109, 255, 0.1)
+  ) !important;
 }
 
-/* Don't highlight `margin` */
-[style="z-index: 10000000;"] [style*="rgba(255, 155, 0, 0.3)"] {
+[style="z-index: 10000000;"] [style*="rgba(255, 155, 0, 0.3)"],
+[style="z-index: 10000000;"] [style*="rgba(77, 200, 0, 0.3)"],
+[style="z-index: 10000000;"] [style*="rgba(120, 170, 210, 0.7)"] {
+  background: none !important;
   border-color: transparent !important;
 }

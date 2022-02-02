@@ -31,4 +31,9 @@ export type SettingsState = {
    * The banners still show, however no modals will be shown for the browser extension or team deployments.
    */
   nextUpdate: number | null;
+
+  /**
+   * Experimental feature to suggest HTML elements to select in the Page Editor
+   */
+  suggestElements?: boolean;
 };
