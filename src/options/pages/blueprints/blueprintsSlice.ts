@@ -15,20 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OptionsState } from "@/store/extensionsTypes";
-import { UnresolvedExtension } from "@/core";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { localStorage } from "redux-persist-webextension-storage";
 
-export function selectExtensions({
-  options,
-}: {
-  options: OptionsState;
-}): UnresolvedExtension[] {
-  if (!Array.isArray(options.extensions)) {
-    console.warn("state migration has not been applied yet", {
-      options,
-    });
-    throw new TypeError("state migration has not been applied yet");
-  }
+type View = "list" | "grid";
 
-  return options.extensions;
-}
+export type BlueprintsState = {
+  view: View;
+};
+
+const initialState: BlueprintsState = {
+  view: "list",
+};
+
+const blueprintsSlice = createSlice({
+  name: "blueprints",
+  initialState,
+  reducers: {
+    setView(state, { payload: view }: PayloadAction<View>) {
+      state.view = view;
+    },
+  },
+});
+
+export const persistBlueprintsConfig = {
+  key: "blueprintsOptions",
+  storage: localStorage,
+};
+
+export default blueprintsSlice;

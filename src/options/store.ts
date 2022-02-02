@@ -39,6 +39,10 @@ import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import { SettingsState } from "@/store/settingsTypes";
 import { localStorage } from "redux-persist-webextension-storage";
+import blueprintsSlice, {
+  BlueprintsState,
+  persistBlueprintsConfig,
+} from "./pages/blueprints/blueprintsSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -46,6 +50,7 @@ export const hashHistory = createHashHistory({ hashType: "slash" });
 
 export interface RootState {
   options: OptionsState;
+  blueprints: BlueprintsState;
   services: ServicesState;
   settings: SettingsState;
   workshop: WorkshopState;
@@ -70,6 +75,10 @@ const store = configureStore({
     options: persistReducer(
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
+    ),
+    blueprints: persistReducer(
+      persistBlueprintsConfig,
+      blueprintsSlice.reducer
     ),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     // XXX: settings and workshop use the same persistor config?

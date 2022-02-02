@@ -16,13 +16,7 @@
  */
 
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, {
-  Fragment,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { Fragment, useContext, useEffect, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getDescription,
@@ -51,6 +45,9 @@ import TableView from "./tableView/TableView";
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import GridView from "./gridView/GridView";
+import useReduxState from "@/hooks/useReduxState";
+import { selectView } from "./blueprintsSelectors";
+import blueprintsSlice from "./blueprintsSlice";
 
 const getFilterOptions = (column: ColumnInstance) => {
   const options = new Set();
@@ -127,7 +124,10 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  const [view, setView] = useState<"list" | "grid">("list");
+  const [view, setView] = useReduxState(
+    selectView,
+    blueprintsSlice.actions.setView
+  );
 
   const {
     rows,
