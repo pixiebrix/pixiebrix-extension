@@ -16,7 +16,7 @@
  */
 
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { Fragment, useContext, useEffect, useMemo } from "react";
+import React, { Fragment, useContext, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getDescription,
@@ -53,6 +53,7 @@ import {
   selectView,
 } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
+import { useSelector } from "react-redux";
 
 const getFilterOptions = (column: ColumnInstance) => {
   const options = new Set();
@@ -132,10 +133,7 @@ const BlueprintsCard: React.FunctionComponent<{
     blueprintsSlice.actions.setSortBy
   );
 
-  const [filters, setFilters] = useReduxState(
-    selectFilters,
-    blueprintsSlice.actions.setFilters
-  );
+  const filters = useSelector(selectFilters);
 
   const tableInstance = useTable<InstallableViewItem>(
     {
@@ -146,35 +144,27 @@ const BlueprintsCard: React.FunctionComponent<{
         sortBy,
         filters,
       },
-      useControlledState: (state) => {
-        if (state.filters !== filters) {
-          return { ...state, filters };
-        }
-
-        return state;
-      },
+      useControlledState: (state) =>
+        useMemo(
+          () => ({
+            ...state,
+            groupBy,
+            sortBy,
+            filters,
+          }),
+          // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
+          [state, groupBy, sortBy, filters]
+        ),
     },
     useFilters,
     useGroupBy,
     useSortBy
   );
 
-  const {
-    rows,
-    flatHeaders,
-    // @ts-expect-error -- for some reason, react-table index.d.ts UseGroupByInstanceProps
-    // doesn't have setGroupBy?
-    setGroupBy: setTableGroupBy,
-    setSortBy: setTableSortBy,
-    state: {
-      groupBy: tableGroupBy,
-      sortBy: tableSortBy,
-      filters: tableFilters,
-    },
-  } = tableInstance;
+  const { rows, flatHeaders } = tableInstance;
 
-  const isGrouped = tableGroupBy.length > 0;
-  const isSorted = tableSortBy.length > 0;
+  const isGrouped = groupBy.length > 0;
+  const isSorted = sortBy.length > 0;
 
   const { groupByOptions, sortByOptions, teamFilters } = useMemo(() => {
     const groupByOptions = flatHeaders
@@ -205,11 +195,11 @@ const BlueprintsCard: React.FunctionComponent<{
 
   return (
     <BootstrapRow>
-      <ListFilters setAllFilters={setFilters} teamFilters={teamFilters} />
+      <ListFilters teamFilters={teamFilters} />
       <Col xs={9}>
         <div className="d-flex justify-content-between align-items-center">
           <h3 className="my-3">
-            {tableFilters.length > 0 ? tableFilters[0].value : "All"} Blueprints
+            {filters.length > 0 ? filters[0].value : "All"} Blueprints
           </h3>
           <span className="d-flex align-items-center">
             <span className="ml-3 mr-2">Group by:</span>
@@ -220,11 +210,8 @@ const BlueprintsCard: React.FunctionComponent<{
               onChange={(option, { action }) => {
                 const value = action === "clear" ? [] : [option.value];
                 setGroupBy(value);
-                setTableGroupBy(value);
               }}
-              value={groupByOptions.find(
-                (opt) => opt.value === tableGroupBy[0]
-              )}
+              value={groupByOptions.find((opt) => opt.value === groupBy[0])}
             />
 
             <span className="ml-3 mr-2">Sort by:</span>
@@ -236,11 +223,8 @@ const BlueprintsCard: React.FunctionComponent<{
                 const value =
                   action === "clear" ? [] : [{ id: option.value, desc: false }];
                 setSortBy(value);
-                setTableSortBy(value);
               }}
-              value={sortByOptions.find(
-                (opt) => opt.value === tableSortBy[0]?.id
-              )}
+              value={sortByOptions.find((opt) => opt.value === sortBy[0]?.id)}
             />
 
             {isSorted && (
@@ -248,20 +232,17 @@ const BlueprintsCard: React.FunctionComponent<{
                 variant="link"
                 size="sm"
                 onClick={() => {
-                  const value = [
-                    { id: tableSortBy[0].id, desc: !tableSortBy[0].desc },
-                  ];
+                  const value = [{ id: sortBy[0].id, desc: !sortBy[0].desc }];
                   setSortBy(value);
-                  setTableSortBy(value);
                 }}
               >
                 <FontAwesomeIcon
                   icon={
-                    tableSortBy[0].id === "updatedAt"
-                      ? tableSortBy[0].desc
+                    sortBy[0].id === "updatedAt"
+                      ? sortBy[0].desc
                         ? faSortAmountDownAlt
                         : faSortAmountUpAlt
-                      : tableSortBy[0].desc
+                      : sortBy[0].desc
                       ? faSortAmountUpAlt
                       : faSortAmountDownAlt
                   }
