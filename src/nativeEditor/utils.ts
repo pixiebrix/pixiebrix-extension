@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import jQuery from "jquery";
 import { MultipleElementsFoundError, NoElementsFoundError } from "@/errors";
 
 /**
@@ -25,7 +24,7 @@ import { MultipleElementsFoundError, NoElementsFoundError } from "@/errors";
  * @throws MultipleElementsFoundError if multiple elements are found
  */
 export function requireSingleElement(selector: string): HTMLElement {
-  const $elt = jQuery(document).find(selector);
+  const $elt = $(document).find(selector);
   if ($elt.length === 0) {
     throw new NoElementsFoundError(selector);
   }
