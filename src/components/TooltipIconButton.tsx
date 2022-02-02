@@ -53,17 +53,14 @@ const TooltipIconButton: React.FC<{
       overlay={renderTooltip}
       rootClose
     >
-      {({ ref, ...rest }) => (
-        <button
-          type="button"
-          onClick={onClick}
-          className={buttonClassName}
-          disabled={disabled}
-          {...rest}
-        >
-          <FontAwesomeIcon forwardedRef={ref} icon={icon} size={size} />
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={onClick}
+        className={buttonClassName}
+        disabled={disabled}
+      >
+        <FontAwesomeIcon icon={icon} size={size} />
+      </button>
     </OverlayTrigger>
   );
 };
