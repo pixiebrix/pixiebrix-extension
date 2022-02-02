@@ -112,9 +112,6 @@ const BlueprintsCard: React.FunctionComponent<{
     return { data, teamFilters };
   }, [installables, scope]);
 
-  const b = uniq(data.map((installable) => installable.sharing.source.label));
-  console.log("sharing", { b });
-
   const [view, setView] = useReduxState(
     selectView,
     blueprintsSlice.actions.setView
