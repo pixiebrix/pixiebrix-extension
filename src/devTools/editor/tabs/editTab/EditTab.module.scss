@@ -27,14 +27,75 @@
   align-items: stretch;
 }
 
-.nodeLayout {
+.nodePanel {
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
   height: 100%;
   width: 200px;
+  border-right: 1px solid lightgrey;
+  display: flex;
+  flex-direction: column;
+}
+
+.nodeHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-bottom: 1px solid lightgrey;
+}
+
+.nodeHeaderTitle {
+  flex-grow: 1;
+  padding-top: 0.25rem;
+  padding-bottom: 0.125rem;
+  padding-left: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.disabledTitle {
+  color: lightgrey;
+}
+
+.nodeLayout {
+  flex-grow: 1;
   overflow-y: auto;
-  padding-top: 10px;
+}
+
+.copyButton {
+  border: none;
+  background: none;
+  color: grey;
+  &:focus,
+  &:hover {
+    color: var(--blue);
+    background: lightgrey;
+  }
+  &:disabled {
+    &:hover {
+      background: none;
+    }
+    color: lightgrey;
+  }
+}
+
+.removeButton {
+  border: none;
+  background: none;
+  color: grey;
+  &:focus,
+  &:hover {
+    color: var(--red);
+    background: lightgrey;
+  }
+  &:disabled {
+    &:hover {
+      background: none;
+    }
+    color: lightgrey;
+  }
 }
 
 .configPanel {
