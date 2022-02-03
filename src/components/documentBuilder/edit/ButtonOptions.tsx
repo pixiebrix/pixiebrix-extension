@@ -72,7 +72,7 @@ const ButtonOptions: React.FC<ButtonOptionsProps> = ({ elementName }) => {
     <>
       {schemaFields}
       <ElementBlockEdit
-        blocksType="effect"
+        blockTypes={["effect", "transform"]}
         blockConfigName={buttonConfigName}
         blockConfig={buttonConfig}
         onBlockSelected={onButtonBlockSelected}
