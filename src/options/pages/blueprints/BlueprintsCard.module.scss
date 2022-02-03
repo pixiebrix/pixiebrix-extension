@@ -16,6 +16,23 @@
  */
 
 .root {
-  max-height: 555px;
+  max-height: calc(100vh - 310px);
   overflow-y: scroll;
+
+  // TODO: this is to add padding between the div content and the scrollbar
+  //  however, this messes with the content alignment with the toolbar above
+  padding-right: 15px;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #bba8bff5;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(169, 153, 171, 0.96);
+  }
 }
