@@ -23,8 +23,8 @@ import getSvgIcon from "@/icons/getSvgIcon";
 import cx from "classnames";
 
 const Icon: React.FunctionComponent<{
-  icon: string;
-  library: IconLibrary;
+  icon?: string;
+  library?: IconLibrary;
   size?: number;
   className?: string;
 }> = ({ icon, library, size = 16, className }) => {
