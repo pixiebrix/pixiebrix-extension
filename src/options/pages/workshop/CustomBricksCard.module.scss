@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.WorkshopPage__BrickTable {
-  tbody > tr:not(.WorkshopPage__BrickTable__more) {
+.brickTable {
+  tbody > tr {
     cursor: pointer;
 
     td:first-child {
