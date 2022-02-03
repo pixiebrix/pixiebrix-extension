@@ -4,8 +4,6 @@
 
 "use strict";
 
-import $ from "jquery";
-
 var combinators = [" ", ">", "+", "~"]; // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors#Combinators
 var fraternisers = ["+", "~"]; // These combinators involve siblings.
 var complexTypes = ["ATTR", "PSEUDO", "ID", "CLASS"]; // These selectors are based upon attributes.

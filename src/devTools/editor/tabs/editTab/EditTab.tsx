@@ -49,6 +49,9 @@ import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 import UnsupportedApiV1 from "@/devTools/editor/tabs/editTab/UnsupportedApiV1";
 import UpgradedToApiV3 from "@/devTools/editor/tabs/editTab/UpgradedToApiV3";
 import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
+import TooltipIconButton from "@/components/TooltipIconButton";
+import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -240,17 +243,48 @@ const EditTab: React.FC<{
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
-        <div className={styles.nodeLayout}>
-          <EditorNodeLayout
-            nodes={nodes}
-            activeNodeId={activeNodeId}
-            relevantBlocksToAdd={relevantBlocksToAdd}
-            addBlock={addBlock}
-            showAppend={showAppendNode}
-            moveBlockUp={moveBlockUp}
-            moveBlockDown={moveBlockDown}
-            pasteBlock={pasteBlock}
-          />
+        <div className={styles.nodePanel}>
+          <div className={styles.nodeHeader}>
+            <span
+              className={cx(styles.nodeHeaderTitle, {
+                [styles.disabledTitle]: activeNodeId === FOUNDATION_NODE_ID,
+              })}
+            >
+              Brick Actions
+            </span>
+            <TooltipIconButton
+              name="copyNode"
+              icon={faCopy}
+              onClick={() => {
+                copyBlock(activeNodeId);
+              }}
+              tooltipText="Copy Brick"
+              buttonClassName={styles.copyButton}
+              disabled={activeNodeId === FOUNDATION_NODE_ID}
+            />
+            <TooltipIconButton
+              name="removeNode"
+              icon={faTrash}
+              onClick={() => {
+                removeBlock(activeNodeId);
+              }}
+              tooltipText="Remove Brick"
+              buttonClassName={styles.removeButton}
+              disabled={activeNodeId === FOUNDATION_NODE_ID}
+            />
+          </div>
+          <div className={styles.nodeLayout}>
+            <EditorNodeLayout
+              nodes={nodes}
+              activeNodeId={activeNodeId}
+              relevantBlocksToAdd={relevantBlocksToAdd}
+              addBlock={addBlock}
+              showAppend={showAppendNode}
+              moveBlockUp={moveBlockUp}
+              moveBlockDown={moveBlockDown}
+              pasteBlock={pasteBlock}
+            />
+          </div>
         </div>
         <div className={styles.configPanel}>
           <ErrorBoundary
@@ -275,12 +309,6 @@ const EditTab: React.FC<{
                   blockPipeline.find((x) => x.instanceId === activeNodeId)?.id
                 }
                 blockError={blockError}
-                onRemoveNode={() => {
-                  removeBlock(activeNodeId);
-                }}
-                copyBlock={() => {
-                  copyBlock(activeNodeId);
-                }}
               />
             ) : (
               <UnsupportedApiV1 />

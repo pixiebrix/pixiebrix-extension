@@ -15,23 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MultipleElementsFoundError, NoElementsFoundError } from "@/errors";
+import { RootState } from "@/options/store";
 
-/**
- * Returns exactly one HTMLElement corresponding to the given selector.
- * @param selector the JQuery selector
- * @throws NoElementsFoundError if not elements are found
- * @throws MultipleElementsFoundError if multiple elements are found
- */
-export function requireSingleElement(selector: string): HTMLElement {
-  const $elt = $(document).find(selector);
-  if ($elt.length === 0) {
-    throw new NoElementsFoundError(selector);
-  }
-
-  if ($elt.length > 1) {
-    throw new MultipleElementsFoundError(selector);
-  }
-
-  return $elt.get(0);
-}
+export const selectView = (state: RootState) => state.blueprints.view;
+export const selectGroupBy = (state: RootState) => state.blueprints.groupBy;
+export const selectSortBy = (state: RootState) => state.blueprints.sortBy;
+export const selectFilters = (state: RootState) => state.blueprints.filters;

@@ -42,7 +42,6 @@ if (window[PAGESCRIPT_SYMBOL]) {
 // eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
 window[PAGESCRIPT_SYMBOL] = uuidv4();
 
-import jQuery from "jquery";
 import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,
@@ -284,4 +283,4 @@ setTimeout(() => {
 // Ensure jquery is available for testing selectors when debugging PixieBrix errors
 // Cast as any because we don't want to pollute namespace with TypeScript declaration
 // eslint-disable-next-line security/detect-object-injection
-window[JQUERY_WINDOW_PROP] = jQuery;
+window[JQUERY_WINDOW_PROP] = $;

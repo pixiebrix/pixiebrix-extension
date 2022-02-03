@@ -1,27 +1,35 @@
 import { Col, Nav } from "react-bootstrap";
 import React from "react";
 import styles from "./ListFilters.module.scss";
-import { UseFiltersInstanceProps } from "react-table";
-import { UnknownObject } from "@/types";
+import useReduxState from "@/hooks/useReduxState";
+import { selectFilters } from "./blueprintsSelectors";
+import blueprintsSlice from "./blueprintsSlice";
 
-type ListFiltersProps<D extends UnknownObject> = {
-  setAllFilters: UseFiltersInstanceProps<D>["setAllFilters"];
+type ListFiltersProps = {
   teamFilters: string[];
 };
 
-function ListFilters<D extends UnknownObject>({
-  setAllFilters,
-  teamFilters,
-}: ListFiltersProps<D>) {
+function ListFilters({ teamFilters }: ListFiltersProps) {
+  const [filters, setFilters] = useReduxState(
+    selectFilters,
+    blueprintsSlice.actions.setFilters
+  );
+
+  const defaultActiveKey = filters[0]?.value ?? "All";
+
   return (
     <Col xs={3} className={styles.filtersCol}>
       <h5>Category Filters</h5>
-      <Nav className="flex-column" variant="pills" defaultActiveKey="active">
+      <Nav
+        className="flex-column"
+        variant="pills"
+        defaultActiveKey={defaultActiveKey}
+      >
         <Nav.Item>
           <Nav.Link
-            eventKey="active"
+            eventKey="Active"
             onClick={() => {
-              setAllFilters([{ id: "status", value: "Active" }]);
+              setFilters([{ id: "status", value: "Active" }]);
             }}
           >
             Active Blueprints
@@ -29,9 +37,9 @@ function ListFilters<D extends UnknownObject>({
         </Nav.Item>
         <Nav.Item>
           <Nav.Link
-            eventKey="all"
+            eventKey="All"
             onClick={() => {
-              setAllFilters([]);
+              setFilters([]);
             }}
           >
             All Blueprints
@@ -40,11 +48,9 @@ function ListFilters<D extends UnknownObject>({
         <h5 className="mt-3">My Collections</h5>
         <Nav.Item>
           <Nav.Link
-            eventKey="personal"
+            eventKey="Personal"
             onClick={() => {
-              setAllFilters([
-                { id: "sharing.source.label", value: "Personal" },
-              ]);
+              setFilters([{ id: "sharing.source.label", value: "Personal" }]);
             }}
           >
             Personal Blueprints
@@ -52,21 +58,24 @@ function ListFilters<D extends UnknownObject>({
         </Nav.Item>
         <Nav.Item>
           <Nav.Link
-            eventKey="public"
+            eventKey="Public"
             onClick={() => {
-              setAllFilters([{ id: "sharing.source.label", value: "Public" }]);
+              setFilters([{ id: "sharing.source.label", value: "Public" }]);
             }}
           >
             Public Marketplace Blueprints
           </Nav.Link>
         </Nav.Item>
-        {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
+        <h5 className="mt-3">Shared with Me</h5>
+        {teamFilters.length === 0 && (
+          <span className="text-muted">No shared blueprints</span>
+        )}
         {teamFilters.map((filter) => (
           <Nav.Item key={filter}>
             <Nav.Link
               eventKey={filter}
               onClick={() => {
-                setAllFilters([{ id: "sharing.source.label", value: filter }]);
+                setFilters([{ id: "sharing.source.label", value: filter }]);
               }}
             >
               {filter} Blueprints
