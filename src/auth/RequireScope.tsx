@@ -19,11 +19,16 @@ import React from "react";
 import { useSelector } from "react-redux";
 import ScopeSettings from "./ScopeSettings";
 import { SettingsState } from "@/store/settingsTypes";
+import { isEmpty } from "lodash";
 
 type RootStateWithSettings = {
   settings: SettingsState;
 };
 
+/**
+ * Ensures that the user has the required scope to view the page.
+ * The auth error is not handled here, it is the responsibility of a parent component.
+ */
 export const RequireScope: React.FunctionComponent<{
   scope: string | null;
   isPending: boolean;
@@ -41,7 +46,7 @@ export const RequireScope: React.FunctionComponent<{
   );
 
   // Fetching scope currently performs a network request. Optimistically show the main interface while the scope is being fetched.
-  if (mode !== "local" && !isPending && (scope === "" || !scope)) {
+  if (mode !== "local" && !isPending && isEmpty(scope)) {
     return (
       <ScopeSettings
         title={scopeSettingsTitle}

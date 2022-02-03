@@ -101,7 +101,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
 
   return (
     <div className={styles.root}>
-      <div className="PaneTitle">{title}</div>
+      <div className={styles.title}>{title}</div>
 
       <div className="font-weight-bold">{description}</div>
 

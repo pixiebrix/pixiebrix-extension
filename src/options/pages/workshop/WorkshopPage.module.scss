@@ -15,22 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.WorkshopPage__BrickTable {
-  tbody > tr:not(.WorkshopPage__BrickTable__more) {
-    cursor: pointer;
-
-    td:first-child {
-      max-width: 10px;
-    }
-
-    code {
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    &:hover {
-      color: #fff;
-      background-color: #b66dff;
-    }
-  }
+.errorContainer {
+  margin: 0 auto;
+  overflow: auto;
+  width: 30%;
+  min-width: 600px;
 }
