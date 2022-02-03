@@ -71,6 +71,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
         <Nav.Item>
           <Nav.Link
             eventKey="Active"
+            disabled={Boolean(query)}
             onClick={() => {
               setFilters([{ id: "status", value: "Active" }]);
             }}
@@ -81,6 +82,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
         <Nav.Item>
           <Nav.Link
             eventKey="All"
+            disabled={Boolean(query)}
             onClick={() => {
               setFilters([]);
             }}
@@ -92,6 +94,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
         <Nav.Item>
           <Nav.Link
             eventKey="Personal"
+            disabled={Boolean(query)}
             onClick={() => {
               setFilters([{ id: "sharing.source.label", value: "Personal" }]);
             }}
@@ -102,6 +105,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
         <Nav.Item>
           <Nav.Link
             eventKey="Public"
+            disabled={Boolean(query)}
             onClick={() => {
               setFilters([{ id: "sharing.source.label", value: "Public" }]);
             }}
@@ -117,6 +121,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
           <Nav.Item key={filter}>
             <Nav.Link
               eventKey={filter}
+              disabled={Boolean(query)}
               onClick={() => {
                 setFilters([{ id: "sharing.source.label", value: filter }]);
               }}

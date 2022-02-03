@@ -158,16 +158,18 @@ const BlueprintsCard: React.FunctionComponent<{
     },
     useFilters,
     // TODO: 1) search over blueprint description and packageId
-    //  2) search globally instead of within useFilter category
     useGlobalFilter,
     useGroupBy,
     useSortBy
   );
 
-  const { rows, flatHeaders, setGlobalFilter, state } = tableInstance;
+  const { rows, flatRows, flatHeaders, setGlobalFilter, state } = tableInstance;
 
   const isGrouped = groupBy.length > 0;
   const isSorted = sortBy.length > 0;
+  const numberOfBlueprints = isGrouped
+    ? flatRows.length - rows.length
+    : rows.length;
 
   const { groupByOptions, sortByOptions } = useMemo(() => {
     const groupByOptions = flatHeaders
@@ -275,9 +277,8 @@ const BlueprintsCard: React.FunctionComponent<{
         <div className={styles.root}>
           {state.globalFilter && (
             <p>
-              {rows.length} results for{" "}
-              <strong>&quot;{state.globalFilter}&quot;</strong> over all
-              categories
+              {numberOfBlueprints} results for{" "}
+              <strong>&quot;{state.globalFilter}&quot;</strong>
             </p>
           )}
           {isGrouped ? (
