@@ -101,7 +101,7 @@ class QuickBarRegistry {
 
   add(action: Action): void {
     this._actions = this._actions.filter((x) => x.id !== action.id);
-    this._actions.push(action);
+    this._actions.unshift(action);
     this.notifyListeners();
   }
 
@@ -112,6 +112,12 @@ class QuickBarRegistry {
   addListener(handler: ChangeHandler) {
     this.listeners.push(handler);
     this.notifyListeners();
+  }
+
+  // These must be added dynamically or else they're static and unremovable/unsortable
+  // https://github.com/timc1/kbar/issues/66
+  addDefaults(): void {
+    this._actions.push(...defaultActions);
   }
 
   public get actions(): Action[] {
