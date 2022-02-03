@@ -192,7 +192,9 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
 
     const icon = iconConfig ? (
       <Icon icon={iconConfig.id} library={iconConfig.library} />
-    ) : undefined;
+    ) : (
+      <Icon />
+    ); // Defaults to a box
 
     quickBarRegistry.add({
       id: extension.id,
