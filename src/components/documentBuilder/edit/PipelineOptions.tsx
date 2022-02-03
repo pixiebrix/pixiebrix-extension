@@ -59,7 +59,7 @@ const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => {
 
   return (
     <ElementBlockEdit
-      blocksType="renderer"
+      blockTypes={["renderer"]}
       blockConfigName={pipelineConfigName}
       blockConfig={pipelineConfig}
       onBlockSelected={onPipelineBlockSelected}

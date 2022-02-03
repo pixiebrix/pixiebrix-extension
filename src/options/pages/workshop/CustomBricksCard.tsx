@@ -28,7 +28,7 @@ import {
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { Kind } from "@/registry/localRegistry";
-import "./WorkshopPage.scss";
+import styles from "./CustomBricksCard.module.scss";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Card, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -102,7 +102,7 @@ const CustomBricksCard: React.FunctionComponent<
   return (
     <Card>
       <Card.Header>Custom Bricks</Card.Header>
-      <Table className="WorkshopPage__BrickTable">
+      <Table className={styles.brickTable}>
         <thead>
           <tr>
             <th>&nbsp;</th>
@@ -136,14 +136,16 @@ const CustomBricksCard: React.FunctionComponent<
               <td>{brick.version}</td>
             </tr>
           ))}
-          {bricks.length >= maxRows && (
-            <tr className="WorkshopPage__BrickTable__more">
+        </tbody>
+        {bricks.length >= maxRows && (
+          <tfoot>
+            <tr>
               <td colSpan={5} className="text-info text-center">
                 <Pagination page={page} setPage={setPage} numPages={numPages} />
               </td>
             </tr>
-          )}
-        </tbody>
+          </tfoot>
+        )}
       </Table>
     </Card>
   );

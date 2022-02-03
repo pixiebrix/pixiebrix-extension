@@ -15,26 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createContext } from "react";
-import { AuthState as CoreAuthState } from "@/core";
+import { Effect } from "@/types";
+import { BlockArg, Schema } from "@/core";
+import { propertiesToSchema } from "@/validators/generic";
+import { $safeFind } from "@/helpers";
 
-export type AuthState = CoreAuthState & {
-  isPending: boolean;
-  error: undefined | unknown;
-};
+export class DisableEffect extends Effect {
+  constructor() {
+    super(
+      "@pixiebrix/disable",
+      "Disable Element",
+      "Disable an element (e.g., button, input)"
+    );
+  }
 
-const anonAuthState: AuthState = {
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: false,
-  scope: null,
-  flags: [],
-  isPending: false,
-  error: undefined,
-};
+  inputSchema: Schema = propertiesToSchema(
+    {
+      selector: {
+        type: "string",
+        format: "selector",
+      },
+    },
+    ["selector"]
+  );
 
-const AuthContext = createContext(anonAuthState);
-
-export default AuthContext;
+  async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
+    const $elt = $safeFind(selector);
+    $elt.prop("disabled", true);
+  }
+}

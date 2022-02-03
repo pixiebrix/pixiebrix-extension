@@ -49,7 +49,11 @@ export function guessSelectedElement(): HTMLElement | null {
 let selectionOverride: Range | undefined;
 const selectionController = {
   save(): void {
-    selectionOverride = getSelection().getRangeAt(0);
+    const selection = getSelection();
+    // It must be set to "undefined" even if there are selections
+    selectionOverride = selection.rangeCount
+      ? selection.getRangeAt(0)
+      : undefined;
   },
   restore(): void {
     if (!selectionOverride) {
