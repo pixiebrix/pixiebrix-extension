@@ -15,23 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MultipleElementsFoundError, NoElementsFoundError } from "@/errors";
+import { Effect } from "@/types";
+import { BlockArg, Schema } from "@/core";
+import { propertiesToSchema } from "@/validators/generic";
+import { $safeFind } from "@/helpers";
 
-/**
- * Returns exactly one HTMLElement corresponding to the given selector.
- * @param selector the JQuery selector
- * @throws NoElementsFoundError if not elements are found
- * @throws MultipleElementsFoundError if multiple elements are found
- */
-export function requireSingleElement(selector: string): HTMLElement {
-  const $elt = $(document).find(selector);
-  if ($elt.length === 0) {
-    throw new NoElementsFoundError(selector);
+export class EnableEffect extends Effect {
+  constructor() {
+    super(
+      "@pixiebrix/enable",
+      "Enable Element",
+      "Enable an element (e.g., button, input)"
+    );
   }
 
-  if ($elt.length > 1) {
-    throw new MultipleElementsFoundError(selector);
-  }
+  inputSchema: Schema = propertiesToSchema(
+    {
+      selector: {
+        type: "string",
+        format: "selector",
+      },
+    },
+    ["selector"]
+  );
 
-  return $elt.get(0);
+  async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
+    const $elt = $safeFind(selector);
+    $elt.prop("disabled", false);
+  }
 }
