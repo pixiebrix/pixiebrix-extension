@@ -17,13 +17,8 @@
 
 import React, { useContext, useMemo, useState } from "react";
 import Page from "@/layout/Page";
-import {
-  faExclamation,
-  faHammer,
-  faPlus,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons";
-import { Alert, Button, Col, Form, InputGroup, Row } from "react-bootstrap";
+import { faHammer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import AuthContext from "@/auth/AuthContext";
@@ -33,14 +28,12 @@ import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
 import workshopSlice, { WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
-import styles from "./WorkshopPage.module.scss";
 import { Brick } from "@/types/contract";
 import useFetch from "@/hooks/useFetch";
 import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
 import { EnrichedBrick, NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
-import { getErrorMessage } from "@/errors";
 
 const { actions } = workshopSlice;
 
@@ -245,30 +238,6 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
     error: authError,
   } = useContext(AuthContext);
 
-  if (authError) {
-    const errorMessage = getErrorMessage(authError);
-    return (
-      <div className={styles.errorContainer}>
-        <Alert variant="danger" className="mt-2">
-          <p>
-            <FontAwesomeIcon icon={faExclamation} className="mr-2" /> Error
-            authenticating account
-          </p>
-          <p>{errorMessage}</p>
-        </Alert>
-        <div className="mt-2">
-          <Button
-            onClick={() => {
-              location.reload();
-            }}
-          >
-            Reload Page
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <RequireScope
       scope={scope}
@@ -279,6 +248,7 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
       <Page
         title="Workshop"
         icon={faHammer}
+        error={authError}
         description={
           <p>
             Build and attach bricks.{" "}
@@ -291,7 +261,8 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
           </p>
         }
         toolbar={
-          isLoggedIn && (
+          isLoggedIn &&
+          !authError && (
             <Button
               variant="info"
               onClick={() => {
