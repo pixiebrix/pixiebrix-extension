@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Col, Pagination, Row as BootstrapRow } from "react-bootstrap";
+import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
 import React, { Fragment, useContext, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,7 +31,6 @@ import {
   useFilters,
   useGlobalFilter,
   useGroupBy,
-  usePagination,
   useSortBy,
   useTable,
 } from "react-table";
@@ -170,13 +169,18 @@ const BlueprintsCard: React.FunctionComponent<{
         ),
     },
     useFilters,
-    // TODO: 1) search over blueprint description and packageId
     useGlobalFilter,
     useGroupBy,
     useSortBy
   );
 
-  const { rows, flatRows, flatHeaders, setGlobalFilter, state } = tableInstance;
+  const {
+    rows,
+    flatRows,
+    flatHeaders,
+    setGlobalFilter,
+    state: { globalFilter },
+  } = tableInstance;
 
   const isGrouped = groupBy.length > 0;
   const isSorted = sortBy.length > 0;
@@ -213,7 +217,7 @@ const BlueprintsCard: React.FunctionComponent<{
       <Col xs={9}>
         <div className="d-flex justify-content-between align-items-center">
           <h3 className="my-3">
-            {state.globalFilter
+            {globalFilter
               ? "Search results"
               : `${filters.length > 0 ? filters[0].value : "All"} Blueprints`}
           </h3>
@@ -288,10 +292,10 @@ const BlueprintsCard: React.FunctionComponent<{
           </span>
         </div>
         <div className={styles.root}>
-          {state.globalFilter && (
+          {globalFilter && (
             <p>
               {numberOfBlueprints} results for{" "}
-              <strong>&quot;{state.globalFilter}&quot;</strong>
+              <strong>&quot;{globalFilter}&quot;</strong>
             </p>
           )}
           {isGrouped ? (
