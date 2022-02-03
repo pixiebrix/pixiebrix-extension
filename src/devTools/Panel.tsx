@@ -39,7 +39,6 @@ import browser from "webextension-polyfill";
 
 // Import custom options widgets/forms for the built-in bricks
 import "@/contrib/editors";
-import { RequireScope } from "@/auth/RequireScope";
 
 registerContribBlocks();
 registerBuiltinBlocks();
@@ -104,14 +103,7 @@ const Panel: React.FunctionComponent = () => {
                 <ErrorBoundary>
                   <Router>
                     <Container fluid className="DevToolsContainer">
-                      <RequireScope
-                        scope={authState?.scope}
-                        isPending={authState.isPending}
-                        scopeSettingsTitle="Welcome to the PixieBrix Page Editor!"
-                        scopeSettingsDescription="To create extensions, you must first set an account alias for your PixieBrix account"
-                      >
-                        <Editor />
-                      </RequireScope>
+                      <Editor />
                     </Container>
                   </Router>
                 </ErrorBoundary>

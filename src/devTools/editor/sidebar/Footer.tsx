@@ -27,9 +27,11 @@ const Footer: React.FunctionComponent = () => {
 
   return (
     <div className={styles.root}>
-      <div className={styles.scope}>
-        Scope: <code>{scope}</code>
-      </div>
+      {scope && (
+        <div className={styles.scope}>
+          Scope: <code>{scope}</code>
+        </div>
+      )}
       {connecting && <BeatLoader size={7} />}
     </div>
   );
