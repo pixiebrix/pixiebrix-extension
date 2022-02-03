@@ -77,12 +77,25 @@ const getInstallableRows = (
   );
 
 // These react-table columns aren't rendered as column headings,
-// but used to expose grouping, sorting, and filtering utilities
-// (and eventually pagination & global searching) on InstallableRows
+// but used to expose grouping, sorting, filtering, and global
+// searching utilities on InstallableRows
 const columns: Array<Column<InstallableViewItem>> = [
   {
     Header: "Name",
     accessor: "name",
+    disableGroupBy: true,
+    disableFilters: true,
+  },
+  {
+    Header: "Description",
+    accessor: "description",
+    disableGroupBy: true,
+    disableFilters: true,
+  },
+  {
+    Header: "Package ID",
+    // @ts-expect-error -- react-table allows nested accessors
+    accessor: "sharing.packageId",
     disableGroupBy: true,
     disableFilters: true,
   },

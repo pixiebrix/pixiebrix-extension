@@ -23,6 +23,14 @@
   justify-content: space-between;
 }
 
+.description {
+  max-height: 25px;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .actions {
   display: flex;
   justify-content: space-between;
