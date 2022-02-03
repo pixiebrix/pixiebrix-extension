@@ -41,11 +41,10 @@ import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
-import { getAuth } from "@/hooks/auth";
+import { useAuth } from "@/hooks/auth";
 import useRefresh from "@/hooks/useRefresh";
 import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
-import { AuthState } from "@/core";
 import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
@@ -157,15 +156,8 @@ const Layout = () => {
   );
 };
 
-const defaultState: AuthState = {
-  isLoggedIn: false,
-  extension: true,
-  isOnboarded: undefined,
-  flags: [],
-};
-
 const App: React.FunctionComponent = () => {
-  const [authState] = useAsyncState(getAuth);
+  const authState = useAuth();
 
   useEffect(() => {
     initTelemetry();
@@ -174,7 +166,7 @@ const App: React.FunctionComponent = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={<GridLoader />} persistor={persistor}>
-        <AuthContext.Provider value={authState ?? defaultState}>
+        <AuthContext.Provider value={authState}>
           <ConnectedRouter history={hashHistory}>
             <ModalProvider>
               <ToastProvider>

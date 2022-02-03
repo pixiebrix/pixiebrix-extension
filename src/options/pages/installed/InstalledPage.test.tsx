@@ -19,7 +19,7 @@ import React from "react";
 import { screen, render } from "@testing-library/react";
 import { _InstalledPage } from "./InstalledPage";
 import { StaticRouter } from "react-router-dom";
-import AuthContext from "@/auth/AuthContext";
+import AuthContext, { AuthState } from "@/auth/AuthContext";
 import { Organization } from "@/types/contract";
 import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 
@@ -173,6 +173,15 @@ const getRenderedOnboardingInformation = () => {
 };
 
 describe("OnboardingPage", () => {
+  const authState: AuthState = {
+    flags: ["restricted-marketplace"],
+    isLoggedIn: true,
+    isOnboarded: true,
+    extension: true,
+    isPending: false,
+    error: undefined,
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -197,14 +206,7 @@ describe("OnboardingPage", () => {
     mockOnboarding({ hasOrganization: true });
 
     render(
-      <AuthContext.Provider
-        value={{
-          flags: ["restricted-marketplace"],
-          isLoggedIn: true,
-          isOnboarded: true,
-          extension: true,
-        }}
-      >
+      <AuthContext.Provider value={authState}>
         <StaticRouter>
           <OnboardingPage />
         </StaticRouter>
@@ -225,14 +227,7 @@ describe("OnboardingPage", () => {
     });
 
     render(
-      <AuthContext.Provider
-        value={{
-          flags: ["restricted-marketplace"],
-          isLoggedIn: true,
-          isOnboarded: true,
-          extension: true,
-        }}
-      >
+      <AuthContext.Provider value={authState}>
         <StaticRouter>
           <OnboardingPage />
         </StaticRouter>
