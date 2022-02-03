@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
+import { Button, Col, Pagination, Row as BootstrapRow } from "react-bootstrap";
 import React, { Fragment, useContext, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,6 +31,7 @@ import {
   useFilters,
   useGlobalFilter,
   useGroupBy,
+  usePagination,
   useSortBy,
   useTable,
 } from "react-table";
@@ -55,6 +56,7 @@ import {
 import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
+import styles from "./BlueprintsCard.module.scss";
 
 const getInstallableRows = (
   installables: Installable[],
@@ -155,6 +157,8 @@ const BlueprintsCard: React.FunctionComponent<{
         ),
     },
     useFilters,
+    // TODO: 1) search over blueprint description and packageId
+    //  2) search globally instead of within useFilter category
     useGlobalFilter,
     useGroupBy,
     useSortBy
@@ -266,27 +270,29 @@ const BlueprintsCard: React.FunctionComponent<{
             </Button>
           </span>
         </div>
-        {state.globalFilter && (
-          <p>
-            {rows.length} results for{" "}
-            <strong>&quot;{state.globalFilter}&quot;</strong> in this category
-          </p>
-        )}
-        {isGrouped ? (
-          <>
-            {rows.map((row) => (
-              <Fragment key={row.groupByVal}>
-                <h5 className="text-muted mt-3">{row.groupByVal}</h5>
-                <BlueprintsView
-                  tableInstance={tableInstance}
-                  rows={row.subRows}
-                />
-              </Fragment>
-            ))}
-          </>
-        ) : (
-          <BlueprintsView tableInstance={tableInstance} rows={rows} />
-        )}
+        <div className={styles.root}>
+          {state.globalFilter && (
+            <p>
+              {rows.length} results for{" "}
+              <strong>&quot;{state.globalFilter}&quot;</strong> in this category
+            </p>
+          )}
+          {isGrouped ? (
+            <>
+              {rows.map((row) => (
+                <Fragment key={row.groupByVal}>
+                  <h5 className="text-muted mt-3">{row.groupByVal}</h5>
+                  <BlueprintsView
+                    tableInstance={tableInstance}
+                    rows={row.subRows}
+                  />
+                </Fragment>
+              ))}
+            </>
+          ) : (
+            <BlueprintsView tableInstance={tableInstance} rows={rows} />
+          )}
+        </div>
       </Col>
     </BootstrapRow>
   );

@@ -35,7 +35,7 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
 
   return (
     <Card className={styles.root}>
-      <h5 className={styles.title}>{name}</h5>
+      <h5>{name}</h5>
       <div>
         <SharingLabel installable={installable} />
         <Card.Text>Updated: {timeSince(updatedAt)}</Card.Text>
