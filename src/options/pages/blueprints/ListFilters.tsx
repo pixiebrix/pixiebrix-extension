@@ -1,5 +1,5 @@
 import { Col, Form, Nav } from "react-bootstrap";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./ListFilters.module.scss";
 import useReduxState from "@/hooks/useReduxState";
 import { selectFilters } from "./blueprintsSelectors";
@@ -16,8 +16,37 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
     blueprintsSlice.actions.setFilters
   );
   const [query, setQuery] = useState("");
+  const [temporaryFilters, setTemporaryFilters] = useState([]);
 
-  const defaultActiveKey = filters[0]?.value ?? "All";
+  // By default, react-table combines filters and globalFilters
+  // If searching via keyword, temporarily
+  // disable category filters
+  useEffect(() => {
+    setGlobalFilter(query);
+
+    if (query) {
+      if (filters.length > 0) {
+        setTemporaryFilters(filters);
+        setFilters([]);
+      }
+
+      return;
+    }
+
+    setFilters(temporaryFilters);
+    setTemporaryFilters([]);
+  }, [query]);
+
+  // Prevent nav-link highlighting when search query
+  // is present by setting an event key that doesn't exist
+  const activeKey = useMemo(() => {
+    if (query) {
+      // Key doesn't exist
+      return "Search results";
+    }
+
+    return filters[0]?.value ?? "All";
+  }, [filters, query]);
 
   return (
     <Col xs={3} className={styles.filtersCol}>
@@ -29,14 +58,14 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
           value={query}
           onChange={({ target }) => {
             setQuery(target.value);
-            setGlobalFilter(target.value);
           }}
         />
       </Form>
       <Nav
         className="flex-column"
         variant="pills"
-        defaultActiveKey={defaultActiveKey}
+        defaultActiveKey={activeKey}
+        activeKey={activeKey}
       >
         <h5>Category Filters</h5>
         <Nav.Item>

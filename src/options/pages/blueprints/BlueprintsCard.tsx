@@ -198,7 +198,9 @@ const BlueprintsCard: React.FunctionComponent<{
       <Col xs={9}>
         <div className="d-flex justify-content-between align-items-center">
           <h3 className="my-3">
-            {filters.length > 0 ? filters[0].value : "All"} Blueprints
+            {state.globalFilter
+              ? "Search results"
+              : `${filters.length > 0 ? filters[0].value : "All"} Blueprints`}
           </h3>
           <span className="d-flex align-items-center">
             <span className="ml-3 mr-2">Group by:</span>
@@ -274,7 +276,8 @@ const BlueprintsCard: React.FunctionComponent<{
           {state.globalFilter && (
             <p>
               {rows.length} results for{" "}
-              <strong>&quot;{state.globalFilter}&quot;</strong> in this category
+              <strong>&quot;{state.globalFilter}&quot;</strong> over all
+              categories
             </p>
           )}
           {isGrouped ? (
