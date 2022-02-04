@@ -203,6 +203,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
 
     quickBarRegistry.add({
       id: extension.id,
+      extensionPointId: this.id,
       name,
       icon,
       perform: async () => {
