@@ -75,8 +75,10 @@ export type Trigger =
   | "interval"
   // `appear` is triggered when an element enters the user's viewport
   | "appear"
-  | "click"
+  // `initialize` is triggered when an element is added to the DOM
+  | "initialize"
   | "blur"
+  | "click"
   | "dblclick"
   | "mouseover"
   | "change";
@@ -156,6 +158,12 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private cancelWatchNewElements: (() => void) | null;
 
   /**
+   * Cancel "initialize" trigger observer
+   * @private
+   */
+  private initializeObserver: MutationObserver | undefined;
+
+  /**
    * Observer to watch for new elements to appear, or undefined if the trigger is not an `appear` trigger
    * @private
    */
@@ -214,6 +222,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     // Clean up observers
     this.cancelInitialWaitElements?.();
     this.cancelWatchNewElements?.();
+    this.initializeObserver?.disconnect();
+    this.initializeObserver = null;
     this.appearObserver?.disconnect();
     this.appearObserver = null;
     this.cancelInitialWaitElements = null;
@@ -418,6 +428,37 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     }
   }
 
+  private attachInitializeTrigger(
+    $element: JQuery<Document | HTMLElement>
+  ): void {
+    this.initializeObserver?.disconnect();
+    this.initializeObserver = null;
+
+    // The caller will have already waited for the element. So $element will contain at least one element
+    if (this.attachMode === "once") {
+      for (const element of $element.get()) {
+        void this.runTrigger(element);
+      }
+
+      return;
+    }
+
+    this.initializeObserver = initialize(
+      this.triggerSelector,
+      (index, element) => {
+        void this.runTrigger(element as HTMLElement).then((errors) => {
+          if (errors.length > 0) {
+            console.error("An error occurred while running a trigger", {
+              errors,
+            });
+            notifyError("An error occurred while running a trigger");
+          }
+        });
+      },
+      { target: document }
+    );
+  }
+
   private attachAppearTrigger($element: JQuery): void {
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
 
@@ -525,9 +566,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   private cancelObservers() {
+    this.intervalController?.abort();
+    this.appearObserver?.disconnect();
+    this.appearObserver = null;
+    this.initializeObserver?.disconnect();
+    this.initializeObserver = null;
     this.cancelInitialWaitElements?.();
-    this.cancelWatchNewElements?.();
     this.cancelInitialWaitElements = null;
+    this.cancelWatchNewElements?.();
     this.cancelWatchNewElements = null;
   }
 
@@ -547,6 +593,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
       case "interval": {
         this.attachInterval();
+        break;
+      }
+
+      case "initialize": {
+        this.attachInitializeTrigger($root);
         break;
       }
 
