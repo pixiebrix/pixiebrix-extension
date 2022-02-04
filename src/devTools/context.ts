@@ -1,4 +1,4 @@
-import { isErrorObject } from "@/errors";
+import { getErrorMessage, isErrorObject } from "@/errors";
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -25,9 +25,7 @@ import { FrameworkMeta } from "@/messaging/constants";
 import { reportError } from "@/telemetry/logging";
 import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
-import { getErrorMessage } from "@/errors";
 import { thisTab } from "@/devTools/utils";
-import { Except } from "type-fest";
 import { detectFrameworks } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/messenger/api";
 import { canAccessTab } from "webext-tools";
@@ -171,6 +169,6 @@ export function useDevConnection(): Context {
   return {
     connecting,
     connect,
-    tabState: tabState,
+    tabState,
   };
 }
