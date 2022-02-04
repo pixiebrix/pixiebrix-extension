@@ -22,7 +22,11 @@ import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors";
 import { sleep } from "@/utils";
-import { Activity, ListResponse } from "@/contrib/automationanywhere/contract";
+import {
+  Activity,
+  DeployResponse,
+  ListResponse,
+} from "@/contrib/automationanywhere/contract";
 
 const MAX_WAIT_MILLIS = 30_000;
 const POLL_MILLIS = 1000;
@@ -48,6 +52,7 @@ export const AUTOMATION_ANYWHERE_PROPERTIES: SchemaProperties = {
   },
   data: {
     type: "object",
+    description: "The input data for the bot",
     additionalProperties: true,
   },
   awaitResult: {
@@ -55,11 +60,6 @@ export const AUTOMATION_ANYWHERE_PROPERTIES: SchemaProperties = {
     default: false,
     description: "Wait for the bot to complete and output the results.",
   },
-};
-
-type DeployResponse = {
-  automationId: string;
-  deploymentId: string;
 };
 
 export class RunBot extends Transformer {
@@ -81,17 +81,7 @@ export class RunBot extends Transformer {
   outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
-    required: ["deploymentId", "automationId"],
-    properties: {
-      deploymentId: {
-        type: "string",
-        format: "uuid",
-      },
-      automationId: {
-        type: "string",
-        format: "uuid",
-      },
-    },
+    additionalProperties: true,
   };
 
   async transform(
@@ -99,7 +89,8 @@ export class RunBot extends Transformer {
     { logger }: BlockOptions
   ): Promise<UnknownObject> {
     const { data: deployData } = await proxyService<DeployResponse>(service, {
-      url: "/v3/automations/deploy",
+      // Using v2 because v3 requires runAsUserIds
+      url: "/v2/automations/deploy",
       method: "post",
       data: {
         fileId,
@@ -114,22 +105,21 @@ export class RunBot extends Transformer {
       },
     });
 
-    logger.info(`Deployment id: ${deployData.deploymentId}`);
-
     if (!awaitResult) {
-      return {
-        automationId: deployData.automationId,
-        deploymentId: deployData.deploymentId,
-      };
+      return {};
     }
 
     const start = Date.now();
 
+    await sleep(POLL_MILLIS);
+
     do {
+      // // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-progress.html
       // eslint-disable-next-line no-await-in-loop -- polling for response
       const { data: activityList } = await proxyService<ListResponse<Activity>>(
         service,
         {
+          // This endpoint isn't working on Community Edition
           url: "/v2/activity/list",
           method: "post",
           data: {
@@ -142,26 +132,43 @@ export class RunBot extends Transformer {
         }
       );
 
+      if (activityList.list.length > 0) {
+        logger.error(
+          `Multiple activities found for deployment: ${deployData.deploymentId}`
+        );
+        throw new Error("Multiple activities found for automation");
+      }
+
       if (activityList.list.length === 0) {
         logger.error(
-          `Control Room deploy not found: ${deployData.deploymentId}`
+          `Activity not found for deployment: ${deployData.deploymentId}`
         );
-        throw new BusinessError("AA deploy not found");
+        throw new BusinessError("Activity not found for automation");
       }
 
       if (activityList.list[0].status === "COMPLETED") {
-        // TODO: show the result here
-        return {
-          automationId: deployData.automationId,
-          deploymentId: deployData.deploymentId,
-        };
+        return mapValues(
+          activityList.list[0].outputVariables ?? {},
+          (x) => x.string
+        );
       }
 
       if (
-        ["DEPLOY_FAILED", "RUN_FAILED"].includes(activityList.list[0].status)
+        // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-progress.html
+        [
+          "DEPLOY_FAILED",
+          "RUN_FAILED",
+          "RUN_ABORTED",
+          "RUN_TIMED_OUT",
+        ].includes(activityList.list[0].status)
       ) {
-        logger.error(`AA deploy failed: ${deployData.deploymentId}`);
-        throw new BusinessError("AA deploy failed");
+        logger.error(
+          `Automation Anywhere run failed: ${deployData.deploymentId}`,
+          {
+            activity: activityList.list[0],
+          }
+        );
+        throw new BusinessError("Automation Anywhere run failed");
       }
 
       // eslint-disable-next-line no-await-in-loop -- polling for response
@@ -169,7 +176,9 @@ export class RunBot extends Transformer {
     } while (Date.now() - start < MAX_WAIT_MILLIS);
 
     throw new BusinessError(
-      `UiPath job did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
+      `Automation Anywhere deploy did not finish in ${
+        MAX_WAIT_MILLIS / 1000
+      } seconds`
     );
   }
 }

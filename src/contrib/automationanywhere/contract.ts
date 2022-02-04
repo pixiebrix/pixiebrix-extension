@@ -57,8 +57,20 @@ export type Device = {
   nickname: string;
 };
 
+export type DeployResponse = {
+  // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-deploy.html
+  automationId: string;
+  deploymentId: string;
+};
+
 export type Activity = {
   status: string;
+  outputVariables?: Record<
+    string,
+    {
+      string: string;
+    }
+  >;
 };
 
 export function interfaceToInputSchema(botInterface: Interface): Schema {

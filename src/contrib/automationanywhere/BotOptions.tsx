@@ -40,7 +40,6 @@ import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import { cachePromiseMethod } from "@/utils/cachePromise";
-import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
   "automation-anywhere/control-room"
@@ -154,13 +153,6 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             as={RemoteSelectWidget}
             optionsFactory={cachedFetchDevices}
             config={config}
-          />
-
-          <SchemaField
-            label="Await Result"
-            name={configName("awaitResult")}
-            schema={AUTOMATION_ANYWHERE_PROPERTIES.awaitResult as Schema}
-            isRequired
           />
 
           {fileId != null && (

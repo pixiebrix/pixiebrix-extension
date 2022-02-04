@@ -35,22 +35,20 @@ const Template: ComponentStory<
       required?: boolean;
     }
   >
-> = (args) => {
-  return (
-    <Formik
-      initialValues={{
-        apiVersion: "v3",
-        childObject: {},
-      }}
-      onSubmit={action("onSubmit")}
-    >
-      <Form>
-        <ChildObjectField {...args} heading="Child Object" />
-        <Button type="submit">Submit</Button>
-      </Form>
-    </Formik>
-  );
-};
+> = (args) => (
+  <Formik
+    initialValues={{
+      apiVersion: "v3",
+      childObject: {},
+    }}
+    onSubmit={action("onSubmit")}
+  >
+    <Form>
+      <ChildObjectField {...args} heading="Child Object" />
+      <Button type="submit">Submit</Button>
+    </Form>
+  </Formik>
+);
 
 export const PrimitiveValue = Template.bind({});
 PrimitiveValue.args = {
