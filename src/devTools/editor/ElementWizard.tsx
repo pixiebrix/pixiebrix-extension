@@ -27,7 +27,6 @@ import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 import LogContext from "@/components/logViewer/LogContext";
 import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
-import styles from "./ElementWizard.module.scss";
 import { thisTab } from "@/devTools/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
@@ -38,6 +37,8 @@ import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
 import AuthContext from "@/auth/AuthContext";
+import styles from "./ElementWizard.module.scss";
+import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -180,6 +181,11 @@ const ElementWizard: React.FunctionComponent<{
           {wizardSteps.map((step) => (
             <WizardNavItem key={step.step} step={step} />
           ))}
+
+          {/* spacer */}
+          <div className="mr-2" />
+
+          <AskQuestionModalButton />
 
           {/* spacer */}
           <div className="flex-grow-1" />
