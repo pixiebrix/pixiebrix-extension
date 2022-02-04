@@ -34,7 +34,7 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
-import { checkAvailable } from "@/blocks/available";
+import { checkAvailable, testMatchPatterns } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
 import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
@@ -113,9 +113,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
   }
 
   uninstall(): void {
-    for (const extension of this.extensions) {
-      quickBarRegistry.remove(extension.id);
-    }
+    quickBarRegistry.removeExtensionPointActions(this.id);
   }
 
   removeExtensions(extensionIds: UUID[]): void {
@@ -126,9 +124,10 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
 
   async install(): Promise<boolean> {
     initQuickBarApp();
-    const available = await this.isAvailable();
-    await this.registerExtensions();
-    return available;
+    // Like for context menus, the match patterns for quick bar control which pages the extension point requires early
+    // access to (so PixieBrix will ask for permissions). Whether a quick bar item actually appears is controlled by the
+    // documentUrlPatterns.
+    return true;
   }
 
   async defaultReader(): Promise<IReader> {
@@ -136,6 +135,12 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
   }
 
   private async registerExtensions(): Promise<void> {
+    // Remove any actions that were available on the previous navigation, but are no longer available
+    if (!testMatchPatterns(this.documentUrlPatterns)) {
+      quickBarRegistry.removeExtensionPointActions(this.id);
+      return;
+    }
+
     const results = await Promise.allSettled(
       this.extensions.map(async (extension) => {
         try {
@@ -256,8 +261,10 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
   async run(): Promise<void> {
     if (this.extensions.length === 0) {
       console.debug(
-        `contextMenu extension point ${this.id} has no installed extensions`
+        `quickBar extension point ${this.id} has no installed extensions`
       );
+      // Not sure if this is needed or not, but remove any straggler extension actions
+      quickBarRegistry.removeExtensionPointActions(this.id);
       return;
     }
 

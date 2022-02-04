@@ -25,10 +25,15 @@ import {
   faStore,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
+import { RegistryId } from "@/core";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
 
 const PIXIEBRIX_SECTION = "PixieBrix";
+
+type CustomAction = Action & {
+  extensionPointId?: RegistryId;
+};
 
 const defaultActions: Action[] = [
   {
@@ -83,10 +88,10 @@ const defaultActions: Action[] = [
   },
 ];
 
-type ChangeHandler = (actions: Action[]) => void;
+type ChangeHandler = (actions: CustomAction[]) => void;
 
 class QuickBarRegistry {
-  private _actions: Action[];
+  private _actions: CustomAction[];
   private readonly listeners: ChangeHandler[] = [];
 
   constructor() {
@@ -99,10 +104,14 @@ class QuickBarRegistry {
     }
   }
 
-  add(action: Action): void {
+  add(action: CustomAction): void {
     this._actions = this._actions.filter((x) => x.id !== action.id);
     this._actions.unshift(action);
     this.notifyListeners();
+  }
+
+  removeExtensionPointActions(id: RegistryId) {
+    this._actions = this._actions.filter((x) => x.extensionPointId !== id);
   }
 
   remove(id: string): void {
