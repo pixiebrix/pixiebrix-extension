@@ -182,7 +182,12 @@ const SidebarExpanded: React.VoidFunctionComponent<
       }
 
       return {
-        elementsByRecipeId,
+        elementsByRecipeId: sortBy(
+          [...elementsByRecipeId.entries()],
+          ([recipeId]) =>
+            recipes.find((recipe) => recipe.metadata.id === recipeId)?.metadata
+              ?.name ?? ""
+        ),
         orphanedElements: sortBy(orphanedElements, (element) => element.label),
       };
     },
@@ -315,7 +320,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
           <GridLoader />
         ) : (
           <ListGroup>
-            {[...elementsByRecipeId.entries()].map(([recipeId, elements]) => (
+            {elementsByRecipeId.map(([recipeId, elements]) => (
               <RecipeEntry
                 key={recipeId}
                 recipeId={recipeId}
