@@ -58,6 +58,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import styles from "./ShareExtensionModal.module.scss";
 import { selectExtensions } from "@/store/extensionsSelectors";
+import { RequireScope } from "@/auth/RequireScope";
 
 const { attachExtension } = extensionsSlice.actions;
 
@@ -279,14 +280,16 @@ const ShareExtensionModal: React.FC<{
         <Modal.Title>Share as Blueprint</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form
-          validationSchema={ShareSchema}
-          initialValues={initialValues}
-          onSubmit={handleShare}
-          renderStatus={renderStatus}
-          renderBody={renderBody}
-          renderSubmit={renderSubmit}
-        />
+        <RequireScope scopeSettingsDescription="To share a blueprint, you must first set an account alias for your PixieBrix account">
+          <Form
+            validationSchema={ShareSchema}
+            initialValues={initialValues}
+            onSubmit={handleShare}
+            renderStatus={renderStatus}
+            renderBody={renderBody}
+            renderSubmit={renderSubmit}
+          />
+        </RequireScope>
       </Modal.Body>
     </Modal>
   );

@@ -21,7 +21,7 @@
   width: 30%;
   min-width: 600px;
 
-  // BS modal has a max-width of 500px, take the whole width of the modal
+  // BS4 modal has a max-width = 500px, take the whole width of the modal
   :global(.modal-content) & {
     width: 100%;
     min-width: 100%;
