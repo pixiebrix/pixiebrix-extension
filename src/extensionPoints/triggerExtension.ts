@@ -81,21 +81,36 @@ export type Trigger =
   | "mouseover"
   | "change";
 
-async function interval(
-  intervalMillis: number,
-  effectGenerator: () => Promise<void>,
-  signal: AbortSignal
-) {
+type IntervalArgs = {
+  intervalMillis: number;
+
+  effectGenerator: () => Promise<void>;
+
+  signal: AbortSignal;
+
+  /**
+   * Request an animation frame so that animation effects (e.g., confetti) don't pile up while the user is not
+   * using the tab/frame running the interval.
+   */
+  requestAnimationFrame: boolean;
+};
+
+async function interval({
+  intervalMillis,
+  effectGenerator,
+  signal,
+  requestAnimationFrame,
+}: IntervalArgs) {
   while (!signal.aborted) {
     const start = Date.now();
 
     try {
-      // Request an animation frame so that animation effects (e.g., confetti) don't pile up while the user is not
-      // using the tab/frame running the interval.
-      // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
-      await new Promise((resolve) => {
-        window.requestAnimationFrame(resolve);
-      });
+      if (requestAnimationFrame) {
+        // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
+        await new Promise((resolve) => {
+          window.requestAnimationFrame(resolve);
+        });
+      }
 
       // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
       await effectGenerator();
@@ -121,6 +136,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   abstract get attachMode(): AttachMode;
 
   abstract get intervalMillis(): number;
+
+  abstract get allowBackground(): boolean;
 
   abstract get targetMode(): TargetMode;
 
@@ -382,7 +399,12 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         );
       };
 
-      void interval(this.intervalMillis, intervalEffect, controller.signal);
+      void interval({
+        intervalMillis: this.intervalMillis,
+        effectGenerator: intervalEffect,
+        signal: controller.signal,
+        requestAnimationFrame: !this.allowBackground,
+      });
 
       this.intervalController = controller;
 
@@ -566,6 +588,12 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
   attachMode?: AttachMode;
 
   /**
+   * Allow triggers to run in the background, even when the tab is not active. Currently, only checked for intervals.
+   * @since 1.5.3
+   */
+  background: boolean;
+
+  /**
    * @since 1.4.8
    */
   targetMode?: TargetMode;
@@ -624,6 +652,10 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
 
   get triggerSelector(): string | null {
     return this._definition.rootSelector;
+  }
+
+  get allowBackground(): boolean {
+    return this._definition.background ?? false;
   }
 
   async defaultReader() {
