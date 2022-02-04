@@ -308,6 +308,7 @@ const BlueprintsCard: React.FunctionComponent<{
                   <BlueprintsView
                     tableInstance={tableInstance}
                     rows={row.subRows}
+                    getInstallableIcon={getInstallableIcon}
                   />
                 </Fragment>
               ))}

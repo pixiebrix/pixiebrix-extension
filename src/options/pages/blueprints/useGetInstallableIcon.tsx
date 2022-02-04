@@ -20,6 +20,8 @@ import { RegistryId } from "@/core";
 import { MarketplaceListing } from "@/types/contract";
 import React, { useCallback } from "react";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCube } from "@fortawesome/free-solid-svg-icons";
 
 function useGetInstallableIcon() {
   const { data: listings } = useGetMarketplaceListingsQuery();
@@ -27,7 +29,7 @@ function useGetInstallableIcon() {
   return useCallback(
     (packageId: RegistryId) => {
       if (!listings) {
-        return null;
+        return <FontAwesomeIcon icon={faCube} color="transparent" size="2x" />;
       }
 
       const listing: MarketplaceListing | null = listings[packageId];
