@@ -55,7 +55,15 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
         </div>
       </div>
       <div>
-        <SharingLabel installable={installable} />
+        <h5>{name}</h5>
+        <p className={cx(styles.description, "text-muted")}>{description}</p>
+      </div>
+      <div>
+        {sharing.packageId ? (
+          <code className="p-0">{sharing.packageId}</code>
+        ) : (
+          <SharingLabel installable={installable} />
+        )}
         <Card.Text className="small">Updated: {timeSince(updatedAt)}</Card.Text>
         <div className={styles.actions}>
           <Status installable={installable} />

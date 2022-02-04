@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,26 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  // 310 is a rough estimation of page height after the headers and footers on this page.
-  // Ideally we would implement a solution that doesn't use hard-coding, like flexbox
-  max-height: calc(100vh - 310px);
-  overflow-y: scroll;
+import userEvent from "@testing-library/user-event";
+import { waitFor } from "@testing-library/react";
 
-  // TODO: this is to add padding between the div content and the scrollbar
-  //  however, this messes with the content alignment with the toolbar above
-  padding-right: 15px;
-
-  &::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(186, 168, 190, 0.96);
-    border-radius: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(169, 153, 171, 0.96);
-  }
+export async function expectToggleOptions(
+  container: HTMLElement,
+  expected: string[]
+) {
+  // React Bootstrap dropdown does not render children items unless toggled
+  userEvent.click(container.querySelector("button"));
+  const actual = new Set(
+    [...container.querySelectorAll("a")].map((x) => x.dataset.testid)
+  );
+  await waitFor(() => {
+    expect(actual).toEqual(new Set(expected));
+  });
 }

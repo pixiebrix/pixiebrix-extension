@@ -36,11 +36,15 @@ import {
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
-import { notifyError } from "@/contentScript/notify";
+import {
+  DEFAULT_ACTION_RESULTS,
+  notifyError,
+  notifyResult,
+} from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { BusinessError, isErrorObject } from "@/errors";
+import { BusinessError, hasCancelRootCause } from "@/errors";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
@@ -227,14 +231,12 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
             ...apiVersionOptions(extension.apiVersion),
           });
         } catch (error) {
-          if (isErrorObject(error)) {
-            reportError(error);
-            extensionLogger.error(error);
+          if (hasCancelRootCause(error)) {
+            notifyResult(extension.id, DEFAULT_ACTION_RESULTS.cancel);
           } else {
-            extensionLogger.warn(error as any);
+            extensionLogger.error(error);
+            notifyResult(extension.id, DEFAULT_ACTION_RESULTS.error);
           }
-
-          throw error;
         }
       },
     });

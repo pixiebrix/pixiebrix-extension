@@ -56,6 +56,7 @@ import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import styles from "./BlueprintsCard.module.scss";
+import styles from "./BlueprintsCard.module.scss";
 import useGetInstallableIcon from "@/options/pages/blueprints/useGetInstallableIcon";
 
 const getInstallableRows = (
@@ -164,7 +165,7 @@ const BlueprintsCard: React.FunctionComponent<{
             ...state,
             groupBy,
             sortBy,
-            filters,
+            filters: state.globalFilter ? [] : filters,
           }),
           // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
           [state, groupBy, sortBy, filters]
