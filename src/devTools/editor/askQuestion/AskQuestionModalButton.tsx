@@ -22,7 +22,6 @@ import { Button, Modal } from "react-bootstrap";
 import slack from "./logos/slack.svg";
 import discourse from "./logos/discourse.svg";
 import zoom from "./logos/zoom.svg";
-import zoom2 from "./logos/zoom2.svg";
 import styles from "./AskQuestionModalButton.module.scss";
 
 type ButtonConfig = {
@@ -48,14 +47,10 @@ const buttons: ButtonConfig[] = [
     label: "Schedule a deep dive",
     link: "https://calendly.com/pixiebrix-support/ask-a-question",
   },
-  {
-    logo: zoom2,
-    label: "Schedule a deep dive",
-    link: "https://calendly.com/pixiebrix-support/ask-a-question",
-  },
 ];
+
 const AskQuestionModalButton: React.VoidFunctionComponent = () => {
-  const [showModal, setShowModal] = React.useState(true);
+  const [showModal, setShowModal] = React.useState(false);
 
   return (
     <>
