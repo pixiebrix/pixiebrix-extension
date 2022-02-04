@@ -239,11 +239,13 @@ function useActions(): void {
 
   useEffect(() => {
     const handler = (actions: Action[]) => {
-      query.registerActions(actions as any);
+      query.registerActions(actions);
     };
 
     quickBarRegistry.addListener(handler);
-    quickBarRegistry.addDefaults();
+    return () => {
+      quickBarRegistry.removeListener(handler);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount; query will be defined on initial mount
   }, []);
 }
@@ -287,7 +289,7 @@ const KBarComponent: React.FC = () => {
 const QuickBarApp: React.FC = () => (
   <ReactShadowRoot mode="closed">
     <Stylesheet href={faStyleSheet}>
-      <KBarProvider actions={[]}>
+      <KBarProvider>
         <AutoShow />
         <KBarToggle>
           <KBarComponent />

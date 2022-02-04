@@ -26,6 +26,7 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { RegistryId } from "@/core";
+import { pull, remove } from "lodash";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
 
@@ -91,12 +92,8 @@ const defaultActions: Action[] = [
 type ChangeHandler = (actions: CustomAction[]) => void;
 
 class QuickBarRegistry {
-  private _actions: CustomAction[];
+  private readonly _actions: CustomAction[] = defaultActions;
   private readonly listeners: ChangeHandler[] = [];
-
-  constructor() {
-    this._actions = defaultActions;
-  }
 
   private notifyListeners() {
     for (const listener of this.listeners) {
@@ -105,17 +102,18 @@ class QuickBarRegistry {
   }
 
   add(action: CustomAction): void {
-    this._actions = this._actions.filter((x) => x.id !== action.id);
+    remove(this._actions, (x) => x.id === action.id);
     this._actions.unshift(action);
     this.notifyListeners();
   }
 
   removeExtensionPointActions(id: RegistryId) {
-    this._actions = this._actions.filter((x) => x.extensionPointId !== id);
+    remove(this._actions, (x) => x.extensionPointId === id);
+    this.notifyListeners();
   }
 
   remove(id: string): void {
-    this._actions = this._actions.filter((x) => x.id !== id);
+    remove(this._actions, (x) => x.id === id);
   }
 
   addListener(handler: ChangeHandler) {
@@ -123,14 +121,8 @@ class QuickBarRegistry {
     this.notifyListeners();
   }
 
-  // These must be added dynamically or else they're static and unremovable/unsortable
-  // https://github.com/timc1/kbar/issues/66
-  addDefaults(): void {
-    this._actions.push(...defaultActions);
-  }
-
-  public get actions(): Action[] {
-    return this._actions;
+  removeListener(handler: ChangeHandler) {
+    pull(this.listeners, handler);
   }
 }
 
