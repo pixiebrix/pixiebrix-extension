@@ -189,7 +189,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     this.abortController = new AbortController();
   }
 
-  onCancel(callback: () => void): void {
+  addCancelHandler(callback: () => void): void {
     this.abortController.signal.addEventListener("abort", callback);
   }
 
@@ -340,7 +340,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       ? awaitElementOnce(rootSelector)
       : [document, noop];
 
-    this.onCancel(cancelRun);
+    this.addCancelHandler(cancelRun);
 
     try {
       await rootPromise;
@@ -418,10 +418,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           }
         });
       },
+      // `target` is a required option
       { target: document }
     );
 
-    this.onCancel(() => {
+    this.addCancelHandler(() => {
       observer.disconnect();
     });
   }
@@ -464,14 +465,15 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           console.debug("initialize: %s", selector);
           appearObserver.observe(element);
         },
+        // `target` is a required option
         { target: document }
       );
-      this.onCancel(() => {
+      this.addCancelHandler(() => {
         mutationObserver.disconnect();
       });
     }
 
-    this.onCancel(() => {
+    this.addCancelHandler(() => {
       appearObserver.disconnect();
     });
   }
@@ -517,9 +519,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           // Already watching, so don't re-watch on the recursive call
           this.attachDOMTrigger($(element as HTMLElement), { watch: false });
         },
+        // `target` is a required option
         { target: document }
       );
-      this.onCancel(() => {
+      this.addCancelHandler(() => {
         mutationObserver.disconnect();
       });
     }
