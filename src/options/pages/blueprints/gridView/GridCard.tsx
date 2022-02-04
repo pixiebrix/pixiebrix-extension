@@ -23,6 +23,7 @@ import { timeSince } from "@/utils/timeUtils";
 import Status from "@/options/pages/blueprints/Status";
 import styles from "./GridCard.module.scss";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
+import cx from "classnames";
 
 type GridCardProps = {
   installableItem: InstallableViewItem;
@@ -31,13 +32,26 @@ type GridCardProps = {
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   installableItem,
 }) => {
-  const { name, updatedAt, installable } = installableItem;
+  const {
+    name,
+    updatedAt,
+    description,
+    sharing,
+    installable,
+  } = installableItem;
 
   return (
     <Card className={styles.root}>
-      <h5 className={styles.title}>{name}</h5>
       <div>
-        <SharingLabel installable={installable} />
+        <h5>{name}</h5>
+        <p className={cx(styles.description, "text-muted")}>{description}</p>
+      </div>
+      <div>
+        {sharing.packageId ? (
+          <code className="p-0">{sharing.packageId}</code>
+        ) : (
+          <SharingLabel installable={installable} />
+        )}
         <Card.Text>Updated: {timeSince(updatedAt)}</Card.Text>
         <div className={styles.actions}>
           <Status installable={installable} />
