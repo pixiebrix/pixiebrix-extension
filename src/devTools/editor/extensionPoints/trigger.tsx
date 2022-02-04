@@ -66,8 +66,12 @@ export interface TriggerFormState extends BaseFormState {
       reader: SingleLayerReaderConfig;
       attachMode: AttachMode;
       targetMode: TargetMode;
-      intervalMillis: number | null;
+
       isAvailable: NormalizedAvailability;
+
+      // Interval props
+      intervalMillis: number | null;
+      background: boolean | null;
     };
   };
 }
@@ -89,6 +93,7 @@ function fromNativeElement(
         attachMode: null,
         targetMode: null,
         intervalMillis: null,
+        background: null,
         reader: getImplicitReader("trigger"),
         isAvailable: makeIsAvailable(url),
       },
@@ -110,6 +115,7 @@ function selectExtensionPoint(
       attachMode,
       targetMode,
       intervalMillis,
+      background,
       reader,
       trigger,
     },
@@ -122,6 +128,7 @@ function selectExtensionPoint(
       isAvailable: pickBy(isAvailable, identity),
       trigger,
       intervalMillis,
+      background,
       attachMode,
       targetMode,
       rootSelector,
@@ -217,6 +224,7 @@ async function fromExtension(
     targetMode,
     trigger,
     reader,
+    background,
     intervalMillis,
   } = extensionPoint.definition;
 
@@ -235,6 +243,7 @@ async function fromExtension(
         trigger,
         attachMode,
         targetMode,
+        background,
         intervalMillis,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),

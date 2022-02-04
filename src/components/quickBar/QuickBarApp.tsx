@@ -243,6 +243,7 @@ function useActions(): void {
     };
 
     quickBarRegistry.addListener(handler);
+    quickBarRegistry.addDefaults();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount; query will be defined on initial mount
   }, []);
 }
@@ -286,7 +287,7 @@ const KBarComponent: React.FC = () => {
 const QuickBarApp: React.FC = () => (
   <ReactShadowRoot mode="closed">
     <Stylesheet href={faStyleSheet}>
-      <KBarProvider actions={quickBarRegistry.actions}>
+      <KBarProvider actions={[]}>
         <AutoShow />
         <KBarToggle>
           <KBarComponent />

@@ -28,12 +28,12 @@ import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
 import workshopSlice, { WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
-import "./WorkshopPage.scss";
 import { Brick } from "@/types/contract";
 import useFetch from "@/hooks/useFetch";
 import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
 import { EnrichedBrick, NavigateProps } from "./workshopTypes";
+import { RequireScope } from "@/auth/RequireScope";
 
 const { actions } = workshopSlice;
 
@@ -221,7 +221,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
         </Col>
       </Row>
       <Row>
-        <Col className="mt-4" md="12" lg="8">
+        <Col className="mt-4" md="12" xl="8">
           <CustomBricksCard navigate={navigate} bricks={sortedBricks} />
         </Col>
       </Row>
@@ -230,38 +230,53 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 };
 
 const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
-  const { isLoggedIn, flags } = useContext(AuthContext);
+  const {
+    isLoggedIn,
+    flags,
+    scope,
+    isPending: isAuthPending,
+    error: authError,
+  } = useContext(AuthContext);
 
   return (
-    <Page
-      title="Workshop"
-      icon={faHammer}
-      description={
-        <p>
-          Build and attach bricks.{" "}
-          {flags.includes("marketplace") && (
-            <>
-              To activate pre-made blueprints, visit the{" "}
-              <Link to={"/marketplace"}>Marketplace</Link>
-            </>
-          )}
-        </p>
-      }
-      toolbar={
-        isLoggedIn && (
-          <Button
-            variant="info"
-            onClick={() => {
-              navigate("/workshop/create/");
-            }}
-          >
-            <FontAwesomeIcon icon={faPlus} /> Create New Brick
-          </Button>
-        )
-      }
+    <RequireScope
+      scope={scope}
+      isPending={isAuthPending}
+      scopeSettingsTitle="Welcome to the PixieBrix Workshop!"
+      scopeSettingsDescription="To use the Workshop, you must first set an account alias for your PixieBrix account"
     >
-      <CustomBricksSection navigate={navigate} />
-    </Page>
+      <Page
+        title="Workshop"
+        icon={faHammer}
+        error={authError}
+        description={
+          <p>
+            Build and attach bricks.{" "}
+            {flags.includes("marketplace") && (
+              <>
+                To activate pre-made blueprints, visit the{" "}
+                <Link to={"/marketplace"}>Marketplace</Link>
+              </>
+            )}
+          </p>
+        }
+        toolbar={
+          isLoggedIn &&
+          !authError && (
+            <Button
+              variant="info"
+              onClick={() => {
+                navigate("/workshop/create/");
+              }}
+            >
+              <FontAwesomeIcon icon={faPlus} /> Create New Brick
+            </Button>
+          )
+        }
+      >
+        <CustomBricksSection navigate={navigate} />
+      </Page>
+    </RequireScope>
   );
 };
 

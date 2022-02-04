@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,22 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.WorkshopPage__BrickTable {
-  tbody > tr:not(.WorkshopPage__BrickTable__more) {
-    cursor: pointer;
+import { Effect } from "@/types";
+import { BlockArg, Schema } from "@/core";
+import { propertiesToSchema } from "@/validators/generic";
+import { $safeFind } from "@/helpers";
 
-    td:first-child {
-      max-width: 10px;
-    }
+export class EnableEffect extends Effect {
+  constructor() {
+    super(
+      "@pixiebrix/enable",
+      "Enable Element",
+      "Enable an element (e.g., button, input)"
+    );
+  }
 
-    code {
-      padding-left: 0;
-      padding-right: 0;
-    }
+  inputSchema: Schema = propertiesToSchema(
+    {
+      selector: {
+        type: "string",
+        format: "selector",
+      },
+    },
+    ["selector"]
+  );
 
-    &:hover {
-      color: #fff;
-      background-color: #b66dff;
-    }
+  async effect({ selector }: BlockArg<{ selector: string }>): Promise<void> {
+    const $elt = $safeFind(selector);
+    $elt.prop("disabled", false);
   }
 }
