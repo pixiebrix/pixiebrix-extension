@@ -16,7 +16,7 @@ import { getErrorMessage, isErrorObject } from "@/errors";
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import pTimeout from "p-timeout";
 import browser from "webextension-polyfill";
 import { navigationEvent } from "@/background/devtools/external";
@@ -151,22 +151,28 @@ export function useDevConnection(): Context {
 
   const [connecting, setConnecting] = useState(false);
 
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
+
   const [tabState, setTabState] = useState<FrameConnectionState>(
     initialFrameState
   );
 
   const connect = useCallback(async () => {
-    setConnecting(true);
-    const tabState = await connectToFrame();
-    // TODO: Ensure that the page hasn't changed in the meanwhile
-    setConnecting(false);
-    setTabState(tabState);
-  }, [setTabState]);
+    setLastUpdate(Date.now());
+  }, []);
 
   // Automatically connect on load
-  useAsyncEffect(async () => {
-    await connect();
-  }, []);
+  useAsyncEffect(
+    async (isActive) => {
+      setConnecting(true);
+      const tabState = await connectToFrame();
+      setConnecting(false);
+      if (isActive()) {
+        setTabState(tabState);
+      }
+    },
+    [lastUpdate]
+  );
 
   useTabEventListener(tabId, navigationEvent, connect);
 
