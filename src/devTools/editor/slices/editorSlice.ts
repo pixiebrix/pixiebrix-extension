@@ -36,6 +36,7 @@ import {
 } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { WritableDraft } from "immer/dist/types/types-external";
 import { BlockConfig } from "@/blocks/types";
+import { RecipeDefinition } from "@/types/definitions";
 
 export type FormState =
   | ActionFormState
@@ -58,9 +59,14 @@ export interface EditorState {
   inserting: ElementType | null;
 
   /**
-   * The uuid of the active element, or null if no elements are active
+   * The uuid of the active element, if an extension is selected
    */
   activeElement: UUID | null;
+
+  /**
+   * The registry id of the active recipe, if a recipe is selected
+   */
+  activeRecipeId: RegistryId | null;
 
   error: string | null;
 
@@ -70,6 +76,11 @@ export interface EditorState {
    * Unsaved elements
    */
   readonly elements: FormState[];
+
+  /**
+   * Recipes (blueprints)
+   */
+  readonly recipesById: Record<RegistryId, RecipeDefinition>;
 
   /**
    * Brick ids (not UUIDs) that are known to be editable by the current user
@@ -106,9 +117,11 @@ export interface EditorState {
 export const initialState: EditorState = {
   selectionSeq: 0,
   activeElement: null,
+  activeRecipeId: null,
   error: null,
   beta: false,
   elements: [],
+  recipesById: {},
   knownEditable: [],
   dirty: {},
   inserting: null,
@@ -221,6 +234,7 @@ export const editorSlice = createSlice({
       state.error = null;
       state.beta = null;
       state.activeElement = uuid;
+      state.activeRecipeId = null;
       state.selectionSeq++;
       ensureElementUIState(state, uuid);
     },
@@ -252,6 +266,7 @@ export const editorSlice = createSlice({
       state.error = null;
       state.beta = null;
       state.activeElement = elementId;
+      state.activeRecipeId = null;
       state.selectionSeq++;
       ensureElementUIState(state, elementId);
     },
@@ -324,6 +339,15 @@ export const editorSlice = createSlice({
 
       // Make sure we're not keeping any private data around from Page Editor sessions
       void clearExtensionTraces(uuid);
+    },
+    selectRecipe: (state, action: PayloadAction<RecipeDefinition>) => {
+      const recipe = action.payload;
+      state.recipesById[recipe.metadata.id] = recipe;
+      state.error = null;
+      state.beta = null;
+      state.activeElement = null;
+      state.activeRecipeId = recipe.metadata.id;
+      state.selectionSeq++;
     },
     setBetaUIEnabled: (state, action: PayloadAction<boolean>) => {
       state.isBetaUI = action.payload;
