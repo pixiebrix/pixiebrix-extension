@@ -200,9 +200,10 @@ const SidebarExpanded: React.VoidFunctionComponent<
 
   const addElement = useAddElement();
 
-  const ElementListItem: React.FC<{ element: IExtension | FormState }> = ({
-    element,
-  }) =>
+  const ElementListItem: React.FC<{
+    element: IExtension | FormState;
+    isNested?: boolean;
+  }> = ({ element, isNested = false }) =>
     isExtension(element) ? (
       <InstalledEntry
         key={`installed-${element.id}`}
@@ -212,6 +213,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
         available={
           !availableInstalledIds || availableInstalledIds.has(element.id)
         }
+        isNested={isNested}
       />
     ) : (
       <DynamicEntry
@@ -221,6 +223,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
         available={
           !availableDynamicIds || availableDynamicIds.has(element.uuid)
         }
+        isNested={isNested}
       />
     );
 
@@ -324,6 +327,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
                   <ElementListItem
                     key={getIdForElement(element)}
                     element={element}
+                    isNested={true}
                   />
                 ))}
               </RecipeEntry>

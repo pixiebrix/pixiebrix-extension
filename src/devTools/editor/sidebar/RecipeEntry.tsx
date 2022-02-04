@@ -62,8 +62,8 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   return (
     <>
       <ListGroup.Item
-        className={styles.root}
-        action
+        className={cx(styles.root, "list-group-item-action")}
+        tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={recipeId === activeRecipeId}
         key={`recipe-${recipeId}`}
         onClick={() => dispatch(actions.selectRecipe(recipe))}

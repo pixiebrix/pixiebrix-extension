@@ -46,7 +46,8 @@ const InstalledEntry: React.FunctionComponent<{
   recipes: RecipeDefinition[];
   active: boolean;
   available: boolean;
-}> = ({ extension, recipes, available, active }) => {
+  isNested?: boolean;
+}> = ({ extension, recipes, available, active, isNested = false }) => {
   const dispatch = useDispatch();
   const [type] = useAsyncState(async () => selectType(extension), [
     extension.extensionPointId,
@@ -82,6 +83,7 @@ const InstalledEntry: React.FunctionComponent<{
       key={`installed-${extension.id}`}
       onClick={async () => selectHandler(extension)}
     >
+      {isNested && <span className={styles.space} />}
       <span className={styles.icon}>
         <ExtensionIcon type={type} />
       </span>

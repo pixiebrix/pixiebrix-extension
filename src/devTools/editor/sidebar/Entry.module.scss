@@ -26,7 +26,11 @@
   flex-shrink: 0;
   border: none;
   background: none;
+  color: inherit;
 }
 .name {
   flex-grow: 1;
+}
+.space {
+  width: 0.5rem;
 }
