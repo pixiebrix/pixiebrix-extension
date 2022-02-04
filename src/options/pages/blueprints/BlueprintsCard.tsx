@@ -56,6 +56,7 @@ import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import styles from "./BlueprintsCard.module.scss";
+import useGetInstallableIcon from "@/options/pages/blueprints/useGetInstallableIcon";
 
 const getInstallableRows = (
   installables: Installable[],
@@ -129,6 +130,7 @@ const BlueprintsCard: React.FunctionComponent<{
     ).filter((label) => label !== "Public" && label !== "Personal");
     return { data, teamFilters };
   }, [installables, scope]);
+  const getInstallableIcon = useGetInstallableIcon();
 
   const [view, setView] = useReduxState(
     selectView,
@@ -311,7 +313,11 @@ const BlueprintsCard: React.FunctionComponent<{
               ))}
             </>
           ) : (
-            <BlueprintsView tableInstance={tableInstance} rows={rows} />
+            <BlueprintsView
+              tableInstance={tableInstance}
+              rows={rows}
+              getInstallableIcon={getInstallableIcon}
+            />
           )}
         </div>
       </Col>

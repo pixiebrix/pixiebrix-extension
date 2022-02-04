@@ -31,11 +31,19 @@ type GridCardProps = {
 
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   installableItem,
+  getInstallableIcon,
 }) => {
-  const { name, updatedAt, description, installable } = installableItem;
+  const {
+    name,
+    updatedAt,
+    description,
+    sharing,
+    installable,
+  } = installableItem;
 
   return (
     <Card className={styles.root}>
+      {getInstallableIcon(sharing.packageId)}
       <div>
         <h5>{name}</h5>
         <p className={cx(styles.description, "text-muted")}>{description}</p>

@@ -33,6 +33,7 @@ import {
   selectShowShareContext,
 } from "@/options/pages/installed/installedPageSelectors";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
+import useGetInstallableIcon from "@/options/pages/blueprints/useGetInstallableIcon";
 
 const BlueprintsPage: React.FunctionComponent = () => {
   const { installables, isLoading, error } = useInstallables();

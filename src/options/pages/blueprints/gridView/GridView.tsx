@@ -24,6 +24,7 @@ import GridCard from "./GridCard";
 const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
   rows,
+  getInstallableIcon,
 }) => (
   <div className={styles.root}>
     {rows.map((row) => {
@@ -33,6 +34,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
         <GridCard
           key={getUniqueId(row.original.installable)}
           installableItem={row.original}
+          getInstallableIcon={getInstallableIcon}
         />
       );
     })}
