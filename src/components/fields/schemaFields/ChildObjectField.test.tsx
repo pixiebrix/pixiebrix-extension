@@ -60,6 +60,6 @@ describe("ChildObjectField", () => {
 
     // Starts as Exclude because it's not required
     expectToggleMode(container, "toggle-data.InputValue", "Exclude");
-    await expectToggleOptions(container, ["text", "var", "omit"]);
+    await expectToggleOptions(container, ["string", "var", "omit"]);
   });
 });

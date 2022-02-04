@@ -100,7 +100,7 @@ const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProps> = ({
             <SchemaField
               key={prop}
               name={joinName(name, prop)}
-              schema={schema}
+              schema={fieldSchema}
             />
           );
         })}

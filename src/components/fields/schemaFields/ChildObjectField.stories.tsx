@@ -20,7 +20,6 @@ import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { Form, Formik } from "formik";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button } from "react-bootstrap";
-import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { action } from "@storybook/addon-actions";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 
