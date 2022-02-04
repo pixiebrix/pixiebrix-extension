@@ -146,30 +146,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   abstract get triggerSelector(): string | null;
 
   /**
-   * Cancel awaiting the element during this.run()
-   * @private
-   */
-  private cancelInitialWaitElements: (() => void) | null;
-
-  /**
-   * Cancel the initialization observer in "watch" attachMode.
-   * @private
-   */
-  private cancelWatchNewElements: (() => void) | null;
-
-  /**
-   * Cancel "initialize" trigger observer
-   * @private
-   */
-  private initializeObserver: MutationObserver | undefined;
-
-  /**
-   * Observer to watch for new elements to appear, or undefined if the trigger is not an `appear` trigger
-   * @private
-   */
-  private appearObserver: IntersectionObserver | undefined;
-
-  /**
    * Installed DOM event listeners, e.g., `click`
    * @private
    */
@@ -184,10 +160,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private readonly boundEventHandler: JQuery.EventHandler<unknown>;
 
   /**
-   * Controller to abort/cancel the currently running interval loop
+   * Controller to drop all listeners and timers
    * @private
    */
-  private intervalController: AbortController | null;
+  private abortController = new AbortController();
 
   protected constructor(
     id: string,
@@ -196,8 +172,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     icon = "faBolt"
   ) {
     super(id, name, description, icon);
-    this.cancelInitialWaitElements = null;
-    this.cancelWatchNewElements = null;
 
     // Bind so we can pass as callback
     this.boundEventHandler = this.eventHandler.bind(this);
@@ -205,6 +179,18 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   async install(): Promise<boolean> {
     return this.isAvailable();
+  }
+
+  cancelObservers(): void {
+    // Inform registered listeners
+    this.abortController.abort();
+
+    // Allow new registrations
+    this.abortController = new AbortController();
+  }
+
+  onCancel(callback: () => void): void {
+    this.abortController.signal.addEventListener("abort", callback);
   }
 
   removeExtensions(): void {
@@ -220,16 +206,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     });
 
     // Clean up observers
-    this.cancelInitialWaitElements?.();
-    this.cancelWatchNewElements?.();
-    this.initializeObserver?.disconnect();
-    this.initializeObserver = null;
-    this.appearObserver?.disconnect();
-    this.appearObserver = null;
-    this.cancelInitialWaitElements = null;
-    this.cancelWatchNewElements = null;
-
-    this.clearInterval();
+    this.cancelObservers();
 
     // Find the latest set of DOM elements and uninstall handlers
     if (this.triggerSelector) {
@@ -363,7 +340,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       ? awaitElementOnce(rootSelector)
       : [document, noop];
 
-    this.cancelInitialWaitElements = cancelRun;
+    this.onCancel(cancelRun);
 
     try {
       await rootPromise;
@@ -373,8 +350,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       }
 
       throw error;
-    } finally {
-      this.cancelInitialWaitElements = null;
     }
 
     // AwaitElementOnce doesn't work with multiple elements. Get everything that's on the current page
@@ -387,20 +362,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     return $root;
   }
 
-  private clearInterval() {
-    console.debug("triggerExtension:clearInterval");
-    this.intervalController?.abort();
-    this.intervalController = null;
-  }
-
   private attachInterval() {
-    this.clearInterval();
+    this.cancelObservers();
 
     if (this.intervalMillis > 0) {
       this.logger.debug("Attaching interval trigger");
-
-      // Cast setInterval return value to number. For some reason Typescript is using the Node types for setInterval
-      const controller = new AbortController();
 
       const intervalEffect = async () => {
         const $root = await this.getRoot();
@@ -412,11 +378,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       void interval({
         intervalMillis: this.intervalMillis,
         effectGenerator: intervalEffect,
-        signal: controller.signal,
+        signal: this.abortController.signal,
         requestAnimationFrame: !this.allowBackground,
       });
-
-      this.intervalController = controller;
 
       console.debug("triggerExtension:attachInterval", {
         intervalMillis: this.intervalMillis,
@@ -431,8 +395,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private attachInitializeTrigger(
     $element: JQuery<Document | HTMLElement>
   ): void {
-    this.initializeObserver?.disconnect();
-    this.initializeObserver = null;
+    this.cancelObservers();
 
     // The caller will have already waited for the element. So $element will contain at least one element
     if (this.attachMode === "once") {
@@ -443,7 +406,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       return;
     }
 
-    this.initializeObserver = initialize(
+    const observer = initialize(
       this.triggerSelector,
       (index, element) => {
         void this.runTrigger(element as HTMLElement).then((errors) => {
@@ -457,14 +420,17 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       },
       { target: document }
     );
+
+    this.onCancel(() => {
+      observer.disconnect();
+    });
   }
 
   private attachAppearTrigger($element: JQuery): void {
+    this.cancelObservers();
+
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
-
-    this.appearObserver?.disconnect();
-
-    this.appearObserver = new IntersectionObserver(
+    const appearObserver = new IntersectionObserver(
       (entries) => {
         for (const entry of entries.filter((x) => x.isIntersecting)) {
           void this.runTrigger(entry.target as HTMLElement).then((errors) => {
@@ -485,7 +451,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
 
     for (const element of $element) {
-      this.appearObserver.observe(element);
+      appearObserver.observe(element);
     }
 
     if (this.attachMode === "watch") {
@@ -496,15 +462,18 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         selector,
         (index, element) => {
           console.debug("initialize: %s", selector);
-          this.appearObserver.observe(element);
+          appearObserver.observe(element);
         },
         { target: document }
       );
-
-      this.cancelWatchNewElements = mutationObserver.disconnect.bind(
-        mutationObserver
-      );
+      this.onCancel(() => {
+        mutationObserver.disconnect();
+      });
     }
+
+    this.onCancel(() => {
+      appearObserver.disconnect();
+    });
   }
 
   private attachDOMTrigger(
@@ -539,8 +508,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     if (watch) {
       // Clear out the existing mutation observer on SPA navigation events.
       // On mutation events, this watch branch is not executed because the mutation handler below passes `watch: false`
-      this.cancelWatchNewElements?.();
-      this.cancelWatchNewElements = null;
+      this.cancelObservers();
 
       // Watch for new elements on the page
       const mutationObserver = initialize(
@@ -551,9 +519,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         },
         { target: document }
       );
-      this.cancelWatchNewElements = mutationObserver.disconnect.bind(
-        mutationObserver
-      );
+      this.onCancel(() => {
+        mutationObserver.disconnect();
+      });
     }
   }
 
@@ -563,18 +531,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     if ($root.get(0) === document) {
       throw new Error(`Trigger ${this.trigger} requires a selector`);
     }
-  }
-
-  private cancelObservers() {
-    this.intervalController?.abort();
-    this.appearObserver?.disconnect();
-    this.appearObserver = null;
-    this.initializeObserver?.disconnect();
-    this.initializeObserver = null;
-    this.cancelInitialWaitElements?.();
-    this.cancelInitialWaitElements = null;
-    this.cancelWatchNewElements?.();
-    this.cancelWatchNewElements = null;
   }
 
   async run(): Promise<void> {
