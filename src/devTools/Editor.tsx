@@ -58,6 +58,7 @@ const Editor: React.FunctionComponent = () => {
     inserting,
     elements,
     activeElement: activeElementId,
+    activeRecipeId,
     error,
     beta,
   } = useSelector(selectEditor);
@@ -146,6 +147,7 @@ const Editor: React.FunctionComponent = () => {
         elements={elements}
         recipes={recipes}
         activeElementId={activeElementId}
+        activeRecipeId={activeRecipeId}
         isInsertingElement={Boolean(inserting)}
         isLoadingItems={loadingRecipes}
       />

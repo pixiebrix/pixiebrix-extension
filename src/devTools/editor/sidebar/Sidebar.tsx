@@ -19,7 +19,7 @@ import browser from "webextension-polyfill";
 import React, { FormEvent, useContext, useMemo, useState } from "react";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
-import { sortBy } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import { sleep } from "@/utils";
 import {
   Badge,
@@ -30,7 +30,7 @@ import {
   ListGroup,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IExtension, UUID } from "@/core";
+import { IExtension, RegistryId, UUID } from "@/core";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import hash from "object-hash";
 import logoUrl from "@/icons/custom-icons/favicon.svg";
@@ -53,6 +53,7 @@ import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 import AuthContext from "@/auth/AuthContext";
 import { RecipeDefinition } from "@/types/definitions";
 import { GridLoader } from "react-spinners";
+import RecipeEntry from "@/devTools/editor/sidebar/RecipeEntry";
 
 const DropdownEntry: React.VoidFunctionComponent<{
   caption: string;
@@ -78,9 +79,14 @@ const Logo: React.VoidFunctionComponent = () => (
   <img src={logoUrl} alt="PixiBrix logo" className={styles.logo} />
 );
 
+export function getIdForElement(element: IExtension | FormState): string {
+  return isExtension(element) ? element.id : element.uuid;
+}
+
 type SidebarProps = {
   isInsertingElement: boolean;
   activeElementId: UUID | null;
+  activeRecipeId: RegistryId | null;
   readonly elements: FormState[];
   installed: IExtension[];
   recipes: RecipeDefinition[];
@@ -94,6 +100,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
 > = ({
   isInsertingElement,
   activeElementId,
+  activeRecipeId,
   installed,
   elements,
   recipes,
@@ -123,28 +130,67 @@ const SidebarExpanded: React.VoidFunctionComponent<
   const elementHash = hash(
     sortBy(elements.map((formState) => `${formState.uuid}-${formState.label}`))
   );
-  const entries = useMemo(
+  const recipeHash = hash(
+    recipes
+      ? recipes.map((recipe) => `${recipe.metadata.id}-${recipe.metadata.name}`)
+      : ""
+  );
+  const { elementsByRecipeId, orphanedElements } = useMemo(
     () => {
       const elementIds = new Set(elements.map((formState) => formState.uuid));
-      const entries = [
-        ...elements.filter(
-          (formState) =>
-            showAll ||
-            availableDynamicIds?.has(formState.uuid) ||
-            activeElementId === formState.uuid
-        ),
-        ...installed.filter(
-          (extension) =>
-            !elementIds.has(extension.id) &&
-            (showAll || availableInstalledIds?.has(extension.id))
-        ),
-      ];
-      return sortBy(entries, (x) => x.label);
+      const elementsByRecipeId: Map<
+        RegistryId,
+        Array<IExtension | FormState>
+      > = new Map();
+      const orphanedElements: Array<IExtension | FormState> = [];
+      const filteredExtensions: IExtension[] = installed.filter(
+        (extension) =>
+          !elementIds.has(extension.id) &&
+          (showAll || availableInstalledIds?.has(extension.id))
+      );
+      const filteredDynamicElements: FormState[] = elements.filter(
+        (formState) =>
+          showAll ||
+          availableDynamicIds?.has(formState.uuid) ||
+          activeElementId === formState.uuid
+      );
+
+      for (const extension of filteredExtensions) {
+        if (extension._recipe) {
+          const recipeId = extension._recipe.id;
+          if (elementsByRecipeId.has(recipeId)) {
+            elementsByRecipeId.get(recipeId).push(extension);
+          } else {
+            elementsByRecipeId.set(recipeId, [extension]);
+          }
+        } else {
+          orphanedElements.push(extension);
+        }
+      }
+
+      for (const element of filteredDynamicElements) {
+        if (element.recipe) {
+          const recipeId = element.recipe.id;
+          if (elementsByRecipeId.has(recipeId)) {
+            elementsByRecipeId.get(recipeId).push(element);
+          } else {
+            elementsByRecipeId.set(recipeId, [element]);
+          }
+        } else {
+          orphanedElements.push(element);
+        }
+      }
+
+      return {
+        elementsByRecipeId,
+        orphanedElements: sortBy(orphanedElements, (element) => element.label),
+      };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash to track element changes
     [
       installed,
       elementHash,
+      recipeHash,
       availableDynamicIds,
       showAll,
       availableInstalledIds,
@@ -153,6 +199,30 @@ const SidebarExpanded: React.VoidFunctionComponent<
   );
 
   const addElement = useAddElement();
+
+  const ElementListItem: React.FC<{ element: IExtension | FormState }> = ({
+    element,
+  }) =>
+    isExtension(element) ? (
+      <InstalledEntry
+        key={`installed-${element.id}`}
+        extension={element}
+        recipes={recipes}
+        active={activeElementId === element.id}
+        available={
+          !availableInstalledIds || availableInstalledIds.has(element.id)
+        }
+      />
+    ) : (
+      <DynamicEntry
+        key={`dynamic-${element.uuid}`}
+        item={element}
+        active={activeElementId === element.uuid}
+        available={
+          !availableDynamicIds || availableDynamicIds.has(element.uuid)
+        }
+      />
+    );
 
   return (
     <div className={cx(styles.root, styles.expanded)}>
@@ -242,29 +312,29 @@ const SidebarExpanded: React.VoidFunctionComponent<
           <GridLoader />
         ) : (
           <ListGroup>
-            {entries.map((entry) =>
-              isExtension(entry) ? (
-                <InstalledEntry
-                  key={`installed-${entry.id}`}
-                  extension={entry}
-                  recipes={recipes}
-                  active={activeElementId === entry.id}
-                  available={
-                    !availableInstalledIds ||
-                    availableInstalledIds.has(entry.id)
-                  }
+            {[...elementsByRecipeId.entries()].map(([recipeId, elements]) => (
+              <RecipeEntry
+                key={recipeId}
+                recipeId={recipeId}
+                recipes={recipes}
+                elements={elements}
+                activeRecipeId={activeRecipeId}
+              >
+                {elements.map((element) => (
+                  <ElementListItem
+                    key={getIdForElement(element)}
+                    element={element}
+                  />
+                ))}
+              </RecipeEntry>
+            ))}
+            {!isEmpty(orphanedElements) &&
+              orphanedElements.map((element) => (
+                <ElementListItem
+                  key={getIdForElement(element)}
+                  element={element}
                 />
-              ) : (
-                <DynamicEntry
-                  key={`dynamic-${entry.uuid}`}
-                  item={entry}
-                  active={activeElementId === entry.uuid}
-                  available={
-                    !availableDynamicIds || availableDynamicIds.has(entry.uuid)
-                  }
-                />
-              )
-            )}
+              ))}
           </ListGroup>
         )}
       </div>
