@@ -230,18 +230,10 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 };
 
 const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
-  const {
-    isLoggedIn,
-    flags,
-    scope,
-    isPending: isAuthPending,
-    error: authError,
-  } = useContext(AuthContext);
+  const { isLoggedIn, flags, error: authError } = useContext(AuthContext);
 
   return (
     <RequireScope
-      scope={scope}
-      isPending={isAuthPending}
       scopeSettingsTitle="Welcome to the PixieBrix Workshop!"
       scopeSettingsDescription="To use the Workshop, you must first set an account alias for your PixieBrix account"
     >

@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useContext } from "react";
 import { useSelector } from "react-redux";
 import ScopeSettings from "./ScopeSettings";
 import { SettingsState } from "@/store/settingsTypes";
 import { isEmpty } from "lodash";
+import AuthContext from "./AuthContext";
 
 type RootStateWithSettings = {
   settings: SettingsState;
@@ -30,23 +31,24 @@ type RootStateWithSettings = {
  * The auth error is not handled here, it is the responsibility of a parent component.
  */
 export const RequireScope: React.FunctionComponent<{
-  scope: string | null;
-  isPending: boolean;
-  scopeSettingsTitle: string;
+  // A flag to opt out of the scope check but still have the RequireScope component in the tree.
+  require?: boolean;
+  scopeSettingsTitle?: string;
   scopeSettingsDescription: string;
 }> = ({
-  scope,
-  isPending,
+  require = true,
   scopeSettingsTitle,
   scopeSettingsDescription,
   children,
 }) => {
+  const { scope, isPending } = useContext(AuthContext);
+
   const mode = useSelector<RootStateWithSettings, string>(
     ({ settings }) => settings.mode
   );
 
   // Fetching scope currently performs a network request. Optimistically show the main interface while the scope is being fetched.
-  if (mode !== "local" && !isPending && isEmpty(scope)) {
+  if (require && mode !== "local" && !isPending && isEmpty(scope)) {
     return (
       <ScopeSettings
         title={scopeSettingsTitle}

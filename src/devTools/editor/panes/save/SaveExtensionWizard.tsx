@@ -46,10 +46,9 @@ const SaveExtensionWizard: React.FC = () => {
     data: editablePackages,
     isLoading: areEditablePackageLoading,
   } = useGetEditablePackagesQuery();
-  const [
-    isRecipeConfigurationModalShown,
-    setRecipeOptionsModalShown,
-  ] = useState(false);
+  const [isRecipeOptionsModalShown, setRecipeOptionsModalShown] = useState(
+    false
+  );
   const isNewRecipe = useRef(false);
   const newRecipeInitialValues = useRef<RecipeConfiguration>(null);
 
@@ -92,7 +91,7 @@ const SaveExtensionWizard: React.FC = () => {
     }
   };
 
-  return isRecipeConfigurationModalShown ? (
+  return isRecipeOptionsModalShown ? (
     <RecipeConfigurationModal
       initialValues={newRecipeInitialValues.current}
       isNewRecipe={isNewRecipe.current}

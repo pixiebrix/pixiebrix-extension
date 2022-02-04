@@ -46,7 +46,7 @@ const VALIDATION_SCHEMA = Yup.object({
 });
 
 type ScopeSettingsProps = {
-  title: string;
+  title?: string;
   description: string;
 };
 
@@ -101,7 +101,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
 
   return (
     <div className={styles.root}>
-      <div className={styles.title}>{title}</div>
+      {title && <div className={styles.title}>{title}</div>}
 
       <div className="font-weight-bold">{description}</div>
 
