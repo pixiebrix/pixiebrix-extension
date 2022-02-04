@@ -26,6 +26,9 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import { PersistedExtension } from "@/core";
+import AuthContext from "@/auth/AuthContext";
+import settingsSlice from "@/store/settingsSlice";
+import { anonAuth } from "@/hooks/auth";
 
 jest.unmock("react-redux");
 jest.mock("@/hooks/useNotifications");
@@ -37,15 +40,27 @@ const extension = extensionFactory({
   label: "testExtension",
 });
 
-const extensionsStore = configureStore({
-  reducer: { options: extensionsSlice.reducer },
+const storeForTests = configureStore({
+  reducer: {
+    options: extensionsSlice.reducer,
+    settings: settingsSlice.reducer,
+  },
   preloadedState: {
     options: { extensions: [extension as PersistedExtension] },
   },
 });
 
-const TestWrapper: React.FC = ({ children }) => (
-  <Provider store={extensionsStore}>{children}</Provider>
+const TestWrapper: React.FC<{ scope?: string }> = ({
+  scope = "@test",
+  children,
+}) => (
+  <Provider store={storeForTests}>
+    <AuthContext.Provider
+      value={{ ...anonAuth, scope, isPending: false, error: undefined }}
+    >
+      {children}
+    </AuthContext.Provider>
+  </Provider>
 );
 
 test("renders modal", async () => {
@@ -55,6 +70,23 @@ test("renders modal", async () => {
     </TestWrapper>
   );
   await waitForEffect();
+  const dialogRoot = screen.getByRole("dialog");
+  expect(dialogRoot).toMatchSnapshot();
+});
+
+test("requires user scope", async () => {
+  render(
+    <TestWrapper scope="">
+      <ShareExtensionModal extensionId={extension.id} />
+    </TestWrapper>
+  );
+  await waitForEffect();
+
+  // Scope input field is on the screen
+  const scopeInput = await screen.findAllByLabelText("Account Alias");
+  expect(scopeInput).not.toBeNull();
+
+  // Screen matches the snapshot
   const dialogRoot = screen.getByRole("dialog");
   expect(dialogRoot).toMatchSnapshot();
 });
@@ -74,6 +106,7 @@ test("prints 'Convert' when not Public (default)", async () => {
   const submitButton = dialogRoot.querySelector('.btn[type="submit"]');
   expect(submitButton.textContent).toBe("Convert");
 });
+
 test("prints 'Share' when Public", async () => {
   render(
     <TestWrapper>

@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import AuthContext from "@/auth/AuthContext";
+import { anonAuth } from "@/hooks/auth";
 import { recipeMetadataFactory } from "@/tests/factories";
 import { render, screen } from "@testing-library/react";
 import React from "react";
@@ -22,13 +24,22 @@ import RecipeConfigurationModal from "./RecipeConfigurationModal";
 
 test("renders Save as New Blueprint button and editable ID field for a new recipe", () => {
   render(
-    <RecipeConfigurationModal
-      initialValues={recipeMetadataFactory()}
-      isNewRecipe
-      close={jest.fn()}
-      navigateBack={jest.fn()}
-      save={jest.fn()}
-    />
+    <AuthContext.Provider
+      value={{
+        ...anonAuth,
+        scope: "@test",
+        isPending: false,
+        error: undefined,
+      }}
+    >
+      <RecipeConfigurationModal
+        initialValues={recipeMetadataFactory()}
+        isNewRecipe
+        close={jest.fn()}
+        navigateBack={jest.fn()}
+        save={jest.fn()}
+      />
+    </AuthContext.Provider>
   );
 
   const updateBlueprintButton = screen.queryByRole("button", {

@@ -30,7 +30,10 @@ import {
 } from "@/tests/factories";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/tests/testHelpers";
+import AuthContext from "@/auth/AuthContext";
+import { anonAuth } from "@/hooks/auth";
 
+jest.mock("@/hooks/useNotifications");
 jest.mock("./useSavingWizard");
 
 jest.mock("@/services/api", () => ({
@@ -139,7 +142,19 @@ test("calls Save as New Blueprint", async () => {
     isLoading: false,
   });
 
-  render(<SaveExtensionWizard />);
+  // Setting the AuthContext to provide the user scope
+  render(
+    <AuthContext.Provider
+      value={{
+        ...anonAuth,
+        scope: "@test",
+        isPending: false,
+        error: undefined,
+      }}
+    >
+      <SaveExtensionWizard />
+    </AuthContext.Provider>
+  );
 
   // Clicking Save as New Blueprint on the first modal
   fireEvent.click(
@@ -158,6 +173,47 @@ test("calls Save as New Blueprint", async () => {
   await waitForEffect();
 
   expect(saveElementAndCreateNewRecipeMock).toHaveBeenCalled();
+});
+
+test("requires user context to save as new blueprint", async () => {
+  const saveElementAndCreateNewRecipeMock = jest.fn();
+  const metadata = installedRecipeMetadataFactory();
+  (useSavingWizardMock as jest.Mock).mockReturnValue({
+    isSaving: false,
+    element: formStateFactory({
+      recipe: metadata,
+    }),
+    saveElementAndCreateNewRecipe: saveElementAndCreateNewRecipeMock,
+  });
+
+  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+    data: [recipeFactory({ metadata }), recipeFactory()],
+    isLoading: false,
+  });
+
+  render(
+    <AuthContext.Provider
+      value={{
+        ...anonAuth,
+        scope: "",
+        isPending: false,
+        error: undefined,
+      }}
+    >
+      <SaveExtensionWizard />
+    </AuthContext.Provider>
+  );
+
+  // Clicking Save as New Blueprint on the first modal
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Save as New Blueprint",
+    })
+  );
+
+  // Scope input field is on the screen
+  const scopeInput = await screen.findAllByLabelText("Account Alias");
+  expect(scopeInput).not.toBeNull();
 });
 
 test("calls Update Blueprint", async () => {
