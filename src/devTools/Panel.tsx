@@ -52,6 +52,34 @@ const PersistLoader: React.FunctionComponent = () => (
   </Centered>
 );
 
+const ErrorBanner: React.FunctionComponent<{ error?: string }> = ({ error }) =>
+  error ? (
+    <div className="d-flex p-1 align-items-center alert-danger flex-align-center">
+      <div className="flex-grow-1">{error}</div>
+      <div>
+        <Button
+          className="mr-2"
+          size="sm"
+          variant="light"
+          onClick={() => {
+            void browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
+          }}
+        >
+          Reload Page
+        </Button>
+        <Button
+          size="sm"
+          variant="light"
+          onClick={() => {
+            location.reload();
+          }}
+        >
+          Reload Editor
+        </Button>
+      </div>
+    </div>
+  ) : null;
+
 const Panel: React.FunctionComponent = () => {
   const authState = useAuth();
   const context = useDevConnection();
@@ -60,39 +88,9 @@ const Panel: React.FunctionComponent = () => {
     await blockRegistry.fetch();
   }, []);
 
-  const error =
-    (authState.error && getErrorMessage(authState.error)) ||
-    context.tabState.error;
-  if (error) {
-    return (
-      <Centered vertically>
-        {authState.error && (
-          <div className="PaneTitle">Error authenticating account</div>
-        )}
-        <div>{error}</div>
-        <div className="mt-2">
-          <Button
-            onClick={() => {
-              void browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
-            }}
-          >
-            Reload Page
-          </Button>
-        </div>
-        <div className="mt-2">
-          <Button
-            size="sm"
-            variant="light"
-            onClick={() => {
-              location.reload();
-            }}
-          >
-            Reload Editor
-          </Button>
-        </div>
-      </Centered>
-    );
-  }
+  const error = authState.error
+    ? "Authentication error: " + getErrorMessage(authState.error)
+    : context.tabState.error;
 
   return (
     <Provider store={store}>
@@ -104,6 +102,7 @@ const Panel: React.FunctionComponent = () => {
                 <ErrorBoundary>
                   <Router>
                     <Container fluid className="DevToolsContainer">
+                      <ErrorBanner error={error} />
                       <RequireScope
                         scope={authState?.scope}
                         isPending={authState.isPending}
