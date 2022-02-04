@@ -25,6 +25,15 @@ import { useField, useFormikContext } from "formik";
 import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
 import { Trigger } from "@/extensionPoints/triggerExtension";
 import { makeLockableFieldProps } from "@/devTools/editor/fields/makeLockableFieldProps";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
+
+function supportsSelector(trigger: Trigger) {
+  return !["load", "interval"].includes(trigger);
+}
+
+function supportsTargetMode(trigger: Trigger) {
+  return supportsSelector(trigger) && trigger !== "appear";
+}
 
 const TriggerConfiguration: React.FC<{
   isLocked: boolean;
@@ -36,11 +45,17 @@ const TriggerConfiguration: React.FC<{
 
   const onTriggerChange = useCallback(
     ({ currentTarget }: React.FormEvent<HTMLSelectElement>) => {
-      if (currentTarget.value) {
+      const nextTrigger = currentTarget.value as Trigger;
+
+      if (!supportsSelector(nextTrigger)) {
         setFieldValue("extensionPoint.definition.rootSelector", null);
         setFieldValue("extensionPoint.definition.attachMode", null);
         setFieldValue("extensionPoint.definition.targetMode", null);
+      }
+
+      if (nextTrigger !== "interval") {
         setFieldValue("extensionPoint.definition.intervalMillis", null);
+        setFieldValue("extensionPoint.definition.background", null);
       }
 
       setFieldValue("extensionPoint.definition.trigger", currentTarget.value);
@@ -68,46 +83,55 @@ const TriggerConfiguration: React.FC<{
         </ConnectedFieldTemplate>
 
         {trigger === "interval" && (
-          <ConnectedFieldTemplate
-            name="extensionPoint.definition.intervalMillis"
-            title="Interval (ms)"
-            type="number"
-            description="Interval to run the trigger in milliseconds"
-            {...makeLockableFieldProps("Interval", isLocked)}
-          />
+          <>
+            <ConnectedFieldTemplate
+              name="extensionPoint.definition.intervalMillis"
+              title="Interval (ms)"
+              type="number"
+              description="Interval to run the trigger in milliseconds"
+              {...makeLockableFieldProps("Interval", isLocked)}
+            />
+            <ConnectedFieldTemplate
+              name="extensionPoint.definition.background"
+              title="Run in Background"
+              as={BooleanWidget}
+              description="Run the interval in inactive tabs"
+              {...makeLockableFieldProps("Run in Background", isLocked)}
+            />
+          </>
         )}
 
-        {trigger !== "load" && (
-          <ConnectedFieldTemplate
-            name="extensionPoint.definition.rootSelector"
-            as={LocationWidget}
-            selectMode="element"
-            description="An element to watch"
-            {...makeLockableFieldProps("Element", isLocked)}
-          />
+        {supportsSelector(trigger) && (
+          <>
+            <ConnectedFieldTemplate
+              name="extensionPoint.definition.rootSelector"
+              as={LocationWidget}
+              selectMode="element"
+              description="An element to watch"
+              {...makeLockableFieldProps("Element", isLocked)}
+            />
+
+            <ConnectedFieldTemplate
+              name="extensionPoint.definition.attachMode"
+              as="select"
+              title="Attach Mode"
+              description={
+                <p>
+                  Use&nbsp;<code>once</code> to attach the trigger once one or
+                  more elements are available. Use&nbsp;
+                  <code>watch</code> to also add the trigger as new matching
+                  elements are added to the page.
+                </p>
+              }
+              {...makeLockableFieldProps("Attach Mode", isLocked)}
+            >
+              <option value="once">once</option>
+              <option value="watch">watch</option>
+            </ConnectedFieldTemplate>
+          </>
         )}
 
-        {trigger !== "load" && (
-          <ConnectedFieldTemplate
-            name="extensionPoint.definition.attachMode"
-            as="select"
-            title="Attach Mode"
-            description={
-              <p>
-                Use&nbsp;<code>once</code> to attach the trigger once one or
-                more elements are available. Use&nbsp;
-                <code>watch</code> to also add the trigger as new matching
-                elements are added to the page.
-              </p>
-            }
-            {...makeLockableFieldProps("Attach Mode", isLocked)}
-          >
-            <option value="once">once</option>
-            <option value="watch">watch</option>
-          </ConnectedFieldTemplate>
-        )}
-
-        {trigger !== "load" && trigger !== "appear" && (
+        {supportsTargetMode(trigger) && (
           <ConnectedFieldTemplate
             name="extensionPoint.definition.targetMode"
             as="select"
