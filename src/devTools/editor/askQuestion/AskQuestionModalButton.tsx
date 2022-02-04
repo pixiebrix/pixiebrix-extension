@@ -19,13 +19,48 @@ import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
+import slack from "./logos/slack.svg";
+import discourse from "./logos/discourse.svg";
+import zoom from "./logos/zoom.svg";
+import zoom2 from "./logos/zoom2.svg";
+import styles from "./AskQuestionModalButton.module.scss";
 
+type ButtonConfig = {
+  logo: string;
+  label: string;
+  link: string;
+};
+
+const buttons: ButtonConfig[] = [
+  {
+    logo: slack,
+    label: "Join Slack, get answers now",
+    link:
+      "https://join.slack.com/t/pixiebrixworkspace/shared_invite/zt-11jzgaxqq-BkvBJyRcyPHctXs5wqCGhw",
+  },
+  {
+    logo: discourse,
+    label: "Start a new discussion thread",
+    link: "https://community.pixiebrix.com",
+  },
+  {
+    logo: zoom,
+    label: "Schedule a deep dive",
+    link: "https://calendly.com/pixiebrix-support/ask-a-question",
+  },
+  {
+    logo: zoom2,
+    label: "Schedule a deep dive",
+    link: "https://calendly.com/pixiebrix-support/ask-a-question",
+  },
+];
 const AskQuestionModalButton: React.VoidFunctionComponent = () => {
-  const [showModal, setShowModal] = React.useState(false);
+  const [showModal, setShowModal] = React.useState(true);
 
   return (
     <>
       <Button
+        variant="info"
         size="sm"
         onClick={() => {
           setShowModal(true);
@@ -41,7 +76,22 @@ const AskQuestionModalButton: React.VoidFunctionComponent = () => {
         }}
       >
         <Modal.Header closeButton>Ask a question</Modal.Header>
-        <Modal.Body>Slack Forum Zoom</Modal.Body>
+        <Modal.Body>
+          {buttons.map(({ logo, label, link }) => (
+            <a
+              key={label}
+              className={styles.button}
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                setShowModal(false);
+              }}
+            >
+              <img className={styles.logo} src={logo} alt={label} /> {label}
+            </a>
+          ))}
+        </Modal.Body>
       </Modal>
     </>
   );
