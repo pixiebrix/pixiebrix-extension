@@ -43,14 +43,20 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
 
   return (
     <Card className={styles.root}>
-      {getInstallableIcon(sharing.packageId)}
-      <div>
-        <h5>{name}</h5>
-        <p className={cx(styles.description, "text-muted")}>{description}</p>
+      <div className="d-flex">
+        <div>{getInstallableIcon(sharing.packageId)}</div>
+        <div>
+          <div className={cx(styles.lineClampThree, "ml-2")}>
+            <h5 className="m-0">{name}</h5>
+          </div>
+          <div className={cx(styles.lineClampOne, "ml-2")}>
+            <p className="text-muted small">{description}</p>
+          </div>
+        </div>
       </div>
       <div>
         <SharingLabel installable={installable} />
-        <Card.Text>Updated: {timeSince(updatedAt)}</Card.Text>
+        <Card.Text className="small">Updated: {timeSince(updatedAt)}</Card.Text>
         <div className={styles.actions}>
           <Status installable={installable} />
           <BlueprintActions installable={installable} />

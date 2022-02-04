@@ -31,7 +31,7 @@ function useGetInstallableIcon() {
       }
 
       const listing: MarketplaceListing | null = listings[packageId];
-      return <InstallableIcon listing={listing} />;
+      return <InstallableIcon listing={listing} size={"2x"} />;
     },
     [listings]
   );

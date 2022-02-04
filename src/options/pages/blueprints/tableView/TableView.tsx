@@ -24,6 +24,7 @@ import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTyp
 const TableView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
   rows,
+  getInstallableIcon,
 }) => (
   <Card>
     <Table {...tableInstance.getTableProps()}>
@@ -35,6 +36,7 @@ const TableView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
             <TableRow
               key={getUniqueId(row.original.installable)}
               installableItem={row.original}
+              getInstallableIcon={getInstallableIcon}
             />
           );
         })}

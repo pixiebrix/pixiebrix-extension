@@ -23,12 +23,17 @@
   justify-content: space-between;
 }
 
-.description {
-  max-height: 25px;
-  width: 100%;
-  white-space: nowrap;
+.lineClampThree {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.lineClampOne {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
   overflow: hidden;
-  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
 }
 
 .actions {
