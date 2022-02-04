@@ -185,8 +185,8 @@ const SidebarExpanded: React.VoidFunctionComponent<
         elementsByRecipeId: sortBy(
           [...elementsByRecipeId.entries()],
           ([recipeId]) =>
-            recipes.find((recipe) => recipe.metadata.id === recipeId)?.metadata
-              ?.name ?? ""
+            recipes?.find((recipe) => recipe.metadata.id === recipeId)?.metadata
+              ?.name ?? recipeId
         ),
         orphanedElements: sortBy(orphanedElements, (element) => element.label),
       };
