@@ -162,7 +162,7 @@ const BlueprintsCard: React.FunctionComponent<{
             ...state,
             groupBy,
             sortBy,
-            filters,
+            filters: state.globalFilters ? [] : filters,
           }),
           // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
           [state, groupBy, sortBy, filters]

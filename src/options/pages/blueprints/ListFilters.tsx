@@ -4,6 +4,7 @@ import styles from "./ListFilters.module.scss";
 import useReduxState from "@/hooks/useReduxState";
 import { selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
+import { useDebounce } from "use-debounce";
 
 type ListFiltersProps = {
   teamFilters: string[];
@@ -16,26 +17,17 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
     blueprintsSlice.actions.setFilters
   );
   const [query, setQuery] = useState("");
-  const [temporaryFilters, setTemporaryFilters] = useState([]);
+  const [debouncedQuery] = useDebounce(query, 300, {
+    trailing: true,
+    leading: false,
+  });
 
   // By default, react-table combines filters and globalFilters
   // If searching via keyword, temporarily
   // disable category filters
   useEffect(() => {
-    setGlobalFilter(query);
-
-    if (query) {
-      if (filters.length > 0) {
-        setTemporaryFilters(filters);
-        setFilters([]);
-      }
-
-      return;
-    }
-
-    setFilters(temporaryFilters);
-    setTemporaryFilters([]);
-  }, [query]);
+    setGlobalFilter(debouncedQuery);
+  }, [debouncedQuery]);
 
   // Prevent nav-link highlighting when search query
   // is present by setting an event key that doesn't exist
