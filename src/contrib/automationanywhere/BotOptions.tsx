@@ -40,6 +40,7 @@ import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import { cachePromiseMethod } from "@/utils/cachePromise";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
   "automation-anywhere/control-room"
@@ -65,6 +66,10 @@ const cachedFetchBots = cachePromiseMethod(["aa:fetchBots"], fetchBots);
 async function fetchDevices(
   config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
+  // HACK: hack to avoid concurrent requests to the proxy. Simultaneous calls to get the token causes a
+  // server error on community edition
+  await cachedFetchBots(config);
+
   const response = await proxyService<ListResponse<Device>>(config, {
     url: "/v2/devices/list",
     method: "POST",
@@ -91,6 +96,7 @@ async function fetchSchema(
       url: `/v1/filecontent/${fileId}/interface`,
       method: "GET",
     });
+
     return interfaceToInputSchema(response.data);
   }
 }
@@ -113,10 +119,17 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
     remoteSchema,
     remoteSchemaPending,
     remoteSchemaError,
-  ] = useAsyncState(
-    async () => cachedFetchSchema(hasPermissions ? config : null, fileId),
-    [config, fileId, hasPermissions]
-  );
+  ] = useAsyncState(async () => {
+    if (hasPermissions && config) {
+      // HACK: hack to avoid concurrent requests to the proxy. Simultaneous calls to get the token causes a
+      // server error on community edition
+      await cachedFetchDevices(config);
+      await cachedFetchBots(config);
+      return cachedFetchSchema(config, fileId);
+    }
+
+    return null;
+  }, [config, fileId, hasPermissions]);
 
   return (
     <RequireServiceConfig
@@ -141,6 +154,13 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             as={RemoteSelectWidget}
             optionsFactory={cachedFetchDevices}
             config={config}
+          />
+
+          <SchemaField
+            label="Await Result"
+            name={configName("awaitResult")}
+            schema={AUTOMATION_ANYWHERE_PROPERTIES.awaitResult as Schema}
+            isRequired
           />
 
           {fileId != null && (

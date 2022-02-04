@@ -16,10 +16,16 @@
  */
 
 import { proxyService } from "@/background/messenger/api";
-import { Effect } from "@/types";
+import { Transformer, UnknownObject } from "@/types";
 import { mapValues } from "lodash";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
+import { BusinessError } from "@/errors";
+import { sleep } from "@/utils";
+import { Activity, ListResponse } from "@/contrib/automationanywhere/contract";
+
+const MAX_WAIT_MILLIS = 30_000;
+const POLL_MILLIS = 1000;
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
   "@pixiebrix/automation-anywhere/run-bot"
@@ -44,19 +50,24 @@ export const AUTOMATION_ANYWHERE_PROPERTIES: SchemaProperties = {
     type: "object",
     additionalProperties: true,
   },
+  awaitResult: {
+    type: "boolean",
+    default: false,
+    description: "Wait for the bot to complete and output the results.",
+  },
 };
 
-interface DeployResponse {
+type DeployResponse = {
   automationId: string;
   deploymentId: string;
-}
+};
 
-export class RunBot extends Effect {
+export class RunBot extends Transformer {
   constructor() {
     super(
       AUTOMATION_ANYWHERE_RUN_BOT_ID,
       "Run Automation Anywhere Bot",
-      "Run an Automation Anywhere Bot via the Enterprise Control Room API"
+      "Run an Automation Anywhere Bot via the Control Room API"
     );
   }
 
@@ -67,12 +78,28 @@ export class RunBot extends Effect {
     properties: AUTOMATION_ANYWHERE_PROPERTIES,
   };
 
-  async effect(
-    { service, fileId, deviceId, data }: BlockArg,
-    options: BlockOptions
-  ): Promise<void> {
-    const { data: responseData } = await proxyService<DeployResponse>(service, {
-      url: "/v2/automations/deploy",
+  outputSchema: Schema = {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    required: ["deploymentId", "automationId"],
+    properties: {
+      deploymentId: {
+        type: "string",
+        format: "uuid",
+      },
+      automationId: {
+        type: "string",
+        format: "uuid",
+      },
+    },
+  };
+
+  async transform(
+    { service, fileId, deviceId, data, awaitResult = false }: BlockArg,
+    { logger }: BlockOptions
+  ): Promise<UnknownObject> {
+    const { data: deployData } = await proxyService<DeployResponse>(service, {
+      url: "/v3/automations/deploy",
       method: "post",
       data: {
         fileId,
@@ -87,6 +114,62 @@ export class RunBot extends Effect {
       },
     });
 
-    options.logger.info(`Automation id ${responseData.automationId}`);
+    logger.info(`Deployment id: ${deployData.deploymentId}`);
+
+    if (!awaitResult) {
+      return {
+        automationId: deployData.automationId,
+        deploymentId: deployData.deploymentId,
+      };
+    }
+
+    const start = Date.now();
+
+    do {
+      // eslint-disable-next-line no-await-in-loop -- polling for response
+      const { data: activityList } = await proxyService<ListResponse<Activity>>(
+        service,
+        {
+          url: "/v2/activity/list",
+          method: "post",
+          data: {
+            filter: {
+              operator: "eq",
+              field: "deploymentId",
+              value: deployData.deploymentId,
+            },
+          },
+        }
+      );
+
+      if (activityList.list.length === 0) {
+        logger.error(
+          `Control Room deploy not found: ${deployData.deploymentId}`
+        );
+        throw new BusinessError("AA deploy not found");
+      }
+
+      if (activityList.list[0].status === "COMPLETED") {
+        // TODO: show the result here
+        return {
+          automationId: deployData.automationId,
+          deploymentId: deployData.deploymentId,
+        };
+      }
+
+      if (
+        ["DEPLOY_FAILED", "RUN_FAILED"].includes(activityList.list[0].status)
+      ) {
+        logger.error(`AA deploy failed: ${deployData.deploymentId}`);
+        throw new BusinessError("AA deploy failed");
+      }
+
+      // eslint-disable-next-line no-await-in-loop -- polling for response
+      await sleep(POLL_MILLIS);
+    } while (Date.now() - start < MAX_WAIT_MILLIS);
+
+    throw new BusinessError(
+      `UiPath job did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
+    );
   }
 }

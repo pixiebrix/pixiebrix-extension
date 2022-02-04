@@ -17,57 +17,61 @@
 
 import { Schema } from "@/core";
 
-export interface ListResponse<TData> {
+export type ListResponse<TData> = {
   page: {
     offset: number;
     total: number;
     totalFilter: number;
   };
   list: TData[];
-}
+};
 
 export const BOT_TYPE = "application/vnd.aa.taskbot";
 
-export interface Variable {
+export type Variable = {
   name: string;
   input: boolean;
   type: "STRING";
   description: string;
-}
+};
 
-export interface Interface {
+export type Interface = {
   variables: Variable[];
-}
+};
 
 // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-details.html
-export interface Bot {
+export type Bot = {
   id: string;
   parentId: string;
   name: string;
   path: string;
   type: typeof BOT_TYPE;
-}
+};
 
-export interface Device {
+export type Device = {
   id: string;
   type: string;
   hostName: string;
   status: "CONNECTED";
   botAgentVersion: string;
   nickname: string;
-}
+};
+
+export type Activity = {
+  status: string;
+};
 
 export function interfaceToInputSchema(botInterface: Interface): Schema {
   return {
     type: "object",
     properties: Object.fromEntries(
       botInterface.variables
-        .filter((x) => x.input)
-        .map((v) => [
-          v.name,
+        .filter((variable) => variable.input)
+        .map((variable) => [
+          variable.name,
           {
             type: "string",
-            description: v.description,
+            description: variable.description,
           },
         ])
     ),

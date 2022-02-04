@@ -558,6 +558,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
             extension.id,
             merge({}, onCancel, DEFAULT_ACTION_RESULTS.cancel)
           );
+          ``;
         } else {
           extensionLogger.error(error);
           notifyResult(
