@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Button, Container } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useDevConnection } from "@/devTools/context";
@@ -103,16 +103,14 @@ const Panel: React.FunctionComponent = () => {
               <ModalProvider>
                 <ErrorBoundary>
                   <Router>
-                    <Container fluid className="DevToolsContainer">
-                      <RequireScope
-                        scope={authState?.scope}
-                        isPending={authState.isPending}
-                        scopeSettingsTitle="Welcome to the PixieBrix Page Editor!"
-                        scopeSettingsDescription="To create extensions, you must first set an account alias for your PixieBrix account"
-                      >
-                        <Editor />
-                      </RequireScope>
-                    </Container>
+                    <RequireScope
+                      scope={authState?.scope}
+                      isPending={authState.isPending}
+                      scopeSettingsTitle="Welcome to the PixieBrix Page Editor!"
+                      scopeSettingsDescription="To create extensions, you must first set an account alias for your PixieBrix account"
+                    >
+                      <Editor />
+                    </RequireScope>
                   </Router>
                 </ErrorBoundary>
               </ModalProvider>
