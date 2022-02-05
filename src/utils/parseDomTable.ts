@@ -54,12 +54,22 @@ function guessDirection(
 
 // TODO: Normalize rowspan and colspan in here as well
 function flattenTableContent(table: HTMLTableElement): RawTableContent {
-  return [...table.rows].map((row) =>
+  const flattened: RawTableContent = [...table.rows].map((row) =>
     [...row.cells].map((cell) => ({
       type: cell.tagName === "TH" ? "header" : "value",
       value: cell.textContent.trim(),
     }))
   );
+
+  // Temporary patch to "support" tables with rowspan/colspan without throwing errors
+  const maxRowlength = Math.max(...flattened.map((row) => row.length));
+  for (const row of flattened) {
+    while (row.length < maxRowlength) {
+      row.push({ type: "value", value: "" });
+    }
+  }
+
+  return flattened;
 }
 
 function extractData(
