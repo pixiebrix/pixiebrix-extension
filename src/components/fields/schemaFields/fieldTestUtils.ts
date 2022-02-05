@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -16,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { reactivateTab, handleNavigate } from "@/contentScript/messenger/api";
-import { forEachTab } from "@/background/util";
-import browser from "webextension-polyfill";
+import userEvent from "@testing-library/user-event";
+import { waitFor } from "@testing-library/react";
 
-export function reactivateEveryTab(): void {
-  console.debug("Reactivate all tabs");
-  void forEachTab(reactivateTab);
+export async function expectToggleOptions(
+  container: HTMLElement,
+  expected: string[]
+) {
+  // React Bootstrap dropdown does not render children items unless toggled
+  userEvent.click(container.querySelector("button"));
+  const actual = new Set(
+    [...container.querySelectorAll("a")].map((x) => x.dataset.testid)
+  );
+  await waitFor(() => {
+    expect(actual).toEqual(new Set(expected));
+  });
 }
-
-function initNavigation(): void {
-  // Let the content script know about navigation from the history API. Required for handling SPA navigation
-  browser.webNavigation.onHistoryStateUpdated.addListener(handleNavigate);
-}
-
-export default initNavigation;

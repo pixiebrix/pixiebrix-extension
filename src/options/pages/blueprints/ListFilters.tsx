@@ -1,33 +1,69 @@
-import { Col, Nav } from "react-bootstrap";
-import React from "react";
+import { Col, Form, Nav } from "react-bootstrap";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./ListFilters.module.scss";
 import useReduxState from "@/hooks/useReduxState";
 import { selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
+import { useDebounce } from "use-debounce";
 
 type ListFiltersProps = {
   teamFilters: string[];
+  setGlobalFilter: (filterValue: string) => void;
 };
 
-function ListFilters({ teamFilters }: ListFiltersProps) {
+function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
   const [filters, setFilters] = useReduxState(
     selectFilters,
     blueprintsSlice.actions.setFilters
   );
+  const [query, setQuery] = useState("");
+  const [debouncedQuery] = useDebounce(query, 300, {
+    trailing: true,
+    leading: false,
+  });
 
-  const defaultActiveKey = filters[0]?.value ?? "All";
+  // By default, react-table combines filters and globalFilters
+  // If searching via keyword, temporarily
+  // disable category filters
+  useEffect(() => {
+    setGlobalFilter(debouncedQuery);
+  }, [debouncedQuery]);
+
+  // Prevent nav-link highlighting when search query
+  // is present by setting an event key that doesn't exist
+  const activeKey = useMemo(() => {
+    if (query) {
+      // Key doesn't exist
+      return "Search results";
+    }
+
+    return filters[0]?.value ?? "All";
+  }, [filters, query]);
 
   return (
     <Col xs={3} className={styles.filtersCol}>
-      <h5>Category Filters</h5>
+      <Form className="mb-4 mr-3">
+        <Form.Control
+          id="query"
+          placeholder="Search"
+          size="sm"
+          value={query}
+          onChange={({ target }) => {
+            setQuery(target.value);
+          }}
+        />
+      </Form>
       <Nav
         className="flex-column"
         variant="pills"
-        defaultActiveKey={defaultActiveKey}
+        defaultActiveKey={activeKey}
+        activeKey={activeKey}
       >
+        <h5>Category Filters</h5>
         <Nav.Item>
           <Nav.Link
             eventKey="Active"
+            disabled={Boolean(query)}
             onClick={() => {
               setFilters([{ id: "status", value: "Active" }]);
             }}
@@ -38,6 +74,7 @@ function ListFilters({ teamFilters }: ListFiltersProps) {
         <Nav.Item>
           <Nav.Link
             eventKey="All"
+            disabled={Boolean(query)}
             onClick={() => {
               setFilters([]);
             }}
@@ -49,6 +86,7 @@ function ListFilters({ teamFilters }: ListFiltersProps) {
         <Nav.Item>
           <Nav.Link
             eventKey="Personal"
+            disabled={Boolean(query)}
             onClick={() => {
               setFilters([{ id: "sharing.source.label", value: "Personal" }]);
             }}
@@ -59,6 +97,7 @@ function ListFilters({ teamFilters }: ListFiltersProps) {
         <Nav.Item>
           <Nav.Link
             eventKey="Public"
+            disabled={Boolean(query)}
             onClick={() => {
               setFilters([{ id: "sharing.source.label", value: "Public" }]);
             }}
@@ -74,6 +113,7 @@ function ListFilters({ teamFilters }: ListFiltersProps) {
           <Nav.Item key={filter}>
             <Nav.Link
               eventKey={filter}
+              disabled={Boolean(query)}
               onClick={() => {
                 setFilters([{ id: "sharing.source.label", value: filter }]);
               }}
