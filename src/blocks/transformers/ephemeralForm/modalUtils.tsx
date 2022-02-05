@@ -22,6 +22,7 @@ export function showModal(url: URL, abortController: AbortController): void {
     <dialog
       ref={(dialog) => {
         dialog.showModal();
+        // No types support for "onClose" attribute
         dialog.addEventListener(
           "close",
           () => {
