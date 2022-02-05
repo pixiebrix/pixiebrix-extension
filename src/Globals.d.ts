@@ -66,6 +66,12 @@ declare module "@/vendors/initialize" {
 interface HTMLDialogElement extends HTMLElement {
   showModal(): void;
 }
+declare namespace React {
+  interface DOMAttributes<T> {
+    // For the dialog element
+    onClose?: ReactEventHandler<T> | undefined;
+  }
+}
 
 // Made available via: "jest-environment-jsdom-global" for jest tests
 declare const jsdom: {
