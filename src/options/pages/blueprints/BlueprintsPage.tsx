@@ -47,7 +47,6 @@ const BlueprintsPage: React.FunctionComponent = () => {
     <Page
       icon={faScroll}
       title="Blueprints"
-      description="Here you can find personal blueprints and blueprints shared with you to activate."
       toolbar={
         <a
           href="https://www.pixiebrix.com/marketplace"
