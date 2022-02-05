@@ -42,7 +42,6 @@ function onEditorClose(): void {
 }
 
 export function watchNavigation(): void {
-  browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
   browser.webNavigation.onDOMContentLoaded.addListener(onNavigation);
   window.addEventListener("beforeunload", onEditorClose);
 
