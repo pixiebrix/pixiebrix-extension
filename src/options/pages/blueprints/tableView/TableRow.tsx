@@ -37,7 +37,7 @@ const TableRow: React.VoidFunctionComponent<{
 
   return (
     <tr>
-      <td>{getInstallableIcon(sharing.packageId)}</td>
+      <td>{getInstallableIcon(installable)}</td>
       <td className="text-wrap">
         <h5 className="text-wrap m-0">{name}</h5>
         <span className="text-muted text-wrap">{description}</span>

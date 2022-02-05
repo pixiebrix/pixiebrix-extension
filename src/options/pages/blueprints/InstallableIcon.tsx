@@ -16,72 +16,49 @@
  */
 
 import React, { useState } from "react";
-import { IBrick } from "@/core";
 import { Split } from "type-fest";
-import { BlockType, getType } from "@/blocks/util";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
   faBolt,
-  faBookReader,
-  faCloud,
   faColumns,
   faCube,
-  faMagic,
   faMousePointer,
-  faRandom,
-  faStar,
+  faScroll,
+  faThLarge,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
-import { MenuItemExtensionPoint } from "@/extensionPoints/menuItemExtension";
-import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
-import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
-import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtension";
 import { useAsyncEffect } from "use-async-effect";
 import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
 import { MarketplaceListing } from "@/types/contract";
+import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
+import { isBlueprint } from "@/options/pages/blueprints/installableUtils";
+import { selectType } from "@/devTools/editor/extensionPoints/adapter";
+import { IExtension } from "@/core";
+import { useAsyncState } from "@/hooks/common";
 
-export function getDefaultBrickIcon(
-  brick: IBrick,
-  blockType: BlockType
-): IconProp {
-  if ("schema" in brick) {
-    return faCloud;
+const extensionTypeIcons = {
+  menuItem: faMousePointer,
+  trigger: faBolt,
+  panel: faWindowMaximize,
+  contextMenu: faBars,
+  actionPanel: faColumns,
+  quickBar: faThLarge,
+};
+
+async function getDefaultInstallableIcon(
+  installable: Installable
+): Promise<IconProp> {
+  if (isBlueprint(installable)) {
+    return faScroll;
   }
 
-  switch (blockType) {
-    case "reader":
-      return faBookReader;
-    case "transform":
-      return faRandom;
-    case "effect":
-      return faMagic;
-    case "renderer":
-      return faWindowMaximize;
-    default:
-      break;
-  }
-
-  if (brick instanceof TriggerExtensionPoint) {
-    return faBolt;
-  }
-
-  if (brick instanceof MenuItemExtensionPoint) {
-    return faMousePointer;
-  }
-
-  if (brick instanceof ContextMenuExtensionPoint) {
-    return faBars;
-  }
-
-  if (brick instanceof PanelExtensionPoint) {
-    return faWindowMaximize;
-  }
-
-  if (brick instanceof ActionPanelExtensionPoint) {
-    return faColumns;
+  try {
+    const type = await selectType(installable as IExtension);
+    return extensionTypeIcons[type];
+  } catch {
+    return faCube;
   }
 
   return faCube;
@@ -95,13 +72,18 @@ const SIZE_REGEX = /^(?<size>\d)x$/i;
  */
 const InstallableIcon: React.FunctionComponent<{
   listing: MarketplaceListing;
+  installable: Installable;
   size?: "1x" | "2x";
   /**
    * Sets a className only in cases where a <FontAwesomeIcon/> is used
    */
   faIconClass?: string;
-}> = ({ listing, size = "1x", faIconClass = "" }) => {
+}> = ({ listing, installable, size = "1x", faIconClass = "" }) => {
   const [listingFaIcon, setFaListingIcon] = useState<IconProp | undefined>();
+
+  const [defaultIcon] = useAsyncState(async () =>
+    getDefaultInstallableIcon(installable)
+  );
 
   useAsyncEffect(
     async (isMounted) => {
@@ -150,7 +132,7 @@ const InstallableIcon: React.FunctionComponent<{
     />
   ) : (
     <FontAwesomeIcon
-      icon={listingFaIcon ?? faCube}
+      icon={listingFaIcon ?? defaultIcon ?? faCube}
       color={listing?.icon_color ?? "darkGrey"}
       className={faIconClass}
       size={size}

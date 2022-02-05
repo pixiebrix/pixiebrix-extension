@@ -56,7 +56,6 @@ import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import styles from "./BlueprintsCard.module.scss";
-import styles from "./BlueprintsCard.module.scss";
 import useGetInstallableIcon from "@/options/pages/blueprints/useGetInstallableIcon";
 
 const getInstallableRows = (
