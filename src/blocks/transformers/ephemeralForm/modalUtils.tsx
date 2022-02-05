@@ -22,9 +22,13 @@ export function showModal(url: URL, abortController: AbortController): void {
     <dialog
       ref={(dialog) => {
         dialog.showModal();
-      }}
-      onClose={() => {
-        abortController.abort();
+        dialog.addEventListener(
+          "close",
+          () => {
+            abortController.abort();
+          },
+          { once: true }
+        );
       }}
       style={{
         border: 0,
