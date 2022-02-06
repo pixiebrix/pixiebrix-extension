@@ -15,19 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
-import { expectContext } from "@/utils/expectContext";
-import { registerMethods } from "webext-messenger";
-import { updateDevTools } from "@/devTools/events";
+import { WebNavigation } from "webextension-polyfill";
+import { SimpleEvent } from "@/hooks/events";
 
-expectContext("devTools");
+type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;
 
-declare global {
-  interface MessengerMethods {
-    UPDATE_DEV_TOOLS: typeof updateDevTools;
-  }
+export const navigationEvent = new SimpleEvent<NavigationDetails>();
+
+export function updateDevTools() {
+  navigationEvent.emit(chrome.devtools.inspectedWindow.tabId);
 }
-
-registerMethods({
-  UPDATE_DEV_TOOLS: updateDevTools,
-});

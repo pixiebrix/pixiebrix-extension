@@ -15,19 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
-import { expectContext } from "@/utils/expectContext";
-import { registerMethods } from "webext-messenger";
-import { updateDevTools } from "@/devTools/events";
+.button {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 5px;
+  color: var(--dark);
+  display: flex;
+  padding: 15px;
+  align-items: center;
 
-expectContext("devTools");
+  &:first-child {
+    color: var(--primary);
+  }
 
-declare global {
-  interface MessengerMethods {
-    UPDATE_DEV_TOOLS: typeof updateDevTools;
+  &:hover {
+    background-color: var(--blue);
+    text-decoration: none;
+    color: var(--light);
+  }
+
+  & + & {
+    margin-top: 15px;
   }
 }
 
-registerMethods({
-  UPDATE_DEV_TOOLS: updateDevTools,
-});
+.logo {
+  margin-right: 10px;
+  height: 35px;
+}

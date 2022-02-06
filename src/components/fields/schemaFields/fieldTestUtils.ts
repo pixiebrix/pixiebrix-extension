@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
-import { expectContext } from "@/utils/expectContext";
-import { registerMethods } from "webext-messenger";
-import { updateDevTools } from "@/devTools/events";
+import userEvent from "@testing-library/user-event";
+import { waitFor } from "@testing-library/react";
 
-expectContext("devTools");
-
-declare global {
-  interface MessengerMethods {
-    UPDATE_DEV_TOOLS: typeof updateDevTools;
-  }
+export async function expectToggleOptions(
+  container: HTMLElement,
+  expected: string[]
+) {
+  // React Bootstrap dropdown does not render children items unless toggled
+  userEvent.click(container.querySelector("button"));
+  const actual = new Set(
+    [...container.querySelectorAll("a")].map((x) => x.dataset.testid)
+  );
+  await waitFor(() => {
+    expect(actual).toEqual(new Set(expected));
+  });
 }
-
-registerMethods({
-  UPDATE_DEV_TOOLS: updateDevTools,
-});

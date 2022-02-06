@@ -94,10 +94,12 @@ const Page: React.FunctionComponent<{
         </div>
         {toolbar && <div>{toolbar}</div>}
       </div>
-      <div className="pb-4">
-        {typeof description === "string" ? <p>{description}</p> : description}
-        {breadcrumb}
-      </div>
+      {description && (
+        <div className="pb-4">
+          {typeof description === "string" ? <p>{description}</p> : description}
+          {breadcrumb}
+        </div>
+      )}
       {body}
     </div>
   );

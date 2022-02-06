@@ -36,7 +36,7 @@ function isPanelElement(element: FormState | null): boolean {
  * @param element
  */
 function isAutomaticTrigger(element: FormState): boolean {
-  const automatic = ["load", "appear", "interval"];
+  const automatic = ["load", "appear", "initialize", "interval"];
   return (
     element?.type === "trigger" &&
     automatic.includes(element?.extensionPoint.definition.trigger)
