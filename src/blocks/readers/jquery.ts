@@ -170,7 +170,7 @@ async function select(
   if (elements.length === 0) {
     console.debug(
       `Did not find any elements for selector in ${maxWaitMillis}ms: ${selectorString}`,
-      { root, rawSelector: selector }
+      { root, selector }
     );
 
     if (maxWaitMillis) {
@@ -182,8 +182,7 @@ async function select(
     return multi ? [] : undefined;
   }
 
-  const newLocal = elements.length > 1 && !multi;
-  if (newLocal) {
+  if (elements.length > 1 && !multi) {
     throw new MultipleElementsFoundError(
       selectorString,
       "Multiple elements found for selector. To return a list of values, supply multi=true"

@@ -210,7 +210,7 @@ function removeUnstyledLayout(node: Node): Node | null {
 function commonButtonStructure(
   items: Element[],
   captioned = false
-): [HTMLElement | string, boolean] {
+): [Element | string, boolean] {
   let currentCaptioned = captioned;
 
   const proto = items[0];
@@ -304,7 +304,7 @@ function commonPanelStructure(
     headingInserted = false,
     bodyInserted = false,
   }: PanelStructureState = {} as PanelStructureState
-): [HTMLElement | string, PanelStructureState] {
+): [Element | string, PanelStructureState] {
   const proto = $items.get(0);
   inHeader = inHeader || HEADER_TAGS.includes(proto.tagName.toLowerCase());
 
