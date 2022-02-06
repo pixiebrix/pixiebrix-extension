@@ -5,8 +5,11 @@ $logoSize: 31px;
   display: flex;
   justify-content: flex-start;
   height: 100%;
-  border-right: 2px solid #c6bfdb;
   background: white;
+
+  // https://shadows.brumm.af
+  box-shadow: 0px 1.1px 5.3px rgba(0, 0, 0, 0.028),
+    0px 3.6px 17.9px rgba(0, 0, 0, 0.042), 0px 16px 80px rgba(0, 0, 0, 0.07);
 
   &.collapsed {
     flex: 0 0 $logoSize;
