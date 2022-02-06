@@ -107,7 +107,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
   private readonly renderTimestamps: Map<string, Date[]>;
 
-  public get defaultOptions(): { heading: string } {
+  public override get defaultOptions(): { heading: string } {
     return { heading: "Custom Panel" };
   }
 
@@ -166,7 +166,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     console.warn("removeExtensions not implemented for panel extensionPoint");
   }
 
-  async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<IReader> {
     throw new Error("PanelExtensionPoint.defaultReader not implemented");
   }
 
@@ -183,7 +183,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     throw new Error("PanelExtensionPoint.isAvailable not implemented");
   }
 
-  uninstall(): void {
+  override uninstall(): void {
     this.uninstalled = true;
 
     for (const extension of this.extensions) {
@@ -516,7 +516,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
     };
   }
 
-  public get defaultOptions(): {
+  public override get defaultOptions(): {
     heading: string;
     [key: string]: string;
   } {
@@ -527,11 +527,11 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
     };
   }
 
-  async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<IReader> {
     return mergeReaders(this._definition.reader);
   }
 
-  addPanel($panel: JQuery): void {
+  override addPanel($panel: JQuery): void {
     const { position = "append" } = this._definition;
 
     if (typeof position !== "string") {
@@ -555,15 +555,15 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
     }
   }
 
-  getContainerSelector(): string {
+  override getContainerSelector(): string {
     return this._definition.containerSelector;
   }
 
-  getTemplate(): string {
+  override getTemplate(): string {
     return this._definition.template;
   }
 
-  async isAvailable(): Promise<boolean> {
+  override async isAvailable(): Promise<boolean> {
     const { isAvailable } = this._definition;
     return checkAvailable(isAvailable);
   }

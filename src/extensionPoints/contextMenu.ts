@@ -108,7 +108,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     super(id, name, description, icon);
   }
 
-  public get syncInstall() {
+  public override get syncInstall() {
     return true;
   }
 
@@ -146,7 +146,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     return blockList(extension.config.action);
   }
 
-  uninstall({ global = false }: { global?: boolean }): void {
+  override uninstall({ global = false }: { global?: boolean }): void {
     // NOTE: don't uninstall the mouse/click handler because other context menus need it
     const extensions = this.extensions.splice(0, this.extensions.length);
     if (global) {
@@ -170,7 +170,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     return available;
   }
 
-  async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<IReader> {
     return new ArrayCompositeReader([
       await this.getBaseReader(),
       new ContextMenuReader(),
@@ -388,7 +388,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
     return mergeReaders(this._definition.reader);
   }
 
-  public get defaultOptions(): {
+  public override get defaultOptions(): {
     title: string;
     [key: string]: string | string[];
   } {

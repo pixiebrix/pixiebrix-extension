@@ -169,7 +169,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   );
 
-  public get defaultOptions(): { caption: string } {
+  public override get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
   }
 
@@ -265,7 +265,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
-  public uninstall(): void {
+  public override uninstall(): void {
     this.uninstalled = true;
 
     const menus = [...this.menus.values()];
@@ -770,7 +770,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   public readonly rawConfig: ExtensionPointConfig<MenuDefinition>;
 
-  public get defaultOptions(): {
+  public override get defaultOptions(): {
     caption: string;
     [key: string]: string;
   } {
@@ -795,7 +795,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     };
   }
 
-  addMenuItem($menu: JQuery, $menuItem: JQuery): void {
+  override addMenuItem($menu: JQuery, $menuItem: JQuery): void {
     const { position = "append" } = this._definition;
 
     if (typeof position === "object") {
@@ -834,7 +834,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     }
   }
 
-  getReaderRoot($containerElement: JQuery): HTMLElement | Document {
+  override getReaderRoot($containerElement: JQuery): HTMLElement | Document {
     const selector = this._definition.readerSelector;
     if (selector) {
       if ($containerElement.length > 1) {
@@ -862,15 +862,15 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     return document;
   }
 
-  async defaultReader() {
+  override async defaultReader() {
     return mergeReaders(this._definition.reader);
   }
 
-  getContainerSelector() {
+  override getContainerSelector() {
     return this._definition.containerSelector;
   }
 
-  getTemplate(): string {
+  override getTemplate(): string {
     return this._definition.template;
   }
 
