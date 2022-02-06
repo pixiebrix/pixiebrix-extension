@@ -20,7 +20,6 @@ import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import browser, { Tabs } from "webextension-polyfill";
 import { toggleActionPanel } from "@/contentScript/messenger/api";
-import { updateDevTools } from "@/devTools/messenger/api";
 import { isScriptableUrl } from "webext-content-scripts";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
@@ -47,9 +46,6 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
     await toggleActionPanel({
       tabId: tab.id,
     });
-
-    // Inform editor that it now has the ActiveTab permission, if it's open
-    updateDevTools({ page: `/devtoolsPanel.html?tabId=${tab.id}` });
   } catch (error) {
     await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
     console.error(error);
