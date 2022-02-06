@@ -14,6 +14,7 @@ $logoSize: 31px;
   &.collapsed {
     flex: 0 0 $logoSize;
     align-items: center;
+    z-index: 999; // Always on top of the content, but below expanded one
   }
   &.expanded {
     flex: 0 0 260px;
