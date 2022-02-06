@@ -18,7 +18,6 @@
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": false,
     "noUnusedParameters": false,
-    "useDefineForClassFields": false,
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],

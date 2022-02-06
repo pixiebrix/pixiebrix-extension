@@ -23,7 +23,7 @@ import * as actionPanel from "@/actionPanel/native";
 import { PromiseCancelled, sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
-import { reportError } from "@/telemetry/logging";
+import { reportError } from "@/telemetry/rollbar";
 import browser from "webextension-polyfill";
 import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
