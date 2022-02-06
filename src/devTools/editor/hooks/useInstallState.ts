@@ -62,7 +62,7 @@ function useInstallState(
 
       return new Set<UUID>();
     },
-    [navSequence, meta, installed],
+    [navSequence, meta, error, installed],
     new Set<UUID>()
   );
 
@@ -90,6 +90,7 @@ function useInstallState(
     },
     [
       meta,
+      error,
       navSequence,
       hash(
         elements.map((x) => ({
