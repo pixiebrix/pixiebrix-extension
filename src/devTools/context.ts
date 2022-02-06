@@ -18,10 +18,10 @@
 import React, { useCallback, useState } from "react";
 import pTimeout from "p-timeout";
 import browser from "webextension-polyfill";
-import { navigationEvent } from "@/background/devtools/external";
+import { navigationEvent } from "@/devTools/events";
 import { useAsyncEffect } from "use-async-effect";
 import { FrameworkMeta } from "@/messaging/constants";
-import { reportError } from "@/telemetry/logging";
+import { reportError } from "@/telemetry/rollbar";
 import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
 import { getErrorMessage } from "@/errors";

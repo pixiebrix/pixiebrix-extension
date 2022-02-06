@@ -17,5 +17,8 @@
 
 import browser from "webextension-polyfill";
 
+// Init rollbar early so we get error reporting on the other initialization
+import "@/telemetry/reportUncaughtErrors";
+
 // https://webpack.js.org/guides/public-path/#on-the-fly
 __webpack_public_path__ = browser.runtime.getURL("/");
