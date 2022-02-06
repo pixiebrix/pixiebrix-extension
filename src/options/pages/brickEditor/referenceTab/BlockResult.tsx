@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./BlockResult.module.scss";
+
 import React, { useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
 import cx from "classnames";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
-import styles from "./BlockResult.module.scss";
 import { OfficialBadge } from "@/components/OfficialBadge";
 import BrickIcon from "@/components/BrickIcon";
 import {

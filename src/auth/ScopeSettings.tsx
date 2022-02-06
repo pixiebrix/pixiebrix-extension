@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ScopeSettings.module.scss";
+
 import React, { useCallback } from "react";
 import { Formik, FormikBag, FormikValues } from "formik";
 import { Alert, Button, Form } from "react-bootstrap";
@@ -28,7 +30,6 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import styles from "./ScopeSettings.module.scss";
 
 interface Profile {
   scope: string | null;

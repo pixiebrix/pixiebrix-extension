@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ElementWizard.module.scss";
+
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useFormikContext } from "formik";
 import { groupBy } from "lodash";
@@ -37,7 +39,6 @@ import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
 import AuthContext from "@/auth/AuthContext";
-import styles from "./ElementWizard.module.scss";
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 
 const EDIT_STEP_NAME = "Edit";

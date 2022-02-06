@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ServiceEditorModal.module.scss";
+
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
@@ -34,7 +36,6 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import styles from "./ServiceEditorModal.module.scss";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/options/constants";
 
 export type OwnProps = {
