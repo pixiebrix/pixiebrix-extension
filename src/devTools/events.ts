@@ -23,5 +23,5 @@ type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;
 export const navigationEvent = new SimpleEvent<NavigationDetails>();
 
 export function updateDevTools() {
-  navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
+  navigationEvent.emit(chrome.devtools.inspectedWindow.tabId);
 }
