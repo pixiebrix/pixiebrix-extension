@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useState } from "react";
-import { DevToolsContext } from "@/devTools/context";
+import React, { useCallback, useState } from "react";
 import Centered from "@/devTools/editor/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
@@ -31,7 +30,6 @@ import { parse as parseDomain } from "psl";
 import { useAsyncEffect } from "use-async-effect";
 
 const PermissionsPane: React.FunctionComponent = () => {
-  const { connect } = useContext(DevToolsContext);
   const [rejected, setRejected] = useState(false);
   const [allowed, setAllowed] = useState(true);
   const [siteLabel, setSiteLabel] = useState("this page");
@@ -52,12 +50,9 @@ const PermissionsPane: React.FunctionComponent = () => {
 
   const onRequestPermission = useCallback(async () => {
     const url = await getCurrentURL();
-    if (await requestPermissions({ origins: [url] })) {
-      await connect();
-    } else {
-      setRejected(true);
-    }
-  }, [connect]);
+    const wasApproved = await requestPermissions({ origins: [url] });
+    setRejected(!wasApproved);
+  }, []);
 
   return (
     <Centered vertically={true}>
