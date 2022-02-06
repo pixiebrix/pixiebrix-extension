@@ -17,9 +17,6 @@
 
 import "@/extensionContext";
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
-
 import "@/actionPanel/messenger/registration";
 import App from "@/actionPanel/ActionPanelApp";
 import ReactDOM from "react-dom";
