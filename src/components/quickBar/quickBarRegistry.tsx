@@ -32,6 +32,9 @@ export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
 
 const PIXIEBRIX_SECTION = "PixieBrix";
 
+/**
+ * `kbar` action with additional metadata about the extension point that added it.
+ */
 type CustomAction = Action & {
   extensionPointId?: RegistryId;
 };
@@ -92,33 +95,37 @@ const defaultActions: Action[] = [
 type ChangeHandler = (actions: CustomAction[]) => void;
 
 class QuickBarRegistry {
-  private readonly _actions: CustomAction[] = defaultActions;
+  private readonly actions: CustomAction[] = defaultActions;
   private readonly listeners: ChangeHandler[] = [];
 
   private notifyListeners() {
     for (const listener of this.listeners) {
-      listener(this._actions);
+      listener(this.actions);
     }
   }
 
+  get currentActions() {
+    return this.actions;
+  }
+
   add(action: CustomAction): void {
-    remove(this._actions, (x) => x.id === action.id);
-    this._actions.unshift(action);
+    remove(this.actions, (x) => x.id === action.id);
+    this.actions.unshift(action);
     this.notifyListeners();
   }
 
   removeExtensionPointActions(id: RegistryId) {
-    remove(this._actions, (x) => x.extensionPointId === id);
+    remove(this.actions, (x) => x.extensionPointId === id);
     this.notifyListeners();
   }
 
   remove(id: string): void {
-    remove(this._actions, (x) => x.id === id);
+    remove(this.actions, (x) => x.id === id);
+    this.notifyListeners();
   }
 
   addListener(handler: ChangeHandler) {
     this.listeners.push(handler);
-    this.notifyListeners();
   }
 
   removeListener(handler: ChangeHandler) {
@@ -126,7 +133,7 @@ class QuickBarRegistry {
   }
 }
 
-// Singleton registry
+// Singleton registry for the content script
 const quickBarRegistry = new QuickBarRegistry();
 
 export default quickBarRegistry;
