@@ -158,7 +158,7 @@ export class FormTransformer extends Transformer {
         void cancelForm(frameNonce);
       });
     } else {
-      showModal(frameSource, controller.signal);
+      showModal(frameSource, controller);
     }
 
     try {
