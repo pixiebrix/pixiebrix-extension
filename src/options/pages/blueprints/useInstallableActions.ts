@@ -27,7 +27,6 @@ import {
   reactivateEveryTab,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { reportError } from "@/telemetry/logging";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { useCallback, useContext } from "react";
@@ -94,9 +93,7 @@ function useInstallableActions(installable: Installable) {
     // Remove from storage first so it doesn't get re-added in reactivate step below
     dispatch(removeExtension({ extensionId: installable.id }));
     // XXX: also remove remove side panel panels that are already open?
-    void uninstallContextMenu({ extensionId: installable.id }).catch(
-      reportError
-    );
+    void uninstallContextMenu({ extensionId: installable.id });
     reactivateEveryTab();
   };
 

@@ -32,7 +32,6 @@ import {
   showActionPanelForm,
 } from "@/actionPanel/native";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
-import { reportError } from "@/telemetry/logging";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
@@ -156,7 +155,7 @@ export class FormTransformer extends Transformer {
         // In the future we might creating/sending a closeIfEmpty message to the sidebar, so that it would close
         // if this form was the only entry in the panel
         hideActionPanelForm(frameNonce);
-        void cancelForm(frameNonce).catch(reportError);
+        void cancelForm(frameNonce);
       });
     } else {
       showModal(frameSource, controller.signal);
