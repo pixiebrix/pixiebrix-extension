@@ -17,9 +17,6 @@
 
 import "@/extensionContext";
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
-
 import React from "react";
 import { render } from "react-dom";
 import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
