@@ -195,8 +195,10 @@ export async function enableOverlay(selector: string): Promise<void> {
     _overlay = new Overlay();
   }
 
-  const $elt = $safeFind(selector);
-  _overlay.inspect($elt.toArray(), null);
+  const elements = $safeFind(selector).toArray();
+  if (elements.length > 0) {
+    _overlay.inspect(elements, null);
+  }
 }
 
 export async function disableOverlay(): Promise<void> {
