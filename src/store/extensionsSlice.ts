@@ -33,7 +33,7 @@ import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
 import { pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
-import { reportError } from "@/telemetry/logging";
+import { reportError } from "@/telemetry/rollbar";
 import {
   ExtensionOptionsState,
   LegacyExtensionObjectState,
@@ -248,7 +248,7 @@ const extensionsSlice = createSlice({
 
       if (pushToCloud && !_deployment) {
         // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
-        void saveUserExtension(extension).catch(reportError);
+        void saveUserExtension(extension);
       }
 
       const index = state.extensions.findIndex((x) => x.id === id);
