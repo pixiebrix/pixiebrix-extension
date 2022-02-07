@@ -35,7 +35,6 @@ import { ModalProvider } from "@/components/ConfirmationModal";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { getErrorMessage } from "@/errors";
-import browser from "webextension-polyfill";
 
 // Import custom options widgets/forms for the built-in bricks
 import "@/contrib/editors";
@@ -72,17 +71,6 @@ const Panel: React.FunctionComponent = () => {
         <div>{error}</div>
         <div className="mt-2">
           <Button
-            onClick={() => {
-              void browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
-            }}
-          >
-            Reload Page
-          </Button>
-        </div>
-        <div className="mt-2">
-          <Button
-            size="sm"
-            variant="light"
             onClick={() => {
               location.reload();
             }}
