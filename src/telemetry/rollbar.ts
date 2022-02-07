@@ -16,7 +16,7 @@
  */
 
 import Rollbar, { LogArgument } from "rollbar";
-import { getErrorMessage, selectError } from "@/errors";
+import { getErrorMessage, ignoredErrors, selectError } from "@/errors";
 import { isExtensionContext } from "webext-detect-page";
 import { MessageContext } from "@/core";
 import { recordError } from "@/background/messenger/api";
@@ -55,11 +55,7 @@ function initRollbar() {
       // disable autoInstrument until we can set up scrubbing rules
       autoInstrument: false,
       // https://docs.rollbar.com/docs/reduce-noisy-javascript-errors#ignore-certain-types-of-messages
-      ignoredMessages: [
-        "ResizeObserver loop limit exceeded",
-        "Promise was cancelled",
-        "Uncaught Error: PixieBrix contentScript already installed",
-      ],
+      ignoredMessages: ignoredErrors,
       payload: {
         client: {
           javascript: {
