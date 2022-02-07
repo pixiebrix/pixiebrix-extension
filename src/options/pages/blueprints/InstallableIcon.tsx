@@ -59,9 +59,10 @@ const InstallableIcon: React.FunctionComponent<{
     getDefaultInstallableIcon(installable)
   );
 
-  const iconToUse = useMemo(() => {
-    return listingFaIcon ?? defaultIcon;
-  }, [listingFaIcon, defaultIcon]);
+  const iconToUse = useMemo(() => listingFaIcon ?? defaultIcon, [
+    listingFaIcon,
+    defaultIcon,
+  ]);
 
   useAsyncEffect(
     async (isMounted) => {

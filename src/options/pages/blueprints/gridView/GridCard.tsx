@@ -42,10 +42,10 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
       <div className="d-flex">
         <div>{getInstallableIcon(installable)}</div>
         <div>
-          <div className={cx(styles.lineClampThree, "ml-2")}>
+          <div className={cx(styles.name, "ml-2")}>
             <h5 className="m-0">{name}</h5>
           </div>
-          <div className={cx(styles.lineClampOne, "ml-2")}>
+          <div className={cx(styles.description, "ml-2")}>
             <p className="text-muted small">{description}</p>
           </div>
         </div>
