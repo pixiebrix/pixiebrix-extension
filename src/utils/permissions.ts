@@ -16,7 +16,7 @@
  */
 
 import browser, { Manifest, Permissions } from "webextension-polyfill";
-import { remove, uniq } from "lodash";
+import { cloneDeep, remove, uniq } from "lodash";
 import {
   containsPermissions,
   openPopupPrompt,
@@ -49,6 +49,9 @@ export function mergePermissions(
 export async function requestPermissions(
   permissions: Permissions.Permissions
 ): Promise<boolean> {
+  // We're going to alter this object so we should clone it
+  permissions = cloneDeep(permissions);
+
   // Don't request permissions for pixiebrix.com, the browser will always show a prompt.
   // We can't use `await containsPermissions()` before `request() `because we might lose the "user action" flag
   // https://github.com/pixiebrix/pixiebrix-extension/issues/1759
