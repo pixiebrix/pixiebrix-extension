@@ -37,7 +37,6 @@ import useNotifications from "@/hooks/useNotifications";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { useDispatch } from "react-redux";
-import { useGetAuthQuery } from "@/services/api";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { installedPageSlice } from "./installedPageSlice";
 
@@ -72,9 +71,6 @@ const InstalledExtensionRow: React.FunctionComponent<{
   const { id: extensionId, label, _recipe } = extension;
 
   const notify = useNotifications();
-  const {
-    data: { scope },
-  } = useGetAuthQuery();
 
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extension
@@ -149,7 +145,8 @@ const InstalledExtensionRow: React.FunctionComponent<{
                   <FontAwesomeIcon icon={faShare} /> Share
                 </>
               ),
-              hide: _recipe != null || scope == null,
+              // OK to show if user doesn't have a scope. They'll be prompted to set a scope
+              hide: _recipe != null,
               action: shareExtension,
             },
             {
