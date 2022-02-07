@@ -43,7 +43,7 @@ import { thisTab } from "@/devTools/utils";
 import styles from "./Editor.module.scss";
 import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
 import Error from "./Error";
-import { GridLoader } from "react-spinners";
+import PersistLoader from "./PersistLoader";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -152,7 +152,7 @@ const Editor: React.FunctionComponent = () => {
   }
 
   if (authLoading) {
-    return <GridLoader />;
+    return <PersistLoader />;
   }
 
   return (

@@ -20,7 +20,6 @@ import { Container } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useDevConnection } from "@/devTools/context";
-import GridLoader from "react-spinners/GridLoader";
 import Editor from "@/devTools/Editor";
 import store, { persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
@@ -28,26 +27,18 @@ import { Provider } from "react-redux";
 import { ToastProvider } from "react-toast-notifications";
 import { useAsyncEffect } from "use-async-effect";
 import blockRegistry from "@/blocks/registry";
-import Centered from "@/devTools/editor/components/Centered";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 // Import custom options widgets/forms for the built-in bricks
 import "@/contrib/editors";
+import PersistLoader from "./PersistLoader";
 
 registerContribBlocks();
 registerBuiltinBlocks();
 
-const PersistLoader: React.FunctionComponent = () => (
-  <Centered>
-    <div className="d-flex justify-content-center">
-      <GridLoader />
-    </div>
-  </Centered>
-);
-
-const Panel: React.FunctionComponent = () => {
+const Panel: React.VoidFunctionComponent = () => {
   const context = useDevConnection();
 
   useAsyncEffect(async () => {
