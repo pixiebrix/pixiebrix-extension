@@ -26,7 +26,7 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import { PersistedExtension } from "@/core";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import settingsSlice from "@/store/settingsSlice";
 import { anonAuth } from "@/hooks/auth";
 

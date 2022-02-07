@@ -25,7 +25,7 @@ import {
   getSharingType,
   getUpdatedAt,
 } from "./installableUtils";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import {
   Column,
   useFilters,
@@ -121,7 +121,9 @@ const columns: Array<Column<InstallableViewItem>> = [
 const BlueprintsCard: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
   const { data, teamFilters } = useMemo(() => {
     const data = getInstallableRows(installables, scope);
     const teamFilters = uniq(

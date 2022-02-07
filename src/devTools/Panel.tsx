@@ -25,8 +25,6 @@ import Editor from "@/devTools/Editor";
 import store, { persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
-import { useAuth } from "@/hooks/auth";
-import AuthContext from "@/auth/AuthContext";
 import { ToastProvider } from "react-toast-notifications";
 import { useAsyncEffect } from "use-async-effect";
 import blockRegistry from "@/blocks/registry";
@@ -36,6 +34,7 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { getErrorMessage } from "@/errors";
 import browser from "webextension-polyfill";
+import { useGetAuthQuery } from "@/services/api";
 
 // Import custom options widgets/forms for the built-in bricks
 import "@/contrib/editors";
@@ -52,7 +51,7 @@ const PersistLoader: React.FunctionComponent = () => (
 );
 
 const Panel: React.FunctionComponent = () => {
-  const authState = useAuth();
+  const { isLoading: authLoading, error: authError } = useGetAuthQuery();
   const context = useDevConnection();
 
   useAsyncEffect(async () => {
@@ -60,12 +59,11 @@ const Panel: React.FunctionComponent = () => {
   }, []);
 
   const error =
-    (authState.error && getErrorMessage(authState.error)) ||
-    context.tabState.error;
+    (authError && getErrorMessage(authError)) || context.tabState.error;
   if (error) {
     return (
       <Centered vertically>
-        {authState.error && (
+        {authError && (
           <div className="PaneTitle">Error authenticating account</div>
         )}
         <div>{error}</div>
@@ -96,21 +94,19 @@ const Panel: React.FunctionComponent = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={<PersistLoader />} persistor={persistor}>
-        <AuthContext.Provider value={authState}>
-          <DevToolsContext.Provider value={context}>
-            <ToastProvider>
-              <ModalProvider>
-                <ErrorBoundary>
-                  <Router>
-                    <Container fluid className="DevToolsContainer">
-                      <Editor />
-                    </Container>
-                  </Router>
-                </ErrorBoundary>
-              </ModalProvider>
-            </ToastProvider>
-          </DevToolsContext.Provider>
-        </AuthContext.Provider>
+        <DevToolsContext.Provider value={context}>
+          <ToastProvider>
+            <ModalProvider>
+              <ErrorBoundary>
+                <Router>
+                  <Container fluid className="DevToolsContainer">
+                    {authLoading ? <PersistLoader /> : <Editor />}
+                  </Container>
+                </Router>
+              </ErrorBoundary>
+            </ModalProvider>
+          </ToastProvider>
+        </DevToolsContext.Provider>
       </PersistGate>
     </Provider>
   );

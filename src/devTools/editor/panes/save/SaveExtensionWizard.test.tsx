@@ -30,7 +30,7 @@ import {
 } from "@/tests/factories";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/tests/testHelpers";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { anonAuth } from "@/hooks/auth";
 
 jest.mock("@/hooks/useNotifications");

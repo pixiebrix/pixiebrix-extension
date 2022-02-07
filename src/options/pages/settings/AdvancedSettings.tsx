@@ -23,11 +23,13 @@ import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import { isEmpty } from "lodash";
 import { useToasts } from "react-toast-notifications";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const { addToast } = useToasts();
-  const { flags } = useContext(AuthContext);
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
   const clear = useCallback(async () => {

@@ -16,13 +16,15 @@
  */
 
 import React, { useContext } from "react";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { DevToolsContext } from "@/devTools/context";
 import BeatLoader from "react-spinners/BeatLoader";
 import styles from "./Footer.module.scss";
 
 const Footer: React.FunctionComponent = () => {
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
   const { connecting } = useContext(DevToolsContext);
 
   return (

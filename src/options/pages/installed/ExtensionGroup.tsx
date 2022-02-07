@@ -42,7 +42,7 @@ import styles from "./ExtensionGroup.module.scss";
 import ExtensionRows from "./ExtensionRows";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router";
 
@@ -81,7 +81,9 @@ const ExtensionGroup: React.FunctionComponent<{
   onExportBlueprint,
   hasUpdate,
 }) => {
-  const { flags } = useContext(AuthContext);
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
   const notify = useNotifications();
   const dispatch = useDispatch();
   const history = useHistory();

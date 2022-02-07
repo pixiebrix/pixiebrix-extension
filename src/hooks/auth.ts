@@ -34,7 +34,7 @@ interface OrganizationResponse {
   readonly scope: string;
 }
 
-interface ProfileResponse {
+export interface ProfileResponse {
   readonly id: string;
   readonly email: string;
   readonly scope: string | null;

@@ -31,7 +31,7 @@ import { groupBy } from "lodash";
 import ExtensionRows from "./ExtensionRows";
 import { isDeploymentActive } from "@/options/deploymentUtils";
 import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { RecipeDefinition } from "@/types/definitions";
 import { push } from "connected-react-router";
 import * as semver from "semver";
@@ -158,7 +158,9 @@ const ActiveBricksCard: React.FunctionComponent<{
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
   const dispatch = useDispatch();
   const { data: organizations = [] } = useGetOrganizationsQuery();
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
   const {
     data: availableRecipes = [] as RecipeDefinition[],
   } = useGetRecipesQuery();

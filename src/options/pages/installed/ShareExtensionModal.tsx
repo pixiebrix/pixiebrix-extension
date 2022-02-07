@@ -27,7 +27,7 @@ import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
 import * as Yup from "yup";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import slugify from "slugify";
 import { getLinkedApiClient } from "@/services/apiClient";
@@ -131,7 +131,9 @@ const ShareExtensionModal: React.FC<{
 
   // If loading the URL directly, there's a race condition if scope will be populated when the modal is mounted.
   // Not a priority to fix because user will, in general, come to the modal via the "Share" button on the main page
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const initialValues: FormState = {

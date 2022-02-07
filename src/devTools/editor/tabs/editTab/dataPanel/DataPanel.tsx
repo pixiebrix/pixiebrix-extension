@@ -37,7 +37,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
@@ -69,7 +69,9 @@ const contextFilter = (value: unknown, key: string) => {
 const DataPanel: React.FC<{
   instanceId: UUID;
 }> = ({ instanceId }) => {
-  const { flags } = useContext(AuthContext);
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
 
   const showDeveloperTabs = flags.includes("page-editor-developer");
 

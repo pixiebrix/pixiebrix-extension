@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { anonAuth } from "@/hooks/auth";
 import { recipeMetadataFactory } from "@/tests/factories";
 import { render, screen } from "@testing-library/react";

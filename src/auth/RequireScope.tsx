@@ -20,7 +20,7 @@ import { useSelector } from "react-redux";
 import ScopeSettings from "./ScopeSettings";
 import { SettingsState } from "@/store/settingsTypes";
 import { isEmpty } from "lodash";
-import AuthContext from "./AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 
 type RootStateWithSettings = {
   settings: SettingsState;
@@ -41,14 +41,18 @@ export const RequireScope: React.FunctionComponent<{
   scopeSettingsDescription,
   children,
 }) => {
-  const { scope, isPending } = useContext(AuthContext);
+  const {
+    data: { scope },
+    isLoading,
+  } = useGetAuthQuery();
 
   const mode = useSelector<RootStateWithSettings, string>(
     ({ settings }) => settings.mode
   );
 
   // Fetching scope currently performs a network request. Optimistically show the main interface while the scope is being fetched.
-  if (require && mode !== "local" && !isPending && isEmpty(scope)) {
+  // if (require && mode !== "local" && !isLoading && isEmpty(scope)) {
+  if (require) {
     return (
       <ScopeSettings
         title={scopeSettingsTitle}

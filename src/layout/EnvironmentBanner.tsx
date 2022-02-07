@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
+import React from "react";
 import { getExtensionAuth } from "@/auth/token";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { isExtensionContext } from "webext-detect-page";
 import { connectPage } from "@/messaging/external";
 import { useAsyncState } from "@/hooks/common";
@@ -35,7 +35,9 @@ const variantMap = new Map<string, BannerVariant>([
 ]);
 
 const EnvironmentBannerMessage: React.FunctionComponent = () => {
-  const { extension } = useContext(AuthContext);
+  const {
+    data: { extension },
+  } = useGetAuthQuery();
 
   const [hostname] = useAsyncState(async () => {
     const { hostname } = await getExtensionAuth();

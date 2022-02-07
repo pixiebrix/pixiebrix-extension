@@ -16,7 +16,7 @@
  */
 
 import React, { useContext } from "react";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { useFormikContext } from "formik";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { UUID } from "@/core";
@@ -34,7 +34,9 @@ import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
 }> = ({ firstBlockInstanceId }) => {
-  const { flags } = useContext(AuthContext);
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
   const showDeveloperTabs = flags.includes("page-editor-developer");
 
   const { values: formState } = useFormikContext<FormState>();

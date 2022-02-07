@@ -16,7 +16,7 @@
  */
 
 import { useContext, useMemo } from "react";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import {
   isDeployment,
   isPersonal,
@@ -30,7 +30,9 @@ function useSharing(
   type: "Personal" | "Public" | "Team" | "Deployment";
   label: string;
 } {
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
 
   const sharingType = useMemo(() => {
     if (isPersonal(installable, scope)) {
