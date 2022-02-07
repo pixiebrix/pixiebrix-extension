@@ -34,6 +34,7 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 // Import custom options widgets/forms for the built-in bricks
 import "@/contrib/editors";
 import PersistLoader from "./PersistLoader";
+import ErrorBanner from "@/devTools/ErrorBanner";
 
 registerContribBlocks();
 registerBuiltinBlocks();
@@ -54,6 +55,7 @@ const Panel: React.VoidFunctionComponent = () => {
               <ErrorBoundary>
                 <Router>
                   <Container fluid className="DevToolsContainer">
+                    <ErrorBanner />
                     <Editor />
                   </Container>
                 </Router>

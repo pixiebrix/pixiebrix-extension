@@ -43,6 +43,8 @@ function onEditorClose(): void {
 
 export function watchNavigation(): void {
   browser.webNavigation.onDOMContentLoaded.addListener(onNavigation);
+  browser.permissions.onAdded.addListener(updateDevTools);
+  browser.permissions.onRemoved.addListener(updateDevTools);
   window.addEventListener("beforeunload", onEditorClose);
 
   if (process.env.DEBUG)

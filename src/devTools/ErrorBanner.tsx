@@ -15,41 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React, { useContext } from "react";
+import { DevToolsContext } from "@/devTools/context";
+import { useGetAuthQuery } from "@/services/api";
 import { getErrorMessage } from "@/errors";
-import React from "react";
 import { Button } from "react-bootstrap";
-import Centered from "./editor/components/Centered";
 
-type ErrorProps = {
-  authError: unknown;
-  error: string;
-};
+const ErrorBanner: React.VFC = () => {
+  const context = useContext(DevToolsContext);
+  const { error: accountError } = useGetAuthQuery();
 
-const Error: React.VoidFunctionComponent<ErrorProps> = ({
-  authError,
-  error,
-}) => {
-  const errorMessage = (authError && getErrorMessage(authError)) || error;
+  const error = accountError
+    ? "Authentication error: " + getErrorMessage(accountError)
+    : context.tabState.error;
+
+  if (!error) {
+    return null;
+  }
 
   return (
-    <Centered vertically>
-      {authError && (
-        <div className="PaneTitle">Error authenticating account</div>
-      )}
-      <div>{errorMessage}</div>
-      <div className="mt-2">
+    <div className="d-flex p-1 align-items-center alert-danger flex-align-center">
+      <div className="flex-grow-1">{error}</div>
+      <div>
         <Button
-          onClick={() => {
-            void browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
-          }}
-        >
-          Reload Page
-        </Button>
-      </div>
-      <div className="mt-2">
-        <Button
-          size="sm"
-          variant="light"
+          className="mr-2"
           onClick={() => {
             location.reload();
           }}
@@ -57,8 +46,8 @@ const Error: React.VoidFunctionComponent<ErrorProps> = ({
           Reload Editor
         </Button>
       </div>
-    </Centered>
+    </div>
   );
 };
 
-export default Error;
+export default ErrorBanner;

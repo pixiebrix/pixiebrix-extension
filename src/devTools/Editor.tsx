@@ -42,7 +42,6 @@ import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
 import styles from "./Editor.module.scss";
 import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
-import Error from "./Error";
 import PersistLoader from "./PersistLoader";
 
 const selectEditor = ({ editor }: RootState) => editor;
@@ -51,8 +50,7 @@ const Editor: React.FunctionComponent = () => {
   const { tabState, connecting } = useContext(DevToolsContext);
   const installed = useSelector(selectExtensions);
   const { data: recipes, isLoading: loadingRecipes } = useGetRecipesQuery();
-  const { isLoading: authLoading, error: authError } = useGetAuthQuery();
-  const devToolsContext = useContext(DevToolsContext);
+  const { isLoading: authLoading } = useGetAuthQuery();
   const dispatch = useDispatch();
 
   // Async fetch marketplace content to the Redux so it's pre-fetched for rendering in the Brick Selection modal
@@ -143,13 +141,6 @@ const Editor: React.FunctionComponent = () => {
     unavailableCount,
     tabState,
   ]);
-
-  // Handle the devTools and Auth errors
-  if (authError || devToolsContext.tabState.error) {
-    return (
-      <Error authError={authError} error={devToolsContext.tabState.error} />
-    );
-  }
 
   if (authLoading) {
     return <PersistLoader />;

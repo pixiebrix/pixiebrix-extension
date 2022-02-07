@@ -24,12 +24,12 @@ import { FrameworkMeta } from "@/messaging/constants";
 import { reportError } from "@/telemetry/rollbar";
 import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage, isErrorObject } from "@/errors";
 import { thisTab } from "@/devTools/utils";
-import { Except } from "type-fest";
 import { detectFrameworks } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/messenger/api";
 import { canAccessTab } from "webext-tools";
+import { sleep } from "@/utils";
 
 interface FrameMeta {
   frameworks: FrameworkMeta[];
@@ -56,19 +56,15 @@ export interface FrameConnectionState {
   meta: FrameMeta | undefined;
 }
 
-const initialFrameState: Except<FrameConnectionState, "frameId"> = {
+const initialFrameState: FrameConnectionState = {
   navSequence: undefined,
   hasPermissions: false,
   error: undefined,
   meta: undefined,
+  frameId: 0,
 };
 
 export interface Context {
-  /**
-   * Re-connect to the background page
-   */
-  connect: () => Promise<void>;
-
   /**
    * True if the a connection attempt is in process
    */
@@ -78,37 +74,52 @@ export interface Context {
 }
 
 const initialValue: Context = {
-  connect: async () => {},
   connecting: false,
   tabState: { ...initialFrameState, frameId: 0 },
 };
 
 export const DevToolsContext = React.createContext(initialValue);
 
-class PermissionsError extends Error {
-  constructor(message: string) {
-    super(message);
-    // Set the prototype explicitly.
-    Object.setPrototypeOf(this, PermissionsError.prototype);
+async function connectToFrame(): Promise<FrameConnectionState> {
+  const uuid = uuidv4();
+  const common = { ...initialFrameState, navSequence: uuid };
+
+  console.debug(`connectToFrame: connecting for ${uuid}`);
+  if (!(await canAccessTab(thisTab))) {
+    console.debug("connectToFrame: cannot access tab");
+    return common;
   }
-}
 
-async function connectToFrame(): Promise<FrameMeta> {
   console.debug("connectToFrame: ensuring contentScript");
-  try {
-    await pTimeout(
-      ensureContentScript(thisTab),
-      4000,
-      "The Page Editor could not establish a connection to the page"
-    );
-  } catch (error) {
-    // If it's not a permission error, then throw error as is
-    if (await canAccessTab(thisTab)) {
-      throw error;
-    }
+  const firstTimeout = Symbol("firstTimeout");
+  const contentScript = ensureContentScript(thisTab, 15_000);
+  const result = await Promise.race([
+    sleep(4000).then(() => firstTimeout),
+    contentScript,
+  ]);
 
-    console.debug("connectToFrame: no access to host");
-    throw new PermissionsError("No access to URL");
+  if (result === firstTimeout) {
+    return {
+      ...common,
+      hasPermissions: true,
+      error:
+        "The Page Editor could not establish a connection to the page, retrying…",
+    };
+  }
+
+  try {
+    await contentScript;
+  } catch (error) {
+    const errorMessage =
+      isErrorObject(error) && error.name === "TimeoutError"
+        ? "The Page Editor could not establish a connection to the page"
+        : getErrorMessage(error);
+    reportError(error);
+    return {
+      ...common,
+      hasPermissions: true,
+      error: errorMessage,
+    };
   }
 
   let frameworks: FrameworkMeta[] = [];
@@ -121,8 +132,12 @@ async function connectToFrame(): Promise<FrameMeta> {
     });
   }
 
-  console.debug("connectToFrame: finished");
-  return { frameworks };
+  console.debug(`connectToFrame: replacing tabState for ${uuid}`);
+  return {
+    ...common,
+    hasPermissions: true,
+    meta: { frameworks },
+  };
 }
 
 export function useDevConnection(): Context {
@@ -130,55 +145,33 @@ export function useDevConnection(): Context {
 
   const [connecting, setConnecting] = useState(false);
 
-  const [current, setCurrent] = useState<FrameConnectionState>({
-    ...initialFrameState,
-    frameId: 0,
-  });
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
+
+  const [tabState, setTabState] = useState<FrameConnectionState>(
+    initialFrameState
+  );
 
   const connect = useCallback(async () => {
-    const uuid = uuidv4();
-    const common = { frameId: 0, navSequence: uuid };
-    try {
-      console.debug(`useDevConnection.connect: connecting for ${uuid}`);
-      setConnecting(true);
-      const meta = await connectToFrame();
-      console.debug(`useDevConnection.connect: replacing tabState for ${uuid}`);
-      setCurrent({
-        ...common,
-        hasPermissions: true,
-        meta,
-      });
-    } catch (error) {
-      if (error instanceof PermissionsError) {
-        setCurrent({
-          ...common,
-          hasPermissions: false,
-          meta: undefined,
-        });
-      } else {
-        reportError(error);
-        setCurrent({
-          ...common,
-          hasPermissions: true,
-          meta: undefined,
-          error: getErrorMessage(error),
-        });
-      }
-    }
-
-    setConnecting(false);
-  }, [setCurrent]);
+    setLastUpdate(Date.now());
+  }, []);
 
   // Automatically connect on load
-  useAsyncEffect(async () => {
-    await connect();
-  }, []);
+  useAsyncEffect(
+    async (isActive) => {
+      setConnecting(true);
+      const tabState = await connectToFrame();
+      setConnecting(false);
+      if (isActive()) {
+        setTabState(tabState);
+      }
+    },
+    [lastUpdate]
+  );
 
   useTabEventListener(tabId, navigationEvent, connect);
 
   return {
     connecting,
-    connect,
-    tabState: current,
+    tabState,
   };
 }
