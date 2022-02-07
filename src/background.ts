@@ -22,9 +22,6 @@ import "@/extensionContext";
 // Required for MV3; Service Workers don't have XMLHttpRequest
 import "@/background/axiosFetch";
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
-
 import "webext-dynamic-content-scripts";
 
 import "@/background/messenger/registration";

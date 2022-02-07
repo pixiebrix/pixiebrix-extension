@@ -1,3 +1,4 @@
+import { isBackground } from "webext-detect-page";
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -19,7 +20,7 @@
  * @file This file must be imported as early as possible in each entrypoint, once
  */
 
-import { reportError } from "@/telemetry/logging";
+import { reportError } from "@/telemetry/rollbar";
 
 function defaultErrorHandler(
   errorEvent: ErrorEvent | PromiseRejectionEvent
@@ -32,23 +33,40 @@ function defaultErrorHandler(
   }
 
   reportError(errorEvent);
-  errorEvent.preventDefault();
-}
-
-const seen = new WeakSet<ErrorEvent | PromiseRejectionEvent>();
-function avoidLoops(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
-  if (seen.has(errorEvent)) {
-    errorEvent.preventDefault();
-  } else {
-    seen.add(errorEvent);
-  }
 }
 
 /**
  * Set of error event handlers to run before the default one.
  * They can call `event.preventDefault()` to avoid reporting the error.
  */
-export const uncaughtErrorHandlers = new Set([avoidLoops]);
+export const uncaughtErrorHandlers = new Set<
+  (errorEvent: ErrorEvent | PromiseRejectionEvent) => void
+>();
+
+let counter = 0;
+let timer: NodeJS.Timeout;
+
+function updateCounter(): void {
+  void chrome.browserAction.setBadgeText({
+    text: counter ? String(counter) : undefined,
+  });
+  void chrome.browserAction.setBadgeBackgroundColor({ color: "#F00" });
+}
+
+function backgroundErrorsBadge() {
+  if (process.env.ENVIRONMENT === "development" && isBackground()) {
+    counter++;
+    updateCounter();
+    // Reset the counter after a minute of inactivity
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      counter = 0;
+      updateCounter();
+    }, 60_000);
+  }
+}
+
+uncaughtErrorHandlers.add(backgroundErrorsBadge);
 
 /*
 Refactor beware: Do not add an `init` function or it will run too late.

@@ -2,7 +2,7 @@ import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 import { render, unmountComponentAtNode } from "react-dom";
 import React from "react";
 
-export function showModal(url: URL, signal: AbortSignal): void {
+export function showModal(url: URL, abortController: AbortController): void {
   // Using `<style>` will avoid overriding the site’s inline styles
   const style = document.createElement("style");
 
@@ -22,6 +22,14 @@ export function showModal(url: URL, signal: AbortSignal): void {
     <dialog
       ref={(dialog) => {
         dialog.showModal();
+        // No types support for "onClose" attribute
+        dialog.addEventListener(
+          "close",
+          () => {
+            abortController.abort();
+          },
+          { once: true }
+        );
       }}
       style={{
         border: 0,
@@ -44,7 +52,7 @@ export function showModal(url: URL, signal: AbortSignal): void {
     shadowRoot
   );
 
-  signal.addEventListener("abort", () => {
+  abortController.signal.addEventListener("abort", () => {
     unmountComponentAtNode(container);
     style.remove();
     container.remove();
