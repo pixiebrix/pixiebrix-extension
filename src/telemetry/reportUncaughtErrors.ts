@@ -20,7 +20,16 @@ import { isBackground } from "webext-detect-page";
  * @file This file must be imported as early as possible in each entrypoint, once
  */
 
+import { getErrorMessage, IGNORED_ERRORS } from "@/errors";
 import { reportError } from "@/telemetry/rollbar";
+
+function ignoreSomeErrors(
+  errorEvent: ErrorEvent | PromiseRejectionEvent
+): void {
+  if (IGNORED_ERRORS.includes(getErrorMessage(errorEvent))) {
+    errorEvent.preventDefault();
+  }
+}
 
 function defaultErrorHandler(
   errorEvent: ErrorEvent | PromiseRejectionEvent
@@ -39,9 +48,7 @@ function defaultErrorHandler(
  * Set of error event handlers to run before the default one.
  * They can call `event.preventDefault()` to avoid reporting the error.
  */
-export const uncaughtErrorHandlers = new Set<
-  (errorEvent: ErrorEvent | PromiseRejectionEvent) => void
->();
+export const uncaughtErrorHandlers = new Set([ignoreSomeErrors]);
 
 let counter = 0;
 let timer: NodeJS.Timeout;
