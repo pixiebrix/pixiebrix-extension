@@ -20,9 +20,6 @@ import "@/vendors/overrides.scss";
 import "@/extensionContext";
 import "@/development/darkMode";
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
-
 import { render } from "react-dom";
 import React from "react";
 import App from "@/options/App";
