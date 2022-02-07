@@ -24,22 +24,18 @@ import Status from "@/options/pages/blueprints/Status";
 import styles from "./GridCard.module.scss";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 import cx from "classnames";
+import { GetInstallableIcon } from "@/options/pages/blueprints/useGetInstallableIcon";
 
 type GridCardProps = {
   installableItem: InstallableViewItem;
+  getInstallableIcon: GetInstallableIcon;
 };
 
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   installableItem,
   getInstallableIcon,
 }) => {
-  const {
-    name,
-    updatedAt,
-    description,
-    sharing,
-    installable,
-  } = installableItem;
+  const { name, updatedAt, description, installable } = installableItem;
 
   return (
     <Card className={styles.root}>
@@ -55,11 +51,7 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
         </div>
       </div>
       <div>
-        {sharing.packageId ? (
-          <code className="p-0 small">{sharing.packageId}</code>
-        ) : (
-          <SharingLabel installable={installable} />
-        )}
+        <SharingLabel installable={installable} />
         <Card.Text className="small">Updated: {timeSince(updatedAt)}</Card.Text>
         <div className={styles.actions}>
           <Status installable={installable} />

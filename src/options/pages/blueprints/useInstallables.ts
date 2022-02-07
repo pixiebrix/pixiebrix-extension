@@ -48,6 +48,8 @@ function useInstallables(): InstallablesState {
   const cloudExtensions = useGetCloudExtensionsQuery();
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
+  console.log("Unresolved extensions", unresolvedExtensions);
+
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
       installedExtensionIds: new Set<UUID>(

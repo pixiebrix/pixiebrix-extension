@@ -41,7 +41,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
   }, [filters, query]);
 
   return (
-    <Col xs={3} className={styles.filtersCol}>
+    <Col xs={3} xl={2} className={styles.filtersCol}>
       <Form className="mb-4 mr-3">
         <Form.Control
           id="query"

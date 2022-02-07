@@ -19,35 +19,31 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { MarketplaceListing } from "@/types/contract";
 import React, { useCallback } from "react";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube, faScroll } from "@fortawesome/free-solid-svg-icons";
-import {
-  getPackageId,
-  isBlueprint,
-} from "@/options/pages/blueprints/installableUtils";
+import { getPackageId } from "@/options/pages/blueprints/installableUtils";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 
-function useGetInstallableIcon() {
+export type GetInstallableIcon = (installable: Installable) => React.ReactNode;
+
+const useGetInstallableIcon: () => GetInstallableIcon = () => {
   const { data: listings, isLoading } = useGetMarketplaceListingsQuery();
 
   return useCallback(
     (installable: Installable) => {
-      if (isLoading) {
-        return <FontAwesomeIcon icon={faCube} color="darkGrey" size="2x" />;
-      }
+      const listing: MarketplaceListing | null = isLoading
+        ? null
+        : listings[getPackageId(installable)];
 
-      const listing: MarketplaceListing | null =
-        listings[getPackageId(installable)];
       return (
         <InstallableIcon
           listing={listing}
           installable={installable}
+          isLoading={isLoading}
           size={"2x"}
         />
       );
     },
-    [listings]
+    [listings, isLoading]
   );
-}
+};
 
 export default useGetInstallableIcon;

@@ -19,6 +19,7 @@ import { RegistryId, ResolvedExtension } from "@/core";
 import { Row, TableInstance } from "react-table";
 import { Organization } from "@/types/contract";
 import { RecipeDefinition } from "@/types/definitions";
+import { GetInstallableIcon } from "@/options/pages/blueprints/useGetInstallableIcon";
 
 export type InstallStatus = {
   hasUpdate: boolean;
@@ -50,4 +51,5 @@ export type InstallableViewItem = {
 export type BlueprintListViewProps = {
   tableInstance: TableInstance;
   rows: Array<Row<InstallableViewItem>>;
+  getInstallableIcon: GetInstallableIcon;
 };

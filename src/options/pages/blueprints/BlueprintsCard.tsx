@@ -91,6 +91,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     accessor: "description",
     disableGroupBy: true,
     disableFilters: true,
+    disableSortBy: true,
   },
   {
     Header: "Package ID",
@@ -216,7 +217,7 @@ const BlueprintsCard: React.FunctionComponent<{
         teamFilters={teamFilters}
         setGlobalFilter={setGlobalFilter}
       />
-      <Col xs={9}>
+      <Col>
         <div className="d-flex justify-content-between align-items-center">
           <h3 className="my-3">
             {globalFilter

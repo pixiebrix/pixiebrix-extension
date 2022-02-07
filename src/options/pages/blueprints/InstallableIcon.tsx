@@ -15,37 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Split } from "type-fest";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBars,
-  faBolt,
-  faColumns,
   faCube,
-  faMousePointer,
+  faPuzzlePiece,
   faScroll,
-  faThLarge,
-  faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncEffect } from "use-async-effect";
 import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
 import { MarketplaceListing } from "@/types/contract";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { isBlueprint } from "@/options/pages/blueprints/installableUtils";
-import { selectType } from "@/devTools/editor/extensionPoints/adapter";
-import { IExtension } from "@/core";
 import { useAsyncState } from "@/hooks/common";
-
-const extensionTypeIcons = {
-  menuItem: faMousePointer,
-  trigger: faBolt,
-  panel: faWindowMaximize,
-  contextMenu: faBars,
-  actionPanel: faColumns,
-  quickBar: faThLarge,
-};
 
 async function getDefaultInstallableIcon(
   installable: Installable
@@ -54,36 +38,30 @@ async function getDefaultInstallableIcon(
     return faScroll;
   }
 
-  try {
-    const type = await selectType(installable as IExtension);
-    return extensionTypeIcons[type];
-  } catch {
-    return faCube;
-  }
-
-  return faCube;
+  return faPuzzlePiece;
 }
 
 const SIZE_REGEX = /^(?<size>\d)x$/i;
 
-/**
- * WARNING: avoid rendering a lot of brick icons (20+) icons on a page at once. Each one waits for the marketplace
- * listing and searches all the listings.
- */
 const InstallableIcon: React.FunctionComponent<{
   listing: MarketplaceListing;
   installable: Installable;
+  isLoading: boolean;
   size?: "1x" | "2x";
   /**
    * Sets a className only in cases where a <FontAwesomeIcon/> is used
    */
   faIconClass?: string;
-}> = ({ listing, installable, size = "1x", faIconClass = "" }) => {
+}> = ({ listing, installable, isLoading, size = "1x", faIconClass = "" }) => {
   const [listingFaIcon, setFaListingIcon] = useState<IconProp | undefined>();
 
   const [defaultIcon] = useAsyncState(async () =>
     getDefaultInstallableIcon(installable)
   );
+
+  const iconToUse = useMemo(() => {
+    return listingFaIcon ?? defaultIcon;
+  }, [listingFaIcon, defaultIcon]);
 
   useAsyncEffect(
     async (isMounted) => {
@@ -123,6 +101,10 @@ const InstallableIcon: React.FunctionComponent<{
   // Setting height and width via em allows for scaling with font size
   const cssSize = `${sizeMultiplier}em`;
 
+  if (isLoading) {
+    return <FontAwesomeIcon icon={faCube} color="darkGrey" size={size} />;
+  }
+
   return listing?.image ? (
     // Don't use the `width`/`height` attributes because they don't work with `em`
     <img
@@ -132,7 +114,7 @@ const InstallableIcon: React.FunctionComponent<{
     />
   ) : (
     <FontAwesomeIcon
-      icon={listingFaIcon ?? defaultIcon ?? faCube}
+      icon={iconToUse}
       color={listing?.icon_color ?? "darkGrey"}
       className={faIconClass}
       size={size}
