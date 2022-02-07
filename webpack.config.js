@@ -50,7 +50,6 @@ function parseEnv(value) {
 // Default ENVs used by webpack
 // Note: Default ENVs used by the extension itself should be set in EnvironmentPlugin
 const defaults = {
-  WEBEXT_MESSENGER_LOGGING: "false",
   DEV_NOTIFY: "true",
   DEV_SLIM: "false",
   CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
@@ -337,6 +336,7 @@ module.exports = (env, options) =>
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
+        WEBEXT_MESSENGER_LOGGING: "false",
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
@@ -349,7 +349,6 @@ module.exports = (env, options) =>
         SUPPORT_WIDGET_ID: null,
         GOOGLE_API_KEY: null,
         GOOGLE_APP_ID: null,
-        WEBEXT_MESSENGER_LOGGING: null,
       }),
 
       new MiniCssExtractPlugin({
