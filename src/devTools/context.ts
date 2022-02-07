@@ -172,6 +172,6 @@ export function useDevConnection(): Context {
 
   return {
     connecting,
-    tabState: current,
+    tabState,
   };
 }
