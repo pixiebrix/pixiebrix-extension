@@ -18,10 +18,10 @@
 import React, { useCallback, useState } from "react";
 import pTimeout from "p-timeout";
 import browser from "webextension-polyfill";
-import { navigationEvent } from "@/background/devtools/external";
+import { navigationEvent } from "@/devTools/events";
 import { useAsyncEffect } from "use-async-effect";
 import { FrameworkMeta } from "@/messaging/constants";
-import { reportError } from "@/telemetry/logging";
+import { reportError } from "@/telemetry/rollbar";
 import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
 import { getErrorMessage, isErrorObject } from "@/errors";
@@ -66,11 +66,6 @@ const initialFrameState: FrameConnectionState = {
 
 export interface Context {
   /**
-   * Re-connect to the background page
-   */
-  connect: () => Promise<void>;
-
-  /**
    * True if the a connection attempt is in process
    */
   connecting: boolean;
@@ -79,7 +74,6 @@ export interface Context {
 }
 
 const initialValue: Context = {
-  connect: async () => {},
   connecting: false,
   tabState: { ...initialFrameState, frameId: 0 },
 };
@@ -178,7 +172,6 @@ export function useDevConnection(): Context {
 
   return {
     connecting,
-    connect,
-    tabState,
+    tabState: current,
   };
 }

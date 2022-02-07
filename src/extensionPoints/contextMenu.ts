@@ -38,7 +38,7 @@ import {
   uninstallContextMenu,
 } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
-import { reportError } from "@/telemetry/logging";
+import { reportError } from "@/telemetry/rollbar";
 import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
@@ -151,9 +151,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     const extensions = this.extensions.splice(0, this.extensions.length);
     if (global) {
       for (const extension of extensions) {
-        void uninstallContextMenu({ extensionId: extension.id }).catch(
-          reportError
-        );
+        void uninstallContextMenu({ extensionId: extension.id });
       }
     }
   }

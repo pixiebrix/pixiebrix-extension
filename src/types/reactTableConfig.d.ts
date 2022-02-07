@@ -11,8 +11,10 @@ import {
   UseExpandedState,
   UseRowStateRowProps,
   UseRowStateCellProps,
-  UseGlobalFiltersInstanceProps,
   UseGlobalFiltersColumnOptions,
+  UseGlobalFiltersInstanceProps,
+  UseGlobalFiltersOptions,
+  UseGlobalFiltersState,
   UseSortByColumnOptions,
   UseSortByColumnProps,
   UseSortByHooks,
@@ -52,6 +54,7 @@ declare module "react-table" {
   export interface TableOptions<D extends object>
     extends UseExpandedOptions<D>,
       UseFiltersOptions<D>,
+      UseGlobalFiltersOptions<D>,
       UseGroupByOptions<D>,
       UseSortByOptions<D>,
       ActionOptions<D> {}
@@ -74,6 +77,7 @@ declare module "react-table" {
   export interface TableState<D extends object = {}>
     extends UseExpandedState<D>,
       UseFiltersState<D>,
+      UseGlobalFiltersState<D>,
       UseGroupByState<D>,
       UseSortByState<D> {}
 
@@ -81,6 +85,7 @@ declare module "react-table" {
   export interface ColumnInterface<D extends object = {}>
     extends UseGlobalFiltersColumnOptions<D>,
       UseFiltersColumnOptions<D>,
+      UseGlobalFiltersColumnOptions<D>,
       UseGroupByColumnOptions<D>,
       UseSortByColumnOptions<D> {}
 

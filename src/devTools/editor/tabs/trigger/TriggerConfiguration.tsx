@@ -32,6 +32,7 @@ function supportsSelector(trigger: Trigger) {
 }
 
 function supportsTargetMode(trigger: Trigger) {
+  // XXX: why doesn't `appear` support target mode?
   return supportsSelector(trigger) && trigger !== "appear";
 }
 
@@ -50,6 +51,9 @@ const TriggerConfiguration: React.FC<{
       if (!supportsSelector(nextTrigger)) {
         setFieldValue("extensionPoint.definition.rootSelector", null);
         setFieldValue("extensionPoint.definition.attachMode", null);
+      }
+
+      if (!supportsTargetMode(nextTrigger)) {
         setFieldValue("extensionPoint.definition.targetMode", null);
       }
 
@@ -75,6 +79,7 @@ const TriggerConfiguration: React.FC<{
         >
           <option value="load">Page Load</option>
           <option value="interval">Interval</option>
+          <option value="initialize">Initialize</option>
           <option value="appear">Appear</option>
           <option value="click">Click</option>
           <option value="dblclick">Double Click</option>

@@ -336,6 +336,7 @@ module.exports = (env, options) =>
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
+        WEBEXT_MESSENGER_LOGGING: "false",
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,

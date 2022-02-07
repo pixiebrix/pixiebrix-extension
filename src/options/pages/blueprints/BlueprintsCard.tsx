@@ -29,6 +29,7 @@ import AuthContext from "@/auth/AuthContext";
 import {
   Column,
   useFilters,
+  useGlobalFilter,
   useGroupBy,
   useSortBy,
   useTable,
@@ -54,6 +55,7 @@ import {
 import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
+import styles from "./BlueprintsCard.module.scss";
 
 const getInstallableRows = (
   installables: Installable[],
@@ -74,8 +76,8 @@ const getInstallableRows = (
   );
 
 // These react-table columns aren't rendered as column headings,
-// but used to expose grouping, sorting, and filtering utilities
-// (and eventually pagination & global searching) on InstallableRows
+// but used to expose grouping, sorting, filtering, and global
+// searching utilities on InstallableRows
 const columns: Array<Column<InstallableViewItem>> = [
   {
     Header: "Name",
@@ -84,19 +86,35 @@ const columns: Array<Column<InstallableViewItem>> = [
     disableFilters: true,
   },
   {
+    Header: "Description",
+    accessor: "description",
+    disableGroupBy: true,
+    disableFilters: true,
+  },
+  {
+    Header: "Package ID",
+    // @ts-expect-error -- react-table allows nested accessors
+    accessor: "sharing.packageId",
+    disableGroupBy: true,
+    disableFilters: true,
+  },
+  {
     Header: "Sharing",
     // @ts-expect-error -- react-table allows nested accessors
     accessor: "sharing.source.label",
+    disableGlobalFilter: true,
   },
   {
     Header: "Last modified",
     accessor: "updatedAt",
     disableGroupBy: true,
     disableFilters: true,
+    disableGlobalFilter: true,
   },
   {
     Header: "Status",
     accessor: "status",
+    disableGlobalFilter: true,
   },
 ];
 
@@ -144,21 +162,31 @@ const BlueprintsCard: React.FunctionComponent<{
             ...state,
             groupBy,
             sortBy,
-            filters,
+            filters: state.globalFilter ? [] : filters,
           }),
           // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
           [state, groupBy, sortBy, filters]
         ),
     },
     useFilters,
+    useGlobalFilter,
     useGroupBy,
     useSortBy
   );
 
-  const { rows, flatHeaders } = tableInstance;
+  const {
+    rows,
+    flatRows,
+    flatHeaders,
+    setGlobalFilter,
+    state: { globalFilter },
+  } = tableInstance;
 
   const isGrouped = groupBy.length > 0;
   const isSorted = sortBy.length > 0;
+  const numberOfBlueprints = isGrouped
+    ? flatRows.length - rows.length
+    : rows.length;
 
   const { groupByOptions, sortByOptions } = useMemo(() => {
     const groupByOptions = flatHeaders
@@ -182,11 +210,16 @@ const BlueprintsCard: React.FunctionComponent<{
 
   return (
     <BootstrapRow>
-      <ListFilters teamFilters={teamFilters} />
+      <ListFilters
+        teamFilters={teamFilters}
+        setGlobalFilter={setGlobalFilter}
+      />
       <Col xs={9}>
         <div className="d-flex justify-content-between align-items-center">
           <h3 className="my-3">
-            {filters.length > 0 ? filters[0].value : "All"} Blueprints
+            {globalFilter
+              ? "Search results"
+              : `${filters.length > 0 ? filters[0].value : "All"} Blueprints`}
           </h3>
           <span className="d-flex align-items-center">
             <span className="ml-3 mr-2">Group by:</span>
@@ -258,21 +291,29 @@ const BlueprintsCard: React.FunctionComponent<{
             </Button>
           </span>
         </div>
-        {isGrouped ? (
-          <>
-            {rows.map((row) => (
-              <Fragment key={row.groupByVal}>
-                <h5 className="text-muted mt-3">{row.groupByVal}</h5>
-                <BlueprintsView
-                  tableInstance={tableInstance}
-                  rows={row.subRows}
-                />
-              </Fragment>
-            ))}
-          </>
-        ) : (
-          <BlueprintsView tableInstance={tableInstance} rows={rows} />
-        )}
+        <div className={styles.root}>
+          {globalFilter && (
+            <p>
+              {numberOfBlueprints} results for{" "}
+              <strong>&quot;{globalFilter}&quot;</strong>
+            </p>
+          )}
+          {isGrouped ? (
+            <>
+              {rows.map((row) => (
+                <Fragment key={row.groupByVal}>
+                  <h5 className="text-muted mt-3">{row.groupByVal}</h5>
+                  <BlueprintsView
+                    tableInstance={tableInstance}
+                    rows={row.subRows}
+                  />
+                </Fragment>
+              ))}
+            </>
+          ) : (
+            <BlueprintsView tableInstance={tableInstance} rows={rows} />
+          )}
+        </div>
       </Col>
     </BootstrapRow>
   );

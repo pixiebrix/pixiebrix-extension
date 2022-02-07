@@ -27,7 +27,6 @@ import {
   reactivateEveryTab,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { reportError } from "@/telemetry/logging";
 import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
 import { Dispatch } from "redux";
@@ -210,7 +209,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     // Remove from storage first so it doesn't get re-added in reactivate step below
     dispatch(removeExtension({ extensionId }));
     // XXX: also remove remove side panel panels that are already open?
-    void uninstallContextMenu({ extensionId }).catch(reportError);
+    void uninstallContextMenu({ extensionId });
     reactivateEveryTab();
   },
 });
