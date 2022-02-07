@@ -114,6 +114,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
     process.env.ENVIRONMENT === "development" ||
     flags.includes("page-editor-developer");
   const showBetaExtensionPoints = flags.includes("page-editor-beta");
+  const shouldGroupByRecipes = flags.includes("page-editor-beta");
 
   const {
     tabState: { hasPermissions },
@@ -156,7 +157,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
       );
 
       for (const extension of filteredExtensions) {
-        if (extension._recipe) {
+        if (extension._recipe && shouldGroupByRecipes) {
           const recipeId = extension._recipe.id;
           if (elementsByRecipeId.has(recipeId)) {
             elementsByRecipeId.get(recipeId).push(extension);
@@ -169,7 +170,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
       }
 
       for (const element of filteredDynamicElements) {
-        if (element.recipe) {
+        if (element.recipe && shouldGroupByRecipes) {
           const recipeId = element.recipe.id;
           if (elementsByRecipeId.has(recipeId)) {
             elementsByRecipeId.get(recipeId).push(element);
