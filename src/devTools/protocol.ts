@@ -15,32 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser, { WebNavigation } from "webextension-polyfill";
-import { navigationEvent } from "@/background/devtools/external";
-import { handleNavigate, resetTab } from "@/contentScript/messenger/api";
+import browser from "webextension-polyfill";
+import { resetTab } from "@/contentScript/messenger/api";
 import { thisTab } from "./utils";
-import { canAccessTab } from "webext-tools";
+import { Target } from "@/types";
+import { updateDevTools } from "./events";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
-export function updateDevTools() {
-  navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
-}
-
-async function onNavigation({
-  tabId,
-  frameId,
-}:
-  | WebNavigation.OnHistoryStateUpdatedDetailsType
-  | WebNavigation.OnDOMContentLoadedDetailsType): Promise<void> {
-  if (
+// The editor only cares for the top frame
+function isCurrentTopFrame({ tabId, frameId }: Target) {
+  return (
     frameId === TOP_LEVEL_FRAME_ID &&
     tabId === browser.devtools.inspectedWindow.tabId
-  ) {
+  );
+}
+
+async function onNavigation(target: Target): Promise<void> {
+  if (isCurrentTopFrame(target)) {
     updateDevTools();
-    if (await canAccessTab({ tabId, frameId })) {
-      handleNavigate({ tabId, frameId });
-    }
   }
 }
 
@@ -49,7 +42,6 @@ function onEditorClose(): void {
 }
 
 export function watchNavigation(): void {
-  browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
   browser.webNavigation.onDOMContentLoaded.addListener(onNavigation);
   browser.permissions.onAdded.addListener(updateDevTools);
   browser.permissions.onRemoved.addListener(updateDevTools);

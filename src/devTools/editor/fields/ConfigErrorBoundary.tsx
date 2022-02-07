@@ -16,7 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { reportError } from "@/telemetry/logging";
+import { reportError } from "@/telemetry/rollbar";
 import { getErrorMessage } from "@/errors";
 import { UnknownObject } from "@/types";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
