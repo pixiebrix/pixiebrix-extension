@@ -22,7 +22,7 @@ import { isObject } from "@/utils";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
-export const ignoredErrors = [
+export const IGNORED_ERRORS = [
   "ResizeObserver loop limit exceeded",
   "Promise was cancelled",
   "Uncaught Error: PixieBrix contentScript already installed",

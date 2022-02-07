@@ -19,13 +19,13 @@
  * @file This file must be imported as early as possible in each entrypoint, once
  */
 
-import { getErrorMessage, ignoredErrors } from "@/errors";
+import { getErrorMessage, IGNORED_ERRORS } from "@/errors";
 import { reportError } from "@/telemetry/rollbar";
 
 function ignoreSomeErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ): void {
-  if (ignoredErrors.includes(getErrorMessage(errorEvent))) {
+  if (IGNORED_ERRORS.includes(getErrorMessage(errorEvent))) {
     errorEvent.preventDefault();
   }
 }
