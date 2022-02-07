@@ -74,7 +74,7 @@
     "http-status-codes": "^2.1.4",
     "idb": "^7.0.0",
     "immer": "^9.0.5",
-    "intro.js": "^4.3.0",
+    "intro.js": "^5.0.0",
     "is-promise": "^4.0.0",
     "jq-web": "^0.5.1",
     "jquery": "^3.6.0",
