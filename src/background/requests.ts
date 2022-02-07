@@ -45,8 +45,7 @@ import {
   isProxiedErrorResponse,
   proxyResponseToAxiosResponse,
 } from "@/background/proxyUtils";
-import { enrichRequestError } from "@/services/errorUtils";
-import { getReasonPhrase } from "http-status-codes";
+import { enrichRequestError, safeGuessStatusText } from "@/services/errorUtils";
 
 type SanitizedResponse<T = unknown> = Pick<
   AxiosResponse<T>,
@@ -179,7 +178,7 @@ async function proxyRequest<T>(
   return {
     data: remoteResponse.json as T,
     status: remoteResponse.status_code,
-    statusText: getReasonPhrase(remoteResponse.status_code),
+    statusText: safeGuessStatusText(remoteResponse.status_code),
     $$proxied: true,
   };
 }

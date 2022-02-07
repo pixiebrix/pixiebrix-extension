@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { AxiosError, AxiosRequestConfig } from "axios";
+import { AxiosError } from "axios";
 import { useAsyncState } from "@/hooks/common";
 import browser from "webextension-polyfill";
 import { Col, Row } from "react-bootstrap";
@@ -26,13 +26,7 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import JsonTree from "@/components/jsonTree/JsonTree";
-import urljoin from "url-join";
-import { getReasonPhrase } from "http-status-codes";
-import { isAbsoluteUrl } from "@/utils";
-
-function getAbsoluteUrl({ url, baseURL }: AxiosRequestConfig): string {
-  return isAbsoluteUrl(url) ? url : urljoin(baseURL, url);
-}
+import { safeGuessStatusText, selectAbsoluteUrl } from "@/services/errorUtils";
 
 function tryParse(value: unknown): unknown {
   if (typeof value === "string") {
@@ -47,18 +41,10 @@ function tryParse(value: unknown): unknown {
   return value;
 }
 
-function getHumanReadableStatus(code: string | number): string {
-  try {
-    return getReasonPhrase(code);
-  } catch {
-    return "Unknown error code";
-  }
-}
-
 const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
   error,
 }) => {
-  const absoluteUrl = useMemo(() => getAbsoluteUrl(error.config), [
+  const absoluteUrl = useMemo(() => selectAbsoluteUrl(error.config), [
     error.config,
   ]);
 
@@ -112,7 +98,7 @@ const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
         )}
         {status && (
           <div>
-            Status: {status} &mdash; {getHumanReadableStatus(status)}
+            Status: {status} &mdash; {safeGuessStatusText(status)}
           </div>
         )}
         {cleanResponse == null ? (

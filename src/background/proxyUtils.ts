@@ -17,7 +17,7 @@
 
 import { AxiosResponse } from "axios";
 import { ProxyResponseData, ProxyResponseErrorData } from "@/types/contract";
-import { getReasonPhrase } from "http-status-codes";
+import { safeGuessStatusText } from "@/services/errorUtils";
 
 export function proxyResponseToAxiosResponse(
   data: ProxyResponseData
@@ -34,7 +34,7 @@ export function proxyResponseToAxiosResponse(
     data: data.json,
     status: data.status_code,
     // A bit of a hack, since our proxy doesn't return statusText on success
-    statusText: getReasonPhrase(data.status_code),
+    statusText: safeGuessStatusText(data.status_code),
   };
 }
 

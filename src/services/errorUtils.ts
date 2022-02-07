@@ -24,13 +24,32 @@ import {
 } from "@/services/errors";
 import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import { getBaseURL } from "@/services/baseService";
+import { getReasonPhrase } from "http-status-codes";
+import { isAbsoluteUrl } from "@/utils";
+import urljoin from "url-join";
+
+export function selectAbsoluteUrl({
+  url,
+  baseURL,
+}: AxiosRequestConfig): string {
+  return isAbsoluteUrl(url) ? url : urljoin(baseURL, url);
+}
+
+export function safeGuessStatusText(code: string | number): string | null {
+  try {
+    return getReasonPhrase(code);
+  } catch {
+    return null;
+  }
+}
 
 async function isAppRequest(error: AxiosError): Promise<boolean> {
   const baseURL = await getBaseURL();
-  return testMatchPatterns([`${baseURL}/*`], error.request.url);
+  const requestUrl = selectAbsoluteUrl(error.config);
+  return testMatchPatterns([`${baseURL}/*`], requestUrl);
 }
 
 export async function enrichRequestError(error: unknown): Promise<unknown> {
@@ -47,7 +66,7 @@ export async function enrichRequestError(error: unknown): Promise<unknown> {
   let url: URL;
 
   try {
-    url = new URL(error.request.url);
+    url = new URL(selectAbsoluteUrl(error.config));
   } catch (typeError) {
     return new BusinessError(
       `Invalid Request URL: ${getErrorMessage(typeError)}`
@@ -84,7 +103,7 @@ export async function enrichRequestError(error: unknown): Promise<unknown> {
   }
 
   return new ClientNetworkError(
-    "No response received. See background page console for details.",
+    "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information",
     error,
     sanitizedUrl
   );
