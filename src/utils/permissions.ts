@@ -22,9 +22,7 @@ import {
   openPopupPrompt,
 } from "@/background/messenger/api";
 import { isScriptableUrl } from "webext-content-scripts";
-import { patternToRegex } from "webext-patterns";
-
-const pbDomainRegex = patternToRegex("https://*.pixiebrix.com/*");
+import { isUrlPermittedByManifest } from "webext-additional-permissions";
 
 /** Filters out any permissions that are not part of `optional_permissions` */
 export function selectOptionalPermissions(
@@ -55,7 +53,7 @@ export async function requestPermissions(
   // We can't use `await containsPermissions()` before `request() `because we might lose the "user action" flag
   // https://github.com/pixiebrix/pixiebrix-extension/issues/1759
   if (Array.isArray(permissions.origins)) {
-    remove(permissions.origins, (origin) => pbDomainRegex.test(origin));
+    remove(permissions.origins, (origin) => isUrlPermittedByManifest(origin));
   }
 
   if (browser.permissions) {
