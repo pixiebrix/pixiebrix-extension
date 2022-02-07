@@ -16,7 +16,7 @@
  */
 
 import { isBackground } from "webext-detect-page";
-import { reportError } from "@/telemetry/logging";
+import { reportError } from "@/telemetry/rollbar";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import browser, { Tabs } from "webextension-polyfill";
 import { toggleActionPanel } from "@/contentScript/messenger/api";
@@ -48,7 +48,6 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
     });
   } catch (error) {
     await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
-    console.error(error);
     reportError(error);
   }
 }

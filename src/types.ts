@@ -216,7 +216,7 @@ export abstract class Block implements IBlock {
 
   abstract readonly inputSchema: Schema;
 
-  readonly outputSchema?: Schema = undefined;
+  outputSchema?: Schema = undefined;
 
   readonly permissions = {};
 

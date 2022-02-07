@@ -27,7 +27,6 @@ import {
 } from "@/actionPanel/actionPanelUtils";
 import { UUID } from "@/core";
 import { cancelForm } from "@/contentScript/messenger/api";
-import { reportError } from "@/telemetry/logging";
 import { whoAmI } from "@/background/messenger/api";
 
 type AppState = ActionPanelStore & {
@@ -54,11 +53,9 @@ const actionPanelSlice = createSlice({
       for (const current of state.forms.filter(
         (x) => x.extensionId === form.extensionId
       )) {
-        void whoAmI()
-          .then(async (sender) =>
-            cancelForm({ tabId: sender.tab.id, frameId: 0 }, current.nonce)
-          )
-          .catch(reportError);
+        void whoAmI().then(async (sender) =>
+          cancelForm({ tabId: sender.tab.id, frameId: 0 }, current.nonce)
+        );
       }
 
       state.forms = state.forms.filter(
