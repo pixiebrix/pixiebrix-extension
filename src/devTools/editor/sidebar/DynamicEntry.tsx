@@ -47,6 +47,8 @@ const DynamicEntry: React.FunctionComponent<{
     (x) => x.editor.dirty[item.uuid] ?? false
   );
 
+  const isButton = item.type === "menuItem";
+
   const showOverlay = useCallback(async (uuid: UUID) => {
     await enableOverlay(thisTab, `[data-pb-uuid="${uuid}"]`);
   }, []);
@@ -61,8 +63,8 @@ const DynamicEntry: React.FunctionComponent<{
       action
       active={active}
       key={`dynamic-${item.uuid}`}
-      onMouseEnter={async () => showOverlay(item.uuid)}
-      onMouseLeave={async () => hideOverlay()}
+      onMouseEnter={isButton && (async () => showOverlay(item.uuid))}
+      onMouseLeave={isButton && (async () => hideOverlay())}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
     >
       <span className={styles.icon}>
