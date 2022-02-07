@@ -89,7 +89,6 @@ const tabStateFactory = define<FrameConnectionState>({
 });
 
 export const activeDevToolContextFactory = define<DevtoolsContextType>({
-  connect: jest.fn(),
   connecting: false,
   tabState: tabStateFactory,
 });

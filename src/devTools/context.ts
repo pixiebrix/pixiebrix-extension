@@ -65,11 +65,6 @@ const initialFrameState: Except<FrameConnectionState, "frameId"> = {
 
 export interface Context {
   /**
-   * Re-connect to the background page
-   */
-  connect: () => Promise<void>;
-
-  /**
    * True if the a connection attempt is in process
    */
   connecting: boolean;
@@ -78,7 +73,6 @@ export interface Context {
 }
 
 const initialValue: Context = {
-  connect: async () => {},
   connecting: false,
   tabState: { ...initialFrameState, frameId: 0 },
 };
@@ -178,7 +172,6 @@ export function useDevConnection(): Context {
 
   return {
     connecting,
-    connect,
     tabState: current,
   };
 }
