@@ -22,10 +22,11 @@ import { timeSince } from "@/utils/timeUtils";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import Status from "@/options/pages/blueprints/Status";
 import styles from "./TableRow.module.scss";
+import { GetInstallableIcon } from "@/options/pages/blueprints/useGetInstallableIcon";
 
 const TableRow: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
-  getInstallableIcon;
+  getInstallableIcon: GetInstallableIcon;
 }> = ({ installableItem, getInstallableIcon }) => {
   const {
     name,
