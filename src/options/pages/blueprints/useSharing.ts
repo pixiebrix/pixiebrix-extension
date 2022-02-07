@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { useGetAuthQuery } from "@/services/api";
 import {
   isDeployment,

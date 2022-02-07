@@ -34,6 +34,7 @@ jest.unmock("react-redux");
 jest.mock("@/hooks/useNotifications");
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
+  useGetAuthQuery: jest.fn(),
 }));
 
 const extension = extensionFactory({
@@ -53,15 +54,15 @@ const storeForTests = configureStore({
 const TestWrapper: React.FC<{ scope?: string }> = ({
   scope = "@test",
   children,
-}) => (
-  <Provider store={storeForTests}>
-    <AuthContext.Provider
-      value={{ ...anonAuth, scope, isPending: false, error: undefined }}
-    >
-      {children}
-    </AuthContext.Provider>
-  </Provider>
-);
+}) => {
+  (useGetAuthQuery as jest.Mock).mockReturnValue({
+    data: {
+      ...anonAuth,
+      scope,
+    },
+  });
+  return <Provider store={storeForTests}>{children}</Provider>;
+};
 
 test("renders modal", async () => {
   render(

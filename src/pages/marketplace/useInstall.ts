@@ -18,7 +18,7 @@
 import { RecipeDefinition } from "@/types/definitions";
 import useNotifications from "@/hooks/useNotifications";
 import { useDispatch } from "react-redux";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { FormikHelpers } from "formik";
 import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";

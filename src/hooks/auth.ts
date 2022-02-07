@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fetch } from "@/hooks/fetch";
 import { AuthState as CoreAuthState, RawServiceConfiguration } from "@/core";
-import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
-import { getUID } from "@/background/telemetry";
 import { AuthOption } from "@/auth/authTypes";
 import { useAsyncState } from "./common";
 import { readRawConfigurations } from "@/services/registry";
@@ -26,7 +23,6 @@ import { useMemo, useCallback } from "react";
 import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { SanitizedAuth } from "@/types/contract";
-import { AuthState } from "@/auth/AuthContext";
 
 interface OrganizationResponse {
   readonly id: string;
@@ -53,50 +49,6 @@ export const anonAuth: CoreAuthState = {
   scope: null,
   flags: [],
 };
-
-export async function getAuth(): Promise<CoreAuthState> {
-  const {
-    id,
-    email,
-    scope,
-    organization,
-    telemetry_organization: telemetryOrganization,
-    is_onboarded: isOnboarded,
-    flags = [],
-  } = await fetch<ProfileResponse>("/api/me/");
-  if (id) {
-    await updateRollbarAuth({
-      userId: id,
-      email,
-      organizationId: telemetryOrganization?.id ?? organization?.id,
-      browserId: await getUID(),
-    });
-    return {
-      userId: id,
-      email,
-      scope,
-      organization,
-      isOnboarded,
-      isLoggedIn: true,
-      extension: true,
-      flags,
-    };
-  }
-
-  return anonAuth;
-}
-
-export function useAuth(initialState: CoreAuthState = anonAuth): AuthState {
-  const [auth, isPending, error] = useAsyncState(getAuth, [], initialState);
-  return useMemo<AuthState>(
-    () => ({
-      ...auth,
-      isPending,
-      error,
-    }),
-    [auth, isPending, error]
-  );
-}
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();

@@ -301,43 +301,47 @@ exports[`requires user scope 1`] = `
                You account alias will not be visible to anyone unless you choose to share a brick or extension.
             </p>
           </div>
-          <form
-            class="mt-2"
-            novalidate=""
+          <div
+            class="container"
           >
-            <div
-              class="formGroup form-group row"
+            <form
+              class="mt-2"
+              novalidate=""
             >
-              <label
-                class="label form-label col-form-label col-xl-2 col-lg-3"
-                for="scope"
-              >
-                Account Alias
-              </label>
               <div
-                class="col-xl-10 col-lg-9"
+                class="formGroup form-group row"
               >
-                <input
-                  class="form-control"
-                  id="scope"
-                  name="scope"
-                  placeholder="@peter-parker"
-                  value=""
-                />
-                <small
-                  class="text-muted form-text"
+                <label
+                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  for="scope"
                 >
-                  Your @alias for publishing bricks, e.g., @peter-parker
-                </small>
+                  Account Alias
+                </label>
+                <div
+                  class="col-xl-10 col-lg-9"
+                >
+                  <input
+                    class="form-control"
+                    id="scope"
+                    name="scope"
+                    placeholder="@peter-parker"
+                    value=""
+                  />
+                  <small
+                    class="text-muted form-text"
+                  >
+                    Your @alias for publishing bricks, e.g., @peter-parker
+                  </small>
+                </div>
               </div>
-            </div>
-            <button
-              class="btn btn-primary"
-              type="submit"
-            >
-              Set My Account Alias
-            </button>
-          </form>
+              <button
+                class="btn btn-primary"
+                type="submit"
+              >
+                Set My Account Alias
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

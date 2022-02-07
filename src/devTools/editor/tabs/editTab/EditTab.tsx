@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout, {
   FOUNDATION_NODE_ID,

@@ -16,7 +16,7 @@
  */
 
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { Fragment, useContext, useMemo } from "react";
+import React, { Fragment, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getDescription,

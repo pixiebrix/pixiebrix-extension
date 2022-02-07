@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { useGetAuthQuery } from "@/services/api";
 import { Link } from "react-router-dom";
-import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
+import {
+  useGetOrganizationsQuery,
+  useGetRecipesQuery,
+  useGetAuthQuery,
+} from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
 import GridLoader from "react-spinners/GridLoader";
 

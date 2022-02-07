@@ -29,7 +29,7 @@ import {
 } from "@/background/messenger/api";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
 import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";

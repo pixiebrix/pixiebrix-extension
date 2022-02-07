@@ -39,7 +39,7 @@ import {
 } from "@/types/contract";
 import { components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
-import { ProfileResponse } from "@/hooks/auth";
+import { anonAuth, ProfileResponse } from "@/hooks/auth";
 import { getUID } from "@/background/telemetry";
 import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
 
@@ -98,23 +98,27 @@ export const appApi = createApi({
         is_onboarded: isOnboarded,
         flags = [],
       }: ProfileResponse) => {
-        await updateRollbarAuth({
-          userId: id,
-          email,
-          organizationId: telemetryOrganization?.id ?? organization?.id,
-          browserId: await getUID(),
-        });
+        if (id) {
+          await updateRollbarAuth({
+            userId: id,
+            email,
+            organizationId: telemetryOrganization?.id ?? organization?.id,
+            browserId: await getUID(),
+          });
 
-        return {
-          userId: id,
-          email,
-          scope,
-          organization,
-          isOnboarded,
-          isLoggedIn: true,
-          extension: true,
-          flags,
-        };
+          return {
+            userId: id,
+            email,
+            scope,
+            organization,
+            isOnboarded,
+            isLoggedIn: true,
+            extension: true,
+            flags,
+          };
+        }
+
+        return anonAuth;
       },
     }),
 

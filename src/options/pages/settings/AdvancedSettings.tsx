@@ -17,7 +17,7 @@
 
 import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import { clearExtensionAuth } from "@/auth/token";
 import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";

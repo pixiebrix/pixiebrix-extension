@@ -21,6 +21,7 @@ import SaveExtensionWizard from "./SaveExtensionWizard";
 import {
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
   useGetRecipesQuery as useGetRecipesQueryMock,
+  useGetAuthQuery,
 } from "@/services/api";
 import useSavingWizardMock from "./useSavingWizard";
 import {
@@ -30,7 +31,6 @@ import {
 } from "@/tests/factories";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/tests/testHelpers";
-import { useGetAuthQuery } from "@/services/api";
 import { anonAuth } from "@/hooks/auth";
 
 jest.mock("@/hooks/useNotifications");
@@ -39,6 +39,7 @@ jest.mock("./useSavingWizard");
 jest.mock("@/services/api", () => ({
   useGetRecipesQuery: jest.fn(),
   useGetEditablePackagesQuery: jest.fn(),
+  useGetAuthQuery: jest.fn(),
 }));
 
 beforeEach(() => {
@@ -48,6 +49,10 @@ beforeEach(() => {
   });
   (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
     data: [],
+    isLoading: false,
+  });
+  (useGetAuthQuery as jest.Mock).mockReturnValue({
+    data: anonAuth,
     isLoading: false,
   });
 });
@@ -142,19 +147,15 @@ test("calls Save as New Blueprint", async () => {
     isLoading: false,
   });
 
+  (useGetAuthQuery as jest.Mock).mockReturnValue({
+    data: {
+      ...anonAuth,
+      scope: "@test",
+    },
+  });
+
   // Setting the AuthContext to provide the user scope
-  render(
-    <AuthContext.Provider
-      value={{
-        ...anonAuth,
-        scope: "@test",
-        isPending: false,
-        error: undefined,
-      }}
-    >
-      <SaveExtensionWizard />
-    </AuthContext.Provider>
-  );
+  render(<SaveExtensionWizard />);
 
   // Clicking Save as New Blueprint on the first modal
   fireEvent.click(
@@ -191,18 +192,7 @@ test("requires user context to save as new blueprint", async () => {
     isLoading: false,
   });
 
-  render(
-    <AuthContext.Provider
-      value={{
-        ...anonAuth,
-        scope: "",
-        isPending: false,
-        error: undefined,
-      }}
-    >
-      <SaveExtensionWizard />
-    </AuthContext.Provider>
-  );
+  render(<SaveExtensionWizard />);
 
   // Clicking Save as New Blueprint on the first modal
   fireEvent.click(

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   MessageContext,
   RecipeMetadata,
@@ -30,8 +30,11 @@ import ExtensionGroupHeader from "./ExtensionGroupHeader";
 import { groupBy } from "lodash";
 import ExtensionRows from "./ExtensionRows";
 import { isDeploymentActive } from "@/options/deploymentUtils";
-import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
-import { useGetAuthQuery } from "@/services/api";
+import {
+  useGetOrganizationsQuery,
+  useGetRecipesQuery,
+  useGetAuthQuery,
+} from "@/services/api";
 import { RecipeDefinition } from "@/types/definitions";
 import { push } from "connected-react-router";
 import * as semver from "semver";

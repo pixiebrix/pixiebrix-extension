@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import ScopeSettings from "./ScopeSettings";
 import { SettingsState } from "@/store/settingsTypes";
@@ -51,8 +51,7 @@ export const RequireScope: React.FunctionComponent<{
   );
 
   // Fetching scope currently performs a network request. Optimistically show the main interface while the scope is being fetched.
-  // if (require && mode !== "local" && !isLoading && isEmpty(scope)) {
-  if (require) {
+  if (require && mode !== "local" && !isLoading && isEmpty(scope)) {
     return (
       <ScopeSettings
         title={scopeSettingsTitle}

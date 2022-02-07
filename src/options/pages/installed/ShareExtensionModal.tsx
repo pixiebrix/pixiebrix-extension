@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   Button,
   Modal,
@@ -27,7 +27,7 @@ import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
 import * as Yup from "yup";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import { useGetAuthQuery } from "@/services/api";
+import { useGetAuthQuery, useGetOrganizationsQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import slugify from "slugify";
 import { getLinkedApiClient } from "@/services/apiClient";
@@ -50,7 +50,6 @@ import Form, {
   RenderSubmit,
 } from "@/components/form/Form";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { useGetOrganizationsQuery } from "@/services/api";
 import { PackageUpsertResponse } from "@/types/contract";
 import extensionsSlice from "@/store/extensionsSlice";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
