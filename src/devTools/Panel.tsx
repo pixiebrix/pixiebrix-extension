@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Button, Container } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useDevConnection } from "@/devTools/context";
@@ -32,9 +32,6 @@ import Centered from "@/devTools/editor/components/Centered";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
-import { getErrorMessage } from "@/errors";
-import browser from "webextension-polyfill";
-import { useGetAuthQuery } from "@/services/api";
 
 // Import custom options widgets/forms for the built-in bricks
 import "@/contrib/editors";
@@ -51,45 +48,11 @@ const PersistLoader: React.FunctionComponent = () => (
 );
 
 const Panel: React.FunctionComponent = () => {
-  const { isLoading: authLoading, error: authError } = useGetAuthQuery();
   const context = useDevConnection();
 
   useAsyncEffect(async () => {
     await blockRegistry.fetch();
   }, []);
-
-  const error =
-    (authError && getErrorMessage(authError)) || context.tabState.error;
-  if (error) {
-    return (
-      <Centered vertically>
-        {authError && (
-          <div className="PaneTitle">Error authenticating account</div>
-        )}
-        <div>{error}</div>
-        <div className="mt-2">
-          <Button
-            onClick={() => {
-              void browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
-            }}
-          >
-            Reload Page
-          </Button>
-        </div>
-        <div className="mt-2">
-          <Button
-            size="sm"
-            variant="light"
-            onClick={() => {
-              location.reload();
-            }}
-          >
-            Reload Editor
-          </Button>
-        </div>
-      </Centered>
-    );
-  }
 
   return (
     <Provider store={store}>
@@ -100,7 +63,7 @@ const Panel: React.FunctionComponent = () => {
               <ErrorBoundary>
                 <Router>
                   <Container fluid className="DevToolsContainer">
-                    {authLoading ? <PersistLoader /> : <Editor />}
+                    <Editor />
                   </Container>
                 </Router>
               </ErrorBoundary>
