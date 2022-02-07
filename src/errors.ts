@@ -206,6 +206,9 @@ const BUSINESS_ERROR_NAMES = new Set([
   "MissingConfigurationError",
   "NotConfiguredError",
   "RemoteServiceError",
+  "ClientNetworkPermissionError",
+  "ClientNetworkError",
+  "ProxiedRemoteServiceError",
   "RemoteExecutionError",
 ]);
 

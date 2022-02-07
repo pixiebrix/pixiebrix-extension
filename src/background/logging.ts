@@ -16,7 +16,7 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { rollbar } from "@/telemetry/rollbar";
+import { getPerson, rollbar } from "@/telemetry/rollbar";
 import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
@@ -192,14 +192,17 @@ export async function getLog(
  * Unroll/flatten the context of nested `ContextErrors`
  * @see SerializedError
  */
-function buildContext(
+function flattenContext(
   error: SerializedError,
   context: MessageContext
 ): MessageContext {
   if (typeof error === "object" && error && error.name === "ContextError") {
     const currentContext =
       typeof error.context === "object" ? error.context : {};
-    const innerContext = buildContext(error.cause as SerializedError, context);
+    const innerContext = flattenContext(
+      error.cause as SerializedError,
+      context
+    );
     // Prefer the inner context
     return { ...context, ...innerContext, ...currentContext };
   }
@@ -214,7 +217,7 @@ export async function recordError(
 ): Promise<void> {
   try {
     const message = getErrorMessage(error);
-    const flatContext = buildContext(error, context);
+    const flatContext = flattenContext(error, context);
 
     if (await allowsTrack()) {
       // Deserialize the error into an Error object before passing it to Rollbar so rollbar treats it as the error.
@@ -229,9 +232,15 @@ export async function recordError(
       if (hasCancelRootCause(error)) {
         // NOP - no reason to send to Rollbar
       } else if (hasBusinessRootCause(error)) {
-        rollbar.debug(message, errorObj, flatContext);
+        rollbar.debug(message, errorObj, {
+          ...flatContext,
+          person: getPerson(),
+        });
       } else {
-        rollbar.error(message, errorObj, flatContext);
+        rollbar.error(message, errorObj, {
+          ...flatContext,
+          person: getPerson(),
+        });
       }
     }
 

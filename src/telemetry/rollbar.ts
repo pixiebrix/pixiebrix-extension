@@ -36,11 +36,28 @@ type Payload = {
   };
 };
 
+type Person = {
+  id: string;
+  email: string;
+  organizationId: string;
+};
+
 /**
  *  @see https://docs.rollbar.com/docs/javascript
  *  @see https://docs.rollbar.com/docs/rollbarjs-configuration-reference
  */
 export const rollbar = initRollbar();
+
+// Track person separately, so we can merge into the payload. Only setting it in rollbar.configure causes it to be
+// overwritten if the caller provides a custom payload (Rollbar does not perform merging with the preset configuration)
+let person: Partial<Person> = {};
+
+/**
+ * Get the Rollbar person to merge into the Rollbar payload
+ */
+export function getPerson(): Partial<Person> {
+  return { ...person };
+}
 
 function initRollbar() {
   try {
@@ -120,24 +137,20 @@ export async function updateAuth({
   email: string | null;
   browserId: string | null;
 }): Promise<void> {
-  if (!rollbar) {
-    return;
-  }
-
   if (isExtensionContext()) {
     if (organizationId) {
-      // Enterprise accounts, use userId for telemetry
-      rollbar.configure({
-        payload: { person: { id: userId, email, organizationId } },
-      });
+      // Enterprise accounts, use userId and email for telemetry
+      person = { id: userId, email, organizationId };
     } else {
-      rollbar.configure({
-        payload: { person: { id: browserId, organizationId: null } },
-      });
+      person = { id: browserId, organizationId: null };
     }
   } else {
+    person = { id: userId, organizationId };
+  }
+
+  if (rollbar) {
     rollbar.configure({
-      payload: { person: { id: userId, organizationId } },
+      payload: { person },
     });
   }
 }
@@ -169,7 +182,7 @@ async function _reportError(
     return;
   }
 
-  // Events are already natively logged
+  // Events are already natively logged by the browser
   if (
     !(error instanceof ErrorEvent || error instanceof PromiseRejectionEvent)
   ) {

@@ -20,6 +20,8 @@ import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { EndpointAuthError, isAxiosError } from "@/errors";
 import { clearExtensionAuth } from "@/auth/token";
 import { isAbsoluteUrl } from "@/utils";
+import { enrichRequestError } from "@/services/errorUtils";
+import { expectContext } from "@/utils/expectContext";
 
 const HTTP_401_UNAUTHENTICATED = 401;
 
@@ -31,6 +33,8 @@ export async function fetch<TData = unknown>(
   relativeOrAbsoluteUrl: string,
   options: FetchOptions = {}
 ): Promise<TData> {
+  expectContext("extension");
+
   const absolute = isAbsoluteUrl(relativeOrAbsoluteUrl);
 
   const { requireLinked } = {
@@ -40,8 +44,12 @@ export async function fetch<TData = unknown>(
 
   if (absolute) {
     // Make a normal request
-    const { data } = await axios.get<TData>(relativeOrAbsoluteUrl);
-    return data;
+    try {
+      const { data } = await axios.get<TData>(relativeOrAbsoluteUrl);
+      return data;
+    } catch (error) {
+      throw await enrichRequestError(error);
+    }
   }
 
   const client = await (requireLinked ? getLinkedApiClient() : getApiClient());
@@ -69,6 +77,6 @@ export async function fetch<TData = unknown>(
       }
     }
 
-    throw error;
+    throw await enrichRequestError(error);
   }
 }
