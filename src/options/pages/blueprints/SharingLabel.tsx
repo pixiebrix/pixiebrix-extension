@@ -33,12 +33,10 @@ const sharingIcons = {
 
 const SharingLabel: React.FunctionComponent<{
   sharing: SharingSource;
-}> = ({ sharing }) => {
-  return (
-    <div>
-      <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
-    </div>
-  );
-};
+}> = ({ sharing }) => (
+  <div>
+    <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
+  </div>
+);
 
 export default SharingLabel;
