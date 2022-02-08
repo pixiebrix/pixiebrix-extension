@@ -16,8 +16,7 @@
  */
 
 import React, { Component } from "react";
-import { reportError } from "@/errors";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage, reportError } from "@/errors";
 import { UnknownObject } from "@/types";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

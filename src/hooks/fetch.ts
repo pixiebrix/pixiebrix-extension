@@ -51,7 +51,12 @@ export async function fetch<TData = unknown>(
       }
     }
 
-    console.warn("App API calls must use relative URLs");
+    console.warn(
+      "fetch calls for the PixieBrix API should use relative URLs to support a dynamic base URL",
+      {
+        relativeOrAbsoluteUrl,
+      }
+    );
   }
 
   const client = await (requireLinked ? getLinkedApiClient() : getApiClient());

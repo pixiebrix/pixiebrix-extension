@@ -18,12 +18,17 @@
 import { uuidv4 } from "@/types/helpers";
 import { ExtensionPoint } from "@/types";
 import { checkAvailable } from "@/blocks/available";
-import { castArray, once, debounce, cloneDeep, merge } from "lodash";
+import { castArray, cloneDeep, debounce, merge, once } from "lodash";
 import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
-import { reportError } from "@/errors";
 import {
-  awaitElementOnce,
+  hasCancelRootCause,
+  MultipleElementsFoundError,
+  NoElementsFoundError,
+  reportError,
+} from "@/errors";
+import {
   acquireElement,
+  awaitElementOnce,
   onNodeRemoved,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
@@ -33,20 +38,15 @@ import {
 } from "@/extensionPoints/types";
 import {
   IBlock,
-  ResolvedExtension,
+  IconConfig,
   IExtensionPoint,
   ReaderOutput,
+  ResolvedExtension,
   Schema,
-  IconConfig,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
-import {
-  hasCancelRootCause,
-  MultipleElementsFoundError,
-  NoElementsFoundError,
-} from "@/errors";
 import {
   DEFAULT_ACTION_RESULTS,
   MessageConfig,
@@ -54,7 +54,7 @@ import {
   notifyResult,
 } from "@/contentScript/notify";
 import { getNavigationId } from "@/contentScript/context";
-import { rejectOnCancelled, PromiseCancelled } from "@/utils";
+import { PromiseCancelled, rejectOnCancelled } from "@/utils";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";

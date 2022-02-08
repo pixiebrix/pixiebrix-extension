@@ -71,6 +71,10 @@ export const getRollbar = once(() => {
   try {
     addAuthListener(updatePerson);
 
+    // NOTE: we are excluding captureUncaught and captureUnhandledRejections because we set our own handlers for that in
+    // reportUncaughtErrors. The default for rollbar is false
+    // https://docs.rollbar.com/docs/rollbarjs-configuration-reference#:~:text=captureEmail-,captureUncaught,-This%20determines%20whether
+
     return Rollbar.init({
       enabled: accessToken && accessToken !== "undefined" && !isContentScript(),
       accessToken,

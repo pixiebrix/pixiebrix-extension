@@ -336,6 +336,14 @@ export function selectError(originalError: unknown): Error {
   }
 
   if (isErrorObject(error)) {
+    console.warn(
+      "selectError encountered a serialized error. Do not pass around serialized errors",
+      {
+        originalError,
+        error,
+      }
+    );
+
     return deserializeError(error);
   }
 
