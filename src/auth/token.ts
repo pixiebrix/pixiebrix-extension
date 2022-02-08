@@ -25,6 +25,7 @@ import {
   UserData,
   UserDataUpdate,
 } from "./authTypes";
+import { isExtensionContext } from "webext-detect-page";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
@@ -112,15 +113,17 @@ export async function updateExtensionAuth(
   return true;
 }
 
-browser.storage.onChanged.addListener((changes, storage) => {
-  if (storage === "local") {
-    // eslint-disable-next-line security/detect-object-injection -- compile time constant
-    const change = changes[STORAGE_EXTENSION_KEY];
+if (isExtensionContext()) {
+  browser.storage.onChanged.addListener((changes, storage) => {
+    if (storage === "local") {
+      // eslint-disable-next-line security/detect-object-injection -- compile time constant
+      const change = changes[STORAGE_EXTENSION_KEY];
 
-    if (change) {
-      for (const listener of listeners) {
-        listener(change.newValue);
+      if (change) {
+        for (const listener of listeners) {
+          listener(change.newValue);
+        }
       }
     }
-  }
-});
+  });
+}
