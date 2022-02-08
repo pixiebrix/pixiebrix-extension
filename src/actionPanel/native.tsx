@@ -16,7 +16,7 @@
  */
 
 import browser from "webextension-polyfill";
-import { reportError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { uuidv4 } from "@/types/helpers";
 import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";

@@ -15,27 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Logger as ILogger, MessageContext } from "@/core";
+import { Logger, MessageContext } from "@/core";
 import { JsonObject } from "type-fest";
 import { getErrorMessage, isConnectionError } from "@/errors";
 import { isContentScript } from "webext-detect-page";
 import { showConnectionLost } from "@/contentScript/connection";
 import { serializeError } from "serialize-error";
 import { recordError, recordLog } from "@/background/messenger/api";
+import { expectContext } from "@/utils/expectContext";
 
 /**
- * An ILogger that logs messages through the background page (which can make calls to Rollbar)
+ * A Logger that logs messages through the background page (which can make calls to Rollbar)
  * @see recordLog
  * @see recordError
  */
-class BackgroundLogger implements ILogger {
+class BackgroundLogger implements Logger {
   readonly context: MessageContext;
 
-  constructor(context: MessageContext) {
-    this.context = context;
+  constructor(context: MessageContext = null) {
+    expectContext(
+      "extension",
+      "BackgroundLogger requires access to the background messenger API"
+    );
+
+    this.context = context ?? {};
   }
 
-  childLogger(context: MessageContext): ILogger {
+  childLogger(context: MessageContext): Logger {
     return new BackgroundLogger({ ...this.context, ...context });
   }
 

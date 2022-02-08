@@ -16,18 +16,13 @@
  */
 
 import { MessageContext, SerializedError } from "@/core";
-import { deserializeError, ErrorObject, serializeError } from "serialize-error";
+import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError } from "axios";
 import { isObject } from "@/utils";
-import { recordError } from "@/background/messenger/api";
+
+// FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2672
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
-
-export const IGNORED_ERRORS = [
-  "ResizeObserver loop limit exceeded",
-  "Promise was cancelled",
-  "Uncaught Error: PixieBrix contentScript already installed",
-];
 
 export class ValidationError extends Error {
   errors: unknown;
@@ -167,6 +162,12 @@ export class ContextError extends Error {
     this.context = context;
   }
 }
+
+export const IGNORED_ERRORS = [
+  "ResizeObserver loop limit exceeded",
+  "Promise was cancelled",
+  "Uncaught Error: PixieBrix contentScript already installed",
+];
 
 export function isErrorObject(error: unknown): error is ErrorObject {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
@@ -355,37 +356,4 @@ export function selectError(originalError: unknown): Error {
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error message'`, which should never be written
   return new Error(String(error));
-}
-
-/**
- * Report an error for local logs, remote telemetry, etc.
- * @param error the error object
- * @param context optional context for error telemetry
- */
-
-export function reportError(error: unknown, context?: MessageContext): void {
-  void _reportError(error, context).catch((reportingError) => {
-    console.error("An error occurred when reporting an error", {
-      originalError: error,
-      reportingError,
-    });
-  });
-}
-
-// Extracted async function to avoid turning `reportError` into an async function
-// which would trigger `eslint/no-floating-promises` at every `reportError` call
-export async function _reportError(
-  error: unknown, // It might also be an ErrorEvent
-  context?: MessageContext
-): Promise<void> {
-  const errorObject = selectError(error);
-
-  // Events are already natively logged by the browser
-  if (
-    !(error instanceof ErrorEvent || error instanceof PromiseRejectionEvent)
-  ) {
-    console.error(error);
-  }
-
-  recordError(serializeError(errorObject), context, null);
 }

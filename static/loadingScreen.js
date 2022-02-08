@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,18 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
-import reportError from "@/telemetry/reportError";
+/** @file Plain file to show loading errors on the page. It must be simple and outside the build specifically to show even build errors. */
 
-/**
- * React hook to report an error once.
- */
-function useReportError(error: unknown): void {
-  useEffect(() => {
-    if (error) {
-      reportError(error);
-    }
-  }, [error]);
+function showErrors(errorEvent) {
+  const logger = document.querySelector(".global-loading-message");
+  if (logger.childElementCount > 0) {
+    // The view was initialized, stop showing errors
+    window.removeEventListener("error", showErrors);
+    return;
+  }
+
+  logger.textContent = String(errorEvent.error);
 }
 
-export default useReportError;
+window.addEventListener("error", showErrors);
