@@ -92,7 +92,7 @@ export class SendAdvancedSlackMessage extends Effect {
   constructor() {
     super(
       "slack/advanced-message",
-      "[Deprecated] Send a Slack richly-formatted message via WebHook with attachments",
+      "[Deprecated] Send a Slack richly-formatted message via Incoming WebHook",
       "Send a Slack richly-formatted message via its Incoming WebHooks App"
     );
   }
