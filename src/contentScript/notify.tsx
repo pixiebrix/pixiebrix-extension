@@ -28,6 +28,7 @@ interface Notification {
   type?: NotificationType;
   id?: string;
   duration?: number;
+  dismissable?: boolean;
 }
 
 const containerStyle: React.CSSProperties = {
@@ -49,6 +50,48 @@ const toastOptions: DefaultToastOptions = {
   },
 };
 
+const buttonClassName = "button-" + uuidv4(); // It must be prefixed
+
+const buttonStyle = `
+  .${buttonClassName} {
+    border: solid 2px #efefff;
+    border-radius: 3px;
+    background: #fff;
+    font: inherit;
+    margin-left: 0.3em;
+    cursor: pointer;
+  }
+
+  .${buttonClassName}:hover,
+  .${buttonClassName}:focus {
+    border-color: #dededd;
+  }
+
+  .${buttonClassName}:active {
+    background-color: #f8f8f8;
+  }
+`;
+
+const Message: React.VoidFunctionComponent<{
+  message: string;
+  id: string;
+  dismissable: boolean;
+}> = ({ message, id, dismissable }) => (
+  <span>
+    {message}
+    {dismissable ? (
+      <button
+        className={buttonClassName}
+        onClick={() => {
+          toast.dismiss(id);
+        }}
+      >
+        ×
+      </button>
+    ) : undefined}
+  </span>
+);
+
 function getMessageDisplayTime(message: string): number {
   const wpm = 100; // 180 is the average words read per minute, make it slower
   return (message.split(" ").length / wpm) * 60_000;
@@ -60,7 +103,13 @@ export function initToaster(): void {
   root.setAttribute("style", "all: initial");
 
   document.body.append(root);
-  render(<Toaster {...{ containerStyle, toastOptions }} />, root);
+  render(
+    <>
+      <style>{buttonStyle}</style>
+      <Toaster {...{ containerStyle, toastOptions }} />
+    </>,
+    root
+  );
 }
 
 export function showNotification({
@@ -68,6 +117,7 @@ export function showNotification({
   type,
   id = uuidv4(),
   duration = getMessageDisplayTime(message),
+  dismissable = false,
 }: Notification): string {
   const options = { id, duration };
   switch (type) {
@@ -75,11 +125,11 @@ export function showNotification({
     case "success":
     case "loading":
       // eslint-disable-next-line security/detect-object-injection -- Filtered
-      toast[type](message, options);
+      toast[type](<Message {...{ message, id, dismissable }} />, options);
       break;
 
     default:
-      toast(message, options);
+      toast(<Message {...{ message, id, dismissable }} />, options);
   }
 
   return id;
