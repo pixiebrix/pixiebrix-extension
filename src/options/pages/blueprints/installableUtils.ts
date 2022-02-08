@@ -161,13 +161,13 @@ export function updateAvailable(
 }
 
 export const getOrganization = (
-  extensionOrRecipe: ResolvedExtension | RecipeDefinition,
+  installable: Installable,
   organizations: Organization[]
 ) => {
   const sharing =
-    "_recipe" in extensionOrRecipe
-      ? extensionOrRecipe._recipe?.sharing
-      : extensionOrRecipe.sharing;
+    "_recipe" in installable
+      ? installable._recipe?.sharing
+      : installable.sharing;
 
   if (!sharing || sharing.organizations.length === 0) {
     return null;
