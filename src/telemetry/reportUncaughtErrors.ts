@@ -18,7 +18,6 @@
 /**
  * @file This file must be imported as early as possible in each entrypoint, once
  */
-import { isBackground } from "webext-detect-page";
 import { getErrorMessage, IGNORED_ERRORS, reportError } from "@/errors";
 
 function ignoreSomeErrors(
