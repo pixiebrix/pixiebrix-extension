@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Rollbar, { LogArgument } from "rollbar";
-import { getErrorMessage, IGNORED_ERRORS, selectError } from "@/errors";
-import { isExtensionContext } from "webext-detect-page";
+import Rollbar from "rollbar";
+import { IGNORED_ERRORS, selectError } from "@/errors";
+import { isContentScript } from "webext-detect-page";
 import { MessageContext } from "@/core";
 import { recordError } from "@/background/messenger/api";
 import { serializeError } from "serialize-error";
+import { addListener as addAuthListener } from "@/auth/token";
+import { BrowserAuthData } from "@/auth/authTypes";
 
 const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
 
@@ -36,10 +38,13 @@ type Payload = {
   };
 };
 
+/**
+ * The PixieBrix Person model for Rollbar.
+ */
 type Person = {
   id: string;
-  email: string;
   organizationId: string;
+  email?: string;
 };
 
 /**
@@ -48,19 +53,21 @@ type Person = {
  */
 export const rollbar = initRollbar();
 
-// Track person separately, so we can merge into the payload. Only setting it in rollbar.configure causes it to be
-// overwritten if the caller provides a custom payload (Rollbar does not perform merging with the preset configuration)
-let person: Partial<Person> = {};
-
-/**
- * Get the Rollbar person to merge into the Rollbar payload
- */
-export function getPerson(): Partial<Person> {
-  return { ...person };
-}
-
 function initRollbar() {
+  if (isContentScript()) {
+    // The contentScript should not make requests directly to rollbar
+    console.warn(
+      "Unexpected import of Rollbar in the contentScript. Do not call Rollbar directly from the contentScript"
+    );
+  }
+
+  if (accessToken) {
+    console.debug("Initializing Rollbar error telemetry");
+  }
+
   try {
+    addAuthListener(updatePerson);
+
     return Rollbar.init({
       enabled: accessToken && accessToken !== "undefined",
       accessToken,
@@ -96,53 +103,29 @@ function initRollbar() {
       },
     });
   } catch (error) {
-    console.error("Error during rollbar init", { error });
+    console.error("Error during Rollbar init", { error });
   }
 }
 
-/**
- * Convert a message or value into a rollbar logging argument.
- *
- * Convert functions/callbacks to `undefined` so they're ignored by rollbar.
- *
- * @see https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
- */
-export function toLogArgument(error: unknown): LogArgument {
-  if (typeof error === "function") {
-    // The function argument for rollbar.log is a callback to call once the error has been reported, drop
-    // these prevent accidentally calling the callback
-    return undefined;
-  }
-
-  if (typeof error === "object") {
-    // The custom data or error object
-    return error;
-  }
-
-  return getErrorMessage(error);
-}
-
-export async function updateAuth({
-  userId,
-  email,
-  organizationId,
+export async function updatePerson({
+  user,
   browserId,
-}: {
-  userId: string;
-  organizationId: string | null;
-  email: string | null;
-  browserId: string | null;
-}): Promise<void> {
-  if (isExtensionContext()) {
-    if (organizationId) {
-      // Enterprise accounts, use userId and email for telemetry
-      person = { id: userId, email, organizationId };
-    } else {
-      person = { id: browserId, organizationId: null };
-    }
-  } else {
-    person = { id: userId, organizationId };
-  }
+  email,
+  telemetryOrganizationId,
+  organizationId,
+}: BrowserAuthData): Promise<void> {
+  const errorOrganizationId = telemetryOrganizationId ?? organizationId;
+
+  const person: Person = organizationId
+    ? {
+        id: user,
+        email,
+        organizationId: errorOrganizationId,
+      }
+    : {
+        id: browserId,
+        organizationId: null,
+      };
 
   if (rollbar) {
     rollbar.configure({
@@ -172,11 +155,6 @@ async function _reportError(
   context?: MessageContext
 ): Promise<void> {
   const errorObject = selectError(error);
-  if (!isExtensionContext()) {
-    // This module is also used by the PixieBrix app, so allow this method to be called from an external context
-    rollbar.error(toLogArgument(errorObject));
-    return;
-  }
 
   // Events are already natively logged by the browser
   if (

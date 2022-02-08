@@ -346,7 +346,6 @@ module.exports = (env, options) =>
 
         // If not found, "null" will leave the ENV unset in the bundle
         ROLLBAR_BROWSER_ACCESS_TOKEN: null,
-        SUPPORT_WIDGET_ID: null,
         GOOGLE_API_KEY: null,
         GOOGLE_APP_ID: null,
       }),

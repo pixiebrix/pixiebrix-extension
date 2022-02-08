@@ -129,8 +129,8 @@ export class ClientNetworkPermissionError extends BusinessError {
 /**
  * An error triggered by a failed network request that did not receive a response.
  *
- * - Timeout
- * - The URL doesn't exist
+ * - Request timeout
+ * - The host doesn't exist (DNS failed)
  * - Blocked by browser due to HTTPS certificate
  * - Blocked by browser extension
  *

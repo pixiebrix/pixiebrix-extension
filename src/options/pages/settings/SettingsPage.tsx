@@ -27,6 +27,9 @@ import AdvancedSettings from "@/options/pages/settings/AdvancedSettings";
 import { Col, Row } from "react-bootstrap";
 import ExperimentalSettings from "@/options/pages/settings/ExperimentalSettings";
 
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
+
 const Section: React.FunctionComponent = ({ children }) => (
   <Row className="mb-4">
     <Col lg={6} md={8}>
@@ -52,7 +55,7 @@ const SettingsPage: React.FunctionComponent = () => {
         </p>
       }
     >
-      {organization == null && (
+      {(organization == null || DEBUG) && (
         <Section>
           <PrivacySettings />
         </Section>

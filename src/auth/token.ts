@@ -17,25 +17,23 @@
 
 import browser from "webextension-polyfill";
 import Cookies from "js-cookie";
-import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
 import { isEqual } from "lodash";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import { BrowserAuthData, UserData } from "./authTypes";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
-interface UserData {
-  email?: string;
-  user?: string;
-  hostname?: string;
-  organizationId?: string;
-  telemetryOrganizationId?: string;
+type AuthListener = (auth: BrowserAuthData) => void;
+
+const listeners: AuthListener[] = [];
+
+export function addListener(handler: AuthListener): void {
+  listeners.push(handler);
 }
 
-export interface AuthData extends UserData {
-  token: string;
-}
-
-export async function readAuthData(): Promise<AuthData | Partial<AuthData>> {
+export async function readAuthData(): Promise<
+  BrowserAuthData | Partial<BrowserAuthData>
+> {
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 
@@ -71,18 +69,11 @@ export async function clearExtensionAuth(): Promise<void> {
  * Refresh the Chrome extensions auth (user, email, token, API hostname), and return true if it was updated.
  */
 export async function updateExtensionAuth(
-  auth: AuthData & { browserId: string }
+  auth: BrowserAuthData
 ): Promise<boolean> {
   if (!auth) {
     return false;
   }
-
-  void updateRollbarAuth({
-    userId: auth.user,
-    email: auth.email,
-    organizationId: auth.telemetryOrganizationId ?? auth.organizationId,
-    browserId: auth.browserId,
-  });
 
   // Note: `auth` is a `Object.create(null)` object, which for some `isEqual` implementations
   // isn't deeply equal to `{}`.  _.isEqual is fine, `fast-deep-equal` isn't

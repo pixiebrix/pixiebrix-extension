@@ -16,7 +16,7 @@
  */
 
 import { MessageContext, SerializedError } from "@/core";
-import { ErrorObject } from "serialize-error";
+import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError } from "axios";
 import { isObject } from "@/utils";
 
@@ -251,6 +251,9 @@ export function hasBusinessRootCause(
   return false;
 }
 
+/**
+ * Browser Messenger API error message patterns.
+ */
 const CONNECTION_ERROR_PATTERNS = [
   "Could not establish connection. Receiving end does not exist.",
   "Extension context invalidated",
@@ -313,9 +316,13 @@ export function getErrorMessage(
 }
 
 /**
- * Finds or creates an Error object starting from strings, error event, or real Errors
+ * Finds or creates an Error starting from strings, error event, or real Errors.
+ *
+ * The result is suitable for passing to Rollbar. (Which treats Errors and objects differently.)
  */
-export function selectError(error: unknown): ErrorObject | Error {
+export function selectError(originalError: unknown): Error {
+  let error: unknown = originalError;
+
   // Extract error from event
   if (error instanceof ErrorEvent) {
     error = error.error;
@@ -323,11 +330,18 @@ export function selectError(error: unknown): ErrorObject | Error {
     error = error.reason;
   }
 
-  if (isErrorObject(error)) {
+  if (error instanceof Error) {
     return error;
   }
 
-  console.warn("A non-Error was thrown", { error });
+  if (isErrorObject(error)) {
+    return deserializeError(error);
+  }
+
+  console.warn("A non-Error was thrown", {
+    originalError,
+    error,
+  });
 
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error message'`, which should never be written

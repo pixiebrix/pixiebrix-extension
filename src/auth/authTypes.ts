@@ -24,3 +24,19 @@ export interface AuthOption {
   serviceId: RegistryId;
   local: boolean;
 }
+
+export interface UserData {
+  email?: string;
+  user?: string;
+  hostname?: string;
+  organizationId?: string;
+  telemetryOrganizationId?: string;
+}
+
+export interface AuthData extends UserData {
+  token: string;
+}
+
+export interface BrowserAuthData extends AuthData {
+  browserId: string;
+}

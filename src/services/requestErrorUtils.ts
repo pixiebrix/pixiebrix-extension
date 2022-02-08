@@ -26,15 +26,25 @@ import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { AxiosError, AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
-import { getBaseURL } from "@/services/baseService";
+import {
+  DEFAULT_SERVICE_URL,
+  getBaseURL,
+  withoutTrailingSlash,
+} from "@/services/baseService";
 import { getReasonPhrase } from "http-status-codes";
 import { isAbsoluteUrl } from "@/utils";
 import urljoin from "url-join";
 
+/**
+ * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
+ * they were passed in with the URL instead of as params.
+ */
 export function selectAbsoluteUrl({
   url,
   baseURL,
 }: AxiosRequestConfig): string {
+  // Using AxiosRequestConfig since the actual request object doesn't seem to be available in all the places we
+  // use this method
   return isAbsoluteUrl(url) ? url : urljoin(baseURL, url);
 }
 
@@ -46,27 +56,39 @@ export function safeGuessStatusText(code: string | number): string | null {
   }
 }
 
+/**
+ * Return true iff the error corresponds to a request to PixieBrix API.
+ */
 async function isAppRequest(error: AxiosError): Promise<boolean> {
   const baseURL = await getBaseURL();
   const requestUrl = selectAbsoluteUrl(error.config);
-  return testMatchPatterns([`${baseURL}/*`], requestUrl);
+  const patterns = [baseURL, DEFAULT_SERVICE_URL].map(
+    (url) => `${withoutTrailingSlash(url)}/*`
+  );
+  return testMatchPatterns(patterns, requestUrl);
 }
 
-export async function enrichRequestError(error: unknown): Promise<unknown> {
+/**
+ * Decorate an AxiosError with additional debugging information
+ * @param maybeAxiosError
+ */
+export async function enrichRequestError(
+  maybeAxiosError: unknown
+): Promise<unknown> {
   expectContext("extension");
 
   console.trace("enrichRequestError", {
-    error,
+    error: maybeAxiosError,
   });
 
-  if (!isAxiosError(error)) {
-    return error;
+  if (!isAxiosError(maybeAxiosError)) {
+    return maybeAxiosError;
   }
 
   let url: URL;
 
   try {
-    url = new URL(selectAbsoluteUrl(error.config));
+    url = new URL(selectAbsoluteUrl(maybeAxiosError.config));
   } catch (typeError) {
     return new BusinessError(
       `Invalid Request URL: ${getErrorMessage(typeError)}`
@@ -79,32 +101,32 @@ export async function enrichRequestError(error: unknown): Promise<unknown> {
     );
   }
 
-  const includeUrl = await isAppRequest(error);
+  const includeUrl = await isAppRequest(maybeAxiosError);
   const sanitizedUrl = (includeUrl ? url.href : null) as SanitizedURL;
 
-  if (error.response) {
+  if (maybeAxiosError.response) {
     return new RemoteServiceError(
-      error.response.statusText ?? error.message,
-      error,
+      maybeAxiosError.response.statusText ?? maybeAxiosError.message,
+      maybeAxiosError,
       sanitizedUrl
     );
   }
 
   const hasPermissions = await browser.permissions.contains({
-    origins: [error.request.url],
+    origins: [maybeAxiosError.request.url],
   });
 
   if (!hasPermissions) {
     return new ClientNetworkPermissionError(
       "Insufficient browser permissions to make request.",
-      error,
+      maybeAxiosError,
       sanitizedUrl
     );
   }
 
   return new ClientNetworkError(
     "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information",
-    error,
+    maybeAxiosError,
     sanitizedUrl
   );
 }

@@ -45,7 +45,10 @@ import {
   isProxiedErrorResponse,
   proxyResponseToAxiosResponse,
 } from "@/background/proxyUtils";
-import { enrichRequestError, safeGuessStatusText } from "@/services/errorUtils";
+import {
+  enrichRequestError,
+  safeGuessStatusText,
+} from "@/services/requestErrorUtils";
 
 type SanitizedResponse<T = unknown> = Pick<
   AxiosResponse<T>,

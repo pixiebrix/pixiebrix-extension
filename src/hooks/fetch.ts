@@ -20,7 +20,7 @@ import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { EndpointAuthError, isAxiosError } from "@/errors";
 import { clearExtensionAuth } from "@/auth/token";
 import { isAbsoluteUrl } from "@/utils";
-import { enrichRequestError } from "@/services/errorUtils";
+import { enrichRequestError } from "@/services/requestErrorUtils";
 import { expectContext } from "@/utils/expectContext";
 
 const HTTP_401_UNAUTHENTICATED = 401;
