@@ -16,23 +16,20 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { rollbar } from "@/telemetry/rollbar";
-import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
+import { getRollbar } from "@/telemetry/rollbar";
+import { MessageContext, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
-import { deserializeError, serializeError } from "serialize-error";
+import { deserializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
-import { sortBy, isEmpty } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
-import { isContentScript } from "webext-detect-page";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
+  getErrorMessage,
   hasBusinessRootCause,
   hasCancelRootCause,
-  isConnectionError,
-  getErrorMessage,
 } from "@/errors";
-import { showConnectionLost } from "@/contentScript/connection";
-import { expectContext } from "@/utils/expectContext";
+import { expectContext, forbidContext } from "@/utils/expectContext";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -192,14 +189,17 @@ export async function getLog(
  * Unroll/flatten the context of nested `ContextErrors`
  * @see SerializedError
  */
-function buildContext(
+function flattenContext(
   error: SerializedError,
   context: MessageContext
 ): MessageContext {
   if (typeof error === "object" && error && error.name === "ContextError") {
     const currentContext =
       typeof error.context === "object" ? error.context : {};
-    const innerContext = buildContext(error.cause as SerializedError, context);
+    const innerContext = flattenContext(
+      error.cause as SerializedError,
+      context
+    );
     // Prefer the inner context
     return { ...context, ...innerContext, ...currentContext };
   }
@@ -207,14 +207,24 @@ function buildContext(
   return context;
 }
 
+/**
+ * True if recordError logged a warning already that DNT mode is on
+ */
+let loggedDNT = false;
+
 export async function recordError(
   error: SerializedError,
   context: MessageContext,
   data: JsonObject | undefined
 ): Promise<void> {
+  forbidContext(
+    "contentScript",
+    "contentScript does not have CSP access to Rollbar"
+  );
+
   try {
     const message = getErrorMessage(error);
-    const flatContext = buildContext(error, context);
+    const flatContext = flattenContext(error, context);
 
     if (await allowsTrack()) {
       // Deserialize the error into an Error object before passing it to Rollbar so rollbar treats it as the error.
@@ -229,10 +239,16 @@ export async function recordError(
       if (hasCancelRootCause(error)) {
         // NOP - no reason to send to Rollbar
       } else if (hasBusinessRootCause(error)) {
+        // Send at debug level so it doesn't trigger devops notifications
+        const rollbar = await getRollbar();
         rollbar.debug(message, errorObj, flatContext);
       } else {
+        const rollbar = await getRollbar();
         rollbar.error(message, errorObj, flatContext);
       }
+    } else if (!loggedDNT) {
+      console.warn("Rollbar telemetry is disabled because DNT is turned on");
+      loggedDNT = true;
     }
 
     await appendEntry({
@@ -266,57 +282,6 @@ export async function recordLog(
     data,
     context: context ?? {},
   });
-}
-
-export class BackgroundLogger implements ILogger {
-  readonly context: MessageContext;
-
-  constructor(context: MessageContext) {
-    this.context = context;
-  }
-
-  childLogger(context: MessageContext): ILogger {
-    return new BackgroundLogger({ ...this.context, ...context });
-  }
-
-  async trace(message: string, data: JsonObject): Promise<void> {
-    console.trace(message, { data, context: this.context });
-    await recordLog(this.context, "trace", message, data);
-  }
-
-  async debug(message: string, data: JsonObject): Promise<void> {
-    console.debug(message, { data, context: this.context });
-    await recordLog(this.context, "debug", message, data);
-  }
-
-  async log(message: string, data: JsonObject): Promise<void> {
-    console.log(message, { data, context: this.context });
-    await recordLog(this.context, "info", message, data);
-  }
-
-  async info(message: string, data: JsonObject): Promise<void> {
-    console.info(message, { data, context: this.context });
-    await recordLog(this.context, "info", message, data);
-  }
-
-  async warn(message: string, data: JsonObject): Promise<void> {
-    console.warn(message, { data, context: this.context });
-    await recordLog(this.context, "warn", message, data);
-  }
-
-  async error(error: unknown, data: JsonObject): Promise<void> {
-    console.error("An error occurred: %s", getErrorMessage(error), {
-      error,
-      context: this.context,
-      data,
-    });
-
-    if (isConnectionError(error) && isContentScript()) {
-      showConnectionLost();
-    }
-
-    await recordError(serializeError(error), this.context, data);
-  }
 }
 
 export type LoggingConfig = {

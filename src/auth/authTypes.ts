@@ -16,6 +16,7 @@
  */
 
 import { RegistryId, UUID } from "@/core";
+import { Except } from "type-fest";
 
 export interface AuthOption {
   label: string;
@@ -23,4 +24,25 @@ export interface AuthOption {
   value: UUID;
   serviceId: RegistryId;
   local: boolean;
+}
+
+export interface UserData {
+  email?: string;
+  user?: string;
+  hostname?: string;
+  organizationId?: string;
+  telemetryOrganizationId?: string;
+}
+
+export type UserDataUpdate = Required<Except<UserData, "hostname">>;
+
+export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
+  "email",
+  "user",
+  "organizationId",
+  "telemetryOrganizationId",
+];
+
+export interface TokenAuthData extends UserData {
+  token: string;
 }

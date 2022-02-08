@@ -37,6 +37,7 @@ import {
 import { components } from "@/types/swagger";
 import { Except } from "type-fest";
 import { FortAwesomeLibrary } from "@/components/AsyncIcon";
+import { AxiosResponse } from "axios";
 
 export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 
@@ -124,7 +125,7 @@ export type CloudExtension<T extends Config = EmptyConfig> = Except<
  * `/api/recipes/${blueprintId}`
  */
 export type BlueprintResponse = {
-  // On this endpoint, the sharing and updated_at are in the envelop of the response
+  // On this endpoint, the sharing and updated_at are in the envelope of the response
   config: UnsavedRecipeDefinition;
   sharing: SharingDefinition;
   updated_at: Timestamp;
@@ -143,4 +144,28 @@ export type MarketplaceListing = {
     url: string;
     alt_text: string;
   };
+};
+
+export type ProxyResponseSuccessData = {
+  json: unknown;
+  status_code: number;
+};
+
+export type ProxyResponseErrorData = {
+  json: unknown;
+  status_code: number;
+  message?: string;
+  reason?: string;
+};
+
+export type ProxyResponseData =
+  | ProxyResponseSuccessData
+  | ProxyResponseErrorData;
+
+// Partial view of an AxiosResponse for providing common interface local and requests made via proxy
+export type RemoteResponse<T = unknown> = Pick<
+  AxiosResponse<T>,
+  "data" | "status" | "statusText"
+> & {
+  $$proxied?: boolean;
 };

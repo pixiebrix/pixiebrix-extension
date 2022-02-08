@@ -15,16 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import pTimeout from "p-timeout";
 import browser from "webextension-polyfill";
 import { navigationEvent } from "@/devTools/events";
 import { useAsyncEffect } from "use-async-effect";
 import { FrameworkMeta } from "@/messaging/constants";
-import { reportError } from "@/telemetry/rollbar";
+import { getErrorMessage, isErrorObject, reportError } from "@/errors";
 import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
-import { getErrorMessage, isErrorObject } from "@/errors";
 import { thisTab } from "@/devTools/utils";
 import { detectFrameworks } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/messenger/api";
@@ -75,7 +74,7 @@ export interface Context {
 
 const initialValue: Context = {
   connecting: false,
-  tabState: { ...initialFrameState, frameId: 0 },
+  tabState: initialFrameState,
 };
 
 export const DevToolsContext = React.createContext(initialValue);
@@ -153,6 +152,22 @@ export function useDevConnection(): Context {
 
   const connect = useCallback(async () => {
     setLastUpdate(Date.now());
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!chrome.runtime?.id) {
+        setTabState({
+          ...initialFrameState,
+          navSequence: uuidv4(),
+          error:
+            "The connection with the rest of the extension was lost. The editor should be reloaded.",
+        });
+      }
+    }, 500);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   // Automatically connect on load

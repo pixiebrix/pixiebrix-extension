@@ -42,12 +42,6 @@ module.exports = {
   ],
   overrides: [
     {
-      files: ["*.stories.tsx"],
-      rules: {
-        "filenames/match-exported": "off",
-      },
-    },
-    {
       files: [
         "webpack.*.js",
         "*.config.js",
@@ -63,6 +57,14 @@ module.exports = {
       rules: {
         // TODO: Import extended config from app, after improving it
         "@typescript-eslint/naming-convention": "off",
+      },
+    },
+    {
+      files: ["*.stories.tsx", "**/__mocks__/**"],
+      rules: {
+        "filenames/match-exported": "off",
+        "unicorn/filename-case": "off",
+        "import/no-anonymous-default-export": "off",
       },
     },
   ],

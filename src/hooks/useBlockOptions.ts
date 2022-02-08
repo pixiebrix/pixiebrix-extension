@@ -22,7 +22,7 @@ import genericOptionsFactory, {
 import { IBlock, RegistryId } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncEffect } from "use-async-effect";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 import optionsRegistry from "@/components/fields/optionsRegistry";
 
 interface BlockState {

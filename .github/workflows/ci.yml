@@ -48,7 +48,6 @@ jobs:
           SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
-          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
           CHROME_EXTENSION_ID: kkomancachnjkdalpcokenmjlimmbaog
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_STAGING_PUBLIC_KEY }}
           GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
