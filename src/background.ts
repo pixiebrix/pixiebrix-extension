@@ -22,9 +22,6 @@ import "@/extensionContext";
 // Required for MV3; Service Workers don't have XMLHttpRequest
 import "@/background/axiosFetch";
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
-
 import "webext-dynamic-content-scripts";
 
 import "@/background/messenger/registration";
@@ -35,6 +32,7 @@ import "@/background/contextMenus";
 import "@/background/browserAction";
 
 import initInstaller from "@/background/installer";
+import initNavigation from "@/background/navigation";
 import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";
 import initExecutor from "@/background/executor";
@@ -46,6 +44,7 @@ import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 import initActiveTabTracking from "@/background/activeTab";
 
 initInstaller();
+initNavigation();
 initExecutor();
 initGoogle();
 initFrames();

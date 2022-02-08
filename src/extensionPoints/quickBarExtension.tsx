@@ -34,13 +34,17 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
-import { checkAvailable } from "@/blocks/available";
-import { reportError } from "@/telemetry/logging";
-import { notifyError } from "@/contentScript/notify";
+import { checkAvailable, testMatchPatterns } from "@/blocks/available";
+import { reportError } from "@/telemetry/rollbar";
+import {
+  DEFAULT_ACTION_RESULTS,
+  notifyError,
+  notifyResult,
+} from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { BusinessError, isErrorObject } from "@/errors";
+import { BusinessError, hasCancelRootCause } from "@/errors";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
@@ -54,10 +58,13 @@ import { guessSelectedElement } from "@/utils/selectionController";
 export type QuickBarTargetMode = "document" | "eventTarget";
 
 export type QuickBarConfig = {
+  /**
+   * The title to show in the Quick Bar
+   */
   title: string;
 
   /**
-   * (Optional) the icon to supply to the icon in the extension point template
+   * (Optional) the icon to show in the Quick Bar
    */
   icon?: IconConfig;
 
@@ -69,13 +76,9 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
     id: string,
     name: string,
     description?: string,
-    icon = "faMousePointer"
+    icon = "faThLarge"
   ) {
     super(id, name, description, icon);
-  }
-
-  public get syncInstall() {
-    return true;
   }
 
   abstract get targetMode(): QuickBarTargetMode;
@@ -93,6 +96,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
         description:
           "The text to display in the item. When the context is selection, use %s within the string to show the selected text.",
       },
+      icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
       action: {
         oneOf: [
           { $ref: "https://app.pixiebrix.com/schemas/effect#" },
@@ -113,9 +117,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
   }
 
   uninstall(): void {
-    for (const extension of this.extensions) {
-      quickBarRegistry.remove(extension.id);
-    }
+    quickBarRegistry.removeExtensionPointActions(this.id);
   }
 
   removeExtensions(extensionIds: UUID[]): void {
@@ -126,26 +128,41 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
 
   async install(): Promise<boolean> {
     initQuickBarApp();
-    const available = await this.isAvailable();
-    await this.registerExtensions();
-    return available;
+    // Like for context menus, the match patterns for quick bar control which pages the extension point requires early
+    // access to (so PixieBrix will ask for permissions). Whether a quick bar item actually appears is controlled by the
+    // documentUrlPatterns.
+    return true;
   }
 
   async defaultReader(): Promise<IReader> {
     return this.getBaseReader();
   }
 
-  private async registerExtensions(): Promise<void> {
+  decideRoot(target: HTMLElement | Document): HTMLElement | Document {
+    switch (this.targetMode) {
+      case "eventTarget":
+        return target;
+      case "document":
+        return document;
+      default:
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+    }
+  }
+
+  private async syncActionsForUrl(): Promise<void> {
+    // Remove any actions that were available on the previous navigation, but are no longer available
+    if (!testMatchPatterns(this.documentUrlPatterns)) {
+      quickBarRegistry.removeExtensionPointActions(this.id);
+      return;
+    }
+
     const results = await Promise.allSettled(
       this.extensions.map(async (extension) => {
         try {
-          await this.registerExtension(extension);
+          await this.registerExtensionAction(extension);
         } catch (error) {
-          reportError(error, {
-            deploymentId: extension._deployment?.id,
-            extensionPointId: extension.extensionPointId,
-            extensionId: extension.id,
-          });
+          reportError(error, selectEventData(extension));
           throw error;
         }
       })
@@ -157,31 +174,11 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
     }
   }
 
-  decideReaderRoot(target: HTMLElement | Document): HTMLElement | Document {
-    switch (this.targetMode) {
-      case "eventTarget":
-        return target;
-      case "document":
-        return document;
-      default:
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
-    }
-  }
-
-  decidePipelineRoot(target: HTMLElement | Document): HTMLElement | Document {
-    switch (this.targetMode) {
-      case "eventTarget":
-        return target;
-      case "document":
-        return document;
-      default:
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
-    }
-  }
-
-  private async registerExtension(
+  /**
+   * Add a QuickBar action for extension
+   * @private
+   */
+  private async registerExtensionAction(
     extension: ResolvedExtension<QuickBarConfig>
   ): Promise<void> {
     const {
@@ -196,8 +193,13 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
       <Icon />
     ); // Defaults to a box
 
+    const extensionLogger = this.logger.childLogger(
+      selectExtensionContext(extension)
+    );
+
     quickBarRegistry.add({
       id: extension.id,
+      extensionPointId: this.id,
       name,
       icon,
       perform: async () => {
@@ -210,14 +212,14 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
           const targetElement = guessSelectedElement() ?? document;
 
           const input = {
-            ...(await reader.read(this.decideReaderRoot(targetElement))),
+            ...(await reader.read(this.decideRoot(targetElement))),
             // Add some additional data that people will generally want
             documentUrl: document.location.href,
           };
 
           const initialValues: InitialValues = {
             input,
-            root: this.decidePipelineRoot(targetElement),
+            root: this.decideRoot(targetElement),
             serviceContext,
             optionsArgs: extension.optionsArgs,
           };
@@ -227,21 +229,15 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
             ...apiVersionOptions(extension.apiVersion),
           });
         } catch (error) {
-          if (isErrorObject(error)) {
-            reportError(error);
-            extensionLogger.error(error);
+          if (hasCancelRootCause(error)) {
+            notifyResult(extension.id, DEFAULT_ACTION_RESULTS.cancel);
           } else {
-            extensionLogger.warn(error as any);
+            extensionLogger.error(error);
+            notifyResult(extension.id, DEFAULT_ACTION_RESULTS.error);
           }
-
-          throw error;
         }
       },
     });
-
-    const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension)
-    );
 
     console.debug(
       "Register quick bar action handler for: %s (%s)",
@@ -256,12 +252,14 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
   async run(): Promise<void> {
     if (this.extensions.length === 0) {
       console.debug(
-        `contextMenu extension point ${this.id} has no installed extensions`
+        `quickBar extension point ${this.id} has no installed extensions`
       );
+      // Not sure if this is needed or not, but remove any straggler extension actions
+      quickBarRegistry.removeExtensionPointActions(this.id);
       return;
     }
 
-    await this.registerExtensions();
+    await this.syncActionsForUrl();
   }
 }
 
