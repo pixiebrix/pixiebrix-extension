@@ -36,8 +36,9 @@ import { Service } from "@/types";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,
+  isExtensionContext: () => true,
   isBackground: () => false,
-  isExtensionContext: () => false,
+  isContentScript: () => false,
 }));
 
 jest.mock("@/services/useDependency", () =>

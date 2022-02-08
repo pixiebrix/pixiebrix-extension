@@ -25,7 +25,7 @@ import browser from "webextension-polyfill";
 import { isBackground } from "webext-detect-page";
 import type { SanitizedServiceConfiguration } from "@/core";
 import type { AxiosRequestConfig } from "axios";
-import type { RemoteResponse } from "@/background/requests";
+import type { RemoteResponse } from "@/types/contract";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
 if (isBackground() && process.env.DEBUG) {

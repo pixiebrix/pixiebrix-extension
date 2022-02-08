@@ -15,9 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Rollbar, { LogArgument } from "rollbar";
-import { getErrorMessage } from "@/errors";
-import { isExtensionContext } from "webext-detect-page";
+import Rollbar from "rollbar";
+import { IGNORED_ERRORS } from "@/errors";
+import { isContentScript } from "webext-detect-page";
+import { addListener as addAuthListener, readAuthData } from "@/auth/token";
+import { UserData } from "@/auth/authTypes";
+import { getUID } from "@/background/telemetry";
+import pMemoize from "p-memoize";
 
 const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
 
@@ -34,27 +38,47 @@ type Payload = {
 };
 
 /**
+ * The PixieBrix Person model for Rollbar.
+ */
+type Person = {
+  id: string;
+  organizationId: string;
+  email?: string;
+};
+
+/**
  *  @see https://docs.rollbar.com/docs/javascript
  *  @see https://docs.rollbar.com/docs/rollbarjs-configuration-reference
  */
-export const rollbar: Rollbar = (() => {
+async function initRollbar(): Promise<Rollbar> {
+  // `async` to fetch person information from localStorage
+
+  if (isContentScript()) {
+    // The contentScript cannot not make requests directly to Rollbar because the site's CSP might not support it
+    console.warn("Unsupported call to initRollbar in the contentScript");
+  }
+
+  if (accessToken) {
+    console.debug("Initializing Rollbar error telemetry");
+  }
+
   try {
+    addAuthListener(updatePerson);
+
+    // NOTE: we are excluding captureUncaught and captureUnhandledRejections because we set our own handlers for that in
+    // reportUncaughtErrors. The default for rollbar is false
+    // https://docs.rollbar.com/docs/rollbarjs-configuration-reference#:~:text=captureEmail-,captureUncaught,-This%20determines%20whether
+
     return Rollbar.init({
-      enabled: accessToken && accessToken !== "undefined",
+      enabled: accessToken && accessToken !== "undefined" && !isContentScript(),
       accessToken,
-      captureUncaught: true,
       captureIp: "anonymize",
-      captureUnhandledRejections: true,
       codeVersion: process.env.SOURCE_VERSION,
       // https://docs.rollbar.com/docs/rollbarjs-telemetry
       // disable autoInstrument until we can set up scrubbing rules
       autoInstrument: false,
       // https://docs.rollbar.com/docs/reduce-noisy-javascript-errors#ignore-certain-types-of-messages
-      ignoredMessages: [
-        "ResizeObserver loop limit exceeded",
-        "Promise was cancelled",
-        "Uncaught Error: PixieBrix contentScript already installed",
-      ],
+      ignoredMessages: IGNORED_ERRORS,
       payload: {
         client: {
           javascript: {
@@ -63,6 +87,7 @@ export const rollbar: Rollbar = (() => {
           },
         },
         environment: process.env.ENVIRONMENT,
+        person: await personFactory(await readAuthData()),
       },
       transform: (payload: Payload) => {
         // Standardize the origin across browsers so that they match the source map we uploaded to rollbar
@@ -78,61 +103,38 @@ export const rollbar: Rollbar = (() => {
       },
     });
   } catch (error) {
-    console.error("Error during rollbar init", { error });
+    console.error("Error during Rollbar init", { error });
   }
-})();
-
-/**
- * Convert a message or value into a rollbar logging argument.
- *
- * Convert functions/callbacks to `undefined` so they're ignored by rollbar.
- *
- * @see https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
- */
-export function toLogArgument(error: unknown): LogArgument {
-  if (typeof error === "function") {
-    // The function argument for rollbar.log is a callback to call once the error has been reported, drop
-    // these prevent accidentally calling the callback
-    return undefined;
-  }
-
-  if (typeof error === "object") {
-    // The custom data or error object
-    return error;
-  }
-
-  return getErrorMessage(error);
 }
 
-export async function updateAuth({
-  userId,
-  email,
-  organizationId,
-  browserId,
-}: {
-  userId: string;
-  organizationId: string | null;
-  email: string | null;
-  browserId: string | null;
-}): Promise<void> {
-  if (!rollbar) {
-    return;
-  }
+async function personFactory(data: Partial<UserData>): Promise<Person> {
+  const browserId = await getUID();
 
-  if (isExtensionContext()) {
-    if (organizationId) {
-      // Enterprise accounts, use userId for telemetry
-      rollbar.configure({
-        payload: { person: { id: userId, email, organizationId } },
-      });
-    } else {
-      rollbar.configure({
-        payload: { person: { id: browserId, organizationId: null } },
-      });
-    }
-  } else {
+  const { user, email, telemetryOrganizationId, organizationId } = data;
+
+  const errorOrganizationId = telemetryOrganizationId ?? organizationId;
+
+  return errorOrganizationId
+    ? {
+        id: user,
+        email,
+        organizationId: errorOrganizationId,
+      }
+    : {
+        id: browserId,
+        organizationId: null,
+      };
+}
+
+async function updatePerson(data: Partial<UserData>): Promise<void> {
+  const rollbar = await getRollbar();
+  if (rollbar) {
+    const person = await personFactory(data);
+    console.debug("Setting Rollbar Person", person);
     rollbar.configure({
-      payload: { person: { id: userId, organizationId } },
+      payload: { person },
     });
   }
 }
+
+export const getRollbar = pMemoize(initRollbar);

@@ -16,7 +16,7 @@
  */
 
 import { connect, useSelector } from "react-redux";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link, Route } from "react-router-dom";
@@ -27,8 +27,7 @@ import {
   reactivateEveryTab,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { reportError } from "@/telemetry/logging";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { reportEvent } from "@/telemetry/events";
 import { Dispatch } from "redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -59,7 +58,9 @@ export const _InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
-  const { flags } = useContext(AuthContext);
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
 
   const [allExtensions, , cloudError] = useAsyncState(
     async () => {
@@ -210,7 +211,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     // Remove from storage first so it doesn't get re-added in reactivate step below
     dispatch(removeExtension({ extensionId }));
     // XXX: also remove remove side panel panels that are already open?
-    void uninstallContextMenu({ extensionId }).catch(reportError);
+    void uninstallContextMenu({ extensionId });
     reactivateEveryTab();
   },
 });

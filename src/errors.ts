@@ -16,9 +16,11 @@
  */
 
 import { MessageContext, SerializedError } from "@/core";
-import { ErrorObject } from "serialize-error";
+import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError } from "axios";
 import { isObject } from "@/utils";
+
+// FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2672
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
@@ -161,6 +163,12 @@ export class ContextError extends Error {
   }
 }
 
+export const IGNORED_ERRORS = [
+  "ResizeObserver loop limit exceeded",
+  "Promise was cancelled",
+  "Uncaught Error: PixieBrix contentScript already installed",
+];
+
 export function isErrorObject(error: unknown): error is ErrorObject {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
   return typeof (error as any)?.message === "string";
@@ -206,6 +214,9 @@ const BUSINESS_ERROR_NAMES = new Set([
   "MissingConfigurationError",
   "NotConfiguredError",
   "RemoteServiceError",
+  "ClientNetworkPermissionError",
+  "ClientNetworkError",
+  "ProxiedRemoteServiceError",
   "RemoteExecutionError",
 ]);
 
@@ -242,6 +253,9 @@ export function hasBusinessRootCause(
   return false;
 }
 
+/**
+ * Browser Messenger API error message patterns.
+ */
 const CONNECTION_ERROR_PATTERNS = [
   "Could not establish connection. Receiving end does not exist.",
   "Extension context invalidated",
@@ -304,9 +318,13 @@ export function getErrorMessage(
 }
 
 /**
- * Finds or creates an Error object starting from strings, error event, or real Errors
+ * Finds or creates an Error starting from strings, error event, or real Errors.
+ *
+ * The result is suitable for passing to Rollbar. (Which treats Errors and objects differently.)
  */
-export function selectError(error: unknown): ErrorObject | Error {
+export function selectError(originalError: unknown): Error {
+  let error: unknown = originalError;
+
   // Extract error from event
   if (error instanceof ErrorEvent) {
     error = error.error;
@@ -314,11 +332,26 @@ export function selectError(error: unknown): ErrorObject | Error {
     error = error.reason;
   }
 
-  if (isErrorObject(error)) {
+  if (error instanceof Error) {
     return error;
   }
 
-  console.warn("A non-Error was thrown", { error });
+  if (isErrorObject(error)) {
+    console.warn(
+      "selectError encountered a serialized error. Do not pass around serialized errors",
+      {
+        originalError,
+        error,
+      }
+    );
+
+    return deserializeError(error);
+  }
+
+  console.warn("A non-Error was thrown", {
+    originalError,
+    error,
+  });
 
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error message'`, which should never be written

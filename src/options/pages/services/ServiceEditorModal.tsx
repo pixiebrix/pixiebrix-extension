@@ -27,7 +27,7 @@ import { useAsyncState } from "@/hooks/common";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { useTitle } from "@/hooks/title";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";

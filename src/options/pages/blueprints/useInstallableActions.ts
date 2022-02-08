@@ -27,14 +27,13 @@ import {
   reactivateEveryTab,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { reportError } from "@/telemetry/logging";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
 import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
 
 const { removeExtension } = extensionsSlice.actions;
@@ -42,7 +41,9 @@ const { removeExtension } = extensionsSlice.actions;
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const notify = useNotifications();
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
 
   const reinstall = () => {
     if (!isExtension(installable) || !installable._recipe) {
@@ -94,9 +95,7 @@ function useInstallableActions(installable: Installable) {
     // Remove from storage first so it doesn't get re-added in reactivate step below
     dispatch(removeExtension({ extensionId: installable.id }));
     // XXX: also remove remove side panel panels that are already open?
-    void uninstallContextMenu({ extensionId: installable.id }).catch(
-      reportError
-    );
+    void uninstallContextMenu({ extensionId: installable.id });
     reactivateEveryTab();
   };
 

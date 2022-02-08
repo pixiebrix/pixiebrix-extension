@@ -19,7 +19,7 @@
 import { Deployment } from "@/types/contract";
 import browser from "webextension-polyfill";
 import { isEmpty, partition, uniqBy } from "lodash";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/telemetry";
 import { getExtensionVersion } from "@/chrome";
 import { isLinked, readAuthData } from "@/auth/token";
@@ -83,7 +83,7 @@ function uninstallExtension(
   const extensionRef = {
     extensionId,
   };
-  void uninstallContextMenu(extensionRef).catch(reportError);
+  void uninstallContextMenu(extensionRef);
   return reducer(state, actions.removeExtension(extensionRef));
 }
 

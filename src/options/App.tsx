@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -35,13 +35,12 @@ import Sidebar from "@/layout/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import { ToastProvider } from "react-toast-notifications";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
-import { useAuth } from "@/hooks/auth";
 import useRefresh from "@/hooks/useRefresh";
 import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
@@ -82,7 +81,13 @@ const Layout = () => {
   // refresh is called.
   useRefresh();
 
-  const { flags } = useContext(AuthContext);
+  const { data: authData, isLoading } = useGetAuthQuery();
+
+  if (isLoading) {
+    return <GridLoader />;
+  }
+
+  const { flags } = authData;
 
   return (
     <div className="w-100">
@@ -157,8 +162,6 @@ const Layout = () => {
 };
 
 const App: React.FunctionComponent = () => {
-  const authState = useAuth();
-
   useEffect(() => {
     initTelemetry();
   }, []);
@@ -166,15 +169,13 @@ const App: React.FunctionComponent = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={<GridLoader />} persistor={persistor}>
-        <AuthContext.Provider value={authState}>
-          <ConnectedRouter history={hashHistory}>
-            <ModalProvider>
-              <ToastProvider>
-                <Layout />
-              </ToastProvider>
-            </ModalProvider>
-          </ConnectedRouter>
-        </AuthContext.Provider>
+        <ConnectedRouter history={hashHistory}>
+          <ModalProvider>
+            <ToastProvider>
+              <Layout />
+            </ToastProvider>
+          </ModalProvider>
+        </ConnectedRouter>
       </PersistGate>
     </Provider>
   );

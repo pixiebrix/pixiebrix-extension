@@ -38,6 +38,8 @@ import {
   Schema,
   UUID,
   RendererOutput,
+  Metadata,
+  Logger,
 } from "@/core";
 import {
   ExtensionPointDefinition,
@@ -56,6 +58,7 @@ import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/common";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 export type PanelConfig = {
   heading?: string;
@@ -93,8 +96,6 @@ function detectLoop(timestamps: Date[]): void {
  * Extension point that adds a panel to a web page.
  */
 export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
-  protected template?: string;
-
   protected $container: JQuery;
 
   private readonly collapsedExtensions: Map<UUID, boolean>;
@@ -111,13 +112,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     return { heading: "Custom Panel" };
   }
 
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon = "faColumns"
-  ) {
-    super(id, name, description, icon);
+  protected constructor(metadata: Metadata, logger: Logger) {
+    super(metadata, logger);
     this.$container = null;
     this.collapsedExtensions = new Map();
     this.cancelPending = new Set();
@@ -505,8 +501,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description } = cloned.metadata;
-    super(id, name, description);
+    super(cloned.metadata, new BackgroundLogger());
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;

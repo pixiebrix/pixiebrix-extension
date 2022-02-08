@@ -21,7 +21,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { extensionToFormState } from "@/devTools/editor/extensionPoints/adapter";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { useGetRecipesQuery } from "@/services/api";
 import { initRecipeOptionsIfNeeded } from "@/devTools/editor/extensionPoints/base";
 

@@ -17,7 +17,7 @@
 
 import styles from "./Entry.module.scss";
 import React, { useCallback } from "react";
-import { IExtension } from "@/core";
+import { IExtension, UUID } from "@/core";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -25,7 +25,7 @@ import {
   selectType,
 } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/slices/editorSlice";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { ListGroup } from "react-bootstrap";
 import {
   NotAvailableIcon,
@@ -33,7 +33,11 @@ import {
 } from "@/devTools/editor/sidebar/ExtensionIcons";
 import { RecipeDefinition } from "@/types/definitions";
 import { initRecipeOptionsIfNeeded } from "@/devTools/editor/extensionPoints/base";
-import { removeExtension } from "@/contentScript/messenger/api";
+import {
+  disableOverlay,
+  enableOverlay,
+  removeExtension,
+} from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
 import { resolveDefinitions } from "@/registry/internal";
 
@@ -74,12 +78,26 @@ const InstalledEntry: React.FunctionComponent<{
     [dispatch, recipes]
   );
 
+  const isButton = type === "menuItem";
+
+  const showOverlay = useCallback(async (uuid: UUID) => {
+    await enableOverlay(thisTab, `[data-pb-uuid="${uuid}"]`);
+  }, []);
+
+  const hideOverlay = useCallback(async () => {
+    await disableOverlay(thisTab);
+  }, []);
+
   return (
     <ListGroup.Item
       className={styles.root}
       action
       active={active}
       key={`installed-${extension.id}`}
+      onMouseEnter={
+        isButton ? async () => showOverlay(extension.id) : undefined
+      }
+      onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={async () => selectHandler(extension)}
     >
       <span className={styles.icon}>
