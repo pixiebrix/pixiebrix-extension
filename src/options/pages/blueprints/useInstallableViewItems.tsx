@@ -19,8 +19,7 @@ import {
   Installable,
   InstallableViewItem,
 } from "@/options/pages/blueprints/blueprintsTypes";
-import React, { useCallback, useContext, useMemo } from "react";
-import AuthContext from "@/auth/AuthContext";
+import React, { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { ResolvedExtension, UUID } from "@/core";
@@ -35,6 +34,7 @@ import {
   updateAvailable,
 } from "@/options/pages/blueprints/installableUtils";
 import {
+  useGetAuthQuery,
   useGetMarketplaceListingsQuery,
   useGetOrganizationsQuery,
   useGetRecipesQuery,
@@ -45,7 +45,9 @@ import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 function useInstallableViewItems(
   installables: Installable[]
 ): InstallableViewItem[] {
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
   const installedExtensions = useSelector(selectExtensions);
   const organizations = useGetOrganizationsQuery();
   const listings = useGetMarketplaceListingsQuery();

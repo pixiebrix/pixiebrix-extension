@@ -16,20 +16,14 @@
  */
 
 import { UUID } from "@/core";
-import { useContext, useMemo } from "react";
-import AuthContext from "@/auth/AuthContext";
-import { ResolvedExtension, UUID } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import { Installable } from "./blueprintsTypes";
-import { useGetCloudExtensionsQuery, useGetRecipesQuery } from "@/services/api";
 import {
   useGetCloudExtensionsQuery,
-  useGetOrganizationsQuery,
   useGetRecipesQuery,
   useGetAuthQuery,
 } from "@/services/api";
