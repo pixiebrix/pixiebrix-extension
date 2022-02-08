@@ -52,14 +52,46 @@ function guessDirection(
   return labelRatio < 0.5 ? "horizontal" : "vertical";
 }
 
-// TODO: Normalize rowspan and colspan in here as well
 function flattenTableContent(table: HTMLTableElement): RawTableContent {
-  return [...table.rows].map((row) =>
-    [...row.cells].map((cell) => ({
-      type: cell.tagName === "TH" ? "header" : "value",
-      value: cell.textContent.trim(),
-    }))
-  );
+  // This table will be pre-filled in the adjactent rows and colums when rowspan and colspan are found.
+  // Colspan means that the current cell exist on [X, Y] and [X + 1, Y]
+  // Rowspan means that the current cell exist on [X, Y] and [X, Y + 1]
+  // Having both means that a colspan × rowspan matrix will be pre-filled.
+  // When a pre-filled cell is found, +1 until the first available column and fill the whole matrix there.
+  const flattened: RawTableContent = [];
+  /* eslint-disable security/detect-object-injection -- Native indexes */
+  for (const [rowIndex, row] of [...table.rows].entries()) {
+    for (let [cellIndex, cell] of [...row.cells].entries()) {
+      // Find the first available column. Cells are only pushed right, never down
+      while (flattened[rowIndex]?.[cellIndex]) {
+        cellIndex++;
+      }
+
+      // Explore the behavior of spans at https://codepen.io/fregante/pen/oNoYGYE
+      const { rowSpan, colSpan, tagName, textContent } = cell;
+      for (let rowSpanIndex = 0; rowSpanIndex < rowSpan; rowSpanIndex++) {
+        for (let colSpanIndex = 0; colSpanIndex < colSpan; colSpanIndex++) {
+          const row = rowIndex + rowSpanIndex;
+          const col = cellIndex + colSpanIndex;
+          flattened[row] = flattened[row] ?? [];
+          flattened[row][col] = {
+            type: tagName === "TH" ? "header" : "value",
+            value: textContent.trim(),
+          };
+        }
+      }
+    }
+  }
+
+  // Temporary patch to "support" tables with rowspan/colspan without throwing errors
+  const maxRowlength = Math.max(...flattened.map((row) => row.length));
+  for (const row of flattened) {
+    while (row.length < maxRowlength) {
+      row.push({ type: "value", value: "" });
+    }
+  }
+
+  return flattened;
 }
 
 function extractData(

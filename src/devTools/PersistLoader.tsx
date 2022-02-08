@@ -15,9 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { WebNavigation } from "webextension-polyfill";
-import { SimpleEvent } from "@/hooks/events";
+import React from "react";
+import GridLoader from "react-spinners/GridLoader";
+import Centered from "@/devTools/editor/components/Centered";
 
-type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;
+const PersistLoader: React.VoidFunctionComponent = () => (
+  <Centered>
+    <div className="d-flex justify-content-center">
+      <GridLoader />
+    </div>
+  </Centered>
+);
 
-export const navigationEvent = new SimpleEvent<NavigationDetails>();
+export default PersistLoader;

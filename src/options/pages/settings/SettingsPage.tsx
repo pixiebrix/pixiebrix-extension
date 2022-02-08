@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
+import React from "react";
 import Page from "@/layout/Page";
 import { faCogs } from "@fortawesome/free-solid-svg-icons";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import PrivacySettings from "@/options/pages/settings/PrivacySettings";
 import LoggingSettings from "@/options/pages/settings/LoggingSettings";
 import PermissionsSettings from "@/options/pages/settings/PermissionsSettings";
@@ -36,7 +36,9 @@ const Section: React.FunctionComponent = ({ children }) => (
 );
 
 const SettingsPage: React.FunctionComponent = () => {
-  const { organization, flags } = useContext(AuthContext);
+  const {
+    data: { organization, flags },
+  } = useGetAuthQuery();
 
   return (
     <Page

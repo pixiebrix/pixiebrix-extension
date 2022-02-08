@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout, {
   FOUNDATION_NODE_ID,
@@ -42,7 +42,7 @@ import usePipelineField, {
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/devTools/editor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
@@ -237,7 +237,9 @@ const EditTab: React.FC<{
         (blockPipelineErrors[activeBlockIndex] as string)
       : null;
 
-  const { flags } = useContext(AuthContext);
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
   const showVersionField = flags.includes("page-editor-developer");
 
   return (

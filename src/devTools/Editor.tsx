@@ -34,12 +34,14 @@ import GenericInsertPane from "@/devTools/editor/panes/insert/GenericInsertPane"
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/slices/editorSlice";
 import {
+  useGetAuthQuery,
   useGetMarketplaceListingsQuery,
   useGetRecipesQuery,
 } from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
 import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
+import PersistLoader from "./PersistLoader";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -47,6 +49,7 @@ const Editor: React.FunctionComponent = () => {
   const { tabState, connecting } = useContext(DevToolsContext);
   const installed = useSelector(selectExtensions);
   const { data: recipes, isLoading: loadingRecipes } = useGetRecipesQuery();
+  const { isLoading: authLoading } = useGetAuthQuery();
   const dispatch = useDispatch();
 
   // Async fetch marketplace content to the Redux so it's pre-fetched for rendering in the Brick Selection modal
@@ -57,7 +60,7 @@ const Editor: React.FunctionComponent = () => {
     inserting,
     elements,
     activeElement: activeElementId,
-    error,
+    error: editorError,
     beta,
   } = useSelector(selectEditor);
 
@@ -83,7 +86,7 @@ const Editor: React.FunctionComponent = () => {
       return <PermissionsPane />;
     }
 
-    if (error && beta) {
+    if (editorError && beta) {
       return <BetaPane />;
     }
 
@@ -101,10 +104,10 @@ const Editor: React.FunctionComponent = () => {
             />
           );
       }
-    } else if (error) {
+    } else if (editorError) {
       return (
         <div className="p-2">
-          <span className="text-danger">{error}</span>
+          <span className="text-danger">{editorError}</span>
         </div>
       );
     } else if (selectedElement) {
@@ -130,13 +133,17 @@ const Editor: React.FunctionComponent = () => {
     cancelInsert,
     inserting,
     selectedElement,
-    error,
+    editorError,
     installed,
     selectionSeq,
     availableDynamicIds?.size,
     unavailableCount,
     tabState,
   ]);
+
+  if (authLoading) {
+    return <PersistLoader />;
+  }
 
   return (
     <div className="DevToolsContainer">

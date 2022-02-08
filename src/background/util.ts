@@ -95,7 +95,10 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
  * - If it's not expected to be injected automatically, it also injects it into the page.
  * - If it's been injected, it will resolve once the content script is ready.
  */
-export async function ensureContentScript(target: Target): Promise<void> {
+export async function ensureContentScript(
+  target: Target,
+  timeoutMillis = 4000
+): Promise<void> {
   expectContext("background");
 
   console.debug("ensureContentScript: requested", target);
@@ -136,8 +139,8 @@ export async function ensureContentScript(target: Target): Promise<void> {
 
     await pTimeout(
       readyNotificationPromise,
-      4000,
-      "contentScript not ready in 4s"
+      timeoutMillis,
+      `contentScript not ready in ${timeoutMillis}ms`
     );
     console.debug("ensureContentScript: ready", target);
   } finally {

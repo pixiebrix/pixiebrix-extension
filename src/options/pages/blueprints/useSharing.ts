@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useContext, useMemo } from "react";
-import AuthContext from "@/auth/AuthContext";
+import { useMemo } from "react";
+import { useGetAuthQuery } from "@/services/api";
 import {
   isDeployment,
   isPersonal,
@@ -30,7 +30,9 @@ function useSharing(
   type: "Personal" | "Public" | "Team" | "Deployment";
   label: string;
 } {
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
 
   const sharingType = useMemo(() => {
     if (isPersonal(installable, scope)) {

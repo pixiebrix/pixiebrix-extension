@@ -17,8 +17,7 @@
 
 import { ResolvedExtension, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
-import { useCallback, useContext, useMemo } from "react";
-import AuthContext from "@/auth/AuthContext";
+import { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
@@ -32,6 +31,7 @@ import {
   useGetCloudExtensionsQuery,
   useGetOrganizationsQuery,
   useGetRecipesQuery,
+  useGetAuthQuery,
 } from "@/services/api";
 
 type InstallablesState = {
@@ -41,7 +41,9 @@ type InstallablesState = {
 };
 
 function useInstallables(): InstallablesState {
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
   const unresolvedExtensions = useSelector(selectExtensions);
 
   const recipes = useGetRecipesQuery();

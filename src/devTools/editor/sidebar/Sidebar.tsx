@@ -50,7 +50,7 @@ import {
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { RecipeDefinition } from "@/types/definitions";
 import { GridLoader } from "react-spinners";
 
@@ -102,7 +102,9 @@ const SidebarExpanded: React.VoidFunctionComponent<
 }) => {
   const context = useContext(DevToolsContext);
 
-  const { flags } = useContext(AuthContext);
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
   const showDeveloperUI =
     process.env.ENVIRONMENT === "development" ||
     flags.includes("page-editor-developer");
