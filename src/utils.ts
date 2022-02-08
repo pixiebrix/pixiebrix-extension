@@ -512,3 +512,8 @@ export async function asyncLoop<Item>(
 ): Promise<void> {
   await Promise.all([...iterable].map(unary(iteratee)));
 }
+
+export function isMac(): boolean {
+  // https://stackoverflow.com/a/27862868/402560
+  return navigator.platform.includes("Mac");
+}

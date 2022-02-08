@@ -55,6 +55,7 @@ import {
   QuickBarTargetMode,
 } from "@/extensionPoints/quickBarExtension";
 import QuickBarConfiguration from "@/devTools/editor/tabs/quickBar/QuickBarConfiguration";
+import { isMac } from "@/utils";
 
 type Extension = BaseExtensionState & Except<QuickBarConfig, "action">;
 
@@ -260,7 +261,10 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
   fromExtension,
   insertModeHelp: (
     <div>
-      <p>The quick bar can be triggered on any page by hitting cmd+k</p>
+      <p>
+        The quick bar can be triggered on any page by pressing{" "}
+        {isMac() ? "Command+K" : "Ctrl+K"}
+      </p>
     </div>
   ),
 };
