@@ -16,16 +16,8 @@
  */
 
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { Fragment, useContext, useMemo } from "react";
+import React, { Fragment, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  getDescription,
-  getLabel,
-  getPackageId,
-  getSharingType,
-  getUpdatedAt,
-} from "./installableUtils";
-import AuthContext from "@/auth/AuthContext";
 import {
   Column,
   useFilters,
@@ -56,25 +48,7 @@ import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import styles from "./BlueprintsCard.module.scss";
-import useGetInstallableIcon from "@/options/pages/blueprints/useGetInstallableIcon";
-
-const getInstallableRows = (
-  installables: Installable[],
-  scope: string
-): InstallableViewItem[] =>
-  installables.map(
-    (installable): InstallableViewItem => ({
-      name: getLabel(installable),
-      description: getDescription(installable),
-      sharing: {
-        packageId: getPackageId(installable),
-        source: getSharingType(installable, scope),
-      },
-      updatedAt: getUpdatedAt(installable),
-      status: installable.active ? "Active" : "Uninstalled",
-      installable,
-    })
-  );
+import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
 
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
@@ -124,15 +98,15 @@ const columns: Array<Column<InstallableViewItem>> = [
 const BlueprintsCard: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
-  const { scope } = useContext(AuthContext);
-  const { data, teamFilters } = useMemo(() => {
-    const data = getInstallableRows(installables, scope);
-    const teamFilters = uniq(
-      data.map((installable) => installable.sharing.source.label)
-    ).filter((label) => label !== "Public" && label !== "Personal");
-    return { data, teamFilters };
-  }, [installables, scope]);
-  const getInstallableIcon = useGetInstallableIcon();
+  const data = useInstallableViewItems(installables);
+
+  const teamFilters = useMemo(
+    () =>
+      uniq(data.map((installable) => installable.sharing.source.label)).filter(
+        (label) => label !== "Public" && label !== "Personal"
+      ),
+    [data]
+  );
 
   const [view, setView] = useReduxState(
     selectView,
@@ -310,17 +284,12 @@ const BlueprintsCard: React.FunctionComponent<{
                   <BlueprintsView
                     tableInstance={tableInstance}
                     rows={row.subRows}
-                    getInstallableIcon={getInstallableIcon}
                   />
                 </Fragment>
               ))}
             </>
           ) : (
-            <BlueprintsView
-              tableInstance={tableInstance}
-              rows={rows}
-              getInstallableIcon={getInstallableIcon}
-            />
+            <BlueprintsView tableInstance={tableInstance} rows={rows} />
           )}
         </div>
       </Col>

@@ -19,7 +19,7 @@ import { RegistryId, ResolvedExtension } from "@/core";
 import { Row, TableInstance } from "react-table";
 import { Organization } from "@/types/contract";
 import { RecipeDefinition } from "@/types/definitions";
-import { GetInstallableIcon } from "@/options/pages/blueprints/useGetInstallableIcon";
+import { ReactNode } from "react";
 
 export type InstallStatus = {
   hasUpdate: boolean;
@@ -28,8 +28,7 @@ export type InstallStatus = {
 };
 
 // XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
-export type Installable = (RecipeDefinition | ResolvedExtension) &
-  InstallStatus;
+export type Installable = RecipeDefinition | ResolvedExtension;
 
 // Reshaped Installable to easily filter, sort, and group Installables
 export type InstallableViewItem = {
@@ -40,10 +39,13 @@ export type InstallableViewItem = {
     source: {
       type: string;
       label: string;
+      organization: Organization;
     };
   };
   updatedAt: string;
   status: "Active" | "Uninstalled";
+  hasUpdate: boolean;
+  icon: ReactNode;
   // Used to get Installable actions from useInstallableActions
   installable: Installable;
 };
@@ -51,5 +53,4 @@ export type InstallableViewItem = {
 export type BlueprintListViewProps = {
   tableInstance: TableInstance;
   rows: Array<Row<InstallableViewItem>>;
-  getInstallableIcon: GetInstallableIcon;
 };

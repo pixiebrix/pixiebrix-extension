@@ -23,18 +23,21 @@ import { Installable, InstallStatus } from "./blueprintsTypes";
 
 export const getSharingType = (
   installable: Installable,
+  organizations: Organization[],
   scope: string
 ): {
   type: string;
   label: string;
+  organization: Organization;
 } => {
   let sharingType = "";
+  const organization = getOrganization(installable, organizations);
 
   if (isPersonal(installable, scope)) {
     sharingType = "Personal";
   } else if (isDeployment(installable)) {
     sharingType = "Deployment";
-  } else if (installable.organization) {
+  } else if (organization) {
     sharingType = "Team";
   } else if (isPublic(installable)) {
     sharingType = "Public";
@@ -45,9 +48,9 @@ export const getSharingType = (
     sharingType === "Team" ||
     // There's a corner case for team deployments of public market bricks. The organization will come through as
     // nullish here.
-    (sharingType === "Deployment" && installable.organization?.name)
+    (sharingType === "Deployment" && organization?.name)
   ) {
-    label = installable.organization.name;
+    label = organization.name;
   } else {
     label = sharingType;
   }
@@ -55,6 +58,7 @@ export const getSharingType = (
   return {
     type: sharingType,
     label,
+    organization,
   };
 };
 

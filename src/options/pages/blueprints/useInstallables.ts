@@ -15,24 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ResolvedExtension, UUID } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
-import { useCallback, useContext, useMemo } from "react";
+import { UUID } from "@/core";
+import { useContext, useMemo } from "react";
 import AuthContext from "@/auth/AuthContext";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
-import {
-  getOrganization,
-  updateAvailable,
-} from "@/options/pages/blueprints/installableUtils";
 import { Installable } from "./blueprintsTypes";
-import {
-  useGetCloudExtensionsQuery,
-  useGetOrganizationsQuery,
-  useGetRecipesQuery,
-} from "@/services/api";
+import { useGetCloudExtensionsQuery, useGetRecipesQuery } from "@/services/api";
 
 type InstallablesState = {
   installables: Installable[];
@@ -46,7 +37,6 @@ function useInstallables(): InstallablesState {
 
   const recipes = useGetRecipesQuery();
   const cloudExtensions = useGetCloudExtensionsQuery();
-  const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -82,17 +72,6 @@ function useInstallables(): InstallablesState {
     []
   );
 
-  const isActive = useCallback(
-    (extensionOrRecipe: RecipeDefinition | ResolvedExtension) => {
-      if ("_recipe" in extensionOrRecipe) {
-        return installedExtensionIds.has(extensionOrRecipe.id);
-      }
-
-      return installedRecipeIds.has(extensionOrRecipe.metadata.id);
-    },
-    [installedExtensionIds, installedRecipeIds]
-  );
-
   const personalOrTeamBlueprints = useMemo(
     () =>
       (recipes.data ?? []).filter(
@@ -107,25 +86,8 @@ function useInstallables(): InstallablesState {
   );
 
   const installables = useMemo(
-    () =>
-      [...resolvedExtensions, ...personalOrTeamBlueprints].map(
-        (extensionOrRecipe) => ({
-          ...extensionOrRecipe,
-          active: isActive(extensionOrRecipe),
-          hasUpdate:
-            "_recipe" in extensionOrRecipe
-              ? updateAvailable(recipes.data, extensionOrRecipe)
-              : false,
-          organization: getOrganization(extensionOrRecipe, organizations),
-        })
-      ),
-    [
-      isActive,
-      organizations,
-      personalOrTeamBlueprints,
-      recipes.data,
-      resolvedExtensions,
-    ]
+    () => [...resolvedExtensions, ...personalOrTeamBlueprints],
+    [personalOrTeamBlueprints, resolvedExtensions]
   );
 
   return {

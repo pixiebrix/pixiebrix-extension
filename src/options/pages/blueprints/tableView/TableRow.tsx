@@ -22,23 +22,22 @@ import { timeSince } from "@/utils/timeUtils";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import Status from "@/options/pages/blueprints/Status";
 import styles from "./TableRow.module.scss";
-import { GetInstallableIcon } from "@/options/pages/blueprints/useGetInstallableIcon";
 
 const TableRow: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
-  getInstallableIcon: GetInstallableIcon;
-}> = ({ installableItem, getInstallableIcon }) => {
+}> = ({ installableItem }) => {
   const {
     name,
     description,
     sharing,
     updatedAt,
     installable,
+    icon,
   } = installableItem;
 
   return (
     <tr>
-      <td>{getInstallableIcon(installable)}</td>
+      <td>{icon}</td>
       <td className="text-wrap">
         <h5 className="text-wrap m-0">{name}</h5>
         <span className="text-muted text-wrap">{description}</span>
@@ -55,7 +54,7 @@ const TableRow: React.VoidFunctionComponent<{
         <span className="small">Updated: {timeSince(updatedAt)}</span>
       </td>
       <td>
-        <Status installable={installable} />
+        <Status installableViewItem={installableItem} />
       </td>
       <td>
         <BlueprintActions installable={installable} />
