@@ -16,7 +16,7 @@
  */
 
 import { useEffect } from "react";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 
 /**
  * React hook to report an error once.

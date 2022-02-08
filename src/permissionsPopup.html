@@ -20,15 +20,15 @@
   <head>
     <meta charset="utf-8" />
     <title>PixieBrix</title>
-    <script defer src="vendors.js"></script>
-    <script defer src="permissionsPopup.js"></script>
+    <link rel="stylesheet" href="loadingScreen.css" />
     <link rel="stylesheet" href="permissionsPopup.css" />
   </head>
   <body>
     <div id="container">
-      <div class="options-loader">
-        <div>Loading PixieBrix Permissions Dialog 🚀</div>
-      </div>
+      <div class="global-loading-message">Loading PixieBrix 🚀</div>
     </div>
+    <script src="loadingScreen.js"></script>
+    <script src="vendors.js"></script>
+    <script src="permissionsPopup.js"></script>
   </body>
 </html>

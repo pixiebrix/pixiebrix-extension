@@ -46,11 +46,14 @@
       }
     </style>
 
+    <link rel="stylesheet" href="loadingScreen.css" />
     <link rel="stylesheet" href="devtoolsPanel.css" />
   </head>
   <body>
-    <!-- main react mount point -->
-    <div id="container">🚀 Loading PixieBrix devtools.</div>
+    <div id="container">
+      <div class="global-loading-message">Loading PixieBrix Editor 🚀</div>
+    </div>
+    <script src="loadingScreen.js"></script>
     <script src="vendors.js"></script>
     <script src="devtoolsPanel.js"></script>
   </body>
