@@ -74,9 +74,7 @@ export const getRollbar = once(() => {
     return Rollbar.init({
       enabled: accessToken && accessToken !== "undefined" && !isContentScript(),
       accessToken,
-      captureUncaught: true,
       captureIp: "anonymize",
-      captureUnhandledRejections: true,
       codeVersion: process.env.SOURCE_VERSION,
       // https://docs.rollbar.com/docs/rollbarjs-telemetry
       // disable autoInstrument until we can set up scrubbing rules
