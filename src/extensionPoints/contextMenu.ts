@@ -51,6 +51,7 @@ import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
 import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -98,15 +99,6 @@ function installMouseHandlerOnce(): void {
  * See also: https://developer.chrome.com/extensions/contextMenus
  */
 export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMenuConfig> {
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon = "faMousePointer"
-  ) {
-    super(id, name, description, icon);
-  }
-
   public get syncInstall() {
     return true;
   }
@@ -348,8 +340,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description, icon } = cloned.metadata;
-    super(id, name, description, icon);
+    super(cloned.metadata, new BackgroundLogger());
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable, documentUrlPatterns, contexts } = cloned.definition;
