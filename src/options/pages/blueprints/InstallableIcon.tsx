@@ -19,11 +19,7 @@ import React, { useMemo, useState } from "react";
 import { Split } from "type-fest";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCube,
-  faPuzzlePiece,
-  faScroll,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCube, faScroll } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncEffect } from "use-async-effect";
 import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
 import { MarketplaceListing } from "@/types/contract";
@@ -38,7 +34,7 @@ async function getDefaultInstallableIcon(
     return faScroll;
   }
 
-  return faPuzzlePiece;
+  return faCube;
 }
 
 const SIZE_REGEX = /^(?<size>\d)x$/i;

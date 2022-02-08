@@ -99,6 +99,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     accessor: "sharing.packageId",
     disableGroupBy: true,
     disableFilters: true,
+    disableSortBy: true,
   },
   {
     Header: "Sharing",
