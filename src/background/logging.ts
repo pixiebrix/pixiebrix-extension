@@ -240,9 +240,11 @@ export async function recordError(
         // NOP - no reason to send to Rollbar
       } else if (hasBusinessRootCause(error)) {
         // Send at debug level so it doesn't trigger devops notifications
-        getRollbar().debug(message, errorObj, flatContext);
+        const rollbar = await getRollbar();
+        rollbar.debug(message, errorObj, flatContext);
       } else {
-        getRollbar().error(message, errorObj, flatContext);
+        const rollbar = await getRollbar();
+        rollbar.error(message, errorObj, flatContext);
       }
     } else if (!loggedDNT) {
       console.warn("Rollbar telemetry is disabled because DNT is turned on");

@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -19,11 +18,10 @@
 import Rollbar from "rollbar";
 import { IGNORED_ERRORS } from "@/errors";
 import { isContentScript } from "webext-detect-page";
-import { UUID } from "@/core";
 import { addListener as addAuthListener, readAuthData } from "@/auth/token";
 import { UserData } from "@/auth/authTypes";
 import { getUID } from "@/background/telemetry";
-import { once } from "lodash";
+import pMemoize from "p-memoize";
 
 const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
 
@@ -56,7 +54,9 @@ void readAuthData().then(async (data) => {
  *  @see https://docs.rollbar.com/docs/javascript
  *  @see https://docs.rollbar.com/docs/rollbarjs-configuration-reference
  */
-export const getRollbar = once(() => {
+async function initRollbar(): Promise<Rollbar> {
+  // `async` to fetch person information from localStorage
+
   if (isContentScript()) {
     // The contentScript cannot not make requests directly to Rollbar because the site's CSP might not support it
     console.warn(
@@ -93,6 +93,7 @@ export const getRollbar = once(() => {
           },
         },
         environment: process.env.ENVIRONMENT,
+        person: await personFactory(await readAuthData()),
       },
       transform: (payload: Payload) => {
         // Standardize the origin across browsers so that they match the source map we uploaded to rollbar
@@ -110,16 +111,12 @@ export const getRollbar = once(() => {
   } catch (error) {
     console.error("Error during Rollbar init", { error });
   }
-});
+}
 
-function selectPerson(data: Partial<UserData> & { browserId: UUID }): Person {
-  const {
-    user,
-    browserId,
-    email,
-    telemetryOrganizationId,
-    organizationId,
-  } = data;
+async function personFactory(data: Partial<UserData>): Promise<Person> {
+  const browserId = await getUID();
+
+  const { user, email, telemetryOrganizationId, organizationId } = data;
 
   const errorOrganizationId = telemetryOrganizationId ?? organizationId;
 
@@ -136,13 +133,14 @@ function selectPerson(data: Partial<UserData> & { browserId: UUID }): Person {
 }
 
 async function updatePerson(data: Partial<UserData>): Promise<void> {
-  const rollbar = getRollbar();
+  const rollbar = await getRollbar();
   if (rollbar) {
-    const browserId = await getUID();
-    const person = selectPerson({ ...data, browserId });
+    const person = await personFactory(data);
     console.debug("Setting Rollbar Person", person);
     rollbar.configure({
       payload: { person },
     });
   }
 }
+
+export const getRollbar = pMemoize(initRollbar);
