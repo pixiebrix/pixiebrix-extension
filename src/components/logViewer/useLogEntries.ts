@@ -133,6 +133,8 @@ export default function useLogEntries({
 
     checkingNewEntriesRef.current = true;
 
+    console.log("getting logs", { context });
+
     const newEntries = await getLog(context);
     const filteredNewEntries = (newEntries ?? []).filter(
       // eslint-disable-next-line security/detect-object-injection -- level is from dropdown

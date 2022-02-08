@@ -258,6 +258,8 @@ export async function recordError(
     "contentScript does not have CSP access to Rollbar"
   );
 
+  console.log("recordError", { error, context, data });
+
   try {
     const message = getErrorMessage(error);
     const flatContext = flattenContext(error, context);

@@ -16,7 +16,8 @@
  */
 
 import { Effect } from "@/types";
-import { Schema } from "@/core";
+import { BlockOptions, Schema } from "@/core";
+import { recordLog } from "@/background/messenger/api";
 
 export class ConfettiEffect extends Effect {
   constructor() {
@@ -28,11 +29,13 @@ export class ConfettiEffect extends Effect {
     properties: {},
   };
 
-  async effect(): Promise<void> {
+  async effect(_, env?: BlockOptions): Promise<void> {
     const {
       default: confetti,
       // @ts-expect-error no existing definitions exist
     } = await import(/* webpackChunkName: "confetti" */ "canvas-confetti");
+
+    recordLog(env.logger.context, "error", "Testing error.", null);
 
     // https://www.kirilv.com/canvas-confetti/
     confetti({
