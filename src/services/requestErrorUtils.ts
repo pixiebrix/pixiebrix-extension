@@ -56,6 +56,15 @@ export function safeGuessStatusText(code: string | number): string | null {
   }
 }
 
+export async function isAppUrl(url: string): Promise<boolean> {
+  const baseURL = await getBaseURL();
+  const patterns = [baseURL, DEFAULT_SERVICE_URL].map(
+    (url) => `${withoutTrailingSlash(url)}/*`
+  );
+
+  return testMatchPatterns(patterns, url);
+}
+
 /**
  * Return true iff the error corresponds to a request to PixieBrix API.
  */

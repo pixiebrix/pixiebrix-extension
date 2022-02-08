@@ -65,6 +65,9 @@ export async function getExtensionAuth(): Promise<UserData> {
   return { user, email, hostname };
 }
 
+/**
+ * Clear the extension state. The options page will show as "unlinked" and prompt the
+ */
 export async function clearExtensionAuth(): Promise<void> {
   await browser.storage.local.remove(STORAGE_EXTENSION_KEY);
   Cookies.remove("csrftoken");

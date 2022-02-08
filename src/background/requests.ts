@@ -50,6 +50,9 @@ import {
   safeGuessStatusText,
 } from "@/services/requestErrorUtils";
 
+// eslint-disable-next-line prefer-destructuring -- process.env variable
+const DEBUG = process.env.DEBUG;
+
 type SanitizedResponse<T = unknown> = Pick<
   AxiosResponse<T>,
   "data" | "status" | "statusText"
@@ -66,11 +69,15 @@ export async function serializableAxiosRequest<T>(
     "Network requests must be made from the background page"
   );
 
-  if (config.baseURL && !config.baseURL?.startsWith("https://")) {
+  if (!DEBUG && config.baseURL && !config.baseURL?.startsWith("https://")) {
     throw new BusinessError("Unsupported URL scheme; Use https:");
   }
 
-  if (isAbsoluteUrl(config.url) && !config.url?.startsWith("https://")) {
+  if (
+    !DEBUG &&
+    isAbsoluteUrl(config.url) &&
+    !config.url?.startsWith("https://")
+  ) {
     throw new BusinessError("Unsupported URL scheme; Use https:");
   }
 

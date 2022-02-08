@@ -18,9 +18,8 @@
 import axios from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { EndpointAuthError, isAxiosError } from "@/errors";
-import { clearExtensionAuth } from "@/auth/token";
 import { isAbsoluteUrl } from "@/utils";
-import { enrichRequestError } from "@/services/requestErrorUtils";
+import { enrichRequestError, isAppUrl } from "@/services/requestErrorUtils";
 import { expectContext } from "@/utils/expectContext";
 
 const HTTP_401_UNAUTHENTICATED = 401;
@@ -43,13 +42,16 @@ export async function fetch<TData = unknown>(
   };
 
   if (absolute) {
-    // Make a normal request
-    try {
-      const { data } = await axios.get<TData>(relativeOrAbsoluteUrl);
-      return data;
-    } catch (error) {
-      throw await enrichRequestError(error);
+    if (!(await isAppUrl(relativeOrAbsoluteUrl))) {
+      try {
+        const { data } = await axios.get<TData>(relativeOrAbsoluteUrl);
+        return data;
+      } catch (error) {
+        throw await enrichRequestError(error);
+      }
     }
+
+    console.warn("App API calls must use relative URLs");
   }
 
   const client = await (requireLinked ? getLinkedApiClient() : getApiClient());
@@ -64,17 +66,7 @@ export async function fetch<TData = unknown>(
       // https://rollbar.com/pixiebrix/pixiebrix/items/832/
       error.response?.status === HTTP_401_UNAUTHENTICATED
     ) {
-      if ("Authorization" in client.defaults.headers) {
-        // The token is incorrect - try relinking
-        // TODO: use openTab to open the extension page. Can't currently do it because openTab is coupled to
-        //  the registry. Add once we fix the messaging architecture
-        await clearExtensionAuth();
-      } else {
-        console.warn(
-          `API endpoint requires authentication: ${relativeOrAbsoluteUrl}`
-        );
-        throw new EndpointAuthError(relativeOrAbsoluteUrl);
-      }
+      throw new EndpointAuthError(relativeOrAbsoluteUrl);
     }
 
     throw await enrichRequestError(error);
