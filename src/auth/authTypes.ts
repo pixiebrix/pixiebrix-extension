@@ -43,10 +43,6 @@ export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "telemetryOrganizationId",
 ];
 
-export interface AuthData extends UserData {
+export interface TokenAuthData extends UserData {
   token: string;
-}
-
-export interface BrowserAuthData extends AuthData {
-  browserId: string;
 }

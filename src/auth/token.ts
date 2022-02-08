@@ -20,7 +20,7 @@ import Cookies from "js-cookie";
 import { isEqual } from "lodash";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
-  BrowserAuthData,
+  TokenAuthData,
   USER_DATA_UPDATE_KEYS,
   UserData,
   UserDataUpdate,
@@ -28,7 +28,7 @@ import {
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
-type AuthListener = (auth: Partial<BrowserAuthData>) => void;
+type AuthListener = (auth: Partial<TokenAuthData>) => void;
 
 const listeners: AuthListener[] = [];
 
@@ -38,7 +38,7 @@ export function addListener(handler: AuthListener): void {
 }
 
 export async function readAuthData(): Promise<
-  BrowserAuthData | Partial<BrowserAuthData>
+  TokenAuthData | Partial<TokenAuthData>
 > {
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
@@ -78,6 +78,7 @@ export async function updateUserData(update: UserDataUpdate): Promise<void> {
   const updated = await readAuthData();
 
   for (const key of USER_DATA_UPDATE_KEYS) {
+    // Intentionally overwrite values with null/undefined from the update
     // eslint-disable-next-line security/detect-object-injection -- keys from compile-time constant
     updated[key] = update[key];
   }
@@ -89,7 +90,7 @@ export async function updateUserData(update: UserDataUpdate): Promise<void> {
  * Refresh the Chrome extensions auth (user, email, token, API hostname), and return true if it was updated.
  */
 export async function updateExtensionAuth(
-  auth: BrowserAuthData
+  auth: TokenAuthData
 ): Promise<boolean> {
   if (!auth) {
     return false;

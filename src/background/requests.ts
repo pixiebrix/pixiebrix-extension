@@ -238,7 +238,7 @@ export async function proxyService<TData>(
   // so it must be copied into `background/messenger/api.ts`
 ): Promise<RemoteResponse<TData>> {
   if (serviceConfig != null && typeof serviceConfig !== "object") {
-    throw new Error("expected configured service for serviceConfig");
+    throw new TypeError("expected configured service for serviceConfig");
   }
 
   if (!serviceConfig) {
@@ -258,7 +258,7 @@ export async function proxyService<TData>(
       requestConfig
     )) as RemoteResponse<TData>;
   } catch (error) {
-    throw new ContextError(selectError(error) as Error, {
+    throw new ContextError(selectError(error), {
       serviceId: serviceConfig.serviceId,
       authId: serviceConfig.id,
     });

@@ -19,13 +19,12 @@
  * API for the PixieBrix app to talk to the browser extension.
  */
 import { updateExtensionAuth } from "@/auth/token";
-import { AuthData } from "@/auth/authTypes";
+import { TokenAuthData } from "@/auth/authTypes";
 import { liftBackground } from "@/background/protocol";
 import { liftExternal } from "@/contentScript/externalProtocol";
 import browser from "webextension-polyfill";
 import { isFirefox } from "webext-detect-page";
 import { reportEvent } from "@/telemetry/events";
-import { getUID } from "@/background/telemetry";
 
 const lift = isFirefox() ? liftExternal : liftBackground;
 
@@ -41,9 +40,8 @@ const _reload = liftBackground("BACKGROUND_RELOAD", async () => {
 // Called by PixieBrix app
 export const setExtensionAuth = lift(
   "SET_EXTENSION_AUTH",
-  async (auth: AuthData) => {
-    const browserId = await getUID();
-    const updated = await updateExtensionAuth({ ...auth, browserId });
+  async (auth: TokenAuthData) => {
+    const updated = await updateExtensionAuth({ ...auth });
     if (updated) {
       // A hack to ensure the SET_EXTENSION_AUTH response flows to the front-end before the backend
       // page is reloaded, causing the message port to close.

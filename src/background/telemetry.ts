@@ -55,8 +55,6 @@ async function uid(): Promise<UUID> {
 
   let uuid = await readStorage<UUID>(UUID_STORAGE_KEY);
 
-  console.debug("Current browser UID", { uuid });
-
   if (!uuid || typeof uuid !== "string") {
     uuid = uuidv4();
     console.debug("Generating UID for browser", { uuid });

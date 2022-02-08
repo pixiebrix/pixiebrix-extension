@@ -18,11 +18,12 @@
 import Rollbar from "rollbar";
 import { IGNORED_ERRORS, selectError } from "@/errors";
 import { isContentScript } from "webext-detect-page";
-import { MessageContext } from "@/core";
+import { MessageContext, UUID } from "@/core";
 import { recordError } from "@/background/messenger/api";
 import { serializeError } from "serialize-error";
 import { addListener as addAuthListener, readAuthData } from "@/auth/token";
-import { BrowserAuthData } from "@/auth/authTypes";
+import { UserData } from "@/auth/authTypes";
+import { getUID } from "@/background/telemetry";
 
 const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
 
@@ -53,8 +54,8 @@ type Person = {
  */
 export const rollbar = initRollbar();
 
-void readAuthData().then((data) => {
-  updatePerson(data);
+void readAuthData().then(async (data) => {
+  await updatePerson(data);
 });
 
 function initRollbar() {
@@ -111,7 +112,7 @@ function initRollbar() {
   }
 }
 
-function selectPerson(data: Partial<BrowserAuthData>): Person {
+function selectPerson(data: Partial<UserData> & { browserId: UUID }): Person {
   const {
     user,
     browserId,
@@ -134,9 +135,10 @@ function selectPerson(data: Partial<BrowserAuthData>): Person {
       };
 }
 
-export function updatePerson(data: Partial<BrowserAuthData>): void {
+async function updatePerson(data: Partial<UserData>): Promise<void> {
   if (rollbar) {
-    const person = selectPerson(data);
+    const browserId = await getUID();
+    const person = selectPerson({ ...data, browserId });
     console.debug("Setting Rollbar Person", person);
     rollbar.configure({
       payload: { person },
