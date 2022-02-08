@@ -35,7 +35,7 @@ import {
 import { Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, noop } from "lodash";
 import { checkAvailable } from "@/blocks/available";
-import { reportError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import {
   awaitElementOnce,

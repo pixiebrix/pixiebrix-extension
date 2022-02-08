@@ -35,7 +35,8 @@ import {
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
-import { BusinessError, hasCancelRootCause, reportError } from "@/errors";
+import { BusinessError, hasCancelRootCause } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import {
   DEFAULT_ACTION_RESULTS,
   notifyError,

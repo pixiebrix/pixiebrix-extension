@@ -24,7 +24,6 @@ import {
   hasCancelRootCause,
   MultipleElementsFoundError,
   NoElementsFoundError,
-  reportError,
 } from "@/errors";
 import {
   acquireElement,
@@ -72,6 +71,7 @@ import { $safeFind } from "@/helpers";
 import sanitize from "@/utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import reportError from "@/telemetry/reportError";
 
 interface ShadowDOM {
   mode?: "open" | "closed";

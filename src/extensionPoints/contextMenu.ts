@@ -38,7 +38,8 @@ import {
   uninstallContextMenu,
 } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
-import { BusinessError, isErrorObject, reportError } from "@/errors";
+import { BusinessError, isErrorObject } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";

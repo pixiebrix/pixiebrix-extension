@@ -33,7 +33,7 @@ import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
 import { pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
-import { reportError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import {
   ExtensionOptionsState,
   LegacyExtensionObjectState,
