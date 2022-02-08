@@ -1,4 +1,3 @@
-import { isBackground } from "webext-detect-page";
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -19,9 +18,8 @@ import { isBackground } from "webext-detect-page";
 /**
  * @file This file must be imported as early as possible in each entrypoint, once
  */
-
-import { getErrorMessage, IGNORED_ERRORS } from "@/errors";
-import { reportError } from "@/telemetry/rollbar";
+import { isBackground } from "webext-detect-page";
+import { getErrorMessage, IGNORED_ERRORS, reportError } from "@/errors";
 
 function ignoreSomeErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
