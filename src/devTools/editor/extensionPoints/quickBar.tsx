@@ -283,7 +283,7 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
           <code>{isEmpty(shortcut) ? defaultShortcut : shortcut}</code>. To
           learn how to customize this shortcut,{" "}
           <a href="https://docs.pixiebrix.com/quick-bar-setup">
-            Read more here
+            read more here
           </a>
           .
         </p>
