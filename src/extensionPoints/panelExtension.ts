@@ -93,8 +93,6 @@ function detectLoop(timestamps: Date[]): void {
  * Extension point that adds a panel to a web page.
  */
 export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
-  protected template?: string;
-
   protected $container: JQuery;
 
   private readonly collapsedExtensions: Map<UUID, boolean>;

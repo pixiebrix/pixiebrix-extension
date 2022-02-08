@@ -19,12 +19,12 @@ import styles from "./PrivateServicesCard.module.scss";
 
 import { useSelector } from "react-redux";
 import { Button, Card, Table } from "react-bootstrap";
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { RootState } from "@/options/store";
 import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { deleteCachedAuthData } from "@/background/messenger/api";
 import { ServicesState } from "@/store/servicesSlice";
 import useNotifications from "@/hooks/useNotifications";
@@ -47,7 +47,10 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   navigate,
 }) => {
   const notify = useNotifications();
-  const { isLoggedIn } = useContext(AuthContext);
+  const {
+    data: { isLoggedIn },
+  } = useGetAuthQuery();
+
   const [page, setPage] = useState(0);
 
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(

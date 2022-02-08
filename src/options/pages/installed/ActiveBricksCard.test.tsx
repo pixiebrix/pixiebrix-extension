@@ -18,16 +18,16 @@ import React from "react";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
 import { screen, render, fireEvent } from "@testing-library/react";
 import { ResolvedExtension, UUID } from "@/core";
+import { useGetRecipesQuery } from "@/services/api";
+import { Organization } from "@/types/contract";
+import { RecipeDefinition } from "@/types/definitions";
+import { anonAuth } from "@/hooks/auth";
 
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
   useGetRecipesQuery: jest.fn(),
+  useGetAuthQuery: jest.fn(() => ({ data: anonAuth })),
 }));
-
-import { useGetRecipesQuery } from "@/services/api";
-import { Organization } from "@/types/contract";
-import { RecipeDefinition } from "@/types/definitions";
-
 const arbitraryTimestamp = "2021-11-20T00:00:00.000000Z";
 
 type TestExtension = {

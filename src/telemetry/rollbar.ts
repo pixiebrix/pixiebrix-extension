@@ -16,8 +16,11 @@
  */
 
 import Rollbar, { LogArgument } from "rollbar";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage, IGNORED_ERRORS, selectError } from "@/errors";
 import { isExtensionContext } from "webext-detect-page";
+import { MessageContext } from "@/core";
+import { recordError } from "@/background/messenger/api";
+import { serializeError } from "serialize-error";
 
 const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
 
@@ -37,7 +40,9 @@ type Payload = {
  *  @see https://docs.rollbar.com/docs/javascript
  *  @see https://docs.rollbar.com/docs/rollbarjs-configuration-reference
  */
-export const rollbar: Rollbar = (() => {
+export const rollbar = initRollbar();
+
+function initRollbar() {
   try {
     return Rollbar.init({
       enabled: accessToken && accessToken !== "undefined",
@@ -50,11 +55,7 @@ export const rollbar: Rollbar = (() => {
       // disable autoInstrument until we can set up scrubbing rules
       autoInstrument: false,
       // https://docs.rollbar.com/docs/reduce-noisy-javascript-errors#ignore-certain-types-of-messages
-      ignoredMessages: [
-        "ResizeObserver loop limit exceeded",
-        "Promise was cancelled",
-        "Uncaught Error: PixieBrix contentScript already installed",
-      ],
+      ignoredMessages: IGNORED_ERRORS,
       payload: {
         client: {
           javascript: {
@@ -80,7 +81,7 @@ export const rollbar: Rollbar = (() => {
   } catch (error) {
     console.error("Error during rollbar init", { error });
   }
-})();
+}
 
 /**
  * Convert a message or value into a rollbar logging argument.
@@ -135,4 +136,41 @@ export async function updateAuth({
       payload: { person: { id: userId, organizationId } },
     });
   }
+}
+
+/**
+ * Report an error for local logs, remote telemetry, etc.
+ * @param error the error object
+ * @param context optional context for error telemetry
+ */
+export function reportError(error: unknown, context?: MessageContext): void {
+  void _reportError(error, context).catch((reportingError) => {
+    console.error("An error occurred when reporting an error", {
+      originalError: error,
+      reportingError,
+    });
+  });
+}
+
+// Extracted async function to avoid turning `reportError` into an async function
+// which would trigger `eslint/no-floating-promises` at every `reportError` call
+async function _reportError(
+  error: unknown, // It might also be an ErrorEvent
+  context?: MessageContext
+): Promise<void> {
+  const errorObject = selectError(error);
+  if (!isExtensionContext()) {
+    // This module is also used by the PixieBrix app, so allow this method to be called from an external context
+    rollbar.error(toLogArgument(errorObject));
+    return;
+  }
+
+  // Events are already natively logged
+  if (
+    !(error instanceof ErrorEvent || error instanceof PromiseRejectionEvent)
+  ) {
+    console.error(error);
+  }
+
+  recordError(serializeError(errorObject), context, null);
 }

@@ -69,7 +69,9 @@ export async function userSelectElement({
           setTimeout(() => requestAnimationFrame(updateOverlay), 30); // Only when the tab is visible
         };
 
-        updateOverlay();
+        if (filteredElements.length > 0) {
+          updateOverlay();
+        }
       }
     }
 

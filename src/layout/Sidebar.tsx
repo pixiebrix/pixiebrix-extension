@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
+import React from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,10 +31,12 @@ import {
 import cx from "classnames";
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 
 const Sidebar: React.FunctionComponent = () => {
-  const { flags } = useContext(AuthContext);
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
 
   return (
     <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>

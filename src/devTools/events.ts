@@ -15,26 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createContext } from "react";
-import { AuthState as CoreAuthState } from "@/core";
+import { WebNavigation } from "webextension-polyfill";
+import { SimpleEvent } from "@/hooks/events";
 
-export type AuthState = CoreAuthState & {
-  isPending: boolean;
-  error: undefined | unknown;
-};
+type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;
 
-const anonAuthState: AuthState = {
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: false,
-  scope: null,
-  flags: [],
-  isPending: false,
-  error: undefined,
-};
+export const navigationEvent = new SimpleEvent<NavigationDetails>();
 
-const AuthContext = createContext(anonAuthState);
-
-export default AuthContext;
+export function updateDevTools() {
+  navigationEvent.emit(chrome.devtools.inspectedWindow.tabId);
+}

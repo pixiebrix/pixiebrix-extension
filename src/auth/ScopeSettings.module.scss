@@ -20,6 +20,13 @@
   overflow: auto;
   width: 30%;
   min-width: 600px;
+
+  // BS4 modal has a max-width = 500px, take the whole width of the modal
+  :global(.modal-content) & {
+    width: 100%;
+    min-width: 100%;
+    padding: 10px;
+  }
 }
 
 .title {

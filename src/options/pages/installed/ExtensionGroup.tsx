@@ -17,7 +17,7 @@
 
 import styles from "./ExtensionGroup.module.scss";
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -43,7 +43,7 @@ import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import ExtensionRows from "./ExtensionRows";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router";
 
@@ -82,7 +82,9 @@ const ExtensionGroup: React.FunctionComponent<{
   onExportBlueprint,
   hasUpdate,
 }) => {
-  const { flags } = useContext(AuthContext);
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
   const notify = useNotifications();
   const dispatch = useDispatch();
   const history = useHistory();

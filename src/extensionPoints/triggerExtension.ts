@@ -33,7 +33,7 @@ import {
 import { Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, noop } from "lodash";
 import { checkAvailable } from "@/blocks/available";
-import { reportError } from "@/telemetry/logging";
+import { reportError } from "@/telemetry/rollbar";
 import { reportEvent } from "@/telemetry/events";
 import {
   awaitElementOnce,
