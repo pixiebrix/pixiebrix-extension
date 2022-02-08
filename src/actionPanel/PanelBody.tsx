@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/tests/ConsoleLogger";
@@ -67,7 +67,7 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
   }
 
   if (pending || component == null) {
-    return <GridLoader />;
+    return <Loader />;
   }
 
   return component;

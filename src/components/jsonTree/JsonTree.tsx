@@ -21,7 +21,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import styles from "./JsonTree.module.scss";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { searchData } from "@/devTools/utils";
 import { useLabelRenderer } from "./treeHooks";
 
@@ -103,7 +103,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
       )}
       {labelText && <span>{labelText}</span>}
       {searchResults === undefined ? (
-        <GridLoader />
+        <Loader />
       ) : (
         <JSONTree
           data={searchResults}

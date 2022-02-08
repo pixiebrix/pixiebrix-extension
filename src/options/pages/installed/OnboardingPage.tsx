@@ -26,7 +26,7 @@ import {
   useGetAuthQuery,
 } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 
 const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
   <Col xs={6}>
@@ -184,7 +184,7 @@ const OnboardingPage: React.FunctionComponent = () => {
     <>
       {isLoading ? (
         <div id="OnboardingSpinner">
-          <GridLoader />
+          <Loader />
         </div>
       ) : (
         <>

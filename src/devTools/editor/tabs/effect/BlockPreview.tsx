@@ -21,7 +21,7 @@ import { AsyncState, useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -204,7 +204,7 @@ const BlockPreview: React.FunctionComponent<{
     return (
       <div>
         {showTraceWarning && traceWarning}
-        <GridLoader />
+        <Loader />
       </div>
     );
   }

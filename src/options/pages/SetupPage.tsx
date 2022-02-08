@@ -25,7 +25,7 @@ import browser from "webextension-polyfill";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 
 import "./SetupPage.scss";
 import { useTitle } from "@/hooks/title";
@@ -85,7 +85,7 @@ const SetupPage: React.FunctionComponent = () => {
           <Card className="OnboardingCard">
             <Card.Header>PixieBrix Setup Steps</Card.Header>
             <Card.Body>
-              <GridLoader />
+              <Loader />
             </Card.Body>
           </Card>
         </Col>

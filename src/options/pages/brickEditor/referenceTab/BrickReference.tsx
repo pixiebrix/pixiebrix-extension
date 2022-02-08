@@ -28,7 +28,7 @@ import { IBlock, IService } from "@/core";
 import Fuse from "fuse.js";
 import { sortBy } from "lodash";
 import styles from "./BrickReference.module.scss";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import BrickDetail from "./BrickDetail";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import BlockResult from "./BlockResult";
@@ -139,7 +139,7 @@ const BrickReference: React.FunctionComponent<{
             />
           ) : (
             <div>
-              <GridLoader />
+              <Loader />
             </div>
           )}
         </Col>

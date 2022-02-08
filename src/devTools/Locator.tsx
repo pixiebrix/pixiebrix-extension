@@ -19,7 +19,7 @@ import React, { useState } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { InputGroup, Form, Table } from "react-bootstrap";
 import { useDebounce } from "use-debounce";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import browser from "webextension-polyfill";
 import { useAsyncEffect } from "use-async-effect";
 import { isEmpty } from "lodash";
@@ -96,7 +96,7 @@ const Locator: React.FunctionComponent = () => {
       {searchError && getErrorMessage(searchError)}
 
       {searchResults == null ? (
-        <GridLoader />
+        <Loader />
       ) : (
         <Table>
           <thead>

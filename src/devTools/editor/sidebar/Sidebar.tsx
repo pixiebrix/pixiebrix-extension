@@ -52,7 +52,7 @@ import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 import { useGetAuthQuery } from "@/services/api";
 import { RecipeDefinition } from "@/types/definitions";
-import { GridLoader } from "react-spinners";
+import Loader from "@/components/Loader";
 
 const DropdownEntry: React.VoidFunctionComponent<{
   caption: string;
@@ -241,7 +241,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
       </div>
       <div className={styles.extensions}>
         {isLoadingItems ? (
-          <GridLoader />
+          <Loader />
         ) : (
           <ListGroup>
             {entries.map((entry) =>

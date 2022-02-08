@@ -19,7 +19,7 @@ import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import InstalledPage from "@/options/pages/installed/InstalledPage";
@@ -84,7 +84,7 @@ const Layout = () => {
   const { data: authData, isLoading } = useGetAuthQuery();
 
   if (isLoading) {
-    return <GridLoader />;
+    return <Loader />;
   }
 
   const { flags } = authData;
@@ -168,7 +168,7 @@ const App: React.FunctionComponent = () => {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={<GridLoader />} persistor={persistor}>
+      <PersistGate loading={<Loader />} persistor={persistor}>
         <ConnectedRouter history={hashHistory}>
           <ModalProvider>
             <ToastProvider>
