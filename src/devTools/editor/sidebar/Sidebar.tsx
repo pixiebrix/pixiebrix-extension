@@ -54,6 +54,28 @@ import { useGetAuthQuery } from "@/services/api";
 import { RecipeDefinition } from "@/types/definitions";
 import { GridLoader } from "react-spinners";
 
+const ReloadButton: React.VoidFunctionComponent = () => (
+  <Button
+    type="button"
+    size="sm"
+    variant="light"
+    title="Shift-click to attempt to reload all contexts (in 2 seconds)"
+    onClick={async (event) => {
+      if (event.shiftKey) {
+        browser.runtime?.reload(); // Not guaranteed
+        await browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
+
+        // We must wait before reloading or else the loading fails
+        // https://github.com/pixiebrix/pixiebrix-extension/pull/2381
+        await sleep(2000);
+      }
+
+      location.reload();
+    }}
+  >
+    <FontAwesomeIcon icon={faSync} />
+  </Button>
+);
 const DropdownEntry: React.VoidFunctionComponent<{
   caption: string;
   icon: IconProp;
@@ -190,30 +212,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
                 ))}
             </DropdownButton>
 
-            {showDeveloperUI && (
-              <Button
-                type="button"
-                size="sm"
-                variant="light"
-                title="Shift-click to attempt to reload all contexts (in 2 seconds)"
-                onClick={async (event) => {
-                  if (event.shiftKey) {
-                    browser.runtime?.reload(); // Not guaranteed
-                    await browser.tabs.reload(
-                      browser.devtools.inspectedWindow.tabId
-                    );
-
-                    // We must wait before reloading or else the loading fails
-                    // https://github.com/pixiebrix/pixiebrix-extension/pull/2381
-                    await sleep(2000);
-                  }
-
-                  location.reload();
-                }}
-              >
-                <FontAwesomeIcon icon={faSync} />
-              </Button>
-            )}
+            {showDeveloperUI && <ReloadButton />}
           </div>
           <Button
             variant="light"
@@ -277,19 +276,30 @@ const SidebarExpanded: React.VoidFunctionComponent<
 
 const SidebarCollapsed: React.VoidFunctionComponent<{
   expandSidebar: () => void;
-}> = ({ expandSidebar }) => (
-  <div className={cx(styles.root, styles.collapsed)}>
-    <Button
-      variant="light"
-      className={cx(styles.toggle)}
-      type="button"
-      onClick={expandSidebar}
-    >
-      <Logo />
-      <FontAwesomeIcon icon={faAngleDoubleRight} />
-    </Button>
-  </div>
-);
+}> = ({ expandSidebar }) => {
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
+  const showDeveloperUI =
+    process.env.ENVIRONMENT === "development" ||
+    flags.includes("page-editor-developer");
+  return (
+    <>
+      <div className={cx(styles.root, styles.collapsed)}>
+        <Button
+          variant="light"
+          className={cx(styles.toggle)}
+          type="button"
+          onClick={expandSidebar}
+        >
+          <Logo />
+          <FontAwesomeIcon icon={faAngleDoubleRight} />
+        </Button>
+        {showDeveloperUI && <ReloadButton />}
+      </div>
+    </>
+  );
+};
 
 const transitionProps: CSSTransitionProps = {
   classNames: {
