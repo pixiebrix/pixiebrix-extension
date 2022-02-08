@@ -19,14 +19,20 @@ import browser from "webextension-polyfill";
 import Cookies from "js-cookie";
 import { isEqual } from "lodash";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
-import { BrowserAuthData, UserData } from "./authTypes";
+import {
+  BrowserAuthData,
+  USER_DATA_UPDATE_KEYS,
+  UserData,
+  UserDataUpdate,
+} from "./authTypes";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
-type AuthListener = (auth: BrowserAuthData) => void;
+type AuthListener = (auth: Partial<BrowserAuthData>) => void;
 
 const listeners: AuthListener[] = [];
 
+// Use listeners to allow inversion of control and avoid circular dependency with rollbar.
 export function addListener(handler: AuthListener): void {
   listeners.push(handler);
 }
@@ -66,6 +72,20 @@ export async function clearExtensionAuth(): Promise<void> {
 }
 
 /**
+ * Update user data (for use in rollbar, etc.), but not the auth token.
+ */
+export async function updateUserData(update: UserDataUpdate): Promise<void> {
+  const updated = await readAuthData();
+
+  for (const key of USER_DATA_UPDATE_KEYS) {
+    // eslint-disable-next-line security/detect-object-injection -- keys from compile-time constant
+    updated[key] = update[key];
+  }
+
+  await setStorage(STORAGE_EXTENSION_KEY, updated);
+}
+
+/**
  * Refresh the Chrome extensions auth (user, email, token, API hostname), and return true if it was updated.
  */
 export async function updateExtensionAuth(
@@ -87,3 +107,16 @@ export async function updateExtensionAuth(
   await setStorage(STORAGE_EXTENSION_KEY, auth);
   return true;
 }
+
+browser.storage.onChanged.addListener((changes, storage) => {
+  if (storage === "local") {
+    // eslint-disable-next-line security/detect-object-injection -- compile time constant
+    const change = changes[STORAGE_EXTENSION_KEY];
+
+    if (change) {
+      for (const listener of listeners) {
+        listener(change.newValue);
+      }
+    }
+  }
+});

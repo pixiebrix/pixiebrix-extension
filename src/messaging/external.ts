@@ -18,7 +18,8 @@
 /**
  * API for the PixieBrix app to talk to the browser extension.
  */
-import { AuthData, updateExtensionAuth } from "@/auth/token";
+import { updateExtensionAuth } from "@/auth/token";
+import { AuthData } from "@/auth/authTypes";
 import { liftBackground } from "@/background/protocol";
 import { liftExternal } from "@/contentScript/externalProtocol";
 import browser from "webextension-polyfill";

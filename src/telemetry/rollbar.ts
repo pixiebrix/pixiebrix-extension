@@ -21,7 +21,7 @@ import { isContentScript } from "webext-detect-page";
 import { MessageContext } from "@/core";
 import { recordError } from "@/background/messenger/api";
 import { serializeError } from "serialize-error";
-import { addListener as addAuthListener } from "@/auth/token";
+import { addListener as addAuthListener, readAuthData } from "@/auth/token";
 import { BrowserAuthData } from "@/auth/authTypes";
 
 const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
@@ -53,11 +53,15 @@ type Person = {
  */
 export const rollbar = initRollbar();
 
+void readAuthData().then((data) => {
+  updatePerson(data);
+});
+
 function initRollbar() {
   if (isContentScript()) {
-    // The contentScript should not make requests directly to rollbar
+    // The contentScript cannot not make requests directly to Rollbar because the site's CSP might not support it
     console.warn(
-      "Unexpected import of Rollbar in the contentScript. Do not call Rollbar directly from the contentScript"
+      "Unsupported import of Rollbar in the contentScript. Do not call Rollbar directly from the contentScript"
     );
   }
 
@@ -69,7 +73,7 @@ function initRollbar() {
     addAuthListener(updatePerson);
 
     return Rollbar.init({
-      enabled: accessToken && accessToken !== "undefined",
+      enabled: accessToken && accessToken !== "undefined" && !isContentScript(),
       accessToken,
       captureUncaught: true,
       captureIp: "anonymize",
@@ -107,16 +111,18 @@ function initRollbar() {
   }
 }
 
-export async function updatePerson({
-  user,
-  browserId,
-  email,
-  telemetryOrganizationId,
-  organizationId,
-}: BrowserAuthData): Promise<void> {
+function selectPerson(data: Partial<BrowserAuthData>): Person {
+  const {
+    user,
+    browserId,
+    email,
+    telemetryOrganizationId,
+    organizationId,
+  } = data;
+
   const errorOrganizationId = telemetryOrganizationId ?? organizationId;
 
-  const person: Person = organizationId
+  return errorOrganizationId
     ? {
         id: user,
         email,
@@ -126,8 +132,12 @@ export async function updatePerson({
         id: browserId,
         organizationId: null,
       };
+}
 
+export function updatePerson(data: Partial<BrowserAuthData>): void {
   if (rollbar) {
+    const person = selectPerson(data);
+    console.debug("Setting Rollbar Person", person);
     rollbar.configure({
       payload: { person },
     });
