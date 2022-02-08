@@ -60,6 +60,7 @@ const ReloadButton: React.VoidFunctionComponent = () => (
     size="sm"
     variant="light"
     title="Shift-click to attempt to reload all contexts (in 2 seconds)"
+    className="mt-auto"
     onClick={async (event) => {
       if (event.shiftKey) {
         browser.runtime?.reload(); // Not guaranteed
