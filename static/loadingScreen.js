@@ -15,42 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#container {
-  height: 100vh;
-}
+/** @file Plain file to show loading errors on the page. It must be simple and outside the build specifically to show even build errors. */
 
-.tab-content {
-  border: none;
-}
-
-.action-panel-button {
-  color: #6562aa;
-
-  &:hover {
-    color: #4d4b8b;
-    background-color: #d1c2d7;
-  }
-}
-
-.center-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.full-height {
-  display: flex;
-  flex-direction: column;
-  & > :last-child {
-    flex-grow: 1;
+function showErrors(errorEvent) {
+  const logger = document.querySelector(".global-loading-message");
+  if (logger.childElementCount > 0) {
+    // The view was initialized, stop showing errors
+    window.removeEventListener("error", showErrors);
+    return;
   }
 
-  .scrollable-area {
-    height: 0;
-    overflow-y: auto;
-  }
+  logger.textContent = String(errorEvent.error);
 }
 
-.tab-content > .active.full-height {
-  display: flex; /* Overrides Bootstrap’s "block"*/
-}
+window.addEventListener("error", showErrors);
