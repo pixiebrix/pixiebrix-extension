@@ -17,25 +17,30 @@
 
 import browser from "webextension-polyfill";
 import Cookies from "js-cookie";
-import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
 import { isEqual } from "lodash";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import {
+  TokenAuthData,
+  USER_DATA_UPDATE_KEYS,
+  UserData,
+  UserDataUpdate,
+} from "./authTypes";
+import { isExtensionContext } from "webext-detect-page";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
-interface UserData {
-  email?: string;
-  user?: string;
-  hostname?: string;
-  organizationId?: string;
-  telemetryOrganizationId?: string;
+type AuthListener = (auth: Partial<TokenAuthData>) => void;
+
+const listeners: AuthListener[] = [];
+
+// Use listeners to allow inversion of control and avoid circular dependency with rollbar.
+export function addListener(handler: AuthListener): void {
+  listeners.push(handler);
 }
 
-export interface AuthData extends UserData {
-  token: string;
-}
-
-export async function readAuthData(): Promise<AuthData | Partial<AuthData>> {
+export async function readAuthData(): Promise<
+  TokenAuthData | Partial<TokenAuthData>
+> {
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 
@@ -61,6 +66,9 @@ export async function getExtensionAuth(): Promise<UserData> {
   return { user, email, hostname };
 }
 
+/**
+ * Clear the extension state. The options page will show as "unlinked" and prompt the
+ */
 export async function clearExtensionAuth(): Promise<void> {
   await browser.storage.local.remove(STORAGE_EXTENSION_KEY);
   Cookies.remove("csrftoken");
@@ -68,21 +76,29 @@ export async function clearExtensionAuth(): Promise<void> {
 }
 
 /**
+ * Update user data (for use in rollbar, etc.), but not the auth token.
+ */
+export async function updateUserData(update: UserDataUpdate): Promise<void> {
+  const updated = await readAuthData();
+
+  for (const key of USER_DATA_UPDATE_KEYS) {
+    // Intentionally overwrite values with null/undefined from the update
+    // eslint-disable-next-line security/detect-object-injection -- keys from compile-time constant
+    updated[key] = update[key];
+  }
+
+  await setStorage(STORAGE_EXTENSION_KEY, updated);
+}
+
+/**
  * Refresh the Chrome extensions auth (user, email, token, API hostname), and return true if it was updated.
  */
 export async function updateExtensionAuth(
-  auth: AuthData & { browserId: string }
+  auth: TokenAuthData
 ): Promise<boolean> {
   if (!auth) {
     return false;
   }
-
-  void updateRollbarAuth({
-    userId: auth.user,
-    email: auth.email,
-    organizationId: auth.telemetryOrganizationId ?? auth.organizationId,
-    browserId: auth.browserId,
-  });
 
   // Note: `auth` is a `Object.create(null)` object, which for some `isEqual` implementations
   // isn't deeply equal to `{}`.  _.isEqual is fine, `fast-deep-equal` isn't
@@ -95,4 +111,19 @@ export async function updateExtensionAuth(
   console.debug(`Setting extension auth for ${auth.email}`, auth);
   await setStorage(STORAGE_EXTENSION_KEY, auth);
   return true;
+}
+
+if (isExtensionContext()) {
+  browser.storage.onChanged.addListener((changes, storage) => {
+    if (storage === "local") {
+      // eslint-disable-next-line security/detect-object-injection -- compile time constant
+      const change = changes[STORAGE_EXTENSION_KEY];
+
+      if (change) {
+        for (const listener of listeners) {
+          listener(change.newValue);
+        }
+      }
+    }
+  });
 }
