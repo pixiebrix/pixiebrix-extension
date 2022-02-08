@@ -16,17 +16,26 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   useSelectedAuths,
   useSelectedExtensions,
 } from "@/options/pages/marketplace/ConfigureBody";
-import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCubes,
+  faExclamationTriangle,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card } from "react-bootstrap";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
+import { resolveRecipe } from "@/registry/internal";
+import { getElementType, isMac } from "@/utils";
+import { useAsyncState } from "@/hooks/common";
+import { isEmpty } from "lodash";
+import { faChrome } from "@fortawesome/free-brands-svg-icons";
 
 const ActivateBody: React.FunctionComponent<{
   blueprint: RecipeDefinition;
@@ -37,6 +46,33 @@ const ActivateBody: React.FunctionComponent<{
     blueprint,
     selectedExtensions,
     selectedAuths
+  );
+  const [hasShortcut, setHasShortcut] = useState(false);
+
+  useEffect(() => {
+    chrome.commands.getAll((commands) => {
+      setHasShortcut(
+        commands.some(
+          (command) =>
+            command.name === "toggle-quick-bar" && !isEmpty(command.shortcut)
+        )
+      );
+    });
+  }, []);
+
+  const [hasQuickBar] = useAsyncState(
+    async () => {
+      const extensions = await resolveRecipe(
+        blueprint,
+        blueprint.extensionPoints
+      );
+      return extensions.some(async (config) => {
+        const type = await getElementType(config);
+        return type === "quickBar";
+      });
+    },
+    [],
+    false
   );
 
   return (
@@ -53,6 +89,24 @@ const ActivateBody: React.FunctionComponent<{
             </u>
           </Link>
         </p>
+        {hasQuickBar && !hasShortcut && (
+          <p className="text-info">
+            <FontAwesomeIcon icon={faExclamationTriangle} /> This blueprint
+            contains one or more Quick Bar extensions, but you have not
+            configured a Quick Bar shortcut in Chrome. Go to{" "}
+            <a href="chrome://extensions/shortcuts">
+              <u>
+                <FontAwesomeIcon icon={faChrome} />
+                {"  "}chrome://extensions/shortcuts
+              </u>
+            </a>{" "}
+            to configure a shortcut. For now, the default is{" "}
+            <code>{isMac() ? "Command+K" : "Ctrl+K"}</code>.{" "}
+            <a href="https://docs.pixiebrix.com/quick-bar-setup">
+              <u>Read more about extension shortcuts here.</u>
+            </a>
+          </p>
+        )}
       </Card.Body>
 
       <PermissionsBody {...permissionsState} />

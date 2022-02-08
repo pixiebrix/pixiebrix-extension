@@ -37,6 +37,8 @@ import {
 import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
+import { ResolvedExtensionPointConfig } from "@/types/definitions";
+import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 
 /**
  * Create a Formik field name, validating the individual path parts.
@@ -516,4 +518,10 @@ export async function asyncLoop<Item>(
 export function isMac(): boolean {
   // https://stackoverflow.com/a/27862868/402560
   return navigator.platform.includes("Mac");
+}
+
+export async function getElementType(
+  extensionPoint: ResolvedExtensionPointConfig
+): Promise<ElementType> {
+  return "quickBar";
 }

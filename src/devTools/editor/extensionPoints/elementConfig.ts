@@ -240,5 +240,5 @@ export interface ElementConfig<
   /**
    * Help text to show in the generic insertion-mode pane
    */
-  readonly insertModeHelp?: React.ReactNode;
+  readonly InsertModeHelpText?: React.VoidFunctionComponent;
 }

@@ -45,7 +45,7 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Menus } from "webextension-polyfill";
 import { NormalizedAvailability } from "@/blocks/types";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Except } from "type-fest";
 import {
   QuickBarConfig,
@@ -56,6 +56,7 @@ import {
 } from "@/extensionPoints/quickBarExtension";
 import QuickBarConfiguration from "@/devTools/editor/tabs/quickBar/QuickBarConfiguration";
 import { isMac } from "@/utils";
+import { isEmpty } from "lodash";
 
 type Extension = BaseExtensionState & Except<QuickBarConfig, "action">;
 
@@ -259,14 +260,36 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  insertModeHelp: (
-    <div>
-      <p>
-        The quick bar can be triggered on any page by pressing{" "}
-        {isMac() ? "Command+K" : "Ctrl+K"}
-      </p>
-    </div>
-  ),
+  InsertModeHelpText: () => {
+    const [shortcut, setShortcut] = useState("");
+
+    useEffect(() => {
+      chrome.commands.getAll((commands) => {
+        const command = commands.find(
+          (command) => command.name === "toggle-quick-bar"
+        );
+        if (command) {
+          setShortcut(command.shortcut);
+        }
+      });
+    }, []);
+
+    const defaultShortcut = isMac() ? "Command+K" : "Ctrl+K";
+
+    return (
+      <div>
+        <p>
+          The quick bar can be triggered on any page by pressing{" "}
+          <code>{isEmpty(shortcut) ? defaultShortcut : shortcut}</code>. To
+          learn how to customize this shortcut,{" "}
+          <a href="https://docs.pixiebrix.com/quick-bar-setup">
+            Read more here
+          </a>
+          .
+        </p>
+      </div>
+    );
+  },
 };
 
 export default config;
