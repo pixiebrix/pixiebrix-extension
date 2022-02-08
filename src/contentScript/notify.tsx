@@ -49,6 +49,11 @@ const toastOptions: DefaultToastOptions = {
   },
 };
 
+function getMessageDisplayTime(message: string): number {
+  const wpm = 100; // 180 is the average words read per minute, make it slower
+  return (message.split(" ").length / wpm) * 60_000;
+}
+
 export function initToaster(): void {
   const root = document.createElement("div");
   // This style cannot be on containerStyle because it overrides some of its props there
@@ -62,7 +67,7 @@ export function showNotification({
   message,
   type,
   id = uuidv4(),
-  duration,
+  duration = getMessageDisplayTime(message),
 }: Notification): string {
   const options = { id, duration };
   switch (type) {
