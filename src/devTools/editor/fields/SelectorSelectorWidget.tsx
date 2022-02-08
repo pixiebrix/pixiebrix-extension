@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./SelectorSelectorWidget.module.scss";
+
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { compact, isEmpty, sortBy, uniqBy } from "lodash";
@@ -199,30 +201,26 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   );
 
   return (
-    <div className="d-flex">
-      <div>
-        <Button
-          onClick={select}
-          disabled={isSelecting || disabled}
-          variant="info"
-          aria-label="Select element"
-        >
-          <FontAwesomeIcon icon={faMousePointer} />
-        </Button>
-      </div>
-      <div className="flex-grow-1">
-        <CreatableAutosuggest
-          isClearable={isClearable}
-          isDisabled={isSelecting || disabled}
-          suggestions={suggestions}
-          inputValue={value}
-          inputPlaceholder={placeholder}
-          renderSuggestion={renderSuggestion}
-          onSuggestionHighlighted={onHighlighted}
-          onSuggestionsClosed={disableSelector}
-          onTextChanged={onTextChanged}
-        />
-      </div>
+    <div className={styles.root}>
+      <Button
+        onClick={select}
+        disabled={isSelecting || disabled}
+        variant="info"
+        aria-label="Select element"
+      >
+        <FontAwesomeIcon icon={faMousePointer} />
+      </Button>
+      <CreatableAutosuggest
+        isClearable={isClearable}
+        isDisabled={isSelecting || disabled}
+        suggestions={suggestions}
+        inputValue={value}
+        inputPlaceholder={placeholder}
+        renderSuggestion={renderSuggestion}
+        onSuggestionHighlighted={onHighlighted}
+        onSuggestionsClosed={disableSelector}
+        onTextChanged={onTextChanged}
+      />
     </div>
   );
 };
