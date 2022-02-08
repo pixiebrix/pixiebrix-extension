@@ -94,8 +94,10 @@ const InstalledEntry: React.FunctionComponent<{
       action
       active={active}
       key={`installed-${extension.id}`}
-      onMouseEnter={isButton && (async () => showOverlay(extension.id))}
-      onMouseLeave={isButton && (async () => hideOverlay())}
+      onMouseEnter={
+        isButton ? async () => showOverlay(extension.id) : undefined
+      }
+      onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={async () => selectHandler(extension)}
     >
       <span className={styles.icon}>
