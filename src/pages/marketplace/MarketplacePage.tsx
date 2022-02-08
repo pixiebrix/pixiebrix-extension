@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import GridLoader from "react-spinners/GridLoader";
 import { PageTitle } from "@/layout/Page";
 import {
@@ -31,11 +31,10 @@ import "./MarketplacePage.scss";
 import type { ButtonProps } from "react-bootstrap";
 import useFetch from "@/hooks/useFetch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery, useGetOrganizationsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import Pagination from "@/components/pagination/Pagination";
 import { Organization } from "@/types/contract";
-import { useGetOrganizationsQuery } from "@/services/api";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -179,7 +178,9 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   const { data: organizations = [] } = useGetOrganizationsQuery();
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
   const [query, setQuery] = useState("");
-  const { scope, flags } = useContext(AuthContext);
+  const {
+    data: { scope, flags },
+  } = useGetAuthQuery();
   const [page, setPage] = useState(0);
 
   const recipes = useMemo(() => {

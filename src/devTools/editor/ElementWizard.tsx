@@ -36,7 +36,7 @@ import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import styles from "./ElementWizard.module.scss";
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 
@@ -100,7 +100,9 @@ const ElementWizard: React.FunctionComponent<{
   const [step, setStep] = useState(wizard[0].step);
 
   const { refresh: refreshLogs } = useContext(LogContext);
-  const { flags } = useContext(AuthContext);
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
 
   const availableDefinition = element.extensionPoint.definition.isAvailable;
   const [available] = useAsyncState(

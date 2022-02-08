@@ -15,26 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createContext } from "react";
-import { AuthState as CoreAuthState } from "@/core";
+import React from "react";
+import GridLoader from "react-spinners/GridLoader";
+import Centered from "@/devTools/editor/components/Centered";
 
-export type AuthState = CoreAuthState & {
-  isPending: boolean;
-  error: undefined | unknown;
-};
+const PersistLoader: React.VoidFunctionComponent = () => (
+  <Centered>
+    <div className="d-flex justify-content-center">
+      <GridLoader />
+    </div>
+  </Centered>
+);
 
-const anonAuthState: AuthState = {
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: false,
-  scope: null,
-  flags: [],
-  isPending: false,
-  error: undefined,
-};
-
-const AuthContext = createContext(anonAuthState);
-
-export default AuthContext;
+export default PersistLoader;
