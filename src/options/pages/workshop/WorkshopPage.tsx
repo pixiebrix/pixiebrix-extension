@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Page from "@/layout/Page";
 import { faHammer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
 import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
@@ -231,17 +231,12 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 
 const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
   const {
-    isLoggedIn,
-    flags,
-    scope,
-    isPending: isAuthPending,
+    data: { isLoggedIn, flags },
     error: authError,
-  } = useContext(AuthContext);
+  } = useGetAuthQuery();
 
   return (
     <RequireScope
-      scope={scope}
-      isPending={isAuthPending}
       scopeSettingsTitle="Welcome to the PixieBrix Workshop!"
       scopeSettingsDescription="To use the Workshop, you must first set an account alias for your PixieBrix account"
     >

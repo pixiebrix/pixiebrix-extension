@@ -16,27 +16,38 @@
  */
 
 import React, { useContext } from "react";
-import { useGetAuthQuery } from "@/services/api";
 import { DevToolsContext } from "@/devTools/context";
-import BeatLoader from "react-spinners/BeatLoader";
-import styles from "./Footer.module.scss";
+import { useGetAuthQuery } from "@/services/api";
+import { getErrorMessage } from "@/errors";
+import { Button } from "react-bootstrap";
 
-const Footer: React.FunctionComponent = () => {
-  const {
-    data: { scope },
-  } = useGetAuthQuery();
-  const { connecting } = useContext(DevToolsContext);
+const ErrorBanner: React.VFC = () => {
+  const context = useContext(DevToolsContext);
+  const { error: accountError } = useGetAuthQuery();
+
+  const error = accountError
+    ? "Authentication error: " + getErrorMessage(accountError)
+    : context.tabState.error;
+
+  if (!error) {
+    return null;
+  }
 
   return (
-    <div className={styles.root}>
-      {scope && (
-        <div className={styles.scope}>
-          Scope: <code>{scope}</code>
-        </div>
-      )}
-      {connecting && <BeatLoader size={7} />}
+    <div className="d-flex p-1 align-items-center alert-danger flex-align-center">
+      <div className="flex-grow-1">{error}</div>
+      <div>
+        <Button
+          className="mr-2"
+          onClick={() => {
+            location.reload();
+          }}
+        >
+          Reload Editor
+        </Button>
+      </div>
     </div>
   );
 };
 
-export default Footer;
+export default ErrorBanner;

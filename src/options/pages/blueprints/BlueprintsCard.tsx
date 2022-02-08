@@ -16,7 +16,7 @@
  */
 
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { Fragment, useContext, useMemo } from "react";
+import React, { Fragment, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getDescription,
@@ -25,7 +25,7 @@ import {
   getSharingType,
   getUpdatedAt,
 } from "./installableUtils";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import {
   Column,
   useFilters,
@@ -121,7 +121,9 @@ const columns: Array<Column<InstallableViewItem>> = [
 const BlueprintsCard: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
   const { data, teamFilters } = useMemo(() => {
     const data = getInstallableRows(installables, scope);
     const teamFilters = uniq(

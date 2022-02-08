@@ -17,17 +17,19 @@
 
 import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import { clearExtensionAuth } from "@/auth/token";
 import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import { isEmpty } from "lodash";
 import { useToasts } from "react-toast-notifications";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const { addToast } = useToasts();
-  const { flags } = useContext(AuthContext);
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
   const clear = useCallback(async () => {
