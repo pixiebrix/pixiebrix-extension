@@ -46,10 +46,6 @@ type Person = {
   email?: string;
 };
 
-void readAuthData().then(async (data) => {
-  await updatePerson(data);
-});
-
 /**
  *  @see https://docs.rollbar.com/docs/javascript
  *  @see https://docs.rollbar.com/docs/rollbarjs-configuration-reference
@@ -59,9 +55,7 @@ async function initRollbar(): Promise<Rollbar> {
 
   if (isContentScript()) {
     // The contentScript cannot not make requests directly to Rollbar because the site's CSP might not support it
-    console.warn(
-      "Unsupported import of Rollbar in the contentScript. Do not call Rollbar directly from the contentScript"
-    );
+    console.warn("Unsupported call to initRollbar in the contentScript");
   }
 
   if (accessToken) {
