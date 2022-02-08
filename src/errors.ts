@@ -16,9 +16,10 @@
  */
 
 import { MessageContext, SerializedError } from "@/core";
-import { ErrorObject } from "serialize-error";
+import { deserializeError, ErrorObject, serializeError } from "serialize-error";
 import { AxiosError } from "axios";
 import { isObject } from "@/utils";
+import { recordError } from "@/background/messenger/api";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
@@ -212,6 +213,9 @@ const BUSINESS_ERROR_NAMES = new Set([
   "MissingConfigurationError",
   "NotConfiguredError",
   "RemoteServiceError",
+  "ClientNetworkPermissionError",
+  "ClientNetworkError",
+  "ProxiedRemoteServiceError",
   "RemoteExecutionError",
 ]);
 
@@ -248,6 +252,9 @@ export function hasBusinessRootCause(
   return false;
 }
 
+/**
+ * Browser Messenger API error message patterns.
+ */
 const CONNECTION_ERROR_PATTERNS = [
   "Could not establish connection. Receiving end does not exist.",
   "Extension context invalidated",
@@ -310,9 +317,13 @@ export function getErrorMessage(
 }
 
 /**
- * Finds or creates an Error object starting from strings, error event, or real Errors
+ * Finds or creates an Error starting from strings, error event, or real Errors.
+ *
+ * The result is suitable for passing to Rollbar. (Which treats Errors and objects differently.)
  */
-export function selectError(error: unknown): ErrorObject | Error {
+export function selectError(originalError: unknown): Error {
+  let error: unknown = originalError;
+
   // Extract error from event
   if (error instanceof ErrorEvent) {
     error = error.error;
@@ -320,13 +331,61 @@ export function selectError(error: unknown): ErrorObject | Error {
     error = error.reason;
   }
 
-  if (isErrorObject(error)) {
+  if (error instanceof Error) {
     return error;
   }
 
-  console.warn("A non-Error was thrown", { error });
+  if (isErrorObject(error)) {
+    console.warn(
+      "selectError encountered a serialized error. Do not pass around serialized errors",
+      {
+        originalError,
+        error,
+      }
+    );
+
+    return deserializeError(error);
+  }
+
+  console.warn("A non-Error was thrown", {
+    originalError,
+    error,
+  });
 
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error message'`, which should never be written
   return new Error(String(error));
+}
+
+/**
+ * Report an error for local logs, remote telemetry, etc.
+ * @param error the error object
+ * @param context optional context for error telemetry
+ */
+
+export function reportError(error: unknown, context?: MessageContext): void {
+  void _reportError(error, context).catch((reportingError) => {
+    console.error("An error occurred when reporting an error", {
+      originalError: error,
+      reportingError,
+    });
+  });
+}
+
+// Extracted async function to avoid turning `reportError` into an async function
+// which would trigger `eslint/no-floating-promises` at every `reportError` call
+export async function _reportError(
+  error: unknown, // It might also be an ErrorEvent
+  context?: MessageContext
+): Promise<void> {
+  const errorObject = selectError(error);
+
+  // Events are already natively logged by the browser
+  if (
+    !(error instanceof ErrorEvent || error instanceof PromiseRejectionEvent)
+  ) {
+    console.error(error);
+  }
+
+  recordError(serializeError(errorObject), context, null);
 }

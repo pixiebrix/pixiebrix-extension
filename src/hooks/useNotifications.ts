@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useToasts, Options as ToastOptions } from "react-toast-notifications";
+import { Options as ToastOptions, useToasts } from "react-toast-notifications";
 import { useCallback, useMemo } from "react";
-import { reportError } from "@/telemetry/rollbar";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage, reportError } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
 
 interface NotificationOptions {

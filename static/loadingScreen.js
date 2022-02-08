@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default {
-  watch: jest.fn(),
-};
+/** @file Plain file to show loading errors on the page. It must be simple and outside the build specifically to show even build errors. */
+
+function showErrors(errorEvent) {
+  const logger = document.querySelector(".global-loading-message");
+  if (logger.childElementCount > 0) {
+    // The view was initialized, stop showing errors
+    window.removeEventListener("error", showErrors);
+    return;
+  }
+
+  logger.textContent = String(errorEvent.error);
+}
+
+window.addEventListener("error", showErrors);

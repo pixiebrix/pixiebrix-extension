@@ -37,7 +37,7 @@ import {
   RendererOutput,
 } from "@/core";
 import { AxiosRequestConfig } from "axios";
-import { BackgroundLogger } from "@/background/logging";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
 

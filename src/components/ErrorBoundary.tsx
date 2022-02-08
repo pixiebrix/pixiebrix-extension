@@ -20,8 +20,7 @@ import { Button } from "react-bootstrap";
 import { isExtensionContext } from "webext-detect-page";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
-import { reportError } from "@/telemetry/rollbar";
-import { getErrorMessage } from "@/errors";
+import { getErrorMessage, reportError } from "@/errors";
 import { UnknownObject } from "@/types";
 
 interface Props {

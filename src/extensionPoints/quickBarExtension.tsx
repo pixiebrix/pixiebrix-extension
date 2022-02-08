@@ -35,7 +35,7 @@ import {
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
-import { reportError } from "@/telemetry/rollbar";
+import { BusinessError, hasCancelRootCause, reportError } from "@/errors";
 import {
   DEFAULT_ACTION_RESULTS,
   notifyError,
@@ -44,7 +44,6 @@ import {
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { BusinessError, hasCancelRootCause } from "@/errors";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
