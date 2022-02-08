@@ -53,8 +53,8 @@ const Panel: React.VoidFunctionComponent = () => {
             <ModalProvider>
               <ErrorBoundary>
                 <Router>
-                    <ErrorBanner />
-                    <Editor />
+                  <ErrorBanner />
+                  <Editor />
                 </Router>
               </ErrorBoundary>
             </ModalProvider>
