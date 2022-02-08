@@ -21,12 +21,6 @@ import { Organization } from "@/types/contract";
 import { RecipeDefinition } from "@/types/definitions";
 import { ReactNode } from "react";
 
-export type InstallStatus = {
-  hasUpdate: boolean;
-  active: boolean;
-  organization: Organization;
-};
-
 // XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
 export type Installable = RecipeDefinition | ResolvedExtension;
 

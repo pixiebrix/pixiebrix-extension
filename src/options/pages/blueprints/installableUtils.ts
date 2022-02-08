@@ -19,7 +19,7 @@ import { RecipeDefinition } from "@/types/definitions";
 import { IExtension, RegistryId, ResolvedExtension, UUID } from "@/core";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
-import { Installable, InstallStatus } from "./blueprintsTypes";
+import { Installable } from "./blueprintsTypes";
 
 export const getSharingType = (
   installable: Installable,
@@ -64,14 +64,14 @@ export const getSharingType = (
 
 export const isExtension = (
   installable: Installable
-): installable is ResolvedExtension & InstallStatus => "_recipe" in installable;
+): installable is ResolvedExtension => "_recipe" in installable;
 
 export const isExtensionFromRecipe = (installable: Installable) =>
   isExtension(installable) && Boolean(installable._recipe);
 
 export const isBlueprint = (
   installable: Installable
-): installable is RecipeDefinition & InstallStatus => !isExtension(installable);
+): installable is RecipeDefinition => !isExtension(installable);
 
 export const getUniqueId = (installable: Installable) =>
   isExtension(installable) ? installable.id : installable.metadata.id;
