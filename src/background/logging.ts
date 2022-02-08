@@ -16,7 +16,7 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { rollbar } from "@/telemetry/rollbar";
+import { getRollbar } from "@/telemetry/rollbar";
 import { MessageContext, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
 import { deserializeError } from "serialize-error";
@@ -240,9 +240,9 @@ export async function recordError(
         // NOP - no reason to send to Rollbar
       } else if (hasBusinessRootCause(error)) {
         // Send at debug level so it doesn't trigger devops notifications
-        rollbar.debug(message, errorObj, flatContext);
+        getRollbar().debug(message, errorObj, flatContext);
       } else {
-        rollbar.error(message, errorObj, flatContext);
+        getRollbar().error(message, errorObj, flatContext);
       }
     } else if (!loggedDNT) {
       console.warn("Rollbar telemetry is disabled because DNT is turned on");

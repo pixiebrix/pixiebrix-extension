@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -22,6 +23,7 @@ import { UUID } from "@/core";
 import { addListener as addAuthListener, readAuthData } from "@/auth/token";
 import { UserData } from "@/auth/authTypes";
 import { getUID } from "@/background/telemetry";
+import { once } from "lodash";
 
 const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
 
@@ -46,17 +48,15 @@ type Person = {
   email?: string;
 };
 
-/**
- *  @see https://docs.rollbar.com/docs/javascript
- *  @see https://docs.rollbar.com/docs/rollbarjs-configuration-reference
- */
-export const rollbar = initRollbar();
-
 void readAuthData().then(async (data) => {
   await updatePerson(data);
 });
 
-function initRollbar() {
+/**
+ *  @see https://docs.rollbar.com/docs/javascript
+ *  @see https://docs.rollbar.com/docs/rollbarjs-configuration-reference
+ */
+export const getRollbar = once(() => {
   if (isContentScript()) {
     // The contentScript cannot not make requests directly to Rollbar because the site's CSP might not support it
     console.warn(
@@ -108,7 +108,7 @@ function initRollbar() {
   } catch (error) {
     console.error("Error during Rollbar init", { error });
   }
-}
+});
 
 function selectPerson(data: Partial<UserData> & { browserId: UUID }): Person {
   const {
@@ -134,6 +134,7 @@ function selectPerson(data: Partial<UserData> & { browserId: UUID }): Person {
 }
 
 async function updatePerson(data: Partial<UserData>): Promise<void> {
+  const rollbar = getRollbar();
   if (rollbar) {
     const browserId = await getUID();
     const person = selectPerson({ ...data, browserId });
