@@ -47,8 +47,8 @@ function useInstallableViewItems(
 ): InstallableViewItem[] {
   const { scope } = useContext(AuthContext);
   const installedExtensions = useSelector(selectExtensions);
-  const { data: organizations = [] } = useGetOrganizationsQuery();
-  const { data: listings, isLoading } = useGetMarketplaceListingsQuery();
+  const organizations = useGetOrganizationsQuery();
+  const listings = useGetMarketplaceListingsQuery();
   const recipes = useGetRecipesQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
@@ -76,20 +76,20 @@ function useInstallableViewItems(
 
   const installableIcon = useCallback(
     (installable: Installable) => {
-      const listing: MarketplaceListing | null = isLoading
+      const listing: MarketplaceListing | null = listings.isLoading
         ? null
-        : listings[getPackageId(installable)];
+        : listings.data[getPackageId(installable)];
 
       return (
         <InstallableIcon
           listing={listing}
           installable={installable}
-          isLoading={isLoading}
+          isLoading={listings.isLoading}
           size={"2x"}
         />
       );
     },
-    [listings, isLoading]
+    [listings]
   );
 
   return useMemo(
@@ -99,7 +99,7 @@ function useInstallableViewItems(
         description: getDescription(installable),
         sharing: {
           packageId: getPackageId(installable),
-          source: getSharingType(installable, organizations, scope),
+          source: getSharingType(installable, organizations.data, scope),
         },
         updatedAt: getUpdatedAt(installable),
         status: isActive(installable) ? "Active" : "Uninstalled",

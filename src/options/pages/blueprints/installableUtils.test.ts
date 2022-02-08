@@ -58,6 +58,7 @@ describe("getSharingType", () => {
       },
     }) as any;
 
+    // @ts-expect-error -- we are generating a test extension
     installable._recipe = {
       id: "test_org",
       sharing: {
@@ -87,6 +88,8 @@ describe("getSharingType", () => {
   test("team installable", () => {
     const installable: Installable = recipeDefinitionFactory() as any;
     const orgId = uuidv4();
+
+    // @ts-expect-error -- we are generating a test recipe
     installable.sharing.organizations = [orgId];
 
     const testOrganizations = [

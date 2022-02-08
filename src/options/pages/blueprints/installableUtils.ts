@@ -21,16 +21,20 @@ import * as semver from "semver";
 import { Organization } from "@/types/contract";
 import { Installable } from "./blueprintsTypes";
 
+export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
+
+export type SharingSource = {
+  type: SharingType;
+  label: string;
+  organization: Organization;
+};
+
 export const getSharingType = (
   installable: Installable,
   organizations: Organization[],
   scope: string
-): {
-  type: string;
-  label: string;
-  organization: Organization;
-} => {
-  let sharingType = "";
+): SharingSource => {
+  let sharingType: SharingType = null;
   const organization = getOrganization(installable, organizations);
 
   if (isPersonal(installable, scope)) {

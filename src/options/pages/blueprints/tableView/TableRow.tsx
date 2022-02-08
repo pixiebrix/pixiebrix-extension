@@ -26,14 +26,7 @@ import styles from "./TableRow.module.scss";
 const TableRow: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
 }> = ({ installableItem }) => {
-  const {
-    name,
-    description,
-    sharing,
-    updatedAt,
-    installable,
-    icon,
-  } = installableItem;
+  const { name, description, sharing, updatedAt, icon } = installableItem;
 
   return (
     <tr>
@@ -47,7 +40,7 @@ const TableRow: React.VoidFunctionComponent<{
           {sharing.packageId && (
             <code className={styles.packageId}>{sharing.packageId}</code>
           )}
-          <SharingLabel installable={installable} />
+          <SharingLabel sharing={sharing.source} />
         </div>
       </td>
       <td className="text-wrap">
@@ -57,7 +50,7 @@ const TableRow: React.VoidFunctionComponent<{
         <Status installableViewItem={installableItem} />
       </td>
       <td>
-        <BlueprintActions installable={installable} />
+        <BlueprintActions installableViewItem={installableItem} />
       </td>
     </tr>
   );
