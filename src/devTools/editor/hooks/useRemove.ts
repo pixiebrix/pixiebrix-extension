@@ -21,7 +21,7 @@ import { useToasts } from "react-toast-notifications";
 import { useFormikContext } from "formik";
 import { useDispatch } from "react-redux";
 import { useModals } from "@/components/ConfirmationModal";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 import { getErrorMessage } from "@/errors";
 import { uninstallContextMenu } from "@/background/messenger/api";
 import { thisTab } from "@/devTools/utils";

@@ -22,7 +22,7 @@ import * as Yup from "yup";
 import { castArray, mapValues } from "lodash";
 import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 import { StatusCodes } from "http-status-codes";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";

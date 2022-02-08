@@ -35,7 +35,7 @@ import {
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 import {
   DEFAULT_ACTION_RESULTS,
   notifyError,

@@ -16,11 +16,9 @@
  */
 
 import Rollbar from "rollbar";
-import { IGNORED_ERRORS, selectError } from "@/errors";
+import { IGNORED_ERRORS } from "@/errors";
 import { isContentScript } from "webext-detect-page";
-import { MessageContext, UUID } from "@/core";
-import { recordError } from "@/background/messenger/api";
-import { serializeError } from "serialize-error";
+import { UUID } from "@/core";
 import { addListener as addAuthListener, readAuthData } from "@/auth/token";
 import { UserData } from "@/auth/authTypes";
 import { getUID } from "@/background/telemetry";
@@ -144,36 +142,4 @@ async function updatePerson(data: Partial<UserData>): Promise<void> {
       payload: { person },
     });
   }
-}
-
-/**
- * Report an error for local logs, remote telemetry, etc.
- * @param error the error object
- * @param context optional context for error telemetry
- */
-export function reportError(error: unknown, context?: MessageContext): void {
-  void _reportError(error, context).catch((reportingError) => {
-    console.error("An error occurred when reporting an error", {
-      originalError: error,
-      reportingError,
-    });
-  });
-}
-
-// Extracted async function to avoid turning `reportError` into an async function
-// which would trigger `eslint/no-floating-promises` at every `reportError` call
-async function _reportError(
-  error: unknown, // It might also be an ErrorEvent
-  context?: MessageContext
-): Promise<void> {
-  const errorObject = selectError(error);
-
-  // Events are already natively logged by the browser
-  if (
-    !(error instanceof ErrorEvent || error instanceof PromiseRejectionEvent)
-  ) {
-    console.error(error);
-  }
-
-  recordError(serializeError(errorObject), context, null);
 }

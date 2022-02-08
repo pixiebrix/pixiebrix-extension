@@ -19,7 +19,7 @@ import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
 import { AddToast, useToasts } from "react-toast-notifications";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";

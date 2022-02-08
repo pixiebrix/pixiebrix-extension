@@ -21,7 +21,7 @@ import browser from "webextension-polyfill";
 import { navigationEvent } from "@/devTools/events";
 import { useAsyncEffect } from "use-async-effect";
 import { FrameworkMeta } from "@/messaging/constants";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
 import { getErrorMessage, isErrorObject } from "@/errors";

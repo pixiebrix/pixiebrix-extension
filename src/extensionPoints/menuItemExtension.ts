@@ -20,7 +20,7 @@ import { ExtensionPoint } from "@/types";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, once, debounce, cloneDeep, merge } from "lodash";
 import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 import {
   awaitElementOnce,
   acquireElement,

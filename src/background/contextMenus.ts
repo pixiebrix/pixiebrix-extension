@@ -18,7 +18,7 @@
 import pTimeout from "p-timeout";
 import browser, { Menus, Tabs } from "webextension-polyfill";
 import { isBackground } from "webext-detect-page";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 import { noop } from "lodash";
 import {
   handleMenuAction,

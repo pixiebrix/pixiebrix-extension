@@ -25,7 +25,7 @@ import {
   selectType,
 } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/slices/editorSlice";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 import { ListGroup } from "react-bootstrap";
 import {
   NotAvailableIcon,

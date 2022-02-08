@@ -17,7 +17,7 @@
 
 import { useToasts, Options as ToastOptions } from "react-toast-notifications";
 import { useCallback, useMemo } from "react";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 import { getErrorMessage } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
 

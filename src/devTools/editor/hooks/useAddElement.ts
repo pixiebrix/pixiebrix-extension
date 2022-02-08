@@ -22,7 +22,7 @@ import { useGetAuthQuery } from "@/services/api";
 import { useToasts } from "react-toast-notifications";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/errors";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { getErrorMessage } from "@/errors";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
