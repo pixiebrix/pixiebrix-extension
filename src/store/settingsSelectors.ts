@@ -15,18 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
-import reportError from "@/telemetry/reportError";
+import { SettingsState } from "./settingsTypes";
 
-/**
- * React hook to report an error once.
- */
-function useReportError(error: unknown): void {
-  useEffect(() => {
-    if (error) {
-      reportError(error);
-    }
-  }, [error]);
-}
-
-export default useReportError;
+type StateWithSettings = {
+  settings: SettingsState;
+};
+export const selectBrowserWarningDismissed = ({
+  settings,
+}: StateWithSettings) => settings.browserWarningDismissed;

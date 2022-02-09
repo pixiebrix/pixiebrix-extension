@@ -17,7 +17,8 @@
 
 import { Options as ToastOptions, useToasts } from "react-toast-notifications";
 import { useCallback, useMemo } from "react";
-import { getErrorMessage, reportError } from "@/errors";
+import { getErrorMessage } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 
 interface NotificationOptions {

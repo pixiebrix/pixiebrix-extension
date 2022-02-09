@@ -30,7 +30,7 @@ import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPo
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { reportEvent } from "@/telemetry/events";
 import { useToasts } from "react-toast-notifications";
-import { reportError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
 import {
   showActionPanel,

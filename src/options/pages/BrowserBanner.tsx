@@ -16,51 +16,42 @@
  */
 
 import React from "react";
-import { Button } from "react-bootstrap";
-import browser from "webextension-polyfill";
-import { useAsyncState } from "@/hooks/common";
-import { getAvailableVersion } from "@/background/messenger/api";
-import reportError from "@/telemetry/reportError";
+import { RootState } from "@/options/store";
+import { selectBrowserWarningDismissed } from "@/store/settingsSelectors";
 import Banner from "@/components/banner/Banner";
-import { gt } from "semver";
+import { useDispatch, useSelector } from "react-redux";
+import { Button } from "react-bootstrap";
+import settingsSlice from "@/store/settingsSlice";
 
-// XXX: move this kind of async state to the Redux state.
-export function useUpdateAvailable() {
-  const [updateAvailable] = useAsyncState(async () => {
-    try {
-      const available = await getAvailableVersion();
-      const installed = browser.runtime.getManifest().version;
-      return available && installed !== available && gt(available, installed);
-    } catch (error) {
-      reportError(error);
-      return false;
-    }
-  }, []);
+const BrowserBanner: React.VoidFunctionComponent = () => {
+  const dispatch = useDispatch();
+  const browserWarningDismissed = useSelector<RootState, boolean>(
+    selectBrowserWarningDismissed
+  );
 
-  return updateAvailable;
-}
-
-const UpdateBanner: React.FunctionComponent = () => {
-  const updateAvailable = useUpdateAvailable();
-
-  if (!updateAvailable) {
+  if (
+    browserWarningDismissed ||
+    // @ts-expect-error -- userAgentData is defined in Chrome browser
+    navigator.userAgentData?.brands?.some((x) => x.brand === "Google Chrome")
+  ) {
     return null;
   }
 
   return (
     <Banner variant="warning">
-      An update to PixieBrix is available
+      PixieBrix officially supports Google Chrome. Some functionality may not be
+      available on your browser.
       <Button
         className="info ml-3"
         size="sm"
         onClick={() => {
-          browser.runtime.reload();
+          dispatch(settingsSlice.actions.dismissBrowserWarning());
         }}
       >
-        Update
+        OK
       </Button>
     </Banner>
   );
 };
 
-export default UpdateBanner;
+export default BrowserBanner;

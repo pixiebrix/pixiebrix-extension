@@ -16,7 +16,7 @@
  */
 
 import { isBackground } from "webext-detect-page";
-import { reportError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import browser, { Tabs } from "webextension-polyfill";
 import { toggleActionPanel } from "@/contentScript/messenger/api";

@@ -15,18 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
-import reportError from "@/telemetry/reportError";
+import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 
-/**
- * React hook to report an error once.
- */
-function useReportError(error: unknown): void {
-  useEffect(() => {
-    if (error) {
-      reportError(error);
-    }
-  }, [error]);
+let counter = 0;
+let timer: NodeJS.Timeout;
+
+function updateCounter(): void {
+  void chrome.browserAction.setBadgeText({
+    text: counter ? String(counter) : undefined,
+  });
+  void chrome.browserAction.setBadgeBackgroundColor({ color: "#F00" });
 }
 
-export default useReportError;
+function backgroundErrorsBadge() {
+  counter++;
+  updateCounter();
+  // Reset the counter after a minute of inactivity
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    counter = 0;
+    updateCounter();
+  }, 60_000);
+}
+
+if (process.env.ENVIRONMENT === "development") {
+  uncaughtErrorHandlers.add(backgroundErrorsBadge);
+}
