@@ -16,6 +16,7 @@
  */
 
 import {
+  getLabel,
   getPackageId,
   getUniqueId,
   isBlueprint,
@@ -97,6 +98,10 @@ function useInstallableActions(installable: Installable) {
     // XXX: also remove remove side panel panels that are already open?
     void uninstallContextMenu({ extensionId: installable.id });
     reactivateEveryTab();
+
+    notify.success(`Removed brick ${getLabel(installable)}`, {
+      event: "ExtensionRemove",
+    });
   };
 
   const viewLogs = () => {
@@ -112,7 +117,6 @@ function useInstallableActions(installable: Installable) {
     );
   };
 
-  // TODO: refactor with that callback & notify hook
   const onExportBlueprint = useCallback(() => {
     const extension = isExtension(installable) ? installable : null;
 

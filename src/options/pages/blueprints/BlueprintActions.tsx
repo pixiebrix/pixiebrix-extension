@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isExtension } from "@/options/pages/blueprints/installableUtils";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,7 +31,7 @@ import { InstallableViewItem } from "./blueprintsTypes";
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
-  const { installable, hasUpdate } = installableViewItem;
+  const { installable, hasUpdate, status } = installableViewItem;
   const {
     remove,
     viewLogs,
@@ -73,6 +72,7 @@ const BlueprintActions: React.FunctionComponent<{
               </>
             ),
             action: viewLogs,
+            hide: status !== "Active",
           },
           ...(reinstall
             ? [
@@ -103,6 +103,7 @@ const BlueprintActions: React.FunctionComponent<{
               </>
             ),
             action: remove,
+            hide: status !== "Active",
             className: "text-danger",
           },
         ]}
