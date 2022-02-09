@@ -39,8 +39,8 @@ const BrowserBanner: React.VoidFunctionComponent = () => {
 
   return (
     <Banner variant="warning">
-      PixieBrix is designed to work best with Google Chrome and not officially
-      supported on your browser.
+      PixieBrix officially supports Google Chrome. Some functionality may not be
+      available on your browser.
       <Button
         className="info ml-3"
         size="sm"
@@ -48,7 +48,7 @@ const BrowserBanner: React.VoidFunctionComponent = () => {
           dispatch(settingsSlice.actions.dismissBrowserWarning());
         }}
       >
-        Acknowledge
+        OK
       </Button>
     </Banner>
   );
