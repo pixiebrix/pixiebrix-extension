@@ -59,7 +59,7 @@ const EditTab: React.FC<{
   useExtensionTrace();
 
   const { values, setValues: setFormValues } = useFormikContext<FormState>();
-  const { extensionPoint, type: elementType } = values;
+  const { extensionPoint, type: extensionPointType } = values;
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
@@ -69,9 +69,10 @@ const EditTab: React.FC<{
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { label, icon, EditorNode } = useMemo(() => ADAPTERS.get(elementType), [
-    elementType,
-  ]);
+  const { label, icon, EditorNode } = useMemo(
+    () => ADAPTERS.get(extensionPointType),
+    [extensionPointType]
+  );
 
   const FoundationNode = isApiAtLeastV2 ? EditorNode : UnsupportedApiV1;
 
@@ -85,7 +86,7 @@ const EditTab: React.FC<{
     blockPipeline,
     blockPipelineErrors,
     errorTraceEntry,
-  } = usePipelineField(allBlocks, elementType);
+  } = usePipelineField(allBlocks, extensionPointType);
 
   const activeNodeId = useSelector(selectActiveNodeId);
   const dispatch = useDispatch();
@@ -217,7 +218,7 @@ const EditTab: React.FC<{
   const [relevantBlocksToAdd] = useAsyncState(
     async () => {
       const excludeType: BlockType = ["actionPanel", "panel"].includes(
-        elementType
+        extensionPointType
       )
         ? "effect"
         : "renderer";
@@ -226,7 +227,7 @@ const EditTab: React.FC<{
         .filter(({ type }) => type != null && type !== excludeType)
         .map(({ block }) => block);
     },
-    [allBlocks, elementType],
+    [allBlocks, extensionPointType],
     []
   );
 

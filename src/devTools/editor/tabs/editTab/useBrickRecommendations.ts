@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { RegistryId } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
@@ -26,10 +25,11 @@ import { useFormikContext } from "formik";
 import { useDebounce } from "use-debounce";
 import { useAsyncState } from "@/hooks/common";
 import { collectRegistryIds } from "@/devTools/editor/tabs/editTab/editHelpers";
+import { ExtensionPointType } from "@/extensionPoints/types";
 
 const READER_COUNT_THRESHOLD = 2;
 
-const typeRecommendations = new Map<ElementType, RegistryId[]>([
+const typeRecommendations = new Map<ExtensionPointType, RegistryId[]>([
   [
     "menuItem",
     [
@@ -65,7 +65,7 @@ const typeRecommendations = new Map<ElementType, RegistryId[]>([
     "actionPanel",
     ["@pixiebrix/property-table", "@pixiebrix/iframe", "@pixiebrix/get"],
   ],
-] as Array<[ElementType, RegistryId[]]>);
+] as Array<[ExtensionPointType, RegistryId[]]>);
 
 const readerLike = [
   // The following two bricks are technically "transforms", but serve the roles as readers
@@ -80,7 +80,7 @@ const commonReaders = [
 ] as RegistryId[];
 
 async function getRecommendations(
-  elementType: ElementType,
+  elementType: ExtensionPointType,
   current: RegistryId[]
 ): Promise<RegistryId[]> {
   // Ignore errors resolving blocks. Errors can be caused by any number of things, e.g., internal ids, etc.

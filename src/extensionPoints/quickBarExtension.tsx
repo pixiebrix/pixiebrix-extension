@@ -108,6 +108,10 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
     return blockList(extension.config.action);
   }
 
+  public get kind(): "quickBar" {
+    return "quickBar";
+  }
+
   uninstall(): void {
     quickBarRegistry.removeExtensionPointActions(this.id);
   }
