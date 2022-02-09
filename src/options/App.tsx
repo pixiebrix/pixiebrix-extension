@@ -54,6 +54,7 @@ import { ModalProvider } from "@/components/ConfirmationModal";
 import WorkshopPage from "./pages/workshop/WorkshopPage";
 import InvitationBanner from "@/options/pages/InvitationBanner";
 import { SettingsState } from "@/store/settingsTypes";
+import BrowserBanner from "./pages/BrowserBanner";
 
 // Register the built-in bricks
 registerBuiltinBlocks();
@@ -97,6 +98,7 @@ const Layout = () => {
           <Sidebar />
           <div className="main-panel">
             <ErrorModal />
+            <BrowserBanner />
             <EnvironmentBanner />
             <UpdateBanner />
             <DeploymentBanner />

@@ -22,6 +22,7 @@ const initialSettingsState: SettingsState = {
   mode: "remote",
   nextUpdate: null as number,
   suggestElements: false,
+  browserWarningDismissed: false,
 };
 
 const settingsSlice = createSlice({
@@ -42,6 +43,9 @@ const settingsSlice = createSlice({
     snoozeUpdates(state, action: PayloadAction<{ durationMillis: number }>) {
       const { durationMillis } = action.payload;
       state.nextUpdate = Date.now() + durationMillis;
+    },
+    dismissBrowserWarning(state) {
+      state.browserWarningDismissed = true;
     },
   },
 });
