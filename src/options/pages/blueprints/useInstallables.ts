@@ -43,15 +43,8 @@ function useInstallables(): InstallablesState {
   const recipes = useGetRecipesQuery();
   const cloudExtensions = useGetCloudExtensionsQuery();
 
-  const { installedExtensionIds, installedRecipeIds } = useMemo(
-    () => ({
-      installedExtensionIds: new Set<UUID>(
-        unresolvedExtensions.map((extension) => extension.id)
-      ),
-      installedRecipeIds: new Set(
-        unresolvedExtensions.map((extension) => extension._recipe?.id)
-      ),
-    }),
+  const installedExtensionIds = useMemo(
+    () => new Set<UUID>(unresolvedExtensions.map((extension) => extension.id)),
     [unresolvedExtensions]
   );
 
@@ -62,7 +55,7 @@ function useInstallables(): InstallablesState {
           recipe.metadata.id.includes(scope) ||
           recipe.sharing.organizations.length > 0
       ),
-    [recipes.data, scope, installedRecipeIds]
+    [recipes.data, scope]
   );
 
   const allExtensions = useMemo(() => {
@@ -88,14 +81,7 @@ function useInstallables(): InstallablesState {
   );
 
   const installables = useMemo(
-    () => [
-      ...resolvedExtensions.filter((extension) => {
-        return !personalOrTeamBlueprints.some(
-          (blueprint) => blueprint.metadata.id === extension._recipe?.id
-        );
-      }),
-      ...personalOrTeamBlueprints,
-    ],
+    () => [...resolvedExtensions, ...personalOrTeamBlueprints],
     [personalOrTeamBlueprints, resolvedExtensions]
   );
 
