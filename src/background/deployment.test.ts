@@ -50,6 +50,11 @@ jest.mock("@/telemetry/events", () => ({
   reportEvent: jest.fn(),
 }));
 
+jest.mock("@/actionPanel/messenger/api", () => {});
+jest.mock("@/contentScript/messenger/api", () => ({
+  insertButton: jest.fn(),
+}));
+
 jest.mock("@/background/messenger/api", () => ({
   // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
   uninstallContextMenu: jest.fn().mockResolvedValue(undefined),
@@ -81,8 +86,9 @@ beforeEach(() => {
 
 jest.mock("webext-detect-page", () => ({
   isBackground: () => true,
+  isExtensionContext: () => true,
   isDevToolsPage: () => false,
-  isExtensionContext: () => false,
+  isContentScript: () => false,
 }));
 
 jest.mock("webextension-polyfill", () => {

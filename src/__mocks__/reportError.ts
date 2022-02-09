@@ -15,18 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
-import reportError from "@/telemetry/reportError";
+import { MessageContext } from "@/core";
+import { getErrorMessage } from "@/errors";
 
-/**
- * React hook to report an error once.
- */
-function useReportError(error: unknown): void {
-  useEffect(() => {
-    if (error) {
-      reportError(error);
-    }
-  }, [error]);
+// A mock that doesn't call the background page to report the error
+function reportError(error: unknown, context?: MessageContext): void {
+  console.error("Report error: %s", getErrorMessage(error), {
+    error,
+    context,
+  });
+
+  throw new Error(`Unexpected call to reportError: ${getErrorMessage(error)}`);
 }
 
-export default useReportError;
+export default reportError;

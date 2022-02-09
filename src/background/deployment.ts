@@ -19,7 +19,7 @@
 import { Deployment } from "@/types/contract";
 import browser from "webextension-polyfill";
 import { isEmpty, partition, uniqBy } from "lodash";
-import { reportError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/telemetry";
 import { getExtensionVersion } from "@/chrome";
 import { isLinked, readAuthData } from "@/auth/token";
