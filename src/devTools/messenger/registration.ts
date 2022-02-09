@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -28,6 +29,8 @@ declare global {
   }
 }
 
-registerMethods({
-  UPDATE_DEV_TOOLS: updateDevTools,
-});
+export default function registerMessenger(): void {
+  registerMethods({
+    UPDATE_DEV_TOOLS: updateDevTools,
+  });
+}

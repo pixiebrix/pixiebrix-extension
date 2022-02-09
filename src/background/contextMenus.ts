@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -17,7 +18,6 @@
 
 import pTimeout from "p-timeout";
 import browser, { Menus, Tabs } from "webextension-polyfill";
-import { isBackground } from "webext-detect-page";
 import { getErrorMessage, hasCancelRootCause } from "@/errors";
 import reportError from "@/telemetry/reportError";
 import { noop } from "lodash";
@@ -237,7 +237,7 @@ export async function ensureContextMenu({
   }
 }
 
-if (isBackground()) {
+export default function initContextMenus(): void {
   browser.contextMenus.onClicked.addListener(menuListener);
   console.debug("Attached context menu listener");
 }

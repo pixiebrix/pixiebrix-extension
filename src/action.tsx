@@ -17,7 +17,7 @@
 
 import "@/extensionContext";
 
-import "@/actionPanel/messenger/registration";
+import registerMessenger from "@/actionPanel/messenger/registration";
 import App from "@/actionPanel/ActionPanelApp";
 import ReactDOM from "react-dom";
 import React from "react";
@@ -29,6 +29,7 @@ import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
 import "@/action.scss";
 
+registerMessenger();
 registerContribBlocks();
 registerBuiltinBlocks();
 
