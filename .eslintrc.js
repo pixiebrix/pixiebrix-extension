@@ -18,6 +18,7 @@ module.exports = {
           "@/background/axiosFetch", // Must be run before other code
           "regenerator-runtime/runtime", // Automatic registration
           "@/telemetry/reportUncaughtErrors",
+          "@testing-library/jest-dom",
         ],
       },
     ],
