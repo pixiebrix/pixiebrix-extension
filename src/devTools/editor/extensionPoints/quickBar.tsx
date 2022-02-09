@@ -283,11 +283,24 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
           <kbd style={{ fontFamily: "system" }}>
             {isEmpty(shortcut) ? DEFAULT_SHORTCUT : shortcut}
           </kbd>
-          . You can{" "}
-          <a href="https://docs.pixiebrix.com/quick-bar-setup">
-            customize this shortcut.
-          </a>
           .
+          {isEmpty(shortcut) ? (
+            <>
+              You are currently using the default shortcut. You may{" "}
+              <a href="https://docs.pixiebrix.com/quick-bar-setup">
+                change this shortcut
+              </a>
+              .
+            </>
+          ) : (
+            <>
+              Remember, you can{" "}
+              <a href="https://docs.pixiebrix.com/quick-bar-setup">
+                change this shortcut
+              </a>
+              .
+            </>
+          )}
         </p>
       </div>
     );
