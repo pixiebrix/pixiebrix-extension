@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./notify.module.scss";
+
 import React from "react";
 import { render } from "react-dom";
 import { toast, Toaster } from "react-hot-toast";
@@ -50,28 +52,6 @@ const toastOptions: DefaultToastOptions = {
   },
 };
 
-const buttonClassName = "button-" + uuidv4(); // It must be prefixed
-
-const buttonStyle = `
-  .${buttonClassName} {
-    border: solid 2px #efefff;
-    border-radius: 3px;
-    background: #fff;
-    font: inherit;
-    margin-left: 0.3em;
-    cursor: pointer;
-  }
-
-  .${buttonClassName}:hover,
-  .${buttonClassName}:focus {
-    border-color: #dededd;
-  }
-
-  .${buttonClassName}:active {
-    background-color: #f8f8f8;
-  }
-`;
-
 const Message: React.VoidFunctionComponent<{
   message: string;
   id: string;
@@ -81,7 +61,7 @@ const Message: React.VoidFunctionComponent<{
     {message}
     {dismissable ? (
       <button
-        className={buttonClassName}
+        className={styles.closeButton}
         onClick={() => {
           toast.dismiss(id);
         }}
@@ -103,13 +83,7 @@ export function initToaster(): void {
   root.setAttribute("style", "all: initial");
 
   document.body.append(root);
-  render(
-    <>
-      <style>{buttonStyle}</style>
-      <Toaster {...{ containerStyle, toastOptions }} />
-    </>,
-    root
-  );
+  render(<Toaster {...{ containerStyle, toastOptions }} />, root);
 }
 
 export function showNotification({
@@ -117,7 +91,7 @@ export function showNotification({
   type,
   id = uuidv4(),
   duration = getMessageDisplayTime(message),
-  dismissable = false,
+  dismissable = true,
 }: Notification): string {
   const options = { id, duration };
   switch (type) {
