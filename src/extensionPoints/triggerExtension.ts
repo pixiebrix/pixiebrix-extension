@@ -175,6 +175,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     this.boundEventHandler = this.eventHandler.bind(this);
   }
 
+  public get kind(): "trigger" {
+    return "trigger";
+  }
+
   async install(): Promise<boolean> {
     return this.isAvailable();
   }

@@ -15,30 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file Generic helper methods.
+ */
+
 import {
-  isEmpty,
-  mapValues,
-  partial,
-  partialRight,
-  negate,
+  compact,
   countBy,
-  maxBy,
   entries,
-  last,
   flow,
   head,
-  ObjectIterator,
-  zip,
-  pickBy,
+  isEmpty,
   isPlainObject,
-  compact,
+  last,
+  mapValues,
+  maxBy,
+  negate,
+  ObjectIterator,
+  partial,
+  partialRight,
+  pickBy,
   unary,
+  zip,
 } from "lodash";
 import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
-import { ResolvedExtensionPointConfig } from "@/types/definitions";
-import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 
 /**
  * Create a Formik field name, validating the individual path parts.
@@ -518,10 +520,4 @@ export async function asyncLoop<Item>(
 export function isMac(): boolean {
   // https://stackoverflow.com/a/27862868/402560
   return navigator.platform.includes("Mac");
-}
-
-export async function getElementType(
-  extensionPoint: ResolvedExtensionPointConfig
-): Promise<ElementType> {
-  return "quickBar";
 }

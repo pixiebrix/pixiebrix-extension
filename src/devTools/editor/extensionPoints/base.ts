@@ -56,6 +56,7 @@ import {
   MINIMAL_SCHEMA,
   MINIMAL_UI_SCHEMA,
 } from "@/components/formBuilder/formBuilderHelpers";
+import { hasInnerExtensionPoint } from "@/registry/internal";
 
 export interface WizardStep {
   step: string;
@@ -250,20 +251,6 @@ export function cleanIsAvailable({
   };
 }
 
-export function hasInnerExtensionPoint(extension: IExtension): boolean {
-  const hasInner = extension.extensionPointId in (extension.definitions ?? {});
-
-  if (!hasInner && isInnerExtensionPoint(extension.extensionPointId)) {
-    console.warn(
-      "Extension is missing inner definition for %s",
-      extension.extensionPointId,
-      { extension }
-    );
-  }
-
-  return hasInner;
-}
-
 export async function lookupExtensionPoint<
   TDefinition extends ExtensionPointDefinition,
   TConfig extends EmptyConfig,
@@ -306,7 +293,7 @@ export async function lookupExtensionPoint<
 
   const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<TDefinition>;
   if (extensionPoint.definition.type !== type) {
-    throw new Error("Expected panel extension point type");
+    throw new Error(`Expected ${type} extension point type`);
   }
 
   return extensionPoint as ExtensionPointConfig<TDefinition> & {

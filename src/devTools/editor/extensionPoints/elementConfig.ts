@@ -27,19 +27,16 @@ import {
   UUID,
 } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import {
+  ExtensionPointConfig,
+  ExtensionPointType,
+} from "@/extensionPoints/types";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import { Target } from "@/types";
 import { OptionsDefinition } from "@/types/definitions";
 
-export type ElementType =
-  | "menuItem"
-  | "trigger"
-  | "panel"
-  | "contextMenu"
-  | "actionPanel"
-  | "quickBar";
+export type ElementType = ExtensionPointType;
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation

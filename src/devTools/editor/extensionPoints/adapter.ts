@@ -29,7 +29,7 @@ import {
   ElementConfig,
   ElementType,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { hasInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
+import { hasInnerExtensionPoint } from "@/registry/internal";
 
 export const ADAPTERS = new Map<ElementType, ElementConfig>([
   ["trigger", triggerExtension],

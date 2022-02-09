@@ -40,6 +40,7 @@ import {
 import { AxiosRequestConfig } from "axios";
 import { Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
+import { ExtensionPointType } from "@/extensionPoints/types";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
@@ -116,6 +117,8 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
   public abstract readonly inputSchema: Schema;
 
   protected readonly logger: Logger;
+
+  public abstract get kind(): ExtensionPointType;
 
   public get syncInstall() {
     return false;

@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import browser from "webextension-polyfill";
 import { RecipeDefinition } from "@/types/definitions";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import {
   useSelectedAuths,
@@ -32,10 +33,12 @@ import { Card } from "react-bootstrap";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { resolveRecipe } from "@/registry/internal";
-import { getElementType, isMac } from "@/utils";
+import extensionPointRegistry from "@/extensionPoints/registry";
+import { isMac } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
 import { isEmpty } from "lodash";
 import { faChrome } from "@fortawesome/free-brands-svg-icons";
+import reportError from "@/telemetry/reportError";
 
 const ActivateBody: React.FunctionComponent<{
   blueprint: RecipeDefinition;
@@ -47,17 +50,13 @@ const ActivateBody: React.FunctionComponent<{
     selectedExtensions,
     selectedAuths
   );
-  const [hasShortcut, setHasShortcut] = useState(false);
 
-  useEffect(() => {
-    chrome.commands.getAll((commands) => {
-      setHasShortcut(
-        commands.some(
-          (command) =>
-            command.name === "toggle-quick-bar" && !isEmpty(command.shortcut)
-        )
-      );
-    });
+  const [hasShortcut] = useAsyncState(async () => {
+    const commands = await browser.commands.getAll();
+    return commands.some(
+      (command) =>
+        command.name === "toggle-quick-bar" && !isEmpty(command.shortcut)
+    );
   }, []);
 
   const [hasQuickBar] = useAsyncState(
@@ -67,8 +66,13 @@ const ActivateBody: React.FunctionComponent<{
         blueprint.extensionPoints
       );
       return extensions.some(async (config) => {
-        const type = await getElementType(config);
-        return type === "quickBar";
+        try {
+          const extensionPoint = await extensionPointRegistry.lookup(config.id);
+          return extensionPoint.kind === "quickBar";
+        } catch (error) {
+          reportError(error);
+          return false;
+        }
       });
     },
     [],
