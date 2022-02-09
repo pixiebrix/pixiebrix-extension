@@ -27,11 +27,12 @@ import {
 import React from "react";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { InstallableViewItem } from "./blueprintsTypes";
+import { isPersonal } from "@/options/pages/blueprints/installableUtils";
 
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
-  const { installable, hasUpdate, status } = installableViewItem;
+  const { installable, hasUpdate, status, sharing } = installableViewItem;
   const {
     remove,
     viewLogs,
@@ -54,6 +55,8 @@ const BlueprintActions: React.FunctionComponent<{
                     </>
                   ),
                   action: viewShare,
+                  hide:
+                    sharing.source.type === "Personal" && status !== "Active",
                 },
               ]
             : []),

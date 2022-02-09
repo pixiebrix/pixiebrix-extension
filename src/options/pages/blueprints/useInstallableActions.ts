@@ -18,11 +18,13 @@
 import {
   getLabel,
   getPackageId,
+  getSharing,
   getUniqueId,
   isBlueprint,
   isExtension,
   isExtensionFromRecipe,
   isPersonal,
+  isShared,
 } from "@/options/pages/blueprints/installableUtils";
 import { Installable } from "./blueprintsTypes";
 import { useDispatch } from "react-redux";
@@ -79,8 +81,13 @@ function useInstallableActions(installable: Installable) {
   const viewShare = () => {
     dispatch(
       installedPageSlice.actions.setShareContext({
-        installableId: getUniqueId(installable),
-        showLink: isBlueprint(installable) || !isPersonal(installable, scope),
+        installableId: isShared(installable)
+          ? getPackageId(installable)
+          : getUniqueId(installable),
+        showLink:
+          isBlueprint(installable) ||
+          !isPersonal(installable, scope) ||
+          isShared(installable),
       })
     );
   };
