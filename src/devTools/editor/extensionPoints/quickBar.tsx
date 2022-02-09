@@ -36,7 +36,7 @@ import { uuidv4 } from "@/types/helpers";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { getDomain } from "@/permissions/patterns";
-import { faCaretRight, faThLarge } from "@fortawesome/free-solid-svg-icons";
+import { faThLarge } from "@fortawesome/free-solid-svg-icons";
 import {
   BaseExtensionState,
   BaseFormState,
@@ -57,7 +57,6 @@ import {
 import QuickBarConfiguration from "@/devTools/editor/tabs/quickBar/QuickBarConfiguration";
 import { isMac } from "@/utils";
 import { isEmpty } from "lodash";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type Extension = BaseExtensionState & Except<QuickBarConfig, "action">;
 
