@@ -55,6 +55,16 @@ function useInstallables(): InstallablesState {
     [unresolvedExtensions]
   );
 
+  const personalOrTeamBlueprints = useMemo(
+    () =>
+      (recipes.data ?? []).filter(
+        (recipe) =>
+          recipe.metadata.id.includes(scope) ||
+          recipe.sharing.organizations.length > 0
+      ),
+    [recipes.data, scope, installedRecipeIds]
+  );
+
   const allExtensions = useMemo(() => {
     const inactiveExtensions =
       cloudExtensions.data
@@ -75,19 +85,6 @@ function useInstallables(): InstallablesState {
       ),
     [allExtensions],
     []
-  );
-
-  const personalOrTeamBlueprints = useMemo(
-    () =>
-      (recipes.data ?? []).filter(
-        (recipe) =>
-          (recipe.metadata.id.includes(scope) ||
-            recipe.sharing.organizations.length > 0) &&
-          // Remove duplicate Installable entries for Active extension
-          // and Recipe pairs
-          !installedRecipeIds.has(recipe.metadata.id)
-      ),
-    [recipes.data, scope, installedRecipeIds]
   );
 
   const installables = useMemo(

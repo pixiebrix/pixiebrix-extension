@@ -77,7 +77,7 @@ export const isBlueprint = (
   installable: Installable
 ): installable is RecipeDefinition => !isExtension(installable);
 
-export const getUniqueId = (installable: Installable) =>
+export const getUniqueId = (installable: Installable): UUID | RegistryId =>
   isExtension(installable) ? installable.id : installable.metadata.id;
 
 export const getLabel = (installable: Installable): string =>

@@ -54,7 +54,6 @@ const BlueprintActions: React.FunctionComponent<{
                       <FontAwesomeIcon icon={faShare} /> Share
                     </>
                   ),
-                  hide: !isExtension(installable),
                   action: viewShare,
                 },
               ]

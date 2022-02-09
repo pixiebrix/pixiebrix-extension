@@ -16,6 +16,9 @@
  */
 
 import {
+  getPackageId,
+  getUniqueId,
+  isBlueprint,
   isExtension,
   isExtensionFromRecipe,
   isPersonal,
@@ -73,13 +76,10 @@ function useInstallableActions(installable: Installable) {
   };
 
   const viewShare = () => {
-    if (!isExtension(installable)) {
-      return;
-    }
-
     dispatch(
       installedPageSlice.actions.setShareContext({
-        extensionId: installable.id,
+        installableId: getUniqueId(installable),
+        showLink: isBlueprint(installable) || !isPersonal(installable, scope),
       })
     );
   };
@@ -125,7 +125,7 @@ function useInstallableActions(installable: Installable) {
   }, [installable, notify]);
 
   return {
-    viewShare: isPersonal(installable, scope) ? viewShare : null,
+    viewShare,
     remove,
     viewLogs,
     onExportBlueprint,

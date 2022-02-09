@@ -128,8 +128,12 @@ export const _InstalledPage: React.FunctionComponent<{
       icon={faCubes}
       error={cloudError ?? resolveError}
     >
-      {showShareContext && (
-        <ShareExtensionModal extensionId={showShareContext.extensionId} />
+      {showShareContext && !showShareContext.showLink && (
+        <ShareExtensionModal extensionId={showShareContext.installableId} />
+      )}
+
+      {showShareContext?.showLink && (
+        <ShareLinkModal blueprintId={showShareContext.installableId} />
       )}
 
       {showLogsContext && (
@@ -139,11 +143,6 @@ export const _InstalledPage: React.FunctionComponent<{
         />
       )}
 
-      <Route
-        exact
-        path="/installed/link/:blueprintId"
-        component={ShareLinkModal}
-      />
       <Row>
         <Col>
           <div className="pb-4">
