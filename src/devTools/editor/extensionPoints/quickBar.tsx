@@ -245,6 +245,8 @@ function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
   };
 }
 
+const DEFAULT_SHORTCUT = isMac() ? "Command+K" : "Ctrl+K";
+
 const config: ElementConfig<undefined, QuickBarFormState> = {
   displayOrder: 1,
   elementType: "quickBar",
@@ -274,14 +276,12 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
       });
     }, []);
 
-    const defaultShortcut = isMac() ? "Command+K" : "Ctrl+K";
-
     return (
       <div>
         <p>
           The quick bar can be triggered on any page by pressing{" "}
           <kbd style={{ fontFamily: "system" }}>
-            {isEmpty(shortcut) ? defaultShortcut : shortcut}
+            {isEmpty(shortcut) ? DEFAULT_SHORTCUT : shortcut}
           </kbd>
           . You can{" "}
           <a href="https://docs.pixiebrix.com/quick-bar-setup">
