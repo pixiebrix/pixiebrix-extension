@@ -30,6 +30,7 @@ import {
   assertExtensionPointConfig,
   ExtensionPointConfig,
   ExtensionPointDefinition,
+  ExtensionPointType,
 } from "@/extensionPoints/types";
 import { registry } from "@/background/messenger/api";
 import React from "react";
@@ -37,7 +38,6 @@ import { createSitePattern } from "@/permissions/patterns";
 import {
   BaseExtensionState,
   BaseFormState,
-  ElementType,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
@@ -106,7 +106,7 @@ export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
 /**
  * Return common extension properties for the Page Editor form state
  */
-export function baseFromExtension<T extends ElementType>(
+export function baseFromExtension<T extends ExtensionPointType>(
   config: IExtension,
   type: T
 ): Pick<
@@ -371,7 +371,9 @@ export function removeEmptyValues<T extends object>(obj: T): T {
 /**
  * Return a composite reader to automatically include in new extensions created with the Page Editor.
  */
-export function getImplicitReader(type: ElementType): SingleLayerReaderConfig {
+export function getImplicitReader(
+  type: ExtensionPointType
+): SingleLayerReaderConfig {
   if (type === "trigger") {
     return readerTypeHack([
       validateRegistryId("@pixiebrix/document-metadata"),

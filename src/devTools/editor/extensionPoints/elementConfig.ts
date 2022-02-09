@@ -36,8 +36,6 @@ import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import { Target } from "@/types";
 import { OptionsDefinition } from "@/types/definitions";
 
-export type ElementType = ExtensionPointType;
-
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
  * @see ReaderConfig
@@ -77,7 +75,7 @@ export interface BaseFormState<
   /**
    * The type of the extensionPoint
    */
-  readonly type: ElementType;
+  readonly type: ExtensionPointType;
 
   /**
    * True if the extensionPoint exists in in the registry
@@ -135,7 +133,7 @@ export interface ElementConfig<
   /**
    * The internal element type, e.g., menuItem, contextMenu, etc.
    */
-  readonly elementType: ElementType;
+  readonly elementType: ExtensionPointType;
 
   /**
    * The ExtensionPointConfig class corresponding to the extension point
