@@ -88,7 +88,14 @@ function useInstallables(): InstallablesState {
   );
 
   const installables = useMemo(
-    () => [...resolvedExtensions, ...personalOrTeamBlueprints],
+    () => [
+      ...resolvedExtensions.filter((extension) => {
+        return !personalOrTeamBlueprints.some(
+          (blueprint) => blueprint.metadata.id === extension._recipe?.id
+        );
+      }),
+      ...personalOrTeamBlueprints,
+    ],
     [personalOrTeamBlueprints, resolvedExtensions]
   );
 

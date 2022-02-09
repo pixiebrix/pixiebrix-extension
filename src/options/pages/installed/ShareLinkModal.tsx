@@ -33,8 +33,6 @@ const ShareLinkModal: React.FunctionComponent<{
     dispatch(installedPageSlice.actions.setShareContext(null));
   };
 
-  console.log("Blueprint id: ", blueprintId);
-
   const installationLink = `https://app.pixiebrix.com/activate?id=${blueprintId}`;
 
   const notify = useNotifications();
