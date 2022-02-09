@@ -15,28 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEyeSlash,
-  faGlobe,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
-import { SharingSource } from "@/options/pages/blueprints/installableUtils";
+import { SettingsState } from "./settingsTypes";
 
-const sharingIcons = {
-  Personal: faEyeSlash,
-  Team: faUsers,
-  Public: faGlobe,
-  Deployment: faUsers,
+type StateWithSettings = {
+  settings: SettingsState;
 };
-
-const SharingLabel: React.FunctionComponent<{
-  sharing: SharingSource;
-}> = ({ sharing }) => (
-  <div>
-    <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
-  </div>
-);
-
-export default SharingLabel;
+export const selectBrowserWarningDismissed = ({
+  settings,
+}: StateWithSettings) => settings.browserWarningDismissed;

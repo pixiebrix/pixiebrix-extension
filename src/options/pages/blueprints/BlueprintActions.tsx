@@ -27,11 +27,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
-import { Installable } from "./blueprintsTypes";
+import { InstallableViewItem } from "./blueprintsTypes";
 
 const BlueprintActions: React.FunctionComponent<{
-  installable: Installable;
-}> = ({ installable }) => {
+  installableViewItem: InstallableViewItem;
+}> = ({ installableViewItem }) => {
+  const { installable, hasUpdate } = installableViewItem;
   const {
     remove,
     viewLogs,
@@ -79,7 +80,7 @@ const BlueprintActions: React.FunctionComponent<{
                 {
                   title: (
                     <>
-                      {installable.hasUpdate ? (
+                      {hasUpdate ? (
                         <span className="text-info">
                           <FontAwesomeIcon icon={faSyncAlt} /> Update
                         </span>
