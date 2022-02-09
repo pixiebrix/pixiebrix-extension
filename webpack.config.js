@@ -225,43 +225,20 @@ module.exports = (env, options) =>
         dynamicImport: true,
       },
     },
-    entry: {
-      // All of these entries require the `vendors.js` file to be included first
-      ...Object.fromEntries(
-        [
-          "background",
-          "contentScript",
-          "devtoolsPanel",
-          "ephemeralForm",
-          "options",
-          "action",
-          "permissionsPopup",
-        ].map((name) => [
-          name,
-          { import: `./src/${name}`, dependOn: "vendors" },
-        ])
-      ),
-
-      // This creates a `vendors.js` file that must be included together with the bundles generated above
-      vendors: [
-        "react",
-        "react-dom",
-        "webextension-polyfill",
-        "jquery",
-        "lodash-es",
-        "js-beautify",
-        "css-selector-generator",
-        "@rjsf/bootstrap-4",
-        "@fortawesome/free-solid-svg-icons",
-      ],
-
-      // Tiny files without imports, no vendors needed
-      frame: "./src/frame",
-      devtools: "./src/devtools",
-
-      // The script that gets injected into the host page should not have a vendor chunk
-      script: "./src/script",
-    },
+    entry: Object.fromEntries(
+      [
+        "background",
+        "contentScript",
+        "devtoolsPanel",
+        "ephemeralForm",
+        "options",
+        "action",
+        "permissionsPopup",
+        "devtools",
+        "script",
+        "frame",
+      ].map((name) => [name, `./src/${name}`])
+    ),
 
     resolve: {
       alias: {
@@ -282,9 +259,7 @@ module.exports = (env, options) =>
       // Chrome bug https://bugs.chromium.org/p/chromium/issues/detail?id=1108199
       splitChunks: {
         automaticNameDelimiter: "-",
-        cacheGroups: {
-          vendors: false,
-        },
+        chunks: "all",
       },
 
       minimizer: [
@@ -352,6 +327,7 @@ module.exports = (env, options) =>
 
       new MiniCssExtractPlugin({
         chunkFilename: "css/[id].css",
+        ignoreOrder: true,
       }),
       new CopyPlugin({
         patterns: [
