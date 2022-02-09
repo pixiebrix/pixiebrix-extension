@@ -19,7 +19,6 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
   Action,
-  KBarAnimator,
   KBarPositioner,
   KBarProvider,
   KBarSearch,
@@ -38,6 +37,7 @@ import { Stylesheet } from "@/components/Stylesheet";
 import selection from "@/utils/selectionController";
 import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
+import { KBarAnimator } from "@/vendors/kbar/KBarAnimator";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
