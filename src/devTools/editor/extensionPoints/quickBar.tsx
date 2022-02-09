@@ -36,14 +36,14 @@ import { uuidv4 } from "@/types/helpers";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { getDomain } from "@/permissions/patterns";
-import { faThLarge } from "@fortawesome/free-solid-svg-icons";
+import { faCaretRight, faThLarge } from "@fortawesome/free-solid-svg-icons";
 import {
   BaseExtensionState,
   BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { Menus } from "webextension-polyfill";
+import browser, { Menus } from "webextension-polyfill";
 import { NormalizedAvailability } from "@/blocks/types";
 import React, { useEffect, useState } from "react";
 import { Except } from "type-fest";
@@ -57,6 +57,7 @@ import {
 import QuickBarConfiguration from "@/devTools/editor/tabs/quickBar/QuickBarConfiguration";
 import { isMac } from "@/utils";
 import { isEmpty } from "lodash";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type Extension = BaseExtensionState & Except<QuickBarConfig, "action">;
 
@@ -277,30 +278,26 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
     }, []);
 
     return (
-      <div>
+      <div className="pb-2">
         <p>
           The quick bar can be triggered on any page by pressing{" "}
           <kbd style={{ fontFamily: "system" }}>
             {isEmpty(shortcut) ? DEFAULT_SHORTCUT : shortcut}
           </kbd>
-          .
-          {isEmpty(shortcut) ? (
-            <>
-              You are currently using the default shortcut. You may{" "}
-              <a href="https://docs.pixiebrix.com/quick-bar-setup">
-                change this shortcut
-              </a>
-              .
-            </>
-          ) : (
-            <>
-              Remember, you can{" "}
-              <a href="https://docs.pixiebrix.com/quick-bar-setup">
-                change this shortcut
-              </a>
-              .
-            </>
-          )}
+          .{" "}
+          {isEmpty(shortcut) &&
+            "You have not configured a Quick Bar shortcut in Chrome, you're currently using the default. "}
+        </p>
+        <p>
+          <a
+            href="chrome://extensions/shortcuts"
+            onClick={(event) => {
+              event.preventDefault();
+              void browser.tabs.create({ url: event.currentTarget.href });
+            }}
+          >
+            Configure a Quick Bar shortcut in Chrome
+          </a>
         </p>
       </div>
     );

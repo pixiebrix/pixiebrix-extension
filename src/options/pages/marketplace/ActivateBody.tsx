@@ -105,10 +105,8 @@ const ActivateBody: React.FunctionComponent<{
                 void browser.tabs.create({ url: event.currentTarget.href });
               }}
             >
-              <u>
-                <FontAwesomeIcon icon={faChrome} />
-                {"  "}chrome://extensions/shortcuts
-              </u>
+              <FontAwesomeIcon icon={faChrome} />
+              <u>chrome://extensions/shortcuts</u>
             </a>{" "}
             to configure a shortcut. For now, the default is{" "}
             <kbd style={{ fontFamily: "system" }}>
@@ -116,7 +114,7 @@ const ActivateBody: React.FunctionComponent<{
             </kbd>
             .{" "}
             <a href="https://docs.pixiebrix.com/quick-bar-setup">
-              <u>Read more about extension shortcuts here.</u>
+              <u>Learn more about extension shortcuts.</u>
             </a>
           </p>
         )}
