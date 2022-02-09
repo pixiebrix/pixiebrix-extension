@@ -28,8 +28,6 @@ const IntroButtons: React.VoidFunctionComponent = () => (
         size="sm"
         href="https://docs.pixiebrix.com/quick-start-guide"
         target="_blank"
-        // @ts-expect-error -- rel is a standard attribute of <a> tag
-        rel="noopener noreferrer"
       >
         <FontAwesomeIcon icon={faExternalLinkAlt} /> Open quick start
       </Button>
