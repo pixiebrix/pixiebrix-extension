@@ -49,7 +49,7 @@ function useInstallableViewItems(
     data: { scope },
   } = useGetAuthQuery();
   const installedExtensions = useSelector(selectExtensions);
-  const organizations = useGetOrganizationsQuery();
+  const { data: organizations } = useGetOrganizationsQuery();
   const listings = useGetMarketplaceListingsQuery();
   const recipes = useGetRecipesQuery();
 
@@ -101,7 +101,7 @@ function useInstallableViewItems(
         description: getDescription(installable),
         sharing: {
           packageId: getPackageId(installable),
-          source: getSharingType(installable, organizations.data, scope),
+          source: getSharingType(installable, organizations ?? [], scope),
         },
         updatedAt: getUpdatedAt(installable),
         status: isActive(installable) ? "Active" : "Uninstalled",
