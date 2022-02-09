@@ -98,7 +98,13 @@ const ActivateBody: React.FunctionComponent<{
             <FontAwesomeIcon icon={faExclamationTriangle} /> This blueprint
             contains one or more Quick Bar extensions, but you have not
             configured a Quick Bar shortcut in Chrome. Go to{" "}
-            <a href="chrome://extensions/shortcuts">
+            <a
+              href="chrome://extensions/shortcuts"
+              onClick={(event) => {
+                event.preventDefault();
+                void browser.tabs.create({ url: event.currentTarget.href });
+              }}
+            >
               <u>
                 <FontAwesomeIcon icon={faChrome} />
                 {"  "}chrome://extensions/shortcuts
