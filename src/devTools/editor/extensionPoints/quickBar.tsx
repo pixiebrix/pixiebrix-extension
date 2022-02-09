@@ -245,7 +245,7 @@ function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
   };
 }
 
-const DEFAULT_SHORTCUT = isMac() ? "Command+K" : "Ctrl+K";
+const DEFAULT_SHORTCUT = isMac() ? "⌘K" : "Ctrl+K";
 
 const config: ElementConfig<undefined, QuickBarFormState> = {
   displayOrder: 1,
