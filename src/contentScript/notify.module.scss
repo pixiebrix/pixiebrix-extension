@@ -2,8 +2,9 @@
   all: initial;
   border: solid 2px #efefff;
   border-radius: 0.4em;
-  line-height: 1.5em;
+  line-height: 1.4em;
   width: 1.5em;
+  padding-bottom: 0.1em; // Better vertical alignment
   text-align: center;
   margin-left: 0.5em;
   cursor: pointer;
