@@ -15,23 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import Centered from "@/devTools/editor/components/Centered";
-import IntroButtons from "./IntroButtons";
+import { Button } from "react-bootstrap";
+import AskQuestionModalButton from "@/devTools/editor/askQuestion/AskQuestionModalButton";
 
-const WelcomePane: React.FunctionComponent = () => (
-  <Centered isScrollable>
-    <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
+const IntroButtons: React.VoidFunctionComponent = () => (
+  <>
+    <p className="text-center">
+      <Button
+        size="sm"
+        href="https://docs.pixiebrix.com/quick-start-guide"
+        target="_blank"
+      >
+        <FontAwesomeIcon icon={faExternalLinkAlt} /> Open quick start
+      </Button>
+    </p>
 
-    <div className="text-center">
-      <p>
-        Click <span className="text-info">Add</span> in the sidebar to edit the
-        page.
-      </p>
-
-      <IntroButtons />
-    </div>
-  </Centered>
+    <p className="text-center">
+      <AskQuestionModalButton />
+    </p>
+  </>
 );
 
-export default WelcomePane;
+export default IntroButtons;
