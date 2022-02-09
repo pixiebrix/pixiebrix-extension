@@ -111,7 +111,10 @@ const ActivateBody: React.FunctionComponent<{
               </u>
             </a>{" "}
             to configure a shortcut. For now, the default is{" "}
-            <code>{isMac() ? "Command+K" : "Ctrl+K"}</code>.{" "}
+            <kbd style={{ fontFamily: "system" }}>
+              {isMac() ? "Command+K" : "Ctrl+K"}
+            </kbd>
+            .{" "}
             <a href="https://docs.pixiebrix.com/quick-bar-setup">
               <u>Read more about extension shortcuts here.</u>
             </a>

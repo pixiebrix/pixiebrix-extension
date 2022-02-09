@@ -280,8 +280,10 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
       <div>
         <p>
           The quick bar can be triggered on any page by pressing{" "}
-          <code>{isEmpty(shortcut) ? defaultShortcut : shortcut}</code>. To
-          learn how to customize this shortcut,{" "}
+          <kbd style={{ fontFamily: "system" }}>
+            {isEmpty(shortcut) ? defaultShortcut : shortcut}
+          </kbd>
+          . To learn how to customize this shortcut,{" "}
           <a href="https://docs.pixiebrix.com/quick-bar-setup">
             read more here
           </a>
