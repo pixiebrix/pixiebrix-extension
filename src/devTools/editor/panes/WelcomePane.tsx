@@ -23,10 +23,10 @@ const WelcomePane: React.FunctionComponent = () => (
   <Centered isScrollable>
     <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
 
-    <div className="text-left">
+    <div className="text-center">
       <p>
-        Click <span className="text-info">Add</span> in the sidebar to add an
-        element to the page.
+        Click <span className="text-info">Add</span> in the sidebar to edit the
+        page.
       </p>
 
       <IntroButtons />
