@@ -112,6 +112,10 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
   abstract readonly contexts: Menus.ContextType[];
 
+  public get kind(): "contextMenu" {
+    return "contextMenu";
+  }
+
   inputSchema: Schema = propertiesToSchema(
     {
       title: {

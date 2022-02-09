@@ -205,7 +205,7 @@ const config: ElementConfig<never, ActionPanelFormState> = {
   selectExtension,
   fromExtension,
   EditorNode: ActionPanelConfiguration,
-  insertModeHelp: (
+  InsertModeHelpText: () => (
     <div>
       <p>
         A sidebar panel can be configured to appear in the PixieBrix sidebar on

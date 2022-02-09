@@ -92,6 +92,10 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     ["heading", "body"]
   );
 
+  public get kind(): "actionPanel" {
+    return "actionPanel";
+  }
+
   async getBlocks(
     extension: ResolvedExtension<ActionPanelConfig>
   ): Promise<IBlock[]> {

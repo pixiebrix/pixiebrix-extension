@@ -564,6 +564,8 @@ export type ResolvedExtension<T extends Config = EmptyConfig> = Except<
 };
 
 export interface IExtensionPoint extends Metadata {
+  kind: string;
+
   inputSchema: Schema;
 
   permissions: Permissions.Permissions;

@@ -151,6 +151,10 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     ["heading", "body"]
   );
 
+  public get kind(): "panel" {
+    return "panel";
+  }
+
   async getBlocks(
     extension: ResolvedExtension<PanelConfig>
   ): Promise<IBlock[]> {
