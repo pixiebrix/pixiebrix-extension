@@ -23,6 +23,7 @@ const initialSettingsState: SettingsState = {
   nextUpdate: null as number,
   suggestElements: false,
   browserWarningDismissed: false,
+  useBlueprintsPage: false,
 };
 
 const settingsSlice = createSlice({
