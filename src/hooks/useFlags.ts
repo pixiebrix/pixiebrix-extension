@@ -17,6 +17,9 @@
 
 import { useGetAuthQuery } from "@/services/api";
 import { useMemo } from "react";
+import { readAuthData } from "@/auth/token";
+import { useAsyncState } from "@/hooks/common";
+import pMemoize from "p-memoize";
 
 const RESTRICTED_PREFIX = "restricted";
 
@@ -38,6 +41,10 @@ type Restrict = {
   flagOff: (flag: string) => boolean;
 };
 
+// Memoize the auth data since we're using useAsyncState.
+// We don't want to have to read from localStorage every time a flag is used
+const memoizedAuthData = pMemoize(readAuthData);
+
 /**
  * Hook for feature flags and organization restrictions.
  *
@@ -46,16 +53,21 @@ type Restrict = {
 function useFlags(): Restrict {
   // Future improvements:
   // - Let caller of each method decide what to do during pending state, (i.e., add default argument)
-  // - Store flags in local storage to fetch faster than the query (and use last known values as fallback)
-  // - Standardize use of environment="development" and DEBUG in react app
+  // - Standardize use of environment="development" and DEBUG in React app
 
   const { data, isFetching, error } = useGetAuthQuery();
 
+  // Use previous
+  const [cachedFlags] = useAsyncState(async () => {
+    const { flags } = await memoizedAuthData();
+    return flags;
+  }, []);
+
   return useMemo(() => {
-    const { flags = [] } = data ?? {};
+    const { flags } = data ?? {};
     const pending = Boolean(error) || isFetching;
 
-    const flagSet = new Set(flags);
+    const flagSet = new Set(flags ?? cachedFlags ?? []);
 
     return {
       permit: (area: RestrictedFeature) =>
@@ -65,7 +77,7 @@ function useFlags(): Restrict {
       flagOn: (flag: string) => !pending && flagSet.has(flag),
       flagOff: (flag: string) => pending || !flagSet.has(flag),
     };
-  }, [data, isFetching, error]);
+  }, [data, isFetching, error, cachedFlags]);
 }
 
 export default useFlags;
