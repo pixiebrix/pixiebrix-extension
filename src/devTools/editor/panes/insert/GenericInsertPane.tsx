@@ -28,7 +28,7 @@ import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPo
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { reportEvent } from "@/telemetry/events";
 import { useToasts } from "react-toast-notifications";
-import { reportError } from "@/telemetry/rollbar";
+import reportError from "@/telemetry/reportError";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
 import styles from "./GenericInsertPane.module.scss";
 import {
@@ -118,7 +118,11 @@ const GenericInsertPane: React.FunctionComponent<{
   return (
     <Centered isScrollable>
       <div className="PaneTitle">Build new {config.label} extension</div>
-      <div className="text-left">{config.insertModeHelp}</div>
+      {config.InsertModeHelpText && (
+        <div className="text-left">
+          <config.InsertModeHelpText />
+        </div>
+      )}
       <Row className={styles.buttonRow}>
         <Button variant="primary" onClick={addNew}>
           <FontAwesomeIcon icon={faPlus} /> Create new {config.label}

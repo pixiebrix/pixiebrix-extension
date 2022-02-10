@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -35,13 +35,12 @@ import Sidebar from "@/layout/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import { ToastProvider } from "react-toast-notifications";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
-import { useAuth } from "@/hooks/auth";
 import useRefresh from "@/hooks/useRefresh";
 import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
@@ -55,6 +54,8 @@ import { ModalProvider } from "@/components/ConfirmationModal";
 import WorkshopPage from "./pages/workshop/WorkshopPage";
 import InvitationBanner from "@/options/pages/InvitationBanner";
 import { SettingsState } from "@/store/settingsTypes";
+import BrowserBanner from "./pages/BrowserBanner";
+import useFlags from "@/hooks/useFlags";
 
 // Register the built-in bricks
 registerBuiltinBlocks();
@@ -78,11 +79,17 @@ const RequireInstall: React.FunctionComponent = ({ children }) => {
 };
 
 const Layout = () => {
-  // Get the latest brick definitions. Currently in Layout to ensure the Redux store has been hydrated by the time
-  // refresh is called.
+  // Get the latest brick definitions. Put it here in Layout instead of App to ensure the Redux store has been hydrated
+  // by the time refresh is called.
   useRefresh();
 
-  const { flags } = useContext(AuthContext);
+  const { permit, flagOn } = useFlags();
+
+  const { isLoading } = useGetAuthQuery();
+
+  if (isLoading) {
+    return <GridLoader />;
+  }
 
   return (
     <div className="w-100">
@@ -92,6 +99,7 @@ const Layout = () => {
           <Sidebar />
           <div className="main-panel">
             <ErrorModal />
+            <BrowserBanner />
             <EnvironmentBanner />
             <UpdateBanner />
             <DeploymentBanner />
@@ -99,7 +107,7 @@ const Layout = () => {
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
-                  {flags.includes("blueprints-page") && (
+                  {flagOn("blueprints-page") && (
                     <Route
                       exact
                       path="/blueprints-page"
@@ -120,15 +128,17 @@ const Layout = () => {
 
                   <Route exact path="/settings" component={SettingsPage} />
 
-                  {!flags.includes("restricted-services") && (
+                  {permit("services") && (
                     <Route path="/services/:id?" component={ServicesEditor} />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {/* Switch does not support consolidating Routes using a React fragment */}
+
+                  {permit("workshop") && (
                     <Route exact path="/workshop" component={WorkshopPage} />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {permit("workshop") && (
                     <Route
                       exact
                       path="/workshop/create/"
@@ -136,7 +146,7 @@ const Layout = () => {
                     />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {permit("workshop") && (
                     <Route
                       exact
                       path="/workshop/bricks/:id/"
@@ -157,8 +167,6 @@ const Layout = () => {
 };
 
 const App: React.FunctionComponent = () => {
-  const authState = useAuth();
-
   useEffect(() => {
     initTelemetry();
   }, []);
@@ -166,15 +174,13 @@ const App: React.FunctionComponent = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={<GridLoader />} persistor={persistor}>
-        <AuthContext.Provider value={authState}>
-          <ConnectedRouter history={hashHistory}>
-            <ModalProvider>
-              <ToastProvider>
-                <Layout />
-              </ToastProvider>
-            </ModalProvider>
-          </ConnectedRouter>
-        </AuthContext.Provider>
+        <ConnectedRouter history={hashHistory}>
+          <ModalProvider>
+            <ToastProvider>
+              <Layout />
+            </ToastProvider>
+          </ModalProvider>
+        </ConnectedRouter>
       </PersistGate>
     </Provider>
   );

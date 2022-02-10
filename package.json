@@ -93,6 +93,7 @@
     "object-hash": "^2.2.0",
     "one-mutation": "^2.0.0",
     "p-defer": "^4.0.0",
+    "p-memoize": "^6.0.1",
     "p-timeout": "^5.0.0",
     "p-wait-for": "^4.1.0",
     "page-metadata-parser": "^1.1.4",

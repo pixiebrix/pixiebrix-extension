@@ -15,26 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createContext } from "react";
-import { AuthState as CoreAuthState } from "@/core";
+import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 
-export type AuthState = CoreAuthState & {
-  isPending: boolean;
-  error: undefined | unknown;
-};
+let counter = 0;
+let timer: NodeJS.Timeout;
 
-const anonAuthState: AuthState = {
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: false,
-  scope: null,
-  flags: [],
-  isPending: false,
-  error: undefined,
-};
+function updateCounter(): void {
+  void chrome.browserAction.setBadgeText({
+    text: counter ? String(counter) : undefined,
+  });
+  void chrome.browserAction.setBadgeBackgroundColor({ color: "#F00" });
+}
 
-const AuthContext = createContext(anonAuthState);
+function backgroundErrorsBadge() {
+  counter++;
+  updateCounter();
+  // Reset the counter after a minute of inactivity
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    counter = 0;
+    updateCounter();
+  }, 60_000);
+}
 
-export default AuthContext;
+if (process.env.ENVIRONMENT === "development") {
+  uncaughtErrorHandlers.add(backgroundErrorsBadge);
+}

@@ -50,10 +50,34 @@ import {
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
-import AuthContext from "@/auth/AuthContext";
 import { RecipeDefinition } from "@/types/definitions";
 import { GridLoader } from "react-spinners";
 import RecipeEntry from "@/devTools/editor/sidebar/RecipeEntry";
+import useFlags from "@/hooks/useFlags";
+
+const ReloadButton: React.VoidFunctionComponent = () => (
+  <Button
+    type="button"
+    size="sm"
+    variant="light"
+    title="Shift-click to attempt to reload all contexts (in 2 seconds)"
+    className="mt-auto"
+    onClick={async (event) => {
+      if (event.shiftKey) {
+        browser.runtime?.reload(); // Not guaranteed
+        await browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
+
+        // We must wait before reloading or else the loading fails
+        // https://github.com/pixiebrix/pixiebrix-extension/pull/2381
+        await sleep(2000);
+      }
+
+      location.reload();
+    }}
+  >
+    <FontAwesomeIcon icon={faSync} />
+  </Button>
+);
 
 const DropdownEntry: React.VoidFunctionComponent<{
   caption: string;
@@ -109,12 +133,12 @@ const SidebarExpanded: React.VoidFunctionComponent<
 }) => {
   const context = useContext(DevToolsContext);
 
-  const { flags } = useContext(AuthContext);
+  const { flagOn } = useFlags();
   const showDeveloperUI =
     process.env.ENVIRONMENT === "development" ||
-    flags.includes("page-editor-developer");
-  const showBetaExtensionPoints = flags.includes("page-editor-beta");
-  const shouldGroupByRecipes = flags.includes("page-editor-beta");
+    flagOn("page-editor-developer");
+  const showBetaExtensionPoints = flagOn("page-editor-beta");
+  const shouldGroupByRecipes = flagOn("page-editor-beta");
 
   const {
     tabState: { hasPermissions },
@@ -267,30 +291,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
                 ))}
             </DropdownButton>
 
-            {showDeveloperUI && (
-              <Button
-                type="button"
-                size="sm"
-                variant="light"
-                title="Shift-click to attempt to reload all contexts (in 2 seconds)"
-                onClick={async (event) => {
-                  if (event.shiftKey) {
-                    browser.runtime?.reload(); // Not guaranteed
-                    await browser.tabs.reload(
-                      browser.devtools.inspectedWindow.tabId
-                    );
-
-                    // We must wait before reloading or else the loading fails
-                    // https://github.com/pixiebrix/pixiebrix-extension/pull/2381
-                    await sleep(2000);
-                  }
-
-                  location.reload();
-                }}
-              >
-                <FontAwesomeIcon icon={faSync} />
-              </Button>
-            )}
+            {showDeveloperUI && <ReloadButton />}
           </div>
           <Button
             variant="light"
@@ -355,19 +356,30 @@ const SidebarExpanded: React.VoidFunctionComponent<
 
 const SidebarCollapsed: React.VoidFunctionComponent<{
   expandSidebar: () => void;
-}> = ({ expandSidebar }) => (
-  <div className={cx(styles.root, styles.collapsed)}>
-    <Button
-      variant="light"
-      className={cx(styles.toggle)}
-      type="button"
-      onClick={expandSidebar}
-    >
-      <Logo />
-      <FontAwesomeIcon icon={faAngleDoubleRight} />
-    </Button>
-  </div>
-);
+}> = ({ expandSidebar }) => {
+  const { flagOn } = useFlags();
+
+  const showDeveloperUI =
+    process.env.ENVIRONMENT === "development" ||
+    flagOn("page-editor-developer");
+
+  return (
+    <>
+      <div className={cx(styles.root, styles.collapsed)}>
+        <Button
+          variant="light"
+          className={cx(styles.toggle)}
+          type="button"
+          onClick={expandSidebar}
+        >
+          <Logo />
+          <FontAwesomeIcon icon={faAngleDoubleRight} />
+        </Button>
+        {showDeveloperUI && <ReloadButton />}
+      </div>
+    </>
+  );
+};
 
 const transitionProps: CSSTransitionProps = {
   classNames: {

@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
-import AuthContext from "@/auth/AuthContext";
+import React from "react";
 import { useFormikContext } from "formik";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { UUID } from "@/core";
@@ -30,12 +29,13 @@ import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
 import ExtensionPointPreview from "@/devTools/editor/tabs/effect/ExtensionPointPreview";
 import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
+import useFlags from "@/hooks/useFlags";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
 }> = ({ firstBlockInstanceId }) => {
-  const { flags } = useContext(AuthContext);
-  const showDeveloperTabs = flags.includes("page-editor-developer");
+  const { flagOn } = useFlags();
+  const showDeveloperTabs = flagOn("page-editor-developer");
 
   const { values: formState } = useFormikContext<FormState>();
 

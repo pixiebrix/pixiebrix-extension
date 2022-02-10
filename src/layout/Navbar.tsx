@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
+import React from "react";
 import { Dropdown, Nav } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,7 +24,7 @@ import {
   faExternalLinkAlt,
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import logo from "@img/logo.svg";
@@ -37,7 +37,9 @@ import { toggleSidebar } from "./toggleSidebar";
 import { SettingsState } from "@/store/settingsTypes";
 
 const Navbar: React.FunctionComponent = () => {
-  const { email, extension } = useContext(AuthContext);
+  const {
+    data: { email, extension },
+  } = useGetAuthQuery();
   const [serviceURL] = useAsyncState<string>(getBaseURL);
   const [connected, connectedPending] = useAsyncState(isLinked);
   const mode = useSelector<{ settings: SettingsState }, string>(

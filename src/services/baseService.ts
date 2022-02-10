@@ -26,7 +26,7 @@ export const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
 
 type ConfiguredHost = string | null | undefined;
 
-function withoutTrailingSlash(url: string): string {
+export function withoutTrailingSlash(url: string): string {
   return url.endsWith("/") ? url.slice(0, -1) : url;
 }
 

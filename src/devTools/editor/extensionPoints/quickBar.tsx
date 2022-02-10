@@ -43,9 +43,9 @@ import {
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { Menus } from "webextension-polyfill";
+import browser, { Menus } from "webextension-polyfill";
 import { NormalizedAvailability } from "@/blocks/types";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Except } from "type-fest";
 import {
   QuickBarConfig,
@@ -55,6 +55,8 @@ import {
   QuickBarTargetMode,
 } from "@/extensionPoints/quickBarExtension";
 import QuickBarConfiguration from "@/devTools/editor/tabs/quickBar/QuickBarConfiguration";
+import { isMac } from "@/utils";
+import { isEmpty } from "lodash";
 
 type Extension = BaseExtensionState & Except<QuickBarConfig, "action">;
 
@@ -243,6 +245,8 @@ function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
   };
 }
 
+const DEFAULT_SHORTCUT = isMac() ? "⌘K" : "Ctrl+K";
+
 const config: ElementConfig<undefined, QuickBarFormState> = {
   displayOrder: 1,
   elementType: "quickBar",
@@ -258,11 +262,45 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  insertModeHelp: (
-    <div>
-      <p>The quick bar can be triggered on any page by hitting cmd+k</p>
-    </div>
-  ),
+  InsertModeHelpText: () => {
+    const [shortcut, setShortcut] = useState("");
+
+    useEffect(() => {
+      chrome.commands.getAll((commands) => {
+        const command = commands.find(
+          (command) => command.name === "toggle-quick-bar"
+        );
+        if (command) {
+          setShortcut(command.shortcut);
+        }
+      });
+    }, []);
+
+    return (
+      <div className="pb-2">
+        <p>
+          The quick bar can be triggered on any page by pressing{" "}
+          <kbd style={{ fontFamily: "system" }}>
+            {isEmpty(shortcut) ? DEFAULT_SHORTCUT : shortcut}
+          </kbd>
+          .{" "}
+          {isEmpty(shortcut) &&
+            "You have not configured a Quick Bar shortcut in Chrome, you're currently using the default. "}
+        </p>
+        <p>
+          <a
+            href="chrome://extensions/shortcuts"
+            onClick={(event) => {
+              event.preventDefault();
+              void browser.tabs.create({ url: event.currentTarget.href });
+            }}
+          >
+            Configure a Quick Bar shortcut in Chrome
+          </a>
+        </p>
+      </div>
+    );
+  },
 };
 
 export default config;
