@@ -18,7 +18,6 @@
 import {
   getLabel,
   getPackageId,
-  getSharing,
   getUniqueId,
   isBlueprint,
   isExtension,
@@ -41,12 +40,18 @@ import { push } from "connected-react-router";
 import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";
 import { useGetAuthQuery } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
+import useUserAction from "@/hooks/useUserAction";
+import { CancelError } from "@/errors";
+import { getLinkedApiClient } from "@/services/apiClient";
+import { useModals } from "@/components/ConfirmationModal";
 
 const { removeExtension } = extensionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const notify = useNotifications();
+  const modals = useModals();
+
   const {
     data: { scope },
   } = useGetAuthQuery();
@@ -92,7 +97,35 @@ function useInstallableActions(installable: Installable) {
     );
   };
 
-  const remove = () => {
+  const deleteExtension = useUserAction(
+    async () => {
+      const confirmed = await modals.showConfirmation({
+        title: "Permanently Delete?",
+        message: "Permanently delete the brick from your account?",
+        submitCaption: "Delete",
+        cancelCaption: "Back to Safety",
+      });
+
+      if (!confirmed) {
+        throw new CancelError();
+      }
+
+      const client = await getLinkedApiClient();
+      await client.delete(`/api/extensions/${getUniqueId(installable)}/`);
+    },
+    {
+      successMessage: `Deleted brick ${getLabel(
+        installable
+      )} from your account`,
+      errorMessage: `Error deleting brick ${getLabel(
+        installable
+      )} from your account`,
+      event: "ExtensionCloudDelete",
+    },
+    [modals]
+  );
+
+  const uninstall = () => {
     if (!isExtension(installable)) {
       return;
     }
@@ -137,10 +170,11 @@ function useInstallableActions(installable: Installable) {
 
   return {
     viewShare,
-    remove,
+    uninstall,
     viewLogs,
     onExportBlueprint,
     activate,
+    deleteExtension: isExtension(installable) ? deleteExtension : null,
     reinstall: isExtensionFromRecipe(installable) ? reinstall : null,
   };
 }

@@ -23,24 +23,31 @@ import {
   faShare,
   faSyncAlt,
   faTimes,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { InstallableViewItem } from "./blueprintsTypes";
-import { isPersonal } from "@/options/pages/blueprints/installableUtils";
+import { useGetAuthQuery } from "@/services/api";
 
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
+  const {
+    data: { flags },
+  } = useGetAuthQuery();
   const { installable, hasUpdate, status, sharing } = installableViewItem;
   const {
-    remove,
+    uninstall,
     viewLogs,
     // TODO: consistent naming
     onExportBlueprint,
     viewShare,
+    deleteExtension,
     reinstall,
   } = useInstallableActions(installable);
+  const isCloudExtension =
+    sharing.source.type === "Personal" && status !== "Active";
 
   return (
     <>
@@ -55,8 +62,7 @@ const BlueprintActions: React.FunctionComponent<{
                     </>
                   ),
                   action: viewShare,
-                  hide:
-                    sharing.source.type === "Personal" && status !== "Active",
+                  hide: isCloudExtension,
                 },
               ]
             : []),
@@ -95,7 +101,7 @@ const BlueprintActions: React.FunctionComponent<{
                   ),
                   action: reinstall,
                   // Managed extensions are updated via the deployment banner
-                  // hide: managed,
+                  hide: sharing.source.type === "Deployment",
                 },
               ]
             : []),
@@ -105,8 +111,22 @@ const BlueprintActions: React.FunctionComponent<{
                 <FontAwesomeIcon icon={faTimes} /> Uninstall
               </>
             ),
-            action: remove,
-            hide: status !== "Active",
+            action: uninstall,
+            // TODO: shift hide logic to useInstallableActions
+            hide:
+              status !== "Active" ||
+              (sharing.source.type === "Deployment" &&
+                flags.includes("restricted-uninstall")),
+            className: "text-danger",
+          },
+          {
+            title: (
+              <span className="text-danger">
+                <FontAwesomeIcon icon={faTrash} /> Delete
+              </span>
+            ),
+            action: deleteExtension,
+            hide: !isCloudExtension,
             className: "text-danger",
           },
         ]}
