@@ -193,8 +193,8 @@ const BlueprintsCard: React.FunctionComponent<{
         setGlobalFilter={setGlobalFilter}
       />
       <Col>
-        <div className="d-flex justify-content-between align-items-center">
-          <h3 className="my-3">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h3>
             {globalFilter
               ? "Search results"
               : `${filters.length > 0 ? filters[0].value : "All"} Blueprints`}

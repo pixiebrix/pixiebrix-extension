@@ -45,22 +45,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
   );
 
   return (
-    <Page
-      icon={faScroll}
-      title="Blueprints"
-      toolbar={
-        <a
-          href="https://www.pixiebrix.com/marketplace"
-          className="btn btn-info"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Public Marketplace
-        </a>
-      }
-      isPending={isLoading}
-      error={error}
-    >
+    <Page isPending={isLoading} error={error}>
       {showLogsContext && (
         <ExtensionLogsModal
           title={showLogsContext.title}

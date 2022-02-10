@@ -46,8 +46,8 @@ const ErrorDisplay: React.FC<{ error: unknown }> = ({ error }) => (
 );
 
 const Page: React.FunctionComponent<{
-  icon: IconProp;
-  title: string;
+  icon?: IconProp;
+  title?: string;
   description?: React.ReactNode;
   breadcrumb?: React.ReactNode;
   toolbar?: React.ReactNode;
@@ -88,12 +88,14 @@ const Page: React.FunctionComponent<{
 
   return (
     <div>
-      <div className="d-flex">
-        <div className="flex-grow-1">
-          <PageTitle icon={icon} title={title} />
+      {title && icon && (
+        <div className="d-flex">
+          <div className="flex-grow-1">
+            <PageTitle icon={icon} title={title} />
+          </div>
+          {toolbar && <div>{toolbar}</div>}
         </div>
-        {toolbar && <div>{toolbar}</div>}
-      </div>
+      )}
       {description && (
         <div className="pb-4">
           {typeof description === "string" ? <p>{description}</p> : description}

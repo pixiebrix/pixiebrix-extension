@@ -5,6 +5,9 @@ import useReduxState from "@/hooks/useReduxState";
 import { selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
+import { PageTitle } from "@/layout/Page";
 
 type ListFiltersProps = {
   teamFilters: string[];
@@ -42,6 +45,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
 
   return (
     <Col sm={3} xl={2} className={styles.filtersCol}>
+      <PageTitle icon={faScroll} title="Blueprints" />
       <Form className="mb-4 mr-3">
         <Form.Control
           id="query"
@@ -122,6 +126,18 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
             </Nav.Link>
           </Nav.Item>
         ))}
+      </Nav>
+      <Nav>
+        <h5 className="mt-3">Explore</h5>
+        <Nav.Item>
+          <Nav.Link
+            href="https://www.pixiebrix.com/marketplace"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Public Marketplace
+          </Nav.Link>
+        </Nav.Item>
       </Nav>
     </Col>
   );
