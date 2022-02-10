@@ -76,7 +76,7 @@ export function useAuthOptions(): [AuthOption[], () => void] {
   const [
     configuredServices,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
-    _localLoading,
+    isLocalLoading,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
     _localError,
     refreshLocal,
@@ -84,10 +84,15 @@ export function useAuthOptions(): [AuthOption[], () => void] {
 
   const {
     data: remoteAuths,
+    isFetching: isRemoteLoading,
     refetch: refreshRemote,
   } = useGetServiceAuthsQuery();
 
   const authOptions = useMemo(() => {
+    if (isLocalLoading || isRemoteLoading) {
+      return [];
+    }
+
     const localOptions = sortBy(
       (configuredServices ?? []).map((x) => ({
         value: x.id,
@@ -111,7 +116,7 @@ export function useAuthOptions(): [AuthOption[], () => void] {
     );
 
     return [...localOptions, ...sharedOptions];
-  }, [remoteAuths, configuredServices]);
+  }, [isLocalLoading, isRemoteLoading, remoteAuths, configuredServices]);
 
   const refresh = useCallback(() => {
     refreshRemote();
