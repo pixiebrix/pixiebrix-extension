@@ -17,6 +17,7 @@
 
 import React from "react";
 import Centered from "@/devTools/editor/components/Centered";
+import IntroButtons from "./IntroButtons";
 
 const NoExtensionsPane: React.FunctionComponent<{
   unavailableCount: number;
@@ -36,27 +37,7 @@ const NoExtensionsPane: React.FunctionComponent<{
         page.
       </p>
 
-      <p>
-        Learn how to use the Page Editor in our{" "}
-        <a
-          href="https://docs.pixiebrix.com/quick-start-guide"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Quick Start Guide
-        </a>
-      </p>
-
-      <p>
-        Or, schedule a{" "}
-        <a
-          href="https://calendly.com/pixiebrix-todd/live-support-session"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          FREE Zoom support session
-        </a>
-      </p>
+      <IntroButtons />
     </div>
   </Centered>
 );

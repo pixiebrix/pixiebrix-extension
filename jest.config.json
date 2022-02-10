@@ -11,7 +11,7 @@
     "^.+\\.txt$": "jest-raw-loader"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!@cfworker|idb|webext-|p-timeout|p-retry|p-defer|serialize-error|urlpattern-polyfill)"
+    "node_modules/(?!@cfworker|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|mimic-fn|urlpattern-polyfill)"
   ],
   "setupFiles": [
     "<rootDir>/src/testEnv.js",

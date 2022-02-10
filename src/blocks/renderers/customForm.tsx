@@ -21,7 +21,7 @@ import { BlockArg, BlockOptions, ComponentRef, Schema, UiSchema } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
 import { dataStore } from "@/background/messenger/api";
-import { reportError } from "@/telemetry/rollbar";
+import reportError from "@/telemetry/reportError";
 import { notifyResult } from "@/contentScript/notify";
 
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";

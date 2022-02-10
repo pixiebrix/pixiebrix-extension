@@ -18,7 +18,8 @@
 import pTimeout from "p-timeout";
 import browser, { Menus, Tabs } from "webextension-polyfill";
 import { isBackground } from "webext-detect-page";
-import { reportError } from "@/telemetry/rollbar";
+import { getErrorMessage, hasCancelRootCause } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { noop } from "lodash";
 import {
   handleMenuAction,
@@ -26,7 +27,6 @@ import {
 } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
-import { getErrorMessage, hasCancelRootCause } from "@/errors";
 import { UUID } from "@/core";
 import { expectContext } from "@/utils/expectContext";
 

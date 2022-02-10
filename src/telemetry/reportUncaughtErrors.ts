@@ -1,4 +1,3 @@
-import { isBackground } from "webext-detect-page";
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -19,9 +18,8 @@ import { isBackground } from "webext-detect-page";
 /**
  * @file This file must be imported as early as possible in each entrypoint, once
  */
-
 import { getErrorMessage, IGNORED_ERRORS } from "@/errors";
-import { reportError } from "@/telemetry/rollbar";
+import reportError from "@/telemetry/reportError";
 
 function ignoreSomeErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
@@ -49,31 +47,6 @@ function defaultErrorHandler(
  * They can call `event.preventDefault()` to avoid reporting the error.
  */
 export const uncaughtErrorHandlers = new Set([ignoreSomeErrors]);
-
-let counter = 0;
-let timer: NodeJS.Timeout;
-
-function updateCounter(): void {
-  void chrome.browserAction.setBadgeText({
-    text: counter ? String(counter) : undefined,
-  });
-  void chrome.browserAction.setBadgeBackgroundColor({ color: "#F00" });
-}
-
-function backgroundErrorsBadge() {
-  if (process.env.ENVIRONMENT === "development" && isBackground()) {
-    counter++;
-    updateCounter();
-    // Reset the counter after a minute of inactivity
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      counter = 0;
-      updateCounter();
-    }, 60_000);
-  }
-}
-
-uncaughtErrorHandlers.add(backgroundErrorsBadge);
 
 /*
 Refactor beware: Do not add an `init` function or it will run too late.

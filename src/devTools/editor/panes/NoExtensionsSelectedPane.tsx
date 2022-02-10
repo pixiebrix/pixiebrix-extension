@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Centered from "@/devTools/editor/components/Centered";
 import React from "react";
+import Centered from "@/devTools/editor/components/Centered";
+import IntroButtons from "./IntroButtons";
 
 const NoExtensionSelectedPane: React.FunctionComponent = () => (
   <Centered>
@@ -29,6 +30,8 @@ const NoExtensionSelectedPane: React.FunctionComponent = () => (
         Or, click the <span className="text-info">Add</span> button in the
         sidebar to add an extension to the page.
       </p>
+
+      <IntroButtons />
     </div>
   </Centered>
 );

@@ -17,7 +17,7 @@
 
 import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
-import { reportError } from "@/telemetry/rollbar";
+import reportError from "@/telemetry/reportError";
 import { useDispatch } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";

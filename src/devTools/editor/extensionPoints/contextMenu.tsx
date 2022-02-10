@@ -258,7 +258,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  insertModeHelp: (
+  InsertModeHelpText: () => (
     <div>
       <p>
         A context menu (also called a right-click menu) can be configured to
