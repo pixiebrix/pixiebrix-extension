@@ -37,32 +37,45 @@ import { SettingsState } from "@/store/settingsTypes";
 
 const Sidebar: React.FunctionComponent = () => {
   const { permit } = useFlags();
-  const useBlueprintsPage = useSelector<{ settings: SettingsState }, boolean>(
-    (x) => x.settings.useBlueprintsPage
-  );
+  const isBlueprintsPageEnabled = useSelector<
+    { settings: SettingsState },
+    boolean
+  >((x) => x.settings.isBlueprintsPageEnabled);
 
   return (
     <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
       <nav className="sidebar sidebar-offcanvas" id={SIDEBAR_ID}>
         <ul className="nav">
-          {!useBlueprintsPage && (
+          {isBlueprintsPageEnabled ? (
             <SidebarLink
-              route="/installed"
-              title="Active Bricks"
-              icon={faCubes}
+              route="/blueprints"
+              title="Blueprints"
+              icon={faScroll}
               isActive={(match, location) =>
                 match ||
                 location.pathname === "/" ||
                 location.pathname.startsWith("/extensions/")
               }
             />
+          ) : (
+            <>
+              <SidebarLink
+                route="/installed"
+                title="Active Bricks"
+                icon={faCubes}
+                isActive={(match, location) =>
+                  match ||
+                  location.pathname === "/" ||
+                  location.pathname.startsWith("/extensions/")
+                }
+              />
+              <SidebarLink
+                route="/blueprints"
+                title={isBlueprintsPageEnabled ? "Blueprints" : "My Blueprints"}
+                icon={faScroll}
+              />
+            </>
           )}
-
-          <SidebarLink
-            route="/blueprints"
-            title={useBlueprintsPage ? "Blueprints" : "My Blueprints"}
-            icon={faScroll}
-          />
 
           {permit("workshop") && (
             <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />

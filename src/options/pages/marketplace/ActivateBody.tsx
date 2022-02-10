@@ -52,7 +52,7 @@ const ActivateBody: React.FunctionComponent<{
     selectedExtensions,
     selectedAuths
   );
-  const { useBlueprintsPage } = useSelector(selectSettings);
+  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
   const [hasShortcut] = useAsyncState(async () => {
     const commands = await browser.commands.getAll();
@@ -89,10 +89,12 @@ const ActivateBody: React.FunctionComponent<{
         <p className="text-info">
           <FontAwesomeIcon icon={faInfoCircle} /> You can de-activate bricks at
           any time on the{" "}
-          <Link to={useBlueprintsPage ? "/blueprints" : "/installed"}>
+          <Link to={isBlueprintsPageEnabled ? "/blueprints" : "/installed"}>
             <u className="text-nowrap">
               <FontAwesomeIcon icon={faCubes} />{" "}
-              {useBlueprintsPage ? "Blueprints page" : "Active Bricks page"}
+              {isBlueprintsPageEnabled
+                ? "Blueprints page"
+                : "Active Bricks page"}
             </u>
           </Link>
         </p>

@@ -27,7 +27,9 @@ import { selectSettings } from "@/store/settingsSelectors";
 
 const ExperimentalSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { suggestElements, useBlueprintsPage } = useSelector(selectSettings);
+  const { suggestElements, isBlueprintsPageEnabled } = useSelector(
+    selectSettings
+  );
   const notify = useNotifications();
 
   return (
@@ -71,7 +73,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
           <Form.Group controlId="toggleBlueprintsPage">
             <Form.Label>
               Use the new Blueprints page:{" "}
-              <i>{useBlueprintsPage ? "Enabled" : "Disabled"}</i>
+              <i>{isBlueprintsPageEnabled ? "Enabled" : "Disabled"}</i>
             </Form.Label>
             <Form.Text muted className="mb-2">
               Toggle on to replace the Active Bricks and My Blueprints pages
@@ -83,11 +85,11 @@ const ExperimentalSettings: React.FunctionComponent = () => {
               offstyle="light"
               onlabel=" "
               offlabel=" "
-              checked={useBlueprintsPage}
+              checked={isBlueprintsPageEnabled}
               onChange={async (value) => {
                 dispatch(
                   settingsSlice.actions.setFlag({
-                    flag: "useBlueprintsPage",
+                    flag: "isBlueprintsPageEnabled",
                     value,
                   })
                 );

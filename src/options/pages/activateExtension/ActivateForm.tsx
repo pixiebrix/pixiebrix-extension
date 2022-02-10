@@ -36,7 +36,7 @@ const ActivateForm: React.FunctionComponent<{
 }> = ({ extension, authOptions }) => {
   const notify = useNotifications();
   const dispatch = useDispatch();
-  const { useBlueprintsPage } = useSelector(selectSettings);
+  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
   const initialValues: FormState = useMemo(() => {
     const uuids = new Set<string>(authOptions.map((x) => x.value));
@@ -58,7 +58,7 @@ const ActivateForm: React.FunctionComponent<{
         );
         notify.success("Activated brick");
 
-        if (useBlueprintsPage) {
+        if (isBlueprintsPageEnabled) {
           dispatch(push("/blueprints"));
         } else {
           dispatch(push("/installed"));

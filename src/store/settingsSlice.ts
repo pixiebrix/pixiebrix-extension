@@ -23,7 +23,7 @@ const initialSettingsState: SettingsState = {
   nextUpdate: null as number,
   suggestElements: false,
   browserWarningDismissed: false,
-  useBlueprintsPage: false,
+  isBlueprintsPageEnabled: false,
 };
 
 const settingsSlice = createSlice({
@@ -36,7 +36,7 @@ const settingsSlice = createSlice({
     setFlag(
       state,
       action: PayloadAction<{
-        flag: "suggestElements" | "useBlueprintsPage";
+        flag: "suggestElements" | "isBlueprintsPageEnabled";
         value: boolean;
       }>
     ) {

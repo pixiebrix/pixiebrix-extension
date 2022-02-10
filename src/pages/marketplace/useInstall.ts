@@ -46,7 +46,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
   const notify = useNotifications();
   const dispatch = useDispatch();
   const { flagOn } = useFlags();
-  const { useBlueprintsPage } = useSelector(selectSettings);
+  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
   return useCallback(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
@@ -116,7 +116,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
 
         reactivateEveryTab();
 
-        if (useBlueprintsPage) {
+        if (isBlueprintsPageEnabled) {
           dispatch(push("/blueprints"));
         } else {
           dispatch(push("/installed"));

@@ -85,7 +85,7 @@ const Layout = () => {
   useRefresh();
 
   const { permit } = useFlags();
-  const { useBlueprintsPage } = useSelector(selectSettings);
+  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
   const { isLoading } = useGetAuthQuery();
 
@@ -109,20 +109,6 @@ const Layout = () => {
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
-                  {useBlueprintsPage ? (
-                    <Route
-                      exact
-                      path="/blueprints"
-                      component={BlueprintsPage}
-                    />
-                  ) : (
-                    <Route
-                      exact
-                      path="/blueprints"
-                      component={MarketplacePage}
-                    />
-                  )}
-
                   <Route
                     exact
                     path="/extensions/install/:extensionId"
@@ -162,7 +148,18 @@ const Layout = () => {
                     />
                   )}
 
-                  {!useBlueprintsPage && <Route component={InstalledPage} />}
+                  {isBlueprintsPageEnabled ? (
+                    <Route component={BlueprintsPage} />
+                  ) : (
+                    <>
+                      <Route
+                        exact
+                        path="/blueprints"
+                        component={MarketplacePage}
+                      />
+                      <Route component={InstalledPage} />
+                    </>
+                  )}
                 </Switch>
               </ErrorBoundary>
             </div>

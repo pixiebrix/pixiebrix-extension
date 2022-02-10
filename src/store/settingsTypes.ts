@@ -45,5 +45,5 @@ export type SettingsState = {
   /**
    * Whether to use the Blueprints page instead of the Active Bricks & My Blueprints pages.
    */
-  useBlueprintsPage: boolean;
+  isBlueprintsPageEnabled: boolean;
 };

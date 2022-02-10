@@ -36,7 +36,7 @@ const extensionsStore = configureStore({
       mode: "remote",
       nextUpdate: null,
       browserWarningDismissed: false,
-      useBlueprintsPage: false,
+      isBlueprintsPageEnabled: false,
     },
   },
 });

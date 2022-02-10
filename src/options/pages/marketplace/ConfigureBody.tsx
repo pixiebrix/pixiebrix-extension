@@ -107,7 +107,7 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({
   reinstall,
 }) => {
   const extensions = useSelector(selectExtensions);
-  const { useBlueprintsPage } = useSelector(selectSettings);
+  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
   const installedExtensions = useMemo(
     () =>
@@ -138,10 +138,12 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({
           <FontAwesomeIcon icon={faInfoCircle} /> Don&apos;t know which bricks
           to select? Don&apos;t worry! &mdash; you can de-activate bricks at any
           time on the{" "}
-          <Link to={useBlueprintsPage ? "/blueprints" : "/installed"}>
+          <Link to={isBlueprintsPageEnabled ? "/blueprints" : "/installed"}>
             <u className="text-nowrap">
               <FontAwesomeIcon icon={faCubes} />{" "}
-              {useBlueprintsPage ? "Blueprints page" : "Active Bricks page"}
+              {isBlueprintsPageEnabled
+                ? "Blueprints page"
+                : "Active Bricks page"}
             </u>
           </Link>
         </p>
