@@ -32,6 +32,7 @@ export interface UserData {
   hostname?: string;
   organizationId?: string;
   telemetryOrganizationId?: string;
+  flags?: string[];
 }
 
 export type UserDataUpdate = Required<Except<UserData, "hostname">>;
@@ -41,6 +42,7 @@ export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "user",
   "organizationId",
   "telemetryOrganizationId",
+  "flags",
 ];
 
 export interface TokenAuthData extends UserData {
