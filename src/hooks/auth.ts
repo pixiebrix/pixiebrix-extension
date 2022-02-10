@@ -89,6 +89,8 @@ export function useAuthOptions(): [AuthOption[], () => void] {
 
   const authOptions = useMemo(() => {
     if (isLocalLoading || isRemoteLoading) {
+      // Return no options to avoid unwanted default behavior when the local options are loaded but the remote options
+      // are still pending
       return [];
     }
 
