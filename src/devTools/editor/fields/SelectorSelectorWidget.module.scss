@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root input {
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
+.root {
+  flex-wrap: nowrap; // Override Bootstrap’s behavior
+  input {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+  }
 }
