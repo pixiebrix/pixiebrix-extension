@@ -33,6 +33,7 @@ import {
   selectShowShareContext,
 } from "@/options/pages/installed/installedPageSelectors";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
+import ShareLinkModal from "@/options/pages/installed/ShareLinkModal";
 
 const BlueprintsPage: React.FunctionComponent = () => {
   const { installables, isLoading, error } = useInstallables();
@@ -66,9 +67,14 @@ const BlueprintsPage: React.FunctionComponent = () => {
           context={showLogsContext.messageContext}
         />
       )}
-      {showShareContext && (
+      {showShareContext?.extensionId && (
         <ShareExtensionModal extensionId={showShareContext.extensionId} />
       )}
+
+      {showShareContext?.blueprintId && (
+        <ShareLinkModal blueprintId={showShareContext.blueprintId} />
+      )}
+
       {installables.length > 0 && (
         <BlueprintsCard installables={installables} />
       )}

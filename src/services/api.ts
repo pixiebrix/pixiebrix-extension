@@ -234,6 +234,16 @@ export const appApi = createApi({
       query: () => ({ url: "/api/extensions/", method: "get" }),
       providesTags: ["CloudExtensions"],
     }),
+    deleteCloudExtension: builder.mutation<
+      CloudExtension,
+      { extensionId: UUID }
+    >({
+      query: ({ extensionId }) => ({
+        url: `/api/extensions/${extensionId}/`,
+        method: "delete",
+      }),
+      invalidatesTags: ["CloudExtensions"],
+    }),
     createRecipe: builder.mutation<
       PackageUpsertResponse,
       {
@@ -295,6 +305,7 @@ export const {
   useGetGroupsQuery,
   useGetRecipesQuery,
   useGetCloudExtensionsQuery,
+  useDeleteCloudExtensionMutation,
   useGetEditablePackagesQuery,
   useCreateRecipeMutation,
   useUpdateRecipeMutation,
