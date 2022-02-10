@@ -41,8 +41,12 @@ import {
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
 import styles from "./Editor.module.scss";
-import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectActiveRecipe,
+} from "@/devTools/editor/slices/editorSelectors";
 import PersistLoader from "./PersistLoader";
+import RecipeOptionsPane from "@/devTools/editor/panes/RecipeOptionsPane";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -67,6 +71,7 @@ const Editor: React.FunctionComponent = () => {
   } = useSelector(selectEditor);
 
   const selectedElement = useSelector(selectActiveElement);
+  const selectedRecipe = useSelector(selectActiveRecipe);
 
   const cancelInsert = useCallback(async () => {
     dispatch(actions.toggleInsert(null));
@@ -119,6 +124,8 @@ const Editor: React.FunctionComponent = () => {
           selectionSeq={selectionSeq}
         />
       );
+    } else if (selectedRecipe) {
+      return <RecipeOptionsPane recipe={selectedRecipe} />;
     } else if (
       availableDynamicIds?.size ||
       installed.length > unavailableCount
