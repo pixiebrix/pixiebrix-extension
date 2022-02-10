@@ -50,6 +50,7 @@ jest.mock("@/services/useDependency", () =>
     requestPermissions: jest.fn(),
   })
 );
+jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
