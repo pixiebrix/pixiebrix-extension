@@ -38,7 +38,10 @@ import { useCallback } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
 import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";
-import { useGetAuthQuery } from "@/services/api";
+import {
+  useDeleteCloudExtensionMutation,
+  useGetAuthQuery,
+} from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
@@ -51,6 +54,7 @@ function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const notify = useNotifications();
   const modals = useModals();
+  const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
 
   const {
     data: { scope },
@@ -112,8 +116,7 @@ function useInstallableActions(installable: Installable) {
         throw new CancelError();
       }
 
-      const client = await getLinkedApiClient();
-      await client.delete(`/api/extensions/${getUniqueId(installable)}/`);
+      await deleteCloudExtension({ extensionId: getUniqueId(installable) });
     },
     {
       successMessage: `Deleted brick ${getLabel(
