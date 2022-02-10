@@ -18,7 +18,6 @@
 import {
   getLabel,
   getPackageId,
-  getUniqueId,
   isBlueprint,
   isExtension,
   isExtensionFromRecipe,
@@ -45,7 +44,6 @@ import {
 import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
-import { getLinkedApiClient } from "@/services/apiClient";
 import { useModals } from "@/components/ConfirmationModal";
 
 const { removeExtension } = extensionsSlice.actions;
@@ -105,6 +103,10 @@ function useInstallableActions(installable: Installable) {
 
   const deleteExtension = useUserAction(
     async () => {
+      if (isBlueprint(installable)) {
+        return;
+      }
+
       const confirmed = await modals.showConfirmation({
         title: "Permanently Delete?",
         message: "Permanently delete the brick from your account?",
@@ -116,7 +118,7 @@ function useInstallableActions(installable: Installable) {
         throw new CancelError();
       }
 
-      await deleteCloudExtension({ extensionId: getUniqueId(installable) });
+      await deleteCloudExtension({ extensionId: installable.id });
     },
     {
       successMessage: `Deleted brick ${getLabel(
