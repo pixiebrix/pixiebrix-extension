@@ -268,8 +268,7 @@ const ServiceField: React.FunctionComponent<
           );
           helpers.setValue(keyToFieldValue(match.outputKey));
         } else if (options.length === 1) {
-          // This condition is only true when there is no shared auth services loaded,
-          // i.e. the user has a single local integration configured.
+          // This condition is only true when the auth services have been filtered by the schema
 
           console.debug("Defaulting to only integration option", {
             option: options[0],
