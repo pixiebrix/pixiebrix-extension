@@ -34,7 +34,10 @@ const settingsSlice = createSlice({
     },
     setFlag(
       state,
-      action: PayloadAction<{ flag: "suggestElements"; value: boolean }>
+      action: PayloadAction<{
+        flag: "suggestElements" | "useBlueprintsPage";
+        value: boolean;
+      }>
     ) {
       const { flag, value } = action.payload;
       // eslint-disable-next-line security/detect-object-injection -- type checked
