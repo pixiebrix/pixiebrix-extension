@@ -42,16 +42,11 @@ const OptionsBody: React.FunctionComponent<{
   );
 
   return (
-    <>
-      <Card.Body className="px-3 py-3">
-        <Card.Title>Personalize Blueprint</Card.Title>
-      </Card.Body>
-      <Card.Body className="OptionsBody p-3">
-        <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
-          <OptionsGroup name="optionsArgs" />
-        </FieldRuntimeContext.Provider>
-      </Card.Body>
-    </>
+    <Card.Body className="OptionsBody p-3">
+      <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
+        <OptionsGroup name="optionsArgs" />
+      </FieldRuntimeContext.Provider>
+    </Card.Body>
   );
 };
 
