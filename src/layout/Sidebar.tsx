@@ -31,18 +31,16 @@ import {
 import cx from "classnames";
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
-import { useGetAuthQuery } from "@/services/api";
+import useFlags from "@/hooks/useFlags";
 
 const Sidebar: React.FunctionComponent = () => {
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { flagOn, permit } = useFlags();
 
   return (
     <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
       <nav className="sidebar sidebar-offcanvas" id={SIDEBAR_ID}>
         <ul className="nav">
-          {flags.includes("blueprints-page") && (
+          {flagOn("blueprints-page") && (
             <SidebarLink
               route="/blueprints-page"
               title="Blueprints"
@@ -66,11 +64,11 @@ const Sidebar: React.FunctionComponent = () => {
             icon={faScroll}
           />
 
-          {!flags.includes("restricted-workshop") && (
+          {permit("workshop") && (
             <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
           )}
 
-          {!flags.includes("restricted-services") && (
+          {permit("services") && (
             <SidebarLink
               route="/services"
               title="Integrations"
@@ -85,7 +83,7 @@ const Sidebar: React.FunctionComponent = () => {
             <span className="nav-text">Quick Links</span>
           </li>
 
-          {!flags.includes("restricted-marketplace") && (
+          {permit("marketplace") && (
             <li className={cx("nav-item")}>
               <a
                 href="https://www.pixiebrix.com/marketplace"

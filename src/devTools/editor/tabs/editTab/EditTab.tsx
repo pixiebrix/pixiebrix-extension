@@ -42,7 +42,6 @@ import usePipelineField, {
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
-import { useGetAuthQuery } from "@/services/api";
 import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/devTools/editor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
@@ -52,6 +51,7 @@ import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
+import useFlags from "@/hooks/useFlags";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -238,10 +238,8 @@ const EditTab: React.FC<{
         (blockPipelineErrors[activeBlockIndex] as string)
       : null;
 
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
-  const showVersionField = flags.includes("page-editor-developer");
+  const { flagOn } = useFlags();
+  const showVersionField = flagOn("page-editor-developer");
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>

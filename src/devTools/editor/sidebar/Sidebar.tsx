@@ -50,9 +50,9 @@ import {
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
-import { useGetAuthQuery } from "@/services/api";
 import { RecipeDefinition } from "@/types/definitions";
 import { GridLoader } from "react-spinners";
+import useFlags from "@/hooks/useFlags";
 
 const DropdownEntry: React.VoidFunctionComponent<{
   caption: string;
@@ -102,13 +102,11 @@ const SidebarExpanded: React.VoidFunctionComponent<
 }) => {
   const context = useContext(DevToolsContext);
 
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { flagOn } = useFlags();
   const showDeveloperUI =
     process.env.ENVIRONMENT === "development" ||
-    flags.includes("page-editor-developer");
-  const showBetaExtensionPoints = flags.includes("page-editor-beta");
+    flagOn("page-editor-developer");
+  const showBetaExtensionPoints = flagOn("page-editor-beta");
 
   const {
     tabState: { hasPermissions },

@@ -55,6 +55,7 @@ import WorkshopPage from "./pages/workshop/WorkshopPage";
 import InvitationBanner from "@/options/pages/InvitationBanner";
 import { SettingsState } from "@/store/settingsTypes";
 import BrowserBanner from "./pages/BrowserBanner";
+import useFlags from "@/hooks/useFlags";
 
 // Register the built-in bricks
 registerBuiltinBlocks();
@@ -78,17 +79,17 @@ const RequireInstall: React.FunctionComponent = ({ children }) => {
 };
 
 const Layout = () => {
-  // Get the latest brick definitions. Currently in Layout to ensure the Redux store has been hydrated by the time
-  // refresh is called.
+  // Get the latest brick definitions. Put it here in Layout instead of App to ensure the Redux store has been hydrated
+  // by the time refresh is called.
   useRefresh();
 
-  const { data: authData, isLoading } = useGetAuthQuery();
+  const { permit, flagOn } = useFlags();
+
+  const { isLoading } = useGetAuthQuery();
 
   if (isLoading) {
     return <GridLoader />;
   }
-
-  const { flags } = authData;
 
   return (
     <div className="w-100">
@@ -106,7 +107,7 @@ const Layout = () => {
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
-                  {flags.includes("blueprints-page") && (
+                  {flagOn("blueprints-page") && (
                     <Route
                       exact
                       path="/blueprints-page"
@@ -127,15 +128,17 @@ const Layout = () => {
 
                   <Route exact path="/settings" component={SettingsPage} />
 
-                  {!flags.includes("restricted-services") && (
+                  {permit("services") && (
                     <Route path="/services/:id?" component={ServicesEditor} />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {/* Switch does not support consolidating Routes using a React fragment */}
+
+                  {permit("workshop") && (
                     <Route exact path="/workshop" component={WorkshopPage} />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {permit("workshop") && (
                     <Route
                       exact
                       path="/workshop/create/"
@@ -143,7 +146,7 @@ const Layout = () => {
                     />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {permit("workshop") && (
                     <Route
                       exact
                       path="/workshop/bricks/:id/"
