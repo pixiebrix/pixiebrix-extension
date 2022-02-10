@@ -24,8 +24,8 @@ export type LogsContext = {
 };
 
 export type ShareContext = {
-  installableId: UUID | RegistryId;
-  showLink: boolean;
+  blueprintId?: RegistryId;
+  extensionId?: UUID;
 };
 
 export type InstalledPageState = {

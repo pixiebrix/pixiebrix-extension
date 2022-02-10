@@ -81,8 +81,7 @@ const InstalledExtensionRow: React.FunctionComponent<{
   const shareExtension = useCallback(() => {
     dispatch(
       installedPageSlice.actions.setShareContext({
-        installableId: extensionId,
-        showLink: false,
+        extensionId,
       })
     );
   }, [dispatch, extensionId]);

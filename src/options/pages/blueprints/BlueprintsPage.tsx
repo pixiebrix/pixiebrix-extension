@@ -67,12 +67,12 @@ const BlueprintsPage: React.FunctionComponent = () => {
           context={showLogsContext.messageContext}
         />
       )}
-      {showShareContext && !showShareContext.showLink && (
-        <ShareExtensionModal extensionId={showShareContext.installableId} />
+      {showShareContext?.extensionId && (
+        <ShareExtensionModal extensionId={showShareContext.extensionId} />
       )}
 
-      {showShareContext?.showLink && (
-        <ShareLinkModal blueprintId={showShareContext.installableId} />
+      {showShareContext?.blueprintId && (
+        <ShareLinkModal blueprintId={showShareContext.blueprintId} />
       )}
 
       {installables.length > 0 && (

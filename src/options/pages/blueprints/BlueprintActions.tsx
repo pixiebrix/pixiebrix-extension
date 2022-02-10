@@ -112,7 +112,7 @@ const BlueprintActions: React.FunctionComponent<{
               </>
             ),
             action: uninstall,
-            // TODO: shift hide logic to useInstallableActions
+            // TODO: shift all hide logic to useInstallableActions
             hide:
               status !== "Active" ||
               (sharing.source.type === "Deployment" &&

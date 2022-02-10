@@ -36,15 +36,9 @@ import {
   useGetAuthQuery,
 } from "@/services/api";
 import { RecipeDefinition } from "@/types/definitions";
-import { push } from "connected-react-router";
 import * as semver from "semver";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
-import {
-  getUniqueId,
-  isBlueprint,
-  isPersonal,
-} from "@/options/pages/blueprints/installableUtils";
 
 const groupByRecipe = (
   extensions: ResolvedExtension[]
@@ -209,8 +203,7 @@ const ActiveBricksCard: React.FunctionComponent<{
   const showShareLinkModal = (blueprintId: RegistryId) => {
     dispatch(
       installedPageSlice.actions.setShareContext({
-        installableId: blueprintId,
-        showLink: true,
+        blueprintId,
       })
     );
   };

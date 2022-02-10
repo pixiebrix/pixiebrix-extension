@@ -84,17 +84,19 @@ function useInstallableActions(installable: Installable) {
   };
 
   const viewShare = () => {
-    dispatch(
-      installedPageSlice.actions.setShareContext({
-        installableId: isShared(installable)
-          ? getPackageId(installable)
-          : getUniqueId(installable),
-        showLink:
-          isBlueprint(installable) ||
-          !isPersonal(installable, scope) ||
-          isShared(installable),
-      })
-    );
+    let shareContext = null;
+
+    if (isBlueprint(installable) || isShared(installable)) {
+      shareContext = {
+        blueprintId: getPackageId(installable),
+      };
+    } else if (isPersonal(installable, scope) && isExtension(installable)) {
+      shareContext = {
+        extensionId: installable.id,
+      };
+    }
+
+    dispatch(installedPageSlice.actions.setShareContext(shareContext));
   };
 
   const deleteExtension = useUserAction(
