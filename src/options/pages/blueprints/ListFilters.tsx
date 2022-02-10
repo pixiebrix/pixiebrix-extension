@@ -44,8 +44,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
   }, [filters, query]);
 
   return (
-    <Col sm={2} className={styles.filtersCol}>
-      <PageTitle icon={faScroll} title="Blueprints" />
+    <Col sm={2}>
       <Form className="mb-4 mr-3">
         <Form.Control
           id="query"

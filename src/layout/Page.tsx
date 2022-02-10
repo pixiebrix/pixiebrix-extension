@@ -46,12 +46,13 @@ const ErrorDisplay: React.FC<{ error: unknown }> = ({ error }) => (
 );
 
 const Page: React.FunctionComponent<{
-  icon?: IconProp;
-  title?: string;
+  icon: IconProp;
+  title: string;
   description?: React.ReactNode;
   breadcrumb?: React.ReactNode;
   toolbar?: React.ReactNode;
   children: React.ReactNode;
+  headerless?: boolean;
 
   /**
    * True to show a loader for the main page content.
@@ -71,6 +72,7 @@ const Page: React.FunctionComponent<{
   toolbar,
   description = null,
   children,
+  headerless,
 }) => {
   useTitle(title);
 
@@ -88,7 +90,7 @@ const Page: React.FunctionComponent<{
 
   return (
     <div>
-      {title && icon && (
+      {!headerless && (
         <div className="d-flex">
           <div className="flex-grow-1">
             <PageTitle icon={icon} title={title} />

@@ -32,10 +32,9 @@ import {
 } from "@/options/pages/installed/installedPageSelectors";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import ShareLinkModal from "@/options/pages/installed/ShareLinkModal";
-import { useTitle } from "@/hooks/title";
+import { faScroll } from "@fortawesome/free-solid-svg-icons";
 
 const BlueprintsPage: React.FunctionComponent = () => {
-  useTitle("Blueprints");
   const { installables, isLoading, error } = useInstallables();
   const showLogsContext = useSelector<RootState, LogsContext>(
     selectShowLogsContext
@@ -45,7 +44,13 @@ const BlueprintsPage: React.FunctionComponent = () => {
   );
 
   return (
-    <Page isPending={isLoading} error={error}>
+    <Page
+      headerless
+      title={"Blueprints"}
+      icon={faScroll}
+      isPending={isLoading}
+      error={error}
+    >
       {showLogsContext && (
         <ExtensionLogsModal
           title={showLogsContext.title}
