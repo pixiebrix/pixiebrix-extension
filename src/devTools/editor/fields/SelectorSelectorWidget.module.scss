@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Overridea and extend Bootstrap’s style
 .root {
-  flex-wrap: nowrap; // Override Bootstrap’s behavior
+  flex-wrap: nowrap;
   input {
+    position: relative;
+    z-index: 3;
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
   }
