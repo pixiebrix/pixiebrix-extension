@@ -14,19 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-.root {
-  display: flex;
-  align-items: stretch;
-  button {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-  }
-  input {
-    border-left: none;
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
-  }
-  [role="combobox"] {
-    flex-grow: 1;
-  }
+
+.root input {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
 }

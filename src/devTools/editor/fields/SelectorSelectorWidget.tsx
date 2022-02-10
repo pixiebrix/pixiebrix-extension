@@ -21,7 +21,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { compact, isEmpty, sortBy, uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors";
-import { Button } from "react-bootstrap";
+import { Button, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import CreatableAutosuggest, {
@@ -201,15 +201,17 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   );
 
   return (
-    <div className={styles.root}>
-      <Button
-        onClick={select}
-        disabled={isSelecting || disabled}
-        variant="info"
-        aria-label="Select element"
-      >
-        <FontAwesomeIcon icon={faMousePointer} />
-      </Button>
+    <InputGroup className={styles.root}>
+      <InputGroup.Prepend>
+        <Button
+          onClick={select}
+          disabled={isSelecting || disabled}
+          variant="info"
+          aria-label="Select element"
+        >
+          <FontAwesomeIcon icon={faMousePointer} />
+        </Button>
+      </InputGroup.Prepend>
       <CreatableAutosuggest
         isClearable={isClearable}
         isDisabled={isSelecting || disabled}
@@ -221,7 +223,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         onSuggestionsClosed={disableSelector}
         onTextChanged={onTextChanged}
       />
-    </div>
+    </InputGroup>
   );
 };
 
