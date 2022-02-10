@@ -36,6 +36,7 @@ import { useGetAuthQuery, useGetOrganizationsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import Pagination from "@/components/pagination/Pagination";
 import { Organization } from "@/types/contract";
+import useFlags from "@/hooks/useFlags";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -180,8 +181,11 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
   const [query, setQuery] = useState("");
   const {
-    data: { scope, flags },
+    data: { scope },
   } = useGetAuthQuery();
+
+  const { permit } = useFlags();
+
   const [page, setPage] = useState(0);
 
   const recipes = useMemo(() => {
@@ -222,7 +226,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
           </div>
         </Col>
 
-        {!flags.includes("restricted-marketplace") && (
+        {permit("marketplace") && (
           <Col className="text-right">
             <a
               href="https://www.pixiebrix.com/marketplace"

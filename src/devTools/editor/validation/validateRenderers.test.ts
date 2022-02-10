@@ -20,20 +20,20 @@ import {
   pipelineFactory,
   TEST_BLOCK_ID,
 } from "@/tests/factories";
-import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import validateRenderers, {
   MULTIPLE_RENDERERS_ERROR_MESSAGE,
   RENDERER_MUST_BE_LAST_BLOCK_ERROR_MESSAGE,
 } from "./validateRenderers";
 import { validateRegistryId } from "@/types/helpers";
+import { ExtensionPointType } from "@/extensionPoints/types";
 
-const elementTypesToSkipValidation: ElementType[] = [
+const elementTypesToSkipValidation: ExtensionPointType[] = [
   "menuItem",
   "trigger",
   "contextMenu",
 ];
-const elementTypesToValidate: ElementType[] = ["panel", "actionPanel"];
+const elementTypesToValidate: ExtensionPointType[] = ["panel", "actionPanel"];
 
 test.each(elementTypesToSkipValidation)(
   "skips validation for %s",

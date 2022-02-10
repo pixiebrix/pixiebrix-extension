@@ -35,10 +35,7 @@ import {
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
 import { Permissions } from "webextension-polyfill";
-import {
-  BaseExtensionState,
-  ElementType,
-} from "@/devTools/editor/extensionPoints/elementConfig";
+import { BaseExtensionState } from "@/devTools/editor/extensionPoints/elementConfig";
 import trigger, {
   TriggerFormState,
 } from "@/devTools/editor/extensionPoints/trigger";
@@ -52,7 +49,10 @@ import {
   ExtensionPointConfig,
   SharingDefinition,
 } from "@/types/definitions";
-import { ExtensionPointConfig as ExtensionPointDefinition } from "@/extensionPoints/types";
+import {
+  ExtensionPointConfig as ExtensionPointDefinition,
+  ExtensionPointType,
+} from "@/extensionPoints/types";
 import {
   Context as DevtoolsContextType,
   FrameConnectionState,
@@ -353,7 +353,7 @@ const internalFormStateFactory = define<FormState>({
   services: [] as ServiceDependency[],
   recipe: null,
 
-  type: "panel" as ElementType,
+  type: "panel" as ExtensionPointType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   extensionPoint: extensionPointDefinitionFactory,

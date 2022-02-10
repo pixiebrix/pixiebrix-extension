@@ -27,7 +27,6 @@ import {
   reactivateEveryTab,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { useGetAuthQuery } from "@/services/api";
 import { reportEvent } from "@/telemetry/events";
 import { Dispatch } from "redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -51,6 +50,7 @@ import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 import extensionsSlice from "@/store/extensionsSlice";
 import { OptionsState } from "@/store/extensionsTypes";
 import ShareLinkModal from "./ShareLinkModal";
+import useFlags from "@/hooks/useFlags";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -58,9 +58,7 @@ export const _InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { flagOn } = useFlags();
 
   const [allExtensions, , cloudError] = useAsyncState(
     async () => {
@@ -155,7 +153,7 @@ export const _InstalledPage: React.FunctionComponent<{
             ) : (
               <p>
                 Here&apos;s a list of bricks you currently have activated.{" "}
-                {flags.includes("marketplace") ? (
+                {flagOn("marketplace") ? (
                   <>
                     You can find more to activate in{" "}
                     <Link to={"/blueprints"}>My Blueprints</Link>.

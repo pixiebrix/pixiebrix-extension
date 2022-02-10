@@ -43,9 +43,9 @@ import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import ExtensionRows from "./ExtensionRows";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
-import { useGetAuthQuery } from "@/services/api";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router";
+import useFlags from "@/hooks/useFlags";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
@@ -82,12 +82,11 @@ const ExtensionGroup: React.FunctionComponent<{
   onExportBlueprint,
   hasUpdate,
 }) => {
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
   const notify = useNotifications();
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const { restrict } = useFlags();
 
   const expandable = !managed;
   const [expanded, setExpanded] = useState(expandable && startExpanded);
@@ -227,14 +226,23 @@ const ExtensionGroup: React.FunctionComponent<{
         ),
         // #1532: temporary approach to controlling whether or not deployments can be uninstalled. In
         // the future we'll want this to depend on the member's role within the deployment's organization
-        hide: managed && flags.includes("restricted-uninstall"),
+        hide: managed && restrict("uninstall"),
         action: async () => {
           await removeMany(extensions);
         },
         className: "text-danger",
       },
     ],
-    [extensions, flags, hasUpdate, managed, onViewLogs, reinstall, removeMany]
+    [
+      onShare,
+      restrict,
+      extensions,
+      hasUpdate,
+      managed,
+      onViewLogs,
+      reinstall,
+      removeMany,
+    ]
   );
 
   return (

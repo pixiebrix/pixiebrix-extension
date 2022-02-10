@@ -15,26 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import {
-  faEyeSlash,
-  faPuzzlePiece,
-  faSave,
-} from "@fortawesome/free-solid-svg-icons";
-import { ExtensionPointType } from "@/extensionPoints/types";
+import React from "react";
+import { Button } from "react-bootstrap";
+import AskQuestionModalButton from "@/devTools/editor/askQuestion/AskQuestionModalButton";
 
-export const ExtensionIcon: React.FunctionComponent<{
-  type: ExtensionPointType;
-}> = ({ type }) => (
-  <FontAwesomeIcon icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece} />
+const IntroButtons: React.VoidFunctionComponent = () => (
+  <>
+    <p className="text-center">
+      <Button
+        size="sm"
+        href="https://docs.pixiebrix.com/quick-start-guide"
+        target="_blank"
+      >
+        <FontAwesomeIcon icon={faExternalLinkAlt} /> Open quick start
+      </Button>
+    </p>
+
+    <p className="text-center">
+      <AskQuestionModalButton />
+    </p>
+  </>
 );
 
-export const NotAvailableIcon: React.FunctionComponent = () => (
-  <FontAwesomeIcon icon={faEyeSlash} title="Not available on page" />
-);
-
-export const UnsavedChangesIcon: React.FunctionComponent = () => (
-  <FontAwesomeIcon icon={faSave} title="Unsaved changes" />
-);
+export default IntroButtons;

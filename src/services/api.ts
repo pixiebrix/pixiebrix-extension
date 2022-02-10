@@ -103,6 +103,7 @@ export const appApi = createApi({
             email,
             organizationId: organization?.id,
             telemetryOrganizationId: telemetryOrganization?.id,
+            flags,
           });
 
           return {
