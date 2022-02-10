@@ -30,6 +30,7 @@ import useEditable from "@/devTools/editor/hooks/useEditable";
 import { LogContextWrapper } from "@/components/logViewer/LogContext";
 import SaveExtensionWizard from "./save/SaveExtensionWizard";
 import useSavingWizard from "./save/useSavingWizard";
+import { ContextLogs } from "@/components/logViewer/Logs";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -84,7 +85,9 @@ const EditorPane: React.FunctionComponent<{
                 delayMillis={CHANGE_DETECT_DELAY_MILLIS}
               />
               <LogContextWrapper>
-                <ElementWizard element={element} editable={editable} />
+                <ContextLogs context={{ extensionId: element.uuid }}>
+                  <ElementWizard element={element} editable={editable} />
+                </ContextLogs>
               </LogContextWrapper>
               {isWizardOpen && <SaveExtensionWizard />}
             </>

@@ -15,20 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Tab } from "react-bootstrap";
-import RunLogCard from "./RunLogCard";
+import React, { useState, createContext } from "react";
+import { LogEntry } from "@/background/logging";
+import usePollContextLogs from "./usePollContextLogs";
+import { MessageContext } from "@/core";
 
-export const LOGS_EVENT_KEY = "logs";
-
-const LogsTab: React.FunctionComponent<{
-  eventKey: string;
-}> = ({ eventKey = LOGS_EVENT_KEY }) => {
-  return (
-    <Tab.Pane eventKey={eventKey} mountOnEnter unmountOnExit className="h-100">
-      <RunLogCard initialLevel="debug" refreshInterval={750} />
-    </Tab.Pane>
-  );
+type LogState = {
+  entries: LogEntry[];
 };
 
-export default LogsTab;
+const defaultState: LogState = {
+  entries: [],
+};
+
+export const LogContext2 = createContext<LogState>(defaultState);
+
+type ContextLogsProps = {
+  context: MessageContext;
+};
+
+export const ContextLogs: React.FunctionComponent<ContextLogsProps> = ({
+  context,
+  children,
+}) => {
+  const entries = usePollContextLogs({ context });
+  return (
+    <LogContext2.Provider value={{ entries }}>{children}</LogContext2.Provider>
+  );
+};

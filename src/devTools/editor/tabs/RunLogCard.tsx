@@ -22,17 +22,14 @@ import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
 import useLogEntries from "@/components/logViewer/useLogEntries";
 import LogToolbar from "@/components/logViewer/LogToolbar";
-import { UUID } from "@/core";
 
 type OwnProps = {
   initialLevel?: MessageLevel;
-  extensionId: UUID;
   perPage?: number;
   refreshInterval?: number;
 };
 
 const RunLogCard: React.FunctionComponent<OwnProps> = ({
-  extensionId,
   initialLevel = "info",
   perPage = 10,
   refreshInterval,
@@ -40,10 +37,8 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   const [level, setLevel] = useState<MessageLevel>(initialLevel);
   const [page, setPage] = useState(0);
 
-  const messageContext = useMemo(() => ({ extensionId }), [extensionId]);
-
   const logs = useLogEntries({
-    context: messageContext,
+    context: null,
     perPage,
     refreshInterval,
     level,
