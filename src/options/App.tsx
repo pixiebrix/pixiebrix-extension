@@ -56,6 +56,7 @@ import InvitationBanner from "@/options/pages/InvitationBanner";
 import { SettingsState } from "@/store/settingsTypes";
 import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
+import { selectSettings } from "@/store/settingsSelectors";
 
 // Register the built-in bricks
 registerBuiltinBlocks();
@@ -83,7 +84,8 @@ const Layout = () => {
   // by the time refresh is called.
   useRefresh();
 
-  const { permit, flagOn } = useFlags();
+  const { permit } = useFlags();
+  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
   const { isLoading } = useGetAuthQuery();
 
@@ -107,14 +109,6 @@ const Layout = () => {
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
-                  {flagOn("blueprints-page") && (
-                    <Route
-                      exact
-                      path="/blueprints-page"
-                      component={BlueprintsPage}
-                    />
-                  )}
-                  <Route exact path="/blueprints" component={MarketplacePage} />
                   <Route
                     exact
                     path="/extensions/install/:extensionId"
@@ -154,7 +148,19 @@ const Layout = () => {
                     />
                   )}
 
-                  <Route component={InstalledPage} />
+                  {!isBlueprintsPageEnabled && (
+                    <Route
+                      exact
+                      path="/blueprints"
+                      component={MarketplacePage}
+                    />
+                  )}
+
+                  {isBlueprintsPageEnabled ? (
+                    <Route component={BlueprintsPage} />
+                  ) : (
+                    <Route component={InstalledPage} />
+                  )}
                 </Switch>
               </ErrorBoundary>
             </div>
