@@ -78,6 +78,7 @@ jest.mock("@/auth/token", () => ({
     organizationId: "00000000-00000000-00000000-00000000",
   }),
   isLinked: jest.fn().mockResolvedValue(true),
+  updateUserData: async () => {},
 }));
 
 beforeEach(() => {
@@ -136,7 +137,11 @@ describe("updateDeployments", () => {
 
     const deployment = deploymentFactory();
 
-    axiosMock.onAny().reply(201, [deployment]);
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(201, [deployment]);
 
     await updateDeployments();
 
@@ -145,11 +150,15 @@ describe("updateDeployments", () => {
     expect(extensions.length).toBe(1);
   });
 
-  test("opens options page if deployment does not have permissions", async () => {
+  test("opens options page if deployment does not have necessary permissions", async () => {
     isLinkedMock.mockResolvedValue(true);
     containsPermissionsMock.mockResolvedValue(false);
 
     const deployment = deploymentFactory();
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
 
     axiosMock.onAny().reply(201, [deployment]);
 

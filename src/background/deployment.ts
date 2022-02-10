@@ -22,7 +22,7 @@ import { isEmpty, partition, uniqBy } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/telemetry";
 import { getExtensionVersion } from "@/chrome";
-import { isLinked, readAuthData } from "@/auth/token";
+import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -42,6 +42,7 @@ import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
 import { getSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
+import { ProfileResponse } from "@/hooks/auth";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -320,14 +321,38 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  const { data: deployments } = await client.post<Deployment[]>(
-    "/api/deployments/",
-    {
-      uid: await getUID(),
-      version: await getExtensionVersion(),
-      active: selectInstalledDeployments(extensions),
-    }
-  );
+  const {
+    data: profile,
+    status: profileResponseStatus,
+  } = await client.get<ProfileResponse>("/api/me/");
+
+  if (profileResponseStatus >= 400) {
+    // If our server is acting up, check again later
+    return;
+  }
+
+  // Ensure the user's flags and telemetry information is up-to-date
+  void updateUserData({
+    user: profile.id,
+    email: profile.email,
+    organizationId: profile.organization?.id,
+    telemetryOrganizationId: profile.telemetry_organization?.id,
+    flags: profile.flags,
+  });
+
+  const {
+    data: deployments,
+    status: deploymentResponseStatus,
+  } = await client.post<Deployment[]>("/api/deployments/", {
+    uid: await getUID(),
+    version: await getExtensionVersion(),
+    active: selectInstalledDeployments(extensions),
+  });
+
+  if (deploymentResponseStatus >= 400) {
+    // Our server is active up, check again later
+    return;
+  }
 
   // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
@@ -339,7 +364,11 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  if (extensionUpdateAvailable) {
+  // `restricted-version` is an implicit flag from the MeSerializer
+  if (
+    extensionUpdateAvailable &&
+    profile.flags.includes("restricted-version")
+  ) {
     console.info("Extension update available from the web store");
     // Have the user update their browser extension. (Since the new version might impact the deployment activation)
     await browser.runtime.openOptionsPage();
