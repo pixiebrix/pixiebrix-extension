@@ -44,7 +44,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
   }, [filters, query]);
 
   return (
-    <Col sm={3} xl={2} className={styles.filtersCol}>
+    <Col sm={2} className={styles.filtersCol}>
       <PageTitle icon={faScroll} title="Blueprints" />
       <Form className="mb-4 mr-3">
         <Form.Control
@@ -109,10 +109,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
             Public Marketplace Blueprints
           </Nav.Link>
         </Nav.Item>
-        <h5 className="mt-3">Shared with Me</h5>
-        {teamFilters.length === 0 && (
-          <span className="text-muted">No shared blueprints</span>
-        )}
+        {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
         {teamFilters.map((filter) => (
           <Nav.Item key={filter}>
             <Nav.Link
@@ -128,7 +125,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
         ))}
       </Nav>
       <Nav>
-        <h5 className="mt-3">Explore</h5>
+        <h5>Explore</h5>
         <Nav.Item>
           <Nav.Link
             href="https://www.pixiebrix.com/marketplace"

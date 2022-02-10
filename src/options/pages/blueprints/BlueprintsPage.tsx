@@ -17,8 +17,6 @@
 
 import React from "react";
 import Page from "@/layout/Page";
-import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import useInstallables from "@/options/pages/blueprints/useInstallables";
 import ExtensionLogsModal from "@/options/pages/installed/ExtensionLogsModal";
@@ -34,8 +32,10 @@ import {
 } from "@/options/pages/installed/installedPageSelectors";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import ShareLinkModal from "@/options/pages/installed/ShareLinkModal";
+import { useTitle } from "@/hooks/title";
 
 const BlueprintsPage: React.FunctionComponent = () => {
+  useTitle("Blueprints");
   const { installables, isLoading, error } = useInstallables();
   const showLogsContext = useSelector<RootState, LogsContext>(
     selectShowLogsContext
