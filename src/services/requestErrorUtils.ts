@@ -35,6 +35,9 @@ import { getReasonPhrase } from "http-status-codes";
 import { isAbsoluteUrl } from "@/utils";
 import urljoin from "url-join";
 
+// eslint-disable-next-line prefer-destructuring -- process.env variable
+const DEBUG = process.env.DEBUG;
+
 /**
  * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
  * they were passed in with the URL instead of as params.
@@ -100,11 +103,11 @@ export async function enrichRequestError(
     url = new URL(selectAbsoluteUrl(maybeAxiosError.config));
   } catch (typeError) {
     return new BusinessError(
-      `Invalid Request URL: ${getErrorMessage(typeError)}`
+      `Invalid request URL: ${getErrorMessage(typeError)}`
     );
   }
 
-  if (url.protocol !== "https:") {
+  if (url.protocol !== "https:" && !DEBUG) {
     return new BusinessError(
       `Unsupported protocol ${url.protocol}. Use https:`
     );

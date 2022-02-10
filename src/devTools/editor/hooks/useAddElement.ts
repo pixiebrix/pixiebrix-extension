@@ -18,7 +18,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
-import { useGetAuthQuery } from "@/services/api";
 import { useToasts } from "react-toast-notifications";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
@@ -28,15 +27,14 @@ import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { SettingsState } from "@/store/settingsTypes";
+import useFlags from "@/hooks/useFlags";
 
 type AddElement = (config: ElementConfig) => void;
 
 function useAddElement(): AddElement {
   const dispatch = useDispatch();
   const { tabState } = useContext(DevToolsContext);
-  const {
-    data: { flags = [] },
-  } = useGetAuthQuery();
+  const { flagOff } = useFlags();
   const { addToast } = useToasts();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
     (x) => x.settings.suggestElements
@@ -44,7 +42,7 @@ function useAddElement(): AddElement {
 
   return useCallback(
     async (config: ElementConfig) => {
-      if (config.flag && !flags.includes(config.flag)) {
+      if (config.flag && flagOff(config.flag)) {
         dispatch(
           actions.betaError({ error: "This feature is in private beta" })
         );
@@ -99,7 +97,7 @@ function useAddElement(): AddElement {
         dispatch(actions.toggleInsert(null));
       }
     },
-    [dispatch, tabState.meta?.frameworks, addToast, flags, suggestElements]
+    [dispatch, tabState.meta?.frameworks, addToast, flagOff, suggestElements]
   );
 }
 
