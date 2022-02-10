@@ -148,17 +148,18 @@ const Layout = () => {
                     />
                   )}
 
+                  {!isBlueprintsPageEnabled && (
+                    <Route
+                      exact
+                      path="/blueprints"
+                      component={MarketplacePage}
+                    />
+                  )}
+
                   {isBlueprintsPageEnabled ? (
                     <Route component={BlueprintsPage} />
                   ) : (
-                    <>
-                      <Route
-                        exact
-                        path="/blueprints"
-                        component={MarketplacePage}
-                      />
-                      <Route component={InstalledPage} />
-                    </>
+                    <Route component={InstalledPage} />
                   )}
                 </Switch>
               </ErrorBoundary>
