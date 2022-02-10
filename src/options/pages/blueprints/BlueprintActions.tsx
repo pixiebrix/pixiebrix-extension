@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isExtension } from "@/options/pages/blueprints/installableUtils";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -24,23 +23,30 @@ import {
   faShare,
   faSyncAlt,
   faTimes,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { InstallableViewItem } from "./blueprintsTypes";
+import { useGetAuthQuery } from "@/services/api";
 
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
-  const { installable, hasUpdate } = installableViewItem;
   const {
-    remove,
+    data: { flags },
+  } = useGetAuthQuery();
+  const { installable, hasUpdate, status, sharing } = installableViewItem;
+  const {
+    uninstall,
     viewLogs,
-    // TODO: consistent naming
-    onExportBlueprint,
+    exportBlueprint,
     viewShare,
+    deleteExtension,
     reinstall,
   } = useInstallableActions(installable);
+  const isCloudExtension =
+    sharing.source.type === "Personal" && status !== "Active";
 
   return (
     <>
@@ -54,8 +60,8 @@ const BlueprintActions: React.FunctionComponent<{
                       <FontAwesomeIcon icon={faShare} /> Share
                     </>
                   ),
-                  hide: !isExtension(installable),
                   action: viewShare,
+                  hide: isCloudExtension,
                 },
               ]
             : []),
@@ -65,7 +71,7 @@ const BlueprintActions: React.FunctionComponent<{
                 <FontAwesomeIcon icon={faDownload} /> Export
               </>
             ),
-            action: onExportBlueprint,
+            action: exportBlueprint,
           },
           {
             title: (
@@ -74,6 +80,7 @@ const BlueprintActions: React.FunctionComponent<{
               </>
             ),
             action: viewLogs,
+            hide: status !== "Active",
           },
           ...(reinstall
             ? [
@@ -93,7 +100,7 @@ const BlueprintActions: React.FunctionComponent<{
                   ),
                   action: reinstall,
                   // Managed extensions are updated via the deployment banner
-                  // hide: managed,
+                  hide: sharing.source.type === "Deployment",
                 },
               ]
             : []),
@@ -103,7 +110,22 @@ const BlueprintActions: React.FunctionComponent<{
                 <FontAwesomeIcon icon={faTimes} /> Uninstall
               </>
             ),
-            action: remove,
+            action: uninstall,
+            // TODO: shift all hide logic to useInstallableActions
+            hide:
+              status !== "Active" ||
+              (sharing.source.type === "Deployment" &&
+                flags.includes("restricted-uninstall")),
+            className: "text-danger",
+          },
+          {
+            title: (
+              <span className="text-danger">
+                <FontAwesomeIcon icon={faTrash} /> Delete
+              </span>
+            ),
+            action: deleteExtension,
+            hide: !isCloudExtension,
             className: "text-danger",
           },
         ]}

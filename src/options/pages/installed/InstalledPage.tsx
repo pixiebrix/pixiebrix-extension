@@ -19,7 +19,7 @@ import { connect, useSelector } from "react-redux";
 import React, { useCallback } from "react";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
-import { Link, Route } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
@@ -126,8 +126,12 @@ export const _InstalledPage: React.FunctionComponent<{
       icon={faCubes}
       error={cloudError ?? resolveError}
     >
-      {showShareContext && (
+      {showShareContext?.extensionId && (
         <ShareExtensionModal extensionId={showShareContext.extensionId} />
+      )}
+
+      {showShareContext?.blueprintId && (
+        <ShareLinkModal blueprintId={showShareContext.blueprintId} />
       )}
 
       {showLogsContext && (
@@ -137,11 +141,6 @@ export const _InstalledPage: React.FunctionComponent<{
         />
       )}
 
-      <Route
-        exact
-        path="/installed/link/:blueprintId"
-        component={ShareLinkModal}
-      />
       <Row>
         <Col>
           <div className="pb-4">
