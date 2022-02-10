@@ -59,7 +59,7 @@ function useReset(): (useResetConfig: Config) => void {
         dispatch(actions.adapterError({ uuid: element.uuid, error }));
       }
     },
-    [dispatch, installed, showConfirmation]
+    [recipes, dispatch, installed, showConfirmation]
   );
 }
 
