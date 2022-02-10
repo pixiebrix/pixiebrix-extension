@@ -115,7 +115,7 @@ export async function uninstallAllDeployments(): Promise<void> {
   });
 }
 
-async function uninstallUnmatchedDeployments(
+export async function uninstallUnmatchedDeployments(
   deployments: Deployment[]
 ): Promise<void> {
   let state = await loadOptions();
@@ -301,6 +301,7 @@ export async function updateDeployments(): Promise<void> {
   // Always get the freshest options slice from the local storage
   const { extensions } = await loadOptions();
 
+  // Version to report to the server. The update check happens via isUpdateAvailable below
   const { version: extensionVersionString } = browser.runtime.getManifest();
   const extensionVersion = parseSemVer(extensionVersionString);
 
@@ -310,7 +311,7 @@ export async function updateDeployments(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping updateDeployments because the extension is not linked to the PixieBrix service"
+      "Skipping  deployments update because the extension is not linked to the PixieBrix service"
     );
     return;
   }
@@ -322,6 +323,9 @@ export async function updateDeployments(): Promise<void> {
 
   if (profileResponseStatus >= 400) {
     // If our server is acting up, check again later
+    console.debug(
+      "Skipping deployments update because /api/me/ request failed"
+    );
     return;
   }
 
@@ -345,6 +349,9 @@ export async function updateDeployments(): Promise<void> {
 
   if (deploymentResponseStatus >= 400) {
     // Our server is active up, check again later
+    console.debug(
+      "Skipping deployments update because /api/deployments/ request failed"
+    );
     return;
   }
 
@@ -352,16 +359,14 @@ export async function updateDeployments(): Promise<void> {
   await uninstallUnmatchedDeployments(deployments);
 
   if (nextUpdate && nextUpdate > now) {
-    console.debug("Skipping updateDeployments because updates are snoozed", {
+    console.debug("Skipping deployments update because updates are snoozed", {
       nextUpdate,
     });
     return;
   }
 
-  const updateAvailable = isUpdateAvailable();
-
   if (
-    updateAvailable &&
+    isUpdateAvailable() &&
     // `restricted-version` is an implicit flag from the MeSerializer
     profile.flags.includes("restricted-version")
   ) {
