@@ -81,10 +81,6 @@ jest.mock("@/auth/token", () => ({
   updateUserData: async () => {},
 }));
 
-beforeEach(() => {
-  jest.resetModules();
-});
-
 jest.mock("webext-detect-page", () => ({
   isBackground: () => true,
   isExtensionContext: () => true,
@@ -110,10 +106,13 @@ jest.mock("webextension-polyfill", () => {
   };
 });
 
+jest.mock("@/background/installer");
+
 import browser from "webextension-polyfill";
 import { isLinked, readAuthData } from "@/auth/token";
 import { containsPermissions } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefresh";
+import { isUpdateAvailable } from "@/background/installer";
 
 const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;
@@ -121,13 +120,18 @@ const getManifestMock = browser.runtime.getManifest as jest.Mock;
 const openOptionsPageMock = browser.runtime.openOptionsPage as jest.Mock;
 const containsPermissionsMock = containsPermissions as jest.Mock;
 const refreshRegistriesMock = refreshRegistries as jest.Mock;
+const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
 
-afterEach(() => {
+beforeEach(() => {
+  jest.resetModules();
+
   isLinkedMock.mockClear();
   readAuthDataMock.mockClear();
   getManifestMock.mockClear();
   containsPermissionsMock.mockClear();
   refreshRegistriesMock.mockClear();
+  openOptionsPageMock.mockClear();
+  isUpdateAvailableMock.mockClear();
 });
 
 describe("updateDeployments", () => {
@@ -160,7 +164,7 @@ describe("updateDeployments", () => {
       flags: [],
     });
 
-    axiosMock.onAny().reply(201, [deployment]);
+    axiosMock.onPost().reply(201, [deployment]);
 
     await updateDeployments();
 
@@ -187,10 +191,29 @@ describe("updateDeployments", () => {
     expect(refreshRegistriesMock.mock.calls.length).toBe(0);
   });
 
-  test("open options page on update", async () => {
-    jest.doMock("@/background/installer", () => ({
-      getAvailableVersion: jest.fn().mockResolvedValue("1.4.0"),
-    }));
+  test("do not open options page on update if restricted-version flag not set", async () => {
+    isUpdateAvailableMock.mockReturnValue(true);
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(201, []);
+
+    await updateDeployments();
+
+    expect(openOptionsPageMock.mock.calls.length).toBe(0);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+  });
+
+  test("open options page on update if restricted-version flag is set", async () => {
+    isUpdateAvailableMock.mockReturnValue(true);
+
+    axiosMock.onGet().reply(200, {
+      flags: ["restricted-version"],
+    });
+
+    axiosMock.onPost().reply(201, []);
 
     await updateDeployments();
 

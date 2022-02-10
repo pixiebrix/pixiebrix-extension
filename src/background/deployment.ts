@@ -276,14 +276,8 @@ export async function updateDeployments(): Promise<void> {
 
   const now = Date.now();
 
-  const [
-    linked,
-    extensionUpdateAvailable,
-    { organizationId },
-    { nextUpdate },
-  ] = await Promise.all([
+  const [linked, { organizationId }, { nextUpdate }] = await Promise.all([
     isLinked(),
-    isUpdateAvailable(),
     readAuthData(),
     getSettingsState(),
   ]);
@@ -364,14 +358,16 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  // `restricted-version` is an implicit flag from the MeSerializer
+  const updateAvailable = isUpdateAvailable();
+
   if (
-    extensionUpdateAvailable &&
+    updateAvailable &&
+    // `restricted-version` is an implicit flag from the MeSerializer
     profile.flags.includes("restricted-version")
   ) {
     console.info("Extension update available from the web store");
     // Have the user update their browser extension. (Since the new version might impact the deployment activation)
-    await browser.runtime.openOptionsPage();
+    void browser.runtime.openOptionsPage();
     return;
   }
 
@@ -387,7 +383,7 @@ export async function updateDeployments(): Promise<void> {
     await refreshRegistries();
   } catch (error) {
     reportError(error);
-    await browser.runtime.openOptionsPage();
+    void browser.runtime.openOptionsPage();
     // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user the to
     // manually install the deployments via the banner
     return;
@@ -419,7 +415,7 @@ export async function updateDeployments(): Promise<void> {
 
   // We only want to call openOptionsPage a single time
   if (manual.length > 0 || automaticError) {
-    await browser.runtime.openOptionsPage();
+    void browser.runtime.openOptionsPage();
   }
 }
 
