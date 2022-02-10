@@ -161,8 +161,6 @@ const getRenderedOnboardingInformation = () => {
 
   const contactTeamAdminColumn = screen.queryByText("Contact your team admin");
 
-  const videoTour = screen.queryByText("Video Tour");
-
   const createBrickColumn = screen.queryByText("Create your Own");
 
   const activateFromDeploymentBannerColumn = screen.queryByText(
@@ -177,7 +175,6 @@ const getRenderedOnboardingInformation = () => {
     activateFromMarketplaceColumn,
     createBrickColumn,
     contactTeamAdminColumn,
-    videoTour,
     activateFromDeploymentBannerColumn,
     activateTeamBlueprintsColumn,
   };
@@ -214,7 +211,6 @@ describe("OnboardingPage", () => {
 
     expect(rendered.activateFromMarketplaceColumn).not.toBeNull();
     expect(rendered.createBrickColumn).not.toBeNull();
-    expect(rendered.videoTour).not.toBeNull();
   });
 
   test("enterprise user with `restricted-marketplace` flag", () => {
@@ -234,7 +230,6 @@ describe("OnboardingPage", () => {
 
     expect(rendered.activateFromMarketplaceColumn).toBeNull();
     expect(rendered.contactTeamAdminColumn).not.toBeNull();
-    expect(rendered.videoTour).toBeNull();
   });
 
   test("enterprise user with automatic team deployments", () => {
@@ -257,7 +252,6 @@ describe("OnboardingPage", () => {
 
     expect(rendered.activateFromMarketplaceColumn).toBeNull();
     expect(rendered.activateFromDeploymentBannerColumn).not.toBeNull();
-    expect(rendered.videoTour).toBeNull();
   });
 
   test("enterprise user with team blueprints", () => {
@@ -276,7 +270,6 @@ describe("OnboardingPage", () => {
 
     expect(rendered.activateTeamBlueprintsColumn).toBeNull();
     expect(rendered.createBrickColumn).not.toBeNull();
-    expect(rendered.videoTour).not.toBeNull();
   });
 
   test("enterprise user with no team blueprints or restrictions", () => {
@@ -294,7 +287,6 @@ describe("OnboardingPage", () => {
 
     expect(rendered.activateFromMarketplaceColumn).not.toBeNull();
     expect(rendered.createBrickColumn).not.toBeNull();
-    expect(rendered.videoTour).not.toBeNull();
   });
 
   function expectLoading() {
