@@ -276,12 +276,12 @@ const SidebarExpanded: React.VoidFunctionComponent<
 const SidebarCollapsed: React.VoidFunctionComponent<{
   expandSidebar: () => void;
 }> = ({ expandSidebar }) => {
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { flagOn } = useFlags();
+
   const showDeveloperUI =
     process.env.ENVIRONMENT === "development" ||
-    flags.includes("page-editor-developer");
+    flagOn("page-editor-developer");
+
   return (
     <>
       <div className={cx(styles.root, styles.collapsed)}>
