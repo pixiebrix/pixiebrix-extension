@@ -177,7 +177,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       "id" | "config" | "_deployment"
     >
   ): Promise<void> {
-    const { title } = extension.config;
+    const { title = "Context menu item" } = extension.config;
 
     // Check for null/undefined to preserve backward compatability
     if (!isDeploymentActive(extension)) {
