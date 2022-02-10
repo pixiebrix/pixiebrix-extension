@@ -36,7 +36,7 @@ import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { useCallback } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
-import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";
+import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/installed/exportBlueprint";
 import {
   useDeleteCloudExtensionMutation,
   useGetAuthQuery,
@@ -164,7 +164,7 @@ function useInstallableActions(installable: Installable) {
     );
   };
 
-  const onExportBlueprint = useCallback(() => {
+  const exportBlueprint = useCallback(() => {
     const extension = isExtension(installable) ? installable : null;
 
     if (extension == null) {
@@ -172,14 +172,14 @@ function useInstallableActions(installable: Installable) {
       return;
     }
 
-    exportBlueprint(extension);
+    exportBlueprintYaml(extension);
   }, [installable, notify]);
 
   return {
     viewShare,
     uninstall,
     viewLogs,
-    onExportBlueprint,
+    exportBlueprint,
     activate,
     deleteExtension: isExtension(installable) ? deleteExtension : null,
     reinstall: isExtensionFromRecipe(installable) ? reinstall : null,

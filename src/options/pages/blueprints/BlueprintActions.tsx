@@ -40,8 +40,7 @@ const BlueprintActions: React.FunctionComponent<{
   const {
     uninstall,
     viewLogs,
-    // TODO: consistent naming
-    onExportBlueprint,
+    exportBlueprint,
     viewShare,
     deleteExtension,
     reinstall,
@@ -72,7 +71,7 @@ const BlueprintActions: React.FunctionComponent<{
                 <FontAwesomeIcon icon={faDownload} /> Export
               </>
             ),
-            action: onExportBlueprint,
+            action: exportBlueprint,
           },
           {
             title: (
