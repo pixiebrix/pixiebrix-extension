@@ -39,6 +39,8 @@ import { useAsyncState } from "@/hooks/common";
 import { isEmpty } from "lodash";
 import { faChrome } from "@fortawesome/free-brands-svg-icons";
 import reportError from "@/telemetry/reportError";
+import { useSelector } from "react-redux";
+import { selectSettings } from "@/store/settingsSelectors";
 
 const ActivateBody: React.FunctionComponent<{
   blueprint: RecipeDefinition;
@@ -50,6 +52,7 @@ const ActivateBody: React.FunctionComponent<{
     selectedExtensions,
     selectedAuths
   );
+  const { useBlueprintsPage } = useSelector(selectSettings);
 
   const [hasShortcut] = useAsyncState(async () => {
     const commands = await browser.commands.getAll();
@@ -86,10 +89,10 @@ const ActivateBody: React.FunctionComponent<{
         <p className="text-info">
           <FontAwesomeIcon icon={faInfoCircle} /> You can de-activate bricks at
           any time on the{" "}
-          <Link to="/installed">
-            <u>
-              <FontAwesomeIcon icon={faCubes} />
-              {"  "}Active Bricks page
+          <Link to={useBlueprintsPage ? "/blueprints" : "/installed"}>
+            <u className="text-nowrap">
+              <FontAwesomeIcon icon={faCubes} />{" "}
+              {useBlueprintsPage ? "Blueprints page" : "Active Bricks page"}
             </u>
           </Link>
         </p>

@@ -56,6 +56,7 @@ import InvitationBanner from "@/options/pages/InvitationBanner";
 import { SettingsState } from "@/store/settingsTypes";
 import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
+import { selectSettings } from "@/store/settingsSelectors";
 
 // Register the built-in bricks
 registerBuiltinBlocks();
@@ -84,9 +85,7 @@ const Layout = () => {
   useRefresh();
 
   const { permit } = useFlags();
-  const useBlueprintsPage = useSelector<{ settings: SettingsState }, boolean>(
-    (x) => x.settings.useBlueprintsPage
-  );
+  const { useBlueprintsPage } = useSelector(selectSettings);
 
   const { isLoading } = useGetAuthQuery();
 

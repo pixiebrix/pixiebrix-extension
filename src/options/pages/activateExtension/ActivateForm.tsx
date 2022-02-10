@@ -19,13 +19,14 @@ import React, { useCallback, useMemo } from "react";
 import { AuthOption } from "@/auth/authTypes";
 import { CloudExtension } from "@/types/contract";
 import { Form, Formik, FormikProps } from "formik";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { push } from "connected-react-router";
 import useNotifications from "@/hooks/useNotifications";
 import ServicesCard from "@/options/pages/activateExtension/ServicesCard";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
 import ActivateCard from "@/options/pages/activateExtension/ActivateCard";
 import extensionsSlice from "@/store/extensionsSlice";
+import { selectSettings } from "@/store/settingsSelectors";
 
 const { actions } = extensionsSlice;
 
@@ -35,6 +36,7 @@ const ActivateForm: React.FunctionComponent<{
 }> = ({ extension, authOptions }) => {
   const notify = useNotifications();
   const dispatch = useDispatch();
+  const { useBlueprintsPage } = useSelector(selectSettings);
 
   const initialValues: FormState = useMemo(() => {
     const uuids = new Set<string>(authOptions.map((x) => x.value));
@@ -55,7 +57,12 @@ const ActivateForm: React.FunctionComponent<{
           })
         );
         notify.success("Activated brick");
-        dispatch(push("/installed"));
+
+        if (useBlueprintsPage) {
+          dispatch(push("/blueprints"));
+        } else {
+          dispatch(push("/installed"));
+        }
       } catch (error) {
         notify.error("Error activating brick", {
           error,
