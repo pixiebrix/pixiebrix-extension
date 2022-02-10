@@ -75,7 +75,6 @@ export function useAuthOptions(): [AuthOption[], () => void] {
   // store to reload if it's changed on another tab
   const [
     configuredServices,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
     isLocalLoading,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
     _localError,
