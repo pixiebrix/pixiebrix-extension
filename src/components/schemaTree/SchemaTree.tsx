@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./SchemaTree.module.scss";
+
 import React, { useMemo } from "react";
 import { Schema } from "@/core";
 import { Table } from "react-bootstrap";
@@ -27,7 +29,6 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { isServiceField } from "@/components/fields/schemaFields/ServiceField";
-import styles from "./SchemaTree.module.scss";
 import cx from "classnames";
 
 type SchemaTreeRow = {

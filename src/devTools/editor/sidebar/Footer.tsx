@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Footer.module.scss";
+
 import React, { useContext } from "react";
 import { useGetAuthQuery } from "@/services/api";
 import { DevToolsContext } from "@/devTools/context";
 import BeatLoader from "react-spinners/BeatLoader";
-import styles from "./Footer.module.scss";
 
 const Footer: React.FunctionComponent = () => {
   const {

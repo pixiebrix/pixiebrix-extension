@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Sidebar.module.scss";
+
 import browser from "webextension-polyfill";
 import React, { FormEvent, useContext, useMemo, useState } from "react";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
@@ -41,7 +43,6 @@ import DynamicEntry from "@/devTools/editor/sidebar/DynamicEntry";
 import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
-import styles from "./Sidebar.module.scss";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,

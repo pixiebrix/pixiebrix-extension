@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./AdvancedLinks.module.scss";
+
 import { BlockIf, BlockWindow } from "@/blocks/types";
 import { TemplateEngine } from "@/core";
 import { joinName } from "@/utils";
@@ -22,7 +24,6 @@ import { useField } from "formik";
 import { partial } from "lodash";
 import React, { MutableRefObject } from "react";
 import { Button } from "react-bootstrap";
-import styles from "./AdvancedLinks.module.scss";
 import { isExpression } from "@/runtime/mapArgs";
 
 export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";

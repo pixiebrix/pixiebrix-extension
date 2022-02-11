@@ -16,6 +16,7 @@
  */
 
 import styles from "./Entry.module.scss";
+
 import React, { useCallback } from "react";
 import { IExtension, UUID } from "@/core";
 import { useDispatch } from "react-redux";
