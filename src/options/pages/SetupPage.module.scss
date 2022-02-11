@@ -15,22 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.OnboardingStep {
-  &__status {
-    min-width: 50px;
-    color: #00b300;
-    font-size: 1.5rem;
-    line-height: 1.5rem;
-  }
+.onboardingStepStatus {
+  min-width: 50px;
+  color: #00b300;
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+}
 
-  &__step {
-    font-size: 1.25rem;
-    line-height: 1.5rem;
-    min-width: 125px;
-  }
+.onboardingStepStep {
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+  min-width: 125px;
+}
 
-  &__content {
-    flex-grow: 1;
-    font-size: 1.25rem;
-  }
+.onboardingStepContent {
+  flex-grow: 1;
+  font-size: 1.25rem;
 }

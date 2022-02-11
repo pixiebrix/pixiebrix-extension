@@ -87,7 +87,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 className={styles.button}
                 onClick={async () => {
                   const sidebar = await whoAmI();
-                  await hideActionPanel({ tabId: sidebar.tab.id! });
+                  await hideActionPanel({ tabId: sidebar.tab.id });
                 }}
                 size="sm"
                 variant="link"

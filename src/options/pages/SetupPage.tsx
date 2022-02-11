@@ -43,15 +43,15 @@ const Step: React.FunctionComponent<{
 }> = ({ number, completed, active, children }) => (
   <ListGroup.Item className={cx("p-4", { "font-weight-bold": active })}>
     <div className="d-flex">
-      <div className={styles.OnboardingStep__status}>
+      <div className={styles.onboardingStepStatus}>
         {completed && (
           <span>
             <FontAwesomeIcon icon={faCheck} />
           </span>
         )}
       </div>
-      <div className={styles.OnboardingStep__step}>Step {number}</div>
-      <div className={styles.OnboardingStep__content}>{children}</div>
+      <div className={styles.onboardingStepStep}>Step {number}</div>
+      <div className={styles.onboardingStepContent}>{children}</div>
     </div>
   </ListGroup.Item>
 );

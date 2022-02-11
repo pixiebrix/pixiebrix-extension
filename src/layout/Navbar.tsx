@@ -84,7 +84,7 @@ const Navbar: React.FunctionComponent = () => {
       >
         {showNavbarToggle && (
           <button
-            className="navbar-toggler"
+            className="navbar-toggler align-self-center"
             type="button"
             onClick={toggleSidebar}
           >

@@ -20,13 +20,12 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 2rem;
 }
-.card {
-  &:hover {
-    cursor: pointer;
-    background-color: #ececff;
-    border-color: #c7c7ff;
-    transition: background-color 0.15s ease-in-out;
-  }
+
+.card:hover {
+  cursor: pointer;
+  background-color: #ececff;
+  border-color: #c7c7ff;
+  transition: background-color 0.15s ease-in-out;
 }
 
 .cardImage {
