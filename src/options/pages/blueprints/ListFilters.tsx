@@ -6,8 +6,7 @@ import { selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
-import { PageTitle } from "@/layout/Page";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 type ListFiltersProps = {
   teamFilters: string[];
