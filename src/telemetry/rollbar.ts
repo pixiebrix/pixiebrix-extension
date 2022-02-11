@@ -137,4 +137,5 @@ async function updatePerson(data: Partial<UserData>): Promise<void> {
   }
 }
 
+// OK to memoize. The addAuthListener will modify the Rollbar instance in place
 export const getRollbar = pMemoize(initRollbar);

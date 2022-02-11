@@ -198,6 +198,14 @@ export function hasCancelRootCause(error: unknown): boolean {
   return false;
 }
 
+export function getRootCause(error: ErrorObject): ErrorObject {
+  if (error.name === "ContextError" && (error as ContextError).cause != null) {
+    return getRootCause(error.cause as ErrorObject);
+  }
+
+  return error;
+}
+
 // Manually list subclasses because the prototype chain is lost in serialization/deserialization
 // See https://github.com/sindresorhus/serialize-error/issues/48
 const BUSINESS_ERROR_CLASSES = [
@@ -207,7 +215,9 @@ const BUSINESS_ERROR_CLASSES = [
 ];
 // Name classes from other modules separately, because otherwise we'll get a circular dependency with this module
 const BUSINESS_ERROR_NAMES = new Set([
-  ...BUSINESS_ERROR_CLASSES.map((x) => x.name),
+  "BusinessError",
+  "NoElementsFoundError",
+  "MultipleElementsFoundError",
   "InputValidationError",
   "OutputValidationError",
   "PipelineConfigurationError",
@@ -273,7 +283,7 @@ export function isAxiosError(error: unknown): error is AxiosError {
 }
 
 /**
- * Return true if the proximate cause of event is an messaging error.
+ * Return true if the proximate cause of event is a messaging error.
  *
  * NOTE: does not recursively identify the root cause of the error.
  */
@@ -337,14 +347,8 @@ export function selectError(originalError: unknown): Error {
   }
 
   if (isErrorObject(error)) {
-    console.warn(
-      "selectError encountered a serialized error. Do not pass around serialized errors",
-      {
-        originalError,
-        error,
-      }
-    );
-
+    // This shouldn't be necessary, but there's some nested calls to selectError
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2696
     return deserializeError(error);
   }
 
