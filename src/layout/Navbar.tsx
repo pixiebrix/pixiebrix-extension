@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Navbar.module.scss";
+
 import React from "react";
 import { Dropdown, Nav } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,6 +37,7 @@ import { isLinked } from "@/auth/token";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
 import { SettingsState } from "@/store/settingsTypes";
+import cx from "classnames";
 
 const Navbar: React.FunctionComponent = () => {
   const {
@@ -51,7 +54,12 @@ const Navbar: React.FunctionComponent = () => {
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-      <div className="text-center navbar-brand-wrapper navbar-toggler-wrapper d-flex align-items-center justify-content-center">
+      <div
+        className={cx(
+          styles.collapsedWrapper,
+          "text-center navbar-brand-wrapper d-flex align-items-center justify-content-center"
+        )}
+      >
         <Link className="navbar-brand brand-logo" to="/">
           <img src={logo} alt="PixieBrix logo" />
         </Link>
@@ -60,7 +68,7 @@ const Navbar: React.FunctionComponent = () => {
         </Link>
         {showNavbarToggle && (
           <button
-            className="navbar-toggler"
+            className={cx("navbar-toggler", styles.collapsedSidebarToggler)}
             type="button"
             onClick={toggleSidebar}
           >
@@ -68,10 +76,15 @@ const Navbar: React.FunctionComponent = () => {
           </button>
         )}
       </div>
-      <div className="navbar-menu-wrapper d-flex align-items-stretch">
+      <div
+        className={cx(
+          styles.expandedWrapper,
+          "navbar-menu-wrapper d-flex align-items-stretch"
+        )}
+      >
         {showNavbarToggle && (
           <button
-            className="navbar-toggler align-self-center"
+            className="navbar-toggler"
             type="button"
             onClick={toggleSidebar}
           >

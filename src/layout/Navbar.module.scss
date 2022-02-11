@@ -15,18 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "@/options.scss";
+// Bootstrap’s variables must be imported here so that they're available in this file
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "@/vendors/theme/assets/styles/variables";
 
-import "@/extensionContext";
-import "@/development/darkMode";
+.collapsedWrapper {
+  @media (max-width: 991px) {
+    width: 100px !important;
+  }
+}
+.expandedWrapper {
+  @media (min-width: 992px) {
+    padding-left: 0 !important;
+  }
+}
 
-import { render } from "react-dom";
-import React from "react";
-import App from "@/options/App";
-import initGoogle from "@/contrib/google/initGoogle";
-
-initGoogle();
-
-render(<App />, document.querySelector("#container"));
+.collapsedSidebarToggler {
+  // move down slightly to align better with logo
+  margin-top: 5px;
+  color: $navbar-menu-color;
+  height: $navbar-height;
+  padding-left: 0;
+  @media (min-width: 992px) {
+    display: none;
+  }
+}

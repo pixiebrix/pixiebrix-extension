@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "vendors/theme/app/app";
-
 html {
   // Always show the scrollbar track to avoid shifting the layout after the content loads
   overflow-y: scroll;
@@ -25,31 +23,4 @@ html {
 .modal-backdrop {
   // keep behind services modal of 999
   z-index: 998;
-}
-
-.navbar {
-  .navbar-toggler {
-    // move down slightly to align better with logo
-    margin-top: 5px;
-  }
-  .navbar-menu-wrapper {
-    @media (min-width: 992px) {
-      padding-left: 0;
-    }
-  }
-  .navbar-brand-wrapper {
-    &.navbar-toggler-wrapper {
-      @media (max-width: 991px) {
-        width: 100px;
-      }
-    }
-    .navbar-toggler {
-      color: $navbar-menu-color;
-      height: $navbar-height;
-      padding-left: 0;
-      @media (min-width: 992px) {
-        display: none;
-      }
-    }
-  }
 }
