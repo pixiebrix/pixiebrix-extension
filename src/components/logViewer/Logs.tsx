@@ -25,8 +25,8 @@ type LogState = {
   allEntries: LogEntry[];
   displayedEntries: LogEntry[];
   isLoading: boolean;
-  refresh: () => void;
-  clear: () => Promise<void>;
+  refreshDisplayedEntries: () => void;
+  clearAllEntries: () => Promise<void>;
 };
 
 const defaultState: LogState = {
@@ -34,8 +34,8 @@ const defaultState: LogState = {
   allEntries: [],
   displayedEntries: [],
   isLoading: true,
-  refresh: () => {},
-  clear: async () => {},
+  refreshDisplayedEntries: () => {},
+  clearAllEntries: async () => {},
 };
 
 export const LogContext2 = createContext<LogState>(defaultState);
@@ -62,11 +62,11 @@ export const ContextLogs: React.FunctionComponent<ContextLogsProps> = ({
     setDisplayedEntries(allEntries);
   }, [isLoading]);
 
-  const refresh = () => {
+  const refreshDisplayedEntries = () => {
     setDisplayedEntries(allEntries);
   };
 
-  const clear = async () => clearLog(messageContext);
+  const clearAllEntries = async () => clearLog(messageContext);
 
   return (
     <LogContext2.Provider
@@ -75,8 +75,8 @@ export const ContextLogs: React.FunctionComponent<ContextLogsProps> = ({
         allEntries,
         displayedEntries,
         isLoading,
-        refresh,
-        clear,
+        refreshDisplayedEntries,
+        clearAllEntries,
       }}
     >
       {children}

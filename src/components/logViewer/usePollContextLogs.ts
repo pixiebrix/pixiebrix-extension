@@ -21,7 +21,7 @@ import useInterval from "@/hooks/useInterval";
 import { isEqual } from "lodash";
 import { useEffect, useState } from "react";
 
-const REFRESH_INTERVAL = 5000;
+const REFRESH_INTERVAL = 3000;
 
 /**
  * @typedef {Object} PollingState

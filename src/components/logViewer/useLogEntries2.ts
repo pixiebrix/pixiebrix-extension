@@ -30,7 +30,8 @@ function useLogEntries2({ level, page, perPage }: config) {
     allEntries,
     displayedEntries,
     isLoading,
-    clear: clearAllEntries,
+    refreshDisplayedEntries,
+    clearAllEntries,
   } = useContext(LogContext2);
 
   const filteredAllEntries = useMemo(() => {
@@ -60,12 +61,8 @@ function useLogEntries2({ level, page, perPage }: config) {
   const numPages = Math.ceil(filteredDisplayedEntries.length / perPage);
 
   const refresh = async () => {
-    const value = Promise.resolve();
-    return value;
-  };
-
-  const clear = async () => {
-    return clearAllEntries();
+    refreshDisplayedEntries();
+    return {};
   };
 
   return {
@@ -75,7 +72,7 @@ function useLogEntries2({ level, page, perPage }: config) {
     pageEntries,
     numPages,
     refresh,
-    clear,
+    clear: clearAllEntries,
   };
 }
 

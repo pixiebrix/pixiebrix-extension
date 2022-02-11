@@ -71,6 +71,10 @@ const WizardNavItem: React.FunctionComponent<{
     [allEntries, lastTimestamp]
   );
 
+  if (step.step === LOG_STEP_NAME) {
+    console.log("Log nav item", { lastTimestamp, unread });
+  }
+
   const logBadge = useMemo(() => {
     if (step.step !== LOG_STEP_NAME) {
       return null;

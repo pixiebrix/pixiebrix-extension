@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import {
   actions as editorActions,
   FormState,
@@ -27,7 +27,6 @@ import { Formik } from "formik";
 import Effect from "@/devTools/editor/components/Effect";
 import ElementWizard from "@/devTools/editor/ElementWizard";
 import useEditable from "@/devTools/editor/hooks/useEditable";
-import { LogContextWrapper } from "@/components/logViewer/LogContext";
 import SaveExtensionWizard from "./save/SaveExtensionWizard";
 import useSavingWizard from "./save/useSavingWizard";
 import { ContextLogs } from "@/components/logViewer/Logs";
@@ -37,10 +36,9 @@ import { ContextLogs } from "@/components/logViewer/Logs";
 const CHANGE_DETECT_DELAY_MILLIS = 100;
 const REDUX_SYNC_WAIT_MILLIS = 500;
 
-const EditorPane: React.FunctionComponent<{
-  selectedElement: FormState;
-  selectionSeq: number;
-}> = ({ selectedElement, selectionSeq }) => {
+const EditorPaneContent: React.VoidFunctionComponent<{
+  element: FormState;
+}> = ({ element }) => {
   const dispatch = useDispatch();
   const editable = useEditable();
   const { isWizardOpen } = useSavingWizard();
@@ -54,9 +52,35 @@ const EditorPane: React.FunctionComponent<{
     { trailing: true, leading: false }
   );
 
+  const messageContext = useMemo(
+    () => ({
+      extensionId: element.uuid,
+      blueprintId: element.recipe ? element.recipe.id : undefined,
+    }),
+    [element.uuid, element.recipe]
+  );
+
+  return (
+    <>
+      <Effect
+        values={element}
+        onChange={syncReduxState}
+        delayMillis={CHANGE_DETECT_DELAY_MILLIS}
+      />
+      <ContextLogs messageContext={messageContext}>
+        <ElementWizard element={element} editable={editable} />
+      </ContextLogs>
+      {isWizardOpen && <SaveExtensionWizard />}
+    </>
+  );
+};
+
+const EditorPane: React.FunctionComponent<{
+  selectedElement: FormState;
+  selectionSeq: number;
+}> = ({ selectedElement, selectionSeq }) => {
   // Key to force reload of component when user selects a different element from the sidebar
   const key = `${selectedElement.uuid}-${selectedElement.installed}-${selectionSeq}`;
-
   return (
     <>
       <ErrorBoundary key={key}>
@@ -77,24 +101,7 @@ const EditorPane: React.FunctionComponent<{
           validateOnChange={false}
           validateOnBlur={true}
         >
-          {({ values: element }) => (
-            <>
-              <Effect
-                values={element}
-                onChange={syncReduxState}
-                delayMillis={CHANGE_DETECT_DELAY_MILLIS}
-              />
-              <ContextLogs
-                messageContext={{
-                  extensionId: element.uuid,
-                  blueprintId: element.recipe ? element.recipe.id : undefined,
-                }}
-              >
-                <ElementWizard element={element} editable={editable} />
-              </ContextLogs>
-              {isWizardOpen && <SaveExtensionWizard />}
-            </>
-          )}
+          {({ values: element }) => <EditorPaneContent element={element} />}
         </Formik>
       </ErrorBoundary>
     </>
