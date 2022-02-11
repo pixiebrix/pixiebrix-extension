@@ -50,7 +50,7 @@ function useAuthorizationGrantFlow() {
 
       const confirm = await modals.showConfirmation({
         title: "Configure Integration",
-        message: `${name} uses a type of authentication that's only supported in the Admin Console. Click below to continue to the Admin Console`,
+        message: `${name} uses a type of authentication that's supported in the Admin Console. Click Configure to continue to the Admin Console`,
         cancelCaption: "Cancel",
         submitCaption: "Configure",
         submitVariant: "primary",
