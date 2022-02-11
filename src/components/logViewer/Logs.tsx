@@ -15,19 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState, createContext } from "react";
-import { LogEntry } from "@/background/logging";
+import React, { createContext } from "react";
+import { clearLog, LogEntry } from "@/background/logging";
 import usePollContextLogs from "./usePollContextLogs";
 import { MessageContext } from "@/core";
 
 type LogState = {
   messageContext: MessageContext;
   entries: LogEntry[];
+  clear: () => Promise<void>;
 };
 
 const defaultState: LogState = {
   messageContext: null,
   entries: [],
+  clear: () => Promise.resolve(),
 };
 
 export const LogContext2 = createContext<LogState>(defaultState);
@@ -41,8 +43,9 @@ export const ContextLogs: React.FunctionComponent<ContextLogsProps> = ({
   children,
 }) => {
   const entries = usePollContextLogs({ context: messageContext });
+  const clear = async () => clearLog(messageContext);
   return (
-    <LogContext2.Provider value={{ messageContext, entries }}>
+    <LogContext2.Provider value={{ messageContext, entries, clear }}>
       {children}
     </LogContext2.Provider>
   );

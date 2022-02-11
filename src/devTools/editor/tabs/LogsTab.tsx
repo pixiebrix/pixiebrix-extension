@@ -25,7 +25,7 @@ const LogsTab: React.FunctionComponent<{
   eventKey: string;
 }> = ({ eventKey = LOGS_EVENT_KEY }) => (
   <Tab.Pane eventKey={eventKey} mountOnEnter unmountOnExit className="h-100">
-    <RunLogCard initialLevel="debug" refreshInterval={750} />
+    <RunLogCard initialLevel="debug" />
   </Tab.Pane>
 );
 

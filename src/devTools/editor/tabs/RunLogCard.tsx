@@ -15,42 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useState } from "react";
 import { MessageLevel } from "@/background/logging";
-import GridLoader from "react-spinners/GridLoader";
-import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
-import useLogEntries from "@/components/logViewer/useLogEntries";
 import LogToolbar from "@/components/logViewer/LogToolbar";
 import useLogEntries2 from "@/components/logViewer/useLogEntries2";
-import { LogContext2 } from "@/components/logViewer/Logs";
+import { Card } from "react-bootstrap";
+import { GridLoader } from "react-spinners";
 
 type OwnProps = {
   initialLevel?: MessageLevel;
   perPage?: number;
-  refreshInterval?: number;
 };
 
 const RunLogCard: React.FunctionComponent<OwnProps> = ({
   initialLevel = "info",
   perPage = 10,
-  refreshInterval,
 }) => {
   const [level, setLevel] = useState<MessageLevel>(initialLevel);
   const [page, setPage] = useState(0);
-  // TODO remove this
-  const a = useContext(LogContext2);
 
-  // TODO remove this
-  const logs = useLogEntries({
-    context: a.messageContext,
-    perPage,
-    refreshInterval,
-    level,
-    page,
-  });
-
-  const logs2 = useLogEntries2({
+  const logs = useLogEntries2({
     level,
     page,
     perPage,
@@ -71,13 +56,13 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
         setLevel={setLevel}
         page={page}
         setPage={setPage}
-        numPages={logs2.numPages}
+        numPages={logs.numPages}
         hasEntries={logs.hasEntries}
         numNew={logs.numNew}
         refresh={logs.refresh}
         clear={logs.clear}
       />
-      <LogTable pageEntries={logs2.pageEntries} hasEntries={logs.hasEntries} />
+      <LogTable pageEntries={logs.pageEntries} hasEntries={logs.hasEntries} />
     </>
   );
 };

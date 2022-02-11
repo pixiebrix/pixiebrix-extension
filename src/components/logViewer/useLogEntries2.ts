@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LOG_LEVELS, MessageLevel } from "@/background/logging";
-import { useContext, useMemo } from "react";
+import { LogEntry, LOG_LEVELS, MessageLevel } from "@/background/logging";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { LogContext2 } from "./Logs";
 
 type config = {
@@ -26,24 +26,66 @@ type config = {
 };
 
 function useLogEntries2({ level, page, perPage }: config) {
-  const { entries } = useContext(LogContext2);
+  const {
+    entries: allEntries,
+    messageContext,
+    clear: clearAllEntries,
+  } = useContext(LogContext2);
+  const [entries, setEntries] = useState<LogEntry[]>([]);
+
+  // Set the initial entries when context changes
+  useEffect(() => {
+    setEntries(allEntries);
+  }, [messageContext]);
+
+  // TODO - newEntries come directly from getLog, always new object, no reason for useMemo
+  const filteredAllEntries = useMemo(
+    () =>
+      allEntries.filter(
+        // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
+        (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
+      ),
+    [level, allEntries]
+  );
 
   const filteredEntries = useMemo(
     () =>
-      entries.filter(
-        // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
+      (entries ?? []).filter(
+        // Level is coming from the dropdown
+        // eslint-disable-next-line security/detect-object-injection
         (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
       ),
     [level, entries]
   );
+
+  const numNew = filteredAllEntries.length - filteredEntries.length;
+
+  const hasEntries = allEntries.length > 0;
+
   const start = page * perPage;
   const pageEntries = filteredEntries.slice(start, start + perPage);
 
   const numPages = Math.ceil(filteredEntries.length / perPage);
 
+  const refresh = async () => {
+    setEntries(allEntries);
+    const value = Promise.resolve();
+    return value;
+  };
+
+  const clear = async () => {
+    setEntries([]);
+    return clearAllEntries();
+  };
+
   return {
+    isLoading: false,
+    numNew,
+    hasEntries,
     pageEntries,
     numPages,
+    refresh,
+    clear,
   };
 }
 
