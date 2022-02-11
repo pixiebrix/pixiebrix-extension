@@ -15,22 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Keep in order so precedence is preserved
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "@/utils/layout.scss";
-import "@/action.scss";
+.button {
+  color: #6562aa;
 
-import "@/extensionContext";
-
-import "@/actionPanel/messenger/registration";
-import App from "@/actionPanel/ActionPanelApp";
-import ReactDOM from "react-dom";
-import React from "react";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
-
-registerContribBlocks();
-registerBuiltinBlocks();
-
-ReactDOM.render(<App />, document.querySelector("#container"));
+  &:hover {
+    color: #4d4b8b;
+    background-color: #d1c2d7;
+  }
+}

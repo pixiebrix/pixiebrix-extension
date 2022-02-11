@@ -93,7 +93,7 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
           </Nav>
         </Card.Header>
         <Card.Body className="p-0 scrollable-area full-height">
-          <Tab.Content className="p-0 full-height">
+          <Tab.Content className="p-0 border-0 full-height">
             {panels.map((panel: PanelEntry) => (
               <Tab.Pane
                 className="full-height flex-grow"
