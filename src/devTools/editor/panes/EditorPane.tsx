@@ -84,16 +84,14 @@ const EditorPane: React.FunctionComponent<{
                 onChange={syncReduxState}
                 delayMillis={CHANGE_DETECT_DELAY_MILLIS}
               />
-              <LogContextWrapper>
-                <ContextLogs
-                  messageContext={{
-                    extensionId: element.uuid,
-                    blueprintId: element.recipe ? element.recipe.id : undefined,
-                  }}
-                >
-                  <ElementWizard element={element} editable={editable} />
-                </ContextLogs>
-              </LogContextWrapper>
+              <ContextLogs
+                messageContext={{
+                  extensionId: element.uuid,
+                  blueprintId: element.recipe ? element.recipe.id : undefined,
+                }}
+              >
+                <ElementWizard element={element} editable={editable} />
+              </ContextLogs>
               {isWizardOpen && <SaveExtensionWizard />}
             </>
           )}

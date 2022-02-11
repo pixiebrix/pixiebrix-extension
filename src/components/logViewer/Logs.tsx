@@ -15,21 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { createContext } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { clearLog, LogEntry } from "@/background/logging";
 import usePollContextLogs from "./usePollContextLogs";
 import { MessageContext } from "@/core";
 
 type LogState = {
   messageContext: MessageContext;
-  entries: LogEntry[];
+  allEntries: LogEntry[];
+  displayedEntries: LogEntry[];
+  isLoading: boolean;
+  refresh: () => void;
   clear: () => Promise<void>;
 };
 
 const defaultState: LogState = {
   messageContext: null,
-  entries: [],
-  clear: () => Promise.resolve(),
+  allEntries: [],
+  displayedEntries: [],
+  isLoading: true,
+  refresh: () => {},
+  clear: async () => {},
 };
 
 export const LogContext2 = createContext<LogState>(defaultState);
@@ -38,14 +44,41 @@ type ContextLogsProps = {
   messageContext: MessageContext;
 };
 
+/**
+ * Fetches the logs from storage and tracks the displayed entries.
+ */
 export const ContextLogs: React.FunctionComponent<ContextLogsProps> = ({
   messageContext,
   children,
 }) => {
-  const entries = usePollContextLogs({ context: messageContext });
+  const [displayedEntries, setDisplayedEntries] = useState<LogEntry[]>([]);
+  const { entries: allEntries, isLoading } = usePollContextLogs({
+    context: messageContext,
+  });
+
+  // Initialize displayed entries when the loading state changes
+  useEffect(() => {
+    console.log("ContextLogs", "init effect", { allEntries, isLoading });
+    setDisplayedEntries(allEntries);
+  }, [isLoading]);
+
+  const refresh = () => {
+    setDisplayedEntries(allEntries);
+  };
+
   const clear = async () => clearLog(messageContext);
+
   return (
-    <LogContext2.Provider value={{ messageContext, entries, clear }}>
+    <LogContext2.Provider
+      value={{
+        messageContext,
+        allEntries,
+        displayedEntries,
+        isLoading,
+        refresh,
+        clear,
+      }}
+    >
       {children}
     </LogContext2.Provider>
   );

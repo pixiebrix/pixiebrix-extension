@@ -40,6 +40,7 @@ import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import useFlags from "@/hooks/useFlags";
+import { LogContext2 } from "@/components/logViewer/Logs";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -58,7 +59,17 @@ const blueprintOptionsStep = {
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
 }> = ({ step }) => {
-  const { unread } = useContext(LogContext);
+  const { allEntries, displayedEntries } = useContext(LogContext2);
+
+  const lastTimestamp = useMemo(
+    () => Math.max(...displayedEntries.map((x) => Number(x.timestamp))),
+    [displayedEntries]
+  );
+
+  const unread = useMemo(
+    () => allEntries.filter((x) => Number(x.timestamp) > lastTimestamp),
+    [allEntries, lastTimestamp]
+  );
 
   const logBadge = useMemo(() => {
     if (step.step !== LOG_STEP_NAME) {

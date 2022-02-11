@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LogEntry, LOG_LEVELS, MessageLevel } from "@/background/logging";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { LOG_LEVELS, MessageLevel } from "@/background/logging";
+import { useContext, useMemo } from "react";
 import { LogContext2 } from "./Logs";
 
 type config = {
@@ -27,59 +27,49 @@ type config = {
 
 function useLogEntries2({ level, page, perPage }: config) {
   const {
-    entries: allEntries,
-    messageContext,
+    allEntries,
+    displayedEntries,
+    isLoading,
     clear: clearAllEntries,
   } = useContext(LogContext2);
-  const [entries, setEntries] = useState<LogEntry[]>([]);
 
-  // Set the initial entries when context changes
-  useEffect(() => {
-    setEntries(allEntries);
-  }, [messageContext]);
+  const filteredAllEntries = useMemo(() => {
+    console.log("useLogEntries2", "filteredAllEntries");
+    return allEntries.filter(
+      // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
+      (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
+    );
+  }, [level, allEntries]);
 
-  // TODO - newEntries come directly from getLog, always new object, no reason for useMemo
-  const filteredAllEntries = useMemo(
-    () =>
-      allEntries.filter(
-        // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
-        (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
-      ),
-    [level, allEntries]
-  );
+  const filteredDisplayedEntries = useMemo(() => {
+    console.log("useLogEntries2", "filteredEntries");
+    return (displayedEntries ?? []).filter(
+      // Level is coming from the dropdown
+      // eslint-disable-next-line security/detect-object-injection
+      (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
+    );
+  }, [level, displayedEntries]);
 
-  const filteredEntries = useMemo(
-    () =>
-      (entries ?? []).filter(
-        // Level is coming from the dropdown
-        // eslint-disable-next-line security/detect-object-injection
-        (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
-      ),
-    [level, entries]
-  );
-
-  const numNew = filteredAllEntries.length - filteredEntries.length;
+  const numNew = filteredAllEntries.length - filteredDisplayedEntries.length;
 
   const hasEntries = allEntries.length > 0;
 
   const start = page * perPage;
-  const pageEntries = filteredEntries.slice(start, start + perPage);
+  const pageEntries = filteredDisplayedEntries.slice(start, start + perPage);
 
-  const numPages = Math.ceil(filteredEntries.length / perPage);
+  const numPages = Math.ceil(filteredDisplayedEntries.length / perPage);
 
   const refresh = async () => {
-    setEntries(allEntries);
     const value = Promise.resolve();
     return value;
   };
 
   const clear = async () => {
-    setEntries([]);
     return clearAllEntries();
   };
 
   return {
-    isLoading: false,
+    isLoading,
     numNew,
     hasEntries,
     pageEntries,

@@ -15,27 +15,66 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLog } from "@/background/logging";
+import { getLog, LogEntry } from "@/background/logging";
 import { MessageContext } from "@/core";
 import useInterval from "@/hooks/useInterval";
-import { useState } from "react";
+import { isEqual } from "lodash";
+import { useEffect, useState } from "react";
 
-const REFRESH_INTERVAL = 1000;
+const REFRESH_INTERVAL = 5000;
 
+/**
+ * @typedef {Object} PollingState
+ * @property {LogEntry[]} entries Log entries for the current MessageContext
+ * @property {boolean} isLoading Whether the log is currently being loaded for the first time for the given MessageContext}
+ */
+
+/**
+ * Polls logs from the storage
+ * @returns {Object} state - The current state of the logs polling
+ * @returns {LogEntry[]} state.entries - Log entries for the current MessageContext
+ * @returns {boolean} state.isLoading - Whether the log is currently being loaded for the first time for the given MessageContext
+ */
 function usePollContextLogs({ context }: { context: MessageContext | null }) {
-  const [entries, setEntries] = useState([]);
+  const [entries, setEntries] = useState<LogEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setEntries([]);
+    setIsLoading(true);
+  }, [context]);
 
   useInterval(async () => {
-    if (context === null && entries.length > 0) {
-      setEntries([]);
+    if (context === null) {
+      if (isLoading) {
+        setIsLoading(false);
+      }
+
       return;
     }
 
     const logEntries = await getLog(context);
-    setEntries(logEntries);
+
+    if (logEntries.length === 0 && entries.length === 0) {
+      if (isLoading) {
+        setIsLoading(false);
+      }
+
+      return;
+    }
+
+    // Do deep equality check. On the log array of ~3k items it takes a fraction of a ms.
+    // Makes sense to spend some cycles here to save on re-rendering of the children.
+    if (!isEqual(logEntries, entries)) {
+      setEntries(logEntries);
+    }
+
+    if (isLoading) {
+      setIsLoading(false);
+    }
   }, REFRESH_INTERVAL);
 
-  return entries;
+  return { entries, isLoading };
 }
 
 export default usePollContextLogs;

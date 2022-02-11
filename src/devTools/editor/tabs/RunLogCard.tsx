@@ -41,6 +41,8 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
     perPage,
   });
 
+  console.log("RunLogCard", "render", logs);
+
   if (logs.isLoading) {
     return (
       <Card.Body>
