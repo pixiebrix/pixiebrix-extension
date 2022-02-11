@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,33 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.ActiveBricksCard {
-  .table {
-    th {
-      font-weight: 400;
-    }
-
-    th,
-    td {
-      height: 44px;
-      padding-top: 5px;
-      padding-bottom: 5px;
-
-      &:first-child {
-        width: 15px;
-      }
-    }
+.table {
+  th {
+    font-weight: 400;
   }
-}
 
-.VideoCard {
-  .card {
-    min-width: 725px;
-    max-width: 725px;
-    width: 725px;
+  th,
+  td {
+    height: 44px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 
-    .card-body {
-      padding: 1.5rem;
+    &:first-child {
+      width: 15px;
     }
   }
 }

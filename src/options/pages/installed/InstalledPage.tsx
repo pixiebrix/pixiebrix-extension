@@ -22,7 +22,6 @@ import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
-import "./InstalledPage.scss";
 import {
   reactivateEveryTab,
   uninstallContextMenu,

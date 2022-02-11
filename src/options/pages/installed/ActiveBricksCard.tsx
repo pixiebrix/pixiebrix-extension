@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ActiveBricksCard.module.scss";
+
 import React, { useMemo } from "react";
 import {
   MessageContext,
@@ -215,9 +217,9 @@ const ActiveBricksCard: React.FunctionComponent<{
   return (
     <Row>
       <Col xl={9} lg={10} md={12}>
-        <Card className="ActiveBricksCard">
+        <Card>
           <Card.Header>Active Bricks</Card.Header>
-          <Table>
+          <Table className={styles.table}>
             <tbody>
               {personalExtensions.length > 0 && (
                 <>
