@@ -16,6 +16,7 @@
  */
 
 import styles from "./Entry.module.scss";
+
 import React, { useCallback } from "react";
 import { IExtension, UUID } from "@/core";
 import { useDispatch } from "react-redux";
@@ -25,7 +26,7 @@ import {
   selectType,
 } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/slices/editorSlice";
-import { reportError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { ListGroup } from "react-bootstrap";
 import {
   NotAvailableIcon,

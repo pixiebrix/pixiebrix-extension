@@ -24,7 +24,6 @@ import {
   hasCancelRootCause,
   MultipleElementsFoundError,
   NoElementsFoundError,
-  reportError,
 } from "@/errors";
 import {
   acquireElement,
@@ -40,6 +39,8 @@ import {
   IBlock,
   IconConfig,
   IExtensionPoint,
+  Logger,
+  Metadata,
   ReaderOutput,
   ResolvedExtension,
   Schema,
@@ -69,6 +70,8 @@ import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { $safeFind } from "@/helpers";
 import sanitize from "@/utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import reportError from "@/telemetry/reportError";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -169,17 +172,16 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   );
 
+  public get kind(): "menuItem" {
+    return "menuItem";
+  }
+
   public get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
   }
 
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon = "faMousePointer"
-  ) {
-    super(id, name, description, icon);
+  protected constructor(metadata: Metadata, logger: Logger) {
+    super(metadata, logger);
     this.instanceId = uuidv4();
     this.menus = new Map<string, HTMLElement>();
     this.removed = new Set<string>();
@@ -784,8 +786,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description, icon } = cloned.metadata;
-    super(id, name, description, icon);
+    super(cloned.metadata, new BackgroundLogger());
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;

@@ -17,7 +17,7 @@
 
 import browser from "webextension-polyfill";
 import Cookies from "js-cookie";
-import { isEqual } from "lodash";
+import { isEqual, pull } from "lodash";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   TokenAuthData,
@@ -36,6 +36,10 @@ const listeners: AuthListener[] = [];
 // Use listeners to allow inversion of control and avoid circular dependency with rollbar.
 export function addListener(handler: AuthListener): void {
   listeners.push(handler);
+}
+
+export function removeListener(handler: AuthListener): void {
+  pull(listeners, handler);
 }
 
 export async function readAuthData(): Promise<
@@ -83,8 +87,8 @@ export async function updateUserData(update: UserDataUpdate): Promise<void> {
 
   for (const key of USER_DATA_UPDATE_KEYS) {
     // Intentionally overwrite values with null/undefined from the update
-    // eslint-disable-next-line security/detect-object-injection -- keys from compile-time constant
-    updated[key] = update[key];
+    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-explicit-any -- keys from compile-time constant
+    updated[key] = update[key] as any;
   }
 
   await setStorage(STORAGE_EXTENSION_KEY, updated);

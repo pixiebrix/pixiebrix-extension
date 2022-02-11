@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ScopeSettings.module.scss";
+
 import React, { useCallback } from "react";
 import { Formik, FormikBag, FormikValues } from "formik";
 import { Alert, Button, Container, Form } from "react-bootstrap";
@@ -24,10 +26,10 @@ import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { StatusCodes } from "http-status-codes";
 import { getLinkedApiClient } from "@/services/apiClient";
-import { isAxiosError, reportError } from "@/errors";
+import { isAxiosError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import useNotifications from "@/hooks/useNotifications";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import styles from "./ScopeSettings.module.scss";
 import { useGetAuthQuery } from "@/services/api";
 
 interface Profile {

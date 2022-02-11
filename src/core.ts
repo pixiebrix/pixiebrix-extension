@@ -15,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
+import type {
   JSONSchema7,
   JSONSchema7Definition,
   JSONSchema7TypeName,
 } from "json-schema";
-import { UiSchema as StandardUiSchema } from "@rjsf/core";
-import { AxiosRequestConfig } from "axios";
-import { Except, Primitive } from "type-fest";
-import { ErrorObject } from "serialize-error";
-import { Permissions } from "webextension-polyfill";
+import type { UiSchema as StandardUiSchema } from "@rjsf/core";
+import type { AxiosRequestConfig } from "axios";
+import type { Except, Primitive } from "type-fest";
+import type { ErrorObject } from "serialize-error";
+import type { Permissions } from "webextension-polyfill";
+import type React from "react";
+
 import { pick } from "lodash";
-import React from "react";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
@@ -563,6 +564,8 @@ export type ResolvedExtension<T extends Config = EmptyConfig> = Except<
 };
 
 export interface IExtensionPoint extends Metadata {
+  kind: string;
+
   inputSchema: Schema;
 
   permissions: Permissions.Permissions;

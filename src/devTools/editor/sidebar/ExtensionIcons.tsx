@@ -23,11 +23,13 @@ import {
   faPuzzlePiece,
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
-import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
+import { ExtensionPointType } from "@/extensionPoints/types";
 
-export const ExtensionIcon: React.FunctionComponent<{ type: ElementType }> = ({
-  type,
-}) => <FontAwesomeIcon icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece} />;
+export const ExtensionIcon: React.FunctionComponent<{
+  type: ExtensionPointType;
+}> = ({ type }) => (
+  <FontAwesomeIcon icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece} />
+);
 
 export const NotAvailableIcon: React.FunctionComponent = () => (
   <FontAwesomeIcon icon={faEyeSlash} title="Not available on page" />

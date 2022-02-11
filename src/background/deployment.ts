@@ -19,10 +19,10 @@
 import { Deployment } from "@/types/contract";
 import browser from "webextension-polyfill";
 import { isEmpty, partition, uniqBy } from "lodash";
-import { reportError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/telemetry";
 import { getExtensionVersion } from "@/chrome";
-import { isLinked, readAuthData } from "@/auth/token";
+import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -42,6 +42,7 @@ import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
 import { getSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
+import { ProfileResponse } from "@/hooks/auth";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -114,7 +115,7 @@ export async function uninstallAllDeployments(): Promise<void> {
   });
 }
 
-async function uninstallUnmatchedDeployments(
+export async function uninstallUnmatchedDeployments(
   deployments: Deployment[]
 ): Promise<void> {
   let state = await loadOptions();
@@ -275,14 +276,8 @@ export async function updateDeployments(): Promise<void> {
 
   const now = Date.now();
 
-  const [
-    linked,
-    extensionUpdateAvailable,
-    { organizationId },
-    { nextUpdate },
-  ] = await Promise.all([
+  const [linked, { organizationId }, { nextUpdate }] = await Promise.all([
     isLinked(),
-    isUpdateAvailable(),
     readAuthData(),
     getSettingsState(),
   ]);
@@ -306,6 +301,7 @@ export async function updateDeployments(): Promise<void> {
   // Always get the freshest options slice from the local storage
   const { extensions } = await loadOptions();
 
+  // Version to report to the server. The update check happens via isUpdateAvailable below
   const { version: extensionVersionString } = browser.runtime.getManifest();
   const extensionVersion = parseSemVer(extensionVersionString);
 
@@ -315,34 +311,68 @@ export async function updateDeployments(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping updateDeployments because the extension is not linked to the PixieBrix service"
+      "Skipping  deployments update because the extension is not linked to the PixieBrix service"
     );
     return;
   }
 
-  const { data: deployments } = await client.post<Deployment[]>(
-    "/api/deployments/",
-    {
-      uid: await getUID(),
-      version: await getExtensionVersion(),
-      active: selectInstalledDeployments(extensions),
-    }
-  );
+  const {
+    data: profile,
+    status: profileResponseStatus,
+  } = await client.get<ProfileResponse>("/api/me/");
+
+  if (profileResponseStatus >= 400) {
+    // If our server is acting up, check again later
+    console.debug(
+      "Skipping deployments update because /api/me/ request failed"
+    );
+    return;
+  }
+
+  // Ensure the user's flags and telemetry information is up-to-date
+  void updateUserData({
+    user: profile.id,
+    email: profile.email,
+    organizationId: profile.organization?.id,
+    telemetryOrganizationId: profile.telemetry_organization?.id,
+    flags: profile.flags,
+  });
+
+  const {
+    data: deployments,
+    status: deploymentResponseStatus,
+  } = await client.post<Deployment[]>("/api/deployments/", {
+    uid: await getUID(),
+    version: await getExtensionVersion(),
+    active: selectInstalledDeployments(extensions),
+  });
+
+  if (deploymentResponseStatus >= 400) {
+    // Our server is active up, check again later
+    console.debug(
+      "Skipping deployments update because /api/deployments/ request failed"
+    );
+    return;
+  }
 
   // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
 
   if (nextUpdate && nextUpdate > now) {
-    console.debug("Skipping updateDeployments because updates are snoozed", {
+    console.debug("Skipping deployments update because updates are snoozed", {
       nextUpdate,
     });
     return;
   }
 
-  if (extensionUpdateAvailable) {
+  if (
+    isUpdateAvailable() &&
+    // `restricted-version` is an implicit flag from the MeSerializer
+    profile.flags.includes("restricted-version")
+  ) {
     console.info("Extension update available from the web store");
     // Have the user update their browser extension. (Since the new version might impact the deployment activation)
-    await browser.runtime.openOptionsPage();
+    void browser.runtime.openOptionsPage();
     return;
   }
 
@@ -358,7 +388,7 @@ export async function updateDeployments(): Promise<void> {
     await refreshRegistries();
   } catch (error) {
     reportError(error);
-    await browser.runtime.openOptionsPage();
+    void browser.runtime.openOptionsPage();
     // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user the to
     // manually install the deployments via the banner
     return;
@@ -390,7 +420,7 @@ export async function updateDeployments(): Promise<void> {
 
   // We only want to call openOptionsPage a single time
   if (manual.length > 0 || automaticError) {
-    await browser.runtime.openOptionsPage();
+    void browser.runtime.openOptionsPage();
   }
 }
 

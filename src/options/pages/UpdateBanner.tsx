@@ -20,7 +20,7 @@ import { Button } from "react-bootstrap";
 import browser from "webextension-polyfill";
 import { useAsyncState } from "@/hooks/common";
 import { getAvailableVersion } from "@/background/messenger/api";
-import { reportError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import Banner from "@/components/banner/Banner";
 import { gt } from "semver";
 
