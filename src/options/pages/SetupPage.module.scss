@@ -15,42 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.OnboardingCard {
-  .card-header {
+.OnboardingStep {
+  &__status {
+    min-width: 50px;
+    color: #00b300;
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+  }
+
+  &__step {
     font-size: 1.25rem;
+    line-height: 1.5rem;
+    min-width: 125px;
   }
 
-  .text-muted {
-    margin-top: 10px;
-    font-size: 1rem;
-  }
-
-  .OnboardingStep {
-    > div {
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
-
-    &.current {
-      font-weight: 500;
-    }
-
-    &__status {
-      min-width: 50px;
-      color: #00b300;
-      font-size: 1.5rem;
-      line-height: 1.5rem;
-    }
-
-    &__step {
-      font-size: 1.25rem;
-      line-height: 1.5rem;
-      min-width: 125px;
-    }
-
-    &__content {
-      flex-grow: 1;
-      font-size: 1.25rem;
-    }
+  &__content {
+    flex-grow: 1;
+    font-size: 1.25rem;
   }
 }
