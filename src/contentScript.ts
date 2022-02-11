@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uuidv4 } from "@/types/helpers";
+import "./contentScript.scss";
 
 const start = Date.now();
 
 import "@/extensionContext";
+import { uuidv4 } from "@/types/helpers";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
 import "@/contentScript/messenger/registration";
 import browser from "webextension-polyfill";
