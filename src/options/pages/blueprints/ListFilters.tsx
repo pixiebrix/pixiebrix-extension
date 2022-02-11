@@ -1,3 +1,5 @@
+import style from "./ListFilters.module.scss";
+
 import { Col, Form, Nav } from "react-bootstrap";
 import React, { useEffect, useMemo, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
@@ -42,7 +44,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
   }, [filters, query]);
 
   return (
-    <Col sm={3} xl={2}>
+    <Col sm={3} xl={2} className={style.nav}>
       <Form className="mb-4 mr-3">
         <Form.Control
           id="query"

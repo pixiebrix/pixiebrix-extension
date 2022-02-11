@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./BlueprintsCard.module.scss";
+
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
 import React, { Fragment, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -47,8 +49,8 @@ import {
 import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
-import styles from "./BlueprintsCard.module.scss";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
+import cx from "classnames";
 
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
@@ -193,7 +195,12 @@ const BlueprintsCard: React.FunctionComponent<{
         setGlobalFilter={setGlobalFilter}
       />
       <Col>
-        <div className="d-flex justify-content-between align-items-center mb-3">
+        <div
+          className={cx(
+            styles.header,
+            "d-flex justify-content-between align-items-center mb-3"
+          )}
+        >
           <h3>
             {globalFilter
               ? "Search results"
