@@ -1,6 +1,5 @@
 import { Col, Form, Nav } from "react-bootstrap";
 import React, { useEffect, useMemo, useState } from "react";
-import styles from "./ListFilters.module.scss";
 import useReduxState from "@/hooks/useReduxState";
 import { selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
@@ -43,7 +42,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
   }, [filters, query]);
 
   return (
-    <Col sm={2}>
+    <Col sm={3} xl={2}>
       <Form className="mb-4 mr-3">
         <Form.Control
           id="query"
