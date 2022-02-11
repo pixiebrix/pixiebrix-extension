@@ -20,11 +20,11 @@ import {
   ClientNetworkError,
   ClientNetworkPermissionError,
   RemoteServiceError,
-  SanitizedURL,
+  SerializableAxiosError,
 } from "@/services/errors";
 import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
-import { AxiosError, AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import {
   DEFAULT_SERVICE_URL,
@@ -71,7 +71,9 @@ export async function isAppUrl(url: string): Promise<boolean> {
 /**
  * Return true iff the error corresponds to a request to PixieBrix API.
  */
-async function isAppRequest(error: AxiosError): Promise<boolean> {
+export async function isAppRequest(
+  error: SerializableAxiosError
+): Promise<boolean> {
   const baseURL = await getBaseURL();
   const requestUrl = selectAbsoluteUrl(error.config);
   const patterns = [baseURL, DEFAULT_SERVICE_URL].map(
@@ -113,14 +115,10 @@ export async function enrichRequestError(
     );
   }
 
-  const includeUrl = await isAppRequest(maybeAxiosError);
-  const sanitizedUrl = (includeUrl ? url.href : null) as SanitizedURL;
-
   if (maybeAxiosError.response) {
     return new RemoteServiceError(
       maybeAxiosError.response.statusText ?? maybeAxiosError.message,
-      maybeAxiosError,
-      sanitizedUrl
+      maybeAxiosError
     );
   }
 
@@ -131,14 +129,12 @@ export async function enrichRequestError(
   if (!hasPermissions) {
     return new ClientNetworkPermissionError(
       "Insufficient browser permissions to make request.",
-      maybeAxiosError,
-      sanitizedUrl
+      maybeAxiosError
     );
   }
 
   return new ClientNetworkError(
     "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information",
-    maybeAxiosError,
-    sanitizedUrl
+    maybeAxiosError
   );
 }

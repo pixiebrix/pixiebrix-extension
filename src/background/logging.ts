@@ -26,10 +26,16 @@ import { allowsTrack } from "@/telemetry/dnt";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
   getErrorMessage,
+  getRootCause,
   hasBusinessRootCause,
   hasCancelRootCause,
+  isAxiosError,
 } from "@/errors";
 import { expectContext, forbidContext } from "@/utils/expectContext";
+import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
+import { readAuthData } from "@/auth/token";
+import { UnknownObject } from "@/types";
+import { isObject } from "@/utils";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -208,7 +214,37 @@ function flattenContext(
 }
 
 /**
- * True if recordError logged a warning already that DNT mode is on
+ * Select extra error context for:
+ * - Requests to PixieBrix API to detect network problems client side
+ * - Any service request if enterprise has enabled `enterprise-telemetry`
+ */
+async function selectExtraContext(
+  error: SerializedError
+): Promise<UnknownObject> {
+  if (!isObject(error)) {
+    return {};
+  }
+
+  const cause = getRootCause(error);
+
+  // Handle base classes of ClientRequestError
+  if ("error" in cause && isAxiosError(cause.error)) {
+    const { flags = [] } = await readAuthData();
+    if (
+      (await isAppRequest(cause.error)) ||
+      flags.includes("enterprise-telemetry")
+    ) {
+      return {
+        url: selectAbsoluteUrl(cause.error.config),
+      };
+    }
+  }
+
+  return {};
+}
+
+/**
+ * True if recordError already logged a warning that DNT mode is on
  */
 let loggedDNT = false;
 
@@ -241,10 +277,12 @@ export async function recordError(
       } else if (hasBusinessRootCause(error)) {
         // Send at debug level so it doesn't trigger devops notifications
         const rollbar = await getRollbar();
-        rollbar.debug(message, errorObj, flatContext);
+        const details = await selectExtraContext(error);
+        rollbar.debug(message, errorObj, { ...flatContext, details });
       } else {
         const rollbar = await getRollbar();
-        rollbar.error(message, errorObj, flatContext);
+        const details = await selectExtraContext(error);
+        rollbar.error(message, errorObj, { flatContext, ...details });
       }
     } else if (!loggedDNT) {
       console.warn("Rollbar telemetry is disabled because DNT is turned on");
