@@ -21,25 +21,29 @@ import usePollContextLogs from "./usePollContextLogs";
 import { MessageContext } from "@/core";
 
 type LogState = {
+  messageContext: MessageContext;
   entries: LogEntry[];
 };
 
 const defaultState: LogState = {
+  messageContext: null,
   entries: [],
 };
 
 export const LogContext2 = createContext<LogState>(defaultState);
 
 type ContextLogsProps = {
-  context: MessageContext;
+  messageContext: MessageContext;
 };
 
 export const ContextLogs: React.FunctionComponent<ContextLogsProps> = ({
-  context,
+  messageContext,
   children,
 }) => {
-  const entries = usePollContextLogs({ context });
+  const entries = usePollContextLogs({ context: messageContext });
   return (
-    <LogContext2.Provider value={{ entries }}>{children}</LogContext2.Provider>
+    <LogContext2.Provider value={{ messageContext, entries }}>
+      {children}
+    </LogContext2.Provider>
   );
 };

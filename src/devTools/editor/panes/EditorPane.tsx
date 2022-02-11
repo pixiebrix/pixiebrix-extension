@@ -85,7 +85,12 @@ const EditorPane: React.FunctionComponent<{
                 delayMillis={CHANGE_DETECT_DELAY_MILLIS}
               />
               <LogContextWrapper>
-                <ContextLogs context={{ extensionId: element.uuid }}>
+                <ContextLogs
+                  messageContext={{
+                    extensionId: element.uuid,
+                    blueprintId: element.recipe ? element.recipe.id : undefined,
+                  }}
+                >
                   <ElementWizard element={element} editable={editable} />
                 </ContextLogs>
               </LogContextWrapper>

@@ -23,12 +23,10 @@ export const LOGS_EVENT_KEY = "logs";
 
 const LogsTab: React.FunctionComponent<{
   eventKey: string;
-}> = ({ eventKey = LOGS_EVENT_KEY }) => {
-  return (
-    <Tab.Pane eventKey={eventKey} mountOnEnter unmountOnExit className="h-100">
-      <RunLogCard initialLevel="debug" refreshInterval={750} />
-    </Tab.Pane>
-  );
-};
+}> = ({ eventKey = LOGS_EVENT_KEY }) => (
+  <Tab.Pane eventKey={eventKey} mountOnEnter unmountOnExit className="h-100">
+    <RunLogCard initialLevel="debug" refreshInterval={750} />
+  </Tab.Pane>
+);
 
 export default LogsTab;
