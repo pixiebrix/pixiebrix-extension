@@ -17,35 +17,19 @@
 
 import React from "react";
 import Centered from "@/devTools/editor/components/Centered";
+import IntroButtons from "./IntroButtons";
 
 const WelcomePane: React.FunctionComponent = () => (
   <Centered isScrollable>
     <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
 
-    <div className="text-left">
-      <p>Click Add in the sidebar to add an element to the page.</p>
-
+    <div className="text-center">
       <p>
-        Learn how to use the Page Editor in our{" "}
-        <a
-          href="https://docs.pixiebrix.com/quick-start-guide"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Quick Start Guide
-        </a>
+        Click <span className="text-info">Add</span> in the sidebar to edit the
+        page.
       </p>
 
-      <p>
-        Or, schedule a{" "}
-        <a
-          href="https://calendly.com/pixiebrix-todd/live-support-session"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          FREE Zoom support session
-        </a>
-      </p>
+      <IntroButtons />
     </div>
   </Centered>
 );

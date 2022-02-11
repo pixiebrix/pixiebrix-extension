@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import documentTreeStyles from "./documentTree.module.scss";
+
 import {
   DocumentComponent,
   DocumentElement,
@@ -24,7 +26,6 @@ import { get } from "lodash";
 import { UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
 import cx from "classnames";
-import documentTreeStyles from "./documentTree.module.scss";
 import React from "react";
 import { Button } from "react-bootstrap";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";

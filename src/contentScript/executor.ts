@@ -16,7 +16,7 @@
  */
 
 import blockRegistry from "@/blocks/registry";
-import { BackgroundLogger } from "@/background/logging";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BlockArg, MessageContext, RegistryId } from "@/core";
 import { Availability } from "@/blocks/types";
 

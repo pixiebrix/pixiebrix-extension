@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   MessageContext,
   RecipeMetadata,
@@ -30,12 +30,15 @@ import ExtensionGroupHeader from "./ExtensionGroupHeader";
 import { groupBy } from "lodash";
 import ExtensionRows from "./ExtensionRows";
 import { isDeploymentActive } from "@/options/deploymentUtils";
-import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
-import AuthContext from "@/auth/AuthContext";
+import {
+  useGetOrganizationsQuery,
+  useGetRecipesQuery,
+  useGetAuthQuery,
+} from "@/services/api";
 import { RecipeDefinition } from "@/types/definitions";
-import { push } from "connected-react-router";
 import * as semver from "semver";
 import { useDispatch } from "react-redux";
+import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 
 const groupByRecipe = (
   extensions: ResolvedExtension[]
@@ -158,7 +161,9 @@ const ActiveBricksCard: React.FunctionComponent<{
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
   const dispatch = useDispatch();
   const { data: organizations = [] } = useGetOrganizationsQuery();
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
   const {
     data: availableRecipes = [] as RecipeDefinition[],
   } = useGetRecipesQuery();
@@ -196,7 +201,11 @@ const ActiveBricksCard: React.FunctionComponent<{
   const deploymentExtensionGroups = groupByRecipe(groupedExtensions.deployment);
 
   const showShareLinkModal = (blueprintId: RegistryId) => {
-    dispatch(push(`/installed/link/${encodeURIComponent(blueprintId)}`));
+    dispatch(
+      installedPageSlice.actions.setShareContext({
+        blueprintId,
+      })
+    );
   };
 
   // Sharing was added to _recipe recently (see the RecipeMetadata type and optionsSlice)

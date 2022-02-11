@@ -15,24 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file Generic helper methods.
+ */
+
 import {
-  isEmpty,
-  mapValues,
-  partial,
-  partialRight,
-  negate,
+  compact,
   countBy,
-  maxBy,
   entries,
-  last,
   flow,
   head,
-  ObjectIterator,
-  zip,
-  pickBy,
+  isEmpty,
   isPlainObject,
-  compact,
+  last,
+  mapValues,
+  maxBy,
+  negate,
+  ObjectIterator,
+  partial,
+  partialRight,
+  pickBy,
   unary,
+  zip,
 } from "lodash";
 import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
@@ -528,4 +532,9 @@ export async function waitFor<T>(
     // eslint-disable-next-line no-await-in-loop -- It's a retry loop
     await sleep(intervalMillis);
   } while (Date.now() < endBy);
+}
+
+export function isMac(): boolean {
+  // https://stackoverflow.com/a/27862868/402560
+  return navigator.platform.includes("Mac");
 }

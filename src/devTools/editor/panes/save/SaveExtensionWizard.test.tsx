@@ -21,6 +21,7 @@ import SaveExtensionWizard from "./SaveExtensionWizard";
 import {
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
   useGetRecipesQuery as useGetRecipesQueryMock,
+  useGetAuthQuery,
 } from "@/services/api";
 import useSavingWizardMock from "./useSavingWizard";
 import {
@@ -30,12 +31,15 @@ import {
 } from "@/tests/factories";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/tests/testHelpers";
+import { anonAuth } from "@/hooks/auth";
 
+jest.mock("@/hooks/useNotifications");
 jest.mock("./useSavingWizard");
 
 jest.mock("@/services/api", () => ({
   useGetRecipesQuery: jest.fn(),
   useGetEditablePackagesQuery: jest.fn(),
+  useGetAuthQuery: jest.fn(),
 }));
 
 beforeEach(() => {
@@ -45,6 +49,10 @@ beforeEach(() => {
   });
   (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
     data: [],
+    isLoading: false,
+  });
+  (useGetAuthQuery as jest.Mock).mockReturnValue({
+    data: anonAuth,
     isLoading: false,
   });
 });
@@ -139,6 +147,14 @@ test("calls Save as New Blueprint", async () => {
     isLoading: false,
   });
 
+  (useGetAuthQuery as jest.Mock).mockReturnValue({
+    data: {
+      ...anonAuth,
+      scope: "@test",
+    },
+  });
+
+  // Setting the AuthContext to provide the user scope
   render(<SaveExtensionWizard />);
 
   // Clicking Save as New Blueprint on the first modal
@@ -158,6 +174,36 @@ test("calls Save as New Blueprint", async () => {
   await waitForEffect();
 
   expect(saveElementAndCreateNewRecipeMock).toHaveBeenCalled();
+});
+
+test("requires user context to save as new blueprint", async () => {
+  const saveElementAndCreateNewRecipeMock = jest.fn();
+  const metadata = installedRecipeMetadataFactory();
+  (useSavingWizardMock as jest.Mock).mockReturnValue({
+    isSaving: false,
+    element: formStateFactory({
+      recipe: metadata,
+    }),
+    saveElementAndCreateNewRecipe: saveElementAndCreateNewRecipeMock,
+  });
+
+  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+    data: [recipeFactory({ metadata }), recipeFactory()],
+    isLoading: false,
+  });
+
+  render(<SaveExtensionWizard />);
+
+  // Clicking Save as New Blueprint on the first modal
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Save as New Blueprint",
+    })
+  );
+
+  // Scope input field is on the screen
+  const scopeInput = await screen.findAllByLabelText("Account Alias");
+  expect(scopeInput).not.toBeNull();
 });
 
 test("calls Update Blueprint", async () => {

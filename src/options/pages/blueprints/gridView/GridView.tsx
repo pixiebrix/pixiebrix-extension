@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./GridView.module.scss";
+
 import React from "react";
 import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
-import styles from "./GridView.module.scss";
 import GridCard from "./GridCard";
 
 const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({

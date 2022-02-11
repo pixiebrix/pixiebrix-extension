@@ -8,6 +8,7 @@ import {
   isErrorObject,
   MultipleElementsFoundError,
   NoElementsFoundError,
+  selectError,
 } from "@/errors";
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
@@ -142,5 +143,26 @@ describe("isErrorObject", () => {
   test("handles primitives", () => {
     expect(isErrorObject(null)).toBe(false);
     expect(isErrorObject(TEST_MESSAGE)).toBe(false);
+  });
+});
+
+describe("selectError", () => {
+  it("passes through error", () => {
+    const error = new Error("test");
+    expect(selectError(error)).toBe(error);
+  });
+
+  it("deserializes error object", () => {
+    const error = new Error("test");
+    expect(selectError(serializeError(error))).toBeInstanceOf(Error);
+    expect(serializeError(selectError(serializeError(error)))).toStrictEqual(
+      serializeError(error)
+    );
+  });
+
+  it("wraps primitize", () => {
+    const error = selectError("test");
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toEqual(error.message);
   });
 });

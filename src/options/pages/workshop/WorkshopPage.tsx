@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Page from "@/layout/Page";
 import { faHammer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
 import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
@@ -34,6 +34,7 @@ import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
 import { EnrichedBrick, NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
+import useFlags from "@/hooks/useFlags";
 
 const { actions } = workshopSlice;
 
@@ -231,17 +232,14 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 
 const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
   const {
-    isLoggedIn,
-    flags,
-    scope,
-    isPending: isAuthPending,
+    data: { isLoggedIn },
     error: authError,
-  } = useContext(AuthContext);
+  } = useGetAuthQuery();
+
+  const { flagOn } = useFlags();
 
   return (
     <RequireScope
-      scope={scope}
-      isPending={isAuthPending}
       scopeSettingsTitle="Welcome to the PixieBrix Workshop!"
       scopeSettingsDescription="To use the Workshop, you must first set an account alias for your PixieBrix account"
     >
@@ -252,7 +250,7 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
         description={
           <p>
             Build and attach bricks.{" "}
-            {flags.includes("marketplace") && (
+            {flagOn("marketplace") && (
               <>
                 To activate pre-made blueprints, visit the{" "}
                 <Link to={"/marketplace"}>Marketplace</Link>

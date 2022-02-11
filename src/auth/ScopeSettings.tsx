@@ -15,20 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ScopeSettings.module.scss";
+
 import React, { useCallback } from "react";
 import { Formik, FormikBag, FormikValues } from "formik";
-import { Alert, Button, Form } from "react-bootstrap";
+import { Alert, Button, Container, Form } from "react-bootstrap";
 import * as Yup from "yup";
 import { castArray, mapValues } from "lodash";
 import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { reportError } from "@/telemetry/logging";
 import { StatusCodes } from "http-status-codes";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import useNotifications from "@/hooks/useNotifications";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import styles from "./ScopeSettings.module.scss";
+import { useGetAuthQuery } from "@/services/api";
 
 interface Profile {
   scope: string | null;
@@ -46,7 +48,7 @@ const VALIDATION_SCHEMA = Yup.object({
 });
 
 type ScopeSettingsProps = {
-  title: string;
+  title?: string;
   description: string;
 };
 
@@ -55,6 +57,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
   description,
 }) => {
   const notify = useNotifications();
+  const { refetch: refetchAuth } = useGetAuthQuery();
 
   const submit = useCallback(
     async (
@@ -94,14 +97,14 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
         }
       }
 
-      location.reload();
+      refetchAuth();
     },
     [notify]
   );
 
   return (
     <div className={styles.root}>
-      <div className={styles.title}>{title}</div>
+      {title && <div className={styles.title}>{title}</div>}
 
       <div className="font-weight-bold">{description}</div>
 
@@ -127,17 +130,19 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
         validationSchema={VALIDATION_SCHEMA}
       >
         {({ handleSubmit, isSubmitting, isValid }) => (
-          <Form noValidate onSubmit={handleSubmit} className="mt-2">
-            <ConnectedFieldTemplate
-              name="scope"
-              label="Account Alias"
-              placeholder="@peter-parker"
-              description="Your @alias for publishing bricks, e.g., @peter-parker"
-            />
-            <Button type="submit" disabled={isSubmitting || !isValid}>
-              Set My Account Alias
-            </Button>
-          </Form>
+          <Container>
+            <Form noValidate onSubmit={handleSubmit} className="mt-2">
+              <ConnectedFieldTemplate
+                name="scope"
+                label="Account Alias"
+                placeholder="@peter-parker"
+                description="Your @alias for publishing bricks, e.g., @peter-parker"
+              />
+              <Button type="submit" disabled={isSubmitting || !isValid}>
+                Set My Account Alias
+              </Button>
+            </Form>
+          </Container>
         )}
       </Formik>
     </div>

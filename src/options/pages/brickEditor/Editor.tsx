@@ -44,6 +44,7 @@ import useNotifications from "@/hooks/useNotifications";
 import { ReferenceEntry } from "./brickEditorTypes";
 import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
+import { isMac } from "@/utils";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -71,11 +72,6 @@ interface OwnProps {
   showTemplates?: boolean;
   showLogs?: boolean;
   logContext: MessageContext | null;
-}
-
-function isMac(): boolean {
-  // https://stackoverflow.com/a/27862868/402560
-  return navigator.platform.includes("Mac");
 }
 
 function useOpenEditorTab() {

@@ -24,6 +24,8 @@ import {
   ReaderOutput,
   ReaderRoot,
   Schema,
+  Metadata,
+  Logger,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -33,7 +35,7 @@ import {
 import { Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, noop } from "lodash";
 import { checkAvailable } from "@/blocks/available";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import {
   awaitElementOnce,
@@ -49,6 +51,7 @@ import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { PromiseCancelled, sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -165,16 +168,15 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    */
   private abortController = new AbortController();
 
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon = "faBolt"
-  ) {
-    super(id, name, description, icon);
+  protected constructor(metadata: Metadata, logger: Logger) {
+    super(metadata, logger);
 
     // Bind so we can pass as callback
     this.boundEventHandler = this.eventHandler.bind(this);
+  }
+
+  public get kind(): "trigger" {
+    return "trigger";
   }
 
   async install(): Promise<boolean> {
@@ -633,8 +635,7 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
   constructor(config: ExtensionPointConfig<TriggerDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description, icon } = cloned.metadata;
-    super(id, name, description, icon);
+    super(cloned.metadata, new BackgroundLogger());
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;

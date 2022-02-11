@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import styles from "./ExtensionGroup.module.scss";
+
+import React, { useCallback, useMemo, useState } from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -38,13 +40,12 @@ import {
   RemoveAction,
 } from "@/options/pages/installed/installedPageTypes";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
-import styles from "./ExtensionGroup.module.scss";
 import ExtensionRows from "./ExtensionRows";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
-import AuthContext from "@/auth/AuthContext";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router";
+import useFlags from "@/hooks/useFlags";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
@@ -81,10 +82,11 @@ const ExtensionGroup: React.FunctionComponent<{
   onExportBlueprint,
   hasUpdate,
 }) => {
-  const { flags } = useContext(AuthContext);
   const notify = useNotifications();
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const { restrict } = useFlags();
 
   const expandable = !managed;
   const [expanded, setExpanded] = useState(expandable && startExpanded);
@@ -224,14 +226,23 @@ const ExtensionGroup: React.FunctionComponent<{
         ),
         // #1532: temporary approach to controlling whether or not deployments can be uninstalled. In
         // the future we'll want this to depend on the member's role within the deployment's organization
-        hide: managed && flags.includes("restricted-uninstall"),
+        hide: managed && restrict("uninstall"),
         action: async () => {
           await removeMany(extensions);
         },
         className: "text-danger",
       },
     ],
-    [extensions, flags, hasUpdate, managed, onViewLogs, reinstall, removeMany]
+    [
+      onShare,
+      restrict,
+      extensions,
+      hasUpdate,
+      managed,
+      onViewLogs,
+      reinstall,
+      removeMany,
+    ]
   );
 
   return (
