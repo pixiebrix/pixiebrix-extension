@@ -162,13 +162,16 @@ const AuthWidget: React.FunctionComponent<{
               size="sm"
               style={{ height: "36px", marginTop: "1px" }}
               onClick={() => {
+                if (serviceDefinition.isAuthorizationGrant) {
+                  void launchAuthorizationGrantFlow(serviceDefinition, {
+                    target: "_self",
+                  });
+                  return;
+                }
+
                 setShowServiceModal(true);
               }}
-              disabled={
-                isPending ||
-                error != null ||
-                serviceDefinition?.isAuthorizationGrant
-              }
+              disabled={isPending || error != null}
             >
               <FontAwesomeIcon icon={faPlus} /> Configure
             </Button>
