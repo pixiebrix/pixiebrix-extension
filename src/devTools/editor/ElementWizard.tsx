@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ElementWizard.module.scss";
+
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useFormikContext } from "formik";
 import { groupBy } from "lodash";
@@ -36,9 +38,8 @@ import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
-import { useGetAuthQuery } from "@/services/api";
-import styles from "./ElementWizard.module.scss";
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
+import useFlags from "@/hooks/useFlags";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -100,9 +101,7 @@ const ElementWizard: React.FunctionComponent<{
   const [step, setStep] = useState(wizard[0].step);
 
   const { refresh: refreshLogs } = useContext(LogContext);
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { flagOn } = useFlags();
 
   const availableDefinition = element.extensionPoint.definition.isAvailable;
   const [available] = useAsyncState(
@@ -144,7 +143,7 @@ const ElementWizard: React.FunctionComponent<{
   } = useFormikContext<FormState>();
 
   const wizardSteps = [...wizard];
-  if (formState.recipe?.id && flags.includes("page-editor-beta")) {
+  if (formState.recipe?.id && flagOn("page-editor-beta")) {
     wizardSteps.push(blueprintOptionsStep);
   }
 

@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { useGetAuthQuery } from "@/services/api";
 import { useFormikContext } from "formik";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { UUID } from "@/core";
@@ -30,14 +29,13 @@ import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
 import ExtensionPointPreview from "@/devTools/editor/tabs/effect/ExtensionPointPreview";
 import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
+import useFlags from "@/hooks/useFlags";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
 }> = ({ firstBlockInstanceId }) => {
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
-  const showDeveloperTabs = flags.includes("page-editor-developer");
+  const { flagOn } = useFlags();
+  const showDeveloperTabs = flagOn("page-editor-developer");
 
   const { values: formState } = useFormikContext<FormState>();
 

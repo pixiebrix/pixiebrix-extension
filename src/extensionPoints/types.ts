@@ -18,7 +18,7 @@
 import { ApiVersion, Metadata } from "@/core";
 import { Availability, ReaderConfig } from "@/blocks/types";
 
-type ExtensionPointType =
+export type ExtensionPointType =
   | "panel"
   | "menuItem"
   | "trigger"

@@ -20,11 +20,11 @@ import {
   ClientNetworkError,
   ClientNetworkPermissionError,
   RemoteServiceError,
-  SanitizedURL,
+  SerializableAxiosError,
 } from "@/services/errors";
 import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
-import { AxiosError, AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import {
   DEFAULT_SERVICE_URL,
@@ -34,6 +34,9 @@ import {
 import { getReasonPhrase } from "http-status-codes";
 import { isAbsoluteUrl } from "@/utils";
 import urljoin from "url-join";
+
+// eslint-disable-next-line prefer-destructuring -- process.env variable
+const DEBUG = process.env.DEBUG;
 
 /**
  * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
@@ -68,7 +71,9 @@ export async function isAppUrl(url: string): Promise<boolean> {
 /**
  * Return true iff the error corresponds to a request to PixieBrix API.
  */
-async function isAppRequest(error: AxiosError): Promise<boolean> {
+export async function isAppRequest(
+  error: SerializableAxiosError
+): Promise<boolean> {
   const baseURL = await getBaseURL();
   const requestUrl = selectAbsoluteUrl(error.config);
   const patterns = [baseURL, DEFAULT_SERVICE_URL].map(
@@ -100,24 +105,20 @@ export async function enrichRequestError(
     url = new URL(selectAbsoluteUrl(maybeAxiosError.config));
   } catch (typeError) {
     return new BusinessError(
-      `Invalid Request URL: ${getErrorMessage(typeError)}`
+      `Invalid request URL: ${getErrorMessage(typeError)}`
     );
   }
 
-  if (url.protocol !== "https:") {
+  if (url.protocol !== "https:" && !DEBUG) {
     return new BusinessError(
       `Unsupported protocol ${url.protocol}. Use https:`
     );
   }
 
-  const includeUrl = await isAppRequest(maybeAxiosError);
-  const sanitizedUrl = (includeUrl ? url.href : null) as SanitizedURL;
-
   if (maybeAxiosError.response) {
     return new RemoteServiceError(
       maybeAxiosError.response.statusText ?? maybeAxiosError.message,
-      maybeAxiosError,
-      sanitizedUrl
+      maybeAxiosError
     );
   }
 
@@ -128,14 +129,12 @@ export async function enrichRequestError(
   if (!hasPermissions) {
     return new ClientNetworkPermissionError(
       "Insufficient browser permissions to make request.",
-      maybeAxiosError,
-      sanitizedUrl
+      maybeAxiosError
     );
   }
 
   return new ClientNetworkError(
     "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information",
-    maybeAxiosError,
-    sanitizedUrl
+    maybeAxiosError
   );
 }

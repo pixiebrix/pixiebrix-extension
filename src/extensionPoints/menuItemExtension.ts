@@ -172,6 +172,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   );
 
+  public get kind(): "menuItem" {
+    return "menuItem";
+  }
+
   public get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
   }

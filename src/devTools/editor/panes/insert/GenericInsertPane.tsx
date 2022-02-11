@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./GenericInsertPane.module.scss";
+
 import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
@@ -30,7 +32,6 @@ import { reportEvent } from "@/telemetry/events";
 import { useToasts } from "react-toast-notifications";
 import reportError from "@/telemetry/reportError";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
-import styles from "./GenericInsertPane.module.scss";
 import {
   showActionPanel,
   updateDynamicElement,
@@ -118,7 +119,11 @@ const GenericInsertPane: React.FunctionComponent<{
   return (
     <Centered isScrollable>
       <div className="PaneTitle">Build new {config.label} extension</div>
-      <div className="text-left">{config.insertModeHelp}</div>
+      {config.InsertModeHelpText && (
+        <div className="text-left">
+          <config.InsertModeHelpText />
+        </div>
+      )}
       <Row className={styles.buttonRow}>
         <Button variant="primary" onClick={addNew}>
           <FontAwesomeIcon icon={faPlus} /> Create new {config.label}

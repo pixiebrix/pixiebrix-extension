@@ -36,9 +36,9 @@ import {
   useGetAuthQuery,
 } from "@/services/api";
 import { RecipeDefinition } from "@/types/definitions";
-import { push } from "connected-react-router";
 import * as semver from "semver";
 import { useDispatch } from "react-redux";
+import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 
 const groupByRecipe = (
   extensions: ResolvedExtension[]
@@ -201,7 +201,11 @@ const ActiveBricksCard: React.FunctionComponent<{
   const deploymentExtensionGroups = groupByRecipe(groupedExtensions.deployment);
 
   const showShareLinkModal = (blueprintId: RegistryId) => {
-    dispatch(push(`/installed/link/${encodeURIComponent(blueprintId)}`));
+    dispatch(
+      installedPageSlice.actions.setShareContext({
+        blueprintId,
+      })
+    );
   };
 
   // Sharing was added to _recipe recently (see the RecipeMetadata type and optionsSlice)

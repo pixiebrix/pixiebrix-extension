@@ -112,6 +112,10 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
   abstract readonly contexts: Menus.ContextType[];
 
+  public get kind(): "contextMenu" {
+    return "contextMenu";
+  }
+
   inputSchema: Schema = propertiesToSchema(
     {
       title: {
@@ -194,6 +198,12 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   private async registerExtensions(): Promise<void> {
+    console.debug(
+      "Registering",
+      this.extensions.length,
+      "contextMenu extension points"
+    );
+
     const results = await Promise.allSettled(
       this.extensions.map(async (extension) => {
         try {
@@ -304,14 +314,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   async run(): Promise<void> {
-    if (this.extensions.length === 0) {
-      console.debug(
-        `contextMenu extension point ${this.id} has no installed extensions`
-      );
-      return;
-    }
-
-    await this.registerExtensions();
+    // Already taken care by the `install` method
   }
 }
 
