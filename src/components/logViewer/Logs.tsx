@@ -62,7 +62,8 @@ export const ContextLogs: React.FunctionComponent<ContextLogsProps> = ({
     setDisplayedEntries(allEntries);
   }, [isLoading]);
 
-  const refreshDisplayedEntries = () => {
+  // TODO This function should not be async, update after Options refactoring
+  const refreshDisplayedEntries = async () => {
     setDisplayedEntries(allEntries);
   };
 

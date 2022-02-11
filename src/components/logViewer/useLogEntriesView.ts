@@ -25,14 +25,8 @@ type config = {
   perPage: number;
 };
 
-function useLogEntries2({ level, page, perPage }: config) {
-  const {
-    allEntries,
-    displayedEntries,
-    isLoading,
-    refreshDisplayedEntries,
-    clearAllEntries,
-  } = useContext(LogContext2);
+function useLogEntriesView({ level, page, perPage }: config) {
+  const { allEntries, displayedEntries } = useContext(LogContext2);
 
   const filteredAllEntries = useMemo(() => {
     console.log("useLogEntries2", "filteredAllEntries");
@@ -45,8 +39,7 @@ function useLogEntries2({ level, page, perPage }: config) {
   const filteredDisplayedEntries = useMemo(() => {
     console.log("useLogEntries2", "filteredEntries");
     return (displayedEntries ?? []).filter(
-      // Level is coming from the dropdown
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
       (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
     );
   }, [level, displayedEntries]);
@@ -60,20 +53,12 @@ function useLogEntries2({ level, page, perPage }: config) {
 
   const numPages = Math.ceil(filteredDisplayedEntries.length / perPage);
 
-  const refresh = async () => {
-    refreshDisplayedEntries();
-    return {};
-  };
-
   return {
-    isLoading,
     numNew,
     hasEntries,
     pageEntries,
     numPages,
-    refresh,
-    clear: clearAllEntries,
   };
 }
 
-export default useLogEntries2;
+export default useLogEntriesView;

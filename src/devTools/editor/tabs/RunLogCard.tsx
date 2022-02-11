@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { MessageLevel } from "@/background/logging";
 import LogTable from "@/components/logViewer/LogTable";
 import LogToolbar from "@/components/logViewer/LogToolbar";
-import useLogEntries2 from "@/components/logViewer/useLogEntries2";
+import useLogEntriesView from "@/components/logViewer/useLogEntriesView";
 import { Card } from "react-bootstrap";
 import { GridLoader } from "react-spinners";
+import { LogContext2 } from "@/components/logViewer/Logs";
 
 type OwnProps = {
   initialLevel?: MessageLevel;
@@ -35,7 +36,11 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   const [level, setLevel] = useState<MessageLevel>(initialLevel);
   const [page, setPage] = useState(0);
 
-  const logs = useLogEntries2({
+  const { isLoading, refreshDisplayedEntries, clearAllEntries } = useContext(
+    LogContext2
+  );
+
+  const logs = useLogEntriesView({
     level,
     page,
     perPage,
@@ -43,7 +48,7 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
 
   console.log("RunLogCard", "render", logs);
 
-  if (logs.isLoading) {
+  if (isLoading) {
     return (
       <Card.Body>
         <GridLoader />
@@ -61,8 +66,8 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
         numPages={logs.numPages}
         hasEntries={logs.hasEntries}
         numNew={logs.numNew}
-        refresh={logs.refresh}
-        clear={logs.clear}
+        refresh={refreshDisplayedEntries}
+        clear={clearAllEntries}
       />
       <LogTable pageEntries={logs.pageEntries} hasEntries={logs.hasEntries} />
     </>
