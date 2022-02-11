@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./contentScript.scss";
+import "@/contentScript.scss";
 
 const start = Date.now();
 
