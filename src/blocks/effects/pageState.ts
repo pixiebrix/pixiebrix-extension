@@ -105,11 +105,17 @@ export class SetPageState extends Transformer {
     const { blueprintId = null, extensionId } = logger.context;
 
     switch (namespace) {
-      case "shared":
+      case "shared": {
+        const previous = blueprintState.get(null) ?? {};
+        const next = mergeState(previous, data, mergeStrategy);
+        blueprintState.set(null, next);
+        return next;
+      }
+
       case "blueprint": {
         const previous = blueprintState.get(blueprintId) ?? {};
         const next = mergeState(previous, data, mergeStrategy);
-        extensionState.set(extensionId, next);
+        blueprintState.set(blueprintId, next);
         return next;
       }
 
@@ -161,7 +167,10 @@ export class GetPageState extends Transformer {
     const { blueprintId = null, extensionId } = logger.context;
 
     switch (namespace) {
-      case "shared":
+      case "shared": {
+        return blueprintState.get(null) ?? {};
+      }
+
       case "blueprint": {
         return blueprintState.get(blueprintId) ?? {};
       }
