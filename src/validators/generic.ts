@@ -226,9 +226,10 @@ async function validateExtension(
 export function useExtensionValidator(
   extension: IExtension
 ): AsyncState<ExtensionValidationResult> {
-  const validationPromise = useMemo(async () => validateExtension(extension), [
-    extension,
-  ]);
+  const validationPromise = useMemo(
+    async () => validateExtension(extension),
+    [extension]
+  );
   return useAsyncState(validationPromise);
 }
 

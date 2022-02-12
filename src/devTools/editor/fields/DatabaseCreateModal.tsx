@@ -87,10 +87,8 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
   onDatabaseCreated,
   onClose,
 }) => {
-  const {
-    data: organizations,
-    isLoading: isLoadingOrganizations,
-  } = useGetOrganizationsQuery();
+  const { data: organizations, isLoading: isLoadingOrganizations } =
+    useGetOrganizationsQuery();
 
   const [createDatabase] = useCreateDatabaseMutation();
 

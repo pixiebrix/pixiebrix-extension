@@ -189,13 +189,8 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
     []
   );
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns, data }, useExpanded);
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({ columns, data }, useExpanded);
 
   if (!schema) {
     return <div className="text-muted">No schema</div>;
@@ -209,10 +204,8 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
     <Table {...getTableProps()} size="sm">
       <thead>
         {headerGroups.map((headerGroup) => {
-          const {
-            key,
-            ...restHeaderGroupProps
-          } = headerGroup.getHeaderGroupProps();
+          const { key, ...restHeaderGroupProps } =
+            headerGroup.getHeaderGroupProps();
           return (
             <tr key={key} {...restHeaderGroupProps}>
               {headerGroup.headers.map((column) => {

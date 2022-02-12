@@ -131,9 +131,10 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
 
   const isRequired = parentSchema.required?.includes(property) ?? false;
 
-  const PropertyRowComponent = useMemo(() => getPropertyRow(propertySchema), [
-    propertySchema,
-  ]);
+  const PropertyRowComponent = useMemo(
+    () => getPropertyRow(propertySchema),
+    [propertySchema]
+  );
 
   const deleteProp = useCallback(() => {
     onDelete(property);

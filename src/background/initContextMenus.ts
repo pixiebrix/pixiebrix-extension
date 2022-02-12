@@ -39,7 +39,7 @@ export async function preloadContextMenus(
       );
       if (extensionPoint instanceof ContextMenuExtensionPoint) {
         await extensionPoint.ensureMenu(
-          (definition as unknown) as ResolvedExtension<ContextMenuConfig>
+          definition as unknown as ResolvedExtension<ContextMenuConfig>
         );
       }
     })

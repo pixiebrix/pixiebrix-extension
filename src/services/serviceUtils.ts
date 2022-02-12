@@ -28,7 +28,8 @@ export const SERVICE_FIELD_REFS = [
 export const SERVICE_BASE_SCHEMA =
   "https://app.pixiebrix.com/schemas/services/";
 
-const SERVICE_ID_REGEX = /^https:\/\/app\.pixiebrix\.com\/schemas\/services\/(?<id>\S+)$/;
+const SERVICE_ID_REGEX =
+  /^https:\/\/app\.pixiebrix\.com\/schemas\/services\/(?<id>\S+)$/;
 
 /**
  * Return the registry ids of services supported by a JSON Schema field definition

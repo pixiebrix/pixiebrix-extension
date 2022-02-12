@@ -55,14 +55,10 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const notify = useNotifications();
   const { id: configurationId } = useParams<{ id: UUID }>();
 
-  const [
-    newConfigurationService,
-    setNewConfigurationService,
-  ] = useState<IService>(null);
-  const [
-    newConfiguration,
-    setNewConfiguration,
-  ] = useState<RawServiceConfiguration>(null);
+  const [newConfigurationService, setNewConfigurationService] =
+    useState<IService>(null);
+  const [newConfiguration, setNewConfiguration] =
+    useState<RawServiceConfiguration>(null);
 
   const {
     activeConfiguration,
