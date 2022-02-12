@@ -40,8 +40,7 @@ import {
 import { components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { anonAuth, ProfileResponse } from "@/hooks/auth";
-import { getUID } from "@/background/telemetry";
-import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
+import { updateUserData } from "@/auth/token";
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
 const appBaseQuery: BaseQueryFn<{
@@ -99,11 +98,12 @@ export const appApi = createApi({
         flags = [],
       }: ProfileResponse) => {
         if (id) {
-          await updateRollbarAuth({
-            userId: id,
+          void updateUserData({
+            user: id,
             email,
-            organizationId: telemetryOrganization?.id ?? organization?.id,
-            browserId: await getUID(),
+            organizationId: organization?.id,
+            telemetryOrganizationId: telemetryOrganization?.id,
+            flags,
           });
 
           return {
@@ -234,6 +234,16 @@ export const appApi = createApi({
       query: () => ({ url: "/api/extensions/", method: "get" }),
       providesTags: ["CloudExtensions"],
     }),
+    deleteCloudExtension: builder.mutation<
+      CloudExtension,
+      { extensionId: UUID }
+    >({
+      query: ({ extensionId }) => ({
+        url: `/api/extensions/${extensionId}/`,
+        method: "delete",
+      }),
+      invalidatesTags: ["CloudExtensions"],
+    }),
     createRecipe: builder.mutation<
       PackageUpsertResponse,
       {
@@ -295,6 +305,7 @@ export const {
   useGetGroupsQuery,
   useGetRecipesQuery,
   useGetCloudExtensionsQuery,
+  useDeleteCloudExtensionMutation,
   useGetEditablePackagesQuery,
   useCreateRecipeMutation,
   useUpdateRecipeMutation,

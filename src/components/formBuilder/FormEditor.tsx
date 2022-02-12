@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable security/detect-object-injection */
+import styles from "./FormEditor.module.scss";
+
 import { useField } from "formik";
 import React, { useEffect, useMemo } from "react";
 import {
@@ -38,7 +39,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Schema } from "@/core";
 import { produce } from "immer";
-import styles from "./FormEditor.module.scss";
 import { joinName } from "@/utils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";

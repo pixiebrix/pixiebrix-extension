@@ -34,11 +34,11 @@ const ErrorBanner: React.VFC = () => {
   }
 
   return (
-    <div className="d-flex p-1 align-items-center alert-danger flex-align-center">
+    <div className="d-flex p-2 align-items-center alert-danger flex-align-center">
       <div className="flex-grow-1">{error}</div>
       <div>
         <Button
-          className="mr-2"
+          className="ml-2"
           onClick={() => {
             location.reload();
           }}

@@ -63,8 +63,8 @@ const DynamicEntry: React.FunctionComponent<{
       action
       active={active}
       key={`dynamic-${item.uuid}`}
-      onMouseEnter={isButton && (async () => showOverlay(item.uuid))}
-      onMouseLeave={isButton && (async () => hideOverlay())}
+      onMouseEnter={isButton ? async () => showOverlay(item.uuid) : undefined}
+      onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
     >
       <span className={styles.icon}>

@@ -23,13 +23,12 @@ import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import { isEmpty } from "lodash";
 import { useToasts } from "react-toast-notifications";
-import { useGetAuthQuery } from "@/services/api";
+import useFlags from "@/hooks/useFlags";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const { addToast } = useToasts();
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { restrict, permit } = useFlags();
+
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
   const clear = useCallback(async () => {
@@ -95,7 +94,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
               placeholder={DEFAULT_SERVICE_URL}
               defaultValue={serviceURL}
               onBlur={handleUpdate}
-              disabled={flags.includes("restricted-service-url")}
+              disabled={restrict("service-url")}
             />
             <Form.Text className="text-muted">
               The PixieBrix service URL
@@ -112,7 +111,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
           Check Updates
         </Button>
 
-        {!flags.includes("restricted-clear-token") && (
+        {permit("clear-token") && (
           <Button variant="warning" onClick={clear}>
             Clear Token
           </Button>

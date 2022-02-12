@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "bootstrap/dist/css/bootstrap.min.css";
+import "react-image-crop/dist/ReactCrop.css";
+import "@/ephemeralForm.scss";
+
 import "@/extensionContext";
 
 import React from "react";
 import { render } from "react-dom";
 import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
-
-import "bootstrap/dist/css/bootstrap.min.css";
-import "react-image-crop/dist/ReactCrop.css";
-import "@/ephemeralForm.scss";
 
 render(<EphemeralForm />, document.querySelector("#container"));

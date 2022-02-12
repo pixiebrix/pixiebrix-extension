@@ -35,7 +35,8 @@ import {
 } from "@/extensionPoints/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
-import { reportError } from "@/telemetry/rollbar";
+import { BusinessError, hasCancelRootCause } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import {
   DEFAULT_ACTION_RESULTS,
   notifyError,
@@ -44,7 +45,6 @@ import {
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { BusinessError, hasCancelRootCause } from "@/errors";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
@@ -54,6 +54,7 @@ import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import { guessSelectedElement } from "@/utils/selectionController";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 
@@ -72,15 +73,6 @@ export type QuickBarConfig = {
 };
 
 export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConfig> {
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon = "faThLarge"
-  ) {
-    super(id, name, description, icon);
-  }
-
   abstract get targetMode(): QuickBarTargetMode;
 
   abstract getBaseReader(): Promise<IReader>;
@@ -114,6 +106,10 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
     extension: ResolvedExtension<QuickBarConfig>
   ): Promise<IBlock[]> {
     return blockList(extension.config.action);
+  }
+
+  public get kind(): "quickBar" {
+    return "quickBar";
   }
 
   uninstall(): void {
@@ -289,8 +285,7 @@ class RemoteQuickBarExtensionPoint extends QuickBarExtensionPoint {
   constructor(config: ExtensionPointConfig<QuickBarDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description, icon } = cloned.metadata;
-    super(id, name, description, icon);
+    super(cloned.metadata, new BackgroundLogger());
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable, documentUrlPatterns, contexts } = cloned.definition;

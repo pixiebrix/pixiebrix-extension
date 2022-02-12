@@ -21,7 +21,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { extensionToFormState } from "@/devTools/editor/extensionPoints/adapter";
-import { reportError } from "@/telemetry/rollbar";
+import reportError from "@/telemetry/reportError";
 import { useGetRecipesQuery } from "@/services/api";
 import { initRecipeOptionsIfNeeded } from "@/devTools/editor/extensionPoints/base";
 
@@ -59,7 +59,7 @@ function useReset(): (useResetConfig: Config) => void {
         dispatch(actions.adapterError({ uuid: element.uuid, error }));
       }
     },
-    [dispatch, installed, showConfirmation]
+    [recipes, dispatch, installed, showConfirmation]
   );
 }
 

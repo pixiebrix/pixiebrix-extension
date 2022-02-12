@@ -36,8 +36,9 @@ import { Service } from "@/types";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,
+  isExtensionContext: () => true,
   isBackground: () => false,
-  isExtensionContext: () => false,
+  isContentScript: () => false,
 }));
 
 jest.mock("@/services/useDependency", () =>
@@ -49,6 +50,7 @@ jest.mock("@/services/useDependency", () =>
     requestPermissions: jest.fn(),
   })
 );
+jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");

@@ -18,20 +18,20 @@
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { IExtension } from "@/core";
 import { registry } from "@/background/messenger/api";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import {
+  ExtensionPointConfig,
+  ExtensionPointType,
+} from "@/extensionPoints/types";
 import menuItemExtension from "@/devTools/editor/extensionPoints/menuItem";
 import quickBarExtension from "@/devTools/editor/extensionPoints/quickBar";
 import triggerExtension from "@/devTools/editor/extensionPoints/trigger";
 import panelExtension from "@/devTools/editor/extensionPoints/panel";
 import contextMenuExtension from "@/devTools/editor/extensionPoints/contextMenu";
 import actionPanelExtension from "@/devTools/editor/extensionPoints/actionPanel";
-import {
-  ElementConfig,
-  ElementType,
-} from "@/devTools/editor/extensionPoints/elementConfig";
-import { hasInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
+import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
+import { hasInnerExtensionPoint } from "@/registry/internal";
 
-export const ADAPTERS = new Map<ElementType, ElementConfig>([
+export const ADAPTERS = new Map<ExtensionPointType, ElementConfig>([
   ["trigger", triggerExtension],
   ["panel", panelExtension],
   ["contextMenu", contextMenuExtension],
@@ -40,7 +40,9 @@ export const ADAPTERS = new Map<ElementType, ElementConfig>([
   ["quickBar", quickBarExtension],
 ]);
 
-export async function selectType(extension: IExtension): Promise<ElementType> {
+export async function selectType(
+  extension: IExtension
+): Promise<ExtensionPointType> {
   if (hasInnerExtensionPoint(extension)) {
     return ((extension.definitions[
       extension.extensionPointId

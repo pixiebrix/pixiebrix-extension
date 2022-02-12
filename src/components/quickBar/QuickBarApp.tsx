@@ -19,7 +19,6 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
   Action,
-  KBarAnimator,
   KBarPositioner,
   KBarProvider,
   KBarSearch,
@@ -32,12 +31,13 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
-import { NOTIFICATIONS_Z_INDEX } from "@/common";
+import { MAX_Z_INDEX } from "@/common";
 import { useEventListener } from "@/hooks/useEventListener";
 import { Stylesheet } from "@/components/Stylesheet";
 import selection from "@/utils/selectionController";
 import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
+import { KBarAnimator } from "@/vendors/kbar/KBarAnimator";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -125,8 +125,7 @@ const KBarComponent: React.FC = () => {
   useActions();
 
   return (
-    // Like notifications, this is temporary UI that must appear above everything
-    <KBarPositioner style={{ zIndex: NOTIFICATIONS_Z_INDEX }}>
+    <KBarPositioner style={{ zIndex: MAX_Z_INDEX }}>
       <KBarAnimator style={animatorStyle}>
         <KBarSearch style={searchStyle} />
         <QuickBarResults />

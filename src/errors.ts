@@ -16,17 +16,13 @@
  */
 
 import { MessageContext, SerializedError } from "@/core";
-import { ErrorObject } from "serialize-error";
+import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError } from "axios";
 import { isObject } from "@/utils";
 
-const DEFAULT_ERROR_MESSAGE = "Unknown error";
+// FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2672
 
-export const IGNORED_ERRORS = [
-  "ResizeObserver loop limit exceeded",
-  "Promise was cancelled",
-  "Uncaught Error: PixieBrix contentScript already installed",
-];
+const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
 export class ValidationError extends Error {
   errors: unknown;
@@ -167,6 +163,12 @@ export class ContextError extends Error {
   }
 }
 
+export const IGNORED_ERRORS = [
+  "ResizeObserver loop limit exceeded",
+  "Promise was cancelled",
+  "Uncaught Error: PixieBrix contentScript already installed",
+];
+
 export function isErrorObject(error: unknown): error is ErrorObject {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
   return typeof (error as any)?.message === "string";
@@ -196,6 +198,14 @@ export function hasCancelRootCause(error: unknown): boolean {
   return false;
 }
 
+export function getRootCause(error: ErrorObject): ErrorObject {
+  if (error.name === "ContextError" && (error as ContextError).cause != null) {
+    return getRootCause(error.cause as ErrorObject);
+  }
+
+  return error;
+}
+
 // Manually list subclasses because the prototype chain is lost in serialization/deserialization
 // See https://github.com/sindresorhus/serialize-error/issues/48
 const BUSINESS_ERROR_CLASSES = [
@@ -205,13 +215,18 @@ const BUSINESS_ERROR_CLASSES = [
 ];
 // Name classes from other modules separately, because otherwise we'll get a circular dependency with this module
 const BUSINESS_ERROR_NAMES = new Set([
-  ...BUSINESS_ERROR_CLASSES.map((x) => x.name),
+  "BusinessError",
+  "NoElementsFoundError",
+  "MultipleElementsFoundError",
   "InputValidationError",
   "OutputValidationError",
   "PipelineConfigurationError",
   "MissingConfigurationError",
   "NotConfiguredError",
   "RemoteServiceError",
+  "ClientNetworkPermissionError",
+  "ClientNetworkError",
+  "ProxiedRemoteServiceError",
   "RemoteExecutionError",
 ]);
 
@@ -248,6 +263,9 @@ export function hasBusinessRootCause(
   return false;
 }
 
+/**
+ * Browser Messenger API error message patterns.
+ */
 const CONNECTION_ERROR_PATTERNS = [
   "Could not establish connection. Receiving end does not exist.",
   "Extension context invalidated",
@@ -265,7 +283,7 @@ export function isAxiosError(error: unknown): error is AxiosError {
 }
 
 /**
- * Return true if the proximate cause of event is an messaging error.
+ * Return true if the proximate cause of event is a messaging error.
  *
  * NOTE: does not recursively identify the root cause of the error.
  */
@@ -310,9 +328,13 @@ export function getErrorMessage(
 }
 
 /**
- * Finds or creates an Error object starting from strings, error event, or real Errors
+ * Finds or creates an Error starting from strings, error event, or real Errors.
+ *
+ * The result is suitable for passing to Rollbar. (Which treats Errors and objects differently.)
  */
-export function selectError(error: unknown): ErrorObject | Error {
+export function selectError(originalError: unknown): Error {
+  let error: unknown = originalError;
+
   // Extract error from event
   if (error instanceof ErrorEvent) {
     error = error.error;
@@ -320,11 +342,20 @@ export function selectError(error: unknown): ErrorObject | Error {
     error = error.reason;
   }
 
-  if (isErrorObject(error)) {
+  if (error instanceof Error) {
     return error;
   }
 
-  console.warn("A non-Error was thrown", { error });
+  if (isErrorObject(error)) {
+    // This shouldn't be necessary, but there's some nested calls to selectError
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2696
+    return deserializeError(error);
+  }
+
+  console.warn("A non-Error was thrown", {
+    originalError,
+    error,
+  });
 
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error message'`, which should never be written

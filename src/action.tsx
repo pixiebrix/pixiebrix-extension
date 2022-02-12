@@ -15,6 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Keep in order so precedence is preserved
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
+import "@/action.scss";
+
 import "@/extensionContext";
 
 import "@/actionPanel/messenger/registration";
@@ -23,11 +28,6 @@ import ReactDOM from "react-dom";
 import React from "react";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
-
-// Keep in order so precedence is preserved
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "@/action.scss";
 
 registerContribBlocks();
 registerBuiltinBlocks();

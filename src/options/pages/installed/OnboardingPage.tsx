@@ -20,13 +20,10 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import {
-  useGetOrganizationsQuery,
-  useGetRecipesQuery,
-  useGetAuthQuery,
-} from "@/services/api";
+import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
 import Loader from "@/components/Loader";
+import useFlags from "@/hooks/useFlags";
 
 const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
   <Col xs={6}>
@@ -98,29 +95,9 @@ const CreateBrickColumn: React.FunctionComponent = () => (
   </Col>
 );
 
-const OnboardingVideoCard: React.FunctionComponent = () => (
-  <Card>
-    <Card.Header>Video Tour</Card.Header>
-    <Card.Body className="mx-auto">
-      <div>
-        <iframe
-          title="onboarding-video"
-          src="https://player.vimeo.com/video/514828533"
-          width="640"
-          height="400"
-          frameBorder="0"
-          allow="fullscreen; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
-    </Card.Body>
-  </Card>
-);
-
 const OnboardingPage: React.FunctionComponent = () => {
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { restrict } = useFlags();
+
   const {
     data: rawRecipes,
     isLoading: isRecipesLoading,
@@ -143,22 +120,13 @@ const OnboardingPage: React.FunctionComponent = () => {
   const isLoading =
     isRecipesLoading || isOrganizationsLoading || isDeploymentsLoading;
 
-  // Video tour should be shown to typical users and enterprise users
-  //  that don't have deployments or marketplace restrictions
-  const showVideoTour = useMemo(
-    () =>
-      !hasOrganization ||
-      (!hasDeployments && !flags.includes("restricted-marketplace")),
-    [hasOrganization, hasDeployments, flags]
-  );
-
   const onBoardingInformation = useMemo(() => {
     if (hasOrganization) {
       if (hasDeployments) {
         return <ActivateFromDeploymentBannerColumn />;
       }
 
-      if (flags.includes("restricted-marketplace")) {
+      if (restrict("marketplace")) {
         return <ContactTeamAdminColumn />;
       }
 
@@ -178,7 +146,7 @@ const OnboardingPage: React.FunctionComponent = () => {
         <CreateBrickColumn />
       </>
     );
-  }, [hasOrganization, hasDeployments, hasTeamBlueprints, flags]);
+  }, [restrict, hasOrganization, hasDeployments, hasTeamBlueprints]);
 
   return (
     <>
@@ -198,13 +166,6 @@ const OnboardingPage: React.FunctionComponent = () => {
               </Card>
             </Col>
           </Row>
-          {showVideoTour && (
-            <Row>
-              <Col className="VideoCard mt-3">
-                <OnboardingVideoCard />
-              </Col>
-            </Row>
-          )}
         </>
       )}
     </>

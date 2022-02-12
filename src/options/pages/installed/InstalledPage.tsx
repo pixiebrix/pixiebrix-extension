@@ -19,7 +19,7 @@ import { connect, useSelector } from "react-redux";
 import React, { useCallback } from "react";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
-import { Link, Route } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
@@ -27,7 +27,6 @@ import {
   reactivateEveryTab,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { useGetAuthQuery } from "@/services/api";
 import { reportEvent } from "@/telemetry/events";
 import { Dispatch } from "redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -51,6 +50,7 @@ import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 import extensionsSlice from "@/store/extensionsSlice";
 import { OptionsState } from "@/store/extensionsTypes";
 import ShareLinkModal from "./ShareLinkModal";
+import useFlags from "@/hooks/useFlags";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -58,9 +58,7 @@ export const _InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { flagOn } = useFlags();
 
   const [allExtensions, , cloudError] = useAsyncState(
     async () => {
@@ -128,8 +126,12 @@ export const _InstalledPage: React.FunctionComponent<{
       icon={faCubes}
       error={cloudError ?? resolveError}
     >
-      {showShareContext && (
+      {showShareContext?.extensionId && (
         <ShareExtensionModal extensionId={showShareContext.extensionId} />
+      )}
+
+      {showShareContext?.blueprintId && (
+        <ShareLinkModal blueprintId={showShareContext.blueprintId} />
       )}
 
       {showLogsContext && (
@@ -139,11 +141,6 @@ export const _InstalledPage: React.FunctionComponent<{
         />
       )}
 
-      <Route
-        exact
-        path="/installed/link/:blueprintId"
-        component={ShareLinkModal}
-      />
       <Row>
         <Col>
           <div className="pb-4">
@@ -155,7 +152,7 @@ export const _InstalledPage: React.FunctionComponent<{
             ) : (
               <p>
                 Here&apos;s a list of bricks you currently have activated.{" "}
-                {flags.includes("marketplace") ? (
+                {flagOn("marketplace") ? (
                   <>
                     You can find more to activate in{" "}
                     <Link to={"/blueprints"}>My Blueprints</Link>.

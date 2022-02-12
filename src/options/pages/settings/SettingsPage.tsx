@@ -26,6 +26,10 @@ import FactoryResetSettings from "@/options/pages/settings/FactoryResetSettings"
 import AdvancedSettings from "@/options/pages/settings/AdvancedSettings";
 import { Col, Row } from "react-bootstrap";
 import ExperimentalSettings from "@/options/pages/settings/ExperimentalSettings";
+import useFlags from "@/hooks/useFlags";
+
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
 
 const Section: React.FunctionComponent = ({ children }) => (
   <Row className="mb-4">
@@ -37,8 +41,10 @@ const Section: React.FunctionComponent = ({ children }) => (
 
 const SettingsPage: React.FunctionComponent = () => {
   const {
-    data: { organization, flags },
+    data: { organization },
   } = useGetAuthQuery();
+
+  const { flagOn, permit } = useFlags();
 
   return (
     <Page
@@ -54,7 +60,7 @@ const SettingsPage: React.FunctionComponent = () => {
         </p>
       }
     >
-      {organization == null && (
+      {(organization == null || DEBUG) && (
         <Section>
           <PrivacySettings />
         </Section>
@@ -64,19 +70,19 @@ const SettingsPage: React.FunctionComponent = () => {
         <LoggingSettings />
       </Section>
 
-      {flags.includes("settings-experimental") && (
+      {flagOn("settings-experimental") && (
         <Section>
           <ExperimentalSettings />
         </Section>
       )}
 
-      {!flags.includes("restricted-permissions") && (
+      {permit("permissions") && (
         <Section>
           <PermissionsSettings />
         </Section>
       )}
 
-      {!flags.includes("restricted-reset") && (
+      {permit("reset") && (
         <Section>
           <FactoryResetSettings />
         </Section>

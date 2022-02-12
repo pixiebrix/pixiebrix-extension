@@ -37,7 +37,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { useGetAuthQuery } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
@@ -49,6 +48,7 @@ import DocumentPreview from "@/components/documentBuilder/preview/DocumentPrevie
 import documentBuilderSelectors from "@/devTools/editor/slices/documentBuilderSelectors";
 import { actions as documentBuilderActions } from "@/devTools/editor/slices/documentBuilderSlice";
 import copy from "copy-to-clipboard";
+import useFlags from "@/hooks/useFlags";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -69,11 +69,8 @@ const contextFilter = (value: unknown, key: string) => {
 const DataPanel: React.FC<{
   instanceId: UUID;
 }> = ({ instanceId }) => {
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
-
-  const showDeveloperTabs = flags.includes("page-editor-developer");
+  const { flagOn } = useFlags();
+  const showDeveloperTabs = flagOn("page-editor-developer");
 
   const { values: formState, errors } = useFormikContext<FormState>();
   const formikData = { errors, ...formState };
