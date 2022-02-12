@@ -17,8 +17,8 @@
 
 import { RecipeDefinition } from "@/types/definitions";
 import useNotifications from "@/hooks/useNotifications";
-import { useDispatch } from "react-redux";
-import { useCallback, useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useCallback } from "react";
 import { FormikHelpers } from "formik";
 import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
@@ -31,8 +31,9 @@ import { collectPermissions } from "@/permissions";
 import { push } from "connected-react-router";
 import { resolveRecipe } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import AuthContext from "@/auth/AuthContext";
 import extensionsSlice from "@/store/extensionsSlice";
+import useFlags from "@/hooks/useFlags";
+import { selectSettings } from "@/store/settingsSelectors";
 
 const { installRecipe } = extensionsSlice.actions;
 
@@ -44,7 +45,8 @@ type InstallRecipe = (
 function useInstall(recipe: RecipeDefinition): InstallRecipe {
   const notify = useNotifications();
   const dispatch = useDispatch();
-  const { flags } = useContext(AuthContext);
+  const { flagOn } = useFlags();
+  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
   return useCallback(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
@@ -114,8 +116,8 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
 
         reactivateEveryTab();
 
-        if (flags.includes("blueprints-page")) {
-          dispatch(push("/blueprints-page"));
+        if (isBlueprintsPageEnabled) {
+          dispatch(push("/blueprints"));
         } else {
           dispatch(push("/installed"));
         }
@@ -126,7 +128,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         setSubmitting(false);
       }
     },
-    [notify, dispatch, recipe]
+    [flagOn, notify, dispatch, recipe]
   );
 }
 

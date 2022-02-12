@@ -1,5 +1,3 @@
-/* eslint-disable unicorn/filename-case */
-
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *

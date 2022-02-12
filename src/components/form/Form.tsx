@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Form.module.scss";
+
 import React, { ReactElement } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { Formik, FormikHelpers, FormikValues } from "formik";
 import * as yup from "yup";
-import styles from "./Form.module.scss";
 
 export type OnSubmit<TValues = FormikValues> = (
   values: TValues,

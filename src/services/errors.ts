@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { BusinessError, SuspiciousOperationError } from "@/errors";
+import { Except } from "type-fest";
 
 export class IncompatibleServiceError extends SuspiciousOperationError {
   constructor(message: string) {
@@ -55,12 +56,83 @@ export class NotConfiguredError extends BusinessError {
   }
 }
 
-export class RemoteServiceError extends BusinessError {
-  response: AxiosResponse;
+// Axios offers its own serialization method, but it doesn't include the response.
+// By deleting toJSON, the serialize-error library will use its default serialization
+export type SerializableAxiosError = Except<AxiosError, "toJSON">;
 
-  constructor(message: string, response?: AxiosResponse) {
+type ProxiedResponse = Pick<AxiosResponse, "data" | "status" | "statusText">;
+
+/**
+ * An error response from a 3rd party API via the PixieBrix proxy
+ * @see RemoteServiceError
+ */
+export class ProxiedRemoteServiceError extends BusinessError {
+  readonly response: ProxiedResponse;
+
+  constructor(message: string, response: ProxiedResponse) {
     super(message);
-    this.name = "RemoteServiceError";
+    this.name = "ProxiedRemoteServiceError";
+
     this.response = response;
+  }
+}
+
+/**
+ * Abstract base class for request errors from client to 3rd-party service.
+ */
+abstract class ClientRequestError extends BusinessError {
+  readonly error: SerializableAxiosError;
+
+  protected constructor(message: string, error: AxiosError) {
+    super(message);
+    this.name = "ClientRequestError";
+
+    // Axios offers its own serialization method, but it doesn't include the response.
+    // By deleting toJSON, the serialize-error library will use its default serialization
+    delete error.toJSON;
+
+    this.error = error;
+  }
+}
+
+/**
+ * An error response from a 3rd party API.
+ */
+export class RemoteServiceError extends ClientRequestError {
+  constructor(message: string, error: AxiosError) {
+    super(message, error);
+    this.name = "RemoteServiceError";
+  }
+}
+
+/**
+ * An error triggered by a failed network request due to missing permissions
+ *
+ * - Blocked by browser due to CORS
+ *
+ * @see ClientNetworkError
+ */
+export class ClientNetworkPermissionError extends ClientRequestError {
+  constructor(message: string, error: AxiosError) {
+    super(message, error);
+    this.name = "ClientNetworkPermissionError";
+  }
+}
+
+/**
+ * An error triggered by a failed network request that did not receive a response.
+ *
+ * - Request timeout
+ * - The host doesn't exist (DNS failed)
+ * - Blocked by browser due to HTTPS certificate
+ * - Blocked by browser extension
+ *
+ * @see RemoteServiceError
+ * @see ClientNetworkError
+ */
+export class ClientNetworkError extends ClientRequestError {
+  constructor(message: string, error: AxiosError) {
+    super(message, error);
+    this.name = "ClientNetworkError";
   }
 }

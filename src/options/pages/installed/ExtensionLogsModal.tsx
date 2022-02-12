@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ExtensionLogsModal.module.scss";
+
 import { MessageContext } from "@/core";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
-import styles from "./ExtensionLogsModal.module.scss";
 import { installedPageSlice } from "./installedPageSlice";
 
 const ExtensionLogsModal: React.FC<{

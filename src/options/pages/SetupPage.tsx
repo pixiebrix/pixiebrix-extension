@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "./SetupPage.scss";
+
 import React, { useCallback } from "react";
 import { faCheck, faLink } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row, Card, Button, ListGroup } from "react-bootstrap";
@@ -27,7 +29,6 @@ import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";
 import GridLoader from "react-spinners/GridLoader";
 
-import "./SetupPage.scss";
 import { useTitle } from "@/hooks/title";
 import { LinkButton } from "@/components/LinkButton";
 

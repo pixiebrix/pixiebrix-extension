@@ -266,7 +266,7 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   selectExtension,
   fromExtension,
   fromExtensionPoint,
-  insertModeHelp: (
+  InsertModeHelpText: () => (
     <div>
       <p>
         A trigger panel can be configured to run an action on page load, when an

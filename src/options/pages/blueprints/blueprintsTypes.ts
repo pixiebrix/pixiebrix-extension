@@ -17,18 +17,12 @@
 
 import { RegistryId, ResolvedExtension } from "@/core";
 import { Row, TableInstance } from "react-table";
-import { Organization } from "@/types/contract";
 import { RecipeDefinition } from "@/types/definitions";
-
-export type InstallStatus = {
-  hasUpdate: boolean;
-  active: boolean;
-  organization: Organization;
-};
+import { ReactNode } from "react";
+import { SharingSource } from "@/options/pages/blueprints/installableUtils";
 
 // XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
-export type Installable = (RecipeDefinition | ResolvedExtension) &
-  InstallStatus;
+export type Installable = RecipeDefinition | ResolvedExtension;
 
 // Reshaped Installable to easily filter, sort, and group Installables
 export type InstallableViewItem = {
@@ -36,13 +30,12 @@ export type InstallableViewItem = {
   description: string;
   sharing: {
     packageId: RegistryId;
-    source: {
-      type: string;
-      label: string;
-    };
+    source: SharingSource;
   };
   updatedAt: string;
   status: "Active" | "Uninstalled";
+  hasUpdate: boolean;
+  icon: ReactNode;
   // Used to get Installable actions from useInstallableActions
   installable: Installable;
 };

@@ -1,0 +1,18 @@
+.global-loading-message {
+  position: fixed;
+  display: flex;
+  inset: 20px;
+  place-content: center;
+  align-items: center;
+  text-align: center;
+
+  /* If the loading is quick enough, we don't need to show the message. */
+  /* This leads to a cleaner loading experience since there will be one fewer flash of intermediary content. */
+  animation: loading-fade-in 0.5s 0.5s both;
+}
+
+@keyframes loading-fade-in {
+  from {
+    opacity: 0;
+  }
+}

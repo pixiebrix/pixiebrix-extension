@@ -16,12 +16,10 @@
  */
 
 import { Reader } from "@/types";
-import { IReader, ReaderOutput, Schema } from "@/core";
+import { IReader, ReaderOutput } from "@/core";
 import { mapValues } from "lodash";
 
 class CompositeReader extends Reader {
-  public readonly outputSchema: Schema;
-
   private readonly _readers: Record<string, IReader>;
 
   constructor(readers: Record<string, IReader>) {

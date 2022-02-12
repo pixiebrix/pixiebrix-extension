@@ -15,19 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { recordError } from "@/background/messenger/api";
-import { rollbar, toLogArgument } from "@/telemetry/rollbar";
 import { MessageContext } from "@/core";
+import { recordError } from "@/background/messenger/api";
 import { serializeError } from "serialize-error";
-import { isBackground, isExtensionContext } from "webext-detect-page";
 import { selectError } from "@/errors";
+import { expectContext } from "@/utils/expectContext";
+
+expectContext(
+  "extension",
+  "reportError requires access background messenger API"
+);
 
 /**
  * Report an error for local logs, remote telemetry, etc.
  * @param error the error object
  * @param context optional context for error telemetry
  */
-export function reportError(error: unknown, context?: MessageContext): void {
+function reportError(error: unknown, context?: MessageContext): void {
   void _reportError(error, context).catch((reportingError) => {
     console.error("An error occurred when reporting an error", {
       originalError: error,
@@ -39,20 +43,19 @@ export function reportError(error: unknown, context?: MessageContext): void {
 // Extracted async function to avoid turning `reportError` into an async function
 // which would trigger `eslint/no-floating-promises` at every `reportError` call
 async function _reportError(
-  error: unknown,
+  error: unknown, // It might also be an ErrorEvent
   context?: MessageContext
 ): Promise<void> {
-  if (!isExtensionContext()) {
-    // This module is also used by the PixieBrix app, so allow this method to be called from an external context
-    rollbar.error(toLogArgument(selectError(error)));
-    return;
-  }
+  const errorObject = selectError(error);
 
-  if (!isBackground()) {
-    // Also log the error in the context it occurred in, so the developer
-    // doesn't have to open the background page to see it
+  // Events are already natively logged by the browser
+  if (
+    !(error instanceof ErrorEvent || error instanceof PromiseRejectionEvent)
+  ) {
     console.error(error);
   }
 
-  recordError(serializeError(selectError(error)), context, null);
+  recordError(serializeError(errorObject), context, null);
 }
+
+export default reportError;

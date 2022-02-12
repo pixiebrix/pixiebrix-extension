@@ -36,4 +36,14 @@ export type SettingsState = {
    * Experimental feature to suggest HTML elements to select in the Page Editor
    */
   suggestElements?: boolean;
+
+  /**
+   * Whether the non-Chrome browser warning has been dismissed.
+   */
+  browserWarningDismissed: boolean;
+
+  /**
+   * Whether to use the Blueprints page instead of the Active Bricks & My Blueprints pages.
+   */
+  isBlueprintsPageEnabled: boolean;
 };

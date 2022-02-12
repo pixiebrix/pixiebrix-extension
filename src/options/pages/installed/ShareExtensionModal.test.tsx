@@ -26,27 +26,43 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import { PersistedExtension } from "@/core";
+import { useGetAuthQuery } from "@/services/api";
+import settingsSlice from "@/store/settingsSlice";
+import { anonAuth } from "@/hooks/auth";
 
 jest.unmock("react-redux");
 jest.mock("@/hooks/useNotifications");
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
+  useGetAuthQuery: jest.fn(),
 }));
 
 const extension = extensionFactory({
   label: "testExtension",
 });
 
-const extensionsStore = configureStore({
-  reducer: { options: extensionsSlice.reducer },
+const storeForTests = configureStore({
+  reducer: {
+    options: extensionsSlice.reducer,
+    settings: settingsSlice.reducer,
+  },
   preloadedState: {
     options: { extensions: [extension as PersistedExtension] },
   },
 });
 
-const TestWrapper: React.FC = ({ children }) => (
-  <Provider store={extensionsStore}>{children}</Provider>
-);
+const TestWrapper: React.FC<{ scope?: string }> = ({
+  scope = "@test",
+  children,
+}) => {
+  (useGetAuthQuery as jest.Mock).mockReturnValue({
+    data: {
+      ...anonAuth,
+      scope,
+    },
+  });
+  return <Provider store={storeForTests}>{children}</Provider>;
+};
 
 test("renders modal", async () => {
   render(
@@ -55,6 +71,23 @@ test("renders modal", async () => {
     </TestWrapper>
   );
   await waitForEffect();
+  const dialogRoot = screen.getByRole("dialog");
+  expect(dialogRoot).toMatchSnapshot();
+});
+
+test("requires user scope", async () => {
+  render(
+    <TestWrapper scope="">
+      <ShareExtensionModal extensionId={extension.id} />
+    </TestWrapper>
+  );
+  await waitForEffect();
+
+  // Scope input field is on the screen
+  const scopeInput = await screen.findAllByLabelText("Account Alias");
+  expect(scopeInput).not.toBeNull();
+
+  // Screen matches the snapshot
   const dialogRoot = screen.getByRole("dialog");
   expect(dialogRoot).toMatchSnapshot();
 });
@@ -74,6 +107,7 @@ test("prints 'Convert' when not Public (default)", async () => {
   const submitButton = dialogRoot.querySelector('.btn[type="submit"]');
   expect(submitButton.textContent).toBe("Convert");
 });
+
 test("prints 'Share' when Public", async () => {
   render(
     <TestWrapper>

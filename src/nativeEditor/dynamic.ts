@@ -30,8 +30,8 @@ import Overlay from "@/nativeEditor/Overlay";
 import {
   ExtensionPointConfig,
   ExtensionPointDefinition,
+  ExtensionPointType,
 } from "@/extensionPoints/types";
-import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { resolveDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
@@ -45,7 +45,7 @@ export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
   TExtension extends EmptyConfig = EmptyConfig
 > {
-  type: ElementType;
+  type: ExtensionPointType;
   extensionPoint: ExtensionPointConfig<TExtensionPoint>;
   extension: IExtension<TExtension>;
 }
@@ -195,8 +195,10 @@ export async function enableOverlay(selector: string): Promise<void> {
     _overlay = new Overlay();
   }
 
-  const $elt = $safeFind(selector);
-  _overlay.inspect($elt.toArray(), null);
+  const elements = $safeFind(selector).toArray();
+  if (elements.length > 0) {
+    _overlay.inspect(elements, null);
+  }
 }
 
 export async function disableOverlay(): Promise<void> {

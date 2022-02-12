@@ -73,10 +73,6 @@ class ExternalBlock extends Block {
 
   readonly inputSchema: Schema;
 
-  readonly outputSchema: Schema;
-
-  readonly defaultOptions: Record<string, unknown>;
-
   constructor(component: ComponentConfig) {
     const { id, name, description, icon } = component.metadata;
     super(id, name, description, icon);

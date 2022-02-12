@@ -67,6 +67,10 @@ const ErrorDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
         return <NetworkErrorDetail error={rootCause} />;
       }
 
+      if ("error" in rootCause && isAxiosError(rootCause.error)) {
+        return <NetworkErrorDetail error={rootCause.error} />;
+      }
+
       return entry.error.stack;
     }
 

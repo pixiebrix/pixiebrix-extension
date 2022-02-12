@@ -336,6 +336,7 @@ module.exports = (env, options) =>
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
+        WEBEXT_MESSENGER_LOGGING: "false",
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
@@ -345,7 +346,6 @@ module.exports = (env, options) =>
 
         // If not found, "null" will leave the ENV unset in the bundle
         ROLLBAR_BROWSER_ACCESS_TOKEN: null,
-        SUPPORT_WIDGET_ID: null,
         GOOGLE_API_KEY: null,
         GOOGLE_APP_ID: null,
       }),

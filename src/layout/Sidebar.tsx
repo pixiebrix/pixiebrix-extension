@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
+import React from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,44 +31,57 @@ import {
 import cx from "classnames";
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
-import AuthContext from "@/auth/AuthContext";
+import useFlags from "@/hooks/useFlags";
+import { useSelector } from "react-redux";
+import { SettingsState } from "@/store/settingsTypes";
 
 const Sidebar: React.FunctionComponent = () => {
-  const { flags } = useContext(AuthContext);
+  const { permit } = useFlags();
+  const isBlueprintsPageEnabled = useSelector<
+    { settings: SettingsState },
+    boolean
+  >((x) => x.settings.isBlueprintsPageEnabled);
 
   return (
     <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
       <nav className="sidebar sidebar-offcanvas" id={SIDEBAR_ID}>
         <ul className="nav">
-          {flags.includes("blueprints-page") && (
+          {isBlueprintsPageEnabled ? (
             <SidebarLink
-              route="/blueprints-page"
+              route="/blueprints"
               title="Blueprints"
               icon={faScroll}
+              isActive={(match, location) =>
+                match ||
+                location.pathname === "/" ||
+                location.pathname.startsWith("/extensions/")
+              }
             />
+          ) : (
+            <>
+              <SidebarLink
+                route="/installed"
+                title="Active Bricks"
+                icon={faCubes}
+                isActive={(match, location) =>
+                  match ||
+                  location.pathname === "/" ||
+                  location.pathname.startsWith("/extensions/")
+                }
+              />
+              <SidebarLink
+                route="/blueprints"
+                title={isBlueprintsPageEnabled ? "Blueprints" : "My Blueprints"}
+                icon={faScroll}
+              />
+            </>
           )}
 
-          <SidebarLink
-            route="/installed"
-            title="Active Bricks"
-            icon={faCubes}
-            isActive={(match, location) =>
-              match ||
-              location.pathname === "/" ||
-              location.pathname.startsWith("/extensions/")
-            }
-          />
-          <SidebarLink
-            route="/blueprints"
-            title="My Blueprints"
-            icon={faScroll}
-          />
-
-          {!flags.includes("restricted-workshop") && (
+          {permit("workshop") && (
             <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
           )}
 
-          {!flags.includes("restricted-services") && (
+          {permit("services") && (
             <SidebarLink
               route="/services"
               title="Integrations"
@@ -83,7 +96,7 @@ const Sidebar: React.FunctionComponent = () => {
             <span className="nav-text">Quick Links</span>
           </li>
 
-          {!flags.includes("restricted-marketplace") && (
+          {permit("marketplace") && (
             <li className={cx("nav-item")}>
               <a
                 href="https://www.pixiebrix.com/marketplace"

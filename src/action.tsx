@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/extensionContext";
+// Keep in order so precedence is preserved
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
+import "@/action.scss";
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
+import "@/extensionContext";
 
 import "@/actionPanel/messenger/registration";
 import App from "@/actionPanel/ActionPanelApp";
@@ -26,11 +28,6 @@ import ReactDOM from "react-dom";
 import React from "react";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
-
-// Keep in order so precedence is preserved
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "@/action.scss";
 
 registerContribBlocks();
 registerBuiltinBlocks();

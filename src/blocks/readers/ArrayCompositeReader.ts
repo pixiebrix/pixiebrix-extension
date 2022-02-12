@@ -16,12 +16,10 @@
  */
 
 import { Reader } from "@/types";
-import { IReader, ReaderOutput, Schema } from "@/core";
+import { IReader, ReaderOutput } from "@/core";
 import { zip } from "lodash";
 
 class ArrayCompositeReader extends Reader {
-  public readonly outputSchema: Schema;
-
   private readonly _readers: IReader[];
 
   constructor(readers: IReader[]) {
