@@ -23,7 +23,7 @@
     {
       "matches": ["https://*.pixiebrix.com/*"],
       "js": ["vendors.js", "contentScript.js"],
-      "css": ["contentScript.css"],
+      "css": ["styles.css"],
       "run_at": "document_idle"
     }
   ],
