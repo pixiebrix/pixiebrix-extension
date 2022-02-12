@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable filenames/match-exported */
 import { IExtension, Metadata } from "@/core";
 import {
   baseFromExtension,

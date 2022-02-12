@@ -5,6 +5,9 @@ module.exports = {
     "pixiebrix",
   ],
   rules: {
+    // Only enable this on components
+    "filenames/match-exported": "off",
+
     // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
     "import/no-named-as-default-member": "off",
 
@@ -42,6 +45,13 @@ module.exports = {
   ],
   overrides: [
     {
+      files: ["src/components/**/*.tsx"],
+      excludedFiles: ["*.test.tsx", "*.stories.tsx"],
+      rules: {
+        "filenames/match-exported": "error",
+      },
+    },
+    {
       files: [
         "webpack.*.js",
         "*.config.js",
@@ -62,7 +72,6 @@ module.exports = {
     {
       files: ["*.stories.tsx", "**/__mocks__/**"],
       rules: {
-        "filenames/match-exported": "off",
         "unicorn/filename-case": "off",
         "import/no-anonymous-default-export": "off",
       },
