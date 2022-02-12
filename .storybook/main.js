@@ -38,11 +38,7 @@ module.exports = {
       "@img": path.resolve(rootDir, "img"),
       "@contrib": path.resolve(rootDir, "contrib"),
       "@schemas": path.resolve(rootDir, "schemas"),
-      vendors: path.resolve(rootDir, "src/vendors"),
-      "webextension-polyfill": path.resolve(
-        rootDir,
-        "src/__mocks__/browserMocks.ts"
-      ),
+      "webextension-polyfill": false,
     };
 
     const fileLoaderRule = config.module.rules.find(
