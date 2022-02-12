@@ -21,6 +21,7 @@ const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 const rootDir = path.resolve(__dirname, "../");
 
+console.log(path.resolve(rootDir, "src/__mocks__/@"));
 module.exports = {
   stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: ["@storybook/addon-links", "@storybook/addon-essentials"],
@@ -33,8 +34,16 @@ module.exports = {
     config.resolve.fallback = {
       fs: false,
     };
+
+    // Automatically mock any module that appears in __mocks__, e.g. src/__mocks__/webextension-polyfill.js
+    config.resolve.modules.push(path.resolve(rootDir, "src/__mocks__"));
+
     config.resolve.alias = {
-      "@": path.resolve(rootDir, "src"),
+      // Allow automatic mocks of any local file
+      "@": [
+        path.resolve(rootDir, "src/__mocks__/@"),
+        path.resolve(rootDir, "src"),
+      ],
       "@img": path.resolve(rootDir, "img"),
       "@contrib": path.resolve(rootDir, "contrib"),
       "@schemas": path.resolve(rootDir, "schemas"),
