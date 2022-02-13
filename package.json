@@ -16,7 +16,7 @@
     "build:webpack": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production",
     "build:typescript": "tsc --noEmit",
     "build:scripts": "webpack --config scripts/webpack.scripts.js",
-    "upload:sourcemaps": "aws s3 cp ./dist s3://pixiebrix-extension-source-maps/$SOURCE_MAP_PATH --exclude '*' --include '*.map' --include '*.js.map' --recursive --no-progress",
+    "upload:sourcemaps": "aws s3 cp ./dist s3://pixiebrix-extension-source-maps/$SOURCE_MAP_PATH --exclude '*' --include '*.map' --include '*.js' --recursive --no-progress",
     "upload:extension": "zip -r $BUILD_FILENAME dist -x '*.map' && aws s3 cp $BUILD_FILENAME s3://pixiebrix-extension-builds/$BUILD_PATH --no-progress",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
     "storybook": "start-storybook -p 6006",
