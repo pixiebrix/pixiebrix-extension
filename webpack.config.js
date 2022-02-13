@@ -336,7 +336,7 @@ module.exports = (env, options) =>
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
         WEBEXT_MESSENGER_LOGGING: "false",
-        ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl,
+        ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost",
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
