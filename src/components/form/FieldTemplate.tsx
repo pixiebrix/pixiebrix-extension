@@ -29,23 +29,22 @@ import { getErrorMessage } from "@/errors";
 import cx from "classnames";
 import { isPlainObject } from "lodash";
 
-export type FieldProps<
-  As extends React.ElementType = React.ElementType
-> = FormControlProps &
-  React.ComponentProps<As> & {
-    name: string;
-    label?: ReactNode;
-    fitLabelWidth?: boolean;
-    description?: ReactNode;
-    error?: string;
-    touched?: boolean;
+export type FieldProps<As extends React.ElementType = React.ElementType> =
+  FormControlProps &
+    React.ComponentProps<As> & {
+      name: string;
+      label?: ReactNode;
+      fitLabelWidth?: boolean;
+      description?: ReactNode;
+      error?: string;
+      touched?: boolean;
 
-    /**
-     * This value is regarded as absence of value, unset property.
-     * It will be passed to the UI input control when the value is undefined.
-     */
-    blankValue?: unknown;
-  };
+      /**
+       * This value is regarded as absence of value, unset property.
+       * It will be passed to the UI input control when the value is undefined.
+       */
+      blankValue?: unknown;
+    };
 
 type WidgetElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 export type CustomFieldWidgetProps<

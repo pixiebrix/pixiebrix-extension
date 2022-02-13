@@ -98,18 +98,12 @@ const CreateBrickColumn: React.FunctionComponent = () => (
 const OnboardingPage: React.FunctionComponent = () => {
   const { restrict } = useFlags();
 
-  const {
-    data: rawRecipes,
-    isLoading: isRecipesLoading,
-  } = useGetRecipesQuery();
-  const {
-    data: organizations,
-    isLoading: isOrganizationsLoading,
-  } = useGetOrganizationsQuery();
-  const {
-    hasUpdate: hasDeployments,
-    isLoading: isDeploymentsLoading,
-  } = useDeployments();
+  const { data: rawRecipes, isLoading: isRecipesLoading } =
+    useGetRecipesQuery();
+  const { data: organizations, isLoading: isOrganizationsLoading } =
+    useGetOrganizationsQuery();
+  const { hasUpdate: hasDeployments, isLoading: isDeploymentsLoading } =
+    useDeployments();
 
   const teamRecipes = (rawRecipes ?? []).filter(
     (recipe) => recipe.sharing.organizations.length > 0

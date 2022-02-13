@@ -31,12 +31,10 @@ const MoveElement: React.FC<MoveElementProps> = ({
   elementName,
   setActiveElement,
 }) => {
-  const { collectionName, elementIndex } = getElementCollectionName(
-    elementName
-  );
-  const [{ value: elementsCollection }, , { setValue }] = useField<
-    DocumentElement[]
-  >(collectionName);
+  const { collectionName, elementIndex } =
+    getElementCollectionName(elementName);
+  const [{ value: elementsCollection }, , { setValue }] =
+    useField<DocumentElement[]>(collectionName);
 
   const canMoveUp = elementIndex > 0;
   const canMoveDown = elementIndex < elementsCollection.length - 1;

@@ -22,9 +22,10 @@ import { IExtension } from "@/core";
 
 function useExtensionMeta(): { lookup: Map<string, IExtension> } {
   const extensions = useSelector(selectExtensions);
-  const lookup = useMemo(() => new Map(extensions.map((x) => [x.id, x])), [
-    extensions,
-  ]);
+  const lookup = useMemo(
+    () => new Map(extensions.map((x) => [x.id, x])),
+    [extensions]
+  );
   return { lookup };
 }
 

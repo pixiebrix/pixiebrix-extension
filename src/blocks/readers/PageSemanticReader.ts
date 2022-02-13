@@ -45,7 +45,7 @@ export class PageSemanticReader extends Reader {
           if (error) {
             reject(error);
           } else {
-            resolve((result as unknown) as ReaderOutput);
+            resolve(result as unknown as ReaderOutput);
           }
         },
         {

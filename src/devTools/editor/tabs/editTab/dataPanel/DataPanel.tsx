@@ -124,13 +124,11 @@ const DataPanel: React.FC<{
     actions.setActiveField
   );
 
-  const [
-    documentBuilderActiveElement,
-    setDocumentBuilderActiveElement,
-  ] = useReduxState(
-    documentBuilderSelectors.activeElement,
-    documentBuilderActions.setActiveElement
-  );
+  const [documentBuilderActiveElement, setDocumentBuilderActiveElement] =
+    useReduxState(
+      documentBuilderSelectors.activeElement,
+      documentBuilderActions.setActiveElement
+    );
 
   const documentBodyName = `extension.blockPipeline.${blockIndex}.config.body`;
 
@@ -153,9 +151,8 @@ const DataPanel: React.FC<{
 
   const [contextQuery, setContextQuery] = useDataPanelTabSearchQuery("context");
   const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery("formik");
-  const [renderedQuery, setRenderedQuery] = useDataPanelTabSearchQuery(
-    "rendered"
-  );
+  const [renderedQuery, setRenderedQuery] =
+    useDataPanelTabSearchQuery("rendered");
   const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
 
   const popupBoundary = showDocumentPreview
