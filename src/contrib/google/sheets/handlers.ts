@@ -20,7 +20,8 @@ import { columnToLetter } from "@/contrib/google/sheets/sheetsHelpers";
 
 type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
 type BatchGetValuesResponse = gapi.client.sheets.BatchGetValuesResponse;
-type BatchUpdateSpreadsheetResponse = gapi.client.sheets.BatchUpdateSpreadsheetResponse;
+type BatchUpdateSpreadsheetResponse =
+  gapi.client.sheets.BatchUpdateSpreadsheetResponse;
 type Spreadsheet = gapi.client.sheets.Spreadsheet;
 type SpreadsheetProperties = gapi.client.sheets.SpreadsheetProperties;
 

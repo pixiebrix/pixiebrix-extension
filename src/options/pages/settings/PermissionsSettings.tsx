@@ -84,9 +84,10 @@ const PermissionsSettings: React.FunctionComponent = () => {
     [refresh, addToast]
   );
 
-  const origins = useMemo(() => sortBy(permissions?.origins ?? []), [
-    permissions,
-  ]);
+  const origins = useMemo(
+    () => sortBy(permissions?.origins ?? []),
+    [permissions]
+  );
 
   const extraPermissions = useMemo(
     () =>

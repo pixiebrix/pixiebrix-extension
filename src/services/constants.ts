@@ -18,6 +18,5 @@
 import { RegistryId } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
 
-export const PIXIEBRIX_SERVICE_ID: RegistryId = validateRegistryId(
-  "@pixiebrix/api"
-);
+export const PIXIEBRIX_SERVICE_ID: RegistryId =
+  validateRegistryId("@pixiebrix/api");

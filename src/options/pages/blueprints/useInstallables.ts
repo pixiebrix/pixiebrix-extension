@@ -77,18 +77,15 @@ function useInstallables(): InstallablesState {
     return [...unresolvedExtensions, ...inactiveExtensions];
   }, [cloudExtensions.data, installedExtensionIds, unresolvedExtensions]);
 
-  const [
-    resolvedExtensions,
-    resolvedExtensionsIsLoading,
-    resolveError,
-  ] = useAsyncState(
-    async () =>
-      Promise.all(
-        allExtensions.map(async (extension) => resolveDefinitions(extension))
-      ),
-    [allExtensions],
-    []
-  );
+  const [resolvedExtensions, resolvedExtensionsIsLoading, resolveError] =
+    useAsyncState(
+      async () =>
+        Promise.all(
+          allExtensions.map(async (extension) => resolveDefinitions(extension))
+        ),
+      [allExtensions],
+      []
+    );
 
   const installables = useMemo(
     () => [...resolvedExtensions, ...personalOrTeamBlueprints],

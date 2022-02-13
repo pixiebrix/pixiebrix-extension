@@ -44,13 +44,10 @@ const SaveExtensionWizard: React.FC = () => {
     data: { scope },
   } = useGetAuthQuery();
   const { data: recipes, isLoading: areRecipesLoading } = useGetRecipesQuery();
-  const {
-    data: editablePackages,
-    isLoading: areEditablePackageLoading,
-  } = useGetEditablePackagesQuery();
-  const [isRecipeOptionsModalShown, setRecipeOptionsModalShown] = useState(
-    false
-  );
+  const { data: editablePackages, isLoading: areEditablePackageLoading } =
+    useGetEditablePackagesQuery();
+  const [isRecipeOptionsModalShown, setRecipeOptionsModalShown] =
+    useState(false);
   const isNewRecipe = useRef(false);
   const newRecipeInitialValues = useRef<RecipeConfiguration>(null);
 
