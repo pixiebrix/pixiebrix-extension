@@ -52,13 +52,6 @@ jest.mock("@/telemetry/logging");
 jest.mock("@/devTools/editor/hooks/useCreate");
 jest.mock("@/devTools/editor/hooks/useReset");
 
-jest.mock("webext-detect-page", () => ({
-  isExtensionContext: () => true,
-  isDevToolsPage: () => false,
-  isBackground: () => false,
-  isContentScript: () => false,
-}));
-
 jest.mock("@/services/api", () => ({
   useCreateRecipeMutation: jest.fn().mockReturnValue([]),
   useUpdateRecipeMutation: jest.fn().mockReturnValue([]),

@@ -42,13 +42,6 @@ jest.mock("@/services/api", () => ({
   useGetAuthQuery: jest.fn(),
 }));
 
-jest.mock("webext-detect-page", () => ({
-  isExtensionContext: () => true,
-  isDevToolsPage: () => true,
-  isBackground: () => false,
-  isContentScript: () => false,
-}));
-
 beforeEach(() => {
   (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
     data: [],
