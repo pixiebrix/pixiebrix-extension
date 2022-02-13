@@ -46,10 +46,8 @@ const AppServiceField: React.FunctionComponent<SchemaFieldProps> = ({
   uiSchema,
   ...props
 }) => {
-  const {
-    values: root,
-    setValues: setRootValues,
-  } = useFormikContext<ServiceSlice>();
+  const { values: root, setValues: setRootValues } =
+    useFormikContext<ServiceSlice>();
   const [{ value }, , helpers] = useField<Expression<ServiceKeyVar>>(props);
 
   // This currently happens when a brick is copy-pasted into a separate extension

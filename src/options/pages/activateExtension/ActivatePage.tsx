@@ -32,9 +32,11 @@ import { useAuthOptions } from "@/hooks/auth";
 const ActivatePage: React.FunctionComponent = () => {
   const { extensionId } = useParams<{ extensionId: string }>();
 
-  const { data: extension, isLoading, error } = useFetch<CloudExtension>(
-    `/api/extensions/${extensionId}`
-  );
+  const {
+    data: extension,
+    isLoading,
+    error,
+  } = useFetch<CloudExtension>(`/api/extensions/${extensionId}`);
 
   const [authOptions] = useAuthOptions();
 

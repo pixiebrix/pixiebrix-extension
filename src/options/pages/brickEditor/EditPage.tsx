@@ -128,9 +128,11 @@ const EditPage: React.FunctionComponent = () => {
 
   const { data } = useFetch<BrickData>(url);
 
-  const { isBlueprint, isInstalled, config: rawConfig } = useParseBrick(
-    data?.config
-  );
+  const {
+    isBlueprint,
+    isInstalled,
+    config: rawConfig,
+  } = useParseBrick(data?.config);
 
   useTouchBrick(id);
 

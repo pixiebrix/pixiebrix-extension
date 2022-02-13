@@ -38,11 +38,8 @@ type ListOptionsProps = {
 };
 
 const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
-  const [
-    { value: documentElement },
-    ,
-    { setValue: setDocumentElement },
-  ] = useField<ListDocumentElement>(elementName);
+  const [{ value: documentElement }, , { setValue: setDocumentElement }] =
+    useField<ListDocumentElement>(elementName);
 
   const arraySourceEdit: SchemaFieldProps = {
     name: joinName(elementName, "config", "array"),

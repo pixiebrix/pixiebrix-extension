@@ -19,7 +19,8 @@ import { validate, v4 as uuidFactory } from "uuid";
 import { RegistryId, SemVerString, Timestamp, UUID } from "@/core";
 import { valid as semVerValid } from "semver";
 
-export const PACKAGE_REGEX = /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
+export const PACKAGE_REGEX =
+  /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
 
 export function uuidv4(): UUID {
   return uuidFactory() as UUID;

@@ -82,7 +82,7 @@ class ExternalBlock extends Block {
     this.outputSchema = this.component.outputSchema;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     const pipeline = castArray(this.component.pipeline);
 
     const purity = await Promise.all(
@@ -95,7 +95,7 @@ class ExternalBlock extends Block {
     return purity.every((x) => x);
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     const pipeline = castArray(this.component.pipeline);
 
     const awareness = await Promise.all(

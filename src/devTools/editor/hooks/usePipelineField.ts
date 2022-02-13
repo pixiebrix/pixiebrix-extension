@@ -58,14 +58,12 @@ function usePipelineField(
     [allBlocks, extensionPointType, errorTraceEntry]
   );
 
-  const [
-    { value: blockPipeline },
-    { error: blockPipelineErrors },
-  ] = useField<BlockPipeline>({
-    name: PIPELINE_BLOCKS_FIELD_NAME,
-    // @ts-expect-error working with nested errors
-    validate: validatePipelineBlocks,
-  });
+  const [{ value: blockPipeline }, { error: blockPipelineErrors }] =
+    useField<BlockPipeline>({
+      name: PIPELINE_BLOCKS_FIELD_NAME,
+      // @ts-expect-error working with nested errors
+      validate: validatePipelineBlocks,
+    });
 
   const formikContext = useFormikContext();
   useAsyncEffect(

@@ -76,17 +76,16 @@ async function fetchDeployments(
   return deployments;
 }
 
-const makeUpdatedFilter = (installed: IExtension[]) => (
-  deployment: Deployment
-) => {
-  const match = installed.find(
-    (extension) => extension._deployment?.id === deployment.id
-  );
-  return (
-    !match ||
-    new Date(match._deployment.timestamp) < new Date(deployment.updated_at)
-  );
-};
+const makeUpdatedFilter =
+  (installed: IExtension[]) => (deployment: Deployment) => {
+    const match = installed.find(
+      (extension) => extension._deployment?.id === deployment.id
+    );
+    return (
+      !match ||
+      new Date(match._deployment.timestamp) < new Date(deployment.updated_at)
+    );
+  };
 
 function activateDeployments(
   dispatch: Dispatch,
