@@ -46,7 +46,7 @@ export const URL_INPUT_SPEC: Schema = {
 };
 
 export class UrlParams extends Transformer {
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
@@ -63,7 +63,7 @@ export class UrlParams extends Transformer {
 
   inputSchema: Schema = URL_INPUT_SPEC;
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     type: "object",
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     properties: {

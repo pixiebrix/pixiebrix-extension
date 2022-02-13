@@ -77,7 +77,7 @@ export class RunBot extends Transformer {
     properties: AUTOMATION_ANYWHERE_PROPERTIES,
   };
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     additionalProperties: true,

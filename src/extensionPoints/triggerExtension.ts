@@ -202,7 +202,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     console.debug("triggerExtension:removeExtensions");
   }
 
-  uninstall(): void {
+  override uninstall(): void {
     console.debug("triggerExtension:uninstall", {
       id: this.id,
     });
@@ -628,7 +628,7 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
 
   public readonly rawConfig: ExtensionPointConfig<TriggerDefinition>;
 
-  public get defaultOptions(): Record<string, string> {
+  public override get defaultOptions(): Record<string, string> {
     return this._definition.defaultOptions ?? {};
   }
 
@@ -669,7 +669,7 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
     return this._definition.background ?? false;
   }
 
-  async defaultReader() {
+  override async defaultReader() {
     return mergeReaders(this._definition.reader);
   }
 

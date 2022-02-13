@@ -37,11 +37,11 @@ export class TimestampReader extends Reader {
     };
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return false;
   }
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
@@ -79,15 +79,15 @@ export class PixieBrixSessionReader extends Reader {
     };
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return false;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
@@ -143,15 +143,15 @@ export class PixieBrixProfileReader extends Reader {
     return getExtensionAuth() as Promise<ReaderOutput>;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return false;
   }
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
@@ -191,15 +191,15 @@ export class DocumentReader extends Reader {
     };
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return false;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
@@ -233,7 +233,7 @@ export class ManifestReader extends Reader {
     );
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return false;
   }
 
@@ -241,11 +241,11 @@ export class ManifestReader extends Reader {
     return true;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {

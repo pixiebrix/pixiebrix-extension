@@ -76,7 +76,7 @@ export class UiPathAppRenderer extends Renderer {
     );
   }
 
-  permissions: Permissions.Permissions = {
+  override permissions: Permissions.Permissions = {
     origins: ["https://cloud.uipath.com/*"],
   };
 

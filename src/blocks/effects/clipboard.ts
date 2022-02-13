@@ -29,7 +29,7 @@ export class CopyToClipboard extends Effect {
     );
   }
 
-  permissions: Permissions.Permissions = {
+  override permissions: Permissions.Permissions = {
     permissions: ["clipboardWrite"],
   };
 
