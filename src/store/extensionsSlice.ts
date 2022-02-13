@@ -225,24 +225,22 @@ const extensionsSlice = createSlice({
         throw new Error("extensionPointId is required");
       }
 
-      const extension: Except<
-        PersistedExtension,
-        "_unresolvedExtensionBrand"
-      > = {
-        id,
-        apiVersion,
-        extensionPointId,
-        _recipe,
-        _deployment: undefined,
-        label,
-        definitions,
-        optionsArgs,
-        services,
-        config,
-        createTimestamp,
-        updateTimestamp: timestamp,
-        active: true,
-      };
+      const extension: Except<PersistedExtension, "_unresolvedExtensionBrand"> =
+        {
+          id,
+          apiVersion,
+          extensionPointId,
+          _recipe,
+          _deployment: undefined,
+          label,
+          definitions,
+          optionsArgs,
+          services,
+          config,
+          createTimestamp,
+          updateTimestamp: timestamp,
+          active: true,
+        };
 
       assertExtensionNotResolved(extension);
 

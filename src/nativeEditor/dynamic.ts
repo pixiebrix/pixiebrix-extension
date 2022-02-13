@@ -148,7 +148,7 @@ export async function runExtensionPointReader(
     extensionPoint.defaultReader = async () =>
       new ArrayCompositeReader([
         await extensionPoint.getBaseReader(),
-        (contextMenuReaderShim as unknown) as IReader,
+        contextMenuReaderShim as unknown as IReader,
       ]);
   }
 
@@ -168,7 +168,8 @@ export async function updateDynamicElement({
   // HACK: hack so that when using the Page Editor the interval trigger only runs when you manually trigger it
   //  Otherwise it's hard to work with the interval trigger because you keep losing the trace from the previous run
   if (extensionPointConfig.definition.type === "trigger") {
-    const triggerDefinition = extensionPointConfig.definition as TriggerDefinition;
+    const triggerDefinition =
+      extensionPointConfig.definition as TriggerDefinition;
     if (triggerDefinition.trigger === "interval") {
       // OK to assign directly since the object comes from the messenger (so we have a fresh object)
       triggerDefinition.trigger = "load";

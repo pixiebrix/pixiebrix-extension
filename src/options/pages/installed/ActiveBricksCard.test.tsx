@@ -41,7 +41,7 @@ const extensionFactory = ({
   isPersonalBrick = false,
   isTeamDeployment = false,
 }: TestExtension = {}) =>
-  (({
+  ({
     id: "",
     apiVersion: "v1",
     ...(!isPersonalBrick && {
@@ -66,21 +66,21 @@ const extensionFactory = ({
     extensionPointId: "@pixiebrix/bar",
     config: {},
     active: true,
-  } as unknown) as ResolvedExtension);
+  } as unknown as ResolvedExtension);
 
 // XXX: use the factories.ts factory instead
 const recipeFactory: (timestamp: string) => RecipeDefinition = (
   timestamp: string
 ) =>
-  (({
+  ({
     // Omitting properties for brevity
-    metadata: ({
+    metadata: {
       id: "@user/foo",
       name: "Test recipe",
       version: "1.0.0",
-    } as unknown) as Metadata,
+    } as unknown as Metadata,
     updated_at: timestamp,
-  } as unknown) as RecipeDefinition);
+  } as unknown as RecipeDefinition);
 
 const mockGetRecipesImplementation = (recipe: RecipeDefinition) => {
   (useGetRecipesQuery as jest.Mock).mockImplementation(() => ({

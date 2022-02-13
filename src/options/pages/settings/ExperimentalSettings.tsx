@@ -27,9 +27,8 @@ import { selectSettings } from "@/store/settingsSelectors";
 
 const ExperimentalSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { suggestElements, isBlueprintsPageEnabled } = useSelector(
-    selectSettings
-  );
+  const { suggestElements, isBlueprintsPageEnabled } =
+    useSelector(selectSettings);
   const notify = useNotifications();
 
   return (

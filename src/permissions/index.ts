@@ -115,7 +115,7 @@ export async function collectPermissions(
         //  to not depend on irrelevant information, e.g., the uuid of the extension. This will also involve changing
         //  the type of getBlocks on the ExtensionPoint interface
         inner = await extensionPermissions(
-          ({ config } as unknown) as IExtension,
+          { config } as unknown as IExtension,
           {
             extensionPoint,
           }

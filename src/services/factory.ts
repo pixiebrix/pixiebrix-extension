@@ -135,9 +135,9 @@ class LocalDefinedService<
     }
 
     if (this.isToken) {
-      const tokenUrl = (this
-        ._definition as ServiceDefinition<TokenAuthenticationDefinition>)
-        .authentication.token.url;
+      const tokenUrl = (
+        this._definition as ServiceDefinition<TokenAuthenticationDefinition>
+      ).authentication.token.url;
       patterns.push(renderMustache(tokenUrl, serviceConfig));
     }
 
@@ -146,8 +146,9 @@ class LocalDefinedService<
 
   getTokenContext(serviceConfig: ServiceConfig): TokenContext {
     if (this.isToken) {
-      const definition: TokenContext = (this._definition
-        .authentication as TokenAuthenticationDefinition).token;
+      const definition: TokenContext = (
+        this._definition.authentication as TokenAuthenticationDefinition
+      ).token;
       // Console.debug("token context", { definition, serviceConfig });
       return renderMustache<TokenContext>(definition, serviceConfig);
     }
@@ -157,8 +158,9 @@ class LocalDefinedService<
 
   getOAuth2Context(serviceConfig: ServiceConfig): OAuth2Context {
     if (this.isOAuth2) {
-      const definition: OAuth2Context = (this._definition
-        .authentication as OAuth2AuthenticationDefinition).oauth2;
+      const definition: OAuth2Context = (
+        this._definition.authentication as OAuth2AuthenticationDefinition
+      ).oauth2;
       console.debug("getOAuth2Context", { definition, serviceConfig });
       return renderMustache<OAuth2Context>(definition, serviceConfig);
     }

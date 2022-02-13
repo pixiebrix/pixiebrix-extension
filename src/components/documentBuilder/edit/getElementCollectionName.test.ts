@@ -19,27 +19,24 @@ import getElementCollectionName from "@/components/documentBuilder/edit/getEleme
 
 test("returns collection name for an element", () => {
   const elementName = "body.0.children.3";
-  const { collectionName, elementIndex } = getElementCollectionName(
-    elementName
-  );
+  const { collectionName, elementIndex } =
+    getElementCollectionName(elementName);
   expect(collectionName).toBe("body.0.children");
   expect(elementIndex).toBe(3);
 });
 
 test("works for root element", () => {
   const elementName = "body.5";
-  const { collectionName, elementIndex } = getElementCollectionName(
-    elementName
-  );
+  const { collectionName, elementIndex } =
+    getElementCollectionName(elementName);
   expect(collectionName).toBe("body");
   expect(elementIndex).toBe(5);
 });
 
 test("works for list element", () => {
   const elementName = "body.5.children.3.config.element.__value__";
-  const { collectionName, elementIndex } = getElementCollectionName(
-    elementName
-  );
+  const { collectionName, elementIndex } =
+    getElementCollectionName(elementName);
 
   // Name of list element collection points to the collection of the list itself
   expect(collectionName).toBe("body.5.children");
