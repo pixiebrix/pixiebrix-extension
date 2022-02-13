@@ -36,6 +36,13 @@ jest.mock("@/services/api", () => ({
   useGetAuthQuery: jest.fn(),
 }));
 
+jest.mock("webext-detect-page", () => ({
+  isExtensionContext: () => true,
+  isDevToolsPage: () => false,
+  isBackground: () => false,
+  isContentScript: () => false,
+}));
+
 jest.mock("@/hooks/useDeployments", () => jest.fn());
 
 // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method

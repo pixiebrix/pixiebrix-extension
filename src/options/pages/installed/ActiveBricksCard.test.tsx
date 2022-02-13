@@ -28,6 +28,14 @@ jest.mock("@/services/api", () => ({
   useGetRecipesQuery: jest.fn(),
   useGetAuthQuery: jest.fn(() => ({ data: anonAuth })),
 }));
+
+jest.mock("webext-detect-page", () => ({
+  isExtensionContext: () => true,
+  isDevToolsPage: () => false,
+  isBackground: () => false,
+  isContentScript: () => false,
+}));
+
 const arbitraryTimestamp = "2021-11-20T00:00:00.000000Z";
 
 type TestExtension = {
