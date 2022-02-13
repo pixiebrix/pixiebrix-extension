@@ -39,6 +39,7 @@ import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { ExtensionNotLinkedError } from "@/errors";
+import { forbidContext } from "@/utils/expectContext";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
