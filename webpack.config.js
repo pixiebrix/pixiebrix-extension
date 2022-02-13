@@ -188,8 +188,8 @@ function mockHeavyDependencies() {
       "Mocking dependencies for development build: @/icons/list, uipath/robot"
     );
     return {
-      "@/icons/list": path.resolve("src/__mocks__/iconsListMock"),
-      "@uipath/robot": path.resolve("src/__mocks__/robotMock"),
+      "@/icons/list": path.resolve("src/__mocks__/@/icons/list"),
+      "@uipath/robot": path.resolve("src/__mocks__/@uipath/robot"),
     };
   }
 }
