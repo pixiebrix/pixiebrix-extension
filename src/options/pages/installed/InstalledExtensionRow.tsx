@@ -72,9 +72,8 @@ const InstalledExtensionRow: React.FunctionComponent<{
 
   const notify = useNotifications();
 
-  const [hasPermissions, requestPermissions] = useExtensionPermissions(
-    extension
-  );
+  const [hasPermissions, requestPermissions] =
+    useExtensionPermissions(extension);
 
   const [validation] = useExtensionValidator(extension);
 

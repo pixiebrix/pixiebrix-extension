@@ -47,9 +47,10 @@ function tryParse(value: unknown): unknown {
 const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
   error,
 }) => {
-  const absoluteUrl = useMemo(() => selectAbsoluteUrl(error.config), [
-    error.config,
-  ]);
+  const absoluteUrl = useMemo(
+    () => selectAbsoluteUrl(error.config),
+    [error.config]
+  );
 
   const [hasPermissions, permissionsPending, permissionsError] = useAsyncState<
     boolean | undefined

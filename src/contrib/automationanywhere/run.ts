@@ -37,8 +37,7 @@ export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
 
 export const AUTOMATION_ANYWHERE_PROPERTIES: SchemaProperties = {
   service: {
-    $ref:
-      "https://app.pixiebrix.com/schemas/services/automation-anywhere/control-room",
+    $ref: "https://app.pixiebrix.com/schemas/services/automation-anywhere/control-room",
   },
   fileId: {
     type: "string",

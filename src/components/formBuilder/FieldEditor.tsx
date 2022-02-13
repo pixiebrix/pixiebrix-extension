@@ -67,11 +67,8 @@ const FieldEditor: React.FC<{
   setActiveField,
   fieldTypes = FIELD_TYPE_OPTIONS,
 }) => {
-  const [
-    { value: rjsfSchema },
-    ,
-    { setValue: setRjsfSchema },
-  ] = useField<RJSFSchema>(name);
+  const [{ value: rjsfSchema }, , { setValue: setRjsfSchema }] =
+    useField<RJSFSchema>(name);
   const { schema, uiSchema } = rjsfSchema;
   const fullPropertyName = `${name}.schema.properties.${propertyName}`;
   const [{ value: propertySchema }] = useField<Schema>(fullPropertyName);

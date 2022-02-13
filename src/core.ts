@@ -513,39 +513,37 @@ export type IExtension<T extends Config = EmptyConfig> = {
  * @see IExtension
  * @see ResolvedExtension
  */
-export type UnresolvedExtension<
-  T extends Config = EmptyConfig
-> = IExtension<T> & {
-  _unresolvedExtensionBrand: never;
-};
+export type UnresolvedExtension<T extends Config = EmptyConfig> =
+  IExtension<T> & {
+    _unresolvedExtensionBrand: never;
+  };
 
 /**
  * An extension that has been saved locally
  * @see IExtension
  * @see UserExtension
  */
-export type PersistedExtension<
-  T extends Config = EmptyConfig
-> = UnresolvedExtension<T> & {
-  /**
-   * True to indicate this extension has been activated on the client.
-   */
-  active: true;
+export type PersistedExtension<T extends Config = EmptyConfig> =
+  UnresolvedExtension<T> & {
+    /**
+     * True to indicate this extension has been activated on the client.
+     */
+    active: true;
 
-  /**
-   * Creation timestamp in ISO format with timezone.
-   *
-   * Currently, not used for anything - might be used for sorting, etc. in the future.
-   */
-  createTimestamp: string;
+    /**
+     * Creation timestamp in ISO format with timezone.
+     *
+     * Currently, not used for anything - might be used for sorting, etc. in the future.
+     */
+    createTimestamp: string;
 
-  /**
-   * Update timestamp in ISO format with timezone.
-   *
-   * Used to determine if local version is outdated compared to user's version on the server.
-   */
-  updateTimestamp: string;
-};
+    /**
+     * Update timestamp in ISO format with timezone.
+     *
+     * Used to determine if local version is outdated compared to user's version on the server.
+     */
+    updateTimestamp: string;
+  };
 
 /**
  * An `IExtension` with all definitions resolved.

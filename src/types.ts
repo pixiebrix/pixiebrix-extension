@@ -54,7 +54,8 @@ export type UnknownObject = Record<string, unknown>;
 export abstract class Service<
   TConfig extends KeyedConfig = KeyedConfig,
   TOAuth extends AuthData = AuthData
-> implements IService<TConfig> {
+> implements IService<TConfig>
+{
   id: RegistryId;
 
   name: string;
@@ -101,7 +102,8 @@ export abstract class Service<
 }
 
 export abstract class ExtensionPoint<TConfig extends EmptyConfig>
-  implements IExtensionPoint {
+  implements IExtensionPoint
+{
   public readonly id: RegistryId;
 
   public readonly name: string;

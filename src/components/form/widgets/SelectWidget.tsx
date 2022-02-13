@@ -41,18 +41,17 @@ export type SelectWidgetOnChange<
 > = React.ChangeEventHandler<SelectLike<TOption>>;
 
 // Type of the SelectWidget props
-type SelectWidgetProps<
-  TOption extends Option<TOption["value"]>
-> = CustomFieldWidgetProps<TOption["value"], SelectLike<TOption>> & {
-  isClearable?: boolean;
-  options: TOption[];
-  isLoading?: boolean;
-  loadError?: unknown;
-  loadingMessage?: string;
-  error?: unknown;
-  disabled?: boolean;
-  components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
-};
+type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
+  CustomFieldWidgetProps<TOption["value"], SelectLike<TOption>> & {
+    isClearable?: boolean;
+    options: TOption[];
+    isLoading?: boolean;
+    loadError?: unknown;
+    loadingMessage?: string;
+    error?: unknown;
+    disabled?: boolean;
+    components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
+  };
 
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,

@@ -271,12 +271,12 @@ export async function lookupExtensionPoint<
       "Converting extension definition to temporary extension point",
       definition
     );
-    const innerExtensionPoint = ({
+    const innerExtensionPoint = {
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       kind: "extensionPoint",
       metadata: internalExtensionPointMetaFactory(),
       ...definition,
-    } as unknown) as ExtensionPointConfig<TDefinition> & {
+    } as unknown as ExtensionPointConfig<TDefinition> & {
       definition: { type: TType };
     };
 
@@ -291,7 +291,8 @@ export async function lookupExtensionPoint<
     );
   }
 
-  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<TDefinition>;
+  const extensionPoint =
+    brick.config as unknown as ExtensionPointConfig<TDefinition>;
   if (extensionPoint.definition.type !== type) {
     throw new Error(`Expected ${type} extension point type`);
   }

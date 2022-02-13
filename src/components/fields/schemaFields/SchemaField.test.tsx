@@ -162,9 +162,8 @@ const sampleSchemas: SchemaTestCase[] = [
   },
 ];
 
-const schemaTestCases: ReadonlyArray<
-  [name: string, schema: Schema]
-> = sampleSchemas.map(({ name, schema }) => [name, schema]);
+const schemaTestCases: ReadonlyArray<[name: string, schema: Schema]> =
+  sampleSchemas.map(({ name, schema }) => [name, schema]);
 
 function expressionValue<T extends TemplateEngine>(
   type: T,
