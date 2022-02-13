@@ -113,6 +113,11 @@ class LazyLocatorFactory {
   private updateTimestamp: number = undefined;
 
   constructor() {
+    forbidContext(
+      "contentScript",
+      "LazyLocatorFactory cannot run in the contentScript"
+    );
+
     if (wasInitialized) {
       throw new Error("LazyLocatorFactory is a singleton class");
     }
