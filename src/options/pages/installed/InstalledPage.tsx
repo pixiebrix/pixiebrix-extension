@@ -63,9 +63,9 @@ export const _InstalledPage: React.FunctionComponent<{
   const [allExtensions, , cloudError] = useAsyncState(
     async () => {
       const lookup = new Set<UUID>(extensions.map((x) => x.id));
-      const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
-        "/api/extensions/"
-      );
+      const { data } = await (
+        await getLinkedApiClient()
+      ).get<CloudExtension[]>("/api/extensions/");
 
       const cloudExtensions = data
         .filter((x) => !lookup.has(x.id))

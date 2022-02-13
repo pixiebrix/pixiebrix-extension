@@ -50,9 +50,8 @@ const NumberWidget: React.FC<
   step,
   ...restProps
 }) => {
-  const [{ value: formValue }, , { setValue: setFormValue }] = useField<number>(
-    name
-  );
+  const [{ value: formValue }, , { setValue: setFormValue }] =
+    useField<number>(name);
   const [value, setValue] = useState<string>(String(formValue));
 
   const inputRef = useRef<HTMLInputElement>();

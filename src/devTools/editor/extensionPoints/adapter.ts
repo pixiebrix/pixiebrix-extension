@@ -44,9 +44,11 @@ export async function selectType(
   extension: IExtension
 ): Promise<ExtensionPointType> {
   if (hasInnerExtensionPoint(extension)) {
-    return ((extension.definitions[
-      extension.extensionPointId
-    ] as unknown) as ExtensionPointConfig).definition.type;
+    return (
+      extension.definitions[
+        extension.extensionPointId
+      ] as unknown as ExtensionPointConfig
+    ).definition.type;
   }
 
   const brick = await registry.find(extension.extensionPointId);
@@ -58,7 +60,7 @@ export async function selectType(
     throw new Error("Cannot find extension point");
   }
 
-  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig;
+  const extensionPoint = brick.config as unknown as ExtensionPointConfig;
   return extensionPoint.definition.type;
 }
 

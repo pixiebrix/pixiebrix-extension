@@ -108,7 +108,7 @@ export class HighlightEffect extends Effect {
     []
   );
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return true;
   }
 

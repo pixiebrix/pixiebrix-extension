@@ -34,7 +34,7 @@ export class ScreenshotTab extends Transformer {
     properties: {},
   };
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     type: "object",
     properties: {
       data: {

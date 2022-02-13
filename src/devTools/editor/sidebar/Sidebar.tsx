@@ -138,11 +138,8 @@ const SidebarExpanded: React.VoidFunctionComponent<
 
   const [showAll, setShowAll] = useState(false);
 
-  const {
-    availableInstalledIds,
-    availableDynamicIds,
-    unavailableCount,
-  } = useInstallState(installed, elements);
+  const { availableInstalledIds, availableDynamicIds, unavailableCount } =
+    useInstallState(installed, elements);
 
   const elementHash = hash(
     sortBy(elements.map((formState) => `${formState.uuid}-${formState.label}`))

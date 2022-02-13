@@ -346,9 +346,8 @@ describe("saving a Recipe Extension", () => {
     const newRecipeMeta = recipeMetadataFactory();
     let creatingRecipePromise: Promise<void>;
     act(() => {
-      creatingRecipePromise = result.current.saveElementAndCreateNewRecipe(
-        newRecipeMeta
-      );
+      creatingRecipePromise =
+        result.current.saveElementAndCreateNewRecipe(newRecipeMeta);
     });
 
     try {
@@ -370,13 +369,8 @@ describe("saving a Recipe Extension", () => {
   });
 
   test("updates the recipe", async () => {
-    const {
-      store,
-      element,
-      recipe,
-      createMock,
-      updateRecipeMock,
-    } = setupMocks();
+    const { store, element, recipe, createMock, updateRecipeMock } =
+      setupMocks();
     updateRecipeMock.mockReturnValueOnce({});
 
     // Render hook
@@ -435,9 +429,8 @@ describe("saving a Recipe Extension", () => {
     const newRecipeMeta = recipeMetadataFactory();
     let updatingRecipePromise: Promise<void>;
     act(() => {
-      updatingRecipePromise = result.current.saveElementAndUpdateRecipe(
-        newRecipeMeta
-      );
+      updatingRecipePromise =
+        result.current.saveElementAndUpdateRecipe(newRecipeMeta);
     });
 
     try {

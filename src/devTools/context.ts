@@ -147,9 +147,8 @@ export function useDevConnection(): Context {
 
   const [lastUpdate, setLastUpdate] = useState(Date.now());
 
-  const [tabState, setTabState] = useState<FrameConnectionState>(
-    initialFrameState
-  );
+  const [tabState, setTabState] =
+    useState<FrameConnectionState>(initialFrameState);
 
   const connect = useCallback(async () => {
     setLastUpdate(Date.now());
