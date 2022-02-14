@@ -5,7 +5,7 @@ module.exports = {
     "pixiebrix",
   ],
   rules: {
-    // Only enable this on components
+    // Only enable this on tsx files
     "filenames/match-exported": "off",
 
     // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
