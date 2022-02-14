@@ -22,7 +22,6 @@ import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
 import LogToolbar from "@/components/logViewer/LogToolbar";
 import useLogEntriesView from "@/components/logViewer/useLogEntriesView";
-import { GridLoader } from "react-spinners";
 import { LogContext2 } from "@/components/logViewer/Logs";
 
 type OwnProps = {
