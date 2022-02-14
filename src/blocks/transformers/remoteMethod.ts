@@ -40,8 +40,7 @@ export class RemoteMethod extends Transformer {
         description: "The API URL",
       },
       service: {
-        $ref:
-          "https://app.pixiebrix.com/schemas/service#/definitions/configuredService",
+        $ref: "https://app.pixiebrix.com/schemas/service#/definitions/configuredService",
         description:
           "The service to authenticate the request, if authorization is required",
       },

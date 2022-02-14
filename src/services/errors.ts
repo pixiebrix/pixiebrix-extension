@@ -58,34 +58,9 @@ export class NotConfiguredError extends BusinessError {
 
 // Axios offers its own serialization method, but it doesn't include the response.
 // By deleting toJSON, the serialize-error library will use its default serialization
-type SerializableAxiosError = Except<AxiosError, "toJSON">;
+export type SerializableAxiosError = Except<AxiosError, "toJSON">;
 
 type ProxiedResponse = Pick<AxiosResponse, "data" | "status" | "statusText">;
-
-export type SanitizedURL = string & {
-  _sanitizedUrlBrand: never;
-};
-
-/**
- * An error response from a 3rd party API
- * @see BrowserNetworkError
- */
-export class RemoteServiceError extends BusinessError {
-  readonly error: SerializableAxiosError;
-  readonly url: SanitizedURL;
-
-  constructor(message: string, error: AxiosError, url: SanitizedURL) {
-    super(message);
-    this.name = "RemoteServiceError";
-
-    // Axios offers its own serialization method, but it doesn't include the response.
-    // By deleting toJSON, the serialize-error library will use its default serialization
-    delete error.toJSON;
-
-    this.error = error;
-    this.url = url;
-  }
-}
 
 /**
  * An error response from a 3rd party API via the PixieBrix proxy
@@ -103,26 +78,44 @@ export class ProxiedRemoteServiceError extends BusinessError {
 }
 
 /**
- * An error triggered by a failed network request due to missing permissions
- *
- * - Blocked by browser due to CORS
- *
- * @see ClientNetworkError
+ * Abstract base class for request errors from client to 3rd-party service.
  */
-export class ClientNetworkPermissionError extends BusinessError {
+abstract class ClientRequestError extends BusinessError {
   readonly error: SerializableAxiosError;
-  readonly url: SanitizedURL;
 
-  constructor(message: string, error: AxiosError, url: SanitizedURL) {
+  protected constructor(message: string, error: AxiosError) {
     super(message);
-    this.name = "ClientNetworkPermissionError";
+    this.name = "ClientRequestError";
 
     // Axios offers its own serialization method, but it doesn't include the response.
     // By deleting toJSON, the serialize-error library will use its default serialization
     delete error.toJSON;
 
     this.error = error;
-    this.url = url;
+  }
+}
+
+/**
+ * An error response from a 3rd party API.
+ */
+export class RemoteServiceError extends ClientRequestError {
+  constructor(message: string, error: AxiosError) {
+    super(message, error);
+    this.name = "RemoteServiceError";
+  }
+}
+
+/**
+ * An error triggered by a failed network request due to missing permissions
+ *
+ * - Blocked by browser due to CORS
+ *
+ * @see ClientNetworkError
+ */
+export class ClientNetworkPermissionError extends ClientRequestError {
+  constructor(message: string, error: AxiosError) {
+    super(message, error);
+    this.name = "ClientNetworkPermissionError";
   }
 }
 
@@ -137,20 +130,9 @@ export class ClientNetworkPermissionError extends BusinessError {
  * @see RemoteServiceError
  * @see ClientNetworkError
  */
-export class ClientNetworkError extends BusinessError {
-  readonly error: SerializableAxiosError;
-  readonly url: SanitizedURL;
-
-  constructor(message: string, error: AxiosError, url: SanitizedURL) {
-    super(message);
+export class ClientNetworkError extends ClientRequestError {
+  constructor(message: string, error: AxiosError) {
+    super(message, error);
     this.name = "ClientNetworkError";
-
-    // Axios offers its own serialization method, but it doesn't include the response.
-    // By deleting toJSON, the serialize-error library will use its default serialization
-    delete error.toJSON;
-
-    this.error = error;
-
-    this.url = url;
   }
 }

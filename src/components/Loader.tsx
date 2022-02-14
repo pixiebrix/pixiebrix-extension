@@ -17,14 +17,16 @@
 
 import React from "react";
 import GridLoader from "react-spinners/GridLoader";
-import Centered from "@/devTools/editor/components/Centered";
 
-const PersistLoader: React.VoidFunctionComponent = () => (
-  <Centered>
-    <div className="d-flex justify-content-center">
-      <GridLoader />
-    </div>
-  </Centered>
+const DEFAULT_STYLE = {
+  margin: "20px auto", // Centet
+  display: "flex",
+  justifyContent: "center",
+};
+const Loader: React.FunctionComponent = () => (
+  <div style={DEFAULT_STYLE}>
+    <GridLoader />
+  </div>
 );
 
-export default PersistLoader;
+export default Loader;

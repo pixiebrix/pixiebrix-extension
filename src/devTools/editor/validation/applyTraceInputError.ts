@@ -21,7 +21,8 @@ import { joinName } from "@/utils";
 import { set } from "lodash";
 import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
-const requiredFieldRegex = /^Instance does not have required property "(?<property>.+)"\.$/;
+const requiredFieldRegex =
+  /^Instance does not have required property "(?<property>.+)"\.$/;
 
 /**
  * Gets Input validation error from the Trace

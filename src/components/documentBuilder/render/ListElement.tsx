@@ -20,7 +20,7 @@ import DocumentContext from "./DocumentContext";
 import { UnknownObject } from "@/types";
 import { Args, isDeferExpression } from "@/runtime/mapArgs";
 import { useAsyncState } from "@/hooks/common";
-import { GridLoader } from "react-spinners";
+import Loader from "@/components/Loader";
 import {
   BuildDocumentBranch,
   DocumentElement,
@@ -98,7 +98,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
   }, [array, elementKey, config, documentContext]);
 
   if (isLoading) {
-    return <GridLoader />;
+    return <Loader />;
   }
 
   if (error) {

@@ -82,11 +82,8 @@ const EditTab: React.FC<{
     new Map()
   );
 
-  const {
-    blockPipeline,
-    blockPipelineErrors,
-    errorTraceEntry,
-  } = usePipelineField(allBlocks, extensionPointType);
+  const { blockPipeline, blockPipelineErrors, errorTraceEntry } =
+    usePipelineField(allBlocks, extensionPointType);
 
   const activeNodeId = useSelector(selectActiveNodeId);
   const dispatch = useDispatch();

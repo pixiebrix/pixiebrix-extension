@@ -77,12 +77,12 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     return this.typeCachePromise;
   }
 
-  register(...items: IBlock[]): void {
+  override register(...items: IBlock[]): void {
     super.register(...items);
     this.typeCachePromise = null;
   }
 
-  clear() {
+  override clear() {
     super.clear();
     this.typeCachePromise = null;
   }

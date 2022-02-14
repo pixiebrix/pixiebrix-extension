@@ -55,28 +55,6 @@ function useInstallables(): InstallablesState {
     [unresolvedExtensions]
   );
 
-  const allExtensions = useMemo(() => {
-    const inactiveExtensions =
-      cloudExtensions.data
-        ?.filter((x) => !installedExtensionIds.has(x.id))
-        .map((x) => ({ ...x, active: false })) ?? [];
-
-    return [...unresolvedExtensions, ...inactiveExtensions];
-  }, [cloudExtensions.data, installedExtensionIds, unresolvedExtensions]);
-
-  const [
-    resolvedExtensions,
-    resolvedExtensionsIsLoading,
-    resolveError,
-  ] = useAsyncState(
-    async () =>
-      Promise.all(
-        allExtensions.map(async (extension) => resolveDefinitions(extension))
-      ),
-    [allExtensions],
-    []
-  );
-
   const personalOrTeamBlueprints = useMemo(
     () =>
       (recipes.data ?? []).filter(
@@ -87,8 +65,27 @@ function useInstallables(): InstallablesState {
           // and Recipe pairs
           !installedRecipeIds.has(recipe.metadata.id)
       ),
-    [recipes.data, scope, installedRecipeIds]
+    [recipes.data, scope]
   );
+
+  const allExtensions = useMemo(() => {
+    const inactiveExtensions =
+      cloudExtensions.data
+        ?.filter((x) => !installedExtensionIds.has(x.id))
+        .map((x) => ({ ...x, active: false })) ?? [];
+
+    return [...unresolvedExtensions, ...inactiveExtensions];
+  }, [cloudExtensions.data, installedExtensionIds, unresolvedExtensions]);
+
+  const [resolvedExtensions, resolvedExtensionsIsLoading, resolveError] =
+    useAsyncState(
+      async () =>
+        Promise.all(
+          allExtensions.map(async (extension) => resolveDefinitions(extension))
+        ),
+      [allExtensions],
+      []
+    );
 
   const installables = useMemo(
     () => [...resolvedExtensions, ...personalOrTeamBlueprints],

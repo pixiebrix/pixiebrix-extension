@@ -21,9 +21,7 @@ const elementsCollectionRegexp = /(?<collectionName>.*)\.(?<elementIndex>\d+)/;
  * Returns the name of the collection of a document element.
  * Ex. for a given elementName `body.0.children.3` returns `body.0.children`
  */
-function getElementCollectionName(
-  elementName: string
-): {
+function getElementCollectionName(elementName: string): {
   collectionName: string;
   elementIndex: number;
 } {

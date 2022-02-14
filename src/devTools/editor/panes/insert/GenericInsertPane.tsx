@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./GenericInsertPane.module.scss";
+
 import React, { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
@@ -30,7 +32,6 @@ import { reportEvent } from "@/telemetry/events";
 import { useToasts } from "react-toast-notifications";
 import reportError from "@/telemetry/reportError";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
-import styles from "./GenericInsertPane.module.scss";
 import {
   showActionPanel,
   updateDynamicElement,

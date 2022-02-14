@@ -23,7 +23,7 @@ import {
   resolveForm,
   cancelForm,
 } from "@/contentScript/messenger/api";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
 import { Target } from "@/types";
 import { validateUUID } from "@/types/helpers";
@@ -71,7 +71,7 @@ const EphemeralForm: React.FC = () => {
   if (isLoading) {
     return (
       <FormContainer>
-        <GridLoader />
+        <Loader />
       </FormContainer>
     );
   }

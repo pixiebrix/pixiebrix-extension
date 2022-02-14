@@ -31,7 +31,7 @@ export class FormData extends Transformer {
     );
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
@@ -42,7 +42,7 @@ export class FormData extends Transformer {
     },
   });
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     additionalProperties: true,

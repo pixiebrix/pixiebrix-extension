@@ -110,13 +110,14 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
   const { data: remoteBricks } = useFetch<Brick[]>("/api/bricks/");
-  const { scopes = [], collections = [], kinds = [] } = useSelector(
-    selectFilters
-  );
+  const {
+    scopes = [],
+    collections = [],
+    kinds = [],
+  } = useSelector(selectFilters);
   const bricks = useEnrichBricks(remoteBricks);
-  const { scopeOptions, kindOptions, collectionOptions } = useSearchOptions(
-    bricks
-  );
+  const { scopeOptions, kindOptions, collectionOptions } =
+    useSearchOptions(bricks);
 
   const filtered = !isEmpty(scopes) || !isEmpty(collections) || !isEmpty(kinds);
 

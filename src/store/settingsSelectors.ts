@@ -20,6 +20,9 @@ import { SettingsState } from "./settingsTypes";
 type StateWithSettings = {
   settings: SettingsState;
 };
+
+export const selectSettings = ({ settings }: StateWithSettings) => settings;
+
 export const selectBrowserWarningDismissed = ({
   settings,
 }: StateWithSettings) => settings.browserWarningDismissed;

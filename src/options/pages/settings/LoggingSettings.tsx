@@ -21,7 +21,7 @@ import { Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { clearLogs } from "@/background/logging";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
@@ -79,7 +79,7 @@ const LoggingSettings: React.FunctionComponent = () => {
             </Form.Group>
           </Form>
         ) : (
-          <GridLoader />
+          <Loader />
         )}
       </Card.Body>
       <Card.Footer>

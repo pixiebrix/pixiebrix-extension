@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ElementWizard.module.scss";
+
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useFormikContext } from "formik";
 import { groupBy } from "lodash";
@@ -36,7 +38,6 @@ import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
-import styles from "./ElementWizard.module.scss";
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import useFlags from "@/hooks/useFlags";
 
@@ -108,12 +109,8 @@ const ElementWizard: React.FunctionComponent<{
     [availableDefinition]
   );
 
-  const {
-    isValid,
-    status,
-    handleReset,
-    setStatus,
-  } = useFormikContext<FormState>();
+  const { isValid, status, handleReset, setStatus } =
+    useFormikContext<FormState>();
 
   const { isSaving, save } = useSavingWizard();
 
@@ -136,10 +133,8 @@ const ElementWizard: React.FunctionComponent<{
     [setStep, refreshLogs]
   );
 
-  const {
-    values: formState,
-    setValues: setFormState,
-  } = useFormikContext<FormState>();
+  const { values: formState, setValues: setFormState } =
+    useFormikContext<FormState>();
 
   const wizardSteps = [...wizard];
   if (formState.recipe?.id && flagOn("page-editor-beta")) {

@@ -16,9 +16,13 @@
  */
 
 import {
+  getLabel,
+  getPackageId,
+  isBlueprint,
   isExtension,
   isExtensionFromRecipe,
   isPersonal,
+  isShared,
 } from "@/options/pages/blueprints/installableUtils";
 import { Installable } from "./blueprintsTypes";
 import { useDispatch } from "react-redux";
@@ -32,15 +36,24 @@ import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { useCallback } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
-import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";
-import { useGetAuthQuery } from "@/services/api";
+import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/installed/exportBlueprint";
+import {
+  useDeleteCloudExtensionMutation,
+  useGetAuthQuery,
+} from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
+import useUserAction from "@/hooks/useUserAction";
+import { CancelError } from "@/errors";
+import { useModals } from "@/components/ConfirmationModal";
 
 const { removeExtension } = extensionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const notify = useNotifications();
+  const modals = useModals();
+  const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
+
   const {
     data: { scope },
   } = useGetAuthQuery();
@@ -73,18 +86,53 @@ function useInstallableActions(installable: Installable) {
   };
 
   const viewShare = () => {
-    if (!isExtension(installable)) {
-      return;
+    let shareContext = null;
+
+    if (isBlueprint(installable) || isShared(installable)) {
+      shareContext = {
+        blueprintId: getPackageId(installable),
+      };
+    } else if (isPersonal(installable, scope) && isExtension(installable)) {
+      shareContext = {
+        extensionId: installable.id,
+      };
     }
 
-    dispatch(
-      installedPageSlice.actions.setShareContext({
-        extensionId: installable.id,
-      })
-    );
+    dispatch(installedPageSlice.actions.setShareContext(shareContext));
   };
 
-  const remove = () => {
+  const deleteExtension = useUserAction(
+    async () => {
+      if (isBlueprint(installable)) {
+        return;
+      }
+
+      const confirmed = await modals.showConfirmation({
+        title: "Permanently Delete?",
+        message: "Permanently delete the brick from your account?",
+        submitCaption: "Delete",
+        cancelCaption: "Back to Safety",
+      });
+
+      if (!confirmed) {
+        throw new CancelError();
+      }
+
+      await deleteCloudExtension({ extensionId: installable.id });
+    },
+    {
+      successMessage: `Deleted brick ${getLabel(
+        installable
+      )} from your account`,
+      errorMessage: `Error deleting brick ${getLabel(
+        installable
+      )} from your account`,
+      event: "ExtensionCloudDelete",
+    },
+    [modals]
+  );
+
+  const uninstall = () => {
     if (!isExtension(installable)) {
       return;
     }
@@ -97,6 +145,10 @@ function useInstallableActions(installable: Installable) {
     // XXX: also remove remove side panel panels that are already open?
     void uninstallContextMenu({ extensionId: installable.id });
     reactivateEveryTab();
+
+    notify.success(`Removed brick ${getLabel(installable)}`, {
+      event: "ExtensionRemove",
+    });
   };
 
   const viewLogs = () => {
@@ -112,8 +164,7 @@ function useInstallableActions(installable: Installable) {
     );
   };
 
-  // TODO: refactor with that callback & notify hook
-  const onExportBlueprint = useCallback(() => {
+  const exportBlueprint = useCallback(() => {
     const extension = isExtension(installable) ? installable : null;
 
     if (extension == null) {
@@ -121,15 +172,16 @@ function useInstallableActions(installable: Installable) {
       return;
     }
 
-    exportBlueprint(extension);
+    exportBlueprintYaml(extension);
   }, [installable, notify]);
 
   return {
-    viewShare: isPersonal(installable, scope) ? viewShare : null,
-    remove,
+    viewShare,
+    uninstall,
     viewLogs,
-    onExportBlueprint,
+    exportBlueprint,
     activate,
+    deleteExtension: isExtension(installable) ? deleteExtension : null,
     reinstall: isExtensionFromRecipe(installable) ? reinstall : null,
   };
 }

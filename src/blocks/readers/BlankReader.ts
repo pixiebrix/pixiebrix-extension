@@ -27,14 +27,14 @@ export class BlankReader extends Reader {
     return {};
   }
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {},
     additionalProperties: false,
   };
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return false;
   }
 
@@ -42,7 +42,7 @@ export class BlankReader extends Reader {
     return true;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 }

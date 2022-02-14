@@ -21,7 +21,7 @@ import {
   ExtensionValidationResult,
   useExtensionValidator,
 } from "@/validators/generic";
-import { BeatLoader } from "react-spinners";
+import BeatLoader from "react-spinners/BeatLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -72,9 +72,8 @@ const InstalledExtensionRow: React.FunctionComponent<{
 
   const notify = useNotifications();
 
-  const [hasPermissions, requestPermissions] = useExtensionPermissions(
-    extension
-  );
+  const [hasPermissions, requestPermissions] =
+    useExtensionPermissions(extension);
 
   const [validation] = useExtensionValidator(extension);
 

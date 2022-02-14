@@ -77,7 +77,7 @@ export const isBlueprint = (
   installable: Installable
 ): installable is RecipeDefinition => !isExtension(installable);
 
-export const getUniqueId = (installable: Installable) =>
+export const getUniqueId = (installable: Installable): UUID | RegistryId =>
   isExtension(installable) ? installable.id : installable.metadata.id;
 
 export const getLabel = (installable: Installable): string =>
@@ -99,6 +99,11 @@ export const getUpdatedAt = (installable: Installable): string =>
 
 export const getSharing = (installable: Installable) =>
   isExtension(installable) ? installable._recipe?.sharing : installable.sharing;
+
+export const isShared = (installable: Installable) => {
+  const sharing = getSharing(installable);
+  return sharing?.organizations?.length > 0 || sharing?.public;
+};
 
 export const isPublic = (installable: Installable): boolean =>
   isExtension(installable)

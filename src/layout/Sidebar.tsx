@@ -32,37 +32,50 @@ import cx from "classnames";
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
 import useFlags from "@/hooks/useFlags";
+import { useSelector } from "react-redux";
+import { SettingsState } from "@/store/settingsTypes";
 
 const Sidebar: React.FunctionComponent = () => {
-  const { flagOn, permit } = useFlags();
+  const { permit } = useFlags();
+  const isBlueprintsPageEnabled = useSelector<
+    { settings: SettingsState },
+    boolean
+  >((x) => x.settings.isBlueprintsPageEnabled);
 
   return (
     <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
       <nav className="sidebar sidebar-offcanvas" id={SIDEBAR_ID}>
         <ul className="nav">
-          {flagOn("blueprints-page") && (
+          {isBlueprintsPageEnabled ? (
             <SidebarLink
-              route="/blueprints-page"
+              route="/blueprints"
               title="Blueprints"
               icon={faScroll}
+              isActive={(match, location) =>
+                match ||
+                location.pathname === "/" ||
+                location.pathname.startsWith("/extensions/")
+              }
             />
+          ) : (
+            <>
+              <SidebarLink
+                route="/installed"
+                title="Active Bricks"
+                icon={faCubes}
+                isActive={(match, location) =>
+                  match ||
+                  location.pathname === "/" ||
+                  location.pathname.startsWith("/extensions/")
+                }
+              />
+              <SidebarLink
+                route="/blueprints"
+                title={isBlueprintsPageEnabled ? "Blueprints" : "My Blueprints"}
+                icon={faScroll}
+              />
+            </>
           )}
-
-          <SidebarLink
-            route="/installed"
-            title="Active Bricks"
-            icon={faCubes}
-            isActive={(match, location) =>
-              match ||
-              location.pathname === "/" ||
-              location.pathname.startsWith("/extensions/")
-            }
-          />
-          <SidebarLink
-            route="/blueprints"
-            title="My Blueprints"
-            icon={faScroll}
-          />
 
           {permit("workshop") && (
             <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
