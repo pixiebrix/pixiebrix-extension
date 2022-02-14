@@ -44,13 +44,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
   );
 
   return (
-    <Page
-      headerless
-      title={"Blueprints"}
-      icon={faScroll}
-      isPending={isLoading}
-      error={error}
-    >
+    <div style={{ height: "100%" }}>
       {showLogsContext && (
         <ExtensionLogsModal
           title={showLogsContext.title}
@@ -68,7 +62,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
       {installables.length > 0 && (
         <BlueprintsCard installables={installables} />
       )}
-    </Page>
+    </div>
   );
 };
 
