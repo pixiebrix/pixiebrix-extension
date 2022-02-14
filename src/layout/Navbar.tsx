@@ -54,12 +54,7 @@ const Navbar: React.FunctionComponent = () => {
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-      <div
-        className={cx(
-          styles.collapsedWrapper,
-          "text-center navbar-brand-wrapper d-flex align-items-center justify-content-center"
-        )}
-      >
+      <div className={cx(styles.collapsedWrapper, "navbar-brand-wrapper")}>
         <Link className="navbar-brand brand-logo" to="/">
           <img src={logo} alt="PixieBrix logo" />
         </Link>
@@ -76,12 +71,7 @@ const Navbar: React.FunctionComponent = () => {
           </button>
         )}
       </div>
-      <div
-        className={cx(
-          styles.expandedWrapper,
-          "navbar-menu-wrapper d-flex align-items-stretch"
-        )}
-      >
+      <div className={cx(styles.expandedWrapper, "navbar-menu-wrapper")}>
         {showNavbarToggle && (
           <button
             className="navbar-toggler align-self-center"

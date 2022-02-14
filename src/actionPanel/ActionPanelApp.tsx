@@ -40,7 +40,6 @@ import slice, { blankActionPanelState } from "./actionPanelSlice";
 import { AnyAction } from "redux";
 import { hideActionPanel } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
-import cx from "classnames";
 
 function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
   return {
@@ -107,10 +106,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 target="_blank"
                 size="sm"
                 variant="link"
-                className={cx(
-                  styles.button,
-                  "d-inline-flex align-items-center text-decoration-none"
-                )}
+                className={styles.button}
               >
                 <span>
                   Options <FontAwesomeIcon icon={faCog} />

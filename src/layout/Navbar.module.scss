@@ -21,11 +21,19 @@
 @import "@/vendors/theme/assets/styles/variables";
 
 .collapsedWrapper {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   @media (max-width: 991px) {
     width: 100px !important;
   }
 }
 .expandedWrapper {
+  display: flex;
+  align-items: stretch;
+
   @media (min-width: 992px) {
     padding-left: 0 !important;
   }
