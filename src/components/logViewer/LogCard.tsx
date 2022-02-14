@@ -22,30 +22,24 @@ import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
 import LogToolbar from "@/components/logViewer/LogToolbar";
 import useLogEntriesView from "@/components/logViewer/useLogEntriesView";
-import { LogContext2 } from "@/components/logViewer/Logs";
+import { LogContext } from "@/components/logViewer/Logs";
 
 type OwnProps = {
   initialLevel?: MessageLevel;
   perPage?: number;
 };
 
-const RunLogCard: React.FunctionComponent<OwnProps> = ({
-  initialLevel = "info",
+const LogCard: React.FunctionComponent<OwnProps> = ({
+  initialLevel = "debug",
   perPage = 10,
 }) => {
   const [level, setLevel] = useState<MessageLevel>(initialLevel);
   const [page, setPage] = useState(0);
 
   const { isLoading, refreshDisplayedEntries, clearAllEntries } =
-    useContext(LogContext2);
+    useContext(LogContext);
 
-  const logs = useLogEntriesView({
-    level,
-    page,
-    perPage,
-  });
-
-  console.log("RunLogCard", "render", logs);
+  const logs = useLogEntriesView({ level, page, perPage });
 
   if (isLoading) {
     return (
@@ -73,4 +67,4 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   );
 };
 
-export default RunLogCard;
+export default LogCard;

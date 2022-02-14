@@ -38,7 +38,7 @@ const defaultState: LogState = {
   clearAllEntries: async () => {},
 };
 
-export const LogContext2 = createContext<LogState>(defaultState);
+export const LogContext = createContext<LogState>(defaultState);
 
 type ContextLogsProps = {
   messageContext: MessageContext;
@@ -58,19 +58,17 @@ export const ContextLogs: React.FunctionComponent<ContextLogsProps> = ({
 
   // Initialize displayed entries when the loading state changes
   useEffect(() => {
-    console.log("ContextLogs", "init effect", { allEntries, isLoading });
     setDisplayedEntries(allEntries);
   }, [isLoading]);
 
-  // TODO This function should not be async, update after Options refactoring
-  const refreshDisplayedEntries = async () => {
+  const refreshDisplayedEntries = () => {
     setDisplayedEntries(allEntries);
   };
 
   const clearAllEntries = async () => clearLog(messageContext);
 
   return (
-    <LogContext2.Provider
+    <LogContext.Provider
       value={{
         messageContext,
         allEntries,
@@ -81,6 +79,6 @@ export const ContextLogs: React.FunctionComponent<ContextLogsProps> = ({
       }}
     >
       {children}
-    </LogContext2.Provider>
+    </LogContext.Provider>
   );
 };

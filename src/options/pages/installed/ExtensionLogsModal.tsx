@@ -21,9 +21,9 @@ import { MessageContext } from "@/core";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
 import { installedPageSlice } from "./installedPageSlice";
 import { ContextLogs } from "@/components/logViewer/Logs";
+import LogCard from "@/components/logViewer/LogCard";
 
 const ExtensionLogsModal: React.FC<{
   title: string;
@@ -47,7 +47,7 @@ const ExtensionLogsModal: React.FC<{
       </Modal.Header>
       <Modal.Body className={styles.body}>
         <ContextLogs messageContext={context}>
-          <BrickLogs />
+          <LogCard />
         </ContextLogs>
       </Modal.Body>
     </Modal>

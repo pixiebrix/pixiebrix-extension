@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LogContext2 } from "@/components/logViewer/Logs";
+import { LogContext } from "@/components/logViewer/Logs";
 import { groupBy } from "lodash";
 import React, { useContext, useMemo } from "react";
 import { Badge } from "react-bootstrap";
 
 const NavItemBadge: React.VoidFunctionComponent = () => {
-  const { allEntries, displayedEntries } = useContext(LogContext2);
+  const { allEntries, displayedEntries } = useContext(LogContext);
 
   const unreadByLevels = useMemo(() => {
     const lastTimestamp = Math.max(

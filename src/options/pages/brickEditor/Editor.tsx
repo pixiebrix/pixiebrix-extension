@@ -29,7 +29,6 @@ import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";
 import SharingTable from "./Sharing";
 import { sortBy } from "lodash";
-import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
 import { MessageContext, UUID } from "@/core";
 import BrickReference from "@/options/pages/brickEditor/referenceTab/BrickReference";
 import { useAsyncState } from "@/hooks/common";
@@ -46,6 +45,7 @@ import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
 import { isMac } from "@/utils";
 import { ContextLogs } from "@/components/logViewer/Logs";
+import LogCard from "@/components/logViewer/LogCard";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -212,7 +212,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
               <Tab.Pane eventKey="logs" className="p-0">
                 {logContext ? (
                   <ContextLogs messageContext={logContext}>
-                    <BrickLogs />
+                    <LogCard />
                   </ContextLogs>
                 ) : (
                   <div className="p-4">

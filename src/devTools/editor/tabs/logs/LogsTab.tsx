@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Tab } from "react-bootstrap";
-import RunLogCard from "./RunLogCard";
+import LogCard from "@/components/logViewer/LogCard";
 
 export const LOGS_EVENT_KEY = "logs";
 
@@ -25,7 +25,7 @@ const LogsTab: React.FunctionComponent<{
   eventKey: string;
 }> = ({ eventKey = LOGS_EVENT_KEY }) => (
   <Tab.Pane eventKey={eventKey} mountOnEnter unmountOnExit className="h-100">
-    <RunLogCard initialLevel="debug" />
+    <LogCard />
   </Tab.Pane>
 );
 

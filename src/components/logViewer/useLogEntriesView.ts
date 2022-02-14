@@ -17,7 +17,7 @@
 
 import { LOG_LEVELS, MessageLevel } from "@/background/logging";
 import { useContext, useMemo } from "react";
-import { LogContext2 } from "./Logs";
+import { LogContext } from "./Logs";
 
 type config = {
   level: MessageLevel;
@@ -26,7 +26,7 @@ type config = {
 };
 
 function useLogEntriesView({ level, page, perPage }: config) {
-  const { allEntries, displayedEntries } = useContext(LogContext2);
+  const { allEntries, displayedEntries } = useContext(LogContext);
 
   const filteredAllEntries = useMemo(() => {
     console.log("useLogEntries2", "filteredAllEntries");

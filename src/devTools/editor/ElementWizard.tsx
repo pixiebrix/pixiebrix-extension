@@ -26,7 +26,6 @@ import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
-import LogContext from "@/components/logViewer/LogContext";
 import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/logs/LogsTab";
 import { thisTab } from "@/devTools/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
@@ -40,6 +39,7 @@ import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab"
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import useFlags from "@/hooks/useFlags";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
+import { LogContext } from "@/components/logViewer/Logs";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -72,7 +72,6 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, editable }) => {
   const [step, setStep] = useState(wizard[0].step);
 
-  const { refresh: refreshLogs } = useContext(LogContext);
   const { flagOn } = useFlags();
 
   const availableDefinition = element.extensionPoint.definition.isAvailable;
@@ -94,15 +93,16 @@ const ElementWizard: React.FunctionComponent<{
     }
   };
 
+  const { refreshDisplayedEntries } = useContext(LogContext);
   const selectTabHandler = useCallback(
     (step: string) => {
       setStep(step);
       if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
         // If user is clicking over to the logs tab, they most likely want to see the most recent logs
-        void refreshLogs();
+        void refreshDisplayedEntries();
       }
     },
-    [setStep, refreshLogs]
+    [setStep, refreshDisplayedEntries]
   );
 
   const { values: formState, setValues: setFormState } =
