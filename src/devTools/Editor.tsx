@@ -40,7 +40,6 @@ import {
 } from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
-import styles from "./Editor.module.scss";
 import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
 import Loader from "@/components/Loader";
 
@@ -151,7 +150,7 @@ const Editor: React.FunctionComponent = () => {
   }
 
   return (
-    <div className={styles.root}>
+    <div className="DevToolsContainer">
       <Sidebar
         installed={installed}
         elements={elements}
