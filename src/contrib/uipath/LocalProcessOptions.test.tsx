@@ -54,6 +54,7 @@ jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
+jest.mock("@/background/messenger/api");
 jest.mock("@/contrib/uipath/uipathHooks", () => {
   const mock = jest.requireActual("@/contrib/uipath/uipathHooks");
   return {
