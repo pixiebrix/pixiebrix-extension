@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -49,16 +50,18 @@ import DocumentOptions, {
   DOCUMENT_ID,
 } from "@/devTools/editor/fields/DocumentOptions";
 
-optionsRegistry.set(SERVICE_GOOGLE_SHEET_ID, SheetServiceOptions);
-optionsRegistry.set(ZAPIER_ID, PushOptions);
-optionsRegistry.set(UIPATH_ID, ProcessOptions);
-optionsRegistry.set(LOCAL_UIPATH_ID, LocalProcessOptions);
-optionsRegistry.set(GOOGLE_SHEETS_APPEND_ID, AppendSpreadsheetOptions);
-optionsRegistry.set(GOOGLE_SHEETS_LOOKUP_ID, LookupSpreadsheetOptions);
-optionsRegistry.set(AUTOMATION_ANYWHERE_RUN_BOT_ID, BotOptions);
-optionsRegistry.set(FORM_MODAL_ID, FormModalOptions);
-optionsRegistry.set(FORM_RENDERER_ID, FormRendererOptions);
-optionsRegistry.set(DATABASE_GET_ID, DatabaseGetOptions);
-optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
-optionsRegistry.set(COMPONENT_READER_ID, ComponentReaderOptions);
-optionsRegistry.set(DOCUMENT_ID, DocumentOptions);
+export default function registerEditors() {
+  optionsRegistry.set(SERVICE_GOOGLE_SHEET_ID, SheetServiceOptions);
+  optionsRegistry.set(ZAPIER_ID, PushOptions);
+  optionsRegistry.set(UIPATH_ID, ProcessOptions);
+  optionsRegistry.set(LOCAL_UIPATH_ID, LocalProcessOptions);
+  optionsRegistry.set(GOOGLE_SHEETS_APPEND_ID, AppendSpreadsheetOptions);
+  optionsRegistry.set(GOOGLE_SHEETS_LOOKUP_ID, LookupSpreadsheetOptions);
+  optionsRegistry.set(AUTOMATION_ANYWHERE_RUN_BOT_ID, BotOptions);
+  optionsRegistry.set(FORM_MODAL_ID, FormModalOptions);
+  optionsRegistry.set(FORM_RENDERER_ID, FormRendererOptions);
+  optionsRegistry.set(DATABASE_GET_ID, DatabaseGetOptions);
+  optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
+  optionsRegistry.set(COMPONENT_READER_ID, ComponentReaderOptions);
+  optionsRegistry.set(DOCUMENT_ID, DocumentOptions);
+}
