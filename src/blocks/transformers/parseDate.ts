@@ -121,7 +121,7 @@ export class ParseDate extends Transformer {
     const parsed = parseDate(date);
 
     if (isEmpty(date.trim())) {
-      throw new BusinessError("Invalid date/time: empty text");
+      throw new BusinessError("Date/time text is empty");
     }
 
     if (parsed == null) {
