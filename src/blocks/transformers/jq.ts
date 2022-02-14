@@ -23,7 +23,7 @@ import { InputValidationError } from "@/blocks/errors";
 import { isErrorObject } from "@/errors";
 
 export class JQTransformer extends Transformer {
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 

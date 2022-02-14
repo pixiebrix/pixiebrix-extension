@@ -37,7 +37,7 @@ export class ParseDataUrl extends Transformer {
     );
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
@@ -58,7 +58,7 @@ export class ParseDataUrl extends Transformer {
     ["url"]
   );
 
-  outputSchema: Schema = propertiesToSchema({
+  override outputSchema: Schema = propertiesToSchema({
     mimeType: {
       type: "string",
       description: "The MIME media type",

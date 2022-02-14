@@ -124,12 +124,8 @@ const ElementWizard: React.FunctionComponent<{
     [availableDefinition]
   );
 
-  const {
-    isValid,
-    status,
-    handleReset,
-    setStatus,
-  } = useFormikContext<FormState>();
+  const { isValid, status, handleReset, setStatus } =
+    useFormikContext<FormState>();
 
   const { isSaving, save } = useSavingWizard();
 
@@ -152,10 +148,8 @@ const ElementWizard: React.FunctionComponent<{
     [setStep, refreshLogs]
   );
 
-  const {
-    values: formState,
-    setValues: setFormState,
-  } = useFormikContext<FormState>();
+  const { values: formState, setValues: setFormState } =
+    useFormikContext<FormState>();
 
   const wizardSteps = [...wizard];
   if (formState.recipe?.id && flagOn("page-editor-beta")) {

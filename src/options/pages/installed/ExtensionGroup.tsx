@@ -91,9 +91,8 @@ const ExtensionGroup: React.FunctionComponent<{
   const expandable = !managed;
   const [expanded, setExpanded] = useState(expandable && startExpanded);
 
-  const [hasPermissions, requestPermissions] = useExtensionPermissions(
-    extensions
-  );
+  const [hasPermissions, requestPermissions] =
+    useExtensionPermissions(extensions);
 
   const sourceRecipeMeta = extensions[0]._recipe;
 

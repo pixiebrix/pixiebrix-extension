@@ -39,7 +39,7 @@ export function getLocalISOString(date: Date): string {
 }
 
 export class ParseDate extends Transformer {
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
@@ -65,7 +65,7 @@ export class ParseDate extends Transformer {
     ["date"]
   );
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     type: "object",
     properties: {
       utc: {

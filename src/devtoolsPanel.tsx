@@ -21,7 +21,7 @@ import "@/devTools/Panel.scss";
 
 import "@/development/darkMode";
 import "@/telemetry/reportUncaughtErrors";
-import "@/devTools/messenger/registration";
+import registerMessenger from "@/devTools/messenger/registration";
 
 import ReactDOM from "react-dom";
 import React from "react";
@@ -29,6 +29,7 @@ import Panel from "@/devTools/Panel";
 import { watchNavigation } from "@/devTools/protocol";
 import initGoogle from "@/contrib/google/initGoogle";
 
+registerMessenger();
 initGoogle();
 watchNavigation();
 

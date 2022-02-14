@@ -53,9 +53,10 @@ const InstalledEntry: React.FunctionComponent<{
   available: boolean;
 }> = ({ extension, recipes, available, active }) => {
   const dispatch = useDispatch();
-  const [type] = useAsyncState(async () => selectType(extension), [
-    extension.extensionPointId,
-  ]);
+  const [type] = useAsyncState(
+    async () => selectType(extension),
+    [extension.extensionPointId]
+  );
 
   const selectHandler = useCallback(
     async (extension: IExtension) => {

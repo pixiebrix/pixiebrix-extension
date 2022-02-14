@@ -21,7 +21,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { unary } from "lodash";
 
 export class RegexTransformer extends Transformer {
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 

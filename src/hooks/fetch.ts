@@ -20,7 +20,7 @@ import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { EndpointAuthError, isAxiosError } from "@/errors";
 import { isAbsoluteUrl } from "@/utils";
 import { enrichRequestError, isAppUrl } from "@/services/requestErrorUtils";
-import { expectContext } from "@/utils/expectContext";
+import { expectContext, forbidContext } from "@/utils/expectContext";
 
 const HTTP_401_UNAUTHENTICATED = 401;
 
@@ -33,6 +33,10 @@ export async function fetch<TData = unknown>(
   options: FetchOptions = {}
 ): Promise<TData> {
   expectContext("extension");
+  forbidContext(
+    "contentScript",
+    "fetch should not be called from the contentScript due to CSP"
+  );
 
   const absolute = isAbsoluteUrl(relativeOrAbsoluteUrl);
 

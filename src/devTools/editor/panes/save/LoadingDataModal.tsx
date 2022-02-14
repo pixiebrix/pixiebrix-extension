@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Modal } from "react-bootstrap";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 
 type OwnProps = {
   onClose: () => void;
@@ -30,7 +30,7 @@ const LoadingDataModal: React.FC<OwnProps> = ({ onClose }) => (
     </Modal.Header>
 
     <Modal.Body>
-      <GridLoader />
+      <Loader />
     </Modal.Body>
   </Modal>
 );

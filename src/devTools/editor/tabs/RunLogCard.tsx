@@ -17,10 +17,11 @@
 
 import React, { useContext, useState } from "react";
 import { MessageLevel } from "@/background/logging";
+import Loader from "@/components/Loader";
+import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
 import LogToolbar from "@/components/logViewer/LogToolbar";
 import useLogEntriesView from "@/components/logViewer/useLogEntriesView";
-import { Card } from "react-bootstrap";
 import { GridLoader } from "react-spinners";
 import { LogContext2 } from "@/components/logViewer/Logs";
 
@@ -36,9 +37,8 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   const [level, setLevel] = useState<MessageLevel>(initialLevel);
   const [page, setPage] = useState(0);
 
-  const { isLoading, refreshDisplayedEntries, clearAllEntries } = useContext(
-    LogContext2
-  );
+  const { isLoading, refreshDisplayedEntries, clearAllEntries } =
+    useContext(LogContext2);
 
   const logs = useLogEntriesView({
     level,
@@ -51,7 +51,7 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   if (isLoading) {
     return (
       <Card.Body>
-        <GridLoader />
+        <Loader />
       </Card.Body>
     );
   }

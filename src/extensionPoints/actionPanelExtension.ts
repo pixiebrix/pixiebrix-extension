@@ -106,7 +106,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     this.extensions.splice(0, this.extensions.length);
   }
 
-  public uninstall(): void {
+  public override uninstall(): void {
     this.removeExtensions();
     removeExtensionPoint(this.id);
     removeShowCallback(this.showCallback);
@@ -256,7 +256,7 @@ class RemotePanelExtensionPoint extends ActionPanelExtensionPoint {
     this.definition = cloned.definition;
   }
 
-  async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<IReader> {
     return mergeReaders(this.definition.reader);
   }
 

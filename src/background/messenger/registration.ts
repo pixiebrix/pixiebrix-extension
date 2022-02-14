@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -23,6 +24,7 @@ import * as sheets from "@/contrib/google/sheets/handlers";
 import {
   ensureContextMenu,
   uninstallContextMenu,
+  preloadContextMenus,
 } from "@/background/contextMenus";
 import { openPopupPrompt } from "@/background/permissionPrompt";
 import {
@@ -43,7 +45,6 @@ import { deleteCachedAuthData } from "@/background/auth";
 import { serializableAxiosRequest, proxyService } from "@/background/requests";
 import { readQuery } from "@/contrib/google/bigquery/handlers";
 import { getRecord, setRecord } from "@/background/dataStore";
-import { preloadContextMenus } from "@/background/initContextMenus";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
@@ -131,64 +132,66 @@ declare global {
   }
 }
 
-registerMethods({
-  GOOGLE_SHEETS_GET_TAB_NAMES: sheets.getTabNames,
-  GOOGLE_SHEETS_GET_SHEET_PROPERTIES: sheets.getSheetProperties,
-  GOOGLE_SHEETS_GET_HEADERS: sheets.getHeaders,
-  GOOGLE_SHEETS_CREATE_TAB: sheets.createTab,
-  GOOGLE_SHEETS_APPEND_ROWS: sheets.appendRows,
-  GOOGLE_SHEETS_BATCH_UPDATE: sheets.batchUpdate,
-  GOOGLE_SHEETS_BATCH_GET: sheets.batchGet,
+export default function registerMessenger(): void {
+  registerMethods({
+    GOOGLE_SHEETS_GET_TAB_NAMES: sheets.getTabNames,
+    GOOGLE_SHEETS_GET_SHEET_PROPERTIES: sheets.getSheetProperties,
+    GOOGLE_SHEETS_GET_HEADERS: sheets.getHeaders,
+    GOOGLE_SHEETS_CREATE_TAB: sheets.createTab,
+    GOOGLE_SHEETS_APPEND_ROWS: sheets.appendRows,
+    GOOGLE_SHEETS_BATCH_UPDATE: sheets.batchUpdate,
+    GOOGLE_SHEETS_BATCH_GET: sheets.batchGet,
 
-  GET_AVAILABLE_VERSION: getAvailableVersion,
-  INJECT_SCRIPT: ensureContentScript,
-  CONTAINS_PERMISSIONS: browser.permissions.contains,
+    GET_AVAILABLE_VERSION: getAvailableVersion,
+    INJECT_SCRIPT: ensureContentScript,
+    CONTAINS_PERMISSIONS: browser.permissions.contains,
 
-  PRELOAD_CONTEXT_MENUS: preloadContextMenus,
-  UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
-  ENSURE_CONTEXT_MENU: ensureContextMenu,
-  OPEN_POPUP_PROMPT: openPopupPrompt,
+    PRELOAD_CONTEXT_MENUS: preloadContextMenus,
+    UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
+    ENSURE_CONTEXT_MENU: ensureContextMenu,
+    OPEN_POPUP_PROMPT: openPopupPrompt,
 
-  ECHO_SENDER: whoAmI,
-  WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
+    ECHO_SENDER: whoAmI,
+    WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
 
-  ACTIVATE_TAB: activateTab,
-  REACTIVATE_EVERY_TAB: reactivateEveryTab,
-  CLOSE_TAB: closeTab,
-  OPEN_TAB: openTab,
-  REGISTRY_GET_KIND: registry.getKind,
-  REGISTRY_SYNC: registry.syncRemote,
-  REGISTRY_FIND: registry.find,
-  LOCATE_SERVICE: locator.locate.bind(locator),
-  REFRESH_SERVICES: refreshServices,
+    ACTIVATE_TAB: activateTab,
+    REACTIVATE_EVERY_TAB: reactivateEveryTab,
+    CLOSE_TAB: closeTab,
+    OPEN_TAB: openTab,
+    REGISTRY_GET_KIND: registry.getKind,
+    REGISTRY_SYNC: registry.syncRemote,
+    REGISTRY_FIND: registry.find,
+    LOCATE_SERVICE: locator.locate.bind(locator),
+    REFRESH_SERVICES: refreshServices,
 
-  REQUEST_RUN_ON_SERVER: requestRunOnServer,
-  REQUEST_RUN_IN_OPENER: requestRunInOpener,
-  REQUEST_RUN_IN_TARGET: requestRunInTarget,
-  REQUEST_RUN_IN_ALL: requestRunInBroadcast,
+    REQUEST_RUN_ON_SERVER: requestRunOnServer,
+    REQUEST_RUN_IN_OPENER: requestRunInOpener,
+    REQUEST_RUN_IN_TARGET: requestRunInTarget,
+    REQUEST_RUN_IN_ALL: requestRunInBroadcast,
 
-  HTTP_REQUEST: serializableAxiosRequest,
-  DELETE_CACHED_AUTH: deleteCachedAuthData,
-  CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
-  PROXY: proxyService,
-  GOOGLE_BIGQUERY_READ: readQuery,
+    HTTP_REQUEST: serializableAxiosRequest,
+    DELETE_CACHED_AUTH: deleteCachedAuthData,
+    CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
+    PROXY: proxyService,
+    GOOGLE_BIGQUERY_READ: readQuery,
 
-  GET_DATA_STORE: getRecord,
-  SET_DATA_STORE: setRecord,
+    GET_DATA_STORE: getRecord,
+    SET_DATA_STORE: setRecord,
 
-  RECORD_LOG: recordLog,
-  RECORD_ERROR: recordError,
-  RECORD_EVENT: recordEvent,
-  GET_LOGGING_CONFIG: getLoggingConfig,
-  SET_LOGGING_CONFIG: setLoggingConfig,
+    RECORD_LOG: recordLog,
+    RECORD_ERROR: recordError,
+    RECORD_EVENT: recordEvent,
+    GET_LOGGING_CONFIG: getLoggingConfig,
+    SET_LOGGING_CONFIG: setLoggingConfig,
 
-  ADD_TRACE_ENTRY: addTraceEntry,
-  ADD_TRACE_EXIT: addTraceExit,
-  CLEAR_TRACES: clearExtensionTraces,
-  CLEAR_ALL_TRACES: clearTraces,
+    ADD_TRACE_ENTRY: addTraceEntry,
+    ADD_TRACE_EXIT: addTraceExit,
+    CLEAR_TRACES: clearExtensionTraces,
+    CLEAR_ALL_TRACES: clearTraces,
 
-  INIT_TELEMETRY: initTelemetry,
-  SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
+    INIT_TELEMETRY: initTelemetry,
+    SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
 
-  CAPTURE_TAB: captureTab,
-});
+    CAPTURE_TAB: captureTab,
+  });
+}

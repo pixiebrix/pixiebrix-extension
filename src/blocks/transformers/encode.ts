@@ -22,7 +22,7 @@ import { propertiesToSchema } from "@/validators/generic";
 export class Base64Encode extends Transformer {
   defaultOutputKey = "encoded";
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
