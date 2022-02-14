@@ -16,6 +16,7 @@
  */
 
 import React, { useState } from "react";
+// eslint-disable-next-line import/no-restricted-paths -- TODO: Should this be executed in the background
 import { MessageLevel } from "@/background/logging";
 import Loader from "@/components/Loader";
 import { Card } from "react-bootstrap";

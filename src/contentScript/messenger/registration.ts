@@ -37,7 +37,7 @@ import {
   showActionPanel,
   toggleActionPanel,
   removeExtension as removeActionPanel,
-} from "@/actionPanel/native";
+} from "@/contentScript/actionPanel";
 import { insertPanel } from "@/nativeEditor/insertPanel";
 import { insertButton } from "@/nativeEditor/insertButton";
 import {

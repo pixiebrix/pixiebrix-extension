@@ -22,11 +22,12 @@ import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef, UUID } from "@/core";
-import {
+import type {
   ActionPanelStore,
   FormEntry,
   PanelEntry,
   RendererError,
+  // eslint-disable-next-line import/no-restricted-paths -- Types only
 } from "@/actionPanel/actionPanelTypes";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import { hideForm, renderPanels, showForm } from "@/actionPanel/messenger/api";

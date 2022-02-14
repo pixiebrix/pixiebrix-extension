@@ -20,7 +20,7 @@ import { Button } from "react-bootstrap";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
-import { getStore } from "@/actionPanel/native";
+import { getStore } from "@/contentScript/actionPanel";
 import {
   addListener,
   removeListener,

@@ -18,6 +18,7 @@
 import { deserializeError } from "serialize-error";
 import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
 import FRAMEWORK_ADAPTERS from "@/frameworks/adapters";
+// eslint-disable-next-line import/no-restricted-paths -- TODO: Move away from lifter pattern
 import { getComponentData } from "@/pageScript/protocol";
 import blockRegistry from "@/blocks/registry";
 import { getCssSelector } from "css-selector-generator";
@@ -27,6 +28,7 @@ import {
   ReduceOptions,
 } from "@/runtime/reducePipeline";
 import { ApiVersion, BlockArgContext, IReader, RegistryId } from "@/core";
+// eslint-disable-next-line import/no-restricted-paths -- TODO: Decide whether to drop this unused API
 import { selectedElement } from "@/devTools/getSelectedElement";
 import { isNullOrBlank, resolveObj } from "@/utils";
 import { BlockConfig } from "@/blocks/types";

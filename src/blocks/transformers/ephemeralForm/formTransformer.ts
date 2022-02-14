@@ -30,7 +30,7 @@ import {
   hideActionPanelForm,
   PANEL_HIDING_EVENT,
   showActionPanelForm,
-} from "@/actionPanel/native";
+} from "@/contentScript/actionPanel";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
