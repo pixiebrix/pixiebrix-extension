@@ -21,7 +21,7 @@ import React, { useMemo } from "react";
 import { useParams } from "react-router";
 import { RecipeDefinition } from "@/types/definitions";
 import { Card, Col, Row } from "react-bootstrap";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
@@ -77,7 +77,7 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
       );
     }
 
-    return <GridLoader />;
+    return <Loader />;
   }, [recipeDefinition, remoteBlueprint, blueprintId]);
 
   return (

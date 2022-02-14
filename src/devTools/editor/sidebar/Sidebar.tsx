@@ -52,7 +52,7 @@ import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 import { RecipeDefinition } from "@/types/definitions";
-import { GridLoader } from "react-spinners";
+import Loader from "@/components/Loader";
 import useFlags from "@/hooks/useFlags";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
@@ -237,7 +237,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
       </div>
       <div className={styles.extensions}>
         {isLoadingItems ? (
-          <GridLoader />
+          <Loader />
         ) : (
           <ListGroup>
             {entries.map((entry) =>

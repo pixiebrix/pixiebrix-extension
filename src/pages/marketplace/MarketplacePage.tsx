@@ -18,7 +18,7 @@
 import "./MarketplacePage.scss";
 
 import React, { useMemo, useState } from "react";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { PageTitle } from "@/layout/Page";
 import {
   faExternalLinkAlt,
@@ -264,7 +264,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
       <Row>
         <Col xl={8} lg={10} md={12}>
           {rawRecipes == null ? (
-            <GridLoader />
+            <Loader />
           ) : (
             <RecipeList
               installedRecipes={installedRecipes}

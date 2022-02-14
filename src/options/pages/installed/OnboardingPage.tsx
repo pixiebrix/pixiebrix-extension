@@ -22,7 +22,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import useFlags from "@/hooks/useFlags";
 
 const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
@@ -146,7 +146,7 @@ const OnboardingPage: React.FunctionComponent = () => {
     <>
       {isLoading ? (
         <div id="OnboardingSpinner">
-          <GridLoader />
+          <Loader />
         </div>
       ) : (
         <>
