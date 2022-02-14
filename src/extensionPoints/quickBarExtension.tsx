@@ -112,7 +112,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
     return "quickBar";
   }
 
-  uninstall(): void {
+  override uninstall(): void {
     quickBarRegistry.removeExtensionPointActions(this.id);
   }
 
@@ -130,7 +130,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
     return true;
   }
 
-  async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<IReader> {
     return this.getBaseReader();
   }
 
@@ -320,7 +320,7 @@ class RemoteQuickBarExtensionPoint extends QuickBarExtensionPoint {
     return mergeReaders(this._definition.reader);
   }
 
-  public get defaultOptions(): {
+  public override get defaultOptions(): {
     title: string;
     [key: string]: string | string[];
   } {

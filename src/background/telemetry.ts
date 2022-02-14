@@ -94,10 +94,12 @@ async function userSummary() {
   try {
     const { extensions } = await loadOptions();
     numActiveExtensions = extensions.length;
-    numActiveBlueprints = uniq(compact(extensions.map((x) => x._recipe?.id)))
-      .length;
-    numActiveExtensionPoints = uniq(extensions.map((x) => x.extensionPointId))
-      .length;
+    numActiveBlueprints = uniq(
+      compact(extensions.map((x) => x._recipe?.id))
+    ).length;
+    numActiveExtensionPoints = uniq(
+      extensions.map((x) => x.extensionPointId)
+    ).length;
   } catch (error) {
     console.warn("Cannot get number of extensions", { error });
   }

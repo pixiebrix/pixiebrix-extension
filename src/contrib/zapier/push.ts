@@ -59,7 +59,7 @@ export class PushZap extends Effect {
   /**
    * Additional permissions required for CORS
    */
-  permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
+  override permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
 
   async effect(
     { pushKey, data }: BlockArg<{ pushKey: string; data: UnknownObject }>,

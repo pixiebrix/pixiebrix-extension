@@ -43,11 +43,11 @@ class ConfigErrorBoundary extends Component<UnknownObject, State> {
     };
   }
 
-  componentDidCatch(error: Error): void {
+  override componentDidCatch(error: Error): void {
     reportError(error);
   }
 
-  render(): React.ReactNode {
+  override render(): React.ReactNode {
     if (this.state.hasError) {
       return (
         <div className="mb-3">

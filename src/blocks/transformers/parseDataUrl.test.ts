@@ -27,10 +27,10 @@ describe("parseDataUrl", () => {
     ["data:,Hello%2C%20World%21"],
   ])("text-decodes URL: %s", async (url) => {
     const result = await block.run(
-      ({
+      {
         url,
         decode: true,
-      } as unknown) as BlockArg,
+      } as unknown as BlockArg,
       {} as BlockOptions
     );
 
@@ -47,10 +47,10 @@ describe("parseDataUrl", () => {
     const url = `data:image/png;base64,${base64}`;
 
     const result = await block.run(
-      ({
+      {
         url,
         decodeText: false,
-      } as unknown) as BlockArg,
+      } as unknown as BlockArg,
       {} as BlockOptions
     );
 

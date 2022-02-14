@@ -47,7 +47,7 @@ export class Prompt extends Transformer {
     ["message"]
   );
 
-  outputSchema: Schema = propertiesToSchema({
+  override outputSchema: Schema = propertiesToSchema({
     value: {
       type: "string",
       description: "The user-provided value",

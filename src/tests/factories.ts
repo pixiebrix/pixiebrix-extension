@@ -126,8 +126,7 @@ export const extensionFactory: (
         config: {
           url: "http://www.amazon.com/s",
           params: {
-            url:
-              "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
+            url: "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
           },
         },
       },
@@ -230,22 +229,24 @@ export const recipeDefinitionFactory = define<RecipeDefinition>({
   extensionPoints: array(extensionPointConfigFactory, 1),
 });
 
-export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>({
-  kind: "extensionPoint",
-  apiVersion: "v3",
-  metadata: (n: number) =>
-    recipeMetadataFactory({
-      id: validateRegistryId(`test/extension-point-${n}`),
-      name: `Extension Point ${n}`,
-    }),
-  definition: {
-    type: "menuItem",
-    isAvailable: {
-      matchPatterns: ["https://*/*"],
+export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>(
+  {
+    kind: "extensionPoint",
+    apiVersion: "v3",
+    metadata: (n: number) =>
+      recipeMetadataFactory({
+        id: validateRegistryId(`test/extension-point-${n}`),
+        name: `Extension Point ${n}`,
+      }),
+    definition: {
+      type: "menuItem",
+      isAvailable: {
+        matchPatterns: ["https://*/*"],
+      },
+      reader: validateRegistryId("@pixiebrix/document-context"),
     },
-    reader: validateRegistryId("@pixiebrix/document-context"),
-  },
-});
+  }
+);
 
 type ExternalExtensionPointParams = {
   extensionPointId?: RegistryId;

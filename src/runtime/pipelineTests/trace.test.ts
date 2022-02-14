@@ -104,7 +104,7 @@ describe("Trace normal execution", () => {
       timestamp: timestamp.toISOString(),
       blockConfig,
       templateContext: { "@input": { inputArg: "hello" }, "@options": {} },
-      renderedArgs: ({ message: "hello" } as unknown) as RenderedArgs,
+      renderedArgs: { message: "hello" } as unknown as RenderedArgs,
     };
 
     const expectedExit: TraceExitData = {

@@ -35,13 +35,11 @@ const RemoveElement: React.FC<RemoveElementProps> = ({
   // Gives the name of the elements's collection
   // In case of a list item element point to the collection of the list element,
   // i.e. removing the item of the list will actually remove the list itself.
-  const { collectionName, elementIndex } = getElementCollectionName(
-    elementName
-  );
+  const { collectionName, elementIndex } =
+    getElementCollectionName(elementName);
 
-  const [{ value: elementsCollection }, , { setValue }] = useField<
-    DocumentElement[]
-  >(collectionName);
+  const [{ value: elementsCollection }, , { setValue }] =
+    useField<DocumentElement[]>(collectionName);
 
   const removeElement = () => {
     const newElementsCollection = [...elementsCollection];

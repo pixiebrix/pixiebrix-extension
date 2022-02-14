@@ -38,7 +38,7 @@ export class DetectElement extends Transformer {
     },
   });
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {

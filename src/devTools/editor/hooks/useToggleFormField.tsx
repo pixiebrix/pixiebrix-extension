@@ -53,10 +53,8 @@ function useToggleFormField(
   onOmitField: () => void;
 } {
   const [parentFieldName, fieldName] = getFieldNamesFromPathString(name);
-  const {
-    values: formState,
-    setValues: setFormState,
-  } = useFormikContext<FormState>();
+  const { values: formState, setValues: setFormState } =
+    useFormikContext<FormState>();
   const parentValues = getIn(formState, parentFieldName) ?? formState;
 
   const inputMode = useMemo(

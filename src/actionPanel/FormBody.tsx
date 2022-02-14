@@ -18,7 +18,7 @@
 import React from "react";
 import { FormEntry } from "@/actionPanel/actionPanelTypes";
 import { useAsyncState } from "@/hooks/common";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
 import { createFrameSource } from "@/blocks/transformers/ephemeralForm/formTransformer";
 
@@ -40,7 +40,7 @@ const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
   if (isLoading) {
     return (
       <div>
-        <GridLoader />
+        <Loader />
       </div>
     );
   }
