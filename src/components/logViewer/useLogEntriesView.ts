@@ -28,27 +28,23 @@ type config = {
 function useLogEntriesView({ level, page, perPage }: config) {
   const { allEntries, displayedEntries } = useContext(LogContext);
 
-  const filteredAllEntries = useMemo(() => {
-    console.log("useLogEntries2", "filteredAllEntries", {
-      allEntries,
-      displayedEntries,
-    });
-    return allEntries.filter(
-      // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
-      (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
-    );
-  }, [level, allEntries]);
+  const filteredAllEntries = useMemo(
+    () =>
+      allEntries.filter(
+        // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
+        (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
+      ),
+    [level, allEntries]
+  );
 
-  const filteredDisplayedEntries = useMemo(() => {
-    console.log("useLogEntries2", "filteredEntries", {
-      allEntries,
-      displayedEntries,
-    });
-    return (displayedEntries ?? []).filter(
-      // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
-      (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
-    );
-  }, [level, displayedEntries]);
+  const filteredDisplayedEntries = useMemo(
+    () =>
+      (displayedEntries ?? []).filter(
+        // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
+        (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
+      ),
+    [level, displayedEntries]
+  );
 
   const numNew = filteredAllEntries.length - filteredDisplayedEntries.length;
 

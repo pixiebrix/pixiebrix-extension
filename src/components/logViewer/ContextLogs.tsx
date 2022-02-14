@@ -16,9 +16,12 @@
  */
 
 import React, { createContext, useEffect, useState } from "react";
-import { clearLog, LogEntry } from "@/background/logging";
-import usePollContextLogs from "./usePollContextLogs";
+import { clearLog, getLog, LogEntry } from "@/background/logging";
 import { MessageContext } from "@/core";
+import { isEqual } from "lodash";
+import useInterval from "@/hooks/useInterval";
+
+const REFRESH_INTERVAL = 750;
 
 type LogState = {
   messageContext: MessageContext;
@@ -51,25 +54,42 @@ export const ContextLogs: React.FunctionComponent<ContextLogsProps> = ({
   messageContext,
   children,
 }) => {
+  const [allEntries, setAllEntries] = useState<LogEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [displayedEntries, setDisplayedEntries] = useState<LogEntry[]>([]);
-  const { entries: allEntries, isLoading } = usePollContextLogs({
-    context: messageContext,
-  });
 
-  // Initialize displayed entries when the loading state changes
   useEffect(() => {
-    setDisplayedEntries(allEntries);
-    console.log("useEffect");
-  }, [isLoading]);
+    setAllEntries([]);
+    setDisplayedEntries([]);
+    setIsLoading(true);
+  }, [messageContext]);
+
+  useInterval(async () => {
+    if (messageContext !== null) {
+      const logEntries = await getLog(messageContext);
+
+      // Do deep equality check. On the log array of ~3k items it takes only a fraction of a ms.
+      // Makes sense to spend some cycles here to save on re-rendering of the children.
+      if (!isEqual(logEntries, allEntries)) {
+        setAllEntries(logEntries);
+      }
+    }
+
+    if (isLoading) {
+      setIsLoading(false);
+
+      // Initialize displayed entries when the loading is complete
+      setDisplayedEntries(allEntries);
+    }
+  }, REFRESH_INTERVAL);
 
   const refreshDisplayedEntries = () => {
-    console.log("refreshDisplayedEntries");
     setDisplayedEntries(allEntries);
   };
 
   const clearAllEntries = async () => {
-    console.log("clearAllEntries");
     await clearLog(messageContext);
+    setAllEntries([]);
     setDisplayedEntries([]);
   };
 
