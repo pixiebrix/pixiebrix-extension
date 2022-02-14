@@ -24,12 +24,6 @@ import { useEffect, useState } from "react";
 const REFRESH_INTERVAL = 750;
 
 /**
- * @typedef {Object} PollingState
- * @property {LogEntry[]} entries Log entries for the current MessageContext
- * @property {boolean} isLoading Whether the log is currently being loaded for the first time for the given MessageContext}
- */
-
-/**
  * Polls logs from the storage
  * @returns {Object} state - The current state of the logs polling
  * @returns {LogEntry[]} state.entries - Log entries for the current MessageContext
@@ -63,7 +57,7 @@ function usePollContextLogs({ context }: { context: MessageContext | null }) {
       return;
     }
 
-    // Do deep equality check. On the log array of ~3k items it takes a fraction of a ms.
+    // Do deep equality check. On the log array of ~3k items it takes only a fraction of a ms.
     // Makes sense to spend some cycles here to save on re-rendering of the children.
     if (!isEqual(logEntries, entries)) {
       setEntries(logEntries);

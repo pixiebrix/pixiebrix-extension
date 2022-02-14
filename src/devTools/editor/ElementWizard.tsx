@@ -17,10 +17,9 @@
 
 import styles from "./ElementWizard.module.scss";
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { useFormikContext } from "formik";
-import { groupBy } from "lodash";
-import { Badge, Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
+import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
 import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
@@ -28,7 +27,7 @@ import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 import LogContext from "@/components/logViewer/LogContext";
-import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
+import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/logs/LogsTab";
 import { thisTab } from "@/devTools/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
@@ -40,7 +39,7 @@ import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import useFlags from "@/hooks/useFlags";
-import { LogContext2 } from "@/components/logViewer/Logs";
+import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -58,56 +57,14 @@ const blueprintOptionsStep = {
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
-}> = ({ step }) => {
-  const { allEntries, displayedEntries } = useContext(LogContext2);
-
-  const lastTimestamp = useMemo(
-    () => Math.max(...displayedEntries.map((x) => Number(x.timestamp))),
-    [displayedEntries]
-  );
-
-  const unread = useMemo(
-    () => allEntries.filter((x) => Number(x.timestamp) > lastTimestamp),
-    [allEntries, lastTimestamp]
-  );
-
-  if (step.step === LOG_STEP_NAME) {
-    console.log("Log nav item", { lastTimestamp, unread });
-  }
-
-  const logBadge = useMemo(() => {
-    if (step.step !== LOG_STEP_NAME) {
-      return null;
-    }
-
-    const levels = groupBy(unread, (x) => x.level);
-    for (const [level, variant] of [
-      ["error", "danger"],
-      ["warning", "warning"],
-    ]) {
-      // eslint-disable-next-line security/detect-object-injection -- constant levels above
-      const numLevel = levels[level];
-      if (numLevel) {
-        return (
-          <Badge className="mx-1" variant={variant}>
-            {numLevel.length}
-          </Badge>
-        );
-      }
-    }
-
-    return null;
-  }, [step.step, unread]);
-
-  return (
-    <Nav.Item>
-      <Nav.Link eventKey={step.step}>
-        {step.step}
-        {logBadge}
-      </Nav.Link>
-    </Nav.Item>
-  );
-};
+}> = ({ step }) => (
+  <Nav.Item>
+    <Nav.Link eventKey={step.step}>
+      {step.step}
+      {step.step === LOG_STEP_NAME && <LogNavItemBadge />}
+    </Nav.Link>
+  </Nav.Item>
+);
 
 const ElementWizard: React.FunctionComponent<{
   element: FormState;
