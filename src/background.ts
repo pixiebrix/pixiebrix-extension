@@ -30,14 +30,13 @@ import "@/messaging/external";
 
 import registerMessenger from "@/background/messenger/registration";
 import initLocator from "@/background/locator";
-import initContextMenusRoot from "@/background/contextMenus";
+import initContextMenus from "@/background/contextMenus";
 import initBrowserAction from "@/background/browserAction";
 import initInstaller from "@/background/installer";
 import initNavigation from "@/background/navigation";
 import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";
 import initExecutor from "@/background/executor";
-import initContextMenus from "@/background/initContextMenus";
 import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deployment";
 import initFirefoxCompat from "@/background/firefoxCompat";
@@ -46,7 +45,6 @@ import initActiveTabTracking from "@/background/activeTab";
 
 void initLocator();
 registerMessenger();
-initContextMenusRoot();
 initBrowserAction();
 initInstaller();
 initNavigation();

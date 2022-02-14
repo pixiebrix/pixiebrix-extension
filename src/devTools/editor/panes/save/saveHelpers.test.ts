@@ -42,7 +42,7 @@ import {
 } from "@/components/formBuilder/formBuilderHelpers";
 import { OptionsDefinition } from "@/types/definitions";
 
-jest.mock("@/background/initContextMenus");
+jest.mock("@/background/contextMenus");
 jest.mock("@/background/messenger/api");
 
 jest.mock("@/devTools/editor/extensionPoints/base", () => ({
