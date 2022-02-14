@@ -24,6 +24,7 @@ import * as sheets from "@/contrib/google/sheets/handlers";
 import {
   ensureContextMenu,
   uninstallContextMenu,
+  preloadContextMenus,
 } from "@/background/contextMenus";
 import { openPopupPrompt } from "@/background/permissionPrompt";
 import {
@@ -44,7 +45,6 @@ import { deleteCachedAuthData } from "@/background/auth";
 import { serializableAxiosRequest, proxyService } from "@/background/requests";
 import { readQuery } from "@/contrib/google/bigquery/handlers";
 import { getRecord, setRecord } from "@/background/dataStore";
-import { preloadContextMenus } from "@/background/initContextMenus";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
