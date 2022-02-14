@@ -64,7 +64,7 @@ module.exports = {
   ],
   overrides: [
     {
-      files: ["**/*.tsx"],
+      files: ["**/*.tsx", "**/use*.ts"],
       excludedFiles: ["*.test.tsx", "*.stories.tsx"],
       rules: {
         "filenames/match-exported": "error",
