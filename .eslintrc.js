@@ -5,6 +5,24 @@ module.exports = {
     "pixiebrix",
   ],
   rules: {
+    "import/no-unassigned-import": [
+      "error",
+      {
+        allow: [
+          "**/*.css",
+          "**/*.scss",
+          "@/development/*",
+          "@/messaging/external",
+          "@/extensionContext", // Must be run before other code
+          "webext-dynamic-content-scripts", // Automatic registration
+          "@/background/axiosFetch", // Must be run before other code
+          "regenerator-runtime/runtime", // Automatic registration
+          "@/telemetry/reportUncaughtErrors",
+          "@testing-library/jest-dom",
+        ],
+      },
+    ],
+
     // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
     "import/no-named-as-default-member": "off",
 

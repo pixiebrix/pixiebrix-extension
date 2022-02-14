@@ -32,10 +32,11 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 // Import custom options widgets/forms for the built-in bricks
-import "@/contrib/editors";
+import registerEditors from "@/contrib/editors";
 import Loader from "@/components/Loader";
 import ErrorBanner from "@/devTools/ErrorBanner";
 
+registerEditors();
 registerContribBlocks();
 registerBuiltinBlocks();
 
