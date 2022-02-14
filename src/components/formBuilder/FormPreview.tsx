@@ -48,9 +48,8 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
   // Maintain a local version of the RJSF schema to reflect the active field
   // Important to have schema and uiSchema always in sync, hence caching both
-  const [{ schema, uiSchema }, setLocalRjsfSchema] = useState<RJSFSchema>(
-    rjsfSchema
-  );
+  const [{ schema, uiSchema }, setLocalRjsfSchema] =
+    useState<RJSFSchema>(rjsfSchema);
 
   const previewSchema = useMemo(() => getPreviewValues(schema), [schema]);
 

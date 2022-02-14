@@ -28,9 +28,8 @@ import { useGetOrganizationsQuery } from "@/services/api";
 const SharingTable: React.FunctionComponent = () => {
   const { data: organizations = [] } = useGetOrganizationsQuery();
   const [publicField, , { setValue: setPublic }] = useField("public");
-  const [organizationsField, , { setValue: setOrganizations }] = useField(
-    "organizations"
-  );
+  const [organizationsField, , { setValue: setOrganizations }] =
+    useField("organizations");
 
   return (
     <Table>

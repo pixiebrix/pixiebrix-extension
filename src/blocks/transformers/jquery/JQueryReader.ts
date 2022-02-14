@@ -83,11 +83,11 @@ export class JQueryReader extends Transformer {
     },
   };
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return true;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 

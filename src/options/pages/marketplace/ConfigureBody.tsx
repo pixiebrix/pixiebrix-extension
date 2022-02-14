@@ -53,10 +53,10 @@ export function useSelectedExtensions(
   extensions: ExtensionPointConfig[]
 ): ExtensionPointConfig[] {
   const { values } = useFormikContext<WizardValues>();
-  return useMemo(() => selectedExtensions(values, extensions), [
-    extensions,
-    values,
-  ]);
+  return useMemo(
+    () => selectedExtensions(values, extensions),
+    [extensions, values]
+  );
 }
 
 const ConfigureRow: React.FunctionComponent<{

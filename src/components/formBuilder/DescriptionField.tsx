@@ -28,11 +28,9 @@ type FormPreviewDescriptionFieldProps = {
 };
 
 // RJSF implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/master/packages/core/src/components/fields/DescriptionField.js
-export const DescriptionField: React.VoidFunctionComponent<FormPreviewDescriptionFieldProps> = ({
-  id,
-  description,
-  className: classNameProp,
-}) => {
+export const DescriptionField: React.VoidFunctionComponent<
+  FormPreviewDescriptionFieldProps
+> = ({ id, description, className: classNameProp }) => {
   if (!description) {
     return null;
   }
@@ -53,4 +51,4 @@ export const DescriptionField: React.VoidFunctionComponent<FormPreviewDescriptio
 };
 
 // Adjusting field type to match RJSF expectations
-export default (DescriptionField as unknown) as Field;
+export default DescriptionField as unknown as Field;

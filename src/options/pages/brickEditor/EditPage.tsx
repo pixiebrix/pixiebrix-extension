@@ -23,7 +23,7 @@ import { Formik, useField } from "formik";
 import { useParams } from "react-router";
 import Editor from "./Editor";
 import { truncate } from "lodash";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import useSubmitBrick from "./useSubmitBrick";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -102,7 +102,7 @@ const LoadingBody: React.FunctionComponent = () => (
       </div>
     </div>
     <div>
-      <GridLoader />
+      <Loader />
     </div>
   </>
 );
@@ -126,9 +126,11 @@ const EditPage: React.FunctionComponent = () => {
 
   const { data } = useFetch<BrickData>(url);
 
-  const { isBlueprint, isInstalled, config: rawConfig } = useParseBrick(
-    data?.config
-  );
+  const {
+    isBlueprint,
+    isInstalled,
+    config: rawConfig,
+  } = useParseBrick(data?.config);
 
   useTouchBrick(id);
 

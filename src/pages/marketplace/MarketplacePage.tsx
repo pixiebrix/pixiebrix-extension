@@ -18,7 +18,7 @@
 import styles from "./MarketplacePage.module.scss";
 
 import React, { useMemo, useState } from "react";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { PageTitle } from "@/layout/Page";
 import {
   faExternalLinkAlt,
@@ -204,10 +204,10 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
     return sortBy(filtered, (x) => x.metadata.name);
   }, [rawRecipes, query, scope]);
 
-  const numPages = useMemo(() => Math.ceil(recipes.length / recipesPerPage), [
-    recipes,
-    recipesPerPage,
-  ]);
+  const numPages = useMemo(
+    () => Math.ceil(recipes.length / recipesPerPage),
+    [recipes, recipesPerPage]
+  );
   const pageRecipes = useMemo(
     () => recipes.slice(page * recipesPerPage, (page + 1) * recipesPerPage),
     [recipes, recipesPerPage, page]
@@ -266,7 +266,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
       <Row>
         <Col xl={8} lg={10} md={12}>
           {rawRecipes == null ? (
-            <GridLoader />
+            <Loader />
           ) : (
             <RecipeList
               installedRecipes={installedRecipes}

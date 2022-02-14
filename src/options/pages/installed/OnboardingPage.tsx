@@ -24,7 +24,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import useFlags from "@/hooks/useFlags";
 
 const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
@@ -100,18 +100,12 @@ const CreateBrickColumn: React.FunctionComponent = () => (
 const OnboardingPage: React.FunctionComponent = () => {
   const { restrict } = useFlags();
 
-  const {
-    data: rawRecipes,
-    isLoading: isRecipesLoading,
-  } = useGetRecipesQuery();
-  const {
-    data: organizations,
-    isLoading: isOrganizationsLoading,
-  } = useGetOrganizationsQuery();
-  const {
-    hasUpdate: hasDeployments,
-    isLoading: isDeploymentsLoading,
-  } = useDeployments();
+  const { data: rawRecipes, isLoading: isRecipesLoading } =
+    useGetRecipesQuery();
+  const { data: organizations, isLoading: isOrganizationsLoading } =
+    useGetOrganizationsQuery();
+  const { hasUpdate: hasDeployments, isLoading: isDeploymentsLoading } =
+    useDeployments();
 
   const teamRecipes = (rawRecipes ?? []).filter(
     (recipe) => recipe.sharing.organizations.length > 0
@@ -154,7 +148,7 @@ const OnboardingPage: React.FunctionComponent = () => {
     <>
       {isLoading ? (
         <div id="OnboardingSpinner">
-          <GridLoader />
+          <Loader />
         </div>
       ) : (
         <>

@@ -28,7 +28,7 @@ function onContextMenuClick({ menuItemId }: Menus.OnClickData) {
   }
 }
 
-export default async function initFirefoxCompat(): Promise<void> {
+export default function initFirefoxCompat(): void {
   expectContext("background");
   if (!isFirefox()) {
     return;

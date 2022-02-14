@@ -57,7 +57,7 @@ const allowedChildTypes: Record<string, DocumentElementType[]> = {
     "list",
   ],
   // Any element we can add to the list
-  list: (DOCUMENT_ELEMENT_TYPES as unknown) as DocumentElementType[],
+  list: DOCUMENT_ELEMENT_TYPES as unknown as DocumentElementType[],
 };
 
 export function getAllowedChildTypes(
