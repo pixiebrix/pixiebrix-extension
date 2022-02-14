@@ -158,7 +158,7 @@
     "whatwg-mimetype": "^3.0.0"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-common-types": "^0.2.36",
+    "@fortawesome/fontawesome-common-types": "^0.3.0",
     "@sindresorhus/tsconfig": "^2.0.0",
     "@storybook/addon-actions": "^6.3.7",
     "@storybook/addon-essentials": "^6.3.6",
