@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
 .searchLabel {
-  color: #343a40;
+  color: $body-color;
 }
 
 .activateButton {
