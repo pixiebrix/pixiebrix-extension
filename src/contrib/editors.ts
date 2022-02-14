@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -17,7 +16,7 @@
  */
 
 import optionsRegistry from "@/components/fields/optionsRegistry";
-import PushOptions from "@/contrib/zapier/pushOptions";
+import PushOptions from "@/contrib/zapier/PushOptions";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import AppendSpreadsheetOptions from "@/contrib/google/sheets/AppendSpreadsheetOptions";

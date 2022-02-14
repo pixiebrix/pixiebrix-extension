@@ -1,6 +1,5 @@
 /** @file It's possible that some of these tabs might lose the permission in the meantime, we can't track that exactly */
 
-// eslint-disable-next-line filenames/match-exported
 import { updateDevTools } from "@/devTools/messenger/api";
 import { canReceiveContentScript } from "@/utils/permissions";
 import browser from "webextension-polyfill";
