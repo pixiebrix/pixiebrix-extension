@@ -31,9 +31,8 @@ const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
 }) => {
   const [field] = useField<ServiceDependency[]>("services");
 
-  const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
-    "/api/services/"
-  );
+  const { data: serviceConfigs } =
+    useFetch<ServiceDefinition[]>("/api/services/");
 
   const values = field.value.map((dependency, index) => ({
     dependency,

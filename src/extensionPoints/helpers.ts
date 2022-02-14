@@ -59,7 +59,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
     const removalObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         // https://stackoverflow.com/questions/51723962/typescript-nodelistofelement-is-not-an-array-type-or-a-string-type
-        for (const removedNode of (mutation.removedNodes as any) as Iterable<Node>) {
+        for (const removedNode of mutation.removedNodes as any as Iterable<Node>) {
           if (!nodes.has(removedNode)) {
             continue;
           }

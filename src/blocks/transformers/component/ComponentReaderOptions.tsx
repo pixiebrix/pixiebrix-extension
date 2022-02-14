@@ -72,9 +72,8 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
     tabState: { meta },
   } = useContext(DevToolsContext);
 
-  const [{ value: framework }, , frameworkHelpers] = useField<Framework>(
-    frameworkFieldName
-  );
+  const [{ value: framework }, , frameworkHelpers] =
+    useField<Framework>(frameworkFieldName);
 
   const frameworkOptions = useFrameworkOptions(meta.frameworks);
 

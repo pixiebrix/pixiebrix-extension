@@ -137,7 +137,7 @@ describe("authenticated direct requests", () => {
     jest
       .spyOn(Locator.prototype, "getLocalConfig")
       .mockResolvedValue(
-        (directServiceConfig as unknown) as RawServiceConfiguration
+        directServiceConfig as unknown as RawServiceConfiguration
       );
   });
 
@@ -202,8 +202,9 @@ describe("proxy service requests", () => {
           fail("Expected proxyService to throw an error");
         } catch (error) {
           expect(error).toBeInstanceOf(ContextError);
-          const { status, statusText } = ((error as ContextError)
-            .cause as AxiosError).response;
+          const { status, statusText } = (
+            (error as ContextError).cause as AxiosError
+          ).response;
           expect(status).toEqual(statusCode);
           expect(statusText).toEqual(reason);
         }

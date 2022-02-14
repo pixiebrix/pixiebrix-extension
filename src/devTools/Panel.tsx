@@ -33,7 +33,7 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 // Import custom options widgets/forms for the built-in bricks
 import registerEditors from "@/contrib/editors";
-import PersistLoader from "./PersistLoader";
+import Loader from "@/components/Loader";
 import ErrorBanner from "@/devTools/ErrorBanner";
 
 registerEditors();
@@ -49,7 +49,7 @@ const Panel: React.VoidFunctionComponent = () => {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={<PersistLoader />} persistor={persistor}>
+      <PersistGate loading={<Loader />} persistor={persistor}>
         <DevToolsContext.Provider value={context}>
           <ToastProvider>
             <ModalProvider>

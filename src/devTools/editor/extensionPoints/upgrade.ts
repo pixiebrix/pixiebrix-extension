@@ -277,7 +277,7 @@ async function upgradeValue({
             // is valid javascript.
             {
               blockId,
-              config: (value as unknown) as UnknownObject,
+              config: value as unknown as UnknownObject,
               fieldName: index.toString(),
               // eslint-disable-next-line security/detect-object-injection
               fieldSchema: itemSchemas[index],

@@ -30,7 +30,7 @@ export class ParseCsv extends Transformer {
     );
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
@@ -41,7 +41,7 @@ export class ParseCsv extends Transformer {
     },
   });
 
-  outputSchema: Schema = propertiesToSchema({
+  override outputSchema: Schema = propertiesToSchema({
     data: {
       type: "array",
       description:

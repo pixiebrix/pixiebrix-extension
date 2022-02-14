@@ -49,9 +49,8 @@ const RequireServiceConfig: React.FC<ConfigProps> = ({
 }) => {
   const serviceIds = extractServiceIds(serviceSchema);
 
-  const { hasPermissions, requestPermissions, config } = useDependency(
-    serviceIds
-  );
+  const { hasPermissions, requestPermissions, config } =
+    useDependency(serviceIds);
 
   const serviceField = (
     <ServiceField

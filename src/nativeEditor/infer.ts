@@ -457,9 +457,8 @@ function commonPanelHTML(tag: string, $items: JQuery): string {
     throw new Error("No items provided");
   }
 
-  const [$common, { bodyInserted, headingInserted }] = commonPanelStructure(
-    $items
-  );
+  const [$common, { bodyInserted, headingInserted }] =
+    commonPanelStructure($items);
 
   if (!bodyInserted) {
     console.warn("No body detected for panel");
@@ -589,9 +588,7 @@ export function getCommonAncestor(...args: Node[]): Node {
   return null;
 }
 
-export function findContainerForElement(
-  element: HTMLElement
-): {
+export function findContainerForElement(element: HTMLElement): {
   container: HTMLElement;
   selectors: string[];
 } {
@@ -640,9 +637,7 @@ export function findContainerForElement(
   };
 }
 
-export function findContainer(
-  elements: HTMLElement[]
-): {
+export function findContainer(elements: HTMLElement[]): {
   container: HTMLElement;
   selectors: string[];
 } {

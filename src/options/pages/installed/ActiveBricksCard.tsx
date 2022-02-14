@@ -48,7 +48,7 @@ const groupByRecipe = (
 const groupByOrganizationId = (
   extensions: ResolvedExtension[]
 ): Array<[UUID, ResolvedExtension[]]> =>
-  (Object.entries(
+  Object.entries(
     groupBy(
       extensions,
       // For the uncommon scenario that a user would be a part of two or more organizations
@@ -56,7 +56,7 @@ const groupByOrganizationId = (
       (extension) => extension._recipe.sharing.organizations[0]
     )
     // Could not figure out nominal type for UUID
-  ) as unknown) as Array<[UUID, ResolvedExtension[]]>;
+  ) as unknown as Array<[UUID, ResolvedExtension[]]>;
 
 const isPublic = (extension: ResolvedExtension) =>
   extension._recipe?.sharing?.public;
@@ -164,18 +164,17 @@ const ActiveBricksCard: React.FunctionComponent<{
   const {
     data: { scope },
   } = useGetAuthQuery();
-  const {
-    data: availableRecipes = [] as RecipeDefinition[],
-  } = useGetRecipesQuery();
+  const { data: availableRecipes = [] as RecipeDefinition[] } =
+    useGetRecipesQuery();
 
   const getOrganizationName = (organizationId: UUID) =>
     organizations.find((organization) => organization.id === organizationId)
       ?.name;
 
-  const groupedExtensions = useMemo(() => groupExtensions(extensions, scope), [
-    extensions,
-    scope,
-  ]);
+  const groupedExtensions = useMemo(
+    () => groupExtensions(extensions, scope),
+    [extensions, scope]
+  );
 
   const personalExtensions = groupedExtensions.personal.bricks;
 
