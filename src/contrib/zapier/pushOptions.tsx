@@ -111,10 +111,10 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
     setGrantedPermissions(result);
   }, [setGrantedPermissions]);
 
-  const hook = useMemo(() => hooks?.find((x) => x.display_name === pushKey), [
-    hooks,
-    pushKey,
-  ]);
+  const hook = useMemo(
+    () => hooks?.find((x) => x.display_name === pushKey),
+    [hooks, pushKey]
+  );
 
   if (!(grantedPermissions || hasPermissions)) {
     return (

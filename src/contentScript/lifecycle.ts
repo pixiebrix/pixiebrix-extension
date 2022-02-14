@@ -236,7 +236,7 @@ async function loadExtensions() {
   await Promise.all(
     Object.entries(extensionMap).map(async (entry) => {
       // Object.entries loses the type information :sadface:
-      const [extensionPointId, extensions] = (entry as unknown) as [
+      const [extensionPointId, extensions] = entry as unknown as [
         RegistryId,
         ResolvedExtension[]
       ];

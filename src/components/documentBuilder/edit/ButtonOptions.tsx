@@ -30,11 +30,8 @@ type ButtonOptionsProps = {
 };
 
 const ButtonOptions: React.FC<ButtonOptionsProps> = ({ elementName }) => {
-  const [
-    { value: documentElement },
-    ,
-    { setValue: setDocumentElement },
-  ] = useField<ButtonDocumentElement>(elementName);
+  const [{ value: documentElement }, , { setValue: setDocumentElement }] =
+    useField<ButtonDocumentElement>(elementName);
 
   const schemaFields = useMemo(
     () =>

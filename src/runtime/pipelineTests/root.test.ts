@@ -41,7 +41,7 @@ class RootAwareBlock extends Block {
 
   inputSchema = propertiesToSchema({});
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return true;
   }
 
@@ -58,9 +58,9 @@ class RootAwareReader extends Reader {
     super("reader/root-aware", "Root Aware Reader");
   }
 
-  inputSchema = propertiesToSchema({});
+  override inputSchema = propertiesToSchema({});
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return true;
   }
 

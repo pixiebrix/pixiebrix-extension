@@ -104,7 +104,8 @@ function useSubmitBrick({
         if (kind === "recipe" && reinstallBlueprint) {
           // Typescript doesn't have enough information to kind === "recipe" distinguishes RecipeDefinition from
           // Definition
-          const unsavedRecipeDefinition = unsavedBrickJson as UnsavedRecipeDefinition;
+          const unsavedRecipeDefinition =
+            unsavedBrickJson as UnsavedRecipeDefinition;
           refreshPromise = reinstall({
             ...unsavedRecipeDefinition,
             sharing: pick(data, ["organizations", "public"]),

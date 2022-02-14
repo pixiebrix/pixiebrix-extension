@@ -49,9 +49,9 @@ describe("ParseDate block", () => {
   test("Results snapshot - EST input", async () => {
     register("US/Eastern");
     const brick = new ParseDate();
-    const arg = ({
+    const arg = {
       date: "Thursday, December 9th 2021, 10pm, EST",
-    } as unknown) as BlockArg<Record<string, string>>;
+    } as unknown as BlockArg<Record<string, string>>;
     await brick
       .run(arg, {
         ctxt: null,
@@ -79,9 +79,9 @@ describe("ParseDate block", () => {
   test("Results snapshot - GMT input", async () => {
     register("US/Eastern");
     const brick = new ParseDate();
-    const arg = ({
+    const arg = {
       date: "Thursday, December 9th 2021, 3am, GMT",
-    } as unknown) as BlockArg<Record<string, string>>;
+    } as unknown as BlockArg<Record<string, string>>;
     await brick
       .run(arg, {
         ctxt: null,

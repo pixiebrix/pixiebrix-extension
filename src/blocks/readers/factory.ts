@@ -111,13 +111,13 @@ export function readerFactory(component: unknown): IReader {
       super(id, name, description);
     }
 
-    outputSchema: Schema = outputSchema;
+    override outputSchema: Schema = outputSchema;
 
     async isAvailable() {
       return checkAvailable(isAvailable);
     }
 
-    async isPure(): Promise<boolean> {
+    override async isPure(): Promise<boolean> {
       return true;
     }
 

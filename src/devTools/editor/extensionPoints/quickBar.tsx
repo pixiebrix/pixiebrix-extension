@@ -157,13 +157,8 @@ async function fromExtension(
     "quickBar"
   >(config, "quickBar");
 
-  const {
-    documentUrlPatterns,
-    defaultOptions,
-    contexts,
-    targetMode,
-    reader,
-  } = extensionPoint.definition;
+  const { documentUrlPatterns, defaultOptions, contexts, targetMode, reader } =
+    extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = extensionWithNormalizedPipeline(config.config, "action");

@@ -42,7 +42,7 @@ export class ContextMenuReader extends Reader {
     throw new Error("ContextMenuReader.read() should not be called directly");
   }
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     type: "object",
     properties: {
       mediaType: {

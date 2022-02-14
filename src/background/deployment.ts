@@ -315,10 +315,8 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  const {
-    data: profile,
-    status: profileResponseStatus,
-  } = await client.get<ProfileResponse>("/api/me/");
+  const { data: profile, status: profileResponseStatus } =
+    await client.get<ProfileResponse>("/api/me/");
 
   if (profileResponseStatus >= 400) {
     // If our server is acting up, check again later
@@ -337,14 +335,12 @@ export async function updateDeployments(): Promise<void> {
     flags: profile.flags,
   });
 
-  const {
-    data: deployments,
-    status: deploymentResponseStatus,
-  } = await client.post<Deployment[]>("/api/deployments/", {
-    uid: await getUID(),
-    version: await getExtensionVersion(),
-    active: selectInstalledDeployments(extensions),
-  });
+  const { data: deployments, status: deploymentResponseStatus } =
+    await client.post<Deployment[]>("/api/deployments/", {
+      uid: await getUID(),
+      version: await getExtensionVersion(),
+      active: selectInstalledDeployments(extensions),
+    });
 
   if (deploymentResponseStatus >= 400) {
     // Our server is active up, check again later
