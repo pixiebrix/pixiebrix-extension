@@ -16,7 +16,7 @@
  */
 
 import optionsRegistry from "@/components/fields/optionsRegistry";
-import PushOptions from "@/contrib/zapier/pushOptions";
+import PushOptions from "@/contrib/zapier/PushOptions";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import AppendSpreadsheetOptions from "@/contrib/google/sheets/AppendSpreadsheetOptions";

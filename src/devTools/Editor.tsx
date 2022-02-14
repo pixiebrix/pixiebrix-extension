@@ -24,7 +24,7 @@ import PermissionsPane from "@/devTools/editor/panes/PermissionsPane";
 import BetaPane from "@/devTools/editor/panes/BetaPane";
 import InsertMenuItemPane from "@/devTools/editor/panes/insert/InsertMenuItemPane";
 import InsertPanelPane from "@/devTools/editor/panes/insert/InsertPanelPane";
-import NoExtensionSelectedPane from "@/devTools/editor/panes/NoExtensionsSelectedPane";
+import NoExtensionSelectedPane from "@/devTools/editor/panes/NoExtensionSelectedPane";
 import NoExtensionsPane from "@/devTools/editor/panes/NoExtensionsPane";
 import WelcomePane from "@/devTools/editor/panes/WelcomePane";
 import EditorPane from "@/devTools/editor/panes/EditorPane";
