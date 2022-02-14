@@ -57,7 +57,6 @@ const LogToolbar: React.FunctionComponent<{
         appearance: "success",
         autoDismiss: true,
       });
-      await refresh();
     } catch {
       addToast("Error clearing log entries for extension", {
         appearance: "error",
@@ -66,8 +65,8 @@ const LogToolbar: React.FunctionComponent<{
     }
   }, [clear, refresh, addToast]);
 
-  const onRefresh = useCallback(async () => {
-    await refresh();
+  const onRefresh = useCallback(() => {
+    refresh();
     addToast("Refreshed the log entries", {
       appearance: "success",
       autoDismiss: true,

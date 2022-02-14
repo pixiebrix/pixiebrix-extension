@@ -44,7 +44,7 @@ import { ReferenceEntry } from "./brickEditorTypes";
 import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
 import { isMac } from "@/utils";
-import { ContextLogs } from "@/components/logViewer/Logs";
+import { ContextLogs } from "@/components/logViewer/ContextLogs";
 import LogCard from "@/components/logViewer/LogCard";
 
 const SharingIcon: React.FunctionComponent<{

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LogContext } from "@/components/logViewer/Logs";
+import { LogContext } from "@/components/logViewer/ContextLogs";
 import { groupBy } from "lodash";
 import React, { useContext, useMemo } from "react";
 import { Badge } from "react-bootstrap";

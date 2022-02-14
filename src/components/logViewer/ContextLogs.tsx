@@ -59,13 +59,19 @@ export const ContextLogs: React.FunctionComponent<ContextLogsProps> = ({
   // Initialize displayed entries when the loading state changes
   useEffect(() => {
     setDisplayedEntries(allEntries);
+    console.log("useEffect");
   }, [isLoading]);
 
   const refreshDisplayedEntries = () => {
+    console.log("refreshDisplayedEntries");
     setDisplayedEntries(allEntries);
   };
 
-  const clearAllEntries = async () => clearLog(messageContext);
+  const clearAllEntries = async () => {
+    console.log("clearAllEntries");
+    await clearLog(messageContext);
+    setDisplayedEntries([]);
+  };
 
   return (
     <LogContext.Provider

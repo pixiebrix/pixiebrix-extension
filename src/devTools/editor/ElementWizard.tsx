@@ -39,7 +39,7 @@ import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab"
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import useFlags from "@/hooks/useFlags";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
-import { LogContext } from "@/components/logViewer/Logs";
+import { LogContext } from "@/components/logViewer/ContextLogs";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";

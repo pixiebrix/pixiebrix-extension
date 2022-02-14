@@ -17,7 +17,7 @@
 
 import { LOG_LEVELS, MessageLevel } from "@/background/logging";
 import { useContext, useMemo } from "react";
-import { LogContext } from "./Logs";
+import { LogContext } from "./ContextLogs";
 
 type config = {
   level: MessageLevel;
@@ -29,7 +29,10 @@ function useLogEntriesView({ level, page, perPage }: config) {
   const { allEntries, displayedEntries } = useContext(LogContext);
 
   const filteredAllEntries = useMemo(() => {
-    console.log("useLogEntries2", "filteredAllEntries");
+    console.log("useLogEntries2", "filteredAllEntries", {
+      allEntries,
+      displayedEntries,
+    });
     return allEntries.filter(
       // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
       (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
@@ -37,7 +40,10 @@ function useLogEntriesView({ level, page, perPage }: config) {
   }, [level, allEntries]);
 
   const filteredDisplayedEntries = useMemo(() => {
-    console.log("useLogEntries2", "filteredEntries");
+    console.log("useLogEntries2", "filteredEntries", {
+      allEntries,
+      displayedEntries,
+    });
     return (displayedEntries ?? []).filter(
       // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
       (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]

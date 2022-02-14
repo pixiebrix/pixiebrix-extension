@@ -21,7 +21,7 @@ import useInterval from "@/hooks/useInterval";
 import { isEqual } from "lodash";
 import { useEffect, useState } from "react";
 
-const REFRESH_INTERVAL = 750;
+const REFRESH_INTERVAL = 3750;
 
 /**
  * Polls logs from the storage
@@ -39,28 +39,19 @@ function usePollContextLogs({ context }: { context: MessageContext | null }) {
   }, [context]);
 
   useInterval(async () => {
-    if (context === null) {
-      if (isLoading) {
-        setIsLoading(false);
+    if (context !== null) {
+      const logEntries = await getLog(context);
+
+      console.log("fetched log entries", {
+        logEntries,
+        entries,
+        eq: isEqual(logEntries, entries),
+      });
+      // Do deep equality check. On the log array of ~3k items it takes only a fraction of a ms.
+      // Makes sense to spend some cycles here to save on re-rendering of the children.
+      if (!isEqual(logEntries, entries)) {
+        setEntries(logEntries);
       }
-
-      return;
-    }
-
-    const logEntries = await getLog(context);
-
-    if (logEntries.length === 0 && entries.length === 0) {
-      if (isLoading) {
-        setIsLoading(false);
-      }
-
-      return;
-    }
-
-    // Do deep equality check. On the log array of ~3k items it takes only a fraction of a ms.
-    // Makes sense to spend some cycles here to save on re-rendering of the children.
-    if (!isEqual(logEntries, entries)) {
-      setEntries(logEntries);
     }
 
     if (isLoading) {

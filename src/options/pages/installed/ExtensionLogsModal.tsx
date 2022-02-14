@@ -22,7 +22,7 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
-import { ContextLogs } from "@/components/logViewer/Logs";
+import { ContextLogs } from "@/components/logViewer/ContextLogs";
 import LogCard from "@/components/logViewer/LogCard";
 
 const ExtensionLogsModal: React.FC<{
