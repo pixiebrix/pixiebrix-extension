@@ -15,33 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { MessageLevel } from "@/background/logging";
 import Loader from "@/components/Loader";
 import { Card } from "react-bootstrap";
-import { MessageContext } from "@/core";
 import LogTable from "@/components/logViewer/LogTable";
-import useLogEntries from "@/components/logViewer/useLogEntries";
 import LogToolbar from "@/components/logViewer/LogToolbar";
+import useLogEntriesView from "@/components/logViewer/useLogEntriesView";
+import { LogContext2 } from "@/components/logViewer/Logs";
 
 const BrickLogs: React.FunctionComponent<{
   initialLevel?: MessageLevel;
-  context: MessageContext;
   perPage?: number;
-  refreshInterval?: number;
-}> = ({ context, initialLevel = "debug", perPage = 10, refreshInterval }) => {
+}> = ({ initialLevel = "debug", perPage = 10 }) => {
   const [level, setLevel] = useState(initialLevel);
   const [page, setPage] = useState(0);
 
-  const logs = useLogEntries({
-    context,
-    perPage,
-    refreshInterval,
-    level,
-    page,
-  });
+  const { isLoading, refreshDisplayedEntries, clearAllEntries } =
+    useContext(LogContext2);
 
-  if (logs.isLoading) {
+  const logs = useLogEntriesView({ level, page, perPage });
+
+  if (isLoading) {
     return (
       <Card.Body>
         <Loader />
@@ -52,13 +47,17 @@ const BrickLogs: React.FunctionComponent<{
   return (
     <>
       <LogToolbar
-        setLevel={setLevel}
         level={level}
+        setLevel={setLevel}
         page={page}
         setPage={setPage}
-        {...logs}
+        numPages={logs.numPages}
+        hasEntries={logs.hasEntries}
+        numNew={logs.numNew}
+        refresh={refreshDisplayedEntries}
+        clear={clearAllEntries}
       />
-      <LogTable {...logs} />
+      <LogTable pageEntries={logs.pageEntries} hasEntries={logs.hasEntries} />
     </>
   );
 };

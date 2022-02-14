@@ -34,7 +34,7 @@ const LogToolbar: React.FunctionComponent<{
   hasEntries: boolean;
   numNew: number;
   clear: () => Promise<void>;
-  refresh: () => Promise<void>;
+  refresh: () => void;
 }> = ({
   level,
   setLevel,

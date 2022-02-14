@@ -45,6 +45,7 @@ import { ReferenceEntry } from "./brickEditorTypes";
 import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
 import { isMac } from "@/utils";
+import { ContextLogs } from "@/components/logViewer/Logs";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -210,7 +211,9 @@ const Editor: React.FunctionComponent<OwnProps> = ({
             {showLogs && (
               <Tab.Pane eventKey="logs" className="p-0">
                 {logContext ? (
-                  <BrickLogs context={logContext} />
+                  <ContextLogs messageContext={logContext}>
+                    <BrickLogs />
+                  </ContextLogs>
                 ) : (
                   <div className="p-4">
                     Cannot determine log context for brick
