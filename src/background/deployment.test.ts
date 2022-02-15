@@ -29,6 +29,10 @@ import { updateDeployments } from "@/background/deployment";
 
 const axiosMock = new MockAdapter(axios);
 
+jest.mock("@/store/settingsStorage", () => ({
+  getSettingsState: jest.fn(),
+}));
+
 jest.mock("@/hooks/useRefresh", () => ({
   refreshRegistries: jest.fn(),
 }));
@@ -48,6 +52,11 @@ jest.mock("@/permissions", () => ({
 
 jest.mock("@/telemetry/events", () => ({
   reportEvent: jest.fn(),
+}));
+
+jest.mock("@/actionPanel/messenger/api", () => {});
+jest.mock("@/contentScript/messenger/api", () => ({
+  insertButton: jest.fn(),
 }));
 
 jest.mock("@/background/messenger/api", () => ({
@@ -73,16 +82,14 @@ jest.mock("@/auth/token", () => ({
     organizationId: "00000000-00000000-00000000-00000000",
   }),
   isLinked: jest.fn().mockResolvedValue(true),
+  updateUserData: async () => {},
 }));
-
-beforeEach(() => {
-  jest.resetModules();
-});
 
 jest.mock("webext-detect-page", () => ({
   isBackground: () => true,
+  isExtensionContext: () => true,
   isDevToolsPage: () => false,
-  isExtensionContext: () => false,
+  isContentScript: () => false,
 }));
 
 jest.mock("webextension-polyfill", () => {
@@ -94,6 +101,7 @@ jest.mock("webextension-polyfill", () => {
       // Keep the existing local storage mock
       ...mock,
       runtime: {
+        openOptionsPage: jest.fn(),
         getManifest: jest.fn().mockReturnValue({
           version: "1.5.2",
         }),
@@ -102,20 +110,47 @@ jest.mock("webextension-polyfill", () => {
   };
 });
 
+jest.mock("@/background/installer", () => ({
+  isUpdateAvailable: jest.fn().mockReturnValue(false),
+}));
+
 import browser from "webextension-polyfill";
 import { isLinked, readAuthData } from "@/auth/token";
 import { containsPermissions } from "@/background/messenger/api";
+import { refreshRegistries } from "@/hooks/useRefresh";
+import { isUpdateAvailable } from "@/background/installer";
+import { getSettingsState } from "@/store/settingsStorage";
 
 const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;
 const getManifestMock = browser.runtime.getManifest as jest.Mock;
+const openOptionsPageMock = browser.runtime.openOptionsPage as jest.Mock;
 const containsPermissionsMock = containsPermissions as jest.Mock;
+const refreshRegistriesMock = refreshRegistries as jest.Mock;
+const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
+const getSettingsStateMock = getSettingsState as jest.Mock;
 
-afterEach(() => {
+beforeEach(() => {
+  jest.resetModules();
+
   isLinkedMock.mockClear();
   readAuthDataMock.mockClear();
+
+  getSettingsStateMock.mockClear();
+
+  getSettingsStateMock.mockResolvedValue({
+    nextUpdate: undefined,
+  });
+
+  readAuthDataMock.mockResolvedValue({
+    organizationId: "00000000-00000000-00000000-00000000",
+  });
+
   getManifestMock.mockClear();
   containsPermissionsMock.mockClear();
+  refreshRegistriesMock.mockClear();
+  openOptionsPageMock.mockClear();
+  isUpdateAvailableMock.mockClear();
 });
 
 describe("updateDeployments", () => {
@@ -125,13 +160,37 @@ describe("updateDeployments", () => {
 
     const deployment = deploymentFactory();
 
-    axiosMock.onAny().reply(201, [deployment]);
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(201, [deployment]);
 
     await updateDeployments();
 
     const { extensions } = await loadOptions();
 
     expect(extensions.length).toBe(1);
+  });
+
+  test("opens options page if deployment does not have necessary permissions", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    containsPermissionsMock.mockResolvedValue(false);
+
+    const deployment = deploymentFactory();
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(201, [deployment]);
+
+    await updateDeployments();
+
+    const { extensions } = await loadOptions();
+
+    expect(extensions.length).toBe(0);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
   });
 
   test("skip update and uninstall if not linked", async () => {
@@ -148,7 +207,62 @@ describe("updateDeployments", () => {
     await updateDeployments();
 
     expect((uninstallAllDeployments as jest.Mock).mock.calls.length).toBe(0);
-    expect(getManifestMock.mock.calls.length).toBe(0);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+  });
+
+  test("do not open options page on update if restricted-version flag not set", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    isUpdateAvailableMock.mockReturnValue(true);
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(201, []);
+
+    await updateDeployments();
+
+    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
+    expect(openOptionsPageMock.mock.calls.length).toBe(0);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+  });
+
+  test("open options page on update if restricted-version flag is set", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    isUpdateAvailableMock.mockReturnValue(true);
+
+    axiosMock.onGet().reply(200, {
+      flags: ["restricted-version"],
+    });
+
+    axiosMock.onPost().reply(201, []);
+
+    await updateDeployments();
+
+    expect(isUpdateAvailableMock.mock.calls.length).toBe(1);
+    expect(openOptionsPageMock.mock.calls.length).toBe(1);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+  });
+
+  test("skip update if snoozed", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    isUpdateAvailableMock.mockReturnValue(true);
+    getSettingsStateMock.mockResolvedValue({
+      nextUpdate: Date.now() + 1_000_000,
+    });
+
+    axiosMock.onGet().reply(200, {
+      flags: ["restricted-version"],
+    });
+
+    axiosMock.onPost().reply(201, []);
+
+    await updateDeployments();
+
+    // Unmatched deployments are always uninstalled if snoozed
+    expect(isUpdateAvailableMock.mock.calls.length).toBe(0);
+    expect(refreshRegistriesMock.mock.calls.length).toBe(0);
+    expect(openOptionsPageMock.mock.calls.length).toBe(0);
   });
 
   test("can uninstall all deployments", async () => {

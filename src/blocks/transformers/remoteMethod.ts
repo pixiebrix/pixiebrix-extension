@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,8 +40,7 @@ export class RemoteMethod extends Transformer {
         description: "The API URL",
       },
       service: {
-        $ref:
-          "https://app.pixiebrix.com/schemas/service#/definitions/configuredService",
+        $ref: "https://app.pixiebrix.com/schemas/service#/definitions/configuredService",
         description:
           "The service to authenticate the request, if authorization is required",
       },

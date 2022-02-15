@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { AxiosError, AxiosRequestConfig } from "axios";
+import { AxiosError } from "axios";
 import { useAsyncState } from "@/hooks/common";
 import browser from "webextension-polyfill";
 import { Col, Row } from "react-bootstrap";
@@ -26,13 +26,10 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import JsonTree from "@/components/jsonTree/JsonTree";
-import urljoin from "url-join";
-import { getReasonPhrase } from "http-status-codes";
-import { isAbsoluteUrl } from "@/utils";
-
-function getAbsoluteUrl({ url, baseURL }: AxiosRequestConfig): string {
-  return isAbsoluteUrl(url) ? url : urljoin(baseURL, url);
-}
+import {
+  safeGuessStatusText,
+  selectAbsoluteUrl,
+} from "@/services/requestErrorUtils";
 
 function tryParse(value: unknown): unknown {
   if (typeof value === "string") {
@@ -47,20 +44,13 @@ function tryParse(value: unknown): unknown {
   return value;
 }
 
-function getHumanReadableStatus(code: string | number): string {
-  try {
-    return getReasonPhrase(code);
-  } catch {
-    return "Unknown error code";
-  }
-}
-
 const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
   error,
 }) => {
-  const absoluteUrl = useMemo(() => getAbsoluteUrl(error.config), [
-    error.config,
-  ]);
+  const absoluteUrl = useMemo(
+    () => selectAbsoluteUrl(error.config),
+    [error.config]
+  );
 
   const [hasPermissions, permissionsPending, permissionsError] = useAsyncState<
     boolean | undefined
@@ -112,7 +102,7 @@ const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
         )}
         {status && (
           <div>
-            Status: {status} &mdash; {getHumanReadableStatus(status)}
+            Status: {status} &mdash; {safeGuessStatusText(status)}
           </div>
         )}
         {cleanResponse == null ? (

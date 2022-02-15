@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,8 @@ import { joinName } from "@/utils";
 import { set } from "lodash";
 import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 
-const requiredFieldRegex = /^Instance does not have required property "(?<property>.+)"\.$/;
+const requiredFieldRegex =
+  /^Instance does not have required property "(?<property>.+)"\.$/;
 
 /**
  * Gets Input validation error from the Trace

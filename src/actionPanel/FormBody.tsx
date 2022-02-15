@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import { FormEntry } from "@/actionPanel/actionPanelTypes";
+import { FormEntry } from "@/actionPanel/types";
 import { useAsyncState } from "@/hooks/common";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
 import { createFrameSource } from "@/blocks/transformers/ephemeralForm/formTransformer";
 
@@ -40,7 +40,7 @@ const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
   if (isLoading) {
     return (
       <div>
-        <GridLoader />
+        <Loader />
       </div>
     );
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -43,6 +43,8 @@ import menuItem from "@/devTools/editor/extensionPoints/menuItem";
 import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
+import { MINIMAL_UI_SCHEMA } from "@/components/formBuilder/formBuilderHelpers";
+import { OptionsDefinition } from "@/types/definitions";
 
 jest.unmock("react-redux");
 
@@ -144,8 +146,22 @@ test("saves non recipe element", async () => {
 });
 
 describe("saving a Recipe Extension", () => {
+  const recipeOptions: OptionsDefinition = {
+    schema: {
+      type: "object",
+      properties: {
+        channels: {
+          type: "string",
+          title: "Channels",
+        },
+      },
+    },
+    uiSchema: MINIMAL_UI_SCHEMA,
+  };
   const setupMocks = () => {
-    const recipe = recipeFactory();
+    const recipe = recipeFactory({
+      options: recipeOptions,
+    });
     (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
       data: [recipe],
       isLoading: false,
@@ -164,6 +180,7 @@ describe("saving a Recipe Extension", () => {
         updated_at: recipe.updated_at,
         sharing: recipe.sharing,
       },
+      optionsDefinition: recipeOptions,
     });
     const extension = menuItem.selectExtension(element);
     extension._recipe = element.recipe;
@@ -238,7 +255,10 @@ describe("saving a Recipe Extension", () => {
       ...recipe.metadata,
       ...pick(recipe, ["sharing", "updated_at"]),
     });
+    expect(elements[0].optionsDefinition).toStrictEqual(recipeOptions);
+
     expect(elements[1].recipe).toBeUndefined();
+    expect(elements[1].optionsDefinition).toBeUndefined();
 
     // Check the source element is reset
     expect(resetMock).toHaveBeenCalledTimes(1);
@@ -326,9 +346,8 @@ describe("saving a Recipe Extension", () => {
     const newRecipeMeta = recipeMetadataFactory();
     let creatingRecipePromise: Promise<void>;
     act(() => {
-      creatingRecipePromise = result.current.saveElementAndCreateNewRecipe(
-        newRecipeMeta
-      );
+      creatingRecipePromise =
+        result.current.saveElementAndCreateNewRecipe(newRecipeMeta);
     });
 
     try {
@@ -350,13 +369,8 @@ describe("saving a Recipe Extension", () => {
   });
 
   test("updates the recipe", async () => {
-    const {
-      store,
-      element,
-      recipe,
-      createMock,
-      updateRecipeMock,
-    } = setupMocks();
+    const { store, element, recipe, createMock, updateRecipeMock } =
+      setupMocks();
     updateRecipeMock.mockReturnValueOnce({});
 
     // Render hook
@@ -415,9 +429,8 @@ describe("saving a Recipe Extension", () => {
     const newRecipeMeta = recipeMetadataFactory();
     let updatingRecipePromise: Promise<void>;
     act(() => {
-      updatingRecipePromise = result.current.saveElementAndUpdateRecipe(
-        newRecipeMeta
-      );
+      updatingRecipePromise =
+        result.current.saveElementAndUpdateRecipe(newRecipeMeta);
     });
 
     try {

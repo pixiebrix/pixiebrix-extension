@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Modal } from "react-bootstrap";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 
 const SavingInProgressModal: React.FC = () => (
   <Modal show backdrop="static" keyboard={false}>
@@ -26,7 +26,7 @@ const SavingInProgressModal: React.FC = () => (
     </Modal.Header>
 
     <Modal.Body>
-      <GridLoader />
+      <Loader />
     </Modal.Body>
   </Modal>
 );

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./SetupPage.module.scss";
+
 import React, { useCallback } from "react";
 import { faCheck, faLink } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row, Card, Button, ListGroup } from "react-bootstrap";
@@ -25,9 +27,8 @@ import browser from "webextension-polyfill";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 
-import "./SetupPage.scss";
 import { useTitle } from "@/hooks/title";
 import { LinkButton } from "@/components/LinkButton";
 
@@ -40,17 +41,17 @@ const Step: React.FunctionComponent<{
   completed?: boolean;
   active?: boolean;
 }> = ({ number, completed, active, children }) => (
-  <ListGroup.Item className={cx("OnboardingStep", { current: active })}>
+  <ListGroup.Item className={cx("p-4", { "font-weight-bold": active })}>
     <div className="d-flex">
-      <div className="OnboardingStep__status">
+      <div className={styles.onboardingStepStatus}>
         {completed && (
           <span>
             <FontAwesomeIcon icon={faCheck} />
           </span>
         )}
       </div>
-      <div className="OnboardingStep__step">Step {number}</div>
-      <div className="OnboardingStep__content">{children}</div>
+      <div className={styles.onboardingStepStep}>Step {number}</div>
+      <div className={styles.onboardingStepContent}>{children}</div>
     </div>
   </ListGroup.Item>
 );
@@ -83,9 +84,9 @@ const SetupPage: React.FunctionComponent = () => {
       <Row className="w-100 mx-0">
         <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
           <Card className="OnboardingCard">
-            <Card.Header>PixieBrix Setup Steps</Card.Header>
+            <Card.Header className="h4">PixieBrix Setup Steps</Card.Header>
             <Card.Body>
-              <GridLoader />
+              <Loader />
             </Card.Body>
           </Card>
         </Col>
@@ -103,15 +104,15 @@ const SetupPage: React.FunctionComponent = () => {
     <Row className="w-100 mx-0">
       <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
         <Card className="OnboardingCard">
-          <Card.Header>PixieBrix Setup Steps</Card.Header>
+          <Card.Header className="h4">PixieBrix Setup Steps</Card.Header>
           <ListGroup className="list-group-flush">
             <Step number={1} completed>
               Install the PixieBrix browser extension
               <div>
-                <span className="text-muted">
+                <small className="text-muted">
                   You have version {browser.runtime.getManifest().version}{" "}
                   installed
-                </span>
+                </small>
               </div>
             </Step>
             <Step number={2} active>
@@ -128,10 +129,10 @@ const SetupPage: React.FunctionComponent = () => {
               </div>
 
               <div className="mt-2">
-                <span className="text-muted">
+                <small className="text-muted">
                   Alternatively, you can use the extension in{" "}
                   <LinkButton onClick={setLocal}>local-only mode</LinkButton>
-                </span>
+                </small>
               </div>
             </Step>
           </ListGroup>

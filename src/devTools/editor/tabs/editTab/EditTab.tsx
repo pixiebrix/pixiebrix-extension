@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout, {
   FOUNDATION_NODE_ID,
@@ -42,13 +42,16 @@ import usePipelineField, {
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveNodeId } from "@/devTools/editor/uiState/uiState";
-import AuthContext from "@/auth/AuthContext";
 import ApiVersionField from "@/devTools/editor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/devTools/editor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/devTools/editor/hooks/useApiVersionAtLeast";
 import UnsupportedApiV1 from "@/devTools/editor/tabs/editTab/UnsupportedApiV1";
 import UpgradedToApiV3 from "@/devTools/editor/tabs/editTab/UpgradedToApiV3";
 import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
+import TooltipIconButton from "@/components/TooltipIconButton";
+import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
+import cx from "classnames";
+import useFlags from "@/hooks/useFlags";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -56,7 +59,7 @@ const EditTab: React.FC<{
   useExtensionTrace();
 
   const { values, setValues: setFormValues } = useFormikContext<FormState>();
-  const { extensionPoint, type: elementType } = values;
+  const { extensionPoint, type: extensionPointType } = values;
 
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
@@ -66,9 +69,10 @@ const EditTab: React.FC<{
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { label, icon, EditorNode } = useMemo(() => ADAPTERS.get(elementType), [
-    elementType,
-  ]);
+  const { label, icon, EditorNode } = useMemo(
+    () => ADAPTERS.get(extensionPointType),
+    [extensionPointType]
+  );
 
   const FoundationNode = isApiAtLeastV2 ? EditorNode : UnsupportedApiV1;
 
@@ -78,11 +82,8 @@ const EditTab: React.FC<{
     new Map()
   );
 
-  const {
-    blockPipeline,
-    blockPipelineErrors,
-    errorTraceEntry,
-  } = usePipelineField(allBlocks, elementType);
+  const { blockPipeline, blockPipelineErrors, errorTraceEntry } =
+    usePipelineField(allBlocks, extensionPointType);
 
   const activeNodeId = useSelector(selectActiveNodeId);
   const dispatch = useDispatch();
@@ -214,7 +215,7 @@ const EditTab: React.FC<{
   const [relevantBlocksToAdd] = useAsyncState(
     async () => {
       const excludeType: BlockType = ["actionPanel", "panel"].includes(
-        elementType
+        extensionPointType
       )
         ? "effect"
         : "renderer";
@@ -223,7 +224,7 @@ const EditTab: React.FC<{
         .filter(({ type }) => type != null && type !== excludeType)
         .map(({ block }) => block);
     },
-    [allBlocks, elementType],
+    [allBlocks, extensionPointType],
     []
   );
 
@@ -234,23 +235,54 @@ const EditTab: React.FC<{
         (blockPipelineErrors[activeBlockIndex] as string)
       : null;
 
-  const { flags } = useContext(AuthContext);
-  const showVersionField = flags.includes("page-editor-developer");
+  const { flagOn } = useFlags();
+  const showVersionField = flagOn("page-editor-developer");
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
-        <div className={styles.nodeLayout}>
-          <EditorNodeLayout
-            nodes={nodes}
-            activeNodeId={activeNodeId}
-            relevantBlocksToAdd={relevantBlocksToAdd}
-            addBlock={addBlock}
-            showAppend={showAppendNode}
-            moveBlockUp={moveBlockUp}
-            moveBlockDown={moveBlockDown}
-            pasteBlock={pasteBlock}
-          />
+        <div className={styles.nodePanel}>
+          <div className={styles.nodeHeader}>
+            <span
+              className={cx(styles.nodeHeaderTitle, {
+                [styles.disabledTitle]: activeNodeId === FOUNDATION_NODE_ID,
+              })}
+            >
+              Brick Actions
+            </span>
+            <TooltipIconButton
+              name="copyNode"
+              icon={faCopy}
+              onClick={() => {
+                copyBlock(activeNodeId);
+              }}
+              tooltipText="Copy Brick"
+              buttonClassName={styles.copyButton}
+              disabled={activeNodeId === FOUNDATION_NODE_ID}
+            />
+            <TooltipIconButton
+              name="removeNode"
+              icon={faTrash}
+              onClick={() => {
+                removeBlock(activeNodeId);
+              }}
+              tooltipText="Remove Brick"
+              buttonClassName={styles.removeButton}
+              disabled={activeNodeId === FOUNDATION_NODE_ID}
+            />
+          </div>
+          <div className={styles.nodeLayout}>
+            <EditorNodeLayout
+              nodes={nodes}
+              activeNodeId={activeNodeId}
+              relevantBlocksToAdd={relevantBlocksToAdd}
+              addBlock={addBlock}
+              showAppend={showAppendNode}
+              moveBlockUp={moveBlockUp}
+              moveBlockDown={moveBlockDown}
+              pasteBlock={pasteBlock}
+            />
+          </div>
         </div>
         <div className={styles.configPanel}>
           <ErrorBoundary
@@ -275,12 +307,6 @@ const EditTab: React.FC<{
                   blockPipeline.find((x) => x.instanceId === activeNodeId)?.id
                 }
                 blockError={blockError}
-                onRemoveNode={() => {
-                  removeBlock(activeNodeId);
-                }}
-                copyBlock={() => {
-                  copyBlock(activeNodeId);
-                }}
               />
             ) : (
               <UnsupportedApiV1 />

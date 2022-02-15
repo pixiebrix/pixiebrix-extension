@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,8 @@ import { columnToLetter } from "@/contrib/google/sheets/sheetsHelpers";
 
 type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
 type BatchGetValuesResponse = gapi.client.sheets.BatchGetValuesResponse;
-type BatchUpdateSpreadsheetResponse = gapi.client.sheets.BatchUpdateSpreadsheetResponse;
+type BatchUpdateSpreadsheetResponse =
+  gapi.client.sheets.BatchUpdateSpreadsheetResponse;
 type Spreadsheet = gapi.client.sheets.Spreadsheet;
 type SpreadsheetProperties = gapi.client.sheets.SpreadsheetProperties;
 

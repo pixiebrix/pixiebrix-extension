@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,17 +17,18 @@
 
 import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import { clearExtensionAuth } from "@/auth/token";
 import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import { isEmpty } from "lodash";
 import { useToasts } from "react-toast-notifications";
-import AuthContext from "@/auth/AuthContext";
+import useFlags from "@/hooks/useFlags";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const { addToast } = useToasts();
-  const { flags } = useContext(AuthContext);
+  const { restrict, permit } = useFlags();
+
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
   const clear = useCallback(async () => {
@@ -93,7 +94,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
               placeholder={DEFAULT_SERVICE_URL}
               defaultValue={serviceURL}
               onBlur={handleUpdate}
-              disabled={flags.includes("restricted-service-url")}
+              disabled={restrict("service-url")}
             />
             <Form.Text className="text-muted">
               The PixieBrix service URL
@@ -110,7 +111,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
           Check Updates
         </Button>
 
-        {!flags.includes("restricted-clear-token") && (
+        {permit("clear-token") && (
           <Button variant="warning" onClick={clear}>
             Clear Token
           </Button>

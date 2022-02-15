@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +22,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebExtensionTarget = require("webpack-target-webextension");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
-const { ESBuildMinifyPlugin } = require("esbuild-loader");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, compact } = require("lodash");
@@ -53,7 +53,6 @@ const defaults = {
   DEV_NOTIFY: "true",
   DEV_SLIM: "false",
   CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
-  ROLLBAR_PUBLIC_PATH: "extension://dynamichost",
 
   // PixieBrix URL to enable connection to for credential exchange
   SERVICE_URL: "https://app.pixiebrix.com",
@@ -189,8 +188,8 @@ function mockHeavyDependencies() {
       "Mocking dependencies for development build: @/icons/list, uipath/robot"
     );
     return {
-      "@/icons/list": path.resolve("src/__mocks__/iconsListMock"),
-      "@uipath/robot": path.resolve("src/__mocks__/robotMock"),
+      "@/icons/list": path.resolve("src/__mocks__/@/icons/list"),
+      "@uipath/robot": path.resolve("src/__mocks__/@uipath/robot"),
     };
   }
 }
@@ -272,6 +271,9 @@ module.exports = (env, options) =>
         "webext-detect-page": path.resolve(
           "src/vendors/webextDetectPage.static.js"
         ),
+
+        // Lighter jQuery version
+        jquery: "jquery/dist/jquery.slim.min.js",
       },
     },
 
@@ -285,10 +287,8 @@ module.exports = (env, options) =>
       },
 
       minimizer: [
-        new ESBuildMinifyPlugin({
-          css: true,
-          sourcemap: produceSourcemap,
-        }),
+        "...", // Preserve native JS minification
+        new CssMinimizerPlugin(),
       ],
     },
 
@@ -335,16 +335,16 @@ module.exports = (env, options) =>
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
+        WEBEXT_MESSENGER_LOGGING: "false",
+        ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost",
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
         SOURCE_VERSION: undefined,
         CHROME_EXTENSION_ID: undefined,
-        ROLLBAR_PUBLIC_PATH: undefined,
 
         // If not found, "null" will leave the ENV unset in the bundle
         ROLLBAR_BROWSER_ACCESS_TOKEN: null,
-        SUPPORT_WIDGET_ID: null,
         GOOGLE_API_KEY: null,
         GOOGLE_APP_ID: null,
       }),

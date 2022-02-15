@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,9 +21,7 @@ const elementsCollectionRegexp = /(?<collectionName>.*)\.(?<elementIndex>\d+)/;
  * Returns the name of the collection of a document element.
  * Ex. for a given elementName `body.0.children.3` returns `body.0.children`
  */
-function getElementCollectionName(
-  elementName: string
-): {
+function getElementCollectionName(elementName: string): {
   collectionName: string;
   elementIndex: number;
 } {

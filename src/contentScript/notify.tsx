@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ import { render } from "react-dom";
 import { toast, Toaster } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
 import { DefaultToastOptions } from "react-hot-toast/dist/core/types";
-import { NOFICATIONS_Z_INDEX } from "@/common";
+import { NOTIFICATIONS_Z_INDEX } from "@/common";
 
 type NotificationType = "info" | "success" | "error" | "loading";
 interface Notification {
@@ -31,7 +31,7 @@ interface Notification {
 }
 
 const containerStyle: React.CSSProperties = {
-  zIndex: NOFICATIONS_Z_INDEX,
+  zIndex: NOTIFICATIONS_Z_INDEX,
   fontFamily: "sans-serif",
 };
 

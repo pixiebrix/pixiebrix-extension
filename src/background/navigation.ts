@@ -1,6 +1,5 @@
-/* eslint-disable filenames/match-exported */
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,18 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
-import { handleNavigate, reactivateTab } from "@/contentScript/messenger/api";
+import { reactivateTab, handleNavigate } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/util";
-
-function initNavigation(): void {
-  // Updates from the history API
-  browser.webNavigation.onHistoryStateUpdated.addListener(handleNavigate);
-}
+import browser from "webextension-polyfill";
+import { canAccessTab } from "webext-tools";
+import { Target } from "@/types";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");
   void forEachTab(reactivateTab);
+}
+
+async function onNavigation({ tabId, frameId }: Target): Promise<void> {
+  if (await canAccessTab({ tabId, frameId })) {
+    handleNavigate({ tabId, frameId });
+  }
+}
+
+function initNavigation(): void {
+  // Let the content script know about navigation from the history API. Required for handling SPA navigation
+  browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
 }
 
 export default initNavigation;

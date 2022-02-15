@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,10 +18,13 @@
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
-import parseDomTable from "@/utils/parseDomTable";
+import parseDomTable, { getAllTables } from "@/utils/parseDomTable";
 import { $safeFind } from "@/helpers";
 
 export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
+export const TABLE_READER_ALL_ID = validateRegistryId(
+  "@pixiebrix/table-reader-all"
+);
 
 export class TableReader extends Transformer {
   constructor() {
@@ -49,7 +52,7 @@ export class TableReader extends Transformer {
     },
   };
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
@@ -69,16 +72,63 @@ export class TableReader extends Transformer {
     additionalProperties: false,
   };
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return true;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
   async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
     const $table = $safeFind<HTMLTableElement>(args.selector, root);
     return parseDomTable($table.get(0), { orientation: args.orientation });
+  }
+}
+
+export class TablesReader extends Transformer {
+  constructor() {
+    super(
+      TABLE_READER_ALL_ID,
+      "Read All Tables",
+      "Extract data from all the tables on the page"
+    );
+  }
+
+  defaultOutputKey = "tables";
+
+  inputSchema: Schema = {
+    type: "object",
+    properties: {},
+  };
+
+  override outputSchema: Schema = {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    properties: {
+      records: {
+        description:
+          "The records in the table (rows or columns, depending on orientation)",
+        type: "array",
+        items: { type: "object" },
+      },
+      fieldNames: {
+        description: "The field names in the table",
+        type: "array",
+        items: { type: "string" },
+      },
+    },
+  };
+
+  override async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
+  override async isPure(): Promise<boolean> {
+    return true;
+  }
+
+  async transform(_: BlockArg, { root }: BlockOptions): Promise<unknown> {
+    return Object.fromEntries(getAllTables(root).entries());
   }
 }

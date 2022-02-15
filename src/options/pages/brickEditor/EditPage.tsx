@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,10 +23,9 @@ import { Formik, useField } from "formik";
 import { useParams } from "react-router";
 import Editor from "./Editor";
 import { truncate } from "lodash";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import useSubmitBrick from "./useSubmitBrick";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import "./EditPage.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { RawConfig } from "@/core";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -103,7 +102,7 @@ const LoadingBody: React.FunctionComponent = () => (
       </div>
     </div>
     <div>
-      <GridLoader />
+      <Loader />
     </div>
   </>
 );
@@ -127,9 +126,11 @@ const EditPage: React.FunctionComponent = () => {
 
   const { data } = useFetch<BrickData>(url);
 
-  const { isBlueprint, isInstalled, config: rawConfig } = useParseBrick(
-    data?.config
-  );
+  const {
+    isBlueprint,
+    isInstalled,
+    config: rawConfig,
+  } = useParseBrick(data?.config);
 
   useTouchBrick(id);
 

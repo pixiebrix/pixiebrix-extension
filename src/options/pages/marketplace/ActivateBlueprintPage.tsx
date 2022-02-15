@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import React, { useMemo } from "react";
 import { useParams } from "react-router";
 import { RecipeDefinition } from "@/types/definitions";
 import { Card, Col, Row } from "react-bootstrap";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
@@ -77,7 +77,7 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
       );
     }
 
-    return <GridLoader />;
+    return <Loader />;
   }, [recipeDefinition, remoteBlueprint, blueprintId]);
 
   return (

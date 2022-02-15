@@ -1,6 +1,6 @@
 /* eslint-disable filenames/match-exported */
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,7 +33,6 @@ import {
   selectIsAvailable,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
-import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import {
   ContextMenuConfig,
@@ -55,6 +54,7 @@ import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
 import { Except } from "type-fest";
+import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 
 type Extension = BaseExtensionState & Except<ContextMenuConfig, "action">;
 
@@ -157,13 +157,8 @@ async function fromExtension(
     ContextMenuConfig,
     "contextMenu"
   >(config, "contextMenu");
-  const {
-    documentUrlPatterns,
-    defaultOptions,
-    contexts,
-    targetMode,
-    reader,
-  } = extensionPoint.definition;
+  const { documentUrlPatterns, defaultOptions, contexts, targetMode, reader } =
+    extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = extensionWithNormalizedPipeline(config.config, "action");
@@ -258,7 +253,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  insertModeHelp: (
+  InsertModeHelpText: () => (
     <div>
       <p>
         A context menu (also called a right-click menu) can be configured to

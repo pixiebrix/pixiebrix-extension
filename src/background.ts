@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,33 +18,35 @@
 // extensionContext needs to be imported before webpack-target-webextension to
 // ensure the webpack path is correct
 import "@/extensionContext";
+import "@/development/autoreload";
+import "@/development/errorsBadge";
 
 // Required for MV3; Service Workers don't have XMLHttpRequest
 import "@/background/axiosFetch";
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/rollbar";
-
 import "webext-dynamic-content-scripts";
 
-import "@/background/messenger/registration";
-import "@/development/autoreload";
-import "@/background/installer";
 import "@/messaging/external";
-import "@/background/locator";
-import "@/background/contextMenus";
-import "@/background/browserAction";
 
+import registerMessenger from "@/background/messenger/registration";
+import initLocator from "@/background/locator";
+import initContextMenus from "@/background/contextMenus";
+import initBrowserAction from "@/background/browserAction";
+import initInstaller from "@/background/installer";
+import initNavigation from "@/background/navigation";
 import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";
-import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
-import initContextMenus from "@/background/initContextMenus";
 import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deployment";
 import initFirefoxCompat from "@/background/firefoxCompat";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
+import initActiveTabTracking from "@/background/activeTab";
 
+void initLocator();
+registerMessenger();
+initBrowserAction();
+initInstaller();
 initNavigation();
 initExecutor();
 initGoogle();
@@ -52,5 +54,6 @@ initFrames();
 initContextMenus();
 initBrowserCommands();
 initDeploymentUpdater();
-void initFirefoxCompat();
+initFirefoxCompat();
 activateBrowserActionIcon();
+initActiveTabTracking();

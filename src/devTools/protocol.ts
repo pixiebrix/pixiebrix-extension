@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,26 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser, { WebNavigation } from "webextension-polyfill";
-import { navigationEvent } from "@/background/devtools/external";
+import browser from "webextension-polyfill";
 import { resetTab } from "@/contentScript/messenger/api";
 import { thisTab } from "./utils";
+import { Target } from "@/types";
+import { updateDevTools } from "./events";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
-export function updateDevTools() {
-  navigationEvent.emit(browser.devtools.inspectedWindow.tabId);
+// The editor only cares for the top frame
+function isCurrentTopFrame({ tabId, frameId }: Target) {
+  return (
+    frameId === TOP_LEVEL_FRAME_ID &&
+    tabId === browser.devtools.inspectedWindow.tabId
+  );
 }
 
-function onNavigation(
-  details:
-    | WebNavigation.OnHistoryStateUpdatedDetailsType
-    | WebNavigation.OnDOMContentLoadedDetailsType
-): void {
-  if (
-    details.frameId === TOP_LEVEL_FRAME_ID &&
-    details.tabId === browser.devtools.inspectedWindow.tabId
-  ) {
+async function onNavigation(target: Target): Promise<void> {
+  if (isCurrentTopFrame(target)) {
     updateDevTools();
   }
 }
@@ -44,8 +42,9 @@ function onEditorClose(): void {
 }
 
 export function watchNavigation(): void {
-  browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
   browser.webNavigation.onDOMContentLoaded.addListener(onNavigation);
+  browser.permissions.onAdded.addListener(updateDevTools);
+  browser.permissions.onRemoved.addListener(updateDevTools);
   window.addEventListener("beforeunload", onEditorClose);
 
   if (process.env.DEBUG)

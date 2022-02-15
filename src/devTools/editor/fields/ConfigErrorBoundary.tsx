@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,8 +16,8 @@
  */
 
 import React, { Component } from "react";
-import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { UnknownObject } from "@/types";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -43,11 +43,11 @@ class ConfigErrorBoundary extends Component<UnknownObject, State> {
     };
   }
 
-  componentDidCatch(error: Error): void {
+  override componentDidCatch(error: Error): void {
     reportError(error);
   }
 
-  render(): React.ReactNode {
+  override render(): React.ReactNode {
     if (this.state.hasError) {
       return (
         <div className="mb-3">

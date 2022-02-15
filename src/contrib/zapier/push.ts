@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -59,7 +59,7 @@ export class PushZap extends Effect {
   /**
    * Additional permissions required for CORS
    */
-  permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
+  override permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
 
   async effect(
     { pushKey, data }: BlockArg<{ pushKey: string; data: UnknownObject }>,

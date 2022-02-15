@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getCommonAncestor } from "@/nativeEditor/infer";
+import { getCommonAncestor } from "@/contentScript/nativeEditor/infer";
 
 /**
  * Get the HTMLElement corresponding to the current selection.
@@ -49,7 +49,11 @@ export function guessSelectedElement(): HTMLElement | null {
 let selectionOverride: Range | undefined;
 const selectionController = {
   save(): void {
-    selectionOverride = getSelection().getRangeAt(0);
+    const selection = getSelection();
+    // It must be set to "undefined" even if there are selections
+    selectionOverride = selection.rangeCount
+      ? selection.getRangeAt(0)
+      : undefined;
   },
   restore(): void {
     if (!selectionOverride) {

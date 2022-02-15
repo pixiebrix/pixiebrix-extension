@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,16 +19,16 @@ import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import * as context from "@/contentScript/context";
-import * as actionPanel from "@/actionPanel/native";
+import * as actionPanel from "@/contentScript/actionPanel";
 import { PromiseCancelled, sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import browser from "webextension-polyfill";
 import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
-import { isDeploymentActive } from "@/options/deploymentUtils";
+import { isDeploymentActive } from "@/utils/deployment";
 import { $safeFind } from "@/helpers";
 
 let _scriptPromise: Promise<void> | undefined;
@@ -104,6 +104,21 @@ async function runExtensionPoint(
 
 export function getInstalledIds(): RegistryId[] {
   return _installedExtensionPoints.map((x) => x.id);
+}
+
+/**
+ * Remove an extension from an extension point on the page
+ */
+export function removeExtension(
+  extensionPointId: RegistryId,
+  extensionId: UUID
+) {
+  const extensionPoint = _installedExtensionPoints.find((x) => x.id);
+  if (extensionPoint) {
+    extensionPoint.removeExtension(extensionId);
+  } else {
+    console.warn("Extension point %s not found", extensionPointId);
+  }
 }
 
 function markUninstalled(id: RegistryId) {
@@ -221,7 +236,7 @@ async function loadExtensions() {
   await Promise.all(
     Object.entries(extensionMap).map(async (entry) => {
       // Object.entries loses the type information :sadface:
-      const [extensionPointId, extensions] = (entry as unknown) as [
+      const [extensionPointId, extensions] = entry as unknown as [
         RegistryId,
         ResolvedExtension[]
       ];

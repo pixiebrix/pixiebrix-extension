@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,8 @@ import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
 import { AddToast, useToasts } from "react-toast-notifications";
-import { reportError } from "@/telemetry/logging";
+import { getErrorMessage, isAxiosError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
@@ -28,7 +29,6 @@ import { reportEvent } from "@/telemetry/events";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { extensionPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";
-import { getErrorMessage, isAxiosError } from "@/errors";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { extensionWithInnerDefinitions } from "@/devTools/editor/extensionPoints/base";
@@ -72,10 +72,8 @@ function selectErrorMessage(error: unknown): string {
 async function ensurePermissions(element: FormState, addToast: AddToast) {
   const adapter = ADAPTERS.get(element.type);
 
-  const {
-    extension,
-    extensionPoint: extensionPointConfig,
-  } = adapter.asDynamicElement(element);
+  const { extension, extensionPoint: extensionPointConfig } =
+    adapter.asDynamicElement(element);
 
   const extensionPoint = extensionPointFactory(extensionPointConfig);
 
@@ -173,9 +171,8 @@ function useCreate(): CreateCallback {
 
           if (!isLocked) {
             try {
-              const extensionPointConfig = adapter.selectExtensionPoint(
-                element
-              );
+              const extensionPointConfig =
+                adapter.selectExtensionPoint(element);
               const packageId = element.installed
                 ? editablePackages.find(
                     // Bricks endpoint uses "name" instead of id

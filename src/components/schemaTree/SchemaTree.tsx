@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./SchemaTree.module.scss";
+
 import React, { useMemo } from "react";
 import { Schema } from "@/core";
 import { Table } from "react-bootstrap";
@@ -27,7 +29,6 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { isServiceField } from "@/components/fields/schemaFields/ServiceField";
-import styles from "./SchemaTree.module.scss";
 import cx from "classnames";
 
 type SchemaTreeRow = {
@@ -188,13 +189,8 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
     []
   );
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns, data }, useExpanded);
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({ columns, data }, useExpanded);
 
   if (!schema) {
     return <div className="text-muted">No schema</div>;
@@ -208,10 +204,8 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
     <Table {...getTableProps()} size="sm">
       <thead>
         {headerGroups.map((headerGroup) => {
-          const {
-            key,
-            ...restHeaderGroupProps
-          } = headerGroup.getHeaderGroupProps();
+          const { key, ...restHeaderGroupProps } =
+            headerGroup.getHeaderGroupProps();
           return (
             <tr key={key} {...restHeaderGroupProps}>
               {headerGroup.headers.map((column) => {

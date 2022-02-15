@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -41,7 +41,7 @@ class RootAwareBlock extends Block {
 
   inputSchema = propertiesToSchema({});
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return true;
   }
 
@@ -58,9 +58,9 @@ class RootAwareReader extends Reader {
     super("reader/root-aware", "Root Aware Reader");
   }
 
-  inputSchema = propertiesToSchema({});
+  override inputSchema = propertiesToSchema({});
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return true;
   }
 

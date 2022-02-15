@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -73,10 +73,6 @@ class ExternalBlock extends Block {
 
   readonly inputSchema: Schema;
 
-  readonly outputSchema: Schema;
-
-  readonly defaultOptions: Record<string, unknown>;
-
   constructor(component: ComponentConfig) {
     const { id, name, description, icon } = component.metadata;
     super(id, name, description, icon);
@@ -86,7 +82,7 @@ class ExternalBlock extends Block {
     this.outputSchema = this.component.outputSchema;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     const pipeline = castArray(this.component.pipeline);
 
     const purity = await Promise.all(
@@ -99,7 +95,7 @@ class ExternalBlock extends Block {
     return purity.every((x) => x);
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     const pipeline = castArray(this.component.pipeline);
 
     const awareness = await Promise.all(

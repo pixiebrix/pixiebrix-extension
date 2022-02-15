@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,7 @@
  */
 
 import styles from "./Entry.module.scss";
+
 import React, { useCallback } from "react";
 import { IExtension, UUID } from "@/core";
 import { useDispatch } from "react-redux";
@@ -25,12 +26,21 @@ import {
   selectType,
 } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/slices/editorSlice";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { ListGroup } from "react-bootstrap";
 import {
   NotAvailableIcon,
   ExtensionIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
+import { RecipeDefinition } from "@/types/definitions";
+import { initRecipeOptionsIfNeeded } from "@/devTools/editor/extensionPoints/base";
+import {
+  disableOverlay,
+  enableOverlay,
+  removeExtension,
+} from "@/contentScript/messenger/api";
+import { thisTab } from "@/devTools/utils";
+import { resolveDefinitions } from "@/registry/internal";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
@@ -38,18 +48,27 @@ import {
  */
 const InstalledEntry: React.FunctionComponent<{
   extension: IExtension;
-  activeElement: UUID | null;
+  recipes: RecipeDefinition[];
+  active: boolean;
   available: boolean;
-}> = ({ extension, available, activeElement }) => {
+}> = ({ extension, recipes, available, active }) => {
   const dispatch = useDispatch();
-  const [type] = useAsyncState(async () => selectType(extension), [
-    extension.extensionPointId,
-  ]);
+  const [type] = useAsyncState(
+    async () => selectType(extension),
+    [extension.extensionPointId]
+  );
 
   const selectHandler = useCallback(
     async (extension: IExtension) => {
       try {
+        // Remove the extension so that we don't get double-actions when editing a trigger.
+        // At this point the extensionPointId can be a
+        const resolved = await resolveDefinitions(extension);
+        removeExtension(thisTab, resolved.extensionPointId, resolved.id);
+
         const state = await extensionToFormState(extension);
+        initRecipeOptionsIfNeeded(state, recipes);
+
         // FIXME: is where we need to uninstall the extension because it will now be a dynamic element? Or should it
         //  be getting handled by lifecycle.ts? Need to add some logging to figure out how other ones work
         dispatch(actions.selectInstalled(state));
@@ -58,15 +77,29 @@ const InstalledEntry: React.FunctionComponent<{
         dispatch(actions.adapterError({ uuid: extension.id, error }));
       }
     },
-    [dispatch]
+    [dispatch, recipes]
   );
+
+  const isButton = type === "menuItem";
+
+  const showOverlay = useCallback(async (uuid: UUID) => {
+    await enableOverlay(thisTab, `[data-pb-uuid="${uuid}"]`);
+  }, []);
+
+  const hideOverlay = useCallback(async () => {
+    await disableOverlay(thisTab);
+  }, []);
 
   return (
     <ListGroup.Item
       className={styles.root}
       action
-      active={extension.id === activeElement}
+      active={active}
       key={`installed-${extension.id}`}
+      onMouseEnter={
+        isButton ? async () => showOverlay(extension.id) : undefined
+      }
+      onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={async () => selectHandler(extension)}
     >
       <span className={styles.icon}>

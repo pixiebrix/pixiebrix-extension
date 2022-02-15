@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,6 +37,7 @@ import {
 import { components } from "@/types/swagger";
 import { Except } from "type-fest";
 import { FortAwesomeLibrary } from "@/components/AsyncIcon";
+import { AxiosResponse } from "axios";
 
 export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 
@@ -82,6 +83,7 @@ export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
   config: SanitizedConfig;
   // XXX: update serializer to include proper metadata child serializer
   service: { config: { metadata: Metadata } };
+  user?: UUID;
 };
 
 export type ConfigurableAuth = components["schemas"]["EditableAuth"] & {
@@ -123,7 +125,7 @@ export type CloudExtension<T extends Config = EmptyConfig> = Except<
  * `/api/recipes/${blueprintId}`
  */
 export type BlueprintResponse = {
-  // On this endpoint, the sharing and updated_at are in the envelop of the response
+  // On this endpoint, the sharing and updated_at are in the envelope of the response
   config: UnsavedRecipeDefinition;
   sharing: SharingDefinition;
   updated_at: Timestamp;
@@ -142,4 +144,28 @@ export type MarketplaceListing = {
     url: string;
     alt_text: string;
   };
+};
+
+export type ProxyResponseSuccessData = {
+  json: unknown;
+  status_code: number;
+};
+
+export type ProxyResponseErrorData = {
+  json: unknown;
+  status_code: number;
+  message?: string;
+  reason?: string;
+};
+
+export type ProxyResponseData =
+  | ProxyResponseSuccessData
+  | ProxyResponseErrorData;
+
+// Partial view of an AxiosResponse for providing common interface local and requests made via proxy
+export type RemoteResponse<T = unknown> = Pick<
+  AxiosResponse<T>,
+  "data" | "status" | "statusText"
+> & {
+  $$proxied?: boolean;
 };

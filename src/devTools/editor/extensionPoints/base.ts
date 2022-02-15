@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,7 @@ import {
   Metadata,
   RegistryId,
   SafeString,
+  Schema,
   UUID,
 } from "@/core";
 import { castArray, cloneDeep, isEmpty, omit } from "lodash";
@@ -29,6 +30,7 @@ import {
   assertExtensionPointConfig,
   ExtensionPointConfig,
   ExtensionPointDefinition,
+  ExtensionPointType,
 } from "@/extensionPoints/types";
 import { registry } from "@/background/messenger/api";
 import React from "react";
@@ -36,7 +38,6 @@ import { createSitePattern } from "@/permissions/patterns";
 import {
   BaseExtensionState,
   BaseFormState,
-  ElementType,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
@@ -50,6 +51,12 @@ import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
 import { INNER_SCOPE, isInnerExtensionPoint } from "@/runtime/runtimeUtils";
+import { RecipeDefinition } from "@/types/definitions";
+import {
+  MINIMAL_SCHEMA,
+  MINIMAL_UI_SCHEMA,
+} from "@/components/formBuilder/formBuilderHelpers";
+import { hasInnerExtensionPoint } from "@/registry/internal";
 
 export interface WizardStep {
   step: string;
@@ -99,7 +106,7 @@ export function omitEditorMetadata(pipeline: BlockPipeline): BlockPipeline {
 /**
  * Return common extension properties for the Page Editor form state
  */
-export function baseFromExtension<T extends ElementType>(
+export function baseFromExtension<T extends ExtensionPointType>(
   config: IExtension,
   type: T
 ): Pick<
@@ -122,6 +129,33 @@ export function baseFromExtension<T extends ElementType>(
     type,
     recipe: config._recipe,
   };
+}
+
+// Add the recipe options to the form state if the extension is a part of a recipe
+export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
+  element: TElement,
+  recipes: RecipeDefinition[]
+) {
+  if (element.recipe?.id) {
+    const recipe = recipes?.find((x) => x.metadata.id === element.recipe.id);
+
+    if (recipe?.options == null) {
+      element.optionsDefinition = {
+        schema: MINIMAL_SCHEMA,
+        uiSchema: MINIMAL_UI_SCHEMA,
+      };
+    } else {
+      element.optionsDefinition = {
+        schema: recipe.options.schema.properties
+          ? recipe.options.schema
+          : ({
+              type: "object",
+              properties: recipe.options.schema,
+            } as Schema),
+        uiSchema: recipe.options.uiSchema,
+      };
+    }
+  }
 }
 
 export function baseSelectExtension({
@@ -217,20 +251,6 @@ export function cleanIsAvailable({
   };
 }
 
-export function hasInnerExtensionPoint(extension: IExtension): boolean {
-  const hasInner = extension.extensionPointId in (extension.definitions ?? {});
-
-  if (!hasInner && isInnerExtensionPoint(extension.extensionPointId)) {
-    console.warn(
-      "Extension is missing inner definition for %s",
-      extension.extensionPointId,
-      { extension }
-    );
-  }
-
-  return hasInner;
-}
-
 export async function lookupExtensionPoint<
   TDefinition extends ExtensionPointDefinition,
   TConfig extends EmptyConfig,
@@ -251,12 +271,12 @@ export async function lookupExtensionPoint<
       "Converting extension definition to temporary extension point",
       definition
     );
-    const innerExtensionPoint = ({
+    const innerExtensionPoint = {
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
       kind: "extensionPoint",
       metadata: internalExtensionPointMetaFactory(),
       ...definition,
-    } as unknown) as ExtensionPointConfig<TDefinition> & {
+    } as unknown as ExtensionPointConfig<TDefinition> & {
       definition: { type: TType };
     };
 
@@ -271,9 +291,10 @@ export async function lookupExtensionPoint<
     );
   }
 
-  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<TDefinition>;
+  const extensionPoint =
+    brick.config as unknown as ExtensionPointConfig<TDefinition>;
   if (extensionPoint.definition.type !== type) {
-    throw new Error("Expected panel extension point type");
+    throw new Error(`Expected ${type} extension point type`);
   }
 
   return extensionPoint as ExtensionPointConfig<TDefinition> & {
@@ -351,7 +372,9 @@ export function removeEmptyValues<T extends object>(obj: T): T {
 /**
  * Return a composite reader to automatically include in new extensions created with the Page Editor.
  */
-export function getImplicitReader(type: ElementType): SingleLayerReaderConfig {
+export function getImplicitReader(
+  type: ExtensionPointType
+): SingleLayerReaderConfig {
   if (type === "trigger") {
     return readerTypeHack([
       validateRegistryId("@pixiebrix/document-metadata"),

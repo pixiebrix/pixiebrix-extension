@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,22 +16,21 @@
  */
 
 import browser, { Manifest, Permissions } from "webextension-polyfill";
-import { uniq } from "lodash";
+import { cloneDeep, remove, uniq } from "lodash";
 import {
   containsPermissions,
   openPopupPrompt,
 } from "@/background/messenger/api";
 import { isScriptableUrl } from "webext-content-scripts";
+import { isUrlPermittedByManifest } from "webext-additional-permissions";
 
 /** Filters out any permissions that are not part of `optional_permissions` */
 export function selectOptionalPermissions(
   permissions: string[]
 ): Manifest.OptionalPermission[] {
-  const { optional_permissions } = chrome.runtime.getManifest();
+  const { optional_permissions } = browser.runtime.getManifest();
   return permissions.filter((requestedPermission) =>
-    optional_permissions.includes(
-      requestedPermission as chrome.runtime.ManifestPermissions
-    )
+    optional_permissions.includes(requestedPermission)
   ) as Manifest.OptionalPermission[];
 }
 
@@ -50,6 +49,16 @@ export function mergePermissions(
 export async function requestPermissions(
   permissions: Permissions.Permissions
 ): Promise<boolean> {
+  // We're going to alter this object so we should clone it
+  permissions = cloneDeep(permissions);
+
+  // Don't request permissions for pixiebrix.com, the browser will always show a prompt.
+  // We can't use `await containsPermissions()` before `request() `because we might lose the "user action" flag
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/1759
+  if (Array.isArray(permissions.origins)) {
+    remove(permissions.origins, (origin) => isUrlPermittedByManifest(origin));
+  }
+
   if (browser.permissions) {
     return browser.permissions.request(permissions);
   }

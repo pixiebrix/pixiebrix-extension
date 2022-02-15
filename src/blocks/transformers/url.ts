@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,7 +46,7 @@ export const URL_INPUT_SPEC: Schema = {
 };
 
 export class UrlParams extends Transformer {
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
@@ -63,7 +63,7 @@ export class UrlParams extends Transformer {
 
   inputSchema: Schema = URL_INPUT_SPEC;
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     type: "object",
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     properties: {

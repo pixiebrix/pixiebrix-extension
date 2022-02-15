@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./FormPreviewFieldTemplate.module.scss";
+
 import { Field, FieldProps } from "@rjsf/core";
 import React from "react";
 import { SetActiveField } from "./formBuilderTypes";
 import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
-import styles from "./FormPreviewFieldTemplate.module.scss";
 import cx from "classnames";
 
 export interface FormPreviewFieldProps extends FieldProps {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo } from "react";
+import styles from "./OnboardingPage.module.scss";
+
+import React, { useMemo } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import AuthContext from "@/auth/AuthContext";
 import { Link } from "react-router-dom";
 import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
+import useFlags from "@/hooks/useFlags";
 
 const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
   <Col xs={6}>
@@ -95,39 +97,15 @@ const CreateBrickColumn: React.FunctionComponent = () => (
   </Col>
 );
 
-const OnboardingVideoCard: React.FunctionComponent = () => (
-  <Card>
-    <Card.Header>Video Tour</Card.Header>
-    <Card.Body className="mx-auto">
-      <div>
-        <iframe
-          title="onboarding-video"
-          src="https://player.vimeo.com/video/514828533"
-          width="640"
-          height="400"
-          frameBorder="0"
-          allow="fullscreen; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
-    </Card.Body>
-  </Card>
-);
-
 const OnboardingPage: React.FunctionComponent = () => {
-  const { flags } = useContext(AuthContext);
-  const {
-    data: rawRecipes,
-    isLoading: isRecipesLoading,
-  } = useGetRecipesQuery();
-  const {
-    data: organizations,
-    isLoading: isOrganizationsLoading,
-  } = useGetOrganizationsQuery();
-  const {
-    hasUpdate: hasDeployments,
-    isLoading: isDeploymentsLoading,
-  } = useDeployments();
+  const { restrict } = useFlags();
+
+  const { data: rawRecipes, isLoading: isRecipesLoading } =
+    useGetRecipesQuery();
+  const { data: organizations, isLoading: isOrganizationsLoading } =
+    useGetOrganizationsQuery();
+  const { hasUpdate: hasDeployments, isLoading: isDeploymentsLoading } =
+    useDeployments();
 
   const teamRecipes = (rawRecipes ?? []).filter(
     (recipe) => recipe.sharing.organizations.length > 0
@@ -138,22 +116,13 @@ const OnboardingPage: React.FunctionComponent = () => {
   const isLoading =
     isRecipesLoading || isOrganizationsLoading || isDeploymentsLoading;
 
-  // Video tour should be shown to typical users and enterprise users
-  //  that don't have deployments or marketplace restrictions
-  const showVideoTour = useMemo(
-    () =>
-      !hasOrganization ||
-      (!hasDeployments && !flags.includes("restricted-marketplace")),
-    [hasOrganization, hasDeployments, flags]
-  );
-
   const onBoardingInformation = useMemo(() => {
     if (hasOrganization) {
       if (hasDeployments) {
         return <ActivateFromDeploymentBannerColumn />;
       }
 
-      if (flags.includes("restricted-marketplace")) {
+      if (restrict("marketplace")) {
         return <ContactTeamAdminColumn />;
       }
 
@@ -173,33 +142,26 @@ const OnboardingPage: React.FunctionComponent = () => {
         <CreateBrickColumn />
       </>
     );
-  }, [hasOrganization, hasDeployments, hasTeamBlueprints, flags]);
+  }, [restrict, hasOrganization, hasDeployments, hasTeamBlueprints]);
 
   return (
     <>
       {isLoading ? (
         <div id="OnboardingSpinner">
-          <GridLoader />
+          <Loader />
         </div>
       ) : (
         <>
           <Row>
             <Col className="VideoCard">
-              <Card>
+              <Card className={styles.card}>
                 <Card.Header>Activate Bricks</Card.Header>
-                <Card.Body>
+                <Card.Body className={styles.cardBody}>
                   <Row>{onBoardingInformation}</Row>
                 </Card.Body>
               </Card>
             </Col>
           </Row>
-          {showVideoTour && (
-            <Row>
-              <Col className="VideoCard mt-3">
-                <OnboardingVideoCard />
-              </Col>
-            </Row>
-          )}
         </>
       )}
     </>

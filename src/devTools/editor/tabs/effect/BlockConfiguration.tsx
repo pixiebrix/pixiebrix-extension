@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +22,7 @@ import useBlockOptions from "@/hooks/useBlockOptions";
 import { Card } from "react-bootstrap";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverrides";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
@@ -115,7 +115,7 @@ const BlockConfiguration: React.FunctionComponent<{
             ) : error ? (
               <div className="invalid-feedback d-block mb-4">{error}</div>
             ) : (
-              <GridLoader />
+              <Loader />
             )}
           </SchemaFieldContext.Provider>
         </FieldSection>

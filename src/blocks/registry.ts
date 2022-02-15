@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -77,12 +77,12 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
     return this.typeCachePromise;
   }
 
-  register(...items: IBlock[]): void {
+  override register(...items: IBlock[]): void {
     super.register(...items);
     this.typeCachePromise = null;
   }
 
-  clear() {
+  override clear() {
     super.clear();
     this.typeCachePromise = null;
   }

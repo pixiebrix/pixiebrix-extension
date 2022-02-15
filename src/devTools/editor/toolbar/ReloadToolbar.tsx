@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +36,7 @@ function isPanelElement(element: FormState | null): boolean {
  * @param element
  */
 function isAutomaticTrigger(element: FormState): boolean {
-  const automatic = ["load", "appear", "interval"];
+  const automatic = ["load", "appear", "initialize", "interval"];
   return (
     element?.type === "trigger" &&
     automatic.includes(element?.extensionPoint.definition.trigger)

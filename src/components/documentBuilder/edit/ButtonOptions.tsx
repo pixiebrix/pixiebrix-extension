@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,11 +30,8 @@ type ButtonOptionsProps = {
 };
 
 const ButtonOptions: React.FC<ButtonOptionsProps> = ({ elementName }) => {
-  const [
-    { value: documentElement },
-    ,
-    { setValue: setDocumentElement },
-  ] = useField<ButtonDocumentElement>(elementName);
+  const [{ value: documentElement }, , { setValue: setDocumentElement }] =
+    useField<ButtonDocumentElement>(elementName);
 
   const schemaFields = useMemo(
     () =>
@@ -72,7 +69,7 @@ const ButtonOptions: React.FC<ButtonOptionsProps> = ({ elementName }) => {
     <>
       {schemaFields}
       <ElementBlockEdit
-        blocksType="effect"
+        blockTypes={["effect", "transform"]}
         blockConfigName={buttonConfigName}
         blockConfig={buttonConfig}
         onBlockSelected={onButtonBlockSelected}

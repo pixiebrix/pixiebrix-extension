@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,10 +20,12 @@ import { ServiceDependency } from "@/core";
 import useNotifications from "@/hooks/useNotifications";
 import { useFormikContext } from "formik";
 import { useAsyncState } from "@/hooks/common";
-import { locator } from "@/background/locator";
 import { collectPermissions, ensureAllPermissions } from "@/permissions";
 import { resolveDefinitions } from "@/registry/internal";
-import { containsPermissions } from "@/background/messenger/api";
+import {
+  containsPermissions,
+  services as locator,
+} from "@/background/messenger/api";
 import { useCallback } from "react";
 import { getErrorMessage } from "@/errors";
 import { reportEvent } from "@/telemetry/events";

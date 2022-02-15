@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,16 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
+import React from "react";
 import Page from "@/layout/Page";
 import { faCogs } from "@fortawesome/free-solid-svg-icons";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import PrivacySettings from "@/options/pages/settings/PrivacySettings";
 import LoggingSettings from "@/options/pages/settings/LoggingSettings";
 import PermissionsSettings from "@/options/pages/settings/PermissionsSettings";
 import FactoryResetSettings from "@/options/pages/settings/FactoryResetSettings";
 import AdvancedSettings from "@/options/pages/settings/AdvancedSettings";
 import { Col, Row } from "react-bootstrap";
+import ExperimentalSettings from "@/options/pages/settings/ExperimentalSettings";
+import useFlags from "@/hooks/useFlags";
+
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
 
 const Section: React.FunctionComponent = ({ children }) => (
   <Row className="mb-4">
@@ -35,7 +40,11 @@ const Section: React.FunctionComponent = ({ children }) => (
 );
 
 const SettingsPage: React.FunctionComponent = () => {
-  const { organization, flags } = useContext(AuthContext);
+  const {
+    data: { organization },
+  } = useGetAuthQuery();
+
+  const { flagOn, permit } = useFlags();
 
   return (
     <Page
@@ -51,7 +60,7 @@ const SettingsPage: React.FunctionComponent = () => {
         </p>
       }
     >
-      {organization == null && (
+      {(organization == null || DEBUG) && (
         <Section>
           <PrivacySettings />
         </Section>
@@ -61,13 +70,19 @@ const SettingsPage: React.FunctionComponent = () => {
         <LoggingSettings />
       </Section>
 
-      {!flags.includes("restricted-permissions") && (
+      {flagOn("settings-experimental") && (
+        <Section>
+          <ExperimentalSettings />
+        </Section>
+      )}
+
+      {permit("permissions") && (
         <Section>
           <PermissionsSettings />
         </Section>
       )}
 
-      {!flags.includes("restricted-reset") && (
+      {permit("reset") && (
         <Section>
           <FactoryResetSettings />
         </Section>

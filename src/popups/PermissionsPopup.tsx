@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,9 +21,9 @@ import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { Button } from "react-bootstrap";
 import Centered from "@/devTools/editor/components/Centered";
-import { reportError } from "@/telemetry/logging";
-import browser, { Permissions } from "webextension-polyfill";
 import { getErrorMessage } from "@/errors";
+import reportError from "@/telemetry/reportError";
+import browser, { Permissions } from "webextension-polyfill";
 import { selectOptionalPermissions } from "@/utils/permissions";
 
 const PermissionsPopup: React.FC = () => {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,8 +21,8 @@ import { Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import GridLoader from "react-spinners/GridLoader";
-import { clearLogs } from "@/background/logging";
+import Loader from "@/components/Loader";
+import { clearLogs } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
 
@@ -79,7 +79,7 @@ const LoggingSettings: React.FunctionComponent = () => {
             </Form.Group>
           </Form>
         ) : (
-          <GridLoader />
+          <Loader />
         )}
       </Card.Body>
       <Card.Footer>

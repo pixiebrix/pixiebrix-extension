@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,12 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { anonAuth } from "@/hooks/auth";
+import { useGetAuthQuery } from "@/services/api";
 import { recipeMetadataFactory } from "@/tests/factories";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import RecipeConfigurationModal from "./RecipeConfigurationModal";
 
+jest.mock("@/services/api", () => ({
+  useGetAuthQuery: jest.fn(() => ({ data: anonAuth })),
+}));
+
 test("renders Save as New Blueprint button and editable ID field for a new recipe", () => {
+  (useGetAuthQuery as jest.Mock).mockReturnValue({
+    data: {
+      ...anonAuth,
+      scope: "@test",
+    },
+  });
   render(
     <RecipeConfigurationModal
       initialValues={recipeMetadataFactory()}

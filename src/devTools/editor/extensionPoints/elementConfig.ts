@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,18 +27,14 @@ import {
   UUID,
 } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { DynamicDefinition } from "@/nativeEditor/dynamic";
+import {
+  ExtensionPointConfig,
+  ExtensionPointType,
+} from "@/extensionPoints/types";
 import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import { Target } from "@/types";
-
-export type ElementType =
-  | "menuItem"
-  | "trigger"
-  | "panel"
-  | "contextMenu"
-  | "actionPanel"
-  | "quickBar";
+import { OptionsDefinition } from "@/types/definitions";
+import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
@@ -79,7 +75,7 @@ export interface BaseFormState<
   /**
    * The type of the extensionPoint
    */
-  readonly type: ElementType;
+  readonly type: ExtensionPointType;
 
   /**
    * True if the extensionPoint exists in in the registry
@@ -118,6 +114,13 @@ export interface BaseFormState<
    * @see IExtension._recipe
    */
   recipe: RecipeMetadata | undefined;
+
+  /**
+   * Information about the recipe (i.e., blueprint) options,
+   * or `undefined` if the extension is not part of a recipe.
+   * @see RecipeDefinition.options
+   */
+  optionsDefinition?: OptionsDefinition;
 }
 
 /**
@@ -130,7 +133,7 @@ export interface ElementConfig<
   /**
    * The internal element type, e.g., menuItem, contextMenu, etc.
    */
-  readonly elementType: ElementType;
+  readonly elementType: ExtensionPointType;
 
   /**
    * The ExtensionPointConfig class corresponding to the extension point
@@ -173,7 +176,10 @@ export interface ElementConfig<
    * `undefined` for elements that aren't placed natively in the host page (e.g., context menus)
    * @param target the tab on which to run the function
    */
-  readonly selectNativeElement?: (target: Target) => Promise<TResult>;
+  readonly selectNativeElement?: (
+    target: Target,
+    useNewFilter?: boolean
+  ) => Promise<TResult>;
 
   /**
    * Returns the initial page editor form state for a new element (including new foundation)
@@ -229,5 +235,5 @@ export interface ElementConfig<
   /**
    * Help text to show in the generic insertion-mode pane
    */
-  readonly insertModeHelp?: React.ReactNode;
+  readonly InsertModeHelpText?: React.VoidFunctionComponent;
 }

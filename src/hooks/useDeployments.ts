@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,7 @@ import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
 import browser, { Permissions } from "webextension-polyfill";
 import { IExtension, UUID, RegistryId } from "@/core";
-import { getLinkedApiClient } from "@/services/apiClient";
+import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { satisfies } from "semver";
 import { compact } from "lodash";
 import chromeP from "webext-polyfill-kinda";
@@ -44,38 +44,48 @@ async function selectDeploymentPermissions(
   deployments: Deployment[]
 ): Promise<Permissions.Permissions> {
   const blueprints = deployments.map((x) => x.package.config);
-  // Deployments can only use proxied services, so there's no additional permissions to request for the
-  // the serviceAuths.
+  // Deployments can only use proxied services, so there's no additional permissions to request for the serviceAuths.
   const permissions = await Promise.all(
     blueprints.map(async (x) => blueprintPermissions(x))
   );
   return mergePermissions(permissions);
 }
 
+/**
+ * Fetch deployments, or return empty array if the extension is not linked to the PixieBrix API.
+ * @param installedExtensions
+ */
 async function fetchDeployments(
   installedExtensions: IExtension[]
 ): Promise<Deployment[]> {
-  const { data: deployments } = await (await getLinkedApiClient()).post<
-    Deployment[]
-  >("/api/deployments/", {
-    uid: await getUID(),
-    version: await getExtensionVersion(),
-    active: selectInstalledDeployments(installedExtensions),
-  });
+  const client = await maybeGetLinkedApiClient();
+
+  if (!client) {
+    return [];
+  }
+
+  const { data: deployments } = await client.post<Deployment[]>(
+    "/api/deployments/",
+    {
+      uid: await getUID(),
+      version: await getExtensionVersion(),
+      active: selectInstalledDeployments(installedExtensions),
+    }
+  );
+
   return deployments;
 }
 
-const makeUpdatedFilter = (installed: IExtension[]) => (
-  deployment: Deployment
-) => {
-  const match = installed.find(
-    (extension) => extension._deployment?.id === deployment.id
-  );
-  return (
-    !match ||
-    new Date(match._deployment.timestamp) < new Date(deployment.updated_at)
-  );
-};
+const makeUpdatedFilter =
+  (installed: IExtension[]) => (deployment: Deployment) => {
+    const match = installed.find(
+      (extension) => extension._deployment?.id === deployment.id
+    );
+    return (
+      !match ||
+      new Date(match._deployment.timestamp) < new Date(deployment.updated_at)
+    );
+  };
 
 function activateDeployments(
   dispatch: Dispatch,
@@ -115,7 +125,7 @@ function activateDeployments(
   }
 }
 
-type DeploymentState = {
+export type DeploymentState = {
   /**
    * `true` iff one or more new deployments/deployment updates are available
    */
@@ -130,6 +140,11 @@ type DeploymentState = {
    * `true` iff the user needs to update their PixieBrix browser extension version to use the deployment
    */
   extensionUpdateRequired: boolean;
+
+  /**
+   * Callback to update the extension. Reloads the extension.
+   */
+  updateExtension: () => Promise<void>;
 
   /**
    * `true` when fetching the available deployments
@@ -186,7 +201,7 @@ function useDeployments(): DeploymentState {
   }, [installedExtensions, deployments]);
 
   const handleUpdate = useCallback(async () => {
-    if (!deployments) {
+    if (deployments == null) {
       notify.error("Deployments have not been fetched");
       return;
     }
@@ -244,9 +259,15 @@ function useDeployments(): DeploymentState {
     }
   }, [deployments, dispatch, notify, installedExtensions]);
 
+  const updateExtension = useCallback(async () => {
+    await chromeP.runtime.requestUpdateCheck();
+    browser.runtime.reload();
+  }, []);
+
   return {
     hasUpdate: updatedDeployments?.length > 0,
     update: handleUpdate,
+    updateExtension,
     extensionUpdateRequired,
     isLoading,
     error: fetchError,

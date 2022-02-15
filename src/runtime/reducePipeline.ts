@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -279,7 +279,7 @@ async function renderBlockArg(
         `Passed root to reader ${config.id} (window=${config.window ?? "self"})`
       );
 
-      return ({ root: state.root } as unknown) as RenderedArgs;
+      return { root: state.root } as unknown as RenderedArgs;
     }
 
     // TODO: allow non-document roots in other tabs
@@ -384,7 +384,7 @@ export async function runBlock(
 
   try {
     // Inputs validated in throwIfInvalidInput
-    const validatedProps = (props as unknown) as BlockProps<BlockArg>;
+    const validatedProps = props as unknown as BlockProps<BlockArg>;
     return await execute(resolvedConfig, validatedProps, options);
   } finally {
     if (stage.notifyProgress) {
@@ -586,12 +586,12 @@ export async function reducePipeline(
 
   const { explicitDataFlow, logger: pipelineLogger } = options;
 
-  let context: BlockArgContext = ({
+  let context: BlockArgContext = {
     // Put serviceContext first so they can't override the input/options
     ...serviceContext,
     "@input": input,
     "@options": optionsArgs ?? {},
-  } as unknown) as BlockArgContext;
+  } as unknown as BlockArgContext;
 
   // When using explicit data flow, the first block (and other blocks) use `@input` in the context to get the inputs
   let output: unknown = explicitDataFlow ? {} : input;

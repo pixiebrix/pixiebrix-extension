@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,8 @@ export const SERVICE_FIELD_REFS = [
 export const SERVICE_BASE_SCHEMA =
   "https://app.pixiebrix.com/schemas/services/";
 
-const SERVICE_ID_REGEX = /^https:\/\/app\.pixiebrix\.com\/schemas\/services\/(?<id>\S+)$/;
+const SERVICE_ID_REGEX =
+  /^https:\/\/app\.pixiebrix\.com\/schemas\/services\/(?<id>\S+)$/;
 
 /**
  * Return the registry ids of services supported by a JSON Schema field definition

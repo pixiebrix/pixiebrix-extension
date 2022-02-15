@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,9 @@
  */
 
 import browser from "webextension-polyfill";
+
+// Init rollbar early so we get error reporting on the other initialization
+import "@/telemetry/reportUncaughtErrors";
 
 // https://webpack.js.org/guides/public-path/#on-the-fly
 __webpack_public_path__ = browser.runtime.getURL("/");

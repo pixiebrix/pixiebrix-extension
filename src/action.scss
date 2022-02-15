@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,49 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#container {
-  height: 100vh;
-}
-
-.tab-content {
-  border: none;
-}
-
-.action-sidebar-loader {
-  width: 100%;
-  margin-top: 60px;
-  display: flex;
-  justify-content: center;
-}
-
-.action-panel-button {
-  color: #6562aa;
-
-  &:hover {
-    color: #4d4b8b;
-    background-color: #d1c2d7;
-  }
-}
-
-.center-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.full-height {
-  display: flex;
-  flex-direction: column;
-  & > :last-child {
-    flex-grow: 1;
-  }
-
-  .scrollable-area {
-    height: 0;
-    overflow-y: auto;
-  }
-}
-
 .tab-content > .active.full-height {
-  display: flex; /* Overrides Bootstrap’s "block"*/
+  display: flex; /* Overrides Tab.Content’ "block" when active */
 }

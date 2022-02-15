@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,9 +31,8 @@ const ServiceSelector: React.FunctionComponent<{
   onSelect: (service: ServiceDefinition) => void;
   placeholder?: string;
 }> = ({ onSelect, placeholder = "Configure a new service" }) => {
-  const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
-    "/api/services/"
-  );
+  const { data: serviceConfigs } =
+    useFetch<ServiceDefinition[]>("/api/services/");
   const serviceOptions = useMemo(
     () =>
       (serviceConfigs ?? [])

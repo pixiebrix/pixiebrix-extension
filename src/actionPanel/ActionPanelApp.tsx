@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,12 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ActionPanelApp.module.scss";
+
 import React, { Dispatch, useEffect, useMemo, useReducer } from "react";
 import { Button } from "react-bootstrap";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
-import { getStore } from "@/actionPanel/native";
+// eslint-disable-next-line import/no-restricted-paths -- TODO: This should be called in the content script, but it currently has to be sync
+import { getActionPanelStore } from "@/contentScript/actionPanel";
 import {
   addListener,
   removeListener,
@@ -28,11 +31,12 @@ import {
 } from "@/actionPanel/protocol";
 import DefaultActionPanel from "@/actionPanel/DefaultActionPanel";
 import { ToastProvider } from "react-toast-notifications";
+// eslint-disable-next-line import/no-restricted-paths -- TODO: move out of @/options or use Messenger
 import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { PersistGate } from "redux-persist/integration/react";
-import { PanelEntry, FormEntry } from "@/actionPanel/actionPanelTypes";
+import { PanelEntry, FormEntry } from "@/actionPanel/types";
 import ActionPanelTabs from "@/actionPanel/ActionPanelTabs";
 import slice, { blankActionPanelState } from "./actionPanelSlice";
 import { AnyAction } from "redux";
@@ -56,7 +60,7 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
 const ActionPanelApp: React.FunctionComponent = () => {
   const [state, dispatch] = useReducer(slice.reducer, {
     ...blankActionPanelState,
-    ...getStore(),
+    ...getActionPanelStore(),
   });
 
   const listener: StoreListener = useMemo(
@@ -76,15 +80,15 @@ const ActionPanelApp: React.FunctionComponent = () => {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={<GridLoader />} persistor={persistor}>
+      <PersistGate loading={<Loader />} persistor={persistor}>
         <ToastProvider>
           <div className="full-height">
             <div className="d-flex p-2 justify-content-between align-content-center">
               <Button
-                className="action-panel-button"
+                className={styles.button}
                 onClick={async () => {
                   const sidebar = await whoAmI();
-                  await hideActionPanel({ tabId: sidebar.tab.id! });
+                  await hideActionPanel({ tabId: sidebar.tab.id });
                 }}
                 size="sm"
                 variant="link"
@@ -104,7 +108,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 target="_blank"
                 size="sm"
                 variant="link"
-                className="action-panel-button d-inline-flex align-items-center text-decoration-none"
+                className={styles.button}
               >
                 <span>
                   Options <FontAwesomeIcon icon={faCog} />

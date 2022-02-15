@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
-import AuthContext from "@/auth/AuthContext";
+import React from "react";
 import { useFormikContext } from "formik";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { UUID } from "@/core";
@@ -26,16 +25,17 @@ import { Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import styles from "./DataPanel.module.scss";
+import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
 import ExtensionPointPreview from "@/devTools/editor/tabs/effect/ExtensionPointPreview";
 import useDataPanelActiveTabKey from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useDataPanelTabSearchQuery from "@/devTools/editor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
+import useFlags from "@/hooks/useFlags";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
 }> = ({ firstBlockInstanceId }) => {
-  const { flags } = useContext(AuthContext);
-  const showDeveloperTabs = flags.includes("page-editor-developer");
+  const { flagOn } = useFlags();
+  const showDeveloperTabs = flagOn("page-editor-developer");
 
   const { values: formState } = useFormikContext<FormState>();
 
@@ -55,31 +55,31 @@ const FoundationDataPanel: React.FC<{
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <Nav variant="tabs">
-        <Nav.Item className={styles.tabNav}>
+        <Nav.Item className={dataPanelStyles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
         </Nav.Item>
         {showDeveloperTabs && (
           <>
-            <Nav.Item className={styles.tabNav}>
+            <Nav.Item className={dataPanelStyles.tabNav}>
               <Nav.Link eventKey="formik">Formik</Nav.Link>
             </Nav.Item>
-            <Nav.Item className={styles.tabNav}>
+            <Nav.Item className={dataPanelStyles.tabNav}>
               <Nav.Link eventKey="blockConfig">Raw Foundation</Nav.Link>
             </Nav.Item>
           </>
         )}
-        <Nav.Item className={styles.tabNav}>
+        <Nav.Item className={dataPanelStyles.tabNav}>
           <Nav.Link eventKey="rendered">Rendered</Nav.Link>
         </Nav.Item>
-        <Nav.Item className={styles.tabNav}>
+        <Nav.Item className={dataPanelStyles.tabNav}>
           <Nav.Link eventKey="output">Output</Nav.Link>
         </Nav.Item>
-        <Nav.Item className={styles.tabNav}>
+        <Nav.Item className={dataPanelStyles.tabNav}>
           <Nav.Link eventKey="preview">Preview</Nav.Link>
         </Nav.Item>
       </Nav>
       <Tab.Content>
-        <Tab.Pane eventKey="context" className={styles.tabPane}>
+        <Tab.Pane eventKey="context" className={dataPanelStyles.tabPane}>
           <div className="text-muted">
             A foundation is the first step in the execution flow, they do not
             receive inputs
@@ -87,7 +87,7 @@ const FoundationDataPanel: React.FC<{
         </Tab.Pane>
         {showDeveloperTabs && (
           <>
-            <Tab.Pane eventKey="formik" className={styles.tabPane}>
+            <Tab.Pane eventKey="formik" className={dataPanelStyles.tabPane}>
               <div className="text-info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
@@ -99,7 +99,10 @@ const FoundationDataPanel: React.FC<{
                 onSearchQueryChanged={setFormikQuery}
               />
             </Tab.Pane>
-            <Tab.Pane eventKey="blockConfig" className={styles.tabPane}>
+            <Tab.Pane
+              eventKey="blockConfig"
+              className={dataPanelStyles.tabPane}
+            >
               <div className="text-info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
                 to developers
@@ -108,13 +111,13 @@ const FoundationDataPanel: React.FC<{
             </Tab.Pane>
           </>
         )}
-        <Tab.Pane eventKey="rendered" className={styles.tabPane}>
+        <Tab.Pane eventKey="rendered" className={dataPanelStyles.tabPane}>
           <div className="text-muted">
             A foundation is the first step in the execution flow, they do not
             receive inputs
           </div>
         </Tab.Pane>
-        <Tab.Pane eventKey="output" className={styles.tabPane}>
+        <Tab.Pane eventKey="output" className={dataPanelStyles.tabPane}>
           {firstBlockTraceRecord ? (
             <JsonTree
               data={firstBlockTraceRecord.templateContext}
@@ -134,7 +137,7 @@ const FoundationDataPanel: React.FC<{
             </div>
           )}
         </Tab.Pane>
-        <Tab.Pane eventKey="preview" className={styles.tabPane}>
+        <Tab.Pane eventKey="preview" className={dataPanelStyles.tabPane}>
           <ExtensionPointPreview element={formState} />
         </Tab.Pane>
       </Tab.Content>

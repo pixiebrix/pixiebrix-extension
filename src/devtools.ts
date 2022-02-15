@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (chrome.devtools.inspectedWindow.tabId) {
+const { tabId } = chrome.devtools.inspectedWindow;
+if (typeof tabId === "number") {
   chrome.devtools.panels.create(
     "PixieBrix",
     "",
-    `devtoolsPanel.html?tabId=${chrome.devtools.inspectedWindow.tabId}`
+    `devtoolsPanel.html?tabId=${tabId}`
   );
 }

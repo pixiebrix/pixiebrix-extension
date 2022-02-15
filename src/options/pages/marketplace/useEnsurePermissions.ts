@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,10 +20,9 @@ import { ServiceAuthPair } from "@/core";
 import useNotifications from "@/hooks/useNotifications";
 import { useFormikContext } from "formik";
 import { useAsyncState } from "@/hooks/common";
-import { locator } from "@/background/locator";
 import { collectPermissions, ensureAllPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
-import { containsPermissions } from "@/background/messenger/api";
+import { containsPermissions, services } from "@/background/messenger/api";
 import { useCallback } from "react";
 import { getErrorMessage } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
@@ -37,7 +36,7 @@ function useEnsurePermissions(
   const { submitForm } = useFormikContext();
 
   const [permissionState, isPending, error] = useAsyncState(async () => {
-    await locator.refreshLocal();
+    await services.refreshLocal();
     const permissions = await collectPermissions(
       await resolveRecipe(blueprint, selected),
       serviceAuths

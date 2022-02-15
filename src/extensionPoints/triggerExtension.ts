@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,8 @@ import {
   ReaderOutput,
   ReaderRoot,
   Schema,
+  Metadata,
+  Logger,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -33,16 +35,13 @@ import {
 import { Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, noop } from "lodash";
 import { checkAvailable } from "@/blocks/available";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import {
-  isNativeCssSelector,
   awaitElementOnce,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import { notifyError } from "@/contentScript/notify";
-// @ts-expect-error using jquery for the JQuery.EventHandler type below
-import JQuery from "jquery";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
@@ -52,6 +51,7 @@ import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { PromiseCancelled, sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -78,27 +78,44 @@ export type Trigger =
   | "interval"
   // `appear` is triggered when an element enters the user's viewport
   | "appear"
-  | "click"
+  // `initialize` is triggered when an element is added to the DOM
+  | "initialize"
   | "blur"
+  | "click"
   | "dblclick"
   | "mouseover"
   | "change";
 
-async function interval(
-  intervalMillis: number,
-  effectGenerator: () => Promise<void>,
-  signal: AbortSignal
-) {
+type IntervalArgs = {
+  intervalMillis: number;
+
+  effectGenerator: () => Promise<void>;
+
+  signal: AbortSignal;
+
+  /**
+   * Request an animation frame so that animation effects (e.g., confetti) don't pile up while the user is not
+   * using the tab/frame running the interval.
+   */
+  requestAnimationFrame: boolean;
+};
+
+async function interval({
+  intervalMillis,
+  effectGenerator,
+  signal,
+  requestAnimationFrame,
+}: IntervalArgs) {
   while (!signal.aborted) {
     const start = Date.now();
 
     try {
-      // Request an animation frame so that animation effects (e.g., confetti) don't pile up while the user is not
-      // using the tab/frame running the interval.
-      // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
-      await new Promise((resolve) => {
-        window.requestAnimationFrame(resolve);
-      });
+      if (requestAnimationFrame) {
+        // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
+        await new Promise((resolve) => {
+          window.requestAnimationFrame(resolve);
+        });
+      }
 
       // eslint-disable-next-line no-await-in-loop -- intentionally running in sequence
       await effectGenerator();
@@ -125,27 +142,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   abstract get intervalMillis(): number;
 
+  abstract get allowBackground(): boolean;
+
   abstract get targetMode(): TargetMode;
 
   abstract get triggerSelector(): string | null;
-
-  /**
-   * Cancel awaiting the element during this.run()
-   * @private
-   */
-  private cancelInitialWaitElements: (() => void) | null;
-
-  /**
-   * Cancel the initialization observer in "watch" attachMode.
-   * @private
-   */
-  private cancelWatchNewElements: (() => void) | null;
-
-  /**
-   * Observer to watch for new elements to appear, or undefined if the trigger is not an `appear` trigger
-   * @private
-   */
-  private appearObserver: IntersectionObserver | undefined;
 
   /**
    * Installed DOM event listeners, e.g., `click`
@@ -162,27 +163,36 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   private readonly boundEventHandler: JQuery.EventHandler<unknown>;
 
   /**
-   * Controller to abort/cancel the currently running interval loop
+   * Controller to drop all listeners and timers
    * @private
    */
-  private intervalController: AbortController | null;
+  private abortController = new AbortController();
 
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon = "faBolt"
-  ) {
-    super(id, name, description, icon);
-    this.cancelInitialWaitElements = null;
-    this.cancelWatchNewElements = null;
+  protected constructor(metadata: Metadata, logger: Logger) {
+    super(metadata, logger);
 
     // Bind so we can pass as callback
     this.boundEventHandler = this.eventHandler.bind(this);
   }
 
+  public get kind(): "trigger" {
+    return "trigger";
+  }
+
   async install(): Promise<boolean> {
     return this.isAvailable();
+  }
+
+  cancelObservers(): void {
+    // Inform registered listeners
+    this.abortController.abort();
+
+    // Allow new registrations
+    this.abortController = new AbortController();
+  }
+
+  addCancelHandler(callback: () => void): void {
+    this.abortController.signal.addEventListener("abort", callback);
   }
 
   removeExtensions(): void {
@@ -192,25 +202,23 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     console.debug("triggerExtension:removeExtensions");
   }
 
-  uninstall(): void {
-    console.debug("triggerExtension:uninstall");
+  override uninstall(): void {
+    console.debug("triggerExtension:uninstall", {
+      id: this.id,
+    });
 
     // Clean up observers
-    this.cancelInitialWaitElements?.();
-    this.cancelWatchNewElements?.();
-    this.appearObserver?.disconnect();
-    this.appearObserver = null;
-    this.cancelInitialWaitElements = null;
-    this.cancelWatchNewElements = null;
-
-    this.clearInterval();
+    this.cancelObservers();
 
     // Find the latest set of DOM elements and uninstall handlers
     if (this.triggerSelector) {
+      // NOTE: you might think we could use a WeakSet of HTMLElement to track which elements we've actually attached
+      // DOM events too. However, we can't because WeakSet is not an enumerable collection
+      // https://esdiscuss.org/topic/removal-of-weakmap-weakset-clear
       const $currentElements = $safeFind(this.triggerSelector);
 
       console.debug(
-        "Removing %s handler from %d elements",
+        "Removing %s handler from %d element(s)",
         this.trigger,
         $currentElements.length
       );
@@ -334,7 +342,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       ? awaitElementOnce(rootSelector)
       : [document, noop];
 
-    this.cancelInitialWaitElements = cancelRun;
+    this.addCancelHandler(cancelRun);
 
     try {
       await rootPromise;
@@ -344,8 +352,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       }
 
       throw error;
-    } finally {
-      this.cancelInitialWaitElements = null;
     }
 
     // AwaitElementOnce doesn't work with multiple elements. Get everything that's on the current page
@@ -358,20 +364,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     return $root;
   }
 
-  private clearInterval() {
-    console.debug("triggerExtension:clearInterval");
-    this.intervalController?.abort();
-    this.intervalController = null;
-  }
-
   private attachInterval() {
-    this.clearInterval();
+    this.cancelObservers();
 
     if (this.intervalMillis > 0) {
       this.logger.debug("Attaching interval trigger");
-
-      // Cast setInterval return value to number. For some reason Typescript is using the Node types for setInterval
-      const controller = new AbortController();
 
       const intervalEffect = async () => {
         const $root = await this.getRoot();
@@ -380,9 +377,12 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         );
       };
 
-      void interval(this.intervalMillis, intervalEffect, controller.signal);
-
-      this.intervalController = controller;
+      void interval({
+        intervalMillis: this.intervalMillis,
+        effectGenerator: intervalEffect,
+        signal: this.abortController.signal,
+        requestAnimationFrame: !this.allowBackground,
+      });
 
       console.debug("triggerExtension:attachInterval", {
         intervalMillis: this.intervalMillis,
@@ -394,12 +394,46 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     }
   }
 
+  private attachInitializeTrigger(
+    $element: JQuery<Document | HTMLElement>
+  ): void {
+    this.cancelObservers();
+
+    // The caller will have already waited for the element. So $element will contain at least one element
+    if (this.attachMode === "once") {
+      for (const element of $element.get()) {
+        void this.runTrigger(element);
+      }
+
+      return;
+    }
+
+    const observer = initialize(
+      this.triggerSelector,
+      (index, element) => {
+        void this.runTrigger(element as HTMLElement).then((errors) => {
+          if (errors.length > 0) {
+            console.error("An error occurred while running a trigger", {
+              errors,
+            });
+            notifyError("An error occurred while running a trigger");
+          }
+        });
+      },
+      // `target` is a required option
+      { target: document }
+    );
+
+    this.addCancelHandler(() => {
+      observer.disconnect();
+    });
+  }
+
   private attachAppearTrigger($element: JQuery): void {
+    this.cancelObservers();
+
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
-
-    this.appearObserver?.disconnect();
-
-    this.appearObserver = new IntersectionObserver(
+    const appearObserver = new IntersectionObserver(
       (entries) => {
         for (const entry of entries.filter((x) => x.isIntersecting)) {
           void this.runTrigger(entry.target as HTMLElement).then((errors) => {
@@ -420,44 +454,47 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
 
     for (const element of $element) {
-      this.appearObserver.observe(element);
+      appearObserver.observe(element);
     }
 
     if (this.attachMode === "watch") {
       const selector = this.triggerSelector;
-
-      if (!isNativeCssSelector(selector)) {
-        throw new Error(
-          `Watch attachMode only supports native browser selectors: ${selector}`
-        );
-      }
 
       console.debug("Watching selector: %s", selector);
       const mutationObserver = initialize(
         selector,
         (index, element) => {
           console.debug("initialize: %s", selector);
-          this.appearObserver.observe(element);
+          appearObserver.observe(element);
         },
+        // `target` is a required option
         { target: document }
       );
-
-      this.cancelWatchNewElements = mutationObserver.disconnect.bind(
-        mutationObserver
-      );
+      this.addCancelHandler(() => {
+        mutationObserver.disconnect();
+      });
     }
+
+    this.addCancelHandler(() => {
+      appearObserver.disconnect();
+    });
   }
 
   private attachDOMTrigger(
     $element: JQuery,
     { watch = false }: { watch?: boolean }
   ): void {
+    // Avoid duplicate events caused by:
+    // 1) Navigation events on SPAs where the element remains on the page
+    // 2) `watch` mode, because the observer will fire the existing elements on the page. (That re-fire will have
+    //  watch: false, see observer handler below.)
     console.debug(
       "Removing existing %s handler for extension point",
       this.trigger
     );
     $element.off(this.trigger, this.boundEventHandler);
 
+    // Install the DOM trigger
     $element.on(this.trigger, this.boundEventHandler);
     this.installedEvents.add(this.trigger);
     console.debug(
@@ -473,26 +510,23 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
 
     if (watch) {
-      if (!isNativeCssSelector(this.triggerSelector)) {
-        throw new Error(
-          `Watch attachMode only supports native browser selectors: ${this.triggerSelector}`
-        );
-      }
+      // Clear out the existing mutation observer on SPA navigation events.
+      // On mutation events, this watch branch is not executed because the mutation handler below passes `watch: false`
+      this.cancelObservers();
 
-      this.cancelWatchNewElements?.();
-      this.cancelWatchNewElements = null;
-
+      // Watch for new elements on the page
       const mutationObserver = initialize(
         this.triggerSelector,
         (index, element) => {
           // Already watching, so don't re-watch on the recursive call
           this.attachDOMTrigger($(element as HTMLElement), { watch: false });
         },
+        // `target` is a required option
         { target: document }
       );
-      this.cancelWatchNewElements = mutationObserver.disconnect.bind(
-        mutationObserver
-      );
+      this.addCancelHandler(() => {
+        mutationObserver.disconnect();
+      });
     }
   }
 
@@ -502,13 +536,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     if ($root.get(0) === document) {
       throw new Error(`Trigger ${this.trigger} requires a selector`);
     }
-  }
-
-  private cancelObservers() {
-    this.cancelInitialWaitElements?.();
-    this.cancelWatchNewElements?.();
-    this.cancelInitialWaitElements = null;
-    this.cancelWatchNewElements = null;
   }
 
   async run(): Promise<void> {
@@ -527,6 +554,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
       case "interval": {
         this.attachInterval();
+        break;
+      }
+
+      case "initialize": {
+        this.attachInitializeTrigger($root);
         break;
       }
 
@@ -568,6 +600,12 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
   attachMode?: AttachMode;
 
   /**
+   * Allow triggers to run in the background, even when the tab is not active. Currently, only checked for intervals.
+   * @since 1.5.3
+   */
+  background: boolean;
+
+  /**
    * @since 1.4.8
    */
   targetMode?: TargetMode;
@@ -590,15 +628,14 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
 
   public readonly rawConfig: ExtensionPointConfig<TriggerDefinition>;
 
-  public get defaultOptions(): Record<string, string> {
+  public override get defaultOptions(): Record<string, string> {
     return this._definition.defaultOptions ?? {};
   }
 
   constructor(config: ExtensionPointConfig<TriggerDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description, icon } = cloned.metadata;
-    super(id, name, description, icon);
+    super(cloned.metadata, new BackgroundLogger());
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;
@@ -628,7 +665,11 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
     return this._definition.rootSelector;
   }
 
-  async defaultReader() {
+  get allowBackground(): boolean {
+    return this._definition.background ?? false;
+  }
+
+  override async defaultReader() {
     return mergeReaders(this._definition.reader);
   }
 

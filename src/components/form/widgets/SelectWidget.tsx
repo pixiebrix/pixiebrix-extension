@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -41,18 +41,17 @@ export type SelectWidgetOnChange<
 > = React.ChangeEventHandler<SelectLike<TOption>>;
 
 // Type of the SelectWidget props
-type SelectWidgetProps<
-  TOption extends Option<TOption["value"]>
-> = CustomFieldWidgetProps<TOption["value"], SelectLike<TOption>> & {
-  isClearable?: boolean;
-  options: TOption[];
-  isLoading?: boolean;
-  loadError?: unknown;
-  loadingMessage?: string;
-  error?: unknown;
-  disabled?: boolean;
-  components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
-};
+type SelectWidgetProps<TOption extends Option<TOption["value"]>> =
+  CustomFieldWidgetProps<TOption["value"], SelectLike<TOption>> & {
+    isClearable?: boolean;
+    options: TOption[];
+    isLoading?: boolean;
+    loadError?: unknown;
+    loadingMessage?: string;
+    error?: unknown;
+    disabled?: boolean;
+    components?: SelectComponentsConfig<TOption, boolean, GroupBase<TOption>>;
+  };
 
 const SelectWidget = <TOption extends Option<TOption["value"]>>({
   id,

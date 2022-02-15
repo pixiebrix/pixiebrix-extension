@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,30 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
-import AuthContext from "@/auth/AuthContext";
 import { useToasts } from "react-toast-notifications";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
-import { reportError } from "@/telemetry/logging";
-import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { getErrorMessage } from "@/errors";
+import reportError from "@/telemetry/reportError";
+import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
+import { SettingsState } from "@/store/settingsTypes";
+import useFlags from "@/hooks/useFlags";
 
 type AddElement = (config: ElementConfig) => void;
 
 function useAddElement(): AddElement {
   const dispatch = useDispatch();
   const { tabState } = useContext(DevToolsContext);
-  const { scope, flags = [] } = useContext(AuthContext);
+  const { flagOff } = useFlags();
   const { addToast } = useToasts();
+  const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
+    (x) => x.settings.suggestElements
+  );
 
   return useCallback(
     async (config: ElementConfig) => {
-      if (config.flag && !flags.includes(config.flag)) {
+      if (config.flag && flagOff(config.flag)) {
         dispatch(
           actions.betaError({ error: "This feature is in private beta" })
         );
@@ -53,7 +57,10 @@ function useAddElement(): AddElement {
       }
 
       try {
-        const element = await config.selectNativeElement(thisTab);
+        const element = await config.selectNativeElement(
+          thisTab,
+          suggestElements
+        );
         const url = await getCurrentURL();
 
         const metadata = internalExtensionPointMetaFactory();
@@ -90,7 +97,7 @@ function useAddElement(): AddElement {
         dispatch(actions.toggleInsert(null));
       }
     },
-    [dispatch, tabState.meta?.frameworks, scope, addToast, flags]
+    [dispatch, tabState.meta?.frameworks, addToast, flagOff, suggestElements]
   );
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,8 +23,8 @@ import getSvgIcon from "@/icons/getSvgIcon";
 import cx from "classnames";
 
 const Icon: React.FunctionComponent<{
-  icon: string;
-  library: IconLibrary;
+  icon?: string;
+  library?: IconLibrary;
   size?: number;
   className?: string;
 }> = ({ icon, library, size = 16, className }) => {

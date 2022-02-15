@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo } from "react";
+import styles from "./ActiveBricksCard.module.scss";
+
+import React, { useMemo } from "react";
 import {
   MessageContext,
   RecipeMetadata,
@@ -29,13 +31,16 @@ import ExtensionGroup from "./ExtensionGroup";
 import ExtensionGroupHeader from "./ExtensionGroupHeader";
 import { groupBy } from "lodash";
 import ExtensionRows from "./ExtensionRows";
-import { isDeploymentActive } from "@/options/deploymentUtils";
-import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
-import AuthContext from "@/auth/AuthContext";
+import { isDeploymentActive } from "@/utils/deployment";
+import {
+  useGetOrganizationsQuery,
+  useGetRecipesQuery,
+  useGetAuthQuery,
+} from "@/services/api";
 import { RecipeDefinition } from "@/types/definitions";
-import { push } from "connected-react-router";
 import * as semver from "semver";
 import { useDispatch } from "react-redux";
+import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 
 const groupByRecipe = (
   extensions: ResolvedExtension[]
@@ -45,7 +50,7 @@ const groupByRecipe = (
 const groupByOrganizationId = (
   extensions: ResolvedExtension[]
 ): Array<[UUID, ResolvedExtension[]]> =>
-  (Object.entries(
+  Object.entries(
     groupBy(
       extensions,
       // For the uncommon scenario that a user would be a part of two or more organizations
@@ -53,7 +58,7 @@ const groupByOrganizationId = (
       (extension) => extension._recipe.sharing.organizations[0]
     )
     // Could not figure out nominal type for UUID
-  ) as unknown) as Array<[UUID, ResolvedExtension[]]>;
+  ) as unknown as Array<[UUID, ResolvedExtension[]]>;
 
 const isPublic = (extension: ResolvedExtension) =>
   extension._recipe?.sharing?.public;
@@ -158,19 +163,20 @@ const ActiveBricksCard: React.FunctionComponent<{
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
   const dispatch = useDispatch();
   const { data: organizations = [] } = useGetOrganizationsQuery();
-  const { scope } = useContext(AuthContext);
   const {
-    data: availableRecipes = [] as RecipeDefinition[],
-  } = useGetRecipesQuery();
+    data: { scope },
+  } = useGetAuthQuery();
+  const { data: availableRecipes = [] as RecipeDefinition[] } =
+    useGetRecipesQuery();
 
   const getOrganizationName = (organizationId: UUID) =>
     organizations.find((organization) => organization.id === organizationId)
       ?.name;
 
-  const groupedExtensions = useMemo(() => groupExtensions(extensions, scope), [
-    extensions,
-    scope,
-  ]);
+  const groupedExtensions = useMemo(
+    () => groupExtensions(extensions, scope),
+    [extensions, scope]
+  );
 
   const personalExtensions = groupedExtensions.personal.bricks;
 
@@ -196,7 +202,11 @@ const ActiveBricksCard: React.FunctionComponent<{
   const deploymentExtensionGroups = groupByRecipe(groupedExtensions.deployment);
 
   const showShareLinkModal = (blueprintId: RegistryId) => {
-    dispatch(push(`/installed/link/${encodeURIComponent(blueprintId)}`));
+    dispatch(
+      installedPageSlice.actions.setShareContext({
+        blueprintId,
+      })
+    );
   };
 
   // Sharing was added to _recipe recently (see the RecipeMetadata type and optionsSlice)
@@ -206,9 +216,9 @@ const ActiveBricksCard: React.FunctionComponent<{
   return (
     <Row>
       <Col xl={9} lg={10} md={12}>
-        <Card className="ActiveBricksCard">
+        <Card>
           <Card.Header>Active Bricks</Card.Header>
-          <Table>
+          <Table className={styles.table}>
             <tbody>
               {personalExtensions.length > 0 && (
                 <>

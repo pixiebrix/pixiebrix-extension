@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -14,7 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useCallback, useContext, useMemo } from "react";
+
+import styles from "./ShareExtensionModal.module.scss";
+
+import React, { useCallback, useMemo } from "react";
 import {
   Button,
   Modal,
@@ -27,7 +30,7 @@ import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
 import * as Yup from "yup";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery, useGetOrganizationsQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import slugify from "slugify";
 import { getLinkedApiClient } from "@/services/apiClient";
@@ -50,14 +53,13 @@ import Form, {
   RenderSubmit,
 } from "@/components/form/Form";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { useGetOrganizationsQuery } from "@/services/api";
 import { PackageUpsertResponse } from "@/types/contract";
 import extensionsSlice from "@/store/extensionsSlice";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
-import styles from "./ShareExtensionModal.module.scss";
 import { selectExtensions } from "@/store/extensionsSelectors";
+import { RequireScope } from "@/auth/RequireScope";
 
 const { attachExtension } = extensionsSlice.actions;
 
@@ -130,7 +132,9 @@ const ShareExtensionModal: React.FC<{
 
   // If loading the URL directly, there's a race condition if scope will be populated when the modal is mounted.
   // Not a priority to fix because user will, in general, come to the modal via the "Share" button on the main page
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const initialValues: FormState = {
@@ -279,14 +283,16 @@ const ShareExtensionModal: React.FC<{
         <Modal.Title>Share as Blueprint</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form
-          validationSchema={ShareSchema}
-          initialValues={initialValues}
-          onSubmit={handleShare}
-          renderStatus={renderStatus}
-          renderBody={renderBody}
-          renderSubmit={renderSubmit}
-        />
+        <RequireScope scopeSettingsDescription="To share a blueprint, you must first set an account alias for your PixieBrix account">
+          <Form
+            validationSchema={ShareSchema}
+            initialValues={initialValues}
+            onSubmit={handleShare}
+            renderStatus={renderStatus}
+            renderBody={renderBody}
+            renderSubmit={renderSubmit}
+          />
+        </RequireScope>
       </Modal.Body>
     </Modal>
   );

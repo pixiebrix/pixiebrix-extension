@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,17 +24,7 @@ import { createFormikTemplate } from "@/tests/formHelpers";
 import { waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { uniq } from "lodash";
-
-async function expectToggleOptions(container: HTMLElement, expected: string[]) {
-  // React Bootstrap dropdown does not render children items unless toggled
-  userEvent.click(container.querySelector("button"));
-  const actual = new Set(
-    [...container.querySelectorAll("a")].map((x) => x.dataset.testid)
-  );
-  await waitFor(() => {
-    expect(actual).toEqual(new Set(expected));
-  });
-}
+import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 
 interface SchemaTestCase {
   name: string;
@@ -172,9 +162,8 @@ const sampleSchemas: SchemaTestCase[] = [
   },
 ];
 
-const schemaTestCases: ReadonlyArray<
-  [name: string, schema: Schema]
-> = sampleSchemas.map(({ name, schema }) => [name, schema]);
+const schemaTestCases: ReadonlyArray<[name: string, schema: Schema]> =
+  sampleSchemas.map(({ name, schema }) => [name, schema]);
 
 function expressionValue<T extends TemplateEngine>(
   type: T,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import styles from "@/options/pages/services/PrivateServicesCard.module.scss";
 
 import React, { useCallback, useState } from "react";
 import { connect } from "react-redux";
@@ -33,9 +35,9 @@ import useNotifications from "@/hooks/useNotifications";
 import { useParams } from "react-router";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
 import BrickModal from "@/components/brickModal/BrickModal";
-import styles from "@/options/pages/services/PrivateServicesCard.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
+import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -53,14 +55,10 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const notify = useNotifications();
   const { id: configurationId } = useParams<{ id: UUID }>();
 
-  const [
-    newConfigurationService,
-    setNewConfigurationService,
-  ] = useState<IService>(null);
-  const [
-    newConfiguration,
-    setNewConfiguration,
-  ] = useState<RawServiceConfiguration>(null);
+  const [newConfigurationService, setNewConfigurationService] =
+    useState<IService>(null);
+  const [newConfiguration, setNewConfiguration] =
+    useState<RawServiceConfiguration>(null);
 
   const {
     activeConfiguration,
@@ -113,8 +111,19 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     ]
   );
 
+  const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
+
   const handleCreate = useCallback(
-    (service: IService) => {
+    async (service: IService) => {
+      const definition = (serviceDefinitions ?? []).find(
+        (x) => x.id === service.id
+      );
+
+      if (definition.isAuthorizationGrant) {
+        void launchAuthorizationGrantFlow(service, { target: "_self" });
+        return;
+      }
+
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal tying
       const config = {
         id: uuidv4(),
@@ -124,13 +133,12 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       } as RawServiceConfiguration;
 
       setNewConfiguration(config);
-      setNewConfigurationService(
-        (serviceDefinitions ?? []).find((x) => x.id === config.serviceId)
-      );
+      setNewConfigurationService(definition);
       navigate(`/services/${encodeURIComponent(config.id)}`);
     },
     [
       navigate,
+      launchAuthorizationGrantFlow,
       serviceDefinitions,
       setNewConfiguration,
       setNewConfigurationService,

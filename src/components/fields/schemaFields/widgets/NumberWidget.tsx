@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -50,9 +50,8 @@ const NumberWidget: React.FC<
   step,
   ...restProps
 }) => {
-  const [{ value: formValue }, , { setValue: setFormValue }] = useField<number>(
-    name
-  );
+  const [{ value: formValue }, , { setValue: setFormValue }] =
+    useField<number>(name);
   const [value, setValue] = useState<string>(String(formValue));
 
   const inputRef = useRef<HTMLInputElement>();

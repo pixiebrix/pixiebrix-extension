@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,6 +33,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import servicesSlice from "@/store/servicesSlice";
 import useNotifications from "@/hooks/useNotifications";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
+import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -56,12 +57,12 @@ const AuthWidget: React.FunctionComponent<{
   const dispatch = useDispatch();
   const notify = useNotifications();
 
-  const [showModal, setShow] = useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
 
-  const [serviceDefinition, isPending, error] = useAsyncState(
-    async () => (await registry.all()).find((x) => x.id === serviceId),
-    [serviceId]
-  );
+  const [serviceDefinition, isPending, error] = useAsyncState(async () => {
+    const serviceDefinitions = await registry.all();
+    return serviceDefinitions.find((x) => x.id === serviceId);
+  }, [serviceId]);
 
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === serviceId),
@@ -97,17 +98,26 @@ const AuthWidget: React.FunctionComponent<{
 
       helpers.setValue(id);
 
-      setShow(false);
+      setShowServiceModal(false);
     },
-    [helpers, notify, dispatch, setShow, serviceId, onRefresh]
+    [helpers, notify, dispatch, setShowServiceModal, serviceId, onRefresh]
   );
+
+  const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
 
   const CustomMenuList = useMemo(
     () =>
-      createMenuListWithAddButton(() => {
-        setShow(true);
+      createMenuListWithAddButton(async () => {
+        if (serviceDefinition.isAuthorizationGrant) {
+          void launchAuthorizationGrantFlow(serviceDefinition, {
+            target: "_self",
+          });
+          return;
+        }
+
+        setShowServiceModal(true);
       }),
-    [setShow]
+    [setShowServiceModal, launchAuthorizationGrantFlow, serviceDefinition]
   );
 
   const initialConfiguration: RawServiceConfiguration = useMemo(
@@ -123,12 +133,12 @@ const AuthWidget: React.FunctionComponent<{
 
   return (
     <>
-      {showModal && (
+      {showServiceModal && (
         <ServiceEditorModal
           configuration={initialConfiguration}
           service={serviceDefinition}
           onClose={() => {
-            setShow(false);
+            setShowServiceModal(false);
           }}
           onSave={save}
         />
@@ -152,7 +162,14 @@ const AuthWidget: React.FunctionComponent<{
               size="sm"
               style={{ height: "36px", marginTop: "1px" }}
               onClick={() => {
-                setShow(true);
+                if (serviceDefinition.isAuthorizationGrant) {
+                  void launchAuthorizationGrantFlow(serviceDefinition, {
+                    target: "_self",
+                  });
+                  return;
+                }
+
+                setShowServiceModal(true);
               }}
               disabled={isPending || error != null}
             >

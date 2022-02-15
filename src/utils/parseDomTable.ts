@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,8 @@
  */
 
 import { zip, zipObject } from "lodash";
+import objectHash from "object-hash";
+import slugify from "slugify";
 
 interface ParsingOptions {
   orientation?: "vertical" | "horizontal" | "infer";
@@ -50,14 +52,46 @@ function guessDirection(
   return labelRatio < 0.5 ? "horizontal" : "vertical";
 }
 
-// TODO: Normalize rowspan and colspan in here as well
 function flattenTableContent(table: HTMLTableElement): RawTableContent {
-  return [...table.rows].map((row) =>
-    [...row.cells].map((cell) => ({
-      type: cell.tagName === "TH" ? "header" : "value",
-      value: cell.textContent.trim(),
-    }))
-  );
+  // This table will be pre-filled in the adjactent rows and colums when rowspan and colspan are found.
+  // Colspan means that the current cell exist on [X, Y] and [X + 1, Y]
+  // Rowspan means that the current cell exist on [X, Y] and [X, Y + 1]
+  // Having both means that a colspan × rowspan matrix will be pre-filled.
+  // When a pre-filled cell is found, +1 until the first available column and fill the whole matrix there.
+  const flattened: RawTableContent = [];
+  /* eslint-disable security/detect-object-injection -- Native indexes */
+  for (const [rowIndex, row] of [...table.rows].entries()) {
+    for (let [cellIndex, cell] of [...row.cells].entries()) {
+      // Find the first available column. Cells are only pushed right, never down
+      while (flattened[rowIndex]?.[cellIndex]) {
+        cellIndex++;
+      }
+
+      // Explore the behavior of spans at https://codepen.io/fregante/pen/oNoYGYE
+      const { rowSpan, colSpan, tagName, textContent } = cell;
+      for (let rowSpanIndex = 0; rowSpanIndex < rowSpan; rowSpanIndex++) {
+        for (let colSpanIndex = 0; colSpanIndex < colSpan; colSpanIndex++) {
+          const row = rowIndex + rowSpanIndex;
+          const col = cellIndex + colSpanIndex;
+          flattened[row] = flattened[row] ?? [];
+          flattened[row][col] = {
+            type: tagName === "TH" ? "header" : "value",
+            value: textContent.trim(),
+          };
+        }
+      }
+    }
+  }
+
+  // Temporary patch to "support" tables with rowspan/colspan without throwing errors
+  const maxRowlength = Math.max(...flattened.map((row) => row.length));
+  for (const row of flattened) {
+    while (row.length < maxRowlength) {
+      row.push({ type: "value", value: "" });
+    }
+  }
+
+  return flattened;
 }
 
 function extractData(
@@ -95,4 +129,39 @@ export default function parseDomTable(
 
   const records = body.map((row) => zipObject(fieldNames, row));
   return { records, fieldNames };
+}
+
+function getAriaDescription(element: HTMLElement): string | undefined {
+  const describedBy = element.getAttribute("aria-describedby");
+  if (describedBy) {
+    return element.ownerDocument.querySelector("#" + describedBy)?.textContent;
+  }
+}
+
+function getNameFromFields(fields: Array<number | string>): string {
+  return "Table_" + objectHash(fields).slice(0, 5);
+}
+
+export function getAllTables(
+  root: HTMLElement | Document = document
+): Map<string, ParsedTable> {
+  const tables = new Map();
+  for (const table of $<HTMLTableElement>("table", root)) {
+    const parsedTable = parseDomTable(table);
+
+    // Uses || instead of ?? to exclude empty strings
+    const tableName =
+      table.querySelector("caption")?.textContent ||
+      getAriaDescription(table) ||
+      table.getAttribute("aria-label") ||
+      // TODO: Exclude random identifiers #2498
+      table.id ||
+      getNameFromFields(parsedTable.fieldNames);
+    tables.set(
+      slugify(tableName, { replacement: "_", lower: true }),
+      parsedTable
+    );
+  }
+
+  return tables;
 }

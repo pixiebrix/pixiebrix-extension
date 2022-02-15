@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./DocumentEditor.module.scss";
+
 import { useField } from "formik";
 import React from "react";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { getProperty } from "@/utils";
 import { Col, Row } from "react-bootstrap";
-import styles from "./DocumentEditor.module.scss";
 import RemoveElement from "./RemoveElement";
 import MoveElement from "./MoveElement";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";

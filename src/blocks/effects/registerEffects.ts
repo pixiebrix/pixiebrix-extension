@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,8 +37,10 @@ import { TelemetryEffect } from "./telemetry";
 import { ConfettiEffect } from "./confetti";
 import { TourEffect } from "./tour";
 import { AttachAutocomplete } from "./attachAutocomplete";
-import { ReactivateEffect } from "@/blocks/effects/reactivate";
-import { SoundEffect } from "@/blocks/effects/sound";
+import { ReactivateEffect } from "./reactivate";
+import { SoundEffect } from "./sound";
+import { DisableEffect } from "./disable";
+import { EnableEffect } from "./enable";
 
 function registerEffects(): void {
   registerBlock(new LogEffect());
@@ -70,6 +72,8 @@ function registerEffects(): void {
   registerBlock(new AttachAutocomplete());
   registerBlock(new ReactivateEffect());
   registerBlock(new SoundEffect());
+  registerBlock(new EnableEffect());
+  registerBlock(new DisableEffect());
 }
 
 export default registerEffects;

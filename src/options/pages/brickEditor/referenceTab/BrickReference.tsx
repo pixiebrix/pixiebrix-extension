@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./BrickReference.module.scss";
+
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Col,
@@ -27,8 +29,7 @@ import {
 import { IBlock, IService } from "@/core";
 import Fuse from "fuse.js";
 import { sortBy } from "lodash";
-import styles from "./BrickReference.module.scss";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import BrickDetail from "./BrickDetail";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import BlockResult from "./BlockResult";
@@ -139,7 +140,7 @@ const BrickReference: React.FunctionComponent<{
             />
           ) : (
             <div>
-              <GridLoader />
+              <Loader />
             </div>
           )}
         </Col>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,7 @@ import Form, { OnSubmit } from "@/components/form/Form";
 import * as yup from "yup";
 import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { RequireScope } from "@/auth/RequireScope";
 
 export type RecipeConfiguration = {
   id: RegistryId;
@@ -67,42 +68,51 @@ const RecipeConfigurationModal: React.FC<OwnProps> = ({
       </Modal.Title>
     </Modal.Header>
 
-    <Form
-      validationSchema={recipeConfigurationSchema}
-      initialValues={initialValues}
-      onSubmit={save}
-      renderSubmit={({ isSubmitting, isValid }) => (
-        <Modal.Footer>
-          <Button variant="link" onClick={navigateBack}>
-            Back
-          </Button>
-
-          <Button
-            variant="info"
-            onClick={() => {
-              close();
-            }}
-          >
-            Cancel
-          </Button>
-
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={!isValid || isSubmitting}
-          >
-            {isNewRecipe ? SAVE_AS_NEW_BLUEPRINT : UPDATE_BLUEPRINT}
-          </Button>
-        </Modal.Footer>
-      )}
+    <RequireScope
+      require={isNewRecipe}
+      scopeSettingsDescription="To create a new blueprint, you must first set an account alias for your PixieBrix account"
     >
-      <Modal.Body>
-        <ConnectedFieldTemplate name="id" label="ID" disabled={!isNewRecipe} />
-        <ConnectedFieldTemplate name="name" label="Name" />
-        <ConnectedFieldTemplate name="version" label="Version" />
-        <ConnectedFieldTemplate name="description" label="Description" />
-      </Modal.Body>
-    </Form>
+      <Form
+        validationSchema={recipeConfigurationSchema}
+        initialValues={initialValues}
+        onSubmit={save}
+        renderSubmit={({ isSubmitting, isValid }) => (
+          <Modal.Footer>
+            <Button variant="link" onClick={navigateBack}>
+              Back
+            </Button>
+
+            <Button
+              variant="info"
+              onClick={() => {
+                close();
+              }}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={!isValid || isSubmitting}
+            >
+              {isNewRecipe ? SAVE_AS_NEW_BLUEPRINT : UPDATE_BLUEPRINT}
+            </Button>
+          </Modal.Footer>
+        )}
+      >
+        <Modal.Body>
+          <ConnectedFieldTemplate
+            name="id"
+            label="ID"
+            disabled={!isNewRecipe}
+          />
+          <ConnectedFieldTemplate name="name" label="Name" />
+          <ConnectedFieldTemplate name="version" label="Version" />
+          <ConnectedFieldTemplate name="description" label="Description" />
+        </Modal.Body>
+      </Form>
+    </RequireScope>
   </Modal>
 );
 

@@ -4,8 +4,6 @@
 
 "use strict";
 
-import $ from "jquery";
-
 var combinators = [" ", ">", "+", "~"]; // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors#Combinators
 var fraternisers = ["+", "~"]; // These combinators involve siblings.
 var complexTypes = ["ATTR", "PSEUDO", "ID", "CLASS"]; // These selectors are based upon attributes.
@@ -84,8 +82,18 @@ msobservers.initialize = function (selector, callback, options) {
   );
   this.push(msobserver);
 
+  var isMatchinInProgress = false;
   // The MutationObserver watches for when new elements are added to the DOM.
   var observer = new MutationObserver(function (mutations) {
+    // Avoid loop caused by Sizzle changing attributes while querying
+    // https://github.com/pie6k/jquery.initialize/issues/29
+    // https://github.com/jquery/sizzle/blob/20390f05731af380833b5aa805db97de0b91268a/src/sizzle.js#L344
+    if (isMatchinInProgress) {
+      return;
+    }
+
+    isMatchinInProgress = true;
+
     var matches = [];
 
     // For each mutation.
@@ -93,21 +101,19 @@ msobservers.initialize = function (selector, callback, options) {
       // If this is an attributes mutation, then the target is the node upon which the mutation occurred.
       if (mutations[m].type == "attributes") {
         // Check if the mutated node matchs.
-        if (mutations[m].target.matches(msobserver.selector))
+        if ($(mutations[m].target).is(msobserver.selector))
           matches.push(mutations[m].target);
 
         // If the selector is fraternal, query siblings of the mutated node for matches.
         if (msobserver.isFraternal)
           matches.push.apply(
             matches,
-            mutations[m].target.parentElement.querySelectorAll(
-              msobserver.selector
-            )
+            $(mutations[m].target.parentElement).find(msobserver.selector)
           );
         else
           matches.push.apply(
             matches,
-            mutations[m].target.querySelectorAll(msobserver.selector)
+            $(mutations[m].target).find(msobserver.selector)
           );
       }
 
@@ -118,21 +124,21 @@ msobservers.initialize = function (selector, callback, options) {
           if (!(mutations[m].addedNodes[n] instanceof Element)) continue;
 
           // Check if the added node matches the selector
-          if (mutations[m].addedNodes[n].matches(msobserver.selector))
+          if ($(mutations[m].addedNodes[n]).is(msobserver.selector))
             matches.push(mutations[m].addedNodes[n]);
 
           // If the selector is fraternal, query siblings for matches.
           if (msobserver.isFraternal)
             matches.push.apply(
               matches,
-              mutations[m].addedNodes[n].parentElement.querySelectorAll(
+              $(mutations[m].addedNodes[n].parentElement).find(
                 msobserver.selector
               )
             );
           else
             matches.push.apply(
               matches,
-              mutations[m].addedNodes[n].querySelectorAll(msobserver.selector)
+              $(mutations[m].addedNodes[n]).find(msobserver.selector)
             );
         }
       }
@@ -141,6 +147,8 @@ msobservers.initialize = function (selector, callback, options) {
     // For each match, call the callback using jQuery.each() to initialize the element (once only.)
     for (var i = 0; i < matches.length; i++)
       $(matches[i]).each(msobserver.callback);
+
+    isMatchinInProgress = false;
   });
 
   // Observe the target element.

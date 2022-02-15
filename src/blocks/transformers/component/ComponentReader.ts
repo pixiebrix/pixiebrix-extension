@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -66,17 +66,17 @@ export class ComponentReader extends Transformer {
     },
   };
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return true;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
   async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
     return frameworkReadFactory(args.framework)(
-      (args as unknown) as FrameworkConfig,
+      args as unknown as FrameworkConfig,
       root
     );
   }

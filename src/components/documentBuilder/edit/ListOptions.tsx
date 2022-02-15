@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,11 +38,8 @@ type ListOptionsProps = {
 };
 
 const ListOptions: React.FC<ListOptionsProps> = ({ elementName }) => {
-  const [
-    { value: documentElement },
-    ,
-    { setValue: setDocumentElement },
-  ] = useField<ListDocumentElement>(elementName);
+  const [{ value: documentElement }, , { setValue: setDocumentElement }] =
+    useField<ListDocumentElement>(elementName);
 
   const arraySourceEdit: SchemaFieldProps = {
     name: joinName(elementName, "config", "array"),

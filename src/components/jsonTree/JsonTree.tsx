@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import JSONTree from "react-json-tree";
+import styles from "./JsonTree.module.scss";
+
+import { JSONTree } from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import styles from "./JsonTree.module.scss";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { searchData } from "@/devTools/utils";
 import { useLabelRenderer } from "./treeHooks";
 
@@ -103,7 +104,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
       )}
       {labelText && <span>{labelText}</span>}
       {searchResults === undefined ? (
-        <GridLoader />
+        <Loader />
       ) : (
         <JSONTree
           data={searchResults}

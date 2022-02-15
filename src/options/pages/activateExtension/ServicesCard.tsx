@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,9 +31,8 @@ const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
 }) => {
   const [field] = useField<ServiceDependency[]>("services");
 
-  const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
-    "/api/services/"
-  );
+  const { data: serviceConfigs } =
+    useFetch<ServiceDefinition[]>("/api/services/");
 
   const values = field.value.map((dependency, index) => ({
     dependency,

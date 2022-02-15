@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,8 +17,8 @@
 
 import pTimeout from "p-timeout";
 import browser, { Menus, Tabs } from "webextension-polyfill";
-import { isBackground } from "webext-detect-page";
-import { reportError } from "@/telemetry/logging";
+import { getErrorMessage, hasCancelRootCause } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { noop } from "lodash";
 import {
   handleMenuAction,
@@ -26,9 +26,16 @@ import {
 } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
-import { getErrorMessage, hasCancelRootCause } from "@/errors";
-import { UUID } from "@/core";
+import { UUID, IExtension, ResolvedExtension } from "@/core";
 import { expectContext } from "@/utils/expectContext";
+import extensionPointRegistry from "@/extensionPoints/registry";
+import {
+  ContextMenuConfig,
+  ContextMenuExtensionPoint,
+} from "@/extensionPoints/contextMenu";
+import { loadOptions } from "@/store/extensionsStorage";
+import { resolveDefinitions } from "@/registry/internal";
+import { allSettledValues } from "@/utils";
 
 type ExtensionId = UUID;
 // This is the type the browser API has for menu ids. In practice they should be strings because that's what we're
@@ -237,7 +244,35 @@ export async function ensureContextMenu({
   }
 }
 
-if (isBackground()) {
+export async function preloadContextMenus(
+  extensions: IExtension[]
+): Promise<void> {
+  expectContext("background");
+  await Promise.allSettled(
+    extensions.map(async (definition) => {
+      const resolved = await resolveDefinitions(definition);
+
+      const extensionPoint = await extensionPointRegistry.lookup(
+        resolved.extensionPointId
+      );
+      if (extensionPoint instanceof ContextMenuExtensionPoint) {
+        await extensionPoint.ensureMenu(
+          definition as unknown as ResolvedExtension<ContextMenuConfig>
+        );
+      }
+    })
+  );
+}
+
+async function preloadAllContextMenus(): Promise<void> {
+  const { extensions } = await loadOptions();
+  const resolved = await allSettledValues(
+    extensions.map(async (x) => resolveDefinitions(x))
+  );
+  await preloadContextMenus(resolved);
+}
+
+export default function initContextMenus(): void {
+  void preloadAllContextMenus();
   browser.contextMenus.onClicked.addListener(menuListener);
-  console.debug("Attached context menu listener");
 }

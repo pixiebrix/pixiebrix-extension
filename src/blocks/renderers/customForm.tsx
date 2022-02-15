@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,14 +21,20 @@ import { BlockArg, BlockOptions, ComponentRef, Schema, UiSchema } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
 import { dataStore } from "@/background/messenger/api";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { notifyResult } from "@/contentScript/notify";
 
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import BootstrapStylesheet from "./BootstrapStylesheet";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
+// eslint-disable-next-line import/no-named-as-default -- need default export here
+import DescriptionField from "@/components/formBuilder/DescriptionField";
+import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 
+const fields = {
+  DescriptionField,
+};
 const uiWidgets = {
   imageCrop: ImageCropWidget,
 };
@@ -47,7 +53,9 @@ const CustomFormComponent: React.FunctionComponent<{
       schema={schema}
       uiSchema={uiSchema}
       formData={formData}
+      fields={fields}
       widgets={uiWidgets}
+      FieldTemplate={FieldTemplate}
       onSubmit={async ({ formData }) => {
         await onSubmit(formData);
       }}

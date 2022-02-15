@@ -16,14 +16,13 @@
  */
 
 import React from "react";
-import { Installable } from "@/options/pages/blueprints/installableUtils";
-import useSharing from "@/options/pages/blueprints/useSharing";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEyeSlash,
   faGlobe,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
+import { SharingSource } from "@/options/pages/blueprints/installableUtils";
 
 const sharingIcons = {
   Personal: faEyeSlash,
@@ -33,15 +32,11 @@ const sharingIcons = {
 };
 
 const SharingLabel: React.FunctionComponent<{
-  installable: Installable;
-}> = ({ installable }) => {
-  const sharing = useSharing(installable);
-
-  return (
-    <span>
-      <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
-    </span>
-  );
-};
+  sharing: SharingSource;
+}> = ({ sharing }) => (
+  <div>
+    <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
+  </div>
+);
 
 export default SharingLabel;

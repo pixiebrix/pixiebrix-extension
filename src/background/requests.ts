@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,14 +18,14 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
-import { RemoteServiceError } from "@/services/errors";
+import { ProxiedRemoteServiceError } from "@/services/errors";
 import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
 import {
+  BusinessError,
   ContextError,
   ExtensionNotLinkedError,
-  getErrorMessage,
   isAxiosError,
   selectError,
 } from "@/errors";
@@ -40,58 +40,27 @@ import { isAbsoluteUrl } from "@/utils";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { ProxyResponseData, RemoteResponse } from "@/types/contract";
+import {
+  isProxiedErrorResponse,
+  proxyResponseToAxiosResponse,
+} from "@/background/proxyUtils";
+import {
+  enrichRequestError,
+  safeGuessStatusText,
+} from "@/services/requestErrorUtils";
 
-interface ProxyResponseSuccessData {
-  json: unknown;
-  status_code: number;
-}
+// eslint-disable-next-line prefer-destructuring -- process.env variable
+const DEBUG = process.env.DEBUG;
 
-interface ProxyResponseErrorData {
-  json: unknown;
-  status_code: number;
-  message?: string;
-  reason?: string;
-}
-
-type ProxyResponseData = ProxyResponseSuccessData | ProxyResponseErrorData;
-
-// Partial view of an AxiosResponse for providing common interface for proxied requests
-export interface RemoteResponse<T = unknown> {
-  data: T;
-  status: number;
-  statusText?: string;
-  $$proxied?: boolean;
-}
-
-function proxyResponseToAxiosResponse(data: ProxyResponseData) {
-  if (isErrorResponse(data)) {
-    return {
-      data: data.json,
-      status: data.status_code,
-      statusText: data.reason ?? data.message,
-    } as AxiosResponse;
-  }
-
-  return {
-    data: data.json,
-    status: data.status_code,
-  } as AxiosResponse;
-}
-
-function isErrorResponse(
-  data: ProxyResponseData
-): data is ProxyResponseErrorData {
-  return data.status_code >= 400;
-}
-
-interface SanitizedResponse<T = unknown> {
+type SanitizedResponse<T = unknown> = Pick<
+  AxiosResponse<T>,
+  "data" | "status" | "statusText"
+> & {
   _sanitizedResponseBrand: null;
-  data: T;
-  status: number;
-  statusText: string;
-}
+};
 
-export async function doCleanAxiosRequest<T>(
+export async function serializableAxiosRequest<T>(
   config: AxiosRequestConfig
 ): Promise<SanitizedResponse<T>> {
   // Network requests must go through background page for permissions/CORS to work properly
@@ -100,6 +69,18 @@ export async function doCleanAxiosRequest<T>(
     "Network requests must be made from the background page"
   );
 
+  if (!DEBUG && config.baseURL && !config.baseURL?.startsWith("https://")) {
+    throw new BusinessError("Unsupported URL scheme; Use https:");
+  }
+
+  if (
+    !DEBUG &&
+    isAbsoluteUrl(config.url) &&
+    !config.url?.startsWith("https://")
+  ) {
+    throw new BusinessError("Unsupported URL scheme; Use https:");
+  }
+
   try {
     const { data, status, statusText } = await axios(config);
 
@@ -107,14 +88,7 @@ export async function doCleanAxiosRequest<T>(
     // potentially sensitive parts of the response (the request, headers, etc.)
     return JSON.parse(JSON.stringify({ data, status, statusText }));
   } catch (error) {
-    if (isAxiosError(error)) {
-      // Axios offers its own serialization method, but it doesn't include the response.
-      // By deleting toJSON, the serialize-error library will use its default serialization
-      delete error.toJSON;
-    }
-
-    console.trace("Error performing request from background page", { error });
-    throw error;
+    throw await enrichRequestError(error);
   }
 }
 
@@ -125,7 +99,7 @@ async function authenticate(
   expectContext("background");
 
   if (config == null) {
-    throw new Error("config is required for authenticate");
+    throw new Error("service configuration is required to authenticate");
   }
 
   const service = await serviceRegistry.lookup(config.serviceId);
@@ -136,13 +110,10 @@ async function authenticate(
       throw new ExtensionNotLinkedError();
     }
 
-    return service.authenticateRequest(
-      ({ apiKey } as unknown) as ServiceConfig,
-      {
-        ...request,
-        url: await absoluteApiUrl(request.url),
-      }
-    );
+    return service.authenticateRequest({ apiKey } as unknown as ServiceConfig, {
+      ...request,
+      url: await absoluteApiUrl(request.url),
+    });
   }
 
   if (service.isOAuth2) {
@@ -184,8 +155,6 @@ async function proxyRequest<T>(
     throw new Error("service is required for proxyRequest");
   }
 
-  console.debug(`Proxying request for ${service.id}`);
-
   const authenticatedRequestConfig = await authenticate(
     await pixieServiceFactory(),
     {
@@ -199,24 +168,15 @@ async function proxyRequest<T>(
     }
   );
 
-  let proxyResponse;
-  try {
-    proxyResponse = await doCleanAxiosRequest<ProxyResponseData>(
-      authenticatedRequestConfig
-    );
-  } catch (error) {
-    // If there's a server error with the proxy server itself, we'll also see it in the Rollbar logs for the server.
-    throw new Error(`API proxy error: ${getErrorMessage(error)}`);
-  }
+  const proxyResponse = await serializableAxiosRequest<ProxyResponseData>(
+    authenticatedRequestConfig
+  );
 
   const { data: remoteResponse } = proxyResponse;
-  console.debug(`Proxy response for ${service.serviceId}:`, proxyResponse);
 
-  if (isErrorResponse(remoteResponse)) {
-    throw new RemoteServiceError(
+  if (isProxiedErrorResponse(remoteResponse)) {
+    throw new ProxiedRemoteServiceError(
       remoteResponse.message ?? remoteResponse.reason,
-      // FIXME: should fix the type of RemoteServiceError to support incomplete responses, e.g., because
-      //  the proxy doesn't return header information from the remote service
       proxyResponseToAxiosResponse(remoteResponse)
     );
   }
@@ -225,13 +185,14 @@ async function proxyRequest<T>(
   return {
     data: remoteResponse.json as T,
     status: remoteResponse.status_code,
+    statusText: safeGuessStatusText(remoteResponse.status_code),
     $$proxied: true,
   };
 }
 
 const UNAUTHORIZED_STATUS_CODES = [401, 403];
 
-async function _proxyService(
+async function performConfiguredRequest(
   serviceConfig: SanitizedServiceConfiguration,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse> {
@@ -241,7 +202,7 @@ async function _proxyService(
   }
 
   try {
-    return await doCleanAxiosRequest(
+    return await serializableAxiosRequest(
       await authenticate(serviceConfig, requestConfig)
     );
   } catch (error) {
@@ -253,23 +214,24 @@ async function _proxyService(
       const service = await serviceRegistry.lookup(serviceConfig.serviceId);
       if (service.isOAuth2 || service.isToken) {
         await deleteCachedAuthData(serviceConfig.id);
-        return doCleanAxiosRequest(
+        return serializableAxiosRequest(
           await authenticate(serviceConfig, requestConfig)
         );
       }
     }
 
-    console.debug(
-      "Error occurred when making a request from the background page",
-      { error }
-    );
+    console.debug("Error making request from the background page", {
+      error,
+      serviceConfig,
+      request: requestConfig,
+    });
 
     throw error;
   }
 }
 
 /**
- * Perform an request either directly, or via the PixieBrix authentication proxy
+ * Perform a request either directly, or via the PixieBrix authentication proxy
  * @param serviceConfig the PixieBrix service configuration (used to locate the full configuration)
  * @param requestConfig the unauthenticated axios request configuration
  */
@@ -280,41 +242,27 @@ export async function proxyService<TData>(
   // so it must be copied into `background/messenger/api.ts`
 ): Promise<RemoteResponse<TData>> {
   if (serviceConfig != null && typeof serviceConfig !== "object") {
-    throw new Error("expected configured service for serviceConfig");
+    throw new TypeError("expected configured service for serviceConfig");
   }
 
   if (!serviceConfig) {
     // No service configuration provided. Perform request directly without authentication
     if (!isAbsoluteUrl(requestConfig.url) && requestConfig.baseURL == null) {
-      throw new Error("expected absolute URL for request without service");
-    }
-
-    try {
-      return await doCleanAxiosRequest<TData>(requestConfig);
-    } catch (error) {
-      if (!isAxiosError(error)) {
-        throw error;
-      }
-
-      if (error.response) {
-        throw new RemoteServiceError(error.response.statusText, error.response);
-      }
-
-      // XXX: most likely the browser blocked the network request (or perhaps the response timed out)
-      console.error(error);
-      throw new RemoteServiceError(
-        "No response received; see browser network log for error."
+      throw new BusinessError(
+        "expected absolute URL for request without service"
       );
     }
+
+    return serializableAxiosRequest<TData>(requestConfig);
   }
 
   try {
-    return (await _proxyService(
+    return (await performConfiguredRequest(
       serviceConfig,
       requestConfig
     )) as RemoteResponse<TData>;
   } catch (error) {
-    throw new ContextError(selectError(error) as Error, {
+    throw new ContextError(selectError(error), {
       serviceId: serviceConfig.serviceId,
       authId: serviceConfig.id,
     });

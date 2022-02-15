@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -85,6 +85,42 @@ describe("FormEditor", () => {
 
       const options: ItRendersOptions<FormEditorProps> = {
         testName: "simple schema",
+        Component: FormEditor,
+        props,
+        TemplateComponent: createFormikTemplate({
+          [RJSF_SCHEMA_PROPERTY_NAME]: {
+            schema,
+            uiSchema,
+          } as RJSFSchema,
+        }),
+        isAsync: true,
+      };
+
+      return options;
+    });
+
+    testItRenders(() => {
+      const schema: Schema = {
+        title: "A form",
+        description: "A form example.",
+        type: "object",
+        properties: {
+          unknown: {
+            type: "string",
+            title: "Unknown format",
+            format: "unknown",
+          },
+        },
+      };
+      const uiSchema: UiSchema = {};
+
+      const props: FormEditorProps = {
+        ...defaultProps,
+        activeField: "unknown",
+      };
+
+      const options: ItRendersOptions<FormEditorProps> = {
+        testName: "unknown field format",
         Component: FormEditor,
         props,
         TemplateComponent: createFormikTemplate({
@@ -235,10 +271,12 @@ describe("FormEditor", () => {
     );
 
     const getRequiredFieldFromMock = (callNumber: number) =>
-      // eslint-disable-next-line security/detect-object-injection
-      (onSubmitMock.mock.calls[callNumber][0][
-        RJSF_SCHEMA_PROPERTY_NAME
-      ] as RJSFSchema).schema.required;
+      /* eslint-disable security/detect-object-injection */
+      (
+        onSubmitMock.mock.calls[callNumber][0][
+          RJSF_SCHEMA_PROPERTY_NAME
+        ] as RJSFSchema
+      ).schema.required;
 
     // Check the field is not required
     await fireFormSubmit();
@@ -345,9 +383,11 @@ describe("FormEditor", () => {
     await fireFormSubmit();
 
     expect(
-      // eslint-disable-next-line security/detect-object-injection
-      ((onSubmitMock.mock.calls[1][0][RJSF_SCHEMA_PROPERTY_NAME] as RJSFSchema)
-        .schema.properties[fieldName] as Schema).default
+      /* eslint-disable security/detect-object-injection */
+      (
+        (onSubmitMock.mock.calls[1][0][RJSF_SCHEMA_PROPERTY_NAME] as RJSFSchema)
+          .schema.properties[fieldName] as Schema
+      ).default
     ).toBeUndefined();
   });
 });

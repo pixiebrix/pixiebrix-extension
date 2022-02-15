@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
 
 import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { useDispatch } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";

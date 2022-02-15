@@ -1,6 +1,6 @@
 /* eslint-disable filenames/match-exported */
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -41,7 +41,6 @@ import {
   TriggerDefinition,
   TriggerExtensionPoint,
 } from "@/extensionPoints/triggerExtension";
-import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
@@ -54,6 +53,7 @@ import {
 import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
+import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 
 export interface TriggerFormState extends BaseFormState {
   type: "trigger";
@@ -66,8 +66,12 @@ export interface TriggerFormState extends BaseFormState {
       reader: SingleLayerReaderConfig;
       attachMode: AttachMode;
       targetMode: TargetMode;
-      intervalMillis: number | null;
+
       isAvailable: NormalizedAvailability;
+
+      // Interval props
+      intervalMillis: number | null;
+      background: boolean | null;
     };
   };
 }
@@ -89,6 +93,7 @@ function fromNativeElement(
         attachMode: null,
         targetMode: null,
         intervalMillis: null,
+        background: null,
         reader: getImplicitReader("trigger"),
         isAvailable: makeIsAvailable(url),
       },
@@ -110,6 +115,7 @@ function selectExtensionPoint(
       attachMode,
       targetMode,
       intervalMillis,
+      background,
       reader,
       trigger,
     },
@@ -122,6 +128,7 @@ function selectExtensionPoint(
       isAvailable: pickBy(isAvailable, identity),
       trigger,
       intervalMillis,
+      background,
       attachMode,
       targetMode,
       rootSelector,
@@ -217,6 +224,7 @@ async function fromExtension(
     targetMode,
     trigger,
     reader,
+    background,
     intervalMillis,
   } = extensionPoint.definition;
 
@@ -235,6 +243,7 @@ async function fromExtension(
         trigger,
         attachMode,
         targetMode,
+        background,
         intervalMillis,
         reader: readerTypeHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
@@ -257,7 +266,7 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   selectExtension,
   fromExtension,
   fromExtensionPoint,
-  insertModeHelp: (
+  InsertModeHelpText: () => (
     <div>
       <p>
         A trigger panel can be configured to run an action on page load, when an

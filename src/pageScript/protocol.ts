@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,8 +23,8 @@ import {
   SET_COMPONENT_DATA,
 } from "@/messaging/constants";
 import { ReaderOutput } from "@/core";
-import { ElementInfo } from "@/nativeEditor/frameworks";
 import { cleanValue } from "@/utils";
+import { ElementInfo } from "@/contentScript/nativeEditor/types";
 
 export type PathSpec =
   | string

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,6 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ActionFormState } from "@/devTools/editor/extensionPoints/menuItem";
 import { ActionPanelFormState } from "@/devTools/editor/extensionPoints/actionPanel";
 import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
@@ -36,6 +35,7 @@ import {
 } from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { WritableDraft } from "immer/dist/types/types-external";
 import { BlockConfig } from "@/blocks/types";
+import { ExtensionPointType } from "@/extensionPoints/types";
 
 export type FormState =
   | ActionFormState
@@ -55,7 +55,7 @@ export interface EditorState {
   /**
    * The element type, if the page editor is in "insertion-mode"
    */
-  inserting: ElementType | null;
+  inserting: ExtensionPointType | null;
 
   /**
    * The uuid of the active element, or null if no elements are active
@@ -175,7 +175,7 @@ export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    toggleInsert: (state, action: PayloadAction<ElementType>) => {
+    toggleInsert: (state, action: PayloadAction<ExtensionPointType>) => {
       state.inserting = action.payload;
       state.beta = false;
       state.error = null;

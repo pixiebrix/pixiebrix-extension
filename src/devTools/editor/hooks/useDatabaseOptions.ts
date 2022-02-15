@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,14 +19,10 @@ import { useGetDatabasesQuery, useGetOrganizationsQuery } from "@/services/api";
 import { useMemo } from "react";
 
 const useDatabaseOptions = () => {
-  const {
-    data: databases,
-    isLoading: isLoadingDatabases,
-  } = useGetDatabasesQuery();
-  const {
-    data: organizations,
-    isLoading: isLoadingOrganizations,
-  } = useGetOrganizationsQuery();
+  const { data: databases, isLoading: isLoadingDatabases } =
+    useGetDatabasesQuery();
+  const { data: organizations, isLoading: isLoadingOrganizations } =
+    useGetOrganizationsQuery();
 
   const isLoading = isLoadingDatabases || isLoadingOrganizations;
 

@@ -11,8 +11,29 @@ import {
   UseExpandedState,
   UseRowStateRowProps,
   UseRowStateCellProps,
-  UseGlobalFiltersInstanceProps,
   UseGlobalFiltersColumnOptions,
+  UseGlobalFiltersInstanceProps,
+  UseGlobalFiltersOptions,
+  UseGlobalFiltersState,
+  UseSortByColumnOptions,
+  UseSortByColumnProps,
+  UseSortByHooks,
+  UseSortByInstanceProps,
+  UseSortByOptions,
+  UseSortByState,
+  UseGroupByCellProps,
+  UseGroupByColumnOptions,
+  UseGroupByColumnProps,
+  UseGroupByHooks,
+  UseGroupByInstanceProps,
+  UseGroupByOptions,
+  UseGroupByRowProps,
+  UseGroupByState,
+  UseFiltersColumnOptions,
+  UseFiltersColumnProps,
+  UseFiltersInstanceProps,
+  UseFiltersOptions,
+  UseFiltersState,
 } from "react-table";
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
@@ -32,34 +53,56 @@ declare module "react-table" {
   // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
   export interface TableOptions<D extends object>
     extends UseExpandedOptions<D>,
+      UseFiltersOptions<D>,
+      UseGlobalFiltersOptions<D>,
+      UseGroupByOptions<D>,
+      UseSortByOptions<D>,
       ActionOptions<D> {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
-  export interface Hooks<D extends object = {}> extends UseExpandedHooks<D> {}
+  export interface Hooks<D extends object = {}>
+    extends UseExpandedHooks<D>,
+      UseGroupByHooks<D>,
+      UseSortByHooks<D> {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
   export interface TableInstance<D extends object = {}>
     extends UseExpandedInstanceProps<D>,
-      UseGlobalFiltersInstanceProps<D> {}
+      UseFiltersInstanceProps<D>,
+      UseGroupByInstanceProps<D>,
+      UseGlobalFiltersInstanceProps<D>,
+      UseSortByInstanceProps<D> {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
   export interface TableState<D extends object = {}>
-    extends UseExpandedState<D> {}
+    extends UseExpandedState<D>,
+      UseFiltersState<D>,
+      UseGlobalFiltersState<D>,
+      UseGroupByState<D>,
+      UseSortByState<D> {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
   export interface ColumnInterface<D extends object = {}>
-    extends UseGlobalFiltersColumnOptions<D> {}
+    extends UseGlobalFiltersColumnOptions<D>,
+      UseFiltersColumnOptions<D>,
+      UseGlobalFiltersColumnOptions<D>,
+      UseGroupByColumnOptions<D>,
+      UseSortByColumnOptions<D> {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
   export interface ColumnInstance<D extends object = {}>
-    extends UseExpandedOptions<D> {}
+    extends UseFiltersColumnProps<D>,
+      UseGroupByColumnProps<D>,
+      UseSortByColumnProps<D> {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
   export interface Cell<D extends object = {}, V = any>
-    extends UseRowStateCellProps<D> {}
+    extends UseRowStateCellProps<D>,
+      UseGroupByCellProps<D> {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
   export interface Row<D extends object = {}>
     extends UseExpandedRowProps<D>,
-      UseRowStateRowProps<D> {}
+      UseRowStateRowProps<D>,
+      UseGroupByRowProps<D> {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -104,7 +104,8 @@ function useSubmitBrick({
         if (kind === "recipe" && reinstallBlueprint) {
           // Typescript doesn't have enough information to kind === "recipe" distinguishes RecipeDefinition from
           // Definition
-          const unsavedRecipeDefinition = unsavedBrickJson as UnsavedRecipeDefinition;
+          const unsavedRecipeDefinition =
+            unsavedBrickJson as UnsavedRecipeDefinition;
           refreshPromise = reinstall({
             ...unsavedRecipeDefinition,
             sharing: pick(data, ["organizations", "public"]),

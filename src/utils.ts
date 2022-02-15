@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,24 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file Generic helper methods.
+ */
+
 import {
-  isEmpty,
-  mapValues,
-  partial,
-  partialRight,
-  negate,
+  compact,
   countBy,
-  maxBy,
   entries,
-  last,
   flow,
   head,
-  ObjectIterator,
-  zip,
-  pickBy,
+  isEmpty,
   isPlainObject,
-  compact,
+  last,
+  mapValues,
+  maxBy,
+  negate,
+  ObjectIterator,
+  partial,
+  partialRight,
+  pickBy,
   unary,
+  zip,
 } from "lodash";
 import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
@@ -511,4 +515,9 @@ export async function asyncLoop<Item>(
   iteratee: (item: Item) => Promise<void>
 ): Promise<void> {
   await Promise.all([...iterable].map(unary(iteratee)));
+}
+
+export function isMac(): boolean {
+  // https://stackoverflow.com/a/27862868/402560
+  return navigator.platform.includes("Mac");
 }

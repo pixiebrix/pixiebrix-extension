@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,8 +37,9 @@ module.exports = mergeWithShared({
   },
   resolve: {
     alias: {
-      "@/icons/list": path.resolve("src/__mocks__/iconsListMock"),
-      "@uipath/robot": path.resolve("src/__mocks__/robotMock"),
+      "@/icons/list": path.resolve("src/__mocks__/@/icons/list"),
+      "@uipath/robot": path.resolve("src/__mocks__/@uipath/robot"),
+      "@/telemetry/reportError": path.resolve("src/__mocks__/reportError"),
     },
   },
   plugins: [

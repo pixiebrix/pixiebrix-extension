@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -50,7 +50,7 @@ const ErrorDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
       if (rootCause.name === "InputValidationError") {
         return (
           <InputValidationErrorDetail
-            error={(rootCause as unknown) as InputValidationError}
+            error={rootCause as unknown as InputValidationError}
           />
         );
       }
@@ -58,13 +58,17 @@ const ErrorDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
       if (rootCause.name === "OutputValidationError") {
         return (
           <OutputValidationErrorDetail
-            error={(rootCause as unknown) as OutputValidationError}
+            error={rootCause as unknown as OutputValidationError}
           />
         );
       }
 
       if (isAxiosError(rootCause)) {
         return <NetworkErrorDetail error={rootCause} />;
+      }
+
+      if ("error" in rootCause && isAxiosError(rootCause.error)) {
+        return <NetworkErrorDetail error={rootCause.error} />;
       }
 
       return entry.error.stack;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,20 +38,21 @@ import {
   uninstallContextMenu,
 } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
-import { reportError } from "@/telemetry/logging";
+import { BusinessError, isErrorObject } from "@/errors";
+import reportError from "@/telemetry/reportError";
 import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { BusinessError, isErrorObject } from "@/errors";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
-import { isDeploymentActive } from "@/options/deploymentUtils";
+import { isDeploymentActive } from "@/utils/deployment";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
 import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -99,16 +100,7 @@ function installMouseHandlerOnce(): void {
  * See also: https://developer.chrome.com/extensions/contextMenus
  */
 export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMenuConfig> {
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon = "faMousePointer"
-  ) {
-    super(id, name, description, icon);
-  }
-
-  public get syncInstall() {
+  public override get syncInstall() {
     return true;
   }
 
@@ -119,6 +111,10 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
 
   abstract readonly contexts: Menus.ContextType[];
+
+  public get kind(): "contextMenu" {
+    return "contextMenu";
+  }
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -146,14 +142,12 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     return blockList(extension.config.action);
   }
 
-  uninstall({ global = false }: { global?: boolean }): void {
+  override uninstall({ global = false }: { global?: boolean }): void {
     // NOTE: don't uninstall the mouse/click handler because other context menus need it
     const extensions = this.extensions.splice(0, this.extensions.length);
     if (global) {
       for (const extension of extensions) {
-        void uninstallContextMenu({ extensionId: extension.id }).catch(
-          reportError
-        );
+        void uninstallContextMenu({ extensionId: extension.id });
       }
     }
   }
@@ -170,7 +164,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     return available;
   }
 
-  async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<IReader> {
     return new ArrayCompositeReader([
       await this.getBaseReader(),
       new ContextMenuReader(),
@@ -183,7 +177,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       "id" | "config" | "_deployment"
     >
   ): Promise<void> {
-    const { title } = extension.config;
+    const { title = "Untitled menu item" } = extension.config;
 
     // Check for null/undefined to preserve backward compatability
     if (!isDeploymentActive(extension)) {
@@ -204,6 +198,12 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   private async registerExtensions(): Promise<void> {
+    console.debug(
+      "Registering",
+      this.extensions.length,
+      "contextMenu extension points"
+    );
+
     const results = await Promise.allSettled(
       this.extensions.map(async (extension) => {
         try {
@@ -314,14 +314,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   async run(): Promise<void> {
-    if (this.extensions.length === 0) {
-      console.debug(
-        `contextMenu extension point ${this.id} has no installed extensions`
-      );
-      return;
-    }
-
-    await this.registerExtensions();
+    // Already taken care by the `install` method
   }
 }
 
@@ -351,8 +344,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description, icon } = cloned.metadata;
-    super(id, name, description, icon);
+    super(cloned.metadata, new BackgroundLogger());
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable, documentUrlPatterns, contexts } = cloned.definition;
@@ -388,7 +380,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
     return mergeReaders(this._definition.reader);
   }
 
-  public get defaultOptions(): {
+  public override get defaultOptions(): {
     title: string;
     [key: string]: string | string[];
   } {

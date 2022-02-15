@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,9 +30,8 @@ import {
   hideActionPanelForm,
   PANEL_HIDING_EVENT,
   showActionPanelForm,
-} from "@/actionPanel/native";
+} from "@/contentScript/actionPanel";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
-import { reportError } from "@/telemetry/logging";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
@@ -156,10 +155,10 @@ export class FormTransformer extends Transformer {
         // In the future we might creating/sending a closeIfEmpty message to the sidebar, so that it would close
         // if this form was the only entry in the panel
         hideActionPanelForm(frameNonce);
-        void cancelForm(frameNonce).catch(reportError);
+        void cancelForm(frameNonce);
       });
     } else {
-      showModal(frameSource, controller.signal);
+      showModal(frameSource, controller);
     }
 
     try {

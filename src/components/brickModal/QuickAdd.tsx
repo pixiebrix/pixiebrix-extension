@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./QuickAdd.module.scss";
+
 import React from "react";
-import "./QuickAdd.scss";
 import { IBrick } from "@/core";
 import { Card } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
+import cx from "classnames";
 
 type OwnProps<T extends IBrick = IBrick> = {
   onSelect: (block: T) => void;
@@ -32,23 +34,23 @@ const QuickAdd: React.FunctionComponent<OwnProps> = ({
 }) => (
   <div>
     <h4>Recommended Bricks</h4>
-    <div className="RecommendationContainer">
+    <div className={styles.root}>
       {recommendations.map((brick) => (
         <Card
-          className="RecommendationCard"
+          className={styles.card}
           key={brick.id}
           onClick={() => {
             onSelect(brick);
           }}
         >
-          <Card.Body className="text-center RecommendationCard__image">
+          <Card.Body className={cx("text-center", "pt-2", styles.cardImage)}>
             <div>
               <BrickIcon brick={brick} />
             </div>
           </Card.Body>
           <Card.Body>
             <Card.Title>{brick.name}</Card.Title>
-            <Card.Text className="small">{brick.description}</Card.Text>
+            <Card.Text className="small pt-2">{brick.description}</Card.Text>
           </Card.Body>
         </Card>
       ))}

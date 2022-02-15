@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,6 @@
 
 import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
-import { localStorage } from "redux-persist-webextension-storage";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
@@ -34,26 +33,34 @@ import {
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
-import settingsSlice, { SettingsState } from "@/store/settingsSlice";
+import settingsSlice from "@/store/settingsSlice";
 import workshopSlice, { WorkshopState } from "@/store/workshopSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
+import { persistSettingsConfig } from "@/store/settingsStorage";
+import { SettingsState } from "@/store/settingsTypes";
+import { localStorage } from "redux-persist-webextension-storage";
+import blueprintsSlice, {
+  BlueprintsState,
+  persistBlueprintsConfig,
+} from "./pages/blueprints/blueprintsSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
 export const hashHistory = createHashHistory({ hashType: "slash" });
 
-const persistSettingsConfig = {
-  key: "settings",
-  storage: localStorage,
-};
-
 export interface RootState {
   options: OptionsState;
+  blueprints: BlueprintsState;
   services: ServicesState;
   settings: SettingsState;
   workshop: WorkshopState;
   installedPage: InstalledPageState;
 }
+
+export const persistWorkshopConfig = {
+  key: "workshop",
+  storage: localStorage,
+};
 
 const conditionalMiddleware: Middleware[] = [];
 if (process.env.NODE_ENV === "development") {
@@ -69,10 +76,14 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
+    blueprints: persistReducer(
+      persistBlueprintsConfig,
+      blueprintsSlice.reducer
+    ),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
-    workshop: persistReducer(persistSettingsConfig, workshopSlice.reducer),
+    workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
     installedPage: installedPageSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },

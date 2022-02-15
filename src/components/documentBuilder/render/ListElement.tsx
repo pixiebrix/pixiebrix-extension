@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ import DocumentContext from "./DocumentContext";
 import { UnknownObject } from "@/types";
 import { Args, isDeferExpression } from "@/runtime/mapArgs";
 import { useAsyncState } from "@/hooks/common";
-import { GridLoader } from "react-spinners";
+import Loader from "@/components/Loader";
 import {
   BuildDocumentBranch,
   DocumentElement,
@@ -98,7 +98,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
   }, [array, elementKey, config, documentContext]);
 
   if (isLoading) {
-    return <GridLoader />;
+    return <Loader />;
   }
 
   if (error) {

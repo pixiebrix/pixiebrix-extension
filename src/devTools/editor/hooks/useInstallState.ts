@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,12 +40,12 @@ function useInstallState(
   elements: FormState[]
 ): InstallState {
   const {
-    tabState: { navSequence, meta },
+    tabState: { navSequence, meta, error },
   } = useContext(DevToolsContext);
 
   const [availableInstalledIds] = useAsyncState(
     async () => {
-      if (meta) {
+      if (meta && !error) {
         const extensionPointIds = new Set(
           await getInstalledExtensionPointIds(thisTab)
         );
@@ -62,7 +62,7 @@ function useInstallState(
 
       return new Set<UUID>();
     },
-    [navSequence, meta, installed],
+    [navSequence, meta, error, installed],
     new Set<UUID>()
   );
 
@@ -70,7 +70,7 @@ function useInstallState(
     async () => {
       // At this point, if the extensionPoint is an inner extension point (without its own id), then it will have
       // been expanded to extensionPoint
-      if (meta) {
+      if (meta && !error) {
         const availability = await Promise.all(
           elements.map(async (element) =>
             checkAvailable(
@@ -90,6 +90,7 @@ function useInstallState(
     },
     [
       meta,
+      error,
       navSequence,
       hash(
         elements.map((x) => ({
@@ -105,7 +106,7 @@ function useInstallState(
     availableInstalledIds,
     availableDynamicIds,
     unavailableCount: meta
-      ? installed.length - availableInstalledIds.size
+      ? installed.length - (availableInstalledIds?.size ?? 0)
       : null,
   };
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, UUID } from "@/core";
+import { AuthState, RegistryId, UUID } from "@/core";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
   EditablePackage,
@@ -39,6 +39,8 @@ import {
 } from "@/types/contract";
 import { components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
+import { anonAuth, ProfileResponse } from "@/hooks/auth";
+import { updateUserData } from "@/auth/token";
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
 const appBaseQuery: BaseQueryFn<{
@@ -70,6 +72,7 @@ export const appApi = createApi({
   reducerPath: "appApi",
   baseQuery: appBaseQuery,
   tagTypes: [
+    "Auth",
     "Databases",
     "Services",
     "ServiceAuths",
@@ -82,6 +85,43 @@ export const appApi = createApi({
     "CloudExtensions",
   ],
   endpoints: (builder) => ({
+    getAuth: builder.query<AuthState, void>({
+      query: () => ({ url: "/api/me/", method: "get" }),
+      providesTags: ["Auth"],
+      transformResponse: async ({
+        id,
+        email,
+        scope,
+        organization,
+        telemetry_organization: telemetryOrganization,
+        is_onboarded: isOnboarded,
+        flags = [],
+      }: ProfileResponse) => {
+        if (id) {
+          void updateUserData({
+            user: id,
+            email,
+            organizationId: organization?.id,
+            telemetryOrganizationId: telemetryOrganization?.id,
+            flags,
+          });
+
+          return {
+            userId: id,
+            email,
+            scope,
+            organization,
+            isOnboarded,
+            isLoggedIn: true,
+            extension: true,
+            flags,
+          };
+        }
+
+        return anonAuth;
+      },
+    }),
+
     getDatabases: builder.query<Database[], void>({
       query: () => ({ url: "/api/databases/", method: "get" }),
       providesTags: ["Databases"],
@@ -194,6 +234,16 @@ export const appApi = createApi({
       query: () => ({ url: "/api/extensions/", method: "get" }),
       providesTags: ["CloudExtensions"],
     }),
+    deleteCloudExtension: builder.mutation<
+      CloudExtension,
+      { extensionId: UUID }
+    >({
+      query: ({ extensionId }) => ({
+        url: `/api/extensions/${extensionId}/`,
+        method: "delete",
+      }),
+      invalidatesTags: ["CloudExtensions"],
+    }),
     createRecipe: builder.mutation<
       PackageUpsertResponse,
       {
@@ -244,6 +294,7 @@ export const appApi = createApi({
 });
 
 export const {
+  useGetAuthQuery,
   useGetDatabasesQuery,
   useCreateDatabaseMutation,
   useAddDatabaseToGroupMutation,
@@ -254,6 +305,7 @@ export const {
   useGetGroupsQuery,
   useGetRecipesQuery,
   useGetCloudExtensionsQuery,
+  useDeleteCloudExtensionMutation,
   useGetEditablePackagesQuery,
   useCreateRecipeMutation,
   useUpdateRecipeMutation,

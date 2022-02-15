@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,6 +38,7 @@ import {
   KeyAuthenticationDefinition,
   OAuth2AuthenticationDefinition,
   TokenAuthenticationDefinition,
+  OAuth2AuthorizationGrantDefinition,
 } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { isAbsoluteUrl } from "@/utils";
@@ -95,6 +96,17 @@ class LocalDefinedService<
   }
 
   /**
+   * Return true if service uses OAuth2 authorization grant
+   */
+  get isAuthorizationGrant(): boolean {
+    return (
+      this.isOAuth2 &&
+      (this._definition.authentication as OAuth2AuthorizationGrantDefinition)
+        .oauth2.grantType === "authorization_code"
+    );
+  }
+
+  /**
    * Returns origins that require permissions to use the service
    * @param serviceConfig
    */
@@ -123,9 +135,9 @@ class LocalDefinedService<
     }
 
     if (this.isToken) {
-      const tokenUrl = (this
-        ._definition as ServiceDefinition<TokenAuthenticationDefinition>)
-        .authentication.token.url;
+      const tokenUrl = (
+        this._definition as ServiceDefinition<TokenAuthenticationDefinition>
+      ).authentication.token.url;
       patterns.push(renderMustache(tokenUrl, serviceConfig));
     }
 
@@ -134,8 +146,9 @@ class LocalDefinedService<
 
   getTokenContext(serviceConfig: ServiceConfig): TokenContext {
     if (this.isToken) {
-      const definition: TokenContext = (this._definition
-        .authentication as TokenAuthenticationDefinition).token;
+      const definition: TokenContext = (
+        this._definition.authentication as TokenAuthenticationDefinition
+      ).token;
       // Console.debug("token context", { definition, serviceConfig });
       return renderMustache<TokenContext>(definition, serviceConfig);
     }
@@ -145,8 +158,9 @@ class LocalDefinedService<
 
   getOAuth2Context(serviceConfig: ServiceConfig): OAuth2Context {
     if (this.isOAuth2) {
-      const definition: OAuth2Context = (this._definition
-        .authentication as OAuth2AuthenticationDefinition).oauth2;
+      const definition: OAuth2Context = (
+        this._definition.authentication as OAuth2AuthenticationDefinition
+      ).oauth2;
       console.debug("getOAuth2Context", { definition, serviceConfig });
       return renderMustache<OAuth2Context>(definition, serviceConfig);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./EditorNodeConfigPanel.module.scss";
+
 import React, { useMemo } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
@@ -24,9 +26,6 @@ import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
 import { showOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
-import styles from "./EditorNodeConfigPanel.module.scss";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 
@@ -48,9 +47,7 @@ const EditorNodeConfigPanel: React.FC<{
   blockFieldName: string;
   blockId: RegistryId;
   blockError: string;
-  copyBlock: () => void;
-  onRemoveNode: () => void;
-}> = ({ blockFieldName, blockId, blockError, copyBlock, onRemoveNode }) => {
+}> = ({ blockFieldName, blockId, blockError }) => {
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
@@ -95,22 +92,6 @@ const EditorNodeConfigPanel: React.FC<{
             disabled={isOutputDisabled}
             as={KeyNameWidget}
           />
-        </Col>
-      </Row>
-      <Row className={styles.buttonRow}>
-        <Col sm="auto">
-          <Button type="button" variant="primary" onClick={copyBlock}>
-            <span>
-              <FontAwesomeIcon icon={faCopy} /> Copy Brick
-            </span>
-          </Button>
-        </Col>
-        <Col sm="auto">
-          <Button type="button" variant="danger" onClick={onRemoveNode}>
-            <span>
-              <FontAwesomeIcon icon={faTrash} /> Remove Brick
-            </span>
-          </Button>
         </Col>
       </Row>
 

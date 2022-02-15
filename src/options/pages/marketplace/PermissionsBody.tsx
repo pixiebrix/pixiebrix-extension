@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { uniq } from "lodash";
 import { selectOptionalPermissions } from "@/utils/permissions";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { Card, Table } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
 import { Permissions } from "webextension-polyfill";
@@ -46,7 +46,7 @@ const PermissionsBody: React.FunctionComponent<{
 
   const helpText = useMemo(() => {
     if (isPending) {
-      return <GridLoader />;
+      return <Loader />;
     }
 
     if (error) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -39,16 +39,18 @@ import cx from "classnames";
 const DynamicEntry: React.FunctionComponent<{
   item: FormState;
   available: boolean;
-  activeElement: string | null;
-}> = ({ item, available, activeElement }) => {
+  active: boolean;
+}> = ({ item, available, active }) => {
   const dispatch = useDispatch();
 
   const isDirty = useSelector<RootState>(
     (x) => x.editor.dirty[item.uuid] ?? false
   );
 
+  const isButton = item.type === "menuItem";
+
   const showOverlay = useCallback(async (uuid: UUID) => {
-    await enableOverlay(thisTab, `[data-uuid="${uuid}"]`);
+    await enableOverlay(thisTab, `[data-pb-uuid="${uuid}"]`);
   }, []);
 
   const hideOverlay = useCallback(async () => {
@@ -59,10 +61,10 @@ const DynamicEntry: React.FunctionComponent<{
     <ListGroup.Item
       className={styles.root}
       action
-      active={item.uuid === activeElement}
+      active={active}
       key={`dynamic-${item.uuid}`}
-      onMouseEnter={async () => showOverlay(item.uuid)}
-      onMouseLeave={async () => hideOverlay()}
+      onMouseEnter={isButton ? async () => showOverlay(item.uuid) : undefined}
+      onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
     >
       <span className={styles.icon}>

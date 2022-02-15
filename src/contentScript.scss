@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.pixiebrix .collapse:not(.show) {
+  display: none;
+}
+
+.pixiebrix [data-toggle="collapse"] {
+  cursor: pointer;
+}
+
+.pixiebrix [data-toggle="collapse"]:after {
+  content: "\02795"; /* Unicode character for "plus" sign (+) */
+  font-size: 13px;
+  color: black;
+  float: right;
+  margin-left: 5px;
+}
+
+.pixiebrix [data-toggle="collapse"].active:after {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+/* Overlay.tsx has no classes, so we target each layer by using its hardcoded values */
+[style="z-index: 10000000;"] [style*="rgba(255, 200, 50, 0.3)"] {
+  border-color: transparent !important;
+  background: linear-gradient(
+    20deg,
+    rgba(182, 109, 255, 0.4),
+    rgba(182, 109, 255, 0.1)
+  ) !important;
+}
+
+[style="z-index: 10000000;"] [style*="rgba(255, 155, 0, 0.3)"],
+[style="z-index: 10000000;"] [style*="rgba(77, 200, 0, 0.3)"],
+[style="z-index: 10000000;"] [style*="rgba(120, 170, 210, 0.7)"] {
+  background: none !important;
+  border-color: transparent !important;
+}

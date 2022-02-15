@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,17 @@ const TooltipIconButton: React.FC<{
   size?: SizeProp;
   onClick: MouseEventHandler<HTMLButtonElement>;
   tooltipText: string;
-}> = ({ name, icon, size = "1x", onClick, tooltipText }) => {
+  buttonClassName?: string;
+  disabled?: boolean;
+}> = ({
+  name,
+  icon,
+  size = "1x",
+  onClick,
+  tooltipText,
+  buttonClassName = "",
+  disabled = false,
+}) => {
   const renderTooltip = (props: unknown) => (
     <Tooltip id={`${name}-tooltip`} {...props}>
       {tooltipText}
@@ -43,11 +53,14 @@ const TooltipIconButton: React.FC<{
       overlay={renderTooltip}
       rootClose
     >
-      {({ ref, ...rest }) => (
-        <button type="button" onClick={onClick} {...rest}>
-          <FontAwesomeIcon forwardedRef={ref} icon={icon} size={size} />
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={onClick}
+        className={buttonClassName}
+        disabled={disabled}
+      >
+        <FontAwesomeIcon icon={icon} size={size} />
+      </button>
     </OverlayTrigger>
   );
 };

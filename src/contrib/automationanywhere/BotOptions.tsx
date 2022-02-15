@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -65,6 +65,10 @@ const cachedFetchBots = cachePromiseMethod(["aa:fetchBots"], fetchBots);
 async function fetchDevices(
   config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
+  // HACK: hack to avoid concurrent requests to the proxy. Simultaneous calls to get the token causes a
+  // server error on community edition
+  await cachedFetchBots(config);
+
   const response = await proxyService<ListResponse<Device>>(config, {
     url: "/v2/devices/list",
     method: "POST",
@@ -91,6 +95,7 @@ async function fetchSchema(
       url: `/v1/filecontent/${fileId}/interface`,
       method: "GET",
     });
+
     return interfaceToInputSchema(response.data);
   }
 }
@@ -109,14 +114,18 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [{ value: fileId }] = useField<string>(configName("fileId"));
 
-  const [
-    remoteSchema,
-    remoteSchemaPending,
-    remoteSchemaError,
-  ] = useAsyncState(
-    async () => cachedFetchSchema(hasPermissions ? config : null, fileId),
-    [config, fileId, hasPermissions]
-  );
+  const [remoteSchema, remoteSchemaPending, remoteSchemaError] =
+    useAsyncState(async () => {
+      if (hasPermissions && config) {
+        // HACK: hack to avoid concurrent requests to the proxy. Simultaneous calls to get the token causes a
+        // server error on community edition
+        await cachedFetchDevices(config);
+        await cachedFetchBots(config);
+        return cachedFetchSchema(config, fileId);
+      }
+
+      return null;
+    }, [config, fileId, hasPermissions]);
 
   return (
     <RequireServiceConfig

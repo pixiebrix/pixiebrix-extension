@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ export class SendSimpleSlackMessage extends Effect {
   constructor() {
     super(
       "slack/simple-message",
-      "Send a Slack message",
+      "[Deprecated] Send a Slack message via Incoming WebHook",
       "Send a Slack message via its Incoming WebHooks App"
     );
   }
@@ -92,7 +92,7 @@ export class SendAdvancedSlackMessage extends Effect {
   constructor() {
     super(
       "slack/advanced-message",
-      "Send a Slack richly-formatted message with attachments",
+      "[Deprecated] Send a Slack richly-formatted message via Incoming WebHook",
       "Send a Slack richly-formatted message via its Incoming WebHooks App"
     );
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import "@/devTools/Panel.scss";
 
 import "@/development/darkMode";
 import "@/telemetry/reportUncaughtErrors";
-import "@/devTools/messenger/registration";
+import registerMessenger from "@/devTools/messenger/registration";
 
 import ReactDOM from "react-dom";
 import React from "react";
@@ -29,6 +29,7 @@ import Panel from "@/devTools/Panel";
 import { watchNavigation } from "@/devTools/protocol";
 import initGoogle from "@/contrib/google/initGoogle";
 
+registerMessenger();
 initGoogle();
 watchNavigation();
 

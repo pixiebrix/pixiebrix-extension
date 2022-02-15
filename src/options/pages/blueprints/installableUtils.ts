@@ -16,31 +16,68 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import { IExtension, RegistryId, ResolvedExtension } from "@/core";
-import { groupBy } from "lodash";
+import { IExtension, RegistryId, ResolvedExtension, UUID } from "@/core";
 import * as semver from "semver";
+import { Organization } from "@/types/contract";
+import { Installable } from "./blueprintsTypes";
 
-export type InstallStatus = {
-  hasUpdate?: boolean;
-  active: boolean;
+export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
+
+export type SharingSource = {
+  type: SharingType;
+  label: string;
+  organization: Organization;
 };
 
-// XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
-export type Installable = (RecipeDefinition | ResolvedExtension) &
-  InstallStatus;
+export const getSharingType = (
+  installable: Installable,
+  organizations: Organization[],
+  scope: string
+): SharingSource => {
+  let sharingType: SharingType = null;
+  const organization = getOrganization(installable, organizations);
+
+  if (isPersonal(installable, scope)) {
+    sharingType = "Personal";
+  } else if (isDeployment(installable)) {
+    sharingType = "Deployment";
+  } else if (organization) {
+    sharingType = "Team";
+  } else if (isPublic(installable)) {
+    sharingType = "Public";
+  }
+
+  let label: string;
+  if (
+    sharingType === "Team" ||
+    // There's a corner case for team deployments of public market bricks. The organization will come through as
+    // nullish here.
+    (sharingType === "Deployment" && organization?.name)
+  ) {
+    label = organization.name;
+  } else {
+    label = sharingType;
+  }
+
+  return {
+    type: sharingType,
+    label,
+    organization,
+  };
+};
 
 export const isExtension = (
   installable: Installable
-): installable is ResolvedExtension & InstallStatus => "_recipe" in installable;
+): installable is ResolvedExtension => "_recipe" in installable;
 
 export const isExtensionFromRecipe = (installable: Installable) =>
   isExtension(installable) && Boolean(installable._recipe);
 
 export const isBlueprint = (
   installable: Installable
-): installable is RecipeDefinition & InstallStatus => !isExtension(installable);
+): installable is RecipeDefinition => !isExtension(installable);
 
-export const getUniqueId = (installable: Installable) =>
+export const getUniqueId = (installable: Installable): UUID | RegistryId =>
   isExtension(installable) ? installable.id : installable.metadata.id;
 
 export const getLabel = (installable: Installable): string =>
@@ -62,6 +99,11 @@ export const getUpdatedAt = (installable: Installable): string =>
 
 export const getSharing = (installable: Installable) =>
   isExtension(installable) ? installable._recipe?.sharing : installable.sharing;
+
+export const isShared = (installable: Installable) => {
+  const sharing = getSharing(installable);
+  return sharing?.organizations?.length > 0 || sharing?.public;
+};
 
 export const isPublic = (installable: Installable): boolean =>
   isExtension(installable)
@@ -91,15 +133,6 @@ export const isPersonal = (installable: Installable, userScope: string) => {
 export const isDeployment = (installable: Installable) =>
   isExtension(installable) && Boolean(installable._deployment);
 
-// TODO: keeping this even though unused atm, will be useful for future grouping features
-export const groupByRecipe = (installables: Installable[]): Installable[][] =>
-  Object.values(
-    groupBy(
-      installables,
-      (installable) => getPackageId(installable) ?? getUniqueId(installable)
-    )
-  );
-
 export function updateAvailable(
   availableRecipes: RecipeDefinition[],
   extension: ResolvedExtension
@@ -122,7 +155,6 @@ export function updateAvailable(
 
   if (semver.eq(availableRecipe.metadata.version, extension._recipe.version)) {
     // Check the updated_at timestamp
-
     if (extension._recipe?.updated_at == null) {
       // Extension was installed prior to us adding updated_at to RecipeMetadata
       return false;
@@ -136,3 +168,23 @@ export function updateAvailable(
 
   return false;
 }
+
+export const getOrganization = (
+  installable: Installable,
+  organizations: Organization[]
+) => {
+  const sharing =
+    "_recipe" in installable
+      ? installable._recipe?.sharing
+      : installable.sharing;
+
+  if (!sharing || sharing.organizations.length === 0) {
+    return null;
+  }
+
+  // If more than one sharing organization, use the first.
+  // This is an uncommon scenario.
+  return organizations.find((org) =>
+    sharing.organizations.includes(org.id as UUID)
+  );
+};

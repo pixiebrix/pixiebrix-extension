@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +40,7 @@ import SelectWidget, {
   SelectLike,
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import { castArray, isEmpty } from "lodash";
+import { castArray, isEmpty, isEqual } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import {
   extractServiceIds,
@@ -78,7 +78,7 @@ function defaultOutputKey(
 
   // OK to cast to SafeString since defaultOutputKey checks it's a valid PACKAGE_REGEX
   return freshIdentifier(
-    (rawKey as unknown) as SafeString,
+    rawKey as unknown as SafeString,
     otherOutputKeys
   ) as OutputKey;
 }
@@ -222,13 +222,10 @@ const ServiceField: React.FunctionComponent<
 > = ({ detectDefault = true, ...props }) => {
   const { schema } = props;
   const [authOptions] = useAuthOptions();
-  const {
-    values: root,
-    setValues: setRootValues,
-  } = useFormikContext<ServiceSlice>();
-  const [{ value, ...field }, meta, helpers] = useField<
-    Expression<ServiceKeyVar>
-  >(props);
+  const { values: root, setValues: setRootValues } =
+    useFormikContext<ServiceSlice>();
+  const [{ value, ...field }, meta, helpers] =
+    useField<Expression<ServiceKeyVar>>(props);
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);
@@ -268,6 +265,8 @@ const ServiceField: React.FunctionComponent<
           );
           helpers.setValue(keyToFieldValue(match.outputKey));
         } else if (options.length === 1) {
+          // This condition is only true when the auth services have been filtered by the schema
+
           console.debug("Defaulting to only integration option", {
             option: options[0],
             options,
@@ -278,6 +277,19 @@ const ServiceField: React.FunctionComponent<
             target: { value: options[0].value, name: field.name, options },
           } as ChangeEvent<SelectLike<AuthOption>>);
         }
+      } else if (
+        value &&
+        !root.services.some((service) =>
+          isEqual(keyToFieldValue(service.outputKey), value)
+        )
+      ) {
+        // This currently happens when a brick is copy-pasted into a separate extension
+        // that does not yet have root.services configured, but already has the service
+        // key set up in the (copied) BlockConfig. Clearing the value here allows the
+        // preceding if-branch to execute again, which runs the "detectDefault" logic
+        // and then calls the service-select change handler, which in turn will configure
+        // root.services properly for the extension.
+        helpers.setValue(null);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount

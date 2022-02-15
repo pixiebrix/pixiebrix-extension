@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,6 +25,7 @@ import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
+import { getTabsWithAccess } from "./activeTab";
 
 /** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
@@ -94,7 +95,10 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
  * - If it's not expected to be injected automatically, it also injects it into the page.
  * - If it's been injected, it will resolve once the content script is ready.
  */
-export async function ensureContentScript(target: Target): Promise<void> {
+export async function ensureContentScript(
+  target: Target,
+  timeoutMillis = 4000
+): Promise<void> {
   expectContext("background");
 
   console.debug("ensureContentScript: requested", target);
@@ -135,8 +139,8 @@ export async function ensureContentScript(target: Target): Promise<void> {
 
     await pTimeout(
       readyNotificationPromise,
-      4000,
-      "contentScript not ready in 4s"
+      timeoutMillis,
+      `contentScript not ready in ${timeoutMillis}ms`
     );
     console.debug("ensureContentScript: ready", target);
   } finally {
@@ -164,8 +168,7 @@ export async function showErrorInOptions(
 export async function forEachTab<
   TCallback extends (target: { tabId: number }) => void
 >(callback: TCallback): Promise<void> {
-  // TODO: Only include PixieBrix tabs, this will reduce the chance of errors
-  for (const tab of await browser.tabs.query({})) {
-    callback({ tabId: tab.id });
+  for (const tabId of await getTabsWithAccess()) {
+    callback({ tabId });
   }
 }

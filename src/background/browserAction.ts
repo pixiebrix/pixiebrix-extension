@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBackground } from "webext-detect-page";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import browser, { Tabs } from "webextension-polyfill";
 import { toggleActionPanel } from "@/contentScript/messenger/api";
-import { updateDevTools } from "@/devTools/messenger/api";
 import { isScriptableUrl } from "webext-content-scripts";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
@@ -47,17 +45,13 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
     await toggleActionPanel({
       tabId: tab.id,
     });
-
-    // Inform editor that it now has the ActiveTab permission, if it's open
-    updateDevTools({ page: `/devtoolsPanel.html?tabId=${tab.id}` });
   } catch (error) {
     await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
-    console.error(error);
     reportError(error);
   }
 }
 
-if (isBackground()) {
+export default function initBrowserAction() {
   const action = browser.browserAction ?? browser.action;
   action.onClicked.addListener(handleBrowserAction);
 }

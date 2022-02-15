@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -39,10 +39,10 @@ export default function useDataPanelActiveTabKey(
     }
   }, [defaultTabKey, onSelectTab, savedActiveKey]);
 
-  const activeKey = useMemo(() => savedActiveKey ?? defaultTabKey, [
-    defaultTabKey,
-    savedActiveKey,
-  ]);
+  const activeKey = useMemo(
+    () => savedActiveKey ?? defaultTabKey,
+    [defaultTabKey, savedActiveKey]
+  );
 
   return [activeKey, onSelectTab];
 }

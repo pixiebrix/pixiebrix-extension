@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { Schema, UUID } from "@/core";
+import { Expression, Schema, UUID } from "@/core";
 import { joinName } from "@/utils";
 import { partial } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
@@ -29,6 +29,9 @@ import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { useField } from "formik";
 import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
+import { isExpression } from "@/runtime/mapArgs";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 
 const keySchema: Schema = {
   type: "string",
@@ -65,12 +68,12 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
   const databaseFieldName = configName("databaseId");
 
   const [showModal, setShowModal] = useState(false);
-  const { setValue: setDatabaseId } = useField<UUID>(databaseFieldName)[2];
+  const [{ value: databaseId }, , { setValue: setDatabaseId }] = useField<
+    UUID | Expression
+  >(databaseFieldName);
 
-  const {
-    databaseOptions,
-    isLoading: isLoadingDatabaseOptions,
-  } = useDatabaseOptions();
+  const { databaseOptions, isLoading: isLoadingDatabaseOptions } =
+    useDatabaseOptions();
 
   const isMountedRef = useRef(true);
   useEffect(
@@ -106,18 +109,26 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
         />
       )}
 
-      <ConnectedFieldTemplate
-        name={databaseFieldName}
-        label="Database"
-        as={SelectWidget}
-        options={databaseOptions}
-        isLoading={isLoadingDatabaseOptions}
-        components={{
-          MenuList: createMenuListWithAddButton(() => {
-            setShowModal(true);
-          }),
-        }}
-      />
+      {isExpression(databaseId) ? (
+        <FieldTemplate
+          name={databaseFieldName}
+          label="Database"
+          as={WorkshopMessageWidget}
+        />
+      ) : (
+        <ConnectedFieldTemplate
+          name={databaseFieldName}
+          label="Database"
+          as={SelectWidget}
+          options={databaseOptions}
+          isLoading={isLoadingDatabaseOptions}
+          components={{
+            MenuList: createMenuListWithAddButton(() => {
+              setShowModal(true);
+            }),
+          }}
+        />
+      )}
 
       <SchemaField name={configName("key")} schema={keySchema} isRequired />
 

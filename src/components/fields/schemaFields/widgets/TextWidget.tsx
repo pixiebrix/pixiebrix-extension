@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -34,7 +34,7 @@ import {
   schemaSupportsTemplates,
 } from "@/components/fields/schemaFields/BasicSchemaField";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import ComplexObjectWidget from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 
 function isVarValue(value: string): boolean {
@@ -55,12 +55,10 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   focusInput,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, { error }, { setValue }] = useField(
-    name
-  );
-  const { allowExpressions: allowExpressionsContext } = useContext(
-    FieldRuntimeContext
-  );
+  const [{ value, ...restInputProps }, { error }, { setValue }] =
+    useField(name);
+  const { allowExpressions: allowExpressionsContext } =
+    useContext(FieldRuntimeContext);
   const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);
 
   const textAreaRef = useRef<HTMLTextAreaElement>();
@@ -95,9 +93,10 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     }
   }, [focusInput]);
 
-  const supportsTemplates = useMemo(() => schemaSupportsTemplates(schema), [
-    schema,
-  ]);
+  const supportsTemplates = useMemo(
+    () => schemaSupportsTemplates(schema),
+    [schema]
+  );
 
   const onChangeForTemplate = useCallback(
     (templateEngine: TemplateEngine) => {
@@ -139,28 +138,31 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
 
   const [fieldInputValue, fieldOnChange] = useMemo(() => {
     if (isTemplateExpression(value)) {
+      // Convert mustache templates to nunjucks if possible, because the page editor only
+      // supports nunjucks, and it doesn't show the template engine anywhere to the user anymore.
+      const shouldChangeToNunjucks =
+        value.__type__ === "mustache" && !isMustacheOnly(value.__value__);
       return [
         value.__value__,
-        // Convert mustache templates to nunjucks if possible, because the page editor only
-        // supports nunjucks, and it doesn't show the template engine anywhere to the user anymore
-        isMustacheOnly(value.__value__)
-          ? onChangeForTemplate(value.__type__)
-          : onChangeForTemplate("nunjucks"),
+        shouldChangeToNunjucks
+          ? onChangeForTemplate("nunjucks")
+          : onChangeForTemplate(value.__type__),
       ];
     }
 
     const fieldValue = typeof value === "string" ? value : "";
-    const onChange: React.ChangeEventHandler<HTMLInputElement> = allowExpressions
-      ? onChangeForTemplate("nunjucks")
-      : (event) => {
-          setValue(event.target.value);
-        };
+    const onChange: React.ChangeEventHandler<HTMLInputElement> =
+      allowExpressions
+        ? onChangeForTemplate("nunjucks")
+        : (event) => {
+            setValue(event.target.value);
+          };
 
     return [fieldValue, onChange];
   }, [allowExpressions, onChangeForTemplate, setValue, value]);
 
   if (isTemplateExpression(value) && isMustacheOnly(value.__value__)) {
-    return <ComplexObjectWidget />;
+    return <WorkshopMessageWidget />;
   }
 
   if (

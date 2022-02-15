@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessageContext, UUID } from "@/core";
+import { MessageContext, RegistryId, UUID } from "@/core";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type LogsContext = {
@@ -24,7 +24,8 @@ export type LogsContext = {
 };
 
 export type ShareContext = {
-  extensionId: UUID;
+  blueprintId?: RegistryId;
+  extensionId?: UUID;
 };
 
 export type InstalledPageState = {

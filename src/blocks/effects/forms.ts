@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@ import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Logger, Schema } from "@/core";
 import { BusinessError } from "@/errors";
 import { boolean } from "@/utils";
-import { requireSingleElement } from "@/nativeEditor/utils";
+import { requireSingleElement } from "@/utils/requireSingleElement";
 import { RequireExactlyOne } from "type-fest";
 
 type SetValueData = RequireExactlyOne<

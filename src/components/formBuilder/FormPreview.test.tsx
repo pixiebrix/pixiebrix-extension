@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -68,5 +68,29 @@ describe("FormPreview", () => {
     };
 
     return options;
+  });
+
+  testItRenders({
+    testName: "it renders markdown in description",
+    Component: FormPreview,
+    props: {
+      rjsfSchema: {
+        schema: {
+          title: "A form",
+          description: "_Form description_",
+          type: "object",
+          properties: {
+            firstName: {
+              type: "string",
+              title: "First name",
+              description: "[link](https://example.com) in **description**",
+            },
+          },
+        },
+        uiSchema: {},
+      },
+      activeField: "firstName",
+      setActiveField: defaultProps.setActiveField,
+    },
   });
 });

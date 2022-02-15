@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { ActionPanelStore, PanelEntry } from "@/actionPanel/actionPanelTypes";
+import { ActionPanelStore, PanelEntry } from "@/actionPanel/types";
 import { mapTabEventKey } from "@/actionPanel/actionPanelUtils";
 import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { UUID } from "@/core";
@@ -93,7 +93,7 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
           </Nav>
         </Card.Header>
         <Card.Body className="p-0 scrollable-area full-height">
-          <Tab.Content className="p-0 full-height">
+          <Tab.Content className="p-0 border-0 full-height">
             {panels.map((panel: PanelEntry) => (
               <Tab.Pane
                 className="full-height flex-grow"

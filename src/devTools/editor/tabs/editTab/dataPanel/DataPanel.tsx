@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import { UUID } from "@/core";
 import { isEmpty, isEqual, pickBy, startsWith } from "lodash";
 import { useFormikContext } from "formik";
@@ -24,7 +24,7 @@ import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors"
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
 import { Alert, Button, Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
-import styles from "./DataPanel.module.scss";
+import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockPreview, {
@@ -37,7 +37,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import AuthContext from "@/auth/AuthContext";
 import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
@@ -49,6 +48,7 @@ import DocumentPreview from "@/components/documentBuilder/preview/DocumentPrevie
 import documentBuilderSelectors from "@/devTools/editor/slices/documentBuilderSelectors";
 import { actions as documentBuilderActions } from "@/devTools/editor/slices/documentBuilderSlice";
 import copy from "copy-to-clipboard";
+import useFlags from "@/hooks/useFlags";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -69,9 +69,8 @@ const contextFilter = (value: unknown, key: string) => {
 const DataPanel: React.FC<{
   instanceId: UUID;
 }> = ({ instanceId }) => {
-  const { flags } = useContext(AuthContext);
-
-  const showDeveloperTabs = flags.includes("page-editor-developer");
+  const { flagOn } = useFlags();
+  const showDeveloperTabs = flagOn("page-editor-developer");
 
   const { values: formState, errors } = useFormikContext<FormState>();
   const formikData = { errors, ...formState };
@@ -125,13 +124,11 @@ const DataPanel: React.FC<{
     actions.setActiveField
   );
 
-  const [
-    documentBuilderActiveElement,
-    setDocumentBuilderActiveElement,
-  ] = useReduxState(
-    documentBuilderSelectors.activeElement,
-    documentBuilderActions.setActiveElement
-  );
+  const [documentBuilderActiveElement, setDocumentBuilderActiveElement] =
+    useReduxState(
+      documentBuilderSelectors.activeElement,
+      documentBuilderActions.setActiveElement
+    );
 
   const documentBodyName = `extension.blockPipeline.${blockIndex}.config.body`;
 
@@ -154,43 +151,42 @@ const DataPanel: React.FC<{
 
   const [contextQuery, setContextQuery] = useDataPanelTabSearchQuery("context");
   const [formikQuery, setFormikQuery] = useDataPanelTabSearchQuery("formik");
-  const [renderedQuery, setRenderedQuery] = useDataPanelTabSearchQuery(
-    "rendered"
-  );
+  const [renderedQuery, setRenderedQuery] =
+    useDataPanelTabSearchQuery("rendered");
   const [outputQuery, setOutputQuery] = useDataPanelTabSearchQuery("output");
 
   const popupBoundary = showDocumentPreview
-    ? document.querySelector(`.${styles.tabContent}`)
+    ? document.querySelector(`.${dataPanelStyles.tabContent}`)
     : undefined;
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
-      <div className={styles.tabContainer}>
+      <div className={dataPanelStyles.tabContainer}>
         <Nav variant="tabs">
-          <Nav.Item className={styles.tabNav}>
+          <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="context">Context</Nav.Link>
           </Nav.Item>
           {showDeveloperTabs && (
             <>
-              <Nav.Item className={styles.tabNav}>
+              <Nav.Item className={dataPanelStyles.tabNav}>
                 <Nav.Link eventKey="formik">Formik</Nav.Link>
               </Nav.Item>
-              <Nav.Item className={styles.tabNav}>
+              <Nav.Item className={dataPanelStyles.tabNav}>
                 <Nav.Link eventKey="blockConfig">Raw Block</Nav.Link>
               </Nav.Item>
             </>
           )}
-          <Nav.Item className={styles.tabNav}>
+          <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="rendered">Rendered</Nav.Link>
           </Nav.Item>
-          <Nav.Item className={styles.tabNav}>
+          <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="output">Output</Nav.Link>
           </Nav.Item>
-          <Nav.Item className={styles.tabNav}>
+          <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="preview">Preview</Nav.Link>
           </Nav.Item>
         </Nav>
-        <Tab.Content className={styles.tabContent}>
+        <Tab.Content className={dataPanelStyles.tabContent}>
           <DataTab eventKey="context" isTraceEmpty={!record}>
             {isInputStale && (
               <Alert variant="warning">
@@ -302,7 +298,7 @@ const DataPanel: React.FC<{
             {showFormPreview || showDocumentPreview ? (
               <ErrorBoundary>
                 {showFormPreview ? (
-                  <div className={styles.selectablePreviewContainer}>
+                  <div className={dataPanelStyles.selectablePreviewContainer}>
                     <FormPreview
                       rjsfSchema={block.config as RJSFSchema}
                       activeField={formBuilderActiveField}

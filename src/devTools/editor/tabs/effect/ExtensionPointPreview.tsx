@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
 
 import React, { useCallback, useEffect, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { UnknownObject } from "@/types";
@@ -115,7 +115,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
   if (isRunning) {
     return (
       <div>
-        <GridLoader />
+        <Loader />
       </div>
     );
   }

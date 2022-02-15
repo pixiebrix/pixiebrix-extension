@@ -1,6 +1,5 @@
-/* eslint-disable filenames/match-exported */
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,10 +18,10 @@
 import { Deployment } from "@/types/contract";
 import browser from "webextension-polyfill";
 import { isEmpty, partition, uniqBy } from "lodash";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/telemetry";
 import { getExtensionVersion } from "@/chrome";
-import { isLinked, readAuthData } from "@/auth/token";
+import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -32,7 +31,7 @@ import {
 } from "@/background/messenger/api";
 import { deploymentPermissions } from "@/permissions";
 import { IExtension, UUID, RegistryId } from "@/core";
-import { getLinkedApiClient } from "@/services/apiClient";
+import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "./util";
 import { parse as parseSemVer, satisfies, SemVer } from "semver";
@@ -40,6 +39,9 @@ import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
+import { getSettingsState } from "@/store/settingsStorage";
+import { isUpdateAvailable } from "@/background/installer";
+import { ProfileResponse } from "@/hooks/auth";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -81,7 +83,7 @@ function uninstallExtension(
   const extensionRef = {
     extensionId,
   };
-  void uninstallContextMenu(extensionRef).catch(reportError);
+  void uninstallContextMenu(extensionRef);
   return reducer(state, actions.removeExtension(extensionRef));
 }
 
@@ -112,7 +114,7 @@ export async function uninstallAllDeployments(): Promise<void> {
   });
 }
 
-async function uninstallUnmatchedDeployments(
+export async function uninstallUnmatchedDeployments(
   deployments: Deployment[]
 ): Promise<void> {
   let state = await loadOptions();
@@ -271,9 +273,12 @@ async function selectUpdatedDeployments(
 export async function updateDeployments(): Promise<void> {
   expectContext("background");
 
-  const [linked, { organizationId }] = await Promise.all([
+  const now = Date.now();
+
+  const [linked, { organizationId }, { nextUpdate }] = await Promise.all([
     isLinked(),
     readAuthData(),
+    getSettingsState(),
   ]);
 
   if (!linked) {
@@ -295,20 +300,76 @@ export async function updateDeployments(): Promise<void> {
   // Always get the freshest options slice from the local storage
   const { extensions } = await loadOptions();
 
+  // Version to report to the server. The update check happens via isUpdateAvailable below
   const { version: extensionVersionString } = browser.runtime.getManifest();
   const extensionVersion = parseSemVer(extensionVersionString);
 
-  const linkedClient = await getLinkedApiClient();
-  const { data: deployments } = await linkedClient.post<Deployment[]>(
-    "/api/deployments/",
-    {
+  // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment installed.
+  // Now we're always sending in order to help team admins understand any gaps between number of registered users
+  // and amount of activity when using deployments
+  const client = await maybeGetLinkedApiClient();
+  if (client == null) {
+    console.debug(
+      "Skipping  deployments update because the extension is not linked to the PixieBrix service"
+    );
+    return;
+  }
+
+  const { data: profile, status: profileResponseStatus } =
+    await client.get<ProfileResponse>("/api/me/");
+
+  if (profileResponseStatus >= 400) {
+    // If our server is acting up, check again later
+    console.debug(
+      "Skipping deployments update because /api/me/ request failed"
+    );
+    return;
+  }
+
+  // Ensure the user's flags and telemetry information is up-to-date
+  void updateUserData({
+    user: profile.id,
+    email: profile.email,
+    organizationId: profile.organization?.id,
+    telemetryOrganizationId: profile.telemetry_organization?.id,
+    flags: profile.flags,
+  });
+
+  const { data: deployments, status: deploymentResponseStatus } =
+    await client.post<Deployment[]>("/api/deployments/", {
       uid: await getUID(),
       version: await getExtensionVersion(),
       active: selectInstalledDeployments(extensions),
-    }
-  );
+    });
 
+  if (deploymentResponseStatus >= 400) {
+    // Our server is active up, check again later
+    console.debug(
+      "Skipping deployments update because /api/deployments/ request failed"
+    );
+    return;
+  }
+
+  // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
+
+  if (nextUpdate && nextUpdate > now) {
+    console.debug("Skipping deployments update because updates are snoozed", {
+      nextUpdate,
+    });
+    return;
+  }
+
+  if (
+    isUpdateAvailable() &&
+    // `restricted-version` is an implicit flag from the MeSerializer
+    profile.flags.includes("restricted-version")
+  ) {
+    console.info("Extension update available from the web store");
+    // Have the user update their browser extension. (Since the new version might impact the deployment activation)
+    void browser.runtime.openOptionsPage();
+    return;
+  }
 
   const updatedDeployments = await selectUpdatedDeployments(deployments);
 
@@ -322,7 +383,7 @@ export async function updateDeployments(): Promise<void> {
     await refreshRegistries();
   } catch (error) {
     reportError(error);
-    await browser.runtime.openOptionsPage();
+    void browser.runtime.openOptionsPage();
     // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user the to
     // manually install the deployments via the banner
     return;
@@ -354,7 +415,7 @@ export async function updateDeployments(): Promise<void> {
 
   // We only want to call openOptionsPage a single time
   if (manual.length > 0 || automaticError) {
-    await browser.runtime.openOptionsPage();
+    void browser.runtime.openOptionsPage();
   }
 }
 

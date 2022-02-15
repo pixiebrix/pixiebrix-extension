@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,7 @@ import {
   handleNavigate,
   queueReactivateTab,
   reactivateTab,
+  removeExtension,
 } from "@/contentScript/lifecycle";
 import {
   getFormDefinition,
@@ -34,17 +35,18 @@ import {
   hideActionPanel,
   showActionPanel,
   toggleActionPanel,
-  removeExtension,
-} from "@/actionPanel/native";
-import { insertPanel } from "@/nativeEditor/insertPanel";
-import { insertButton } from "@/nativeEditor/insertButton";
+  removeExtension as removeActionPanel,
+  getActionPanelStore,
+} from "@/contentScript/actionPanel";
+import { insertPanel } from "@/contentScript/nativeEditor/insertPanel";
+import { insertButton } from "@/contentScript/nativeEditor/insertButton";
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/nativeEditor/dynamic";
+} from "@/contentScript/nativeEditor/dynamic";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
 import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
 import {
@@ -56,8 +58,11 @@ import {
 } from "@/contentScript/devTools";
 import { checkAvailable } from "@/blocks/available";
 import { showNotification } from "@/contentScript/notify";
-import { linkChildTab, runBrick } from "@/contentScript/executor";
-import { cancelSelect, selectElement } from "@/nativeEditor/selector";
+import { runBrick } from "@/contentScript/executor";
+import {
+  cancelSelect,
+  selectElement,
+} from "@/contentScript/nativeEditor/selector";
 import {
   runEffectPipeline,
   runMapArgs,
@@ -75,6 +80,7 @@ declare global {
 
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
+    REMOVE_EXTENSION: typeof removeExtension;
     RESET_TAB: typeof resetTab;
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
@@ -82,7 +88,9 @@ declare global {
     TOGGLE_ACTION_PANEL: typeof toggleActionPanel;
     SHOW_ACTION_PANEL: typeof showActionPanel;
     HIDE_ACTION_PANEL: typeof hideActionPanel;
-    REMOVE_ACTION_PANEL: typeof removeExtension;
+    REMOVE_ACTION_PANEL: typeof removeActionPanel;
+    GET_ACTION_PANEL_STORE: typeof getActionPanelStore;
+
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
 
@@ -105,7 +113,6 @@ declare global {
     CHECK_AVAILABLE: typeof checkAvailable;
     HANDLE_NAVIGATE: typeof handleNavigate;
     SHOW_NOTIFICATION: typeof showNotification;
-    LINK_CHILD_TAB: typeof linkChildTab;
     RUN_BRICK: typeof runBrick;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
@@ -116,50 +123,54 @@ declare global {
   }
 }
 
-registerMethods({
-  FORM_GET_DEFINITION: getFormDefinition,
-  FORM_RESOLVE: resolveForm,
-  FORM_CANCEL: cancelForm,
+export default function registerMessenger(): void {
+  registerMethods({
+    FORM_GET_DEFINITION: getFormDefinition,
+    FORM_RESOLVE: resolveForm,
+    FORM_CANCEL: cancelForm,
 
-  QUEUE_REACTIVATE_TAB: queueReactivateTab,
-  REACTIVATE_TAB: reactivateTab,
-  RESET_TAB: resetTab,
+    QUEUE_REACTIVATE_TAB: queueReactivateTab,
+    REACTIVATE_TAB: reactivateTab,
+    REMOVE_EXTENSION: removeExtension,
+    RESET_TAB: resetTab,
 
-  TOGGLE_QUICK_BAR: toggleQuickBar,
-  HANDLE_MENU_ACTION: handleMenuAction,
-  TOGGLE_ACTION_PANEL: toggleActionPanel,
-  SHOW_ACTION_PANEL: showActionPanel,
-  HIDE_ACTION_PANEL: hideActionPanel,
-  REMOVE_ACTION_PANEL: removeExtension,
-  INSERT_PANEL: insertPanel,
-  INSERT_BUTTON: insertButton,
+    TOGGLE_QUICK_BAR: toggleQuickBar,
+    HANDLE_MENU_ACTION: handleMenuAction,
+    TOGGLE_ACTION_PANEL: toggleActionPanel,
+    SHOW_ACTION_PANEL: showActionPanel,
+    HIDE_ACTION_PANEL: hideActionPanel,
+    REMOVE_ACTION_PANEL: removeActionPanel,
+    GET_ACTION_PANEL_STORE: getActionPanelStore,
 
-  UIPATH_INIT: initRobot,
-  UIPATH_GET_PROCESSES: getProcesses,
+    INSERT_PANEL: insertPanel,
+    INSERT_BUTTON: insertButton,
 
-  SEARCH_WINDOW: withSearchWindow,
-  DETECT_FRAMEWORKS: withDetectFrameworkVersions,
-  RUN_SINGLE_BLOCK: runBlock,
-  RUN_READER_BLOCK: runReaderBlock,
-  RUN_READER: runReader,
-  READ_SELECTED: readSelected,
+    UIPATH_INIT: initRobot,
+    UIPATH_GET_PROCESSES: getProcesses,
 
-  CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
-  UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
-  RUN_EXTENSION_POINT_READER: runExtensionPointReader,
-  ENABLE_OVERLAY: enableOverlay,
-  DISABLE_OVERLAY: disableOverlay,
-  INSTALLED_EXTENSIONS: getInstalledIds,
-  CHECK_AVAILABLE: checkAvailable,
-  HANDLE_NAVIGATE: handleNavigate,
-  SHOW_NOTIFICATION: showNotification,
+    SEARCH_WINDOW: withSearchWindow,
+    DETECT_FRAMEWORKS: withDetectFrameworkVersions,
+    RUN_SINGLE_BLOCK: runBlock,
+    RUN_READER_BLOCK: runReaderBlock,
+    RUN_READER: runReader,
+    READ_SELECTED: readSelected,
 
-  LINK_CHILD_TAB: linkChildTab,
-  RUN_BRICK: runBrick,
-  CANCEL_SELECT_ELEMENT: cancelSelect,
-  SELECT_ELEMENT: selectElement,
+    CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
+    UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
+    RUN_EXTENSION_POINT_READER: runExtensionPointReader,
+    ENABLE_OVERLAY: enableOverlay,
+    DISABLE_OVERLAY: disableOverlay,
+    INSTALLED_EXTENSIONS: getInstalledIds,
+    CHECK_AVAILABLE: checkAvailable,
+    HANDLE_NAVIGATE: handleNavigate,
+    SHOW_NOTIFICATION: showNotification,
 
-  RUN_RENDERER_PIPELINE: runRendererPipeline,
-  RUN_EFFECT_PIPELINE: runEffectPipeline,
-  RUN_MAP_ARGS: runMapArgs,
-});
+    RUN_BRICK: runBrick,
+    CANCEL_SELECT_ELEMENT: cancelSelect,
+    SELECT_ELEMENT: selectElement,
+
+    RUN_RENDERER_PIPELINE: runRendererPipeline,
+    RUN_EFFECT_PIPELINE: runEffectPipeline,
+    RUN_MAP_ARGS: runMapArgs,
+  });
+}

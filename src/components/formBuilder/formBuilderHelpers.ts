@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,7 +37,13 @@ export const MINIMAL_UI_SCHEMA: UiSchema = {
 
 export const DEFAULT_FIELD_TYPE = "string";
 
-export const parseUiType = (value: string) => {
+export type UiType = {
+  propertyType: SchemaPropertyType;
+  uiWidget: string | undefined;
+  propertyFormat: string | undefined;
+};
+
+export const parseUiType = (value: string): UiType => {
   const [propertyType, uiWidget, propertyFormat] = value.split(":");
   return {
     propertyType: propertyType as SchemaPropertyType,
@@ -287,9 +293,10 @@ export const produceSchemaOnUiTypeChange = (
 };
 
 export const updateRjsfSchemaWithDefaultsIfNeeded = (
-  rjsfSchema: RJSFSchema
+  rjsfSchema: RJSFSchema = {} as RJSFSchema
 ) => {
   const { schema, uiSchema } = rjsfSchema;
+
   // eslint-disable-next-line security/detect-object-injection -- UI_ORDER is a known property
   const uiOrder = uiSchema?.[UI_ORDER];
   const needToUpdateRequired =
@@ -299,8 +306,6 @@ export const updateRjsfSchemaWithDefaultsIfNeeded = (
 
   if (!schema || !uiSchema || !uiOrder?.includes("*") || needToUpdateRequired) {
     return produce(rjsfSchema, (draft) => {
-      // Relying on Immer to protect against object injections
-      /* eslint-disable security/detect-object-injection */
       if (!draft.schema) {
         draft.schema = MINIMAL_SCHEMA;
       }
@@ -309,19 +314,37 @@ export const updateRjsfSchemaWithDefaultsIfNeeded = (
         draft.uiSchema = MINIMAL_UI_SCHEMA;
       }
 
+      // Relying on Immer to protect against object injections
+      /* eslint-disable security/detect-object-injection */
       if (!draft.uiSchema[UI_ORDER]) {
         const propertyKeys = Object.keys(draft.schema.properties || {});
         draft.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
       } else if (!draft.uiSchema[UI_ORDER].includes("*")) {
         draft.uiSchema[UI_ORDER].push("*");
       }
+      /* eslint-enable security/detect-object-injection */
 
       if (needToUpdateRequired) {
         draft.schema.required = [];
       }
-      /* eslint-enable security/detect-object-injection */
     });
   }
 
   return null;
+};
+
+export const normalizeUiOrder = (propertyKeys: string[], uiOrder: string[]) => {
+  // A naive check to see if all property keys are presenter in uiOrder
+  if (
+    propertyKeys.length === uiOrder.length - 1 &&
+    uiOrder[uiOrder.length - 1] === "*"
+  ) {
+    return uiOrder;
+  }
+
+  return [
+    ...uiOrder.filter((key) => propertyKeys.includes(key)),
+    ...propertyKeys.filter((key) => !uiOrder.includes(key)),
+    "*",
+  ];
 };

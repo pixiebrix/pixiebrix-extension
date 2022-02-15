@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,19 +19,24 @@ import React from "react";
 import { screen, render } from "@testing-library/react";
 import { _InstalledPage } from "./InstalledPage";
 import { StaticRouter } from "react-router-dom";
-import AuthContext from "@/auth/AuthContext";
 import { Organization } from "@/types/contract";
 import OnboardingPage from "@/options/pages/installed/OnboardingPage";
+import {
+  useGetOrganizationsQuery,
+  useGetRecipesQuery,
+  useGetAuthQuery,
+} from "@/services/api";
+import useDeployments from "@/hooks/useDeployments";
+import { AuthState } from "@/core";
+import { anonAuth } from "@/hooks/auth";
 
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: jest.fn(),
   useGetRecipesQuery: jest.fn(),
+  useGetAuthQuery: jest.fn(),
 }));
 
 jest.mock("@/hooks/useDeployments", () => jest.fn());
-
-import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
-import useDeployments from "@/hooks/useDeployments";
 
 // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
 jest.mock("@/hooks/useNotifications", () => {
@@ -46,6 +51,12 @@ jest.mock("@/hooks/useNotifications", () => {
 });
 
 describe("InstalledPage", () => {
+  beforeAll(() => {
+    (useGetAuthQuery as jest.Mock).mockReturnValue({
+      data: anonAuth,
+    });
+  });
+
   afterAll(() => {
     jest.resetAllMocks();
   });
@@ -150,8 +161,6 @@ const getRenderedOnboardingInformation = () => {
 
   const contactTeamAdminColumn = screen.queryByText("Contact your team admin");
 
-  const videoTour = screen.queryByText("Video Tour");
-
   const createBrickColumn = screen.queryByText("Create your Own");
 
   const activateFromDeploymentBannerColumn = screen.queryByText(
@@ -166,14 +175,26 @@ const getRenderedOnboardingInformation = () => {
     activateFromMarketplaceColumn,
     createBrickColumn,
     contactTeamAdminColumn,
-    videoTour,
     activateFromDeploymentBannerColumn,
     activateTeamBlueprintsColumn,
   };
 };
 
 describe("OnboardingPage", () => {
+  const authState: AuthState = {
+    flags: ["restricted-marketplace"],
+    isLoggedIn: true,
+    isOnboarded: true,
+    extension: true,
+  };
+
   beforeEach(() => {
+    (useGetAuthQuery as jest.Mock).mockReturnValue({
+      data: anonAuth,
+    });
+  });
+
+  afterEach(() => {
     jest.resetAllMocks();
   });
 
@@ -190,32 +211,25 @@ describe("OnboardingPage", () => {
 
     expect(rendered.activateFromMarketplaceColumn).not.toBeNull();
     expect(rendered.createBrickColumn).not.toBeNull();
-    expect(rendered.videoTour).not.toBeNull();
   });
 
   test("enterprise user with `restricted-marketplace` flag", () => {
     mockOnboarding({ hasOrganization: true });
 
+    (useGetAuthQuery as jest.Mock).mockReturnValue({
+      data: authState,
+    });
+
     render(
-      <AuthContext.Provider
-        value={{
-          flags: ["restricted-marketplace"],
-          isLoggedIn: true,
-          isOnboarded: true,
-          extension: true,
-        }}
-      >
-        <StaticRouter>
-          <OnboardingPage />
-        </StaticRouter>
-      </AuthContext.Provider>
+      <StaticRouter>
+        <OnboardingPage />
+      </StaticRouter>
     );
 
     const rendered = getRenderedOnboardingInformation();
 
     expect(rendered.activateFromMarketplaceColumn).toBeNull();
     expect(rendered.contactTeamAdminColumn).not.toBeNull();
-    expect(rendered.videoTour).toBeNull();
   });
 
   test("enterprise user with automatic team deployments", () => {
@@ -224,26 +238,20 @@ describe("OnboardingPage", () => {
       hasDeployments: true,
     });
 
+    (useGetAuthQuery as jest.Mock).mockReturnValue({
+      data: authState,
+    });
+
     render(
-      <AuthContext.Provider
-        value={{
-          flags: ["restricted-marketplace"],
-          isLoggedIn: true,
-          isOnboarded: true,
-          extension: true,
-        }}
-      >
-        <StaticRouter>
-          <OnboardingPage />
-        </StaticRouter>
-      </AuthContext.Provider>
+      <StaticRouter>
+        <OnboardingPage />
+      </StaticRouter>
     );
 
     const rendered = getRenderedOnboardingInformation();
 
     expect(rendered.activateFromMarketplaceColumn).toBeNull();
     expect(rendered.activateFromDeploymentBannerColumn).not.toBeNull();
-    expect(rendered.videoTour).toBeNull();
   });
 
   test("enterprise user with team blueprints", () => {
@@ -262,7 +270,6 @@ describe("OnboardingPage", () => {
 
     expect(rendered.activateTeamBlueprintsColumn).toBeNull();
     expect(rendered.createBrickColumn).not.toBeNull();
-    expect(rendered.videoTour).not.toBeNull();
   });
 
   test("enterprise user with no team blueprints or restrictions", () => {
@@ -280,7 +287,6 @@ describe("OnboardingPage", () => {
 
     expect(rendered.activateFromMarketplaceColumn).not.toBeNull();
     expect(rendered.createBrickColumn).not.toBeNull();
-    expect(rendered.videoTour).not.toBeNull();
   });
 
   function expectLoading() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useTitle } from "@/hooks/title";
 import { getErrorMessage } from "@/errors";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 
 export const PageTitle: React.FunctionComponent<{
   title: React.ReactNode;
@@ -76,7 +76,7 @@ const Page: React.FunctionComponent<{
 
   const body = useMemo(() => {
     if (isPending) {
-      return <GridLoader />;
+      return <Loader />;
     }
 
     if (error) {
@@ -94,10 +94,12 @@ const Page: React.FunctionComponent<{
         </div>
         {toolbar && <div>{toolbar}</div>}
       </div>
-      <div className="pb-4">
-        {typeof description === "string" ? <p>{description}</p> : description}
-        {breadcrumb}
-      </div>
+      {description && (
+        <div className="pb-4">
+          {typeof description === "string" ? <p>{description}</p> : description}
+          {breadcrumb}
+        </div>
+      )}
       {body}
     </div>
   );

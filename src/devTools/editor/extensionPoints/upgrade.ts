@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -277,7 +277,7 @@ async function upgradeValue({
             // is valid javascript.
             {
               blockId,
-              config: (value as unknown) as UnknownObject,
+              config: value as unknown as UnknownObject,
               fieldName: index.toString(),
               // eslint-disable-next-line security/detect-object-injection
               fieldSchema: itemSchemas[index],

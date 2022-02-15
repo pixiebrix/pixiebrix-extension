@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,17 +18,17 @@
 import React, { useMemo } from "react";
 import { Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { RecipeDefinition, ServiceDefinition } from "@/types/definitions";
+import { RecipeDefinition } from "@/types/definitions";
 import { useSelectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
 import { faCloud, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useFetch from "@/hooks/useFetch";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import AuthWidget from "@/options/pages/marketplace/AuthWidget";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import { useField } from "formik";
 import { ServiceAuthPair } from "@/core";
 import { useAuthOptions } from "@/hooks/auth";
+import { useGetServicesQuery } from "@/services/api";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -41,9 +41,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
 
   const selected = useSelectedExtensions(blueprint.extensionPoints);
 
-  const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
-    "/api/services/"
-  );
+  const { data: serviceConfigs } = useGetServicesQuery();
 
   const visibleServiceIds = useMemo(
     // The PixieBrix service gets automatically configured, so don't need to show it. If the PixieBrix service is
@@ -63,7 +61,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
         <Card.Title>Select Integrations</Card.Title>
         <p>
           Integrations tell PixieBrix how to connect to the other applications
-          and integrations you use
+          you use
         </p>
         <p className="text-info">
           <FontAwesomeIcon icon={faInfoCircle} /> You can configure integrations

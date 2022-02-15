@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,14 +27,14 @@ import { IBlock } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 
 type ElementBlockEditProps = {
-  blocksType: BlockType;
+  blockTypes: BlockType[];
   blockConfigName: string;
   blockConfig: BlockConfig;
   onBlockSelected: (blockConfig: BlockConfig) => void;
 };
 
 const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
-  blocksType,
+  blockTypes,
   blockConfigName,
   blockConfig,
   onBlockSelected,
@@ -43,7 +43,7 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
     async () => {
       const allBlocks = await blockRegistry.allTyped();
       return [...allBlocks.values()]
-        .filter((x) => x.type === blocksType)
+        .filter((x) => blockTypes.includes(x.type))
         .map((x) => x.block);
     },
     [],

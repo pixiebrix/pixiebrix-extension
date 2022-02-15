@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ import PermissionsPane from "@/devTools/editor/panes/PermissionsPane";
 import BetaPane from "@/devTools/editor/panes/BetaPane";
 import InsertMenuItemPane from "@/devTools/editor/panes/insert/InsertMenuItemPane";
 import InsertPanelPane from "@/devTools/editor/panes/insert/InsertPanelPane";
-import NoExtensionSelectedPane from "@/devTools/editor/panes/NoExtensionsSelectedPane";
+import NoExtensionSelectedPane from "@/devTools/editor/panes/NoExtensionSelectedPane";
 import NoExtensionsPane from "@/devTools/editor/panes/NoExtensionsPane";
 import WelcomePane from "@/devTools/editor/panes/WelcomePane";
 import EditorPane from "@/devTools/editor/panes/EditorPane";
@@ -33,17 +33,23 @@ import useEscapeHandler from "@/devTools/editor/hooks/useEscapeHandler";
 import GenericInsertPane from "@/devTools/editor/panes/insert/GenericInsertPane";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/slices/editorSlice";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import {
+  useGetAuthQuery,
+  useGetMarketplaceListingsQuery,
+  useGetRecipesQuery,
+} from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
-import styles from "./Editor.module.scss";
 import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
+import Loader from "@/components/Loader";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
 const Editor: React.FunctionComponent = () => {
   const { tabState, connecting } = useContext(DevToolsContext);
   const installed = useSelector(selectExtensions);
+  const { data: recipes, isLoading: loadingRecipes } = useGetRecipesQuery();
+  const { isLoading: authLoading } = useGetAuthQuery();
   const dispatch = useDispatch();
 
   // Async fetch marketplace content to the Redux so it's pre-fetched for rendering in the Brick Selection modal
@@ -53,8 +59,8 @@ const Editor: React.FunctionComponent = () => {
     selectionSeq,
     inserting,
     elements,
-    activeElement,
-    error,
+    activeElement: activeElementId,
+    error: editorError,
     beta,
   } = useSelector(selectEditor);
 
@@ -80,7 +86,7 @@ const Editor: React.FunctionComponent = () => {
       return <PermissionsPane />;
     }
 
-    if (error && beta) {
+    if (editorError && beta) {
       return <BetaPane />;
     }
 
@@ -98,10 +104,10 @@ const Editor: React.FunctionComponent = () => {
             />
           );
       }
-    } else if (error) {
+    } else if (editorError) {
       return (
         <div className="p-2">
-          <span className="text-danger">{error}</span>
+          <span className="text-danger">{editorError}</span>
         </div>
       );
     } else if (selectedElement) {
@@ -127,7 +133,7 @@ const Editor: React.FunctionComponent = () => {
     cancelInsert,
     inserting,
     selectedElement,
-    error,
+    editorError,
     installed,
     selectionSeq,
     availableDynamicIds?.size,
@@ -135,13 +141,23 @@ const Editor: React.FunctionComponent = () => {
     tabState,
   ]);
 
+  if (authLoading) {
+    return (
+      <div className="auth">
+        <Loader />
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.root}>
+    <div className="DevToolsContainer">
       <Sidebar
         installed={installed}
         elements={elements}
-        activeElement={activeElement}
+        recipes={recipes}
+        activeElementId={activeElementId}
         isInsertingElement={Boolean(inserting)}
+        isLoadingItems={loadingRecipes}
       />
       {body}
     </div>

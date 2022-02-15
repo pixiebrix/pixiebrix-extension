@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,7 +27,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";
-import SharingTable from "./Sharing";
+import SharingTable from "./SharingTable";
 import { sortBy } from "lodash";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
 import { MessageContext, UUID } from "@/core";
@@ -44,6 +44,7 @@ import useNotifications from "@/hooks/useNotifications";
 import { ReferenceEntry } from "./brickEditorTypes";
 import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
+import { isMac } from "@/utils";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -71,11 +72,6 @@ interface OwnProps {
   showTemplates?: boolean;
   showLogs?: boolean;
   logContext: MessageContext | null;
-}
-
-function isMac(): boolean {
-  // https://stackoverflow.com/a/27862868/402560
-  return navigator.platform.includes("Mac");
 }
 
 function useOpenEditorTab() {

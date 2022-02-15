@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ExtensionLogsModal.module.scss";
+
 import { MessageContext } from "@/core";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
-import styles from "./ExtensionLogsModal.module.scss";
 import { installedPageSlice } from "./installedPageSlice";
 
 const ExtensionLogsModal: React.FC<{

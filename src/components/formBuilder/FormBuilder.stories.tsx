@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,16 +27,18 @@ import { UiSchema } from "@rjsf/core";
 
 const schema: Schema = {
   title: "A form",
-  description: "A form example.",
+  description: "A form example with _(you can use markdown)_",
   type: "object",
   properties: {
     firstName: {
       type: "string",
       title: "First name",
+      description: "Your first name",
       default: "Chuck",
     },
     age: {
-      type: "number",
+      type: "integer",
+      description: "**integer number**, please",
       title: "Age",
     },
     telephone: {

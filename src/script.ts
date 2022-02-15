@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -42,7 +42,6 @@ if (window[PAGESCRIPT_SYMBOL]) {
 // eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
 window[PAGESCRIPT_SYMBOL] = uuidv4();
 
-import jQuery from "jquery";
 import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,
@@ -71,8 +70,8 @@ import {
   traverse,
   WriteableComponentAdapter,
 } from "@/frameworks/component";
-import { elementInfo } from "@/nativeEditor/frameworks";
-import { requireSingleElement } from "@/nativeEditor/utils";
+import { elementInfo } from "@/contentScript/nativeEditor/frameworks";
+import { requireSingleElement } from "@/utils/requireSingleElement";
 import { getPropByPath, noopProxy, ReadProxy } from "@/runtime/pathHelpers";
 import { UnknownObject } from "@/types";
 
@@ -284,4 +283,4 @@ setTimeout(() => {
 // Ensure jquery is available for testing selectors when debugging PixieBrix errors
 // Cast as any because we don't want to pollute namespace with TypeScript declaration
 // eslint-disable-next-line security/detect-object-injection
-window[JQUERY_WINDOW_PROP] = jQuery;
+window[JQUERY_WINDOW_PROP] = $;

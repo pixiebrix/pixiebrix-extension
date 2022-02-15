@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -57,7 +57,7 @@ const allowedChildTypes: Record<string, DocumentElementType[]> = {
     "list",
   ],
   // Any element we can add to the list
-  list: (DOCUMENT_ELEMENT_TYPES as unknown) as DocumentElementType[],
+  list: DOCUMENT_ELEMENT_TYPES as unknown as DocumentElementType[],
 };
 
 export function getAllowedChildTypes(

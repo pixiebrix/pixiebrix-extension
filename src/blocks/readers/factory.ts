@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -111,13 +111,13 @@ export function readerFactory(component: unknown): IReader {
       super(id, name, description);
     }
 
-    outputSchema: Schema = outputSchema;
+    override outputSchema: Schema = outputSchema;
 
     async isAvailable() {
       return checkAvailable(isAvailable);
     }
 
-    async isPure(): Promise<boolean> {
+    override async isPure(): Promise<boolean> {
       return true;
     }
 

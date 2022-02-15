@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ import { Button, Modal } from "react-bootstrap";
 import Form from "@/components/form/Form";
 import * as yup from "yup";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import {
   useAddDatabaseToGroupMutation,
   useCreateDatabaseMutation,
@@ -87,10 +87,8 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
   onDatabaseCreated,
   onClose,
 }) => {
-  const {
-    data: organizations,
-    isLoading: isLoadingOrganizations,
-  } = useGetOrganizationsQuery();
+  const { data: organizations, isLoading: isLoadingOrganizations } =
+    useGetOrganizationsQuery();
 
   const [createDatabase] = useCreateDatabaseMutation();
 
@@ -138,7 +136,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
 
       {isLoadingOrganizations ? (
         <Modal.Body>
-          <GridLoader />
+          <Loader />
         </Modal.Body>
       ) : (
         <Form

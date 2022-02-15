@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -113,14 +113,14 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const authId = uuidv4();
     const serviceId = validateRegistryId("test/api");
 
-    (services.locate as any) = jest.fn().mockResolvedValue(({
+    (services.locate as any) = jest.fn().mockResolvedValue({
       id: authId,
       serviceId,
       proxy: false,
       config: {
         prop: "abc123",
       },
-    } as unknown) as SanitizedServiceConfiguration);
+    } as unknown as SanitizedServiceConfiguration);
 
     const dependencies: ServiceDependency[] = [
       { id: serviceId, outputKey: validateOutputKey("service") },
@@ -178,14 +178,14 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const authId = uuidv4();
     const serviceId = validateRegistryId("test/api");
 
-    (services.locate as any) = jest.fn().mockResolvedValue(({
+    (services.locate as any) = jest.fn().mockResolvedValue({
       id: authId,
       serviceId,
       proxy: false,
       config: {
         prop: "abc123",
       },
-    } as unknown) as SanitizedServiceConfiguration);
+    } as unknown as SanitizedServiceConfiguration);
 
     const dependencies: ServiceDependency[] = [
       { id: serviceId, outputKey: validateOutputKey("service") },
@@ -222,14 +222,14 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       const authId = uuidv4();
       const serviceId = validateRegistryId("test/api");
 
-      (services.locate as any) = jest.fn().mockResolvedValue(({
+      (services.locate as any) = jest.fn().mockResolvedValue({
         id: authId,
         serviceId,
         proxy: false,
         config: {
           prop: "abc123",
         },
-      } as unknown) as SanitizedServiceConfiguration);
+      } as unknown as SanitizedServiceConfiguration);
 
       const dependencies: ServiceDependency[] = [
         { id: serviceId, outputKey: validateOutputKey("service") },

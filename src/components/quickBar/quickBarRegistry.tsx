@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,10 +25,19 @@ import {
   faStore,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
+import { RegistryId } from "@/core";
+import { pull, remove } from "lodash";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
 
 const PIXIEBRIX_SECTION = "PixieBrix";
+
+/**
+ * `kbar` action with additional metadata about the extension point that added it.
+ */
+type CustomAction = Action & {
+  extensionPointId?: RegistryId;
+};
 
 const defaultActions: Action[] = [
   {
@@ -83,43 +92,48 @@ const defaultActions: Action[] = [
   },
 ];
 
-type ChangeHandler = (actions: Action[]) => void;
+type ChangeHandler = (actions: CustomAction[]) => void;
 
 class QuickBarRegistry {
-  private _actions: Action[];
+  private readonly actions: CustomAction[] = defaultActions;
   private readonly listeners: ChangeHandler[] = [];
-
-  constructor() {
-    this._actions = defaultActions;
-  }
 
   private notifyListeners() {
     for (const listener of this.listeners) {
-      listener(this._actions);
+      listener(this.actions);
     }
   }
 
-  add(action: Action): void {
-    this._actions = this._actions.filter((x) => x.id !== action.id);
-    this._actions.push(action);
+  get currentActions() {
+    return this.actions;
+  }
+
+  add(action: CustomAction): void {
+    remove(this.actions, (x) => x.id === action.id);
+    this.actions.unshift(action);
+    this.notifyListeners();
+  }
+
+  removeExtensionPointActions(id: RegistryId) {
+    remove(this.actions, (x) => x.extensionPointId === id);
     this.notifyListeners();
   }
 
   remove(id: string): void {
-    this._actions = this._actions.filter((x) => x.id !== id);
+    remove(this.actions, (x) => x.id === id);
+    this.notifyListeners();
   }
 
   addListener(handler: ChangeHandler) {
     this.listeners.push(handler);
-    this.notifyListeners();
   }
 
-  public get actions(): Action[] {
-    return this._actions;
+  removeListener(handler: ChangeHandler) {
+    pull(this.listeners, handler);
   }
 }
 
-// Singleton registry
+// Singleton registry for the content script
 const quickBarRegistry = new QuickBarRegistry();
 
 export default quickBarRegistry;

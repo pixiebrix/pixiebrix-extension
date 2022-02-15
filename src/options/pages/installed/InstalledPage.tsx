@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,19 +16,16 @@
  */
 
 import { connect, useSelector } from "react-redux";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
-import { Link, Route } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
-import "./InstalledPage.scss";
 import {
   reactivateEveryTab,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { reportError } from "@/telemetry/logging";
-import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
 import { Dispatch } from "redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -52,6 +49,7 @@ import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 import extensionsSlice from "@/store/extensionsSlice";
 import { OptionsState } from "@/store/extensionsTypes";
 import ShareLinkModal from "./ShareLinkModal";
+import useFlags from "@/hooks/useFlags";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -59,14 +57,14 @@ export const _InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
-  const { flags } = useContext(AuthContext);
+  const { flagOn } = useFlags();
 
   const [allExtensions, , cloudError] = useAsyncState(
     async () => {
       const lookup = new Set<UUID>(extensions.map((x) => x.id));
-      const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
-        "/api/extensions/"
-      );
+      const { data } = await (
+        await getLinkedApiClient()
+      ).get<CloudExtension[]>("/api/extensions/");
 
       const cloudExtensions = data
         .filter((x) => !lookup.has(x.id))
@@ -127,8 +125,12 @@ export const _InstalledPage: React.FunctionComponent<{
       icon={faCubes}
       error={cloudError ?? resolveError}
     >
-      {showShareContext && (
+      {showShareContext?.extensionId && (
         <ShareExtensionModal extensionId={showShareContext.extensionId} />
+      )}
+
+      {showShareContext?.blueprintId && (
+        <ShareLinkModal blueprintId={showShareContext.blueprintId} />
       )}
 
       {showLogsContext && (
@@ -138,11 +140,6 @@ export const _InstalledPage: React.FunctionComponent<{
         />
       )}
 
-      <Route
-        exact
-        path="/installed/link/:blueprintId"
-        component={ShareLinkModal}
-      />
       <Row>
         <Col>
           <div className="pb-4">
@@ -154,7 +151,7 @@ export const _InstalledPage: React.FunctionComponent<{
             ) : (
               <p>
                 Here&apos;s a list of bricks you currently have activated.{" "}
-                {flags.includes("marketplace") ? (
+                {flagOn("marketplace") ? (
                   <>
                     You can find more to activate in{" "}
                     <Link to={"/blueprints"}>My Blueprints</Link>.
@@ -210,7 +207,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     // Remove from storage first so it doesn't get re-added in reactivate step below
     dispatch(removeExtension({ extensionId }));
     // XXX: also remove remove side panel panels that are already open?
-    void uninstallContextMenu({ extensionId }).catch(reportError);
+    void uninstallContextMenu({ extensionId });
     reactivateEveryTab();
   },
 });

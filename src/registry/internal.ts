@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,13 +17,13 @@
 
 import {
   Config,
-  ResolvedExtension,
+  EmptyConfig,
   IBlock,
   IExtension,
   IExtensionPoint,
   InnerDefinitions,
   RegistryId,
-  EmptyConfig,
+  ResolvedExtension,
 } from "@/core";
 import { produce } from "immer";
 import objectHash from "object-hash";
@@ -41,6 +41,7 @@ import {
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { ReaderConfig } from "@/blocks/types";
 import { UnknownObject } from "@/types";
+import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 
@@ -247,4 +248,18 @@ export async function resolveRecipe(
         ? { ...config, id: definitions.get(config.id).id }
         : config) as ResolvedExtensionPointConfig
   );
+}
+
+export function hasInnerExtensionPoint(extension: IExtension): boolean {
+  const hasInner = extension.extensionPointId in (extension.definitions ?? {});
+
+  if (!hasInner && isInnerExtensionPoint(extension.extensionPointId)) {
+    console.warn(
+      "Extension is missing inner definition for %s",
+      extension.extensionPointId,
+      { extension }
+    );
+  }
+
+  return hasInner;
 }

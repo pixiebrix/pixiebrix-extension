@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,8 +16,9 @@
  */
 
 import React, { useState } from "react";
-import { MessageLevel } from "@/background/logging";
-import GridLoader from "react-spinners/GridLoader";
+// eslint-disable-next-line import/no-restricted-paths -- Types only
+import type { MessageLevel } from "@/background/logging";
+import Loader from "@/components/Loader";
 import { Card } from "react-bootstrap";
 import { MessageContext } from "@/core";
 import LogTable from "@/components/logViewer/LogTable";
@@ -44,7 +45,7 @@ const BrickLogs: React.FunctionComponent<{
   if (logs.isLoading) {
     return (
       <Card.Body>
-        <GridLoader />
+        <Loader />
       </Card.Body>
     );
   }

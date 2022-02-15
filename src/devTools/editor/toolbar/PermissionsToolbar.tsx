@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -59,9 +59,8 @@ const PermissionsToolbar: React.FunctionComponent<{
       }
 
       const { asDynamicElement: factory } = ADAPTERS.get(element.type);
-      const { extension, extensionPoint: extensionPointConfig } = factory(
-        element
-      );
+      const { extension, extensionPoint: extensionPointConfig } =
+        factory(element);
       const extensionPoint = extensionPointFactory(extensionPointConfig);
 
       // We don't want the extension point availability because we already have access to it on the page

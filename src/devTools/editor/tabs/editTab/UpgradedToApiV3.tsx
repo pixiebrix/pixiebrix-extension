@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./UpgradedToApiV3.module.scss";
+
 import React from "react";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,7 +24,6 @@ import {
   faExclamationCircle,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import styles from "./UpgradedToApiV3.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
 import { actions } from "@/devTools/editor/slices/editorSlice";

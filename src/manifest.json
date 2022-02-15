@@ -23,7 +23,7 @@
     {
       "matches": ["https://*.pixiebrix.com/*"],
       "js": ["vendors.js", "contentScript.js"],
-      "css": ["styles.css"],
+      "css": ["contentScript.css"],
       "run_at": "document_idle"
     }
   ],
@@ -68,7 +68,8 @@
     "toggle-quick-bar": {
       "description": "Toggle quick bar",
       "suggested_key": {
-        "default": "Ctrl+K"
+        "default": "Ctrl+K",
+        "mac": "Command+K"
       },
       "global": true
     }

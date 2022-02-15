@@ -1,6 +1,5 @@
-/* eslint-disable filenames/match-exported */
 /*
- * Copyright (C) 2021 PixieBrix, Inc.
+ * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,10 +16,6 @@
  */
 
 import { IExtension, Metadata } from "@/core";
-import {
-  ButtonDefinition,
-  ButtonSelectionResult,
-} from "@/nativeEditor/insertButton";
 import {
   baseFromExtension,
   baseSelectExtension,
@@ -53,11 +48,15 @@ import {
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { ElementInfo } from "@/nativeEditor/frameworks";
 import { NormalizedAvailability } from "@/blocks/types";
 import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfiguration";
 import { insertButton } from "@/contentScript/messenger/api";
 import { Except } from "type-fest";
+import {
+  ButtonDefinition,
+  ButtonSelectionResult,
+  ElementInfo,
+} from "@/contentScript/nativeEditor/types";
 
 type Extension = BaseExtensionState & Except<MenuItemExtensionConfig, "action">;
 
