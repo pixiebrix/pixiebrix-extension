@@ -15,18 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { render } from "@testing-library/react";
 import React from "react";
-import GridLoader from "react-spinners/GridLoader";
+import { defaultState, LogContext, LogState } from "./ContextLogs";
+import LogCard from "./LogCard";
 
-const DEFAULT_STYLE = {
-  margin: "20px auto", // Centet
-  display: "flex",
-  justifyContent: "center",
-};
-const Loader: React.FunctionComponent = () => (
-  <div style={DEFAULT_STYLE} data-testid="loader">
-    <GridLoader />
-  </div>
-);
+function renderLogCard(state: LogState = defaultState) {
+  return render(
+    <LogContext.Provider value={state}>
+      <LogCard />
+    </LogContext.Provider>
+  );
+}
 
-export default Loader;
+test("shows loader", () => {
+  const rendered = renderLogCard();
+
+  expect(rendered.getByTestId("loader")).toBeInTheDocument();
+});
+
+test("renders empty table", () => {
+  const rendered = renderLogCard({
+    ...defaultState,
+    isLoading: false,
+  });
+  expect(rendered.asFragment()).toMatchSnapshot();
+});

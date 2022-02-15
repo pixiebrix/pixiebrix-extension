@@ -23,7 +23,7 @@ import useInterval from "@/hooks/useInterval";
 
 const REFRESH_INTERVAL = 750;
 
-type LogState = {
+export type LogState = {
   messageContext: MessageContext;
   allEntries: LogEntry[];
   displayedEntries: LogEntry[];
@@ -32,7 +32,7 @@ type LogState = {
   clearAllEntries: () => Promise<void>;
 };
 
-const defaultState: LogState = {
+export const defaultState: LogState = {
   messageContext: null,
   allEntries: [],
   displayedEntries: [],
