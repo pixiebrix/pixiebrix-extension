@@ -95,7 +95,7 @@ const Layout = () => {
   }
 
   return (
-    <div className="w-100">
+    <div>
       <Navbar />
       <Container fluid className="page-body-wrapper">
         <RequireInstall>

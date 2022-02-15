@@ -15,23 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.tabPane {
-  height: 100%;
-}
-
 .paneContent {
-  height: 100%;
-  width: 100%;
-  display: inline-flex;
-  flex-direction: row;
+  display: flex;
   align-items: stretch;
+  height: 100%;
 }
 
 .nodePanel {
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
-  height: 100%;
   width: 200px;
   border-right: 1px solid lightgrey;
   display: flex;
@@ -115,4 +108,8 @@
 
 .brickFaIcon {
   color: inherit;
+}
+
+.tabPane {
+  height: 100%;
 }

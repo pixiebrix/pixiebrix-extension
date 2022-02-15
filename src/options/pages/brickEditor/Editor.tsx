@@ -27,7 +27,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";
-import SharingTable from "./Sharing";
+import SharingTable from "./SharingTable";
 import { sortBy } from "lodash";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
 import { MessageContext, UUID } from "@/core";

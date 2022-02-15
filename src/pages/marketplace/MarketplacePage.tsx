@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./MarketplacePage.scss";
+import styles from "./MarketplacePage.module.scss";
 
 import React, { useMemo, useState } from "react";
 import Loader from "@/components/Loader";
@@ -85,7 +85,7 @@ const Entry: React.FunctionComponent<
         <Button
           size="sm"
           variant="info"
-          className="activate-button"
+          className={styles.activateButton}
           {...buttonProps}
           onClick={onInstall}
         >
@@ -98,7 +98,7 @@ const Entry: React.FunctionComponent<
       <Button
         size="sm"
         variant="info"
-        className="activate-button"
+        className={styles.activateButton}
         {...buttonProps}
         disabled
       >
@@ -246,7 +246,9 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
           <Form>
             <InputGroup className="mb-2 mr-sm-2">
               <InputGroup.Prepend>
-                <InputGroup.Text>Search</InputGroup.Text>
+                <InputGroup.Text className={styles.searchLabel}>
+                  Search
+                </InputGroup.Text>
               </InputGroup.Prepend>
               <Form.Control
                 id="query"

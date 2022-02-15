@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ActionPanelApp.module.scss";
+
 import React, { Dispatch, useEffect, useMemo, useReducer } from "react";
 import { Button } from "react-bootstrap";
 import logo from "@img/logo.svg";
@@ -83,10 +85,10 @@ const ActionPanelApp: React.FunctionComponent = () => {
           <div className="full-height">
             <div className="d-flex p-2 justify-content-between align-content-center">
               <Button
-                className="action-panel-button"
+                className={styles.button}
                 onClick={async () => {
                   const sidebar = await whoAmI();
-                  await hideActionPanel({ tabId: sidebar.tab.id! });
+                  await hideActionPanel({ tabId: sidebar.tab.id });
                 }}
                 size="sm"
                 variant="link"
@@ -106,7 +108,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 target="_blank"
                 size="sm"
                 variant="link"
-                className="action-panel-button d-inline-flex align-items-center text-decoration-none"
+                className={styles.button}
               >
                 <span>
                   Options <FontAwesomeIcon icon={faCog} />

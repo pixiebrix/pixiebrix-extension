@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,59 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-html,
-body,
-#container {
+// Bootstrap’s variables must be imported here so that they're available in this file
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "@/vendors/theme/assets/styles/variables";
+
+.collapsedWrapper {
+  text-align: center;
   display: flex;
-  justify-content: stretch;
-  height: 100%;
-  width: 100%;
-  & > * {
-    flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 991px) {
+    width: 100px !important;
+  }
+}
+.expandedWrapper {
+  display: flex;
+  align-items: stretch;
+
+  @media (min-width: 992px) {
+    padding-left: 0 !important;
   }
 }
 
-.full-height {
-  display: flex;
-  flex-direction: column;
-  & > :last-child {
-    flex-grow: 1;
-  }
-
-  .scrollable-area {
-    height: 0;
-    overflow-y: auto;
-  }
-}
-
-.DevToolsContainer {
-  display: flex;
-  .PaneTitle {
-    font-weight: bold;
-    font-size: 1.3rem;
-    margin-bottom: 10px;
-  }
-
-  .nav-pills {
-    button {
-      border-radius: 0;
-    }
-    .nav-item {
-      display: flex;
-      align-items: stretch;
-    }
-    .nav-link {
-      display: flex;
-      align-items: center;
-      border-radius: 0;
-      padding-top: 0;
-      padding-bottom: 0;
-      font-size: 0.875rem;
-    }
-  }
-
-  label.AutoRun {
-    font-size: 0.875rem;
-    padding: 0.3em;
+.collapsedSidebarToggler {
+  // move down slightly to align better with logo
+  margin-top: 5px;
+  color: $navbar-menu-color;
+  height: $navbar-height;
+  padding-left: 0;
+  @media (min-width: 992px) {
+    display: none;
   }
 }

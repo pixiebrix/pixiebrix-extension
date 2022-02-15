@@ -26,6 +26,8 @@ function showErrors(errorEvent) {
   }
 
   logger.textContent = String(errorEvent.error);
+  logger.style.fontFamily = "monospace";
+  logger.style.whiteSpace = "pre";
 }
 
 window.addEventListener("error", showErrors);
