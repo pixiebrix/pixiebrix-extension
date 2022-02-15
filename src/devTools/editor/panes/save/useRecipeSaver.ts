@@ -15,20 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { useSelector } from "react-redux";
-import { selectActiveRecipe } from "@/devTools/editor/slices/editorSelectors";
-import { Alert } from "react-bootstrap";
-import { RecipeDefinition } from "@/types/definitions";
+import { useCallback } from "react";
 
-const RecipeOptionsPane: React.FC<{ recipe: RecipeDefinition }> = () => {
-  const recipe = useSelector(selectActiveRecipe);
+function useRecipeSaver(): [() => void, boolean] {
+  // Stubs
+  const save = useCallback(() => {}, []);
+  const isSaving = false;
 
-  if (!recipe) {
-    return <Alert variant="danger">Recipe not found</Alert>;
-  }
+  return [save, isSaving];
+}
 
-  return <div>Recipe Options for {recipe.metadata.name}</div>;
-};
-
-export default RecipeOptionsPane;
+export default useRecipeSaver;

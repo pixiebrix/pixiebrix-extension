@@ -46,7 +46,7 @@ import {
   selectActiveRecipe,
 } from "@/devTools/editor/slices/editorSelectors";
 import PersistLoader from "./PersistLoader";
-import RecipeOptionsPane from "@/devTools/editor/panes/RecipeOptionsPane";
+import RecipePane from "@/devTools/editor/panes/RecipePane";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -125,7 +125,7 @@ const Editor: React.FunctionComponent = () => {
         />
       );
     } else if (selectedRecipe) {
-      return <RecipeOptionsPane recipe={selectedRecipe} />;
+      return <RecipePane recipe={selectedRecipe} />;
     } else if (
       availableDynamicIds?.size ||
       installed.length > unavailableCount

@@ -16,8 +16,6 @@
  */
 
 .root {
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-  width: 100%;
+  // This should be moved higher up to EditTabLayout at some point
+  flex-grow: 1;
 }

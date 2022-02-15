@@ -16,8 +16,26 @@
  */
 
 .root {
-  display: flex;
-  flex-direction: row;
   height: 100%;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav {
+  min-height: 31px; // To match the height of the actions of the Sidebar
+  box-shadow: 0 2px 2px gray;
+  z-index: 1; // Paint the shadow above the content below
+}
+
+.badge {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
+.actionButtonIcon {
+  margin-right: 0.25rem;
+}
+
+.content {
+  flex-grow: 1;
 }

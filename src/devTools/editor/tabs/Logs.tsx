@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-  width: 100%;
-}
+import React from "react";
+
+// eslint-disable-next-line arrow-body-style
+const Logs: React.VoidFunctionComponent = () => {
+  return <div>Logs Placeholder</div>;
+};
+
+export default Logs;
