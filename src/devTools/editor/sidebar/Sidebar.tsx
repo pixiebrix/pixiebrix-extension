@@ -55,6 +55,7 @@ import { RecipeDefinition } from "@/types/definitions";
 import Loader from "@/components/Loader";
 import RecipeEntry from "@/devTools/editor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
+import arrangeElements from "@/devTools/editor/sidebar/arrangeElements";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -139,7 +140,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
     process.env.ENVIRONMENT === "development" ||
     flagOn("page-editor-developer");
   const showBetaExtensionPoints = flagOn("page-editor-beta");
-  const shouldGroupByRecipes = flagOn("page-editor-beta");
+  const groupByRecipe = flagOn("page-editor-beta");
 
   const {
     tabState: { hasPermissions },
@@ -159,62 +160,18 @@ const SidebarExpanded: React.VoidFunctionComponent<
       : ""
   );
   const { elementsByRecipeId, orphanedElements } = useMemo(
-    () => {
-      const elementIds = new Set(elements.map((formState) => formState.uuid));
-      const elementsByRecipeId: Map<
-        RegistryId,
-        Array<IExtension | FormState>
-      > = new Map();
-      const orphanedElements: Array<IExtension | FormState> = [];
-      const filteredExtensions: IExtension[] = installed.filter(
-        (extension) =>
-          !elementIds.has(extension.id) &&
-          (showAll || availableInstalledIds?.has(extension.id))
-      );
-      const filteredDynamicElements: FormState[] = elements.filter(
-        (formState) =>
-          showAll ||
-          availableDynamicIds?.has(formState.uuid) ||
-          activeElementId === formState.uuid
-      );
-
-      for (const extension of filteredExtensions) {
-        if (extension._recipe && shouldGroupByRecipes) {
-          const recipeId = extension._recipe.id;
-          if (elementsByRecipeId.has(recipeId)) {
-            elementsByRecipeId.get(recipeId).push(extension);
-          } else {
-            elementsByRecipeId.set(recipeId, [extension]);
-          }
-        } else {
-          orphanedElements.push(extension);
-        }
-      }
-
-      for (const element of filteredDynamicElements) {
-        if (element.recipe && shouldGroupByRecipes) {
-          const recipeId = element.recipe.id;
-          if (elementsByRecipeId.has(recipeId)) {
-            elementsByRecipeId.get(recipeId).push(element);
-          } else {
-            elementsByRecipeId.set(recipeId, [element]);
-          }
-        } else {
-          orphanedElements.push(element);
-        }
-      }
-
-      return {
-        elementsByRecipeId: sortBy(
-          [...elementsByRecipeId.entries()],
-          ([recipeId]) =>
-            recipes?.find((recipe) => recipe.metadata.id === recipeId)?.metadata
-              ?.name ?? recipeId
-        ),
-        orphanedElements: sortBy(orphanedElements, (element) => element.label),
-      };
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash to track element changes
+    () =>
+      arrangeElements({
+        elements,
+        installed,
+        recipes,
+        availableInstalledIds,
+        availableDynamicIds,
+        showAll,
+        groupByRecipe,
+        activeElementId,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash and recipeHash to track changes
     [
       installed,
       elementHash,
