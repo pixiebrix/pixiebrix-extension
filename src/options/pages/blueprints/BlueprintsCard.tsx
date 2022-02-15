@@ -206,7 +206,7 @@ const BlueprintsCard: React.FunctionComponent<{
               ? "Search results"
               : `${filters.length > 0 ? filters[0].value : "All"} Blueprints`}
           </h3>
-          <span className="d-flex align-items-center">
+          <span className="d-flex align-items-center small">
             <span className="ml-3 mr-2">Group by:</span>
             <Select
               isClearable

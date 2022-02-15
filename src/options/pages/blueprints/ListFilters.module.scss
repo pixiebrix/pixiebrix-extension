@@ -1,5 +1,8 @@
-.nav {
-  position: sticky;
-  top: 100px;
-  align-self: flex-start;
+.root {
+  font-size: 0.9rem;
+
+  h5 {
+    font-weight: bold;
+    font-size: 0.8rem;
+  }
 }

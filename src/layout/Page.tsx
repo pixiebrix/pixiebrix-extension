@@ -38,7 +38,7 @@ export const PageTitle: React.FunctionComponent<{
   </div>
 );
 
-const ErrorDisplay: React.FC<{ error: unknown }> = ({ error }) => (
+export const ErrorDisplay: React.FC<{ error: unknown }> = ({ error }) => (
   <div>
     <h2 className="text-danger">An error occurred</h2>
     <p>{getErrorMessage(error)}</p>
@@ -52,7 +52,6 @@ const Page: React.FunctionComponent<{
   breadcrumb?: React.ReactNode;
   toolbar?: React.ReactNode;
   children: React.ReactNode;
-  headerless?: boolean;
 
   /**
    * True to show a loader for the main page content.
@@ -72,7 +71,6 @@ const Page: React.FunctionComponent<{
   toolbar,
   description = null,
   children,
-  headerless,
 }) => {
   useTitle(title);
 
@@ -90,14 +88,12 @@ const Page: React.FunctionComponent<{
 
   return (
     <div>
-      {!headerless && (
-        <div className="d-flex">
-          <div className="flex-grow-1">
-            <PageTitle icon={icon} title={title} />
-          </div>
-          {toolbar && <div>{toolbar}</div>}
+      <div className="d-flex">
+        <div className="flex-grow-1">
+          <PageTitle icon={icon} title={title} />
         </div>
-      )}
+        {toolbar && <div>{toolbar}</div>}
+      </div>
       {description && (
         <div className="pb-4">
           {typeof description === "string" ? <p>{description}</p> : description}

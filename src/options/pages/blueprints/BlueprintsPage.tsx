@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import Page from "@/layout/Page";
+import React, { useMemo } from "react";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import useInstallables from "@/options/pages/blueprints/useInstallables";
 import ExtensionLogsModal from "@/options/pages/installed/ExtensionLogsModal";
@@ -32,9 +31,12 @@ import {
 } from "@/options/pages/installed/installedPageSelectors";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import ShareLinkModal from "@/options/pages/installed/ShareLinkModal";
-import { faScroll } from "@fortawesome/free-solid-svg-icons";
+import { useTitle } from "@/hooks/title";
+import GridLoader from "react-spinners/GridLoader";
+import { ErrorDisplay } from "@/layout/Page";
 
 const BlueprintsPage: React.FunctionComponent = () => {
+  useTitle("Blueprints");
   const { installables, isLoading, error } = useInstallables();
   const showLogsContext = useSelector<RootState, LogsContext>(
     selectShowLogsContext
@@ -42,6 +44,18 @@ const BlueprintsPage: React.FunctionComponent = () => {
   const showShareContext = useSelector<RootState, ShareContext>(
     selectShowShareContext
   );
+
+  const body = useMemo(() => {
+    if (isLoading) {
+      return <GridLoader />;
+    }
+
+    if (error) {
+      return <ErrorDisplay error={error} />;
+    }
+
+    return <BlueprintsCard installables={installables} />;
+  }, [installables, isLoading, error]);
 
   return (
     <div style={{ height: "100%" }}>
@@ -59,9 +73,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
         <ShareLinkModal blueprintId={showShareContext.blueprintId} />
       )}
 
-      {installables.length > 0 && (
-        <BlueprintsCard installables={installables} />
-      )}
+      {body}
     </div>
   );
 };
