@@ -32,8 +32,7 @@ const buttons: ButtonConfig[] = [
   {
     logo: slack,
     label: "Join Slack, get answers now",
-    link:
-      "https://join.slack.com/t/pixiebrixworkspace/shared_invite/zt-11jzgaxqq-BkvBJyRcyPHctXs5wqCGhw",
+    link: "https://join.slack.com/t/pixiebrixworkspace/shared_invite/zt-11jzgaxqq-BkvBJyRcyPHctXs5wqCGhw",
   },
   {
     logo: discourse,
