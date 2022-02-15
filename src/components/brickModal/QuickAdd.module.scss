@@ -15,38 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.RecommendationContainer {
+.root {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 2rem;
+}
 
-  .RecommendationCard {
-    &:hover {
-      cursor: pointer;
-      background-color: #ececff;
-      border-color: #c7c7ff;
-      transition: background-color 0.15s ease-in-out;
-    }
+.card:hover {
+  cursor: pointer;
+  background-color: #ececff;
+  border-color: #c7c7ff;
+  transition: background-color 0.15s ease-in-out;
+}
 
-    &__image {
-      font-size: 50px;
-      height: 80px;
+.cardImage {
+  font-size: 50px;
+  height: 80px;
 
-      div {
-        margin: auto;
+  div {
+    margin: auto;
 
-        svg {
-          vertical-align: middle;
-        }
-      }
-    }
-
-    .card-body:nth-child(1) {
-      padding-bottom: 10px;
-    }
-
-    .card-body {
-      padding-top: 10px;
+    svg {
+      vertical-align: middle;
     }
   }
 }
