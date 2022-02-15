@@ -41,6 +41,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
 import { resolveDefinitions } from "@/registry/internal";
+import cx from "classnames";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
@@ -103,8 +104,11 @@ const InstalledEntry: React.FunctionComponent<{
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={async () => selectHandler(extension)}
     >
-      {isNested && <span className={styles.space} />}
-      <span className={styles.icon}>
+      <span
+        className={cx(styles.icon, {
+          [styles.nested]: isNested,
+        })}
+      >
         <ExtensionIcon type={type} />
       </span>
       <span className={styles.name}>{extension.label ?? extension.id}</span>
