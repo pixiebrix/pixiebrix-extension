@@ -19,7 +19,7 @@ import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import InstalledPage from "@/options/pages/installed/InstalledPage";
@@ -48,7 +48,7 @@ import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
-import "@/contrib/editors";
+import registerEditors from "@/contrib/editors";
 import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import WorkshopPage from "./pages/workshop/WorkshopPage";
@@ -59,6 +59,7 @@ import useFlags from "@/hooks/useFlags";
 import { selectSettings } from "@/store/settingsSelectors";
 
 // Register the built-in bricks
+registerEditors();
 registerBuiltinBlocks();
 registerContribBlocks();
 
@@ -90,11 +91,11 @@ const Layout = () => {
   const { isLoading } = useGetAuthQuery();
 
   if (isLoading) {
-    return <GridLoader />;
+    return <Loader />;
   }
 
   return (
-    <div className="w-100">
+    <div>
       <Navbar />
       <Container fluid className="page-body-wrapper">
         <RequireInstall>
@@ -179,7 +180,7 @@ const App: React.FunctionComponent = () => {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={<GridLoader />} persistor={persistor}>
+      <PersistGate loading={<Loader />} persistor={persistor}>
         <ConnectedRouter history={hashHistory}>
           <ModalProvider>
             <ToastProvider>

@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,38 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.RecommendationContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 2rem;
+import React from "react";
+import GridLoader from "react-spinners/GridLoader";
 
-  .RecommendationCard {
-    &:hover {
-      cursor: pointer;
-      background-color: #ececff;
-      border-color: #c7c7ff;
-      transition: background-color 0.15s ease-in-out;
-    }
+const DEFAULT_STYLE = {
+  margin: "20px auto", // Centet
+  display: "flex",
+  justifyContent: "center",
+};
+const Loader: React.FunctionComponent = () => (
+  <div style={DEFAULT_STYLE}>
+    <GridLoader />
+  </div>
+);
 
-    &__image {
-      font-size: 50px;
-      height: 80px;
-
-      div {
-        margin: auto;
-
-        svg {
-          vertical-align: middle;
-        }
-      }
-    }
-
-    .card-body:nth-child(1) {
-      padding-bottom: 10px;
-    }
-
-    .card-body {
-      padding-top: 10px;
-    }
-  }
-}
+export default Loader;

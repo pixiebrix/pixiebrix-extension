@@ -35,12 +35,6 @@
   content: "\2796"; /* Unicode character for "minus" sign (-) */
 }
 
-body.pixiebrix-modal-open {
-  overflow: hidden !important;
-  /* Consider padding to avoid content jitter when opening/closing the modal */
-  /* padding-right: 15px; */
-}
-
 /* Overlay.tsx has no classes, so we target each layer by using its hardcoded values */
 [style="z-index: 10000000;"] [style*="rgba(255, 200, 50, 0.3)"] {
   border-color: transparent !important;

@@ -52,11 +52,11 @@ export class ElementReader extends Reader {
     };
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {

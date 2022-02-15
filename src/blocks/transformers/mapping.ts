@@ -22,7 +22,7 @@ import { BusinessError } from "@/errors";
 export class MappingTransformer extends Transformer {
   defaultOutputKey = "value";
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 

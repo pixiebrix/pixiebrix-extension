@@ -15,14 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.marketplace-component {
-  .input-group-prepend {
-    .input-group-text {
-      color: #343a40;
-    }
-  }
-}
+/**
+ * App-like layout component that to define scrollable areas in a specific viewport,
+ * without relying on hardcoded heights. Not yet compatible with layouts that have
+ * multiple scrollable columns like the editor.
+ *
+ * .full-height must be used recursively until `html` or until *one* element with a pre-set height.
+ * .scrollable-area then specifies which element has scrollable content.
+ *
+ * @example
+ * <body class="full-height">
+ *   <div class="full-height">
+ *     <header/>
+ *     <banner/>
+ *     <div class="scrollable"/>
+ *   </div>
+ * <body>
+ */
 
-.activate-button {
-  min-width: 93px;
+.full-height {
+  display: flex;
+  flex-direction: column;
+  & > :last-child {
+    flex-grow: 1;
+  }
+
+  .scrollable-area {
+    height: 0;
+    overflow-y: auto;
+  }
 }

@@ -18,17 +18,19 @@
 // Keep in order so precedence is preserved
 import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
+import "@/utils/layout.scss";
 import "@/action.scss";
 
 import "@/extensionContext";
 
-import "@/actionPanel/messenger/registration";
+import registerMessenger from "@/actionPanel/messenger/registration";
 import App from "@/actionPanel/ActionPanelApp";
 import ReactDOM from "react-dom";
 import React from "react";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 
+registerMessenger();
 registerContribBlocks();
 registerBuiltinBlocks();
 

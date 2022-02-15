@@ -24,7 +24,7 @@ import PermissionsPane from "@/devTools/editor/panes/PermissionsPane";
 import BetaPane from "@/devTools/editor/panes/BetaPane";
 import InsertMenuItemPane from "@/devTools/editor/panes/insert/InsertMenuItemPane";
 import InsertPanelPane from "@/devTools/editor/panes/insert/InsertPanelPane";
-import NoExtensionSelectedPane from "@/devTools/editor/panes/NoExtensionsSelectedPane";
+import NoExtensionSelectedPane from "@/devTools/editor/panes/NoExtensionSelectedPane";
 import NoExtensionsPane from "@/devTools/editor/panes/NoExtensionsPane";
 import WelcomePane from "@/devTools/editor/panes/WelcomePane";
 import EditorPane from "@/devTools/editor/panes/EditorPane";
@@ -40,9 +40,8 @@ import {
 } from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
-import styles from "./Editor.module.scss";
 import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
-import PersistLoader from "./PersistLoader";
+import Loader from "@/components/Loader";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -143,11 +142,15 @@ const Editor: React.FunctionComponent = () => {
   ]);
 
   if (authLoading) {
-    return <PersistLoader />;
+    return (
+      <div className="auth">
+        <Loader />
+      </div>
+    );
   }
 
   return (
-    <div className={styles.root}>
+    <div className="DevToolsContainer">
       <Sidebar
         installed={installed}
         elements={elements}

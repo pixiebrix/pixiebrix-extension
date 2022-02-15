@@ -15,33 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.ActiveBricksCard {
-  .table {
-    th {
-      font-weight: 400;
-    }
-
-    th,
-    td {
-      height: 44px;
-      padding-top: 5px;
-      padding-bottom: 5px;
-
-      &:first-child {
-        width: 15px;
-      }
-    }
-  }
+.onboardingStepStatus {
+  min-width: 50px;
+  color: #00b300;
+  font-size: 1.5rem;
+  line-height: 1.5rem;
 }
 
-.VideoCard {
-  .card {
-    min-width: 725px;
-    max-width: 725px;
-    width: 725px;
+.onboardingStepStep {
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+  min-width: 125px;
+}
 
-    .card-body {
-      padding: 1.5rem;
-    }
-  }
+.onboardingStepContent {
+  flex-grow: 1;
+  font-size: 1.25rem;
 }

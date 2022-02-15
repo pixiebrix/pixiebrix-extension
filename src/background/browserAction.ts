@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBackground } from "webext-detect-page";
 import reportError from "@/telemetry/reportError";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import browser, { Tabs } from "webextension-polyfill";
@@ -52,7 +51,7 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   }
 }
 
-if (isBackground()) {
+export default function initBrowserAction() {
   const action = browser.browserAction ?? browser.action;
   action.onClicked.addListener(handleBrowserAction);
 }

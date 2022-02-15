@@ -20,7 +20,7 @@ import { Button, Modal } from "react-bootstrap";
 import Form from "@/components/form/Form";
 import * as yup from "yup";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import {
   useAddDatabaseToGroupMutation,
   useCreateDatabaseMutation,
@@ -136,7 +136,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
 
       {isLoadingOrganizations ? (
         <Modal.Body>
-          <GridLoader />
+          <Loader />
         </Modal.Body>
       ) : (
         <Form

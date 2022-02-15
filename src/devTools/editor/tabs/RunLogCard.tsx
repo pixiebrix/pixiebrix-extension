@@ -16,8 +16,9 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { MessageLevel } from "@/background/logging";
-import GridLoader from "react-spinners/GridLoader";
+// eslint-disable-next-line import/no-restricted-paths -- Types only
+import type { MessageLevel } from "@/background/logging";
+import Loader from "@/components/Loader";
 import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
 import useLogEntries from "@/components/logViewer/useLogEntries";
@@ -53,7 +54,7 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   if (logs.isLoading) {
     return (
       <Card.Body>
-        <GridLoader />
+        <Loader />
       </Card.Body>
     );
   }

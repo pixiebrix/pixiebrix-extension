@@ -39,6 +39,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
+import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
 
 const EDIT_STEP_NAME = "Edit";
@@ -165,7 +166,7 @@ const ElementWizard: React.FunctionComponent<{
           event.preventDefault();
         }}
         onReset={handleReset}
-        className={styles.form}
+        className={cx(styles.form, "full-height")}
       >
         <Nav
           variant="pills"
@@ -200,7 +201,7 @@ const ElementWizard: React.FunctionComponent<{
         </Nav>
 
         {status && <div className="text-danger">{status}</div>}
-        <Tab.Content className={styles.tabContent}>
+        <Tab.Content className={styles.content}>
           {wizardSteps.map(({ Component, step }) => (
             <Component
               key={step}

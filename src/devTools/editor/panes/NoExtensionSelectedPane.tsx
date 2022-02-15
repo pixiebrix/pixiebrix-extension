@@ -16,15 +16,23 @@
  */
 
 import React from "react";
-import GridLoader from "react-spinners/GridLoader";
 import Centered from "@/devTools/editor/components/Centered";
+import IntroButtons from "./IntroButtons";
 
-const PersistLoader: React.VoidFunctionComponent = () => (
+const NoExtensionSelectedPane: React.FunctionComponent = () => (
   <Centered>
-    <div className="d-flex justify-content-center">
-      <GridLoader />
+    <div className="PaneTitle">No extension selected</div>
+
+    <div className="text-left">
+      <p>Select an extension in the sidebar to edit</p>
+      <p>
+        Or, click the <span className="text-info">Add</span> button in the
+        sidebar to add an extension to the page.
+      </p>
+
+      <IntroButtons />
     </div>
   </Centered>
 );
 
-export default PersistLoader;
+export default NoExtensionSelectedPane;

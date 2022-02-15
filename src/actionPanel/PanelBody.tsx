@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage } from "@/errors";
 import { BlockArg, RendererOutput } from "@/core";
-import { PanelPayload } from "@/actionPanel/actionPanelTypes";
+import { PanelPayload } from "@/actionPanel/types";
 import RendererComponent from "@/actionPanel/RendererComponent";
 
 const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
@@ -67,7 +67,7 @@ const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({
   }
 
   if (pending || component == null) {
-    return <GridLoader />;
+    return <Loader />;
   }
 
   return component;

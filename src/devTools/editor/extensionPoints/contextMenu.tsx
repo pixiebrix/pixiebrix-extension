@@ -33,7 +33,6 @@ import {
   selectIsAvailable,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
-import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import {
   ContextMenuConfig,
@@ -55,6 +54,7 @@ import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
 import { Except } from "type-fest";
+import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 
 type Extension = BaseExtensionState & Except<ContextMenuConfig, "action">;
 

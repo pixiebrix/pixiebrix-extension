@@ -17,7 +17,7 @@
 
 import { Effect } from "@/types";
 import { Schema } from "@/core";
-import { hideActionPanel, showActionPanel } from "@/actionPanel/native";
+import { hideActionPanel, showActionPanel } from "@/contentScript/actionPanel";
 
 const NO_PARAMS: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",

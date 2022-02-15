@@ -95,6 +95,7 @@ export const contextMenus = {
 export const services = {
   locate: getMethod("LOCATE_SERVICE", bg),
   refresh: getMethod("REFRESH_SERVICES", bg),
+  refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
 };
 
 export const httpRequest = getMethod("HTTP_REQUEST", bg);
@@ -110,6 +111,7 @@ export const recordError = getNotifier("RECORD_ERROR", bg);
 export const recordEvent = getNotifier("RECORD_EVENT", bg);
 export const getLoggingConfig = getMethod("GET_LOGGING_CONFIG", bg);
 export const setLoggingConfig = getMethod("SET_LOGGING_CONFIG", bg);
+export const clearLogs = getMethod("CLEAR_LOGS", bg);
 
 export const traces = {
   addEntry: getNotifier("ADD_TRACE_ENTRY", bg),

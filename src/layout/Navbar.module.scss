@@ -1,0 +1,51 @@
+/*
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// Bootstrap’s variables must be imported here so that they're available in this file
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "@/vendors/theme/assets/styles/variables";
+
+.collapsedWrapper {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 991px) {
+    width: 100px !important;
+  }
+}
+.expandedWrapper {
+  display: flex;
+  align-items: stretch;
+
+  @media (min-width: 992px) {
+    padding-left: 0 !important;
+  }
+}
+
+.collapsedSidebarToggler {
+  // move down slightly to align better with logo
+  margin-top: 5px;
+  color: $navbar-menu-color;
+  height: $navbar-height;
+  padding-left: 0;
+  @media (min-width: 992px) {
+    display: none;
+  }
+}

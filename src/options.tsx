@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/options.scss";
+import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
+import "@/options.scss";
+
 import "@/extensionContext";
 import "@/development/darkMode";
 

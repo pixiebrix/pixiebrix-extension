@@ -1,3 +1,29 @@
+const contexts = [
+  "background",
+  "contentScript",
+  "devTools",
+  "options",
+  "actionPanel",
+  // "pageScript", // TODO: After Messenger migration
+];
+
+const restrictedZones = [];
+for (const exporter of contexts) {
+  for (const importer of contexts) {
+    if (exporter !== importer) {
+      restrictedZones.push({
+        target: `./src/${importer}/**/*`,
+        from: `./src/${exporter}`,
+        except: [
+          `../${exporter}/messenger/api.ts`,
+          `../${exporter}/types.ts`,
+          `../${exporter}/nativeEditor/types.ts`,
+        ],
+      });
+    }
+  }
+}
+
 module.exports = {
   root: true,
   extends: [
@@ -5,6 +31,35 @@ module.exports = {
     "pixiebrix",
   ],
   rules: {
+    "import/no-restricted-paths": [
+      "error",
+      {
+        zones: restrictedZones,
+      },
+    ],
+
+    // Only enable this on tsx files
+    "filenames/match-exported": "off",
+
+    // Avoid imports with side effects
+    "import/no-unassigned-import": [
+      "error",
+      {
+        allow: [
+          "**/*.css",
+          "**/*.scss",
+          "@/development/*",
+          "@/messaging/external",
+          "@/extensionContext", // Must be run before other code
+          "@/background/axiosFetch", // Must be run before other code
+          "@/telemetry/reportUncaughtErrors",
+          "@testing-library/jest-dom",
+          "webext-dynamic-content-scripts", // Automatic registration
+          "regenerator-runtime/runtime", // Automatic registration
+        ],
+      },
+    ],
+
     // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
     "import/no-named-as-default-member": "off",
 
@@ -42,6 +97,13 @@ module.exports = {
   ],
   overrides: [
     {
+      files: ["**/*.tsx", "**/use*.ts"],
+      excludedFiles: ["*.test.tsx", "*.stories.tsx"],
+      rules: {
+        "filenames/match-exported": "error",
+      },
+    },
+    {
       files: [
         "webpack.*.js",
         "*.config.js",
@@ -62,7 +124,6 @@ module.exports = {
     {
       files: ["*.stories.tsx", "**/__mocks__/**"],
       rules: {
-        "filenames/match-exported": "off",
         "unicorn/filename-case": "off",
         "import/no-anonymous-default-export": "off",
       },

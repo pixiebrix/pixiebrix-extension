@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./OnboardingPage.module.scss";
+
 import React, { useMemo } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,7 +24,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import useFlags from "@/hooks/useFlags";
 
 const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
@@ -146,15 +148,15 @@ const OnboardingPage: React.FunctionComponent = () => {
     <>
       {isLoading ? (
         <div id="OnboardingSpinner">
-          <GridLoader />
+          <Loader />
         </div>
       ) : (
         <>
           <Row>
             <Col className="VideoCard">
-              <Card>
+              <Card className={styles.card}>
                 <Card.Header>Activate Bricks</Card.Header>
-                <Card.Body>
+                <Card.Body className={styles.cardBody}>
                   <Row>{onBoardingInformation}</Row>
                 </Card.Body>
               </Card>

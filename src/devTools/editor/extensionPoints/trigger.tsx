@@ -41,7 +41,6 @@ import {
   TriggerDefinition,
   TriggerExtensionPoint,
 } from "@/extensionPoints/triggerExtension";
-import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
@@ -54,6 +53,7 @@ import {
 import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
+import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 
 export interface TriggerFormState extends BaseFormState {
   type: "trigger";

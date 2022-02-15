@@ -28,6 +28,8 @@ declare global {
   }
 }
 
-registerMethods({
-  UPDATE_DEV_TOOLS: updateDevTools,
-});
+export default function registerMessenger(): void {
+  registerMethods({
+    UPDATE_DEV_TOOLS: updateDevTools,
+  });
+}

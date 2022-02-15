@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./EditPage.scss";
-
 import React, { useEffect, useMemo } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
@@ -25,7 +23,7 @@ import { Formik, useField } from "formik";
 import { useParams } from "react-router";
 import Editor from "./Editor";
 import { truncate } from "lodash";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import useSubmitBrick from "./useSubmitBrick";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -104,7 +102,7 @@ const LoadingBody: React.FunctionComponent = () => (
       </div>
     </div>
     <div>
-      <GridLoader />
+      <Loader />
     </div>
   </>
 );

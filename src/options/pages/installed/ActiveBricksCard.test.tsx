@@ -28,6 +28,7 @@ jest.mock("@/services/api", () => ({
   useGetRecipesQuery: jest.fn(),
   useGetAuthQuery: jest.fn(() => ({ data: anonAuth })),
 }));
+
 const arbitraryTimestamp = "2021-11-20T00:00:00.000000Z";
 
 type TestExtension = {

@@ -63,12 +63,12 @@ export class ImageReader extends Reader {
     throw new Error(`Expected an image, got ${element.tagName ?? "document"}`);
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     // This is Pure, but produces very large values. So let's leave as impure for now
     return false;
   }
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
