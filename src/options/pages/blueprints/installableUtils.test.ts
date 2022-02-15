@@ -28,7 +28,7 @@ import { UserRole } from "@/types/contract";
 describe("getSharingType", () => {
   test("personal extension", () => {
     const installable: Installable = extensionFactory() as any;
-    const { type, label } = getSharingType(installable, "test_scope");
+    const { type, label } = getSharingType(installable, [], "test_scope");
 
     expect(type).toBe("Personal");
     expect(label).toBe("Personal");
@@ -42,28 +42,44 @@ describe("getSharingType", () => {
         timestamp: new Date().toISOString(),
       },
     }) as any;
-    const { type, label } = getSharingType(installable, "test_scope");
+    const { type, label } = getSharingType(installable, [], "test_scope");
 
     expect(type).toBe("Deployment");
     expect(label).toBe("Deployment");
   });
 
   test("organization deployment", () => {
+    const orgId = uuidv4();
     const installable: Installable = extensionFactory({
       _deployment: {
-        id: uuidv4(),
+        id: orgId,
         active: true,
         timestamp: new Date().toISOString(),
       },
     }) as any;
-    installable.organization = {
-      id: uuidv4(),
-      name: "test_org",
-      scope: "test_scope",
-      role: UserRole.admin,
+
+    // @ts-expect-error -- we are generating a test extension
+    installable._recipe = {
+      id: "test_org",
+      sharing: {
+        organizations: [orgId],
+      },
     };
 
-    const { type, label } = getSharingType(installable, "test_scope");
+    const testOrganizations = [
+      {
+        id: orgId,
+        name: "test_org",
+        scope: "test_scope",
+        role: UserRole.admin,
+      },
+    ];
+
+    const { type, label } = getSharingType(
+      installable,
+      testOrganizations,
+      "test_scope"
+    );
 
     expect(type).toBe("Deployment");
     expect(label).toBe("test_org");
@@ -71,14 +87,25 @@ describe("getSharingType", () => {
 
   test("team installable", () => {
     const installable: Installable = recipeDefinitionFactory() as any;
-    installable.organization = {
-      id: uuidv4(),
-      name: "test_org",
-      scope: "test_scope",
-      role: UserRole.admin,
-    };
+    const orgId = uuidv4();
 
-    const { type, label } = getSharingType(installable, "test_scope");
+    // @ts-expect-error -- we are generating a test recipe
+    installable.sharing.organizations = [orgId];
+
+    const testOrganizations = [
+      {
+        id: orgId,
+        name: "test_org",
+        scope: "test_scope",
+        role: UserRole.admin,
+      },
+    ];
+
+    const { type, label } = getSharingType(
+      installable,
+      testOrganizations,
+      "test_scope"
+    );
 
     expect(type).toBe("Team");
     expect(label).toBe("test_org");
@@ -89,7 +116,7 @@ describe("getSharingType", () => {
       sharing: sharingDefinitionFactory({ public: true }),
     }) as any;
 
-    const { type, label } = getSharingType(installable, "test_scope");
+    const { type, label } = getSharingType(installable, [], "test_scope");
 
     expect(type).toBe("Public");
     expect(label).toBe("Public");

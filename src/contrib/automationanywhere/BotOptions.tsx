@@ -114,21 +114,18 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [{ value: fileId }] = useField<string>(configName("fileId"));
 
-  const [
-    remoteSchema,
-    remoteSchemaPending,
-    remoteSchemaError,
-  ] = useAsyncState(async () => {
-    if (hasPermissions && config) {
-      // HACK: hack to avoid concurrent requests to the proxy. Simultaneous calls to get the token causes a
-      // server error on community edition
-      await cachedFetchDevices(config);
-      await cachedFetchBots(config);
-      return cachedFetchSchema(config, fileId);
-    }
+  const [remoteSchema, remoteSchemaPending, remoteSchemaError] =
+    useAsyncState(async () => {
+      if (hasPermissions && config) {
+        // HACK: hack to avoid concurrent requests to the proxy. Simultaneous calls to get the token causes a
+        // server error on community edition
+        await cachedFetchDevices(config);
+        await cachedFetchBots(config);
+        return cachedFetchSchema(config, fileId);
+      }
 
-    return null;
-  }, [config, fileId, hasPermissions]);
+      return null;
+    }, [config, fileId, hasPermissions]);
 
   return (
     <RequireServiceConfig

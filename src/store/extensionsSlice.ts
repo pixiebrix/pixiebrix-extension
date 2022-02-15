@@ -33,7 +33,7 @@ import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
 import { pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import {
   ExtensionOptionsState,
   LegacyExtensionObjectState,
@@ -225,30 +225,28 @@ const extensionsSlice = createSlice({
         throw new Error("extensionPointId is required");
       }
 
-      const extension: Except<
-        PersistedExtension,
-        "_unresolvedExtensionBrand"
-      > = {
-        id,
-        apiVersion,
-        extensionPointId,
-        _recipe,
-        _deployment: undefined,
-        label,
-        definitions,
-        optionsArgs,
-        services,
-        config,
-        createTimestamp,
-        updateTimestamp: timestamp,
-        active: true,
-      };
+      const extension: Except<PersistedExtension, "_unresolvedExtensionBrand"> =
+        {
+          id,
+          apiVersion,
+          extensionPointId,
+          _recipe,
+          _deployment: undefined,
+          label,
+          definitions,
+          optionsArgs,
+          services,
+          config,
+          createTimestamp,
+          updateTimestamp: timestamp,
+          active: true,
+        };
 
       assertExtensionNotResolved(extension);
 
       if (pushToCloud && !_deployment) {
         // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
-        void saveUserExtension(extension).catch(reportError);
+        void saveUserExtension(extension);
       }
 
       const index = state.extensions.findIndex((x) => x.id === id);

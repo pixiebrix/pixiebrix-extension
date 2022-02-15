@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -16,21 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Centered from "@/devTools/editor/components/Centered";
 import React from "react";
+import GridLoader from "react-spinners/GridLoader";
 
-const NoExtensionSelectedPane: React.FunctionComponent = () => (
-  <Centered>
-    <div className="PaneTitle">No extension selected</div>
-
-    <div className="text-left">
-      <p>Select an extension in the sidebar to edit</p>
-      <p>
-        Or, click the <span className="text-info">Add</span> button in the
-        sidebar to add an extension to the page.
-      </p>
-    </div>
-  </Centered>
+const DEFAULT_STYLE = {
+  margin: "20px auto", // Centet
+  display: "flex",
+  justifyContent: "center",
+};
+const Loader: React.FunctionComponent = () => (
+  <div style={DEFAULT_STYLE}>
+    <GridLoader />
+  </div>
 );
 
-export default NoExtensionSelectedPane;
+export default Loader;

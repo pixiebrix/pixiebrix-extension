@@ -30,8 +30,8 @@ import Overlay from "@/nativeEditor/Overlay";
 import {
   ExtensionPointConfig,
   ExtensionPointDefinition,
+  ExtensionPointType,
 } from "@/extensionPoints/types";
-import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { resolveDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
@@ -45,7 +45,7 @@ export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
   TExtension extends EmptyConfig = EmptyConfig
 > {
-  type: ElementType;
+  type: ExtensionPointType;
   extensionPoint: ExtensionPointConfig<TExtensionPoint>;
   extension: IExtension<TExtension>;
 }
@@ -148,7 +148,7 @@ export async function runExtensionPointReader(
     extensionPoint.defaultReader = async () =>
       new ArrayCompositeReader([
         await extensionPoint.getBaseReader(),
-        (contextMenuReaderShim as unknown) as IReader,
+        contextMenuReaderShim as unknown as IReader,
       ]);
   }
 
@@ -168,7 +168,8 @@ export async function updateDynamicElement({
   // HACK: hack so that when using the Page Editor the interval trigger only runs when you manually trigger it
   //  Otherwise it's hard to work with the interval trigger because you keep losing the trace from the previous run
   if (extensionPointConfig.definition.type === "trigger") {
-    const triggerDefinition = extensionPointConfig.definition as TriggerDefinition;
+    const triggerDefinition =
+      extensionPointConfig.definition as TriggerDefinition;
     if (triggerDefinition.trigger === "interval") {
       // OK to assign directly since the object comes from the messenger (so we have a fresh object)
       triggerDefinition.trigger = "load";
@@ -195,8 +196,10 @@ export async function enableOverlay(selector: string): Promise<void> {
     _overlay = new Overlay();
   }
 
-  const $elt = $safeFind(selector);
-  _overlay.inspect($elt.toArray(), null);
+  const elements = $safeFind(selector).toArray();
+  if (elements.length > 0) {
+    _overlay.inspect(elements, null);
+  }
 }
 
 export async function disableOverlay(): Promise<void> {

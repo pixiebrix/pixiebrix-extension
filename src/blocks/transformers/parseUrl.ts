@@ -38,7 +38,7 @@ const URL_PROPERTIES = [
 ];
 
 export class UrlParser extends Transformer {
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
@@ -68,7 +68,7 @@ export class UrlParser extends Transformer {
     ["url"]
   );
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     type: "object",
     properties: {
       searchParams: {

@@ -30,14 +30,14 @@ import {
   FormikError,
   FormikErrorTree,
 } from "@/devTools/editor/tabs/editTab/editTabTypes";
-import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { TypedBlockMap } from "@/blocks/registry";
+import { ExtensionPointType } from "@/extensionPoints/types";
 
 export const PIPELINE_BLOCKS_FIELD_NAME = "extension.blockPipeline";
 
 function usePipelineField(
   allBlocks: TypedBlockMap,
-  elementType: ElementType
+  extensionPointType: ExtensionPointType
 ): {
   blockPipeline: BlockPipeline;
   blockPipelineErrors: FormikError;
@@ -50,22 +50,20 @@ function usePipelineField(
       const formikErrors: FormikErrorTree = {};
 
       validateOutputKey(formikErrors, pipeline, allBlocks);
-      validateRenderers(formikErrors, pipeline, allBlocks, elementType);
+      validateRenderers(formikErrors, pipeline, allBlocks, extensionPointType);
       applyTraceError(formikErrors, errorTraceEntry, pipeline);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;
     },
-    [allBlocks, elementType, errorTraceEntry]
+    [allBlocks, extensionPointType, errorTraceEntry]
   );
 
-  const [
-    { value: blockPipeline },
-    { error: blockPipelineErrors },
-  ] = useField<BlockPipeline>({
-    name: PIPELINE_BLOCKS_FIELD_NAME,
-    // @ts-expect-error working with nested errors
-    validate: validatePipelineBlocks,
-  });
+  const [{ value: blockPipeline }, { error: blockPipelineErrors }] =
+    useField<BlockPipeline>({
+      name: PIPELINE_BLOCKS_FIELD_NAME,
+      // @ts-expect-error working with nested errors
+      validate: validatePipelineBlocks,
+    });
 
   const formikContext = useFormikContext();
   useAsyncEffect(

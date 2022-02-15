@@ -32,7 +32,12 @@ const extensionsStore = configureStore({
   },
   preloadedState: {
     options: { extensions: [] },
-    settings: { mode: "remote", nextUpdate: null },
+    settings: {
+      mode: "remote",
+      nextUpdate: null,
+      browserWarningDismissed: false,
+      isBlueprintsPageEnabled: false,
+    },
   },
 });
 

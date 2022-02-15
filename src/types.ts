@@ -35,11 +35,12 @@ import {
   ResolvedExtension,
   UUID,
   RendererOutput,
+  Metadata,
 } from "@/core";
 import { AxiosRequestConfig } from "axios";
-import { BackgroundLogger } from "@/background/logging";
 import { Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "@/types/helpers";
+import { ExtensionPointType } from "@/extensionPoints/types";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
@@ -53,7 +54,8 @@ export type UnknownObject = Record<string, unknown>;
 export abstract class Service<
   TConfig extends KeyedConfig = KeyedConfig,
   TOAuth extends AuthData = AuthData
-> implements IService<TConfig> {
+> implements IService<TConfig>
+{
   id: RegistryId;
 
   name: string;
@@ -100,14 +102,15 @@ export abstract class Service<
 }
 
 export abstract class ExtensionPoint<TConfig extends EmptyConfig>
-  implements IExtensionPoint {
+  implements IExtensionPoint
+{
   public readonly id: RegistryId;
 
   public readonly name: string;
 
-  public readonly description: string;
-
   public readonly icon: BlockIcon;
+
+  public readonly description: string;
 
   protected readonly extensions: Array<ResolvedExtension<TConfig>> = [];
 
@@ -116,6 +119,8 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
   public abstract readonly inputSchema: Schema;
 
   protected readonly logger: Logger;
+
+  public abstract get kind(): ExtensionPointType;
 
   public get syncInstall() {
     return false;
@@ -131,17 +136,12 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     return {};
   }
 
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon?: BlockIcon
-  ) {
-    this.id = validateRegistryId(id);
-    this.name = name;
-    this.description = description;
-    this.icon = icon;
-    this.logger = new BackgroundLogger({ extensionPointId: this.id });
+  protected constructor(metadata: Metadata, logger: Logger) {
+    this.id = validateRegistryId(metadata.id);
+    this.name = metadata.name;
+    this.icon = metadata.icon;
+    this.description = metadata.description;
+    this.logger = logger.childLogger({ extensionPointId: this.id });
   }
 
   /**
@@ -216,7 +216,7 @@ export abstract class Block implements IBlock {
 
   abstract readonly inputSchema: Schema;
 
-  readonly outputSchema?: Schema = undefined;
+  outputSchema?: Schema = undefined;
 
   readonly permissions = {};
 
@@ -257,7 +257,7 @@ export abstract class Effect extends Block {
     super(id, name, description, icon);
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     // Most effects don't use the root, so have them opt-in
     return false;
   }
@@ -279,7 +279,7 @@ export abstract class Transformer extends Block {
     super(id, name, description, icon);
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     // Most transformers don't use the root, so have them opt-in
     return false;
   }
@@ -306,7 +306,7 @@ export abstract class Renderer extends Block {
     options: BlockOptions
   ): Promise<RendererOutput>;
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     // Most renderers don't use the root, so have them opt-in
     return false;
   }
@@ -319,7 +319,7 @@ export abstract class Renderer extends Block {
 export abstract class Reader extends Block implements IReader {
   readonly inputSchema: Schema = {};
 
-  outputSchema: Schema = undefined;
+  override outputSchema: Schema = undefined;
 
   protected constructor(
     id: string,
@@ -330,7 +330,7 @@ export abstract class Reader extends Block implements IReader {
     super(id, name, description, icon);
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     // Most readers use the root, so have them opt-out if they don't
     return true;
   }

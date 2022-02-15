@@ -16,109 +16,51 @@
  */
 
 import React from "react";
-import { Button, Container } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useDevConnection } from "@/devTools/context";
-import GridLoader from "react-spinners/GridLoader";
 import Editor from "@/devTools/Editor";
 import store, { persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
-import { useAuth } from "@/hooks/auth";
-import AuthContext from "@/auth/AuthContext";
 import { ToastProvider } from "react-toast-notifications";
 import { useAsyncEffect } from "use-async-effect";
 import blockRegistry from "@/blocks/registry";
-import Centered from "@/devTools/editor/components/Centered";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
-import { getErrorMessage } from "@/errors";
-import browser from "webextension-polyfill";
 
 // Import custom options widgets/forms for the built-in bricks
-import "@/contrib/editors";
-import { RequireScope } from "@/auth/RequireScope";
+import registerEditors from "@/contrib/editors";
+import Loader from "@/components/Loader";
+import ErrorBanner from "@/devTools/ErrorBanner";
 
+registerEditors();
 registerContribBlocks();
 registerBuiltinBlocks();
 
-const PersistLoader: React.FunctionComponent = () => (
-  <Centered>
-    <div className="d-flex justify-content-center">
-      <GridLoader />
-    </div>
-  </Centered>
-);
-
-const Panel: React.FunctionComponent = () => {
-  const authState = useAuth();
+const Panel: React.VoidFunctionComponent = () => {
   const context = useDevConnection();
 
   useAsyncEffect(async () => {
     await blockRegistry.fetch();
   }, []);
 
-  const error =
-    (authState.error && getErrorMessage(authState.error)) ||
-    context.tabState.error;
-  if (error) {
-    return (
-      <Centered vertically>
-        {authState.error && (
-          <div className="PaneTitle">Error authenticating account</div>
-        )}
-        <div>{error}</div>
-        <div className="mt-2">
-          <Button
-            onClick={() => {
-              void browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
-            }}
-          >
-            Reload Page
-          </Button>
-        </div>
-        <div className="mt-2">
-          <Button
-            size="sm"
-            variant="light"
-            onClick={() => {
-              location.reload();
-            }}
-          >
-            Reload Editor
-          </Button>
-        </div>
-      </Centered>
-    );
-  }
-
   return (
     <Provider store={store}>
-      <PersistGate loading={<PersistLoader />} persistor={persistor}>
-        <AuthContext.Provider value={authState}>
-          <DevToolsContext.Provider value={context}>
-            <ToastProvider>
-              <ModalProvider>
-                <ErrorBoundary>
-                  <Router>
-                    <Container fluid className="DevToolsContainer">
-                      <RequireScope
-                        scope={authState?.scope}
-                        isPending={authState.isPending}
-                        scopeSettingsTitle="Welcome to the PixieBrix Page Editor!"
-                        scopeSettingsDescription="To create extensions, you must first set an account alias for your PixieBrix account"
-                      >
-                        <Editor />
-                      </RequireScope>
-                    </Container>
-                  </Router>
-                </ErrorBoundary>
-              </ModalProvider>
-            </ToastProvider>
-          </DevToolsContext.Provider>
-        </AuthContext.Provider>
+      <PersistGate loading={<Loader />} persistor={persistor}>
+        <DevToolsContext.Provider value={context}>
+          <ToastProvider>
+            <ModalProvider>
+              <ErrorBoundary>
+                <Router>
+                  <ErrorBanner />
+                  <Editor />
+                </Router>
+              </ErrorBoundary>
+            </ModalProvider>
+          </ToastProvider>
+        </DevToolsContext.Provider>
       </PersistGate>
     </Provider>
   );

@@ -15,23 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ResolvedExtension, UUID } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
-import { useCallback, useContext, useMemo } from "react";
-import AuthContext from "@/auth/AuthContext";
+import { UUID } from "@/core";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
-import {
-  getOrganization,
-  updateAvailable,
-} from "@/options/pages/blueprints/installableUtils";
 import { Installable } from "./blueprintsTypes";
 import {
   useGetCloudExtensionsQuery,
-  useGetOrganizationsQuery,
   useGetRecipesQuery,
+  useGetAuthQuery,
 } from "@/services/api";
 
 type InstallablesState = {
@@ -41,12 +35,13 @@ type InstallablesState = {
 };
 
 function useInstallables(): InstallablesState {
-  const { scope } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
   const unresolvedExtensions = useSelector(selectExtensions);
 
   const recipes = useGetRecipesQuery();
   const cloudExtensions = useGetCloudExtensionsQuery();
-  const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -60,39 +55,6 @@ function useInstallables(): InstallablesState {
     [unresolvedExtensions]
   );
 
-  const allExtensions = useMemo(() => {
-    const inactiveExtensions =
-      cloudExtensions.data
-        ?.filter((x) => !installedExtensionIds.has(x.id))
-        .map((x) => ({ ...x, active: false })) ?? [];
-
-    return [...unresolvedExtensions, ...inactiveExtensions];
-  }, [cloudExtensions.data, installedExtensionIds, unresolvedExtensions]);
-
-  const [
-    resolvedExtensions,
-    resolvedExtensionsIsLoading,
-    resolveError,
-  ] = useAsyncState(
-    async () =>
-      Promise.all(
-        allExtensions.map(async (extension) => resolveDefinitions(extension))
-      ),
-    [allExtensions],
-    []
-  );
-
-  const isActive = useCallback(
-    (extensionOrRecipe: RecipeDefinition | ResolvedExtension) => {
-      if ("_recipe" in extensionOrRecipe) {
-        return installedExtensionIds.has(extensionOrRecipe.id);
-      }
-
-      return installedRecipeIds.has(extensionOrRecipe.metadata.id);
-    },
-    [installedExtensionIds, installedRecipeIds]
-  );
-
   const personalOrTeamBlueprints = useMemo(
     () =>
       (recipes.data ?? []).filter(
@@ -103,29 +65,31 @@ function useInstallables(): InstallablesState {
           // and Recipe pairs
           !installedRecipeIds.has(recipe.metadata.id)
       ),
-    [recipes.data, scope, installedRecipeIds]
+    [recipes.data, scope]
   );
 
+  const allExtensions = useMemo(() => {
+    const inactiveExtensions =
+      cloudExtensions.data
+        ?.filter((x) => !installedExtensionIds.has(x.id))
+        .map((x) => ({ ...x, active: false })) ?? [];
+
+    return [...unresolvedExtensions, ...inactiveExtensions];
+  }, [cloudExtensions.data, installedExtensionIds, unresolvedExtensions]);
+
+  const [resolvedExtensions, resolvedExtensionsIsLoading, resolveError] =
+    useAsyncState(
+      async () =>
+        Promise.all(
+          allExtensions.map(async (extension) => resolveDefinitions(extension))
+        ),
+      [allExtensions],
+      []
+    );
+
   const installables = useMemo(
-    () =>
-      [...resolvedExtensions, ...personalOrTeamBlueprints].map(
-        (extensionOrRecipe) => ({
-          ...extensionOrRecipe,
-          active: isActive(extensionOrRecipe),
-          hasUpdate:
-            "_recipe" in extensionOrRecipe
-              ? updateAvailable(recipes.data, extensionOrRecipe)
-              : false,
-          organization: getOrganization(extensionOrRecipe, organizations),
-        })
-      ),
-    [
-      isActive,
-      organizations,
-      personalOrTeamBlueprints,
-      recipes.data,
-      resolvedExtensions,
-    ]
+    () => [...resolvedExtensions, ...personalOrTeamBlueprints],
+    [personalOrTeamBlueprints, resolvedExtensions]
   );
 
   return {

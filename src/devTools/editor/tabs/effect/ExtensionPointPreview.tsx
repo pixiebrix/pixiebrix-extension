@@ -17,7 +17,7 @@
 
 import React, { useCallback, useEffect, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { UnknownObject } from "@/types";
@@ -115,7 +115,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
   if (isRunning) {
     return (
       <div>
-        <GridLoader />
+        <Loader />
       </div>
     );
   }

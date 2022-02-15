@@ -18,7 +18,7 @@
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { expectContext } from "@/utils/expectContext";
 import { registerMethods } from "webext-messenger";
-import { updateDevTools } from "@/devTools/protocol";
+import { updateDevTools } from "@/devTools/events";
 
 expectContext("devTools");
 
@@ -28,6 +28,8 @@ declare global {
   }
 }
 
-registerMethods({
-  UPDATE_DEV_TOOLS: updateDevTools,
-});
+export default function registerMessenger(): void {
+  registerMethods({
+    UPDATE_DEV_TOOLS: updateDevTools,
+  });
+}

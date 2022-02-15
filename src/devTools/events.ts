@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -16,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Mock for "webextension-polyfill"
+import { WebNavigation } from "webextension-polyfill";
+import { SimpleEvent } from "@/hooks/events";
 
-import type { Browser } from "webextension-polyfill";
+type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;
 
-const browser: Partial<Browser> = {};
+export const navigationEvent = new SimpleEvent<NavigationDetails>();
 
-export default browser;
+export function updateDevTools() {
+  navigationEvent.emit(chrome.devtools.inspectedWindow.tabId);
+}

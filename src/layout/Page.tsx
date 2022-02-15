@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useTitle } from "@/hooks/title";
 import { getErrorMessage } from "@/errors";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 
 export const PageTitle: React.FunctionComponent<{
   title: React.ReactNode;
@@ -76,7 +76,7 @@ const Page: React.FunctionComponent<{
 
   const body = useMemo(() => {
     if (isPending) {
-      return <GridLoader />;
+      return <Loader />;
     }
 
     if (error) {

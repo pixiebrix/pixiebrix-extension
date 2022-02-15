@@ -21,6 +21,8 @@ import {
   IBlock,
   IExtensionPoint,
   IReader,
+  Logger,
+  Metadata,
   ReaderOutput,
   ResolvedExtension,
   Schema,
@@ -54,6 +56,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 export type ActionPanelConfig = {
   heading: string;
@@ -65,13 +68,8 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
   readonly showCallback: ShowCallback;
 
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon = "faColumns"
-  ) {
-    super(id, name, description, icon);
+  protected constructor(metadata: Metadata, logger: Logger) {
+    super(metadata, logger);
     this.showCallback = ActionPanelExtensionPoint.prototype.run.bind(this);
   }
 
@@ -94,6 +92,10 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     ["heading", "body"]
   );
 
+  public get kind(): "actionPanel" {
+    return "actionPanel";
+  }
+
   async getBlocks(
     extension: ResolvedExtension<ActionPanelConfig>
   ): Promise<IBlock[]> {
@@ -104,7 +106,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     this.extensions.splice(0, this.extensions.length);
   }
 
-  public uninstall(): void {
+  public override uninstall(): void {
     this.removeExtensions();
     removeExtensionPoint(this.id);
     removeShowCallback(this.showCallback);
@@ -249,13 +251,12 @@ class RemotePanelExtensionPoint extends ActionPanelExtensionPoint {
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description } = cloned.metadata;
-    super(id, name, description);
+    super(cloned.metadata, new BackgroundLogger());
     this.rawConfig = cloned;
     this.definition = cloned.definition;
   }
 
-  async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<IReader> {
     return mergeReaders(this.definition.reader);
   }
 

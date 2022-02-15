@@ -15,26 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createContext } from "react";
-import { AuthState as CoreAuthState } from "@/core";
-
-export type AuthState = CoreAuthState & {
-  isPending: boolean;
-  error: undefined | unknown;
-};
-
-const anonAuthState: AuthState = {
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: false,
-  scope: null,
-  flags: [],
-  isPending: false,
-  error: undefined,
-};
-
-const AuthContext = createContext(anonAuthState);
-
-export default AuthContext;
+// Overridea and extend Bootstrap’s style
+.root {
+  flex-wrap: nowrap;
+  input {
+    position: relative;
+    z-index: 3;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+  }
+}

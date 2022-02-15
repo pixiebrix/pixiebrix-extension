@@ -33,8 +33,10 @@ declare global {
   }
 }
 
-registerMethods({
-  ACTION_PANEL_RENDER_PANELS: renderPanels,
-  ACTION_PANEL_SHOW_FORM: showForm,
-  ACTION_PANEL_HIDE_FORM: hideForm,
-});
+export default function registerMessenger(): void {
+  registerMethods({
+    ACTION_PANEL_RENDER_PANELS: renderPanels,
+    ACTION_PANEL_SHOW_FORM: showForm,
+    ACTION_PANEL_HIDE_FORM: hideForm,
+  });
+}

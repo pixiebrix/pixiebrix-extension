@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./BlueprintOptionsTab.module.scss";
+import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
+
 import { useFormikContext } from "formik";
 import React, { useMemo, useState } from "react";
 import { Alert, Col, Container, Nav, Row, Tab } from "react-bootstrap";
@@ -22,7 +25,7 @@ import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor from "@/components/formBuilder/FormEditor";
 import FormPreview from "@/components/formBuilder/FormPreview";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
@@ -33,8 +36,6 @@ import { useGetRecipesQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import styles from "./BlueprintOptionsTab.module.scss";
-import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter(
   (type) => !["File", "Image crop"].includes(type.label)
@@ -63,7 +64,7 @@ const BlueprintOptionsTab: React.VoidFunctionComponent<{
         <Container>
           <Row>
             <Col>
-              <GridLoader />
+              <Loader />
             </Col>
           </Row>
         </Container>

@@ -13,12 +13,10 @@
 
     // TODO: Drop these lines to make TS stricter https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "strictNullChecks": false,
-    "noImplicitOverride": false,
     "strictFunctionTypes": false,
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": false,
     "noUnusedParameters": false,
-    "useDefineForClassFields": false,
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],

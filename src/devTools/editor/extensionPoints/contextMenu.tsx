@@ -157,13 +157,8 @@ async function fromExtension(
     ContextMenuConfig,
     "contextMenu"
   >(config, "contextMenu");
-  const {
-    documentUrlPatterns,
-    defaultOptions,
-    contexts,
-    targetMode,
-    reader,
-  } = extensionPoint.definition;
+  const { documentUrlPatterns, defaultOptions, contexts, targetMode, reader } =
+    extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = extensionWithNormalizedPipeline(config.config, "action");
@@ -258,7 +253,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  insertModeHelp: (
+  InsertModeHelpText: () => (
     <div>
       <p>
         A context menu (also called a right-click menu) can be configured to

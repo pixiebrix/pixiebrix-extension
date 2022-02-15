@@ -23,7 +23,7 @@ import * as actionPanel from "@/actionPanel/native";
 import { PromiseCancelled, sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import browser from "webextension-polyfill";
 import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
@@ -236,7 +236,7 @@ async function loadExtensions() {
   await Promise.all(
     Object.entries(extensionMap).map(async (entry) => {
       // Object.entries loses the type information :sadface:
-      const [extensionPointId, extensions] = (entry as unknown) as [
+      const [extensionPointId, extensions] = entry as unknown as [
         RegistryId,
         ResolvedExtension[]
       ];

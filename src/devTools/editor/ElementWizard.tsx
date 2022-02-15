@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ElementWizard.module.scss";
+
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useFormikContext } from "formik";
 import { groupBy } from "lodash";
@@ -36,9 +38,9 @@ import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/devTools/editor/extensionPoints/upgrade";
 import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
-import AuthContext from "@/auth/AuthContext";
-import styles from "./ElementWizard.module.scss";
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
+import cx from "classnames";
+import useFlags from "@/hooks/useFlags";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -100,7 +102,7 @@ const ElementWizard: React.FunctionComponent<{
   const [step, setStep] = useState(wizard[0].step);
 
   const { refresh: refreshLogs } = useContext(LogContext);
-  const { flags } = useContext(AuthContext);
+  const { flagOn } = useFlags();
 
   const availableDefinition = element.extensionPoint.definition.isAvailable;
   const [available] = useAsyncState(
@@ -108,12 +110,8 @@ const ElementWizard: React.FunctionComponent<{
     [availableDefinition]
   );
 
-  const {
-    isValid,
-    status,
-    handleReset,
-    setStatus,
-  } = useFormikContext<FormState>();
+  const { isValid, status, handleReset, setStatus } =
+    useFormikContext<FormState>();
 
   const { isSaving, save } = useSavingWizard();
 
@@ -136,13 +134,11 @@ const ElementWizard: React.FunctionComponent<{
     [setStep, refreshLogs]
   );
 
-  const {
-    values: formState,
-    setValues: setFormState,
-  } = useFormikContext<FormState>();
+  const { values: formState, setValues: setFormState } =
+    useFormikContext<FormState>();
 
   const wizardSteps = [...wizard];
-  if (formState.recipe?.id && flags.includes("page-editor-beta")) {
+  if (formState.recipe?.id && flagOn("page-editor-beta")) {
     wizardSteps.push(blueprintOptionsStep);
   }
 
@@ -170,7 +166,7 @@ const ElementWizard: React.FunctionComponent<{
           event.preventDefault();
         }}
         onReset={handleReset}
-        className={styles.form}
+        className={cx(styles.form, "full-height")}
       >
         <Nav
           variant="pills"
@@ -205,7 +201,7 @@ const ElementWizard: React.FunctionComponent<{
         </Nav>
 
         {status && <div className="text-danger">{status}</div>}
-        <Tab.Content className={styles.tabContent}>
+        <Tab.Content className={styles.content}>
           {wizardSteps.map(({ Component, step }) => (
             <Component
               key={step}

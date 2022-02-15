@@ -1,6 +1,6 @@
 /** @file It's possible that some of these tabs might lose the permission in the meantime, we can't track that exactly */
 
-// eslint-disable-next-line filenames/match-exported
+import { updateDevTools } from "@/devTools/messenger/api";
 import { canReceiveContentScript } from "@/utils/permissions";
 import browser from "webextension-polyfill";
 
@@ -12,6 +12,9 @@ function track(tab: chrome.tabs.Tab): void {
   if (tab.url && canReceiveContentScript(tab.url)) {
     console.debug("ActiveTab added:", tab.id, tab.url);
     possiblyActiveTabs.set(tab.id, new URL(tab.url).origin);
+
+    // Inform editor that it now has the ActiveTab permission, if it's open
+    updateDevTools({ page: `/devtoolsPanel.html?tabId=${tab.id}` });
   }
 }
 

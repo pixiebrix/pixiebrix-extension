@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   useGetRecipesQuery,
   useGetEditablePackagesQuery,
+  useGetAuthQuery,
 } from "@/services/api";
 import { validateRegistryId } from "@/types/helpers";
 import SavingInProgressModal from "./SavingInProgressModal";
 import LoadingDataModal from "./LoadingDataModal";
-import AuthContext from "@/auth/AuthContext";
 import { generateScopeBrickId, isRecipeEditable } from "./saveHelpers";
 import useSavingWizard from "./useSavingWizard";
 import SavingExtensionModal from "./SavingExtensionModal";
@@ -40,16 +40,14 @@ const SaveExtensionWizard: React.FC = () => {
     saveElementAndUpdateRecipe,
     closeWizard,
   } = useSavingWizard();
-  const { scope } = useContext(AuthContext);
-  const { data: recipes, isLoading: areRecipesLoading } = useGetRecipesQuery();
   const {
-    data: editablePackages,
-    isLoading: areEditablePackageLoading,
-  } = useGetEditablePackagesQuery();
-  const [
-    isRecipeConfigurationModalShown,
-    setRecipeOptionsModalShown,
-  ] = useState(false);
+    data: { scope },
+  } = useGetAuthQuery();
+  const { data: recipes, isLoading: areRecipesLoading } = useGetRecipesQuery();
+  const { data: editablePackages, isLoading: areEditablePackageLoading } =
+    useGetEditablePackagesQuery();
+  const [isRecipeOptionsModalShown, setRecipeOptionsModalShown] =
+    useState(false);
   const isNewRecipe = useRef(false);
   const newRecipeInitialValues = useRef<RecipeConfiguration>(null);
 
@@ -92,7 +90,7 @@ const SaveExtensionWizard: React.FC = () => {
     }
   };
 
-  return isRecipeConfigurationModalShown ? (
+  return isRecipeOptionsModalShown ? (
     <RecipeConfigurationModal
       initialValues={newRecipeInitialValues.current}
       isNewRecipe={isNewRecipe.current}

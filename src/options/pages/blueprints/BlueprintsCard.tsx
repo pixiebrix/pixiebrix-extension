@@ -15,17 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./BlueprintsCard.module.scss";
+
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { Fragment, useContext, useMemo } from "react";
+import React, { Fragment, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  getDescription,
-  getLabel,
-  getPackageId,
-  getSharingType,
-  getUpdatedAt,
-} from "./installableUtils";
-import AuthContext from "@/auth/AuthContext";
 import {
   Column,
   useFilters,
@@ -55,25 +49,7 @@ import {
 import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
-import styles from "./BlueprintsCard.module.scss";
-
-const getInstallableRows = (
-  installables: Installable[],
-  scope: string
-): InstallableViewItem[] =>
-  installables.map(
-    (installable): InstallableViewItem => ({
-      name: getLabel(installable),
-      description: getDescription(installable),
-      sharing: {
-        packageId: getPackageId(installable),
-        source: getSharingType(installable, scope),
-      },
-      updatedAt: getUpdatedAt(installable),
-      status: installable.active ? "Active" : "Uninstalled",
-      installable,
-    })
-  );
+import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
 
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
@@ -90,6 +66,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     accessor: "description",
     disableGroupBy: true,
     disableFilters: true,
+    disableSortBy: true,
   },
   {
     Header: "Package ID",
@@ -97,6 +74,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     accessor: "sharing.packageId",
     disableGroupBy: true,
     disableFilters: true,
+    disableSortBy: true,
   },
   {
     Header: "Sharing",
@@ -121,14 +99,15 @@ const columns: Array<Column<InstallableViewItem>> = [
 const BlueprintsCard: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
-  const { scope } = useContext(AuthContext);
-  const { data, teamFilters } = useMemo(() => {
-    const data = getInstallableRows(installables, scope);
-    const teamFilters = uniq(
-      data.map((installable) => installable.sharing.source.label)
-    ).filter((label) => label !== "Public" && label !== "Personal");
-    return { data, teamFilters };
-  }, [installables, scope]);
+  const data = useInstallableViewItems(installables);
+
+  const teamFilters = useMemo(
+    () =>
+      uniq(data.map((installable) => installable.sharing.source.label)).filter(
+        (label) => label !== "Public" && label !== "Personal"
+      ),
+    [data]
+  );
 
   const [view, setView] = useReduxState(
     selectView,
@@ -214,7 +193,7 @@ const BlueprintsCard: React.FunctionComponent<{
         teamFilters={teamFilters}
         setGlobalFilter={setGlobalFilter}
       />
-      <Col xs={9}>
+      <Col>
         <div className="d-flex justify-content-between align-items-center">
           <h3 className="my-3">
             {globalFilter

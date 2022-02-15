@@ -23,7 +23,7 @@ import {
 import serviceRegistry from "@/services/registry";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { isBackground } from "webext-detect-page";
+import { isBackground, isExtensionContext } from "webext-detect-page";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { proxyService } from "./requests";
 import { ContextError } from "@/errors";
@@ -33,10 +33,14 @@ import { RemoteServiceError } from "@/services/errors";
 import { validateRegistryId } from "@/types/helpers";
 
 const axiosMock = new MockAdapter(axios);
-const mockisBackground = isBackground as jest.MockedFunction<
+const mockIsBackground = isBackground as jest.MockedFunction<
   typeof isBackground
 >;
-mockisBackground.mockImplementation(() => true);
+const mockIsExtensionContext = isExtensionContext as jest.MockedFunction<
+  typeof isExtensionContext
+>;
+mockIsBackground.mockImplementation(() => true);
+mockIsExtensionContext.mockImplementation(() => true);
 
 jest.mock("@/background/protocol");
 jest.mock("@/auth/token");
@@ -48,14 +52,14 @@ const Locator = locator.default;
 afterEach(() => {
   axiosMock.reset();
   axiosMock.resetHistory();
-  (Locator as any).mockClear();
+  (Locator as jest.Mock).mockClear();
 });
 
-(token.getExtensionToken as any).mockResolvedValue("abc123");
+(token.getExtensionToken as jest.Mock).mockResolvedValue("abc123");
 
 // Use real version of pixieServiceFactory
 const { pixieServiceFactory } = jest.requireActual("@/services/locator");
-(locator.pixieServiceFactory as any) = pixieServiceFactory;
+(locator.pixieServiceFactory as jest.Mock) = pixieServiceFactory;
 
 const EXAMPLE_SERVICE_API = validateRegistryId("example/api");
 
@@ -119,7 +123,7 @@ describe("unauthenticated direct requests", () => {
       fail("Expected proxyService to throw a RemoteServiceError error");
     } catch (error) {
       expect(error).toBeInstanceOf(RemoteServiceError);
-      const { status } = (error as RemoteServiceError).response;
+      const { status } = (error as RemoteServiceError).error.response;
       expect(status).toEqual(500);
     }
   });
@@ -133,7 +137,7 @@ describe("authenticated direct requests", () => {
     jest
       .spyOn(Locator.prototype, "getLocalConfig")
       .mockResolvedValue(
-        (directServiceConfig as unknown) as RawServiceConfiguration
+        directServiceConfig as unknown as RawServiceConfiguration
       );
   });
 
@@ -151,7 +155,12 @@ describe("authenticated direct requests", () => {
       fail("Expected proxyService to throw an error");
     } catch (error) {
       expect(error).toBeInstanceOf(ContextError);
-      const { status } = ((error as ContextError).cause as AxiosError).response;
+
+      const { cause } = error as ContextError;
+
+      expect(cause).toBeInstanceOf(RemoteServiceError);
+
+      const { status } = (cause as RemoteServiceError).error.response;
       expect(status).toEqual(403);
     }
   });
@@ -193,8 +202,9 @@ describe("proxy service requests", () => {
           fail("Expected proxyService to throw an error");
         } catch (error) {
           expect(error).toBeInstanceOf(ContextError);
-          const { status, statusText } = ((error as ContextError)
-            .cause as AxiosError).response;
+          const { status, statusText } = (
+            (error as ContextError).cause as AxiosError
+          ).response;
           expect(status).toEqual(statusCode);
           expect(statusText).toEqual(reason);
         }
@@ -209,9 +219,15 @@ describe("proxy service requests", () => {
       await proxyService(proxiedServiceConfig, requestConfig);
       fail("Expected proxyService to throw an error");
     } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-      expect((error as Error).message).toEqual(
-        "API proxy error: Request failed with status code 500"
+      expect(error).toBeInstanceOf(ContextError);
+
+      const { cause } = error as ContextError;
+
+      expect(cause).toBeInstanceOf(RemoteServiceError);
+
+      expect((cause as RemoteServiceError).error.response.status).toEqual(500);
+      expect((cause as RemoteServiceError).message).toEqual(
+        "Request failed with status code 500"
       );
     }
   });

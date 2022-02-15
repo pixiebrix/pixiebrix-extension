@@ -35,10 +35,7 @@ import {
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
 import { Permissions } from "webextension-polyfill";
-import {
-  BaseExtensionState,
-  ElementType,
-} from "@/devTools/editor/extensionPoints/elementConfig";
+import { BaseExtensionState } from "@/devTools/editor/extensionPoints/elementConfig";
 import trigger, {
   TriggerFormState,
 } from "@/devTools/editor/extensionPoints/trigger";
@@ -52,7 +49,10 @@ import {
   ExtensionPointConfig,
   SharingDefinition,
 } from "@/types/definitions";
-import { ExtensionPointConfig as ExtensionPointDefinition } from "@/extensionPoints/types";
+import {
+  ExtensionPointConfig as ExtensionPointDefinition,
+  ExtensionPointType,
+} from "@/extensionPoints/types";
 import {
   Context as DevtoolsContextType,
   FrameConnectionState,
@@ -89,7 +89,6 @@ const tabStateFactory = define<FrameConnectionState>({
 });
 
 export const activeDevToolContextFactory = define<DevtoolsContextType>({
-  connect: jest.fn(),
   connecting: false,
   tabState: tabStateFactory,
 });
@@ -127,8 +126,7 @@ export const extensionFactory: (
         config: {
           url: "http://www.amazon.com/s",
           params: {
-            url:
-              "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
+            url: "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}",
           },
         },
       },
@@ -231,22 +229,24 @@ export const recipeDefinitionFactory = define<RecipeDefinition>({
   extensionPoints: array(extensionPointConfigFactory, 1),
 });
 
-export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>({
-  kind: "extensionPoint",
-  apiVersion: "v3",
-  metadata: (n: number) =>
-    recipeMetadataFactory({
-      id: validateRegistryId(`test/extension-point-${n}`),
-      name: `Extension Point ${n}`,
-    }),
-  definition: {
-    type: "menuItem",
-    isAvailable: {
-      matchPatterns: ["https://*/*"],
+export const extensionPointDefinitionFactory = define<ExtensionPointDefinition>(
+  {
+    kind: "extensionPoint",
+    apiVersion: "v3",
+    metadata: (n: number) =>
+      recipeMetadataFactory({
+        id: validateRegistryId(`test/extension-point-${n}`),
+        name: `Extension Point ${n}`,
+      }),
+    definition: {
+      type: "menuItem",
+      isAvailable: {
+        matchPatterns: ["https://*/*"],
+      },
+      reader: validateRegistryId("@pixiebrix/document-context"),
     },
-    reader: validateRegistryId("@pixiebrix/document-context"),
-  },
-});
+  }
+);
 
 type ExternalExtensionPointParams = {
   extensionPointId?: RegistryId;
@@ -354,7 +354,7 @@ const internalFormStateFactory = define<FormState>({
   services: [] as ServiceDependency[],
   recipe: null,
 
-  type: "panel" as ElementType,
+  type: "panel" as ExtensionPointType,
   label: (i: number) => `Element ${i}`,
   extension: baseExtensionStateFactory,
   extensionPoint: extensionPointDefinitionFactory,

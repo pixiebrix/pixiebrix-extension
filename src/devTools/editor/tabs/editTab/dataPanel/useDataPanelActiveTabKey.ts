@@ -39,10 +39,10 @@ export default function useDataPanelActiveTabKey(
     }
   }, [defaultTabKey, onSelectTab, savedActiveKey]);
 
-  const activeKey = useMemo(() => savedActiveKey ?? defaultTabKey, [
-    defaultTabKey,
-    savedActiveKey,
-  ]);
+  const activeKey = useMemo(
+    () => savedActiveKey ?? defaultTabKey,
+    [defaultTabKey, savedActiveKey]
+  );
 
   return [activeKey, onSelectTab];
 }

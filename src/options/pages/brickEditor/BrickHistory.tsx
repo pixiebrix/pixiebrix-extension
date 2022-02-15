@@ -14,13 +14,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import styles from "./BrickHistory.module.scss";
+
 import React, { useEffect, useMemo, useState, Suspense } from "react";
 import Select, { components, OptionProps } from "react-select";
 import useFetch from "@/hooks/useFetch";
 import { PackageVersion, Package } from "@/types/contract";
 import DiffEditor from "@/vendors/DiffEditor";
 import objectHash from "object-hash";
-import styles from "./BrickHistory.module.scss";
 import { UUID } from "@/core";
 
 export interface PackageVersionOption {

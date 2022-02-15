@@ -15,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
+import type {
   JSONSchema7,
   JSONSchema7Definition,
   JSONSchema7TypeName,
 } from "json-schema";
-import { UiSchema as StandardUiSchema } from "@rjsf/core";
-import { AxiosRequestConfig } from "axios";
-import { Except, Primitive } from "type-fest";
-import { ErrorObject } from "serialize-error";
-import { Permissions } from "webextension-polyfill";
+import type { UiSchema as StandardUiSchema } from "@rjsf/core";
+import type { AxiosRequestConfig } from "axios";
+import type { Except, Primitive } from "type-fest";
+import type { ErrorObject } from "serialize-error";
+import type { Permissions } from "webextension-polyfill";
+import type React from "react";
+
 import { pick } from "lodash";
-import React from "react";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
@@ -512,39 +513,37 @@ export type IExtension<T extends Config = EmptyConfig> = {
  * @see IExtension
  * @see ResolvedExtension
  */
-export type UnresolvedExtension<
-  T extends Config = EmptyConfig
-> = IExtension<T> & {
-  _unresolvedExtensionBrand: never;
-};
+export type UnresolvedExtension<T extends Config = EmptyConfig> =
+  IExtension<T> & {
+    _unresolvedExtensionBrand: never;
+  };
 
 /**
  * An extension that has been saved locally
  * @see IExtension
  * @see UserExtension
  */
-export type PersistedExtension<
-  T extends Config = EmptyConfig
-> = UnresolvedExtension<T> & {
-  /**
-   * True to indicate this extension has been activated on the client.
-   */
-  active: true;
+export type PersistedExtension<T extends Config = EmptyConfig> =
+  UnresolvedExtension<T> & {
+    /**
+     * True to indicate this extension has been activated on the client.
+     */
+    active: true;
 
-  /**
-   * Creation timestamp in ISO format with timezone.
-   *
-   * Currently, not used for anything - might be used for sorting, etc. in the future.
-   */
-  createTimestamp: string;
+    /**
+     * Creation timestamp in ISO format with timezone.
+     *
+     * Currently, not used for anything - might be used for sorting, etc. in the future.
+     */
+    createTimestamp: string;
 
-  /**
-   * Update timestamp in ISO format with timezone.
-   *
-   * Used to determine if local version is outdated compared to user's version on the server.
-   */
-  updateTimestamp: string;
-};
+    /**
+     * Update timestamp in ISO format with timezone.
+     *
+     * Used to determine if local version is outdated compared to user's version on the server.
+     */
+    updateTimestamp: string;
+  };
 
 /**
  * An `IExtension` with all definitions resolved.
@@ -563,6 +562,8 @@ export type ResolvedExtension<T extends Config = EmptyConfig> = Except<
 };
 
 export interface IExtensionPoint extends Metadata {
+  kind: string;
+
   inputSchema: Schema;
 
   permissions: Permissions.Permissions;

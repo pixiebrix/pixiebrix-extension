@@ -17,19 +17,22 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { Installable } from "./blueprintsTypes";
+import { InstallableViewItem } from "./blueprintsTypes";
 import useInstallableActions from "./useInstallableActions";
 
 type StatusProps = {
-  installable: Installable;
+  installableViewItem: InstallableViewItem;
 };
 
-const Status: React.VoidFunctionComponent<StatusProps> = ({ installable }) => {
+const Status: React.VoidFunctionComponent<StatusProps> = ({
+  installableViewItem,
+}) => {
+  const { status, installable, hasUpdate } = installableViewItem;
   const { activate, reinstall } = useInstallableActions(installable);
 
-  return installable.active ? (
+  return status === "Active" ? (
     <>
-      {installable.hasUpdate ? (
+      {hasUpdate ? (
         <Button size="sm" variant="warning" onClick={reinstall}>
           Update
         </Button>

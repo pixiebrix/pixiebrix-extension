@@ -66,17 +66,17 @@ export class ComponentReader extends Transformer {
     },
   };
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return true;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
   async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
     return frameworkReadFactory(args.framework)(
-      (args as unknown) as FrameworkConfig,
+      args as unknown as FrameworkConfig,
       root
     );
   }

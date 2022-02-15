@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { ResolvedExtension } from "@/core";
 import {
   ExtensionValidationResult,
   useExtensionValidator,
 } from "@/validators/generic";
-import { BeatLoader } from "react-spinners";
+import BeatLoader from "react-spinners/BeatLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -37,7 +37,6 @@ import useNotifications from "@/hooks/useNotifications";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { useDispatch } from "react-redux";
-import AuthContext from "@/auth/AuthContext";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { installedPageSlice } from "./installedPageSlice";
 
@@ -72,11 +71,9 @@ const InstalledExtensionRow: React.FunctionComponent<{
   const { id: extensionId, label, _recipe } = extension;
 
   const notify = useNotifications();
-  const { scope: userScope } = useContext(AuthContext);
 
-  const [hasPermissions, requestPermissions] = useExtensionPermissions(
-    extension
-  );
+  const [hasPermissions, requestPermissions] =
+    useExtensionPermissions(extension);
 
   const [validation] = useExtensionValidator(extension);
 
@@ -147,7 +144,8 @@ const InstalledExtensionRow: React.FunctionComponent<{
                   <FontAwesomeIcon icon={faShare} /> Share
                 </>
               ),
-              hide: _recipe != null || userScope == null,
+              // OK to show if user doesn't have a scope. They'll be prompted to set a scope
+              hide: _recipe != null,
               action: shareExtension,
             },
             {

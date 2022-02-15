@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
-import GridLoader from "react-spinners/GridLoader";
+import "./MarketplacePage.scss";
+
+import React, { useMemo, useState } from "react";
+import Loader from "@/components/Loader";
 import { PageTitle } from "@/layout/Page";
 import {
   faExternalLinkAlt,
@@ -27,15 +29,14 @@ import {
 import { Metadata, Sharing, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
-import "./MarketplacePage.scss";
 import type { ButtonProps } from "react-bootstrap";
 import useFetch from "@/hooks/useFetch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery, useGetOrganizationsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import Pagination from "@/components/pagination/Pagination";
 import { Organization } from "@/types/contract";
-import { useGetOrganizationsQuery } from "@/services/api";
+import useFlags from "@/hooks/useFlags";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -179,7 +180,12 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   const { data: organizations = [] } = useGetOrganizationsQuery();
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
   const [query, setQuery] = useState("");
-  const { scope, flags } = useContext(AuthContext);
+  const {
+    data: { scope },
+  } = useGetAuthQuery();
+
+  const { permit } = useFlags();
+
   const [page, setPage] = useState(0);
 
   const recipes = useMemo(() => {
@@ -198,10 +204,10 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
     return sortBy(filtered, (x) => x.metadata.name);
   }, [rawRecipes, query, scope]);
 
-  const numPages = useMemo(() => Math.ceil(recipes.length / recipesPerPage), [
-    recipes,
-    recipesPerPage,
-  ]);
+  const numPages = useMemo(
+    () => Math.ceil(recipes.length / recipesPerPage),
+    [recipes, recipesPerPage]
+  );
   const pageRecipes = useMemo(
     () => recipes.slice(page * recipesPerPage, (page + 1) * recipesPerPage),
     [recipes, recipesPerPage, page]
@@ -220,7 +226,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
           </div>
         </Col>
 
-        {!flags.includes("restricted-marketplace") && (
+        {permit("marketplace") && (
           <Col className="text-right">
             <a
               href="https://www.pixiebrix.com/marketplace"
@@ -258,7 +264,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
       <Row>
         <Col xl={8} lg={10} md={12}>
           {rawRecipes == null ? (
-            <GridLoader />
+            <Loader />
           ) : (
             <RecipeList
               installedRecipes={installedRecipes}
