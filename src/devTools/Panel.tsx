@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { Container } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useDevConnection } from "@/devTools/context";
@@ -55,10 +54,8 @@ const Panel: React.VoidFunctionComponent = () => {
             <ModalProvider>
               <ErrorBoundary>
                 <Router>
-                  <Container fluid className="DevToolsContainer">
-                    <ErrorBanner />
-                    <Editor />
-                  </Container>
+                  <ErrorBanner />
+                  <Editor />
                 </Router>
               </ErrorBoundary>
             </ModalProvider>

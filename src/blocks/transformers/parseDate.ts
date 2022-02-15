@@ -18,6 +18,8 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { BusinessError } from "@/errors";
+import { isEmpty } from "lodash";
 
 export function getLocalISOString(date: Date): string {
   let offsetInMinutes = date.getTimezoneOffset();
@@ -59,7 +61,7 @@ export class ParseDate extends Transformer {
       date: {
         type: "string",
         title: "Date",
-        description: "A date string value in any format",
+        description: "A textual date in any format",
       },
     },
     ["date"]
@@ -111,12 +113,21 @@ export class ParseDate extends Transformer {
     },
   };
 
-  async transform({ date }: BlockArg): Promise<unknown> {
+  async transform({ date }: BlockArg<{ date: string }>): Promise<unknown> {
     const { parseDate } = await import(
       /* webpackChunkName: "chrono-node" */ "chrono-node"
     );
 
     const parsed = parseDate(date);
+
+    if (isEmpty(date.trim())) {
+      throw new BusinessError("Date/time text is empty");
+    }
+
+    if (parsed == null) {
+      throw new BusinessError("Unrecognized date/time");
+    }
+
     const millisPerMinute = 60 * 1000;
     const offsetInMinutes = parsed.getTimezoneOffset();
     const utc = new Date(parsed.getTime() + offsetInMinutes * millisPerMinute);

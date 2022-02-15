@@ -23,11 +23,12 @@ const ToggleField: React.FunctionComponent<{ name: string }> = ({ name }) => {
   const [field, , helpers] = useField(name);
   return (
     <BootstrapSwitchButton
-      size="sm"
+      size="xs"
       onstyle="info"
       offstyle="light"
       onlabel=" "
       offlabel=" "
+      style="align-self-center"
       checked={field.value ?? false}
       onChange={(value) => {
         helpers.setValue(value);
