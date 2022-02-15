@@ -21,7 +21,7 @@ import {
   inferPanelHTML,
   inferSelectors,
   safeCssSelector,
-} from "@/nativeEditor/infer";
+} from "@/contentScript/nativeEditor/infer";
 import { PIXIEBRIX_DATA_ATTR, EXTENSION_POINT_DATA_ATTR } from "@/common";
 
 test("infer basic button", () => {

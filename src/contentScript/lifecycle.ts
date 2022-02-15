@@ -19,7 +19,7 @@ import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import * as context from "@/contentScript/context";
-import * as actionPanel from "@/actionPanel/native";
+import * as actionPanel from "@/contentScript/actionPanel";
 import { PromiseCancelled, sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
@@ -28,7 +28,7 @@ import browser from "webextension-polyfill";
 import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
-import { isDeploymentActive } from "@/options/deploymentUtils";
+import { isDeploymentActive } from "@/utils/deployment";
 import { $safeFind } from "@/helpers";
 
 let _scriptPromise: Promise<void> | undefined;

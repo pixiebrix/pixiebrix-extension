@@ -27,10 +27,8 @@ import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import CreatableAutosuggest, {
   SuggestionTypeBase,
 } from "@/devTools/editor/fields/creatableAutosuggest/CreatableAutosuggest";
-import { ElementInfo } from "@/nativeEditor/frameworks";
 import SelectorListItem from "@/devTools/editor/fields/selectorListItem/SelectorListItem";
 import { Framework } from "@/messaging/constants";
-import { SelectMode } from "@/nativeEditor/selector";
 import { useField } from "formik";
 import {
   disableOverlay,
@@ -39,6 +37,7 @@ import {
   cancelSelect,
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
+import { ElementInfo, SelectMode } from "@/contentScript/nativeEditor/types";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;

@@ -38,7 +38,6 @@ import {
   ActionPanelExtensionPoint,
   PanelDefinition,
 } from "@/extensionPoints/actionPanelExtension";
-import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
@@ -50,6 +49,7 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
 import { Except } from "type-fest";
+import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 
 type Extension = BaseExtensionState & Except<ActionPanelConfig, "body">;
 

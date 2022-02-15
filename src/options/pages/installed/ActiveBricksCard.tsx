@@ -31,7 +31,7 @@ import ExtensionGroup from "./ExtensionGroup";
 import ExtensionGroupHeader from "./ExtensionGroupHeader";
 import { groupBy } from "lodash";
 import ExtensionRows from "./ExtensionRows";
-import { isDeploymentActive } from "@/options/deploymentUtils";
+import { isDeploymentActive } from "@/utils/deployment";
 import {
   useGetOrganizationsQuery,
   useGetRecipesQuery,

@@ -22,12 +22,12 @@ import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef, UUID } from "@/core";
-import {
+import type {
   ActionPanelStore,
   FormEntry,
   PanelEntry,
   RendererError,
-} from "@/actionPanel/actionPanelTypes";
+} from "@/actionPanel/types";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import { hideForm, renderPanels, showForm } from "@/actionPanel/messenger/api";
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
@@ -188,7 +188,7 @@ export function isActionPanelVisible(): boolean {
   return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
 }
 
-export function getStore(): ActionPanelStore {
+export function getActionPanelStore(): ActionPanelStore {
   // `forms` state is managed by the action panel react component
   return { panels, forms: [] };
 }

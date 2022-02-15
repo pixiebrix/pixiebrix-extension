@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { FormEntry } from "@/actionPanel/actionPanelTypes";
+import { FormEntry } from "@/actionPanel/types";
 import { useAsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
