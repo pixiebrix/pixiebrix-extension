@@ -50,7 +50,6 @@ import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
-import cx from "classnames";
 import AutoSizer from "react-virtualized-auto-sizer";
 
 // These react-table columns aren't rendered as column headings,
@@ -196,11 +195,7 @@ const BlueprintsCard: React.FunctionComponent<{
         setGlobalFilter={setGlobalFilter}
       />
       <Col className={styles.mainContainer}>
-        <div
-          className={cx(
-            "d-flex justify-content-between align-items-center mb-3"
-          )}
-        >
+        <div className="d-flex justify-content-between align-items-center mb-3">
           <h3 className={styles.filterTitle}>
             {globalFilter
               ? "Search results"
