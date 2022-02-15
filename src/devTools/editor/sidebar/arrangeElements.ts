@@ -31,6 +31,11 @@ type ArrangeElementsArgs = {
   activeElementId: UUID;
 };
 
+type ArrangeElementsResult = {
+  elementsByRecipeId: Array<[RegistryId, Array<IExtension | FormState>]>;
+  orphanedElements: Array<IExtension | FormState>;
+};
+
 function arrangeElements({
   elements,
   installed,
@@ -39,7 +44,7 @@ function arrangeElements({
   availableDynamicIds,
   showAll,
   activeElementId,
-}: ArrangeElementsArgs) {
+}: ArrangeElementsArgs): ArrangeElementsResult {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
   const elementsByRecipeId: Map<
     RegistryId,
