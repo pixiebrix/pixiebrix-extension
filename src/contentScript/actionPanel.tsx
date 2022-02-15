@@ -27,8 +27,7 @@ import type {
   FormEntry,
   PanelEntry,
   RendererError,
-  // eslint-disable-next-line import/no-restricted-paths -- Types only
-} from "@/actionPanel/actionPanelTypes";
+} from "@/actionPanel/types";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import { hideForm, renderPanels, showForm } from "@/actionPanel/messenger/api";
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
@@ -189,7 +188,7 @@ export function isActionPanelVisible(): boolean {
   return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
 }
 
-export function getStore(): ActionPanelStore {
+export function getActionPanelStore(): ActionPanelStore {
   // `forms` state is managed by the action panel react component
   return { panels, forms: [] };
 }

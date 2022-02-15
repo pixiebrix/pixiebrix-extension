@@ -17,7 +17,7 @@
  */
 
 // eslint-disable-next-line import/no-restricted-paths -- Type only
-import { type RunBlock } from "@/contentScript/executor";
+import type { RunBlock } from "@/contentScript/executor";
 import browser, { Runtime, Tabs } from "webextension-polyfill";
 import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";

@@ -1,3 +1,29 @@
+const contexts = [
+  "background",
+  "contentScript",
+  "devTools",
+  "options",
+  "actionPanel",
+  // "pageScript", // TODO: After Messenger migration
+];
+
+const restrictedZones = [];
+for (const exporter of contexts) {
+  for (const importer of contexts) {
+    if (exporter !== importer) {
+      restrictedZones.push({
+        target: `./src/${importer}/**/*`,
+        from: `./src/${exporter}`,
+        except: [
+          `../${exporter}/messenger/api.ts`,
+          `../${exporter}/types.ts`,
+          `../${exporter}/nativeEditor/types.ts`,
+        ],
+      });
+    }
+  }
+}
+
 module.exports = {
   root: true,
   extends: [
@@ -5,6 +31,13 @@ module.exports = {
     "pixiebrix",
   ],
   rules: {
+    "import/no-restricted-paths": [
+      "error",
+      {
+        zones: restrictedZones,
+      },
+    ],
+
     "import/no-unassigned-import": [
       "error",
       {

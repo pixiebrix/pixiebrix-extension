@@ -38,8 +38,6 @@ import {
   PanelDefinition,
   PanelExtensionPoint,
 } from "@/extensionPoints/panelExtension";
-import { DynamicDefinition } from "@/nativeEditor/dynamic";
-import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import { uuidv4 } from "@/types/helpers";
 import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
@@ -50,12 +48,16 @@ import {
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
 import { NormalizedAvailability } from "@/blocks/types";
 import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration";
 import { insertPanel } from "@/contentScript/messenger/api";
 import { Except } from "type-fest";
+import {
+  DynamicDefinition,
+  ElementInfo,
+  PanelSelectionResult,
+} from "@/contentScript/nativeEditor/types";
 
 export type PanelTraits = {
   style: {

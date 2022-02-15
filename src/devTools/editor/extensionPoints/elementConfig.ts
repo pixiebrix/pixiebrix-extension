@@ -31,10 +31,10 @@ import {
   ExtensionPointConfig,
   ExtensionPointType,
 } from "@/extensionPoints/types";
-import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import { Target } from "@/types";
 import { OptionsDefinition } from "@/types/definitions";
+import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation

@@ -18,7 +18,6 @@
 import { deserializeError } from "serialize-error";
 import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
 import FRAMEWORK_ADAPTERS from "@/frameworks/adapters";
-// eslint-disable-next-line import/no-restricted-paths -- TODO: Move away from lifter pattern
 import { getComponentData } from "@/pageScript/protocol";
 import blockRegistry from "@/blocks/registry";
 import { getCssSelector } from "css-selector-generator";
@@ -28,7 +27,7 @@ import {
   ReduceOptions,
 } from "@/runtime/reducePipeline";
 import { ApiVersion, BlockArgContext, IReader, RegistryId } from "@/core";
-// eslint-disable-next-line import/no-restricted-paths -- TODO: Decide whether to drop this unused API
+// eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { selectedElement } from "@/devTools/getSelectedElement";
 import { isNullOrBlank, resolveObj } from "@/utils";
 import { BlockConfig } from "@/blocks/types";
@@ -38,7 +37,7 @@ import { SerializableResponse } from "@/messaging/protocol";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
-import { clearDynamicElements } from "@/nativeEditor/dynamic";
+import { clearDynamicElements } from "@/contentScript/nativeEditor/dynamic";
 import { reactivateTab } from "./lifecycle";
 import selection from "@/utils/selectionController";
 

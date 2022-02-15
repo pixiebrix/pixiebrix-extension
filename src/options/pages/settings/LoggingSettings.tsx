@@ -22,8 +22,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import Loader from "@/components/Loader";
-// eslint-disable-next-line import/no-restricted-paths -- TODO: Should this be executed in the background
-import { clearLogs } from "@/background/logging";
+import { clearLogs } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
 

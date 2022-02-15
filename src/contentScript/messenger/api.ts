@@ -32,6 +32,7 @@ export const toggleActionPanel = getMethod("TOGGLE_ACTION_PANEL");
 export const showActionPanel = getMethod("SHOW_ACTION_PANEL");
 export const hideActionPanel = getMethod("HIDE_ACTION_PANEL");
 export const removeActionPanel = getMethod("REMOVE_ACTION_PANEL");
+export const getActionPanelStore = getMethod("GET_ACTION_PANEL_STORE");
 export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");
 

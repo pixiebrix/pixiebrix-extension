@@ -20,7 +20,8 @@ import { Button } from "react-bootstrap";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
-import { getStore } from "@/contentScript/actionPanel";
+// eslint-disable-next-line import/no-restricted-paths -- TODO: This should be called in the content script, but it currently has to be sync
+import { getActionPanelStore } from "@/contentScript/actionPanel";
 import {
   addListener,
   removeListener,
@@ -28,11 +29,12 @@ import {
 } from "@/actionPanel/protocol";
 import DefaultActionPanel from "@/actionPanel/DefaultActionPanel";
 import { ToastProvider } from "react-toast-notifications";
+// eslint-disable-next-line import/no-restricted-paths -- TODO: move out of @/options or use Messenger
 import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
 import Loader from "@/components/Loader";
 import { PersistGate } from "redux-persist/integration/react";
-import { PanelEntry, FormEntry } from "@/actionPanel/actionPanelTypes";
+import { PanelEntry, FormEntry } from "@/actionPanel/types";
 import ActionPanelTabs from "@/actionPanel/ActionPanelTabs";
 import slice, { blankActionPanelState } from "./actionPanelSlice";
 import { AnyAction } from "redux";
@@ -56,7 +58,7 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
 const ActionPanelApp: React.FunctionComponent = () => {
   const [state, dispatch] = useReducer(slice.reducer, {
     ...blankActionPanelState,
-    ...getStore(),
+    ...getActionPanelStore(),
   });
 
   const listener: StoreListener = useMemo(

@@ -20,11 +20,12 @@ import { ServiceDependency } from "@/core";
 import useNotifications from "@/hooks/useNotifications";
 import { useFormikContext } from "formik";
 import { useAsyncState } from "@/hooks/common";
-// eslint-disable-next-line import/no-restricted-paths -- TODO: Should this be executed in the background
-import { locator } from "@/background/locator";
 import { collectPermissions, ensureAllPermissions } from "@/permissions";
 import { resolveDefinitions } from "@/registry/internal";
-import { containsPermissions } from "@/background/messenger/api";
+import {
+  containsPermissions,
+  services as locator,
+} from "@/background/messenger/api";
 import { useCallback } from "react";
 import { getErrorMessage } from "@/errors";
 import { reportEvent } from "@/telemetry/events";

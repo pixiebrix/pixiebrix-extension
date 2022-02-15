@@ -23,7 +23,7 @@ import ConsoleLogger from "@/tests/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage } from "@/errors";
 import { BlockArg, RendererOutput } from "@/core";
-import { PanelPayload } from "@/actionPanel/actionPanelTypes";
+import { PanelPayload } from "@/actionPanel/types";
 import RendererComponent from "@/actionPanel/RendererComponent";
 
 const PanelBody: React.FunctionComponent<{ payload: PanelPayload }> = ({

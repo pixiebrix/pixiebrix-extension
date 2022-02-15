@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { ActionPanelStore, PanelEntry } from "@/actionPanel/actionPanelTypes";
+import { ActionPanelStore, PanelEntry } from "@/actionPanel/types";
 import { mapTabEventKey } from "@/actionPanel/actionPanelUtils";
 import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { UUID } from "@/core";
