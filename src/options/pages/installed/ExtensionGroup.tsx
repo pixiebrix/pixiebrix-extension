@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ExtensionGroup.module.scss";
+
 import React, { useCallback, useMemo, useState } from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -38,7 +40,6 @@ import {
   RemoveAction,
 } from "@/options/pages/installed/installedPageTypes";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
-import styles from "./ExtensionGroup.module.scss";
 import ExtensionRows from "./ExtensionRows";
 import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
@@ -90,9 +91,8 @@ const ExtensionGroup: React.FunctionComponent<{
   const expandable = !managed;
   const [expanded, setExpanded] = useState(expandable && startExpanded);
 
-  const [hasPermissions, requestPermissions] = useExtensionPermissions(
-    extensions
-  );
+  const [hasPermissions, requestPermissions] =
+    useExtensionPermissions(extensions);
 
   const sourceRecipeMeta = extensions[0]._recipe;
 

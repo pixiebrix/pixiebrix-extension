@@ -72,10 +72,8 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
     UUID | Expression
   >(databaseFieldName);
 
-  const {
-    databaseOptions,
-    isLoading: isLoadingDatabaseOptions,
-  } = useDatabaseOptions();
+  const { databaseOptions, isLoading: isLoadingDatabaseOptions } =
+    useDatabaseOptions();
 
   const isMountedRef = useRef(true);
   useEffect(

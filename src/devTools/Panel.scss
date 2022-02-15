@@ -15,16 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.DevToolsContainer.container-fluid {
-  padding-left: 0;
-  padding-right: 0;
+html,
+body,
+#container {
+  display: flex;
+  justify-content: stretch;
+  height: 100%;
+  width: 100%;
+  & > * {
+    flex-grow: 1;
+  }
+}
 
-  .SupportPane {
-    border-left: 3px solid #c6bfdb;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+.full-height {
+  display: flex;
+  flex-direction: column;
+  & > :last-child {
+    flex-grow: 1;
   }
 
+  .scrollable-area {
+    height: 0;
+    overflow-y: auto;
+  }
+}
+
+.DevToolsContainer {
+  display: flex;
   .PaneTitle {
     font-weight: bold;
     font-size: 1.3rem;
@@ -32,36 +49,25 @@
   }
 
   .nav-pills {
-    padding-bottom: 0;
-
     button {
       border-radius: 0;
     }
-
     .nav-item {
-      margin-right: 0;
-      margin-left: 0;
-      white-space: nowrap;
-
-      .nav-link {
-        height: 100%;
-        font-size: 0.875rem;
-        border-radius: 0;
-        padding-top: 4px;
-        padding-bottom: 4px;
-      }
+      display: flex;
+      align-items: stretch;
     }
-  }
-
-  .container-fluid {
-    padding-right: 0;
-  }
-
-  .tab-pane {
-    overflow-y: auto;
+    .nav-link {
+      display: flex;
+      align-items: center;
+      border-radius: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      font-size: 0.875rem;
+    }
   }
 
   label.AutoRun {
     font-size: 0.875rem;
+    padding: 0.3em;
   }
 }

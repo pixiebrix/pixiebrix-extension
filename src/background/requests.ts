@@ -110,13 +110,10 @@ async function authenticate(
       throw new ExtensionNotLinkedError();
     }
 
-    return service.authenticateRequest(
-      ({ apiKey } as unknown) as ServiceConfig,
-      {
-        ...request,
-        url: await absoluteApiUrl(request.url),
-      }
-    );
+    return service.authenticateRequest({ apiKey } as unknown as ServiceConfig, {
+      ...request,
+      url: await absoluteApiUrl(request.url),
+    });
   }
 
   if (service.isOAuth2) {

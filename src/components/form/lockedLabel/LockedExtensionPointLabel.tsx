@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./LockedExtensionPointLabel.module.scss";
+
 import React from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { uuidv4 } from "@/types/helpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { useField } from "formik";
-import styles from "./LockedExtensionPointLabel.module.scss";
 
 const LockedExtensionPointLabel: React.FC<{
   label: string;

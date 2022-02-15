@@ -16,12 +16,12 @@
  */
 
 import LazyLocatorFactory from "@/services/locator";
-import { isBackground } from "webext-detect-page";
 
 export const locator = new LazyLocatorFactory();
 
-async function initLocator() {
+export default async function initLocator() {
   await locator.refresh();
+  console.debug("Eagerly initialized service locator");
 }
 
 type RefreshOptions = {
@@ -46,10 +46,4 @@ export async function refreshServices(options?: RefreshOptions): Promise<void> {
     // Prevent buggy call sites from silently causing issues
     throw new Error("Either local or remote must be set to true");
   }
-}
-
-if (isBackground()) {
-  void initLocator().then(() => {
-    console.debug("Eagerly initialized service locator");
-  });
 }

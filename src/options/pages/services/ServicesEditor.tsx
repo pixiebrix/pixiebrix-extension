@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "@/options/pages/services/PrivateServicesCard.module.scss";
+
 import React, { useCallback, useState } from "react";
 import { connect } from "react-redux";
 import servicesSlice from "@/store/servicesSlice";
@@ -33,10 +35,9 @@ import useNotifications from "@/hooks/useNotifications";
 import { useParams } from "react-router";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
 import BrickModal from "@/components/brickModal/BrickModal";
-import styles from "@/options/pages/services/PrivateServicesCard.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
-import { getBaseURL } from "@/services/baseService";
+import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -54,14 +55,10 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const notify = useNotifications();
   const { id: configurationId } = useParams<{ id: UUID }>();
 
-  const [
-    newConfigurationService,
-    setNewConfigurationService,
-  ] = useState<IService>(null);
-  const [
-    newConfiguration,
-    setNewConfiguration,
-  ] = useState<RawServiceConfiguration>(null);
+  const [newConfigurationService, setNewConfigurationService] =
+    useState<IService>(null);
+  const [newConfiguration, setNewConfiguration] =
+    useState<RawServiceConfiguration>(null);
 
   const {
     activeConfiguration,
@@ -114,6 +111,8 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     ]
   );
 
+  const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
+
   const handleCreate = useCallback(
     async (service: IService) => {
       const definition = (serviceDefinitions ?? []).find(
@@ -121,10 +120,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       );
 
       if (definition.isAuthorizationGrant) {
-        const url = new URL("services/", await getBaseURL());
-        url.searchParams.set("id", service.id);
-        // eslint-disable-next-line security/detect-non-literal-fs-filename -- browser window
-        window.open(url.href);
+        void launchAuthorizationGrantFlow(service, { target: "_self" });
         return;
       }
 
@@ -142,6 +138,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     },
     [
       navigate,
+      launchAuthorizationGrantFlow,
       serviceDefinitions,
       setNewConfiguration,
       setNewConfigurationService,

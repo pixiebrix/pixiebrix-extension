@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import styles from "./ShareExtensionModal.module.scss";
+
 import React, { useCallback, useMemo } from "react";
 import {
   Button,
@@ -55,7 +58,6 @@ import extensionsSlice from "@/store/extensionsSlice";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
-import styles from "./ShareExtensionModal.module.scss";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { RequireScope } from "@/auth/RequireScope";
 

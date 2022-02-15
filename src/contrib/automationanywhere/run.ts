@@ -37,8 +37,7 @@ export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
 
 export const AUTOMATION_ANYWHERE_PROPERTIES: SchemaProperties = {
   service: {
-    $ref:
-      "https://app.pixiebrix.com/schemas/services/automation-anywhere/control-room",
+    $ref: "https://app.pixiebrix.com/schemas/services/automation-anywhere/control-room",
   },
   fileId: {
     type: "string",
@@ -78,7 +77,7 @@ export class RunBot extends Transformer {
     properties: AUTOMATION_ANYWHERE_PROPERTIES,
   };
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     additionalProperties: true,

@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./SelectorSelectorWidget.module.scss";
+
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { compact, isEmpty, sortBy, uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors";
-import { Button } from "react-bootstrap";
+import { Button, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import CreatableAutosuggest, {
@@ -164,9 +166,9 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
 
       const selectors = selected.selectors ?? [];
 
-      const firstSelector = (sort
-        ? sortBy(selectors, (x) => x.length)
-        : selectors)[0];
+      const firstSelector = (
+        sort ? sortBy(selectors, (x) => x.length) : selectors
+      )[0];
 
       console.debug("Setting selector", { selected, firstSelector });
       setValue(firstSelector);
@@ -199,8 +201,8 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   );
 
   return (
-    <div className="d-flex">
-      <div>
+    <InputGroup className={styles.root}>
+      <InputGroup.Prepend>
         <Button
           onClick={select}
           disabled={isSelecting || disabled}
@@ -209,21 +211,19 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         >
           <FontAwesomeIcon icon={faMousePointer} />
         </Button>
-      </div>
-      <div className="flex-grow-1">
-        <CreatableAutosuggest
-          isClearable={isClearable}
-          isDisabled={isSelecting || disabled}
-          suggestions={suggestions}
-          inputValue={value}
-          inputPlaceholder={placeholder}
-          renderSuggestion={renderSuggestion}
-          onSuggestionHighlighted={onHighlighted}
-          onSuggestionsClosed={disableSelector}
-          onTextChanged={onTextChanged}
-        />
-      </div>
-    </div>
+      </InputGroup.Prepend>
+      <CreatableAutosuggest
+        isClearable={isClearable}
+        isDisabled={isSelecting || disabled}
+        suggestions={suggestions}
+        inputValue={value}
+        inputPlaceholder={placeholder}
+        renderSuggestion={renderSuggestion}
+        onSuggestionHighlighted={onHighlighted}
+        onSuggestionsClosed={disableSelector}
+        onTextChanged={onTextChanged}
+      />
+    </InputGroup>
   );
 };
 

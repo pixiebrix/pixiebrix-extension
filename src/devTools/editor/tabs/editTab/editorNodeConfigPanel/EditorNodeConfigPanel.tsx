@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./EditorNodeConfigPanel.module.scss";
+
 import React, { useMemo } from "react";
 import { Col, Row } from "react-bootstrap";
 import { RegistryId } from "@/core";
@@ -24,7 +26,6 @@ import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
 import { showOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
-import styles from "./EditorNodeConfigPanel.module.scss";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 

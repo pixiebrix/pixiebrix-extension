@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "./SetupPage.scss";
+
 import React, { useCallback } from "react";
 import { faCheck, faLink } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row, Card, Button, ListGroup } from "react-bootstrap";
@@ -25,9 +27,8 @@ import browser from "webextension-polyfill";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 
-import "./SetupPage.scss";
 import { useTitle } from "@/hooks/title";
 import { LinkButton } from "@/components/LinkButton";
 
@@ -85,7 +86,7 @@ const SetupPage: React.FunctionComponent = () => {
           <Card className="OnboardingCard">
             <Card.Header>PixieBrix Setup Steps</Card.Header>
             <Card.Body>
-              <GridLoader />
+              <Loader />
             </Card.Body>
           </Card>
         </Col>

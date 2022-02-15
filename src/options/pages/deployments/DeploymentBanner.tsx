@@ -30,12 +30,8 @@ const DeploymentBanner: React.FunctionComponent = () => {
   // Use a single useDeployments for both the banner and modal because useDeployments makes a network call. In the
   // future, we need to move the state to Redux
   const deploymentState = useDeployments();
-  const {
-    hasUpdate,
-    update,
-    extensionUpdateRequired,
-    updateExtension,
-  } = deploymentState;
+  const { hasUpdate, update, extensionUpdateRequired, updateExtension } =
+    deploymentState;
 
   // Only show on certain pages where the user expects to see a top-level install button. It's especially confusing
   // to show the banner on other pages with an activate button (e.g., the marketplace wizard, in the workshop, etc.)

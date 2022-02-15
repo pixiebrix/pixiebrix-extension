@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -28,7 +27,7 @@ function onContextMenuClick({ menuItemId }: Menus.OnClickData) {
   }
 }
 
-export default async function initFirefoxCompat(): Promise<void> {
+export default function initFirefoxCompat(): void {
   expectContext("background");
   if (!isFirefox()) {
     return;

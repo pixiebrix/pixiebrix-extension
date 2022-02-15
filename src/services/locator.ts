@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -39,6 +38,7 @@ import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { ExtensionNotLinkedError } from "@/errors";
+import { forbidContext } from "@/utils/expectContext";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -112,6 +112,11 @@ class LazyLocatorFactory {
   private updateTimestamp: number = undefined;
 
   constructor() {
+    forbidContext(
+      "contentScript",
+      "LazyLocatorFactory cannot run in the contentScript"
+    );
+
     if (wasInitialized) {
       throw new Error("LazyLocatorFactory is a singleton class");
     }

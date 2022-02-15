@@ -15,16 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import GridLoader from "react-spinners/GridLoader";
-import Centered from "@/devTools/editor/components/Centered";
-
-const PersistLoader: React.VoidFunctionComponent = () => (
-  <Centered>
-    <div className="d-flex justify-content-center">
-      <GridLoader />
-    </div>
-  </Centered>
-);
-
-export default PersistLoader;
+export function expectContext() {}
+export function forbidContext() {}

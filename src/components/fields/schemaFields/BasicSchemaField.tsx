@@ -394,13 +394,12 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     hideLabel,
   } = props;
   const fieldLabel = makeLabelForSchemaField(props);
-  const defaultDescription = useMemo(() => description ?? schema.description, [
-    description,
-    schema.description,
-  ]);
-  const [fieldDescription, setFieldDescription] = useState<React.ReactNode>(
-    defaultDescription
+  const defaultDescription = useMemo(
+    () => description ?? schema.description,
+    [description, schema.description]
   );
+  const [fieldDescription, setFieldDescription] =
+    useState<React.ReactNode>(defaultDescription);
 
   const updateFieldDescription = useCallback(
     (newDescription: string | undefined) => {

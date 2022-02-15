@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Modal } from "react-bootstrap";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 
 const SavingInProgressModal: React.FC = () => (
   <Modal show backdrop="static" keyboard={false}>
@@ -26,7 +26,7 @@ const SavingInProgressModal: React.FC = () => (
     </Modal.Header>
 
     <Modal.Body>
-      <GridLoader />
+      <Loader />
     </Modal.Body>
   </Modal>
 );

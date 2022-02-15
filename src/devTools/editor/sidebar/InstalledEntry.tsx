@@ -16,6 +16,7 @@
  */
 
 import styles from "./Entry.module.scss";
+
 import React, { useCallback } from "react";
 import { IExtension, UUID } from "@/core";
 import { useDispatch } from "react-redux";
@@ -53,9 +54,10 @@ const InstalledEntry: React.FunctionComponent<{
   isNested?: boolean;
 }> = ({ extension, recipes, available, active, isNested = false }) => {
   const dispatch = useDispatch();
-  const [type] = useAsyncState(async () => selectType(extension), [
-    extension.extensionPointId,
-  ]);
+  const [type] = useAsyncState(
+    async () => selectType(extension),
+    [extension.extensionPointId]
+  );
 
   const selectHandler = useCallback(
     async (extension: IExtension) => {

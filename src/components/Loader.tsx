@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,9 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-  width: 100%;
-}
+import React from "react";
+import GridLoader from "react-spinners/GridLoader";
+
+const DEFAULT_STYLE = {
+  margin: "20px auto", // Centet
+  display: "flex",
+  justifyContent: "center",
+};
+const Loader: React.FunctionComponent = () => (
+  <div style={DEFAULT_STYLE}>
+    <GridLoader />
+  </div>
+);
+
+export default Loader;

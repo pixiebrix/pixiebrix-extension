@@ -42,7 +42,7 @@ import {
 } from "@/components/formBuilder/formBuilderHelpers";
 import { OptionsDefinition } from "@/types/definitions";
 
-jest.mock("@/background/initContextMenus");
+jest.mock("@/background/contextMenus");
 jest.mock("@/background/messenger/api");
 
 jest.mock("@/devTools/editor/extensionPoints/base", () => ({
@@ -254,8 +254,9 @@ describe("replaceRecipeExtension round trip", () => {
         draft.definitions.extensionPoint2 = cloneDeep(
           recipe.definitions.extensionPoint
         );
-        (draft.definitions.extensionPoint2
-          .definition as MenuDefinition).template = newTemplate;
+        (
+          draft.definitions.extensionPoint2.definition as MenuDefinition
+        ).template = newTemplate;
         draft.extensionPoints[0].id = "extensionPoint2" as InnerDefinitionRef;
         // `services` gets normalized from undefined to {}
         draft.extensionPoints[0].services = {};

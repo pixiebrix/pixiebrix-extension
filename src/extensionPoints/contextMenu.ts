@@ -100,7 +100,7 @@ function installMouseHandlerOnce(): void {
  * See also: https://developer.chrome.com/extensions/contextMenus
  */
 export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMenuConfig> {
-  public get syncInstall() {
+  public override get syncInstall() {
     return true;
   }
 
@@ -142,7 +142,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     return blockList(extension.config.action);
   }
 
-  uninstall({ global = false }: { global?: boolean }): void {
+  override uninstall({ global = false }: { global?: boolean }): void {
     // NOTE: don't uninstall the mouse/click handler because other context menus need it
     const extensions = this.extensions.splice(0, this.extensions.length);
     if (global) {
@@ -164,7 +164,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     return available;
   }
 
-  async defaultReader(): Promise<IReader> {
+  override async defaultReader(): Promise<IReader> {
     return new ArrayCompositeReader([
       await this.getBaseReader(),
       new ContextMenuReader(),
@@ -177,7 +177,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       "id" | "config" | "_deployment"
     >
   ): Promise<void> {
-    const { title } = extension.config;
+    const { title = "Untitled menu item" } = extension.config;
 
     // Check for null/undefined to preserve backward compatability
     if (!isDeploymentActive(extension)) {
@@ -198,6 +198,12 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   private async registerExtensions(): Promise<void> {
+    console.debug(
+      "Registering",
+      this.extensions.length,
+      "contextMenu extension points"
+    );
+
     const results = await Promise.allSettled(
       this.extensions.map(async (extension) => {
         try {
@@ -308,14 +314,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   async run(): Promise<void> {
-    if (this.extensions.length === 0) {
-      console.debug(
-        `contextMenu extension point ${this.id} has no installed extensions`
-      );
-      return;
-    }
-
-    await this.registerExtensions();
+    // Already taken care by the `install` method
   }
 }
 
@@ -381,7 +380,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
     return mergeReaders(this._definition.reader);
   }
 
-  public get defaultOptions(): {
+  public override get defaultOptions(): {
     title: string;
     [key: string]: string | string[];
   } {

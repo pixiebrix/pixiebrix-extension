@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -16,24 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import Centered from "@/devTools/editor/components/Centered";
-import IntroButtons from "./IntroButtons";
-
-const NoExtensionSelectedPane: React.FunctionComponent = () => (
-  <Centered>
-    <div className="PaneTitle">No extension selected</div>
-
-    <div className="text-left">
-      <p>Select an extension in the sidebar to edit</p>
-      <p>
-        Or, click the <span className="text-info">Add</span> button in the
-        sidebar to add an extension to the page.
-      </p>
-
-      <IntroButtons />
-    </div>
-  </Centered>
-);
-
-export default NoExtensionSelectedPane;
+// Overridea and extend Bootstrap’s style
+.root {
+  flex-wrap: nowrap;
+  input {
+    position: relative;
+    z-index: 3;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+  }
+}

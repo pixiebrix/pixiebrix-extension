@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Sidebar.module.scss";
+
 import browser from "webextension-polyfill";
 import React, { FormEvent, useContext, useMemo, useState } from "react";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
@@ -41,7 +43,6 @@ import DynamicEntry from "@/devTools/editor/sidebar/DynamicEntry";
 import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
-import styles from "./Sidebar.module.scss";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
@@ -51,7 +52,7 @@ import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 import { RecipeDefinition } from "@/types/definitions";
-import { GridLoader } from "react-spinners";
+import Loader from "@/components/Loader";
 import RecipeEntry from "@/devTools/editor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
 
@@ -146,11 +147,8 @@ const SidebarExpanded: React.VoidFunctionComponent<
 
   const [showAll, setShowAll] = useState(false);
 
-  const {
-    availableInstalledIds,
-    availableDynamicIds,
-    unavailableCount,
-  } = useInstallState(installed, elements);
+  const { availableInstalledIds, availableDynamicIds, unavailableCount } =
+    useInstallState(installed, elements);
 
   const elementHash = hash(
     sortBy(elements.map((formState) => `${formState.uuid}-${formState.label}`))
@@ -319,7 +317,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
       </div>
       <div className={styles.extensions}>
         {isLoadingItems ? (
-          <GridLoader />
+          <Loader />
         ) : (
           <ListGroup>
             {elementsByRecipeId.map(([recipeId, elements]) => (
