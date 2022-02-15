@@ -38,14 +38,11 @@ const TableRow: React.VoidFunctionComponent<{
       </td>
       <td>
         <div className={styles.sharing}>
-          {sharing.packageId && (
-            <code className={styles.packageId}>{sharing.packageId}</code>
-          )}
+          <span className="small text-wrap">
+            Updated: {timeSince(updatedAt)}
+          </span>
           <SharingLabel sharing={sharing.source} />
         </div>
-      </td>
-      <td className="text-wrap">
-        <span className="small">Updated: {timeSince(updatedAt)}</span>
       </td>
       <td>
         <Status installableViewItem={installableItem} />
