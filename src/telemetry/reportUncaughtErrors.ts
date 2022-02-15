@@ -1,3 +1,4 @@
+import { matchesAnyPattern } from "@/utils";
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -24,7 +25,7 @@ import reportError from "@/telemetry/reportError";
 function ignoreSomeErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ): void {
-  if (IGNORED_ERRORS.includes(getErrorMessage(errorEvent))) {
+  if (matchesAnyPattern(getErrorMessage(errorEvent), IGNORED_ERRORS)) {
     errorEvent.preventDefault();
   }
 }

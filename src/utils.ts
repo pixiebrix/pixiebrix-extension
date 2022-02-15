@@ -521,3 +521,13 @@ export function isMac(): boolean {
   // https://stackoverflow.com/a/27862868/402560
   return navigator.platform.includes("Mac");
 }
+
+/** Tests a target string against a list of strings (full match) or regexes (can be mixed) */
+export function matchesAnyPattern(
+  target: string,
+  patterns: Array<string | RegExp>
+): boolean {
+  return patterns.some((pattern) =>
+    typeof pattern === "string" ? pattern === target : pattern.test(target)
+  );
+}

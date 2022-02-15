@@ -18,7 +18,7 @@
 import { MessageContext, SerializedError } from "@/core";
 import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError } from "axios";
-import { isObject } from "@/utils";
+import { isObject, matchesAnyPattern } from "@/utils";
 
 // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2672
 
@@ -163,10 +163,20 @@ export class ContextError extends Error {
   }
 }
 
+/** Browser Messenger API error message patterns */
+const CONNECTION_ERROR_PATTERNS = [
+  "Could not establish connection. Receiving end does not exist.",
+  "Extension context invalidated.",
+];
+
+// Can also be regexes, similar to this (although our matching is stricter) https://docs.rollbar.com/docs/javascript/#section-ignoring-specific-exception-messages
 export const IGNORED_ERRORS = [
   "ResizeObserver loop limit exceeded",
   "Promise was cancelled",
   "Uncaught Error: PixieBrix contentScript already installed",
+  "The frame was removed.",
+  /No frame with id \d+ in tab \d+/,
+  ...CONNECTION_ERROR_PATTERNS,
 ];
 
 export function isErrorObject(error: unknown): error is ErrorObject {
@@ -263,14 +273,6 @@ export function hasBusinessRootCause(
   return false;
 }
 
-/**
- * Browser Messenger API error message patterns.
- */
-const CONNECTION_ERROR_PATTERNS = [
-  "Could not establish connection. Receiving end does not exist.",
-  "Extension context invalidated",
-];
-
 export function isPromiseRejectionEvent(
   event: unknown
 ): event is PromiseRejectionEvent {
@@ -288,8 +290,10 @@ export function isAxiosError(error: unknown): error is AxiosError {
  * NOTE: does not recursively identify the root cause of the error.
  */
 export function isConnectionError(possibleError: unknown): boolean {
-  const message = getErrorMessage(possibleError);
-  return CONNECTION_ERROR_PATTERNS.some((pattern) => message.includes(pattern));
+  return matchesAnyPattern(
+    getErrorMessage(possibleError),
+    CONNECTION_ERROR_PATTERNS
+  );
 }
 
 /**

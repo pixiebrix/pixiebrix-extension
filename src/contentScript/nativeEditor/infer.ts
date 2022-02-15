@@ -1,3 +1,4 @@
+import { matchesAnyPattern } from "@/utils";
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -123,7 +124,7 @@ function commonAttribute($items: JQuery, attribute: string) {
   const exclude = TEMPLATE_VALUE_EXCLUDE_PATTERNS.get(attribute) ?? [];
 
   const filtered = unfiltered.filter(
-    (value) => !exclude.some((regex) => regex.test(value))
+    (value) => !matchesAnyPattern(value, exclude)
   );
 
   return filtered.length > 0 ? filtered.join(" ") : null;
@@ -143,9 +144,7 @@ function setCommonAttributes($common: JQuery, $items: JQuery) {
       if (
         value
           .split(" ")
-          .some((value) =>
-            ATTR_SKIP_ELEMENT_PATTERNS.some((test) => test.test(value))
-          )
+          .some((value) => matchesAnyPattern(value, ATTR_SKIP_ELEMENT_PATTERNS))
       ) {
         throw new SkipElement(
           "Attribute value contains value in the skip list"
