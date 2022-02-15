@@ -100,7 +100,7 @@ const ElementWizard: React.FunctionComponent<{
       setStep(step);
       if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
         // If user is clicking over to the logs tab, they most likely want to see the most recent logs
-        void refreshDisplayedEntries();
+        refreshDisplayedEntries();
       }
     },
     [setStep, refreshDisplayedEntries]

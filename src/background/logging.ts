@@ -160,7 +160,6 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
 export async function getLog(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
-  console.log("getLog", { context });
   const db = await getDB();
   const objectStore = db
     .transaction(ENTRY_OBJECT_STORE, "readonly")
@@ -258,8 +257,6 @@ export async function recordError(
     "contentScript",
     "contentScript does not have CSP access to Rollbar"
   );
-
-  console.log("recordError", { error, context, data });
 
   try {
     const message = getErrorMessage(error);
