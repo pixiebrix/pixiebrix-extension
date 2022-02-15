@@ -58,7 +58,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
   }, [installables, isLoading, error]);
 
   return (
-    <div style={{ height: "100%" }}>
+    <div className="h-100">
       {showLogsContext && (
         <ExtensionLogsModal
           title={showLogsContext.title}

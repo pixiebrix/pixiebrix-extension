@@ -8,7 +8,6 @@ import blueprintsSlice from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import cx from "classnames";
 
 type ListFiltersProps = {
   teamFilters: string[];
@@ -46,7 +45,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
 
   return (
     <Col sm={3} xl={2} className={styles.root}>
-      <Form className={cx(styles.searchBar, "mb-4 mr-3")}>
+      <Form className="mb-4 mr-3">
         <Form.Control
           id="query"
           placeholder="Search"
@@ -124,7 +123,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
           </Nav.Item>
         ))}
       </Nav>
-      <Nav className={styles.footerNav}>
+      <Nav>
         <h5>Explore</h5>
         <Nav.Item>
           <Nav.Link

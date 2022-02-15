@@ -190,12 +190,12 @@ const BlueprintsCard: React.FunctionComponent<{
   const BlueprintsView = view === "list" ? TableView : GridView;
 
   return (
-    <BootstrapRow style={{ height: "100%" }}>
+    <BootstrapRow className={styles.root}>
       <ListFilters
         teamFilters={teamFilters}
         setGlobalFilter={setGlobalFilter}
       />
-      <Col className={styles.blueprintsContainer}>
+      <Col className={styles.mainContainer}>
         <div
           className={cx(
             "d-flex justify-content-between align-items-center mb-3"
@@ -276,6 +276,7 @@ const BlueprintsCard: React.FunctionComponent<{
             </Button>
           </span>
         </div>
+        {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
           <AutoSizer>
             {({ height, width }) => (
