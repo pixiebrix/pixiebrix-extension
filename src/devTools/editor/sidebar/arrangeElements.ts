@@ -43,6 +43,7 @@ function arrangeElements({
   availableInstalledIds,
   availableDynamicIds,
   showAll,
+  groupByRecipe,
   activeElementId,
 }: ArrangeElementsArgs): ArrangeElementsResult {
   const elementIds = new Set(elements.map((formState) => formState.uuid));
@@ -64,7 +65,7 @@ function arrangeElements({
   );
 
   for (const extension of filteredExtensions) {
-    if (extension._recipe) {
+    if (extension._recipe && groupByRecipe) {
       const recipeId = extension._recipe.id;
       if (elementsByRecipeId.has(recipeId)) {
         elementsByRecipeId.get(recipeId).push(extension);
@@ -77,7 +78,7 @@ function arrangeElements({
   }
 
   for (const element of filteredDynamicElements) {
-    if (element.recipe) {
+    if (element.recipe && groupByRecipe) {
       const recipeId = element.recipe.id;
       if (elementsByRecipeId.has(recipeId)) {
         elementsByRecipeId.get(recipeId).push(element);
