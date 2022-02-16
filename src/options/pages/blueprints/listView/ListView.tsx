@@ -15,34 +15,67 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
 import ListItem from "./ListItem";
-import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import {
+  BlueprintListViewProps,
+  InstallableViewItem,
+} from "@/options/pages/blueprints/blueprintsTypes";
 import { FixedSizeList as List } from "react-window";
+import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
+import { Row } from "react-table";
+
+// Expands react-table grouped rows recursively, as
+// compensation for react-tables instance property flatRows,
+// which is depth-first
+function expandRows(
+  rows: Array<Row<InstallableViewItem>>
+): Array<Row<InstallableViewItem>> {
+  const flatRows = [];
+  for (const row of rows) {
+    flatRows.push(row);
+
+    if (row.isGrouped) {
+      flatRows.push(...expandRows(row.subRows));
+    }
+  }
+
+  return flatRows;
+}
 
 const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
   rows,
   height,
   width,
-}) => (
-  <ListGroup {...tableInstance.getTableProps()}>
-    <List
-      height={height}
-      width={width}
-      itemCount={rows.length}
-      // Arbitrary number that looks aesthetic
-      itemSize={67}
-    >
-      {({ index, style }) => {
-        const row = rows[index];
-        tableInstance.prepareRow(row);
+}) => {
+  const expandedRows = useMemo(() => {
+    return expandRows(rows);
+  }, [rows]);
 
-        return <ListItem installableItem={row.original} style={style} />;
-      }}
-    </List>
-  </ListGroup>
-);
+  return (
+    <ListGroup {...tableInstance.getTableProps()}>
+      <List
+        height={height}
+        width={width}
+        itemCount={expandedRows.length}
+        // Arbitrary number that looks aesthetic
+        itemSize={67}
+      >
+        {({ index, style }) => {
+          const row = expandedRows[index];
+          tableInstance.prepareRow(row);
+
+          return row.isGrouped ? (
+            <ListGroupHeader groupName={row.groupByVal} style={style} />
+          ) : (
+            <ListItem installableItem={row.original} style={style} />
+          );
+        }}
+      </List>
+    </ListGroup>
+  );
+};
 
 export default ListView;

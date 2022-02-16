@@ -162,6 +162,9 @@ const BlueprintsCard: React.FunctionComponent<{
     state: { globalFilter },
   } = tableInstance;
 
+  console.log("Rows:", rows);
+  console.log("Flat rows:", flatRows);
+
   const isGrouped = groupBy.length > 0;
   const isSorted = sortBy.length > 0;
   const numberOfBlueprints = isGrouped
@@ -282,28 +285,12 @@ const BlueprintsCard: React.FunctionComponent<{
                     <strong>&quot;{globalFilter}&quot;</strong>
                   </p>
                 )}
-                {isGrouped ? (
-                  <>
-                    {rows.map((row) => (
-                      <Fragment key={row.groupByVal}>
-                        <h5 className="text-muted mt-3">{row.groupByVal}</h5>
-                        <BlueprintsView
-                          tableInstance={tableInstance}
-                          rows={row.subRows}
-                          height={height}
-                          width={width}
-                        />
-                      </Fragment>
-                    ))}
-                  </>
-                ) : (
-                  <BlueprintsView
-                    tableInstance={tableInstance}
-                    rows={rows}
-                    width={width}
-                    height={height}
-                  />
-                )}
+                <BlueprintsView
+                  tableInstance={tableInstance}
+                  rows={rows}
+                  width={width}
+                  height={height}
+                />
               </div>
             )}
           </AutoSizer>

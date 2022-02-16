@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,46 +14,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-.root {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 
-.listHeader {
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  color: #bba8bff5;
-}
+import React from "react";
+import { ListGroup } from "react-bootstrap";
+import styles from "@/options/pages/blueprints/listView/ListItem.module.scss";
 
-.icon {
-  padding-right: 1rem;
-}
+const ListGroupHeader: React.VoidFunctionComponent<{
+  groupName: string;
+  style: unknown;
+}> = ({ groupName, style }) => {
+  return (
+    <ListGroup.Item
+      variant="secondary"
+      className={styles.listHeader}
+      style={style}
+    >
+      {groupName}
+    </ListGroup.Item>
+  );
+};
 
-.name {
-  text-wrap: normal;
-  flex-grow: 1;
-
-  h5 {
-    text-overflow: ellipsis;
-    margin: 0;
-  }
-}
-
-.sharing {
-  flex-grow: 1;
-  text-align: right;
-}
-
-.updatedAt {
-  color: grey;
-  text-wrap: normal;
-  font-size: 80%;
-  font-weight: 400;
-}
-
-.status {
-  text-align: center;
-  flex-basis: 150px;
-}
+export default ListGroupHeader;
