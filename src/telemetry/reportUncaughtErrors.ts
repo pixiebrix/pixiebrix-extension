@@ -19,13 +19,27 @@ import { matchesAnyPattern } from "@/utils";
 /**
  * @file This file must be imported as early as possible in each entrypoint, once
  */
-import { getErrorMessage, IGNORED_ERRORS } from "@/errors";
+import {
+  ContextError,
+  getErrorMessage,
+  IGNORED_ERRORS,
+  selectError,
+} from "@/errors";
 import reportError from "@/telemetry/reportError";
+
+// Ignore these only if they're not ContextError
+const IGNORED_NON_CONTEXT_ERRORS = [/^No tab with id/, "The tab was closed"];
 
 function ignoreSomeErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ): void {
-  if (matchesAnyPattern(getErrorMessage(errorEvent), IGNORED_ERRORS)) {
+  const error = selectError(errorEvent);
+  const errorMessage = getErrorMessage(error);
+  if (
+    matchesAnyPattern(errorMessage, IGNORED_ERRORS) ||
+    (!(error instanceof ContextError) &&
+      matchesAnyPattern(errorMessage, IGNORED_NON_CONTEXT_ERRORS))
+  ) {
     errorEvent.preventDefault();
   }
 }

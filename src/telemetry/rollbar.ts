@@ -78,7 +78,7 @@ async function initRollbar(): Promise<Rollbar> {
       // disable autoInstrument until we can set up scrubbing rules
       autoInstrument: false,
       // https://docs.rollbar.com/docs/reduce-noisy-javascript-errors#ignore-certain-types-of-messages
-      ignoredMessages: IGNORED_ERRORS,
+      ignoredMessages: IGNORED_ERRORS as string[], // Their types are too strict
       payload: {
         client: {
           javascript: {
