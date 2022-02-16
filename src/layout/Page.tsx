@@ -38,7 +38,7 @@ export const PageTitle: React.FunctionComponent<{
   </div>
 );
 
-const ErrorDisplay: React.FC<{ error: unknown }> = ({ error }) => (
+export const ErrorDisplay: React.FC<{ error: unknown }> = ({ error }) => (
   <div>
     <h2 className="text-danger">An error occurred</h2>
     <p>{getErrorMessage(error)}</p>
