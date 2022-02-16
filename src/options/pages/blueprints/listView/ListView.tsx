@@ -22,14 +22,14 @@ import {
   BlueprintListViewProps,
   InstallableViewItem,
 } from "@/options/pages/blueprints/blueprintsTypes";
-import { VariableSizeList as List } from "react-window";
+import { FixedSizeList as List } from "react-window";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { Row } from "react-table";
 
 // Expands react-table grouped rows recursively, as
 // compensation for react-tables instance property flatRows,
 // which is depth-first
-function expandRows(
+export function expandRows(
   rows: Array<Row<InstallableViewItem>>
 ): Array<Row<InstallableViewItem>> {
   const flatRows = [];
@@ -50,13 +50,7 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   height,
   width,
 }) => {
-  const expandedRows = useMemo(() => {
-    return expandRows(rows);
-  }, [rows]);
-
-  const getItemSize = (index: number) =>
-    // Arbitrary numbers that look aesthetic
-    expandedRows[index].isGrouped ? 43 : 67;
+  const expandedRows = useMemo(() => expandRows(rows), [rows]);
 
   return (
     <ListGroup {...tableInstance.getTableProps()}>
@@ -64,8 +58,8 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
         height={height}
         width={width}
         itemCount={expandedRows.length}
-        // Arbitrary number that looks aesthetic
-        itemSize={getItemSize}
+        // Arbitrary number that fits content aesthetically
+        itemSize={67}
       >
         {({ index, style }) => {
           const row = expandedRows[index];

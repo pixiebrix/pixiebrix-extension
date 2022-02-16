@@ -18,7 +18,7 @@
 import styles from "./BlueprintsCard.module.scss";
 
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { Fragment, useMemo } from "react";
+import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Column,
@@ -162,9 +162,6 @@ const BlueprintsCard: React.FunctionComponent<{
     state: { globalFilter },
   } = tableInstance;
 
-  console.log("Rows:", rows);
-  console.log("Flat rows:", flatRows);
-
   const isGrouped = groupBy.length > 0;
   const isSorted = sortBy.length > 0;
   const numberOfBlueprints = isGrouped
@@ -201,7 +198,7 @@ const BlueprintsCard: React.FunctionComponent<{
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h3 className={styles.filterTitle}>
             {globalFilter
-              ? "Search results"
+              ? `${numberOfBlueprints} results for "${globalFilter}"`
               : `${filters.length > 0 ? filters[0].value : "All"} Blueprints`}
           </h3>
           <span className="d-flex align-items-center small">
@@ -279,12 +276,6 @@ const BlueprintsCard: React.FunctionComponent<{
           <AutoSizer defaultHeight={500}>
             {({ height, width }) => (
               <div>
-                {globalFilter && (
-                  <p>
-                    {numberOfBlueprints} results for{" "}
-                    <strong>&quot;{globalFilter}&quot;</strong>
-                  </p>
-                )}
                 <BlueprintsView
                   tableInstance={tableInstance}
                   rows={rows}

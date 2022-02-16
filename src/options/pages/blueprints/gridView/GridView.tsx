@@ -17,27 +17,43 @@
 
 import styles from "./GridView.module.scss";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import { FixedSizeGrid as Grid } from "react-window";
 import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 import GridCard from "./GridCard";
+import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
+import ListItem from "@/options/pages/blueprints/listView/ListItem";
+import { expandRows } from "@/options/pages/blueprints/listView/ListView";
 
 const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
   rows,
-}) => (
-  <div className={styles.root}>
-    {rows.map((row) => {
-      tableInstance.prepareRow(row);
+  width,
+  height,
+}) => {
+  // TODO: move expandedRows up a level
+  const expandedRows = useMemo(() => expandRows(rows), [rows]);
 
-      return (
-        <GridCard
-          key={getUniqueId(row.original.installable)}
-          installableItem={row.original}
-        />
-      );
-    })}
-  </div>
-);
+  return (
+    <div className={styles.root}>
+      <Grid
+        height={height}
+        width={width}
+        rowHeight={200}
+        rowCount={rows.length}
+        columnCount={1}
+        columnWidth={200}
+      >
+        {({ rowIndex, style }) => {
+          const row = rows[rowIndex];
+          tableInstance.prepareRow(row);
+
+          return <GridCard installableItem={row.original} style={style} />;
+        }}
+      </Grid>
+    </div>
+  );
+};
 
 export default GridView;
