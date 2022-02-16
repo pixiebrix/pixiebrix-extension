@@ -69,7 +69,12 @@ const conditionalMiddleware: Middleware[] = [];
 if (process.env.NODE_ENV === "development") {
   // Allow tree shaking of logger in production
   // https://github.com/LogRocket/redux-logger/issues/6
-  conditionalMiddleware.push(createLogger());
+  conditionalMiddleware.push(
+    createLogger({
+      // Do not log polling actions (they happen too often)
+      predicate: (getState, action) => !action.type.includes("logs/polling"),
+    })
+  );
 }
 
 const store = configureStore({
