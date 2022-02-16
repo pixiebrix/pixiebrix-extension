@@ -22,21 +22,16 @@ import { Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
 const NavItemBadge: React.VoidFunctionComponent = () => {
-  const { allEntries, displayedEntries } = useSelector(selectLogs);
-  console.log("NavItemBadge 1", { allEntries, displayedEntries });
+  const { availableEntries, entries } = useSelector(selectLogs);
 
   const unreadByLevels = useMemo(() => {
-    const lastTimestamp = Math.max(
-      ...displayedEntries.map((x) => Number(x.timestamp))
-    );
-    const unread = allEntries.filter(
+    const lastTimestamp = Math.max(...entries.map((x) => Number(x.timestamp)));
+    const unread = availableEntries.filter(
       (x) => Number(x.timestamp) > lastTimestamp
     );
 
     return groupBy(unread, (x) => x.level);
-  }, [allEntries, displayedEntries]);
-
-  console.log("NavItemBadge", { allEntries, displayedEntries, unreadByLevels });
+  }, [availableEntries, entries]);
 
   for (const [level, variant] of [
     ["error", "danger"],

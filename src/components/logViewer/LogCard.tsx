@@ -41,9 +41,8 @@ const LogCard: React.FunctionComponent<OwnProps> = ({
 
   const { isLoading } = useSelector(selectLogs);
   const dispatch = useDispatch();
-  const refreshDisplayedEntries = () =>
-    dispatch(logActions.refreshDisplayedEntries());
-  const clearAllEntries = () => dispatch(logActions.clear());
+  const refreshEntries = () => dispatch(logActions.refreshEntries());
+  const clearAvailableEntries = () => dispatch(logActions.clear());
 
   const logs = useLogEntriesView({ level, page, perPage });
 
@@ -65,8 +64,8 @@ const LogCard: React.FunctionComponent<OwnProps> = ({
         numPages={logs.numPages}
         hasEntries={logs.hasEntries}
         numNew={logs.numNew}
-        refresh={refreshDisplayedEntries}
-        clear={clearAllEntries}
+        refresh={refreshEntries}
+        clear={clearAvailableEntries}
       />
       <LogTable pageEntries={logs.pageEntries} hasEntries={logs.hasEntries} />
     </>

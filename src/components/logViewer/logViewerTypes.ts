@@ -10,12 +10,12 @@ export type LogState = {
   /**
    * All available log entries
    */
-  allEntries: LogEntry[];
+  availableEntries: LogEntry[];
 
   /**
    * Log entries that have been selected for viewing (without pagination and filtering)
    */
-  displayedEntries: LogEntry[];
+  entries: LogEntry[];
 
   /**
    * Indicates the progress of the first loading from storage for the active context

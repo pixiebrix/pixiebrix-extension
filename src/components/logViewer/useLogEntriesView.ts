@@ -27,34 +27,34 @@ type config = {
 };
 
 function useLogEntriesView({ level, page, perPage }: config) {
-  const { allEntries, displayedEntries } = useSelector(selectLogs);
+  const { availableEntries, entries } = useSelector(selectLogs);
 
-  const filteredAllEntries = useMemo(
+  const filteredAvailableEntries = useMemo(
     () =>
-      allEntries.filter(
+      availableEntries.filter(
         // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
         (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
       ),
-    [level, allEntries]
+    [level, availableEntries]
   );
 
-  const filteredDisplayedEntries = useMemo(
+  const filteredEntries = useMemo(
     () =>
-      (displayedEntries ?? []).filter(
+      (entries ?? []).filter(
         // eslint-disable-next-line security/detect-object-injection -- level is coming from the dropdown
         (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
       ),
-    [level, displayedEntries]
+    [level, entries]
   );
 
-  const numNew = filteredAllEntries.length - filteredDisplayedEntries.length;
+  const numNew = filteredAvailableEntries.length - filteredEntries.length;
 
-  const hasEntries = allEntries.length > 0;
+  const hasEntries = availableEntries.length > 0;
 
   const start = page * perPage;
-  const pageEntries = filteredDisplayedEntries.slice(start, start + perPage);
+  const pageEntries = filteredEntries.slice(start, start + perPage);
 
-  const numPages = Math.ceil(filteredDisplayedEntries.length / perPage);
+  const numPages = Math.ceil(filteredEntries.length / perPage);
 
   return {
     numNew,

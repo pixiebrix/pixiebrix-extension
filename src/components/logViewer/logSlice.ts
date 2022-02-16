@@ -21,12 +21,12 @@ import { isEqual } from "lodash";
 import { selectActiveContext } from "./logSelectors";
 import { LogState } from "./logViewerTypes";
 
-const REFRESH_INTERVAL = 2750;
+const REFRESH_INTERVAL = 750;
 
 export const initialLogState: LogState = {
   activeContext: null,
-  allEntries: [],
-  displayedEntries: [],
+  availableEntries: [],
+  entries: [],
   isLoading: false,
 };
 
@@ -41,14 +41,14 @@ const clear = createAsyncThunk("logs/clearStatus", async (arg, thunkAPI) => {
 // Init the logs polling. Should be dispatched once at the start of the app
 const pollLogs = createAsyncThunk("logs/polling", async (arg, thunkAPI) => {
   const activeContext = selectActiveContext(thunkAPI.getState() as any);
-  let logEntries: LogEntry[] = [];
+  let availableEntries: LogEntry[] = [];
   if (activeContext != null) {
-    logEntries = await getLog(activeContext);
+    availableEntries = await getLog(activeContext);
   }
 
   setTimeout(() => thunkAPI.dispatch(pollLogs()), REFRESH_INTERVAL);
 
-  return logEntries;
+  return availableEntries;
 });
 
 export const logSlice = createSlice({
@@ -57,34 +57,37 @@ export const logSlice = createSlice({
   reducers: {
     setContext(state, { payload: context }) {
       state.activeContext = context;
-      state.allEntries = [];
-      state.displayedEntries = [];
+      state.availableEntries = [];
+      state.entries = [];
       state.isLoading = true;
     },
-    refreshDisplayedEntries(state) {
-      state.displayedEntries = state.allEntries;
+    refreshEntries(state) {
+      state.entries = state.availableEntries;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(clear.fulfilled, (state) => {
-      state.allEntries = [];
-      state.displayedEntries = [];
+      state.availableEntries = [];
+      state.entries = [];
     });
-    builder.addCase(pollLogs.fulfilled, (state, { payload: allEntries }) => {
-      // Do deep equality check. On the log array of ~3k items it takes only a fraction of a ms.
-      // Makes sense to spend some cycles here to save on re-rendering of the children.
-      if (!isEqual(state.allEntries, allEntries)) {
-        // @ts-expect-error -- LogEntry[] is assignable to WritableDraft<LogEntry>[]
-        state.allEntries = allEntries;
-      }
+    builder.addCase(
+      pollLogs.fulfilled,
+      (state, { payload: availableEntries }) => {
+        // Do deep equality check. On the log array of ~3k items it takes only a fraction of a ms.
+        // Makes sense to spend some cycles here to save on re-rendering of the children.
+        if (!isEqual(state.availableEntries, availableEntries)) {
+          // @ts-expect-error -- LogEntry[] is assignable to WritableDraft<LogEntry>[]
+          state.availableEntries = availableEntries;
+        }
 
-      // If this is the first time we've loaded the log from storage, we want to display all of it.
-      if (state.isLoading) {
-        state.isLoading = false;
-        // @ts-expect-error -- LogEntry[] is assignable to WritableDraft<LogEntry>[]
-        state.displayedEntries = allEntries;
+        // If this is the first time we've loaded the log from storage, we want to display all of it.
+        if (state.isLoading) {
+          state.isLoading = false;
+          // @ts-expect-error -- LogEntry[] is assignable to WritableDraft<LogEntry>[]
+          state.entries = availableEntries;
+        }
       }
-    });
+    );
   },
 });
 

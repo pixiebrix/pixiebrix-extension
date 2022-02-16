@@ -96,14 +96,13 @@ const ElementWizard: React.FunctionComponent<{
 
   const dispatch = useDispatch();
 
-  const refreshDisplayedEntries = () =>
-    dispatch(logActions.refreshDisplayedEntries());
+  const refreshEntries = () => dispatch(logActions.refreshEntries());
 
   const selectTabHandler = (step: string) => {
     setStep(step);
     if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
       // If user is clicking over to the logs tab, they most likely want to see the most recent logs
-      refreshDisplayedEntries();
+      refreshEntries();
     }
   };
 
