@@ -1,3 +1,4 @@
+import { matchesAnyPattern } from "@/utils";
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -84,5 +85,19 @@ describe("joinName", () => {
   test("accepts null/undefined base path part", () => {
     expect(joinName(null, "foo")).toBe("foo");
     expect(joinName(undefined, "foo")).toBe("foo");
+  });
+});
+
+describe("matchesAnyPattern", () => {
+  test("matches a string array", () => {
+    expect(matchesAnyPattern("hello", ["hi", "howdy", "hello"])).toBeTruthy();
+    expect(
+      matchesAnyPattern("hello", ["hi", "howdy", "hello y’all"])
+    ).toBeFalsy();
+    expect(matchesAnyPattern("yellow", ["hi", "howdy", "hello"])).toBeFalsy();
+  });
+  test("matches a regex array", () => {
+    expect(matchesAnyPattern("hello", [/^hel+o/, /(ho ){3}/])).toBeTruthy();
+    expect(matchesAnyPattern("hello", [/^Hello$/])).toBeFalsy();
   });
 });

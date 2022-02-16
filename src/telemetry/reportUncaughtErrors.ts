@@ -1,4 +1,3 @@
-import { matchesAnyPattern } from "@/utils";
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -26,6 +25,7 @@ import {
   selectError,
 } from "@/errors";
 import reportError from "@/telemetry/reportError";
+import { matchesAnyPattern } from "@/utils";
 
 // Ignore these only if they're not ContextError
 const IGNORED_NON_CONTEXT_ERRORS = [/^No tab with id/, "The tab was closed"];
