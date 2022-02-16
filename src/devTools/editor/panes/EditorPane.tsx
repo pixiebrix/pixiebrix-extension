@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useEffect } from "react";
 import {
   actions as editorActions,
   FormState,
@@ -29,7 +29,7 @@ import ElementWizard from "@/devTools/editor/ElementWizard";
 import useEditable from "@/devTools/editor/hooks/useEditable";
 import SaveExtensionWizard from "./save/SaveExtensionWizard";
 import useSavingWizard from "./save/useSavingWizard";
-import { ContextLogs } from "@/components/logViewer/ContextLogs";
+import { logActions } from "@/components/logViewer/logSlice";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -52,13 +52,13 @@ const EditorPaneContent: React.VoidFunctionComponent<{
     { trailing: true, leading: false }
   );
 
-  const messageContext = useMemo(
-    () => ({
+  useEffect(() => {
+    const messageContext = {
       extensionId: element.uuid,
       blueprintId: element.recipe ? element.recipe.id : undefined,
-    }),
-    [element.uuid, element.recipe]
-  );
+    };
+    dispatch(logActions.setContext(messageContext));
+  }, [element.uuid, element.recipe, dispatch]);
 
   return (
     <>
@@ -67,9 +67,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
         onChange={syncReduxState}
         delayMillis={CHANGE_DETECT_DELAY_MILLIS}
       />
-      <ContextLogs messageContext={messageContext}>
-        <ElementWizard element={element} editable={editable} />
-      </ContextLogs>
+      <ElementWizard element={element} editable={editable} />
       {isWizardOpen && <SaveExtensionWizard />}
     </>
   );

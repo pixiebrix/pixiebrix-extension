@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore, Middleware } from "@reduxjs/toolkit";
+import { AnyAction, configureStore, Middleware } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
 import { editorSlice, EditorState } from "@/devTools/editor/slices/editorSlice";
@@ -44,6 +44,8 @@ import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { SettingsState } from "@/store/settingsTypes";
+import { LogState } from "@/components/logViewer/logViewerTypes";
+import { logSlice, logActions } from "@/components/logViewer/logSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -60,6 +62,7 @@ export type RootState = {
   documentBuilder: DocumentBuilderState;
   settings: SettingsState;
   runtime: RuntimeState;
+  logs: LogState;
 };
 
 const conditionalMiddleware: Middleware[] = [];
@@ -82,6 +85,7 @@ const store = configureStore({
     runtime: runtimeSlice.reducer,
     formBuilder: formBuilderSlice.reducer,
     documentBuilder: documentBuilderSlice.reducer,
+    logs: logSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware: (getDefaultMiddleware) => [
@@ -103,5 +107,7 @@ export const persistor = persistStore(store);
 // Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
+
+store.dispatch(logActions.pollLogs() as AnyAction);
 
 export default store;

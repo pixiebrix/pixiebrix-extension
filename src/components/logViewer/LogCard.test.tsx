@@ -15,29 +15,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { configureStore } from "@reduxjs/toolkit";
 import { render } from "@testing-library/react";
 import React from "react";
-import { defaultState, LogContext, LogState } from "./ContextLogs";
+import { Provider } from "react-redux";
 import LogCard from "./LogCard";
+import { initialLogState, logSlice } from "./logSlice";
+import { LogState } from "./logViewerTypes";
 
-function renderLogCard(state: LogState = defaultState) {
+jest.unmock("react-redux");
+
+function renderLogCard(state?: LogState) {
+  const store = configureStore({
+    reducer: {
+      logs: logSlice.reducer,
+    },
+    preloadedState: state
+      ? {
+          logs: state,
+        }
+      : undefined,
+  });
+
   return render(
-    <LogContext.Provider value={state}>
+    <Provider store={store}>
       <LogCard />
-    </LogContext.Provider>
+    </Provider>
   );
 }
 
 test("shows loader", () => {
-  const rendered = renderLogCard();
+  const rendered = renderLogCard({
+    ...initialLogState,
+    isLoading: true,
+  });
 
   expect(rendered.getByTestId("loader")).toBeInTheDocument();
 });
 
 test("renders empty table", () => {
-  const rendered = renderLogCard({
-    ...defaultState,
-    isLoading: false,
-  });
+  const rendered = renderLogCard();
+
   expect(rendered.asFragment()).toMatchSnapshot();
 });

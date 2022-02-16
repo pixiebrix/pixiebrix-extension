@@ -33,7 +33,7 @@ const LogToolbar: React.FunctionComponent<{
   numPages: number;
   hasEntries: boolean;
   numNew: number;
-  clear: () => Promise<void>;
+  clear: () => void;
   refresh: () => void;
 }> = ({
   level,
@@ -50,9 +50,9 @@ const LogToolbar: React.FunctionComponent<{
 }) => {
   const { addToast } = useToasts();
 
-  const onClear = useCallback(async () => {
+  const onClear = () => {
     try {
-      await clear();
+      clear();
       addToast("Cleared the log entries for this extension", {
         appearance: "success",
         autoDismiss: true,
@@ -63,7 +63,7 @@ const LogToolbar: React.FunctionComponent<{
         autoDismiss: true,
       });
     }
-  }, [clear, refresh, addToast]);
+  };
 
   const onRefresh = useCallback(() => {
     refresh();

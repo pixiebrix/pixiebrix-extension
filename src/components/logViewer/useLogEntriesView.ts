@@ -17,7 +17,8 @@
 
 import { LOG_LEVELS, MessageLevel } from "@/background/logging";
 import { useContext, useMemo } from "react";
-import { LogContext } from "./ContextLogs";
+import { selectLogs } from "@/components/logViewer/logSelectors";
+import { useSelector } from "react-redux";
 
 type config = {
   level: MessageLevel;
@@ -26,7 +27,7 @@ type config = {
 };
 
 function useLogEntriesView({ level, page, perPage }: config) {
-  const { allEntries, displayedEntries } = useContext(LogContext);
+  const { allEntries, displayedEntries } = useSelector(selectLogs);
 
   const filteredAllEntries = useMemo(
     () =>

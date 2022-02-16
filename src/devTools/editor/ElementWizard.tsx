@@ -40,7 +40,7 @@ import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
-import { LogContext } from "@/components/logViewer/ContextLogs";
+import { logActions } from "@/components/logViewer/logSlice";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -94,17 +94,18 @@ const ElementWizard: React.FunctionComponent<{
     }
   };
 
-  const { refreshDisplayedEntries } = useContext(LogContext);
-  const selectTabHandler = useCallback(
-    (step: string) => {
-      setStep(step);
-      if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
-        // If user is clicking over to the logs tab, they most likely want to see the most recent logs
-        refreshDisplayedEntries();
-      }
-    },
-    [setStep, refreshDisplayedEntries]
-  );
+  const dispatch = useDispatch();
+
+  const refreshDisplayedEntries = () =>
+    dispatch(logActions.refreshDisplayedEntries());
+
+  const selectTabHandler = (step: string) => {
+    setStep(step);
+    if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
+      // If user is clicking over to the logs tab, they most likely want to see the most recent logs
+      refreshDisplayedEntries();
+    }
+  };
 
   const { values: formState, setValues: setFormState } =
     useFormikContext<FormState>();
@@ -113,8 +114,6 @@ const ElementWizard: React.FunctionComponent<{
   if (formState.recipe?.id && flagOn("page-editor-beta")) {
     wizardSteps.push(blueprintOptionsStep);
   }
-
-  const dispatch = useDispatch();
 
   useAsyncEffect(async () => {
     if (formState.apiVersion === "v2") {

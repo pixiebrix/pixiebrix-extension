@@ -22,7 +22,9 @@ import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
 import LogToolbar from "@/components/logViewer/LogToolbar";
 import useLogEntriesView from "@/components/logViewer/useLogEntriesView";
-import { LogContext } from "@/components/logViewer/ContextLogs";
+import { useDispatch, useSelector } from "react-redux";
+import { selectLogs } from "./logSelectors";
+import { logActions } from "./logSlice";
 
 type OwnProps = {
   initialLevel?: MessageLevel;
@@ -36,8 +38,11 @@ const LogCard: React.FunctionComponent<OwnProps> = ({
   const [level, setLevel] = useState<MessageLevel>(initialLevel);
   const [page, setPage] = useState(0);
 
-  const { isLoading, refreshDisplayedEntries, clearAllEntries } =
-    useContext(LogContext);
+  const { isLoading } = useSelector(selectLogs);
+  const dispatch = useDispatch();
+  const refreshDisplayedEntries = () =>
+    dispatch(logActions.refreshDisplayedEntries());
+  const clearAllEntries = () => dispatch(logActions.clear());
 
   const logs = useLogEntriesView({ level, page, perPage });
 

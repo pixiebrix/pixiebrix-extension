@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LogContext } from "@/components/logViewer/ContextLogs";
+import { selectLogs } from "@/components/logViewer/logSelectors";
 import { groupBy } from "lodash";
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Badge } from "react-bootstrap";
+import { useSelector } from "react-redux";
 
 const NavItemBadge: React.VoidFunctionComponent = () => {
-  const { allEntries, displayedEntries } = useContext(LogContext);
+  const { allEntries, displayedEntries } = useSelector(selectLogs);
+  console.log("NavItemBadge 1", { allEntries, displayedEntries });
 
   const unreadByLevels = useMemo(() => {
     const lastTimestamp = Math.max(
@@ -33,6 +35,8 @@ const NavItemBadge: React.VoidFunctionComponent = () => {
 
     return groupBy(unread, (x) => x.level);
   }, [allEntries, displayedEntries]);
+
+  console.log("NavItemBadge", { allEntries, displayedEntries, unreadByLevels });
 
   for (const [level, variant] of [
     ["error", "danger"],
