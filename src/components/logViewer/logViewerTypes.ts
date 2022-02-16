@@ -22,3 +22,7 @@ export type LogState = {
    */
   isLoading: boolean;
 };
+
+export type LogRootState = {
+  logs: LogState;
+};

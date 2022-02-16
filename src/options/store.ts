@@ -44,19 +44,20 @@ import blueprintsSlice, {
   persistBlueprintsConfig,
 } from "./pages/blueprints/blueprintsSlice";
 import { logActions, logSlice } from "@/components/logViewer/logSlice";
+import { LogRootState } from "@/components/logViewer/logViewerTypes";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
 export const hashHistory = createHashHistory({ hashType: "slash" });
 
-export interface RootState {
+export type RootState = LogRootState & {
   options: OptionsState;
   blueprints: BlueprintsState;
   services: ServicesState;
   settings: SettingsState;
   workshop: WorkshopState;
   installedPage: InstalledPageState;
-}
+};
 
 export const persistWorkshopConfig = {
   key: "workshop",

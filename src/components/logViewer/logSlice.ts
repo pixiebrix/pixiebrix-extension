@@ -16,10 +16,11 @@
  */
 
 import { clearLog, getLog, LogEntry } from "@/background/logging";
+import { MessageContext } from "@/core";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { isEqual } from "lodash";
 import { selectActiveContext } from "./logSelectors";
-import { LogState } from "./logViewerTypes";
+import { LogRootState, LogState } from "./logViewerTypes";
 
 const REFRESH_INTERVAL = 750;
 
@@ -31,16 +32,25 @@ export const initialLogState: LogState = {
 };
 
 // Clear the logs in storage for the given context
-const clear = createAsyncThunk("logs/clearStatus", async (arg, thunkAPI) => {
-  const activeContext = selectActiveContext(thunkAPI.getState() as any);
-  if (activeContext != null) {
-    await clearLog(activeContext);
+const clear = createAsyncThunk<void, void, { state: LogRootState }>(
+  "logs/clearStatus",
+  async (arg, thunkAPI) => {
+    const activeContext = selectActiveContext(thunkAPI.getState());
+    if (activeContext != null) {
+      await clearLog(activeContext);
+    }
   }
-});
+);
 
 // Init the logs polling. Should be dispatched once at the start of the app
-const pollLogs = createAsyncThunk("logs/polling", async (arg, thunkAPI) => {
-  const activeContext = selectActiveContext(thunkAPI.getState() as any);
+const pollLogs = createAsyncThunk<
+  LogEntry[],
+  void,
+  {
+    state: LogRootState;
+  }
+>("logs/polling", async (arg, thunkAPI) => {
+  const activeContext = selectActiveContext(thunkAPI.getState());
   let availableEntries: LogEntry[] = [];
   if (activeContext != null) {
     availableEntries = await getLog(activeContext);
@@ -55,7 +65,7 @@ export const logSlice = createSlice({
   name: "logs",
   initialState: initialLogState,
   reducers: {
-    setContext(state, { payload: context }) {
+    setContext(state, { payload: context }: { payload: MessageContext }) {
       state.activeContext = context;
       state.availableEntries = [];
       state.entries = [];

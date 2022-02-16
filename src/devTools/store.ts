@@ -44,7 +44,7 @@ import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { SettingsState } from "@/store/settingsTypes";
-import { LogState } from "@/components/logViewer/logViewerTypes";
+import { LogRootState } from "@/components/logViewer/logViewerTypes";
 import { logSlice, logActions } from "@/components/logViewer/logSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
@@ -54,7 +54,7 @@ const persistSettingsConfig = {
   storage: localStorage,
 };
 
-export type RootState = {
+export type RootState = LogRootState & {
   options: OptionsState;
   editor: EditorState;
   savingExtension: SavingExtensionState;
@@ -62,7 +62,6 @@ export type RootState = {
   documentBuilder: DocumentBuilderState;
   settings: SettingsState;
   runtime: RuntimeState;
-  logs: LogState;
 };
 
 const conditionalMiddleware: Middleware[] = [];

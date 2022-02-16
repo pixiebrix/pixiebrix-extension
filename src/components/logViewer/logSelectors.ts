@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LogState } from "./logViewerTypes";
+import { LogRootState } from "./logViewerTypes";
 
-export function selectLogs(rootState: { logs: LogState }) {
-  return rootState.logs;
+export function selectLogs({ logs }: LogRootState) {
+  return logs;
 }
 
-export function selectActiveContext({ logs }: { logs: LogState }) {
+export function selectActiveContext({ logs }: LogRootState) {
   return logs.activeContext;
 }
