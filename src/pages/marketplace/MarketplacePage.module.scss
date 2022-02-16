@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.marketplace-component {
-  .input-group-prepend {
-    .input-group-text {
-      color: #343a40;
-    }
-  }
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+.searchLabel {
+  color: $body-color;
 }
 
-.activate-button {
+.activateButton {
   min-width: 93px;
 }

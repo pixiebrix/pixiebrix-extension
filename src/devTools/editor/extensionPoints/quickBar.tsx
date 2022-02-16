@@ -33,7 +33,6 @@ import {
   selectIsAvailable,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
-import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { getDomain } from "@/permissions/patterns";
 import { faThLarge } from "@fortawesome/free-solid-svg-icons";
@@ -57,6 +56,7 @@ import {
 import QuickBarConfiguration from "@/devTools/editor/tabs/quickBar/QuickBarConfiguration";
 import { isMac } from "@/utils";
 import { isEmpty } from "lodash";
+import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 
 type Extension = BaseExtensionState & Except<QuickBarConfig, "action">;
 

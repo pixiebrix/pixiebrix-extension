@@ -70,8 +70,8 @@ import {
   traverse,
   WriteableComponentAdapter,
 } from "@/frameworks/component";
-import { elementInfo } from "@/nativeEditor/frameworks";
-import { requireSingleElement } from "@/nativeEditor/utils";
+import { elementInfo } from "@/contentScript/nativeEditor/frameworks";
+import { requireSingleElement } from "@/utils/requireSingleElement";
 import { getPropByPath, noopProxy, ReadProxy } from "@/runtime/pathHelpers";
 import { UnknownObject } from "@/types";
 

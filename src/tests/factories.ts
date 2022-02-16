@@ -42,7 +42,6 @@ import trigger, {
 import menuItem, {
   ActionFormState,
 } from "@/devTools/editor/extensionPoints/menuItem";
-import { ButtonSelectionResult } from "@/nativeEditor/insertButton";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import {
   RecipeDefinition,
@@ -59,6 +58,7 @@ import {
 } from "@/devTools/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
 import { Deployment } from "@/types/contract";
+import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),

@@ -36,16 +36,17 @@ import {
   showActionPanel,
   toggleActionPanel,
   removeExtension as removeActionPanel,
-} from "@/actionPanel/native";
-import { insertPanel } from "@/nativeEditor/insertPanel";
-import { insertButton } from "@/nativeEditor/insertButton";
+  getActionPanelStore,
+} from "@/contentScript/actionPanel";
+import { insertPanel } from "@/contentScript/nativeEditor/insertPanel";
+import { insertButton } from "@/contentScript/nativeEditor/insertButton";
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/nativeEditor/dynamic";
+} from "@/contentScript/nativeEditor/dynamic";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
 import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
 import {
@@ -58,7 +59,10 @@ import {
 import { checkAvailable } from "@/blocks/available";
 import { showNotification } from "@/contentScript/notify";
 import { runBrick } from "@/contentScript/executor";
-import { cancelSelect, selectElement } from "@/nativeEditor/selector";
+import {
+  cancelSelect,
+  selectElement,
+} from "@/contentScript/nativeEditor/selector";
 import {
   runEffectPipeline,
   runMapArgs,
@@ -85,6 +89,8 @@ declare global {
     SHOW_ACTION_PANEL: typeof showActionPanel;
     HIDE_ACTION_PANEL: typeof hideActionPanel;
     REMOVE_ACTION_PANEL: typeof removeActionPanel;
+    GET_ACTION_PANEL_STORE: typeof getActionPanelStore;
+
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
 
@@ -134,6 +140,8 @@ export default function registerMessenger(): void {
     SHOW_ACTION_PANEL: showActionPanel,
     HIDE_ACTION_PANEL: hideActionPanel,
     REMOVE_ACTION_PANEL: removeActionPanel,
+    GET_ACTION_PANEL_STORE: getActionPanelStore,
+
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,
 

@@ -18,26 +18,13 @@
 // https://github.com/facebook/react/blob/7559722a865e89992f75ff38c1015a865660c3cd/packages/react-devtools-shared/src/backend/views/Highlighter/index.js
 
 import { uuidv4 } from "@/types/helpers";
-import { ElementInfo } from "./frameworks";
 import { userSelectElement } from "./selector";
 import * as pageScript from "@/pageScript/protocol";
 import { findContainer, inferPanelHTML } from "./infer";
 import { html as beautifyHTML } from "js-beautify";
-import { PanelConfig, PanelDefinition } from "@/extensionPoints/panelExtension";
-import { Except } from "type-fest";
-import { UUID } from "@/core";
+import { PanelSelectionResult } from "@/contentScript/nativeEditor/types";
 
 const DEFAULT_PANEL_HEADING = "PixieBrix Panel";
-
-export type PanelSelectionResult = {
-  uuid: UUID;
-  foundation: Except<
-    PanelDefinition,
-    "defaultOptions" | "isAvailable" | "reader"
-  >;
-  panel: Except<PanelConfig, "body">;
-  containerInfo: ElementInfo;
-};
 
 export async function insertPanel(): Promise<PanelSelectionResult> {
   const selected = await userSelectElement();

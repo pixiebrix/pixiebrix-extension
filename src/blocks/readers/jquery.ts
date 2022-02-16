@@ -16,7 +16,7 @@
  */
 
 import { ReaderOutput } from "@/core";
-import { asyncMapValues, sleep } from "@/utils";
+import { asyncMapValues, waitFor } from "@/utils";
 import { BusinessError, MultipleElementsFoundError } from "@/errors";
 import { $safeFind } from "@/helpers";
 
@@ -82,11 +82,11 @@ function castValue(value: string, type?: CastType): Result {
 }
 
 async function processFind(
-  $elt: JQuery<HTMLElement | Document>,
+  element: HTMLElement | Document,
   selector: ChildrenSelector
 ): Promise<Record<string, Result>> {
   return asyncMapValues(selector.find, async (selector) =>
-    select(selector, $elt)
+    select(selector, element)
   );
 }
 
@@ -134,103 +134,86 @@ function processElement($elt: JQuery, selector: SingleSelector) {
 
 async function select(
   selector: string | Selector,
-  $root?: JQuery<HTMLElement | Document>
+  root?: HTMLElement | Document
 ): Promise<Result> {
-  const normalizedSelector: Selector =
+  const normalizedSelector =
     typeof selector === "string" ? { selector } : selector;
+  const {
+    selector: selectorString,
+    multi = false,
+    maxWaitMillis = 0,
+  } = normalizedSelector;
 
-  if ((normalizedSelector.selector ?? "").trim() === "") {
-    return normalizedSelector.multi ? [] : undefined;
+  if (!selectorString || !selectorString.trim()) {
+    return multi ? [] : undefined;
   }
 
-  let $elt: JQuery<HTMLElement | Document>;
+  if (!root && !selectorString) {
+    throw new BusinessError(
+      "'selector' required if not nested within a 'find' block"
+    );
+  }
 
-  const start = Date.now();
-
-  do {
-    if ($root) {
-      $elt = normalizedSelector.selector
-        ? $safeFind(normalizedSelector.selector, $root)
-        : $root;
-    } else {
-      if (!normalizedSelector.selector) {
-        throw new BusinessError(
-          "'selector' required if not nested within a 'find' block"
-        );
-      }
-
-      $elt = $safeFind(normalizedSelector.selector);
+  const findElements = () => {
+    const $elt = selectorString ? $safeFind(selectorString, root) : $(root);
+    if ($elt.length > 0 || multi) {
+      return $elt.get();
     }
+  };
 
-    if (
-      $elt.length > 0 ||
-      normalizedSelector.multi ||
-      !normalizedSelector.maxWaitMillis
-    ) {
-      break;
-    }
+  const elements =
+    (await waitFor(findElements, {
+      maxWaitMillis,
+      intervalMillis: 50,
+    })) ?? [];
 
-    await sleep(50);
-  } while (Date.now() - start < normalizedSelector.maxWaitMillis);
-
-  if ($elt.length === 0) {
+  if (elements.length === 0) {
     console.debug(
-      `Did not find any elements for selector in ${
-        normalizedSelector.maxWaitMillis ?? 0
-      }ms: ${normalizedSelector.selector}`,
-      { $root, normalizedSelector }
+      `Did not find any elements for selector in ${maxWaitMillis}ms: ${selectorString}`,
+      { root, selector }
     );
 
-    if (normalizedSelector.maxWaitMillis) {
+    if (maxWaitMillis) {
       throw new BusinessError(
-        `Did not find any elements for selector in ${
-          normalizedSelector.maxWaitMillis ?? 0
-        }ms: ${normalizedSelector.selector}`
+        `Did not find any elements for selector in ${maxWaitMillis}ms: ${selectorString}`
       );
     }
 
-    return normalizedSelector.multi ? [] : undefined;
+    return multi ? [] : undefined;
   }
 
-  if ($elt.length > 1 && !normalizedSelector.multi) {
+  if (elements.length > 1 && !multi) {
     throw new MultipleElementsFoundError(
-      normalizedSelector.selector,
+      selectorString,
       "Multiple elements found for selector. To return a list of values, supply multi=true"
     );
   }
 
   if ("find" in normalizedSelector) {
-    const values = await Promise.all(
-      $elt
-        .map(async function () {
-          return processFind($(this), normalizedSelector);
-        })
-        .toArray()
+    const values = elements.map(async (element) =>
+      processFind(element, normalizedSelector)
     );
-    return normalizedSelector.multi ? values : values[0];
+    return multi ? Promise.all(values) : values[0];
   }
 
-  if ($elt === $(document)) {
+  if (elements[0] === document) {
     throw new Error("Cannot process document as an element");
   }
 
-  const values = $elt
-    .map(function () {
-      return processElement($(this) as JQuery, normalizedSelector);
-    })
-    .toArray();
-  return normalizedSelector.multi ? values : values[0];
+  const values = elements.map((element) =>
+    processElement($(element) as JQuery, normalizedSelector)
+  );
+  return multi ? values : values[0];
 }
 
 export async function readJQuery(
   reader: JQueryConfig,
-  root: HTMLElement | Document
+  root: HTMLElement | Document = document
 ): Promise<ReaderOutput> {
   const { selectors } = reader;
-  const $root = $(root ?? document);
-  if ($root.length === 0) {
+  if (!root) {
     throw new Error("JQuery reader requires the document or element(s)");
   }
 
-  return asyncMapValues(selectors, async (selector) => select(selector, $root));
+  return asyncMapValues(selectors, async (selector) => select(selector, root));
 }

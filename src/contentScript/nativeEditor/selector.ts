@@ -14,12 +14,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import Overlay from "@/nativeEditor/Overlay";
-import { findContainer, safeCssSelector } from "@/nativeEditor/infer";
+import Overlay from "@/vendors/Overlay";
+import {
+  findContainer,
+  safeCssSelector,
+} from "@/contentScript/nativeEditor/infer";
 import { Framework } from "@/messaging/constants";
 import { uniq } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
-import { requireSingleElement } from "@/nativeEditor/utils";
+import { requireSingleElement } from "@/utils/requireSingleElement";
+import { SelectMode } from "@/contentScript/nativeEditor/types";
 
 let overlay: Overlay | null = null;
 let styleElement: HTMLStyleElement = null;
@@ -234,8 +238,6 @@ export async function userSelectElement({
     startInspectingNative();
   });
 }
-
-export type SelectMode = "element" | "container";
 
 export async function cancelSelect() {
   if (_cancelSelect) {

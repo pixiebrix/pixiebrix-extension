@@ -517,6 +517,23 @@ export async function asyncLoop<Item>(
   await Promise.all([...iterable].map(unary(iteratee)));
 }
 
+export async function waitFor<T>(
+  looper: (...args: unknown[]) => Promise<T> | T,
+  { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 }
+): Promise<T | undefined> {
+  const endBy = Date.now() + maxWaitMillis;
+  do {
+    // eslint-disable-next-line no-await-in-loop -- It's a retry loop
+    const result = await looper();
+    if (result) {
+      return result;
+    }
+
+    // eslint-disable-next-line no-await-in-loop -- It's a retry loop
+    await sleep(intervalMillis);
+  } while (Date.now() < endBy);
+}
+
 export function isMac(): boolean {
   // https://stackoverflow.com/a/27862868/402560
   return navigator.platform.includes("Mac");
