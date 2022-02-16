@@ -1,10 +1,13 @@
+import styles from "./ListFilters.module.scss";
+
 import { Col, Form, Nav } from "react-bootstrap";
 import React, { useEffect, useMemo, useState } from "react";
-import styles from "./ListFilters.module.scss";
 import useReduxState from "@/hooks/useReduxState";
 import { selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 type ListFiltersProps = {
   teamFilters: string[];
@@ -41,7 +44,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
   }, [filters, query]);
 
   return (
-    <Col sm={3} xl={2} className={styles.filtersCol}>
+    <Col sm={3} xl={2} className={styles.root}>
       <Form className="mb-4 mr-3">
         <Form.Control
           id="query"
@@ -105,10 +108,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
             Public Marketplace Blueprints
           </Nav.Link>
         </Nav.Item>
-        <h5 className="mt-3">Shared with Me</h5>
-        {teamFilters.length === 0 && (
-          <span className="text-muted">No shared blueprints</span>
-        )}
+        {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
         {teamFilters.map((filter) => (
           <Nav.Item key={filter}>
             <Nav.Link
@@ -122,6 +122,18 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
             </Nav.Link>
           </Nav.Item>
         ))}
+      </Nav>
+      <Nav>
+        <h5>Explore</h5>
+        <Nav.Item>
+          <Nav.Link
+            href="https://www.pixiebrix.com/marketplace"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Public Marketplace
+          </Nav.Link>
+        </Nav.Item>
       </Nav>
     </Col>
   );

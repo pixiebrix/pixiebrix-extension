@@ -15,28 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ActionPanelStore, EntryType } from "@/actionPanel/types";
-import { UUID } from "@/core";
+.button {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: #6562aa;
 
-export function mapTabEventKey(
-  entryType: EntryType,
-  entry: { extensionId: UUID } | null
-): string | null {
-  if (entry == null) {
-    return null;
+  &:hover {
+    color: #4d4b8b;
+    background-color: #d1c2d7;
   }
-
-  return `${entryType}-${entry.extensionId}`;
-}
-
-/**
- * Return the default tab to show. Give preference to the most recent ephemeral form.
- */
-export function defaultEventKey({
-  forms = [],
-  panels = [],
-}: ActionPanelStore): string | null {
-  return forms.length > 0
-    ? mapTabEventKey("form", forms[forms.length - 1])
-    : mapTabEventKey("panel", panels[0]);
 }

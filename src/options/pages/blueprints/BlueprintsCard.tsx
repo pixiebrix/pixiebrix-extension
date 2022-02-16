@@ -50,6 +50,7 @@ import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
@@ -188,19 +189,19 @@ const BlueprintsCard: React.FunctionComponent<{
   const BlueprintsView = view === "list" ? TableView : GridView;
 
   return (
-    <BootstrapRow>
+    <BootstrapRow className={styles.root}>
       <ListFilters
         teamFilters={teamFilters}
         setGlobalFilter={setGlobalFilter}
       />
-      <Col>
-        <div className="d-flex justify-content-between align-items-center">
-          <h3 className="my-3">
+      <Col className={styles.mainContainer}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h3 className={styles.filterTitle}>
             {globalFilter
               ? "Search results"
               : `${filters.length > 0 ? filters[0].value : "All"} Blueprints`}
           </h3>
-          <span className="d-flex align-items-center">
+          <span className="d-flex align-items-center small">
             <span className="ml-3 mr-2">Group by:</span>
             <Select
               isClearable
@@ -270,28 +271,38 @@ const BlueprintsCard: React.FunctionComponent<{
             </Button>
           </span>
         </div>
-        <div className={styles.root}>
-          {globalFilter && (
-            <p>
-              {numberOfBlueprints} results for{" "}
-              <strong>&quot;{globalFilter}&quot;</strong>
-            </p>
-          )}
-          {isGrouped ? (
-            <>
-              {rows.map((row) => (
-                <Fragment key={row.groupByVal}>
-                  <h5 className="text-muted mt-3">{row.groupByVal}</h5>
-                  <BlueprintsView
-                    tableInstance={tableInstance}
-                    rows={row.subRows}
-                  />
-                </Fragment>
-              ))}
-            </>
-          ) : (
-            <BlueprintsView tableInstance={tableInstance} rows={rows} />
-          )}
+        {/* This wrapper prevents AutoSizer overflow in a flex box container */}
+        <div style={{ flex: "1 1 auto" }}>
+          <AutoSizer>
+            {({ height, width }) => (
+              <div
+                style={{ height: `${height}px`, width: `${width}px` }}
+                className={styles.blueprintsList}
+              >
+                {globalFilter && (
+                  <p>
+                    {numberOfBlueprints} results for{" "}
+                    <strong>&quot;{globalFilter}&quot;</strong>
+                  </p>
+                )}
+                {isGrouped ? (
+                  <>
+                    {rows.map((row) => (
+                      <Fragment key={row.groupByVal}>
+                        <h5 className="text-muted mt-3">{row.groupByVal}</h5>
+                        <BlueprintsView
+                          tableInstance={tableInstance}
+                          rows={row.subRows}
+                        />
+                      </Fragment>
+                    ))}
+                  </>
+                ) : (
+                  <BlueprintsView tableInstance={tableInstance} rows={rows} />
+                )}
+              </div>
+            )}
+          </AutoSizer>
         </div>
       </Col>
     </BootstrapRow>

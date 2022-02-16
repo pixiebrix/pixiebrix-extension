@@ -44,7 +44,7 @@ import {
   ShowCallback,
   updateHeading,
   upsertPanel,
-} from "@/actionPanel/native";
+} from "@/contentScript/actionPanel";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
 import { BusinessError, getErrorMessage } from "@/errors";

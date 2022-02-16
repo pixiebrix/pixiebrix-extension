@@ -15,11 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  ActionPanelStore,
-  FormEntry,
-  PanelEntry,
-} from "@/actionPanel/actionPanelTypes";
+import { ActionPanelStore, FormEntry, PanelEntry } from "@/actionPanel/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   defaultEventKey,

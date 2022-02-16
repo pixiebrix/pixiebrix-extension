@@ -16,8 +16,6 @@
  */
 
 import {
-  EmptyConfig,
-  IExtension,
   IExtensionPoint,
   IReader,
   ReaderOutput,
@@ -26,12 +24,7 @@ import {
 } from "@/core";
 import { clearDynamic, runDynamic } from "@/contentScript/lifecycle";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import Overlay from "@/nativeEditor/Overlay";
-import {
-  ExtensionPointConfig,
-  ExtensionPointDefinition,
-  ExtensionPointType,
-} from "@/extensionPoints/types";
+import Overlay from "@/vendors/Overlay";
 import { resolveDefinitions } from "@/registry/internal";
 import { expectContext } from "@/utils/expectContext";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
@@ -40,15 +33,7 @@ import { $safeFind } from "@/helpers";
 import { TriggerDefinition } from "@/extensionPoints/triggerExtension";
 import selection from "@/utils/selectionController";
 import { ContextMenuReader } from "@/extensionPoints/contextMenuReader";
-
-export interface DynamicDefinition<
-  TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
-  TExtension extends EmptyConfig = EmptyConfig
-> {
-  type: ExtensionPointType;
-  extensionPoint: ExtensionPointConfig<TExtensionPoint>;
-  extension: IExtension<TExtension>;
-}
+import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 
 let _overlay: Overlay | null = null;
 const _temporaryExtensions: Map<string, IExtensionPoint> = new Map();

@@ -18,6 +18,7 @@
 // Keep in order so precedence is preserved
 import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
+import "@/utils/layout.scss";
 import "@/action.scss";
 
 import "@/extensionContext";

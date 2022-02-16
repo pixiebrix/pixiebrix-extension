@@ -81,9 +81,16 @@ const TEMPLATE_VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
 
 class SkipElement extends Error {}
 
-function outerHTML($element: JQuery<HTMLElement | Text>): string {
-  // Trick to get the HTML of the actual element
-  return $("<div>").append($element.clone()).html();
+function outerHTML(element: Element | string): string {
+  if (typeof element === "string") {
+    return element;
+  }
+
+  return element.outerHTML;
+}
+
+function newElement(tagName: string): Element {
+  return document.createElement(tagName);
 }
 
 function escapeDoubleQuotes(str: string): string {
@@ -95,17 +102,14 @@ function escapeDoubleQuotes(str: string): string {
  * Returns true iff any of the immediate children are text nodes.
  * @param $element
  */
-function hasTextNodeChild($element: JQuery): boolean {
-  return $element
-    .contents()
-    .get()
-    .some((x) => x.nodeType === Node.TEXT_NODE);
+function hasTextNodeChild(element: Element): boolean {
+  return [...element.childNodes].some((x) => x.nodeType === Node.TEXT_NODE);
 }
 
-function commonAttribute($items: JQuery, attribute: string) {
-  const attributeValues = $items
-    .toArray()
-    .map((x) => x.attributes.getNamedItem(attribute)?.value);
+function commonAttribute(items: Element[], attribute: string) {
+  const attributeValues = items.map(
+    (x) => x.attributes.getNamedItem(attribute)?.value
+  );
 
   let unfiltered: string[];
 
@@ -129,8 +133,8 @@ function commonAttribute($items: JQuery, attribute: string) {
   return filtered.length > 0 ? filtered.join(" ") : null;
 }
 
-function setCommonAttributes($common: JQuery, $items: JQuery) {
-  const { attributes } = $items.get(0);
+function setCommonAttributes(common: Element, items: Element[]) {
+  const { attributes } = items[0];
 
   // Find the common attributes between the elements
   for (const { name } of attributes) {
@@ -138,7 +142,7 @@ function setCommonAttributes($common: JQuery, $items: JQuery) {
       continue;
     }
 
-    const value = commonAttribute($items, name);
+    const value = commonAttribute(items, name);
     if (value != null) {
       if (
         value
@@ -152,7 +156,7 @@ function setCommonAttributes($common: JQuery, $items: JQuery) {
         );
       }
 
-      $common.attr(name, value);
+      common.setAttribute(name, value);
     }
   }
 }
@@ -199,32 +203,32 @@ function removeUnstyledLayout(node: Node): Node | null {
 
 /**
  * Recursively extract common HTML template from one or more buttons/menu item.
- * @param $items JQuery of HTML elements
+ * @param items JQuery of HTML elements
  * @param captioned true, if the generated HTML template already includes a caption
  * placeholder
  */
 function commonButtonStructure(
-  $items: JQuery,
+  items: Element[],
   captioned = false
-): [JQuery<HTMLElement | Text>, boolean] {
+): [Element | string, boolean] {
   let currentCaptioned = captioned;
 
-  const proto = $items.get(0);
+  const proto = items[0];
 
   if (ICON_TAGS.includes(proto.tagName.toLowerCase())) {
     // TODO: need to provide a way of adding additional classes to the button. E.g. some classes
     //  may provide for the margin, etc.
-    return [$(document.createTextNode("{{{ icon }}}")), currentCaptioned];
+    return ["{{{ icon }}}", currentCaptioned];
   }
 
-  const $common = $(`<${proto.tagName.toLowerCase()}>`);
+  const common = newElement(proto.tagName);
 
   try {
-    setCommonAttributes($common, $items);
+    setCommonAttributes(common, items);
   } catch (error) {
     if (error instanceof SkipElement) {
       // Shouldn't happen at the top level
-      return [$(), currentCaptioned];
+      return ["", currentCaptioned];
     }
 
     throw error;
@@ -244,23 +248,22 @@ function commonButtonStructure(
       protoChild.textContent &&
       protoChild.textContent?.trim() !== ""
     ) {
-      $common.append(document.createTextNode("{{{ caption }}}"));
+      common.append("{{{ caption }}}");
       currentCaptioned = true;
     } else if (
       protoChild.nodeType === Node.ELEMENT_NODE &&
-      $items.toArray().every((x) => elementIndex < x.children.length) &&
-      uniq($items.toArray().map((x) => x.children.item(elementIndex).tagName))
-        .length === 1
+      items.every((x) => elementIndex < x.children.length) &&
+      uniq(items.map((x) => x.children.item(elementIndex).tagName)).length === 1
     ) {
-      const $children = $items.map(function () {
-        return this.children.item(elementIndex) as HTMLElement;
-      });
+      const children = items.map((element) =>
+        element.children.item(elementIndex)
+      );
 
       const [child, childCaptioned] = commonButtonStructure(
-        $children,
+        children,
         currentCaptioned
       );
-      $common.append(child);
+      common.append(child);
       currentCaptioned ||= childCaptioned;
 
       elementIndex++;
@@ -268,19 +271,19 @@ function commonButtonStructure(
   }
 
   if (proto.tagName === "A") {
-    $common.attr("href", "#");
+    common.setAttribute("href", "#");
   }
 
   if (
     !currentCaptioned &&
-    $common.children().length === 0 &&
+    common.childElementCount === 0 &&
     CAPTION_TAGS.includes(proto.tagName.toLowerCase())
   ) {
-    $common.append(document.createTextNode("{{{ caption }}}"));
+    common.append("{{{ caption }}}");
     currentCaptioned = true;
   }
 
-  return [$common, currentCaptioned];
+  return [common, currentCaptioned];
 }
 
 type PanelStructureState = {
@@ -301,13 +304,13 @@ function commonPanelStructure(
     headingInserted = false,
     bodyInserted = false,
   }: PanelStructureState = {} as PanelStructureState
-): [JQuery<HTMLElement | Text>, PanelStructureState] {
+): [Element | string, PanelStructureState] {
   const proto = $items.get(0);
   inHeader = inHeader || HEADER_TAGS.includes(proto.tagName.toLowerCase());
 
-  const $common = $(`<${proto.tagName.toLowerCase()}>`);
+  const common = newElement(proto.tagName);
 
-  setCommonAttributes($common, $items);
+  setCommonAttributes(common, $items.get());
 
   // Heuristic that assumes tag matches from the beginning
   for (let i = 0; i < proto.children.length; i++) {
@@ -331,36 +334,36 @@ function commonPanelStructure(
       });
       bodyInserted = innerState.bodyInserted;
       headingInserted = innerState.headingInserted;
-      $common.append(inner);
+      common.append(inner);
     } else if (
       !headingInserted &&
       HEADER_TAGS.some((tag) => $protoChild.has(tag))
     ) {
       const [header] = buildHeader(protoChild);
-      $common.append(header);
+      common.append(header);
       headingInserted = true;
     } else if (
       !inHeader &&
       !bodyInserted &&
       !LAYOUT_TAGS.includes(proto.children.item(i).tagName.toLowerCase())
     ) {
-      $common.append(document.createTextNode("{{{ body }}}"));
+      common.append("{{{ body }}}");
       bodyInserted = true;
     }
   }
 
-  if (inHeader && !headingInserted && hasTextNodeChild($(proto))) {
-    $common.append(document.createTextNode("{{{ heading }}}"));
+  if (inHeader && !headingInserted && hasTextNodeChild(proto)) {
+    common.append("{{{ heading }}}");
     headingInserted = true;
   }
 
-  return [$common, { inHeader, bodyInserted, headingInserted }];
+  return [common, { inHeader, bodyInserted, headingInserted }];
 }
 
-function buildHeader(proto: HTMLElement): [JQuery, boolean] {
+function buildHeader(proto: HTMLElement): [Element, boolean] {
   const tag = proto.tagName.toLowerCase();
-  const $inferred = $(`<${tag}>`);
-  setCommonAttributes($inferred, $(proto));
+  const inferred = newElement(tag);
+  setCommonAttributes(inferred, [proto]);
 
   let inserted = false;
 
@@ -369,29 +372,29 @@ function buildHeader(proto: HTMLElement): [JQuery, boolean] {
 
     // Recurse structurally
     const [childHeader, childInserted] = buildHeader(child);
-    $inferred.append(childHeader);
+    inferred.append(childHeader);
     inserted ||= childInserted;
   }
 
-  if (!inserted && TEXT_TAGS.includes(tag) && hasTextNodeChild($(proto))) {
-    $inferred.append(document.createTextNode("{{{ heading }}}"));
+  if (!inserted && TEXT_TAGS.includes(tag) && hasTextNodeChild(proto)) {
+    inferred.append("{{{ heading }}}");
     inserted = true;
   }
 
-  return [$inferred, inserted];
+  return [inferred, inserted];
 }
 
-function buildBody(proto: HTMLElement): [JQuery<HTMLElement | Text>, boolean] {
+function buildBody(proto: HTMLElement): [Element | string, boolean] {
   let inserted = false;
 
   const tag = proto.tagName.toLowerCase();
 
   if (!LAYOUT_TAGS.includes(tag)) {
-    return [$(document.createTextNode("{{{ body }}}")), true];
+    return ["{{{ body }}}", true];
   }
 
-  const $inferred = $(`<${proto.tagName.toLowerCase()}>`);
-  setCommonAttributes($inferred, $(proto));
+  const inferred = newElement(proto.tagName);
+  setCommonAttributes(inferred, [proto]);
 
   for (let i = 0; i < proto.children.length; i++) {
     const child = proto.children.item(i) as HTMLElement;
@@ -400,24 +403,24 @@ function buildBody(proto: HTMLElement): [JQuery<HTMLElement | Text>, boolean] {
     if (LAYOUT_TAGS.includes(childTag)) {
       const [childElement, childInserted] = buildBody(child);
       inserted ||= childInserted;
-      $inferred.append(childElement);
+      inferred.append(childElement);
     } else if (!inserted && !LAYOUT_TAGS.includes(childTag)) {
       inserted = true;
-      $inferred.append(document.createTextNode("{{{ body }}}"));
+      inferred.append("{{{ body }}}");
     }
   }
 
-  return [$inferred, inserted];
+  return [inferred, inserted];
 }
 
 export function buildSinglePanelElement(
   proto: HTMLElement,
   { headingInserted = false }: PanelStructureState = {} as PanelStructureState
-): [JQuery, PanelStructureState] {
+): [Element, PanelStructureState] {
   let bodyInserted = false;
 
-  const $inferred = $(`<${proto.tagName.toLowerCase()}>`);
-  setCommonAttributes($inferred, $(proto));
+  const inferred = newElement(proto.tagName);
+  setCommonAttributes(inferred, [proto]);
 
   for (let i = 0; i < proto.children.length; i++) {
     const child = proto.children.item(i) as HTMLElement;
@@ -425,31 +428,30 @@ export function buildSinglePanelElement(
 
     if (!headingInserted && HEADER_TAGS.some((tag) => $child.has(tag))) {
       const [header] = buildHeader(child);
-      $inferred.append(header);
+      inferred.append(header);
       headingInserted = true;
     } else if (headingInserted && !bodyInserted) {
       const [childBody, childInserted] = buildBody(child);
-      $inferred.append(childBody);
+      inferred.append(childBody);
       bodyInserted ||= childInserted;
     }
   }
 
-  return [$inferred, { inHeader: false, headingInserted, bodyInserted }];
+  return [inferred, { inHeader: false, headingInserted, bodyInserted }];
 }
 
-function commonButtonHTML(tag: string, $items: JQuery): string {
-  if ($items.length === 0) {
+function commonButtonHTML(tag: string, items: Element[]): string {
+  if (items.length === 0) {
     throw new Error("No items provided");
   }
 
-  const elements = compact(
-    $items.toArray().map(unary(removeUnstyledLayout))
-  ).filter((x) => x.nodeType === Node.ELEMENT_NODE);
+  const elements = items
+    .map(unary(removeUnstyledLayout))
+    .filter((x): x is Element => x && x.nodeType === Node.ELEMENT_NODE);
 
-  const [$common] = commonButtonStructure($(elements as HTMLElement[]));
+  const [common] = commonButtonStructure(elements);
 
-  // Trick to get the HTML of the actual element
-  return $("<div>").append($common.clone()).html();
+  return outerHTML(common);
 }
 
 function commonPanelHTML(tag: string, $items: JQuery): string {
@@ -457,7 +459,7 @@ function commonPanelHTML(tag: string, $items: JQuery): string {
     throw new Error("No items provided");
   }
 
-  const [$common, { bodyInserted, headingInserted }] =
+  const [common, { bodyInserted, headingInserted }] =
     commonPanelStructure($items);
 
   if (!bodyInserted) {
@@ -468,7 +470,7 @@ function commonPanelHTML(tag: string, $items: JQuery): string {
     console.warn("No heading detected for panel");
   }
 
-  return outerHTML($common);
+  return outerHTML(common);
 }
 
 const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
@@ -724,7 +726,7 @@ export function inferButtonHTML(
     const children = containerChildren($container, selected);
     // Vote on the root tag
     const tag = mostCommonElement(selected.map((x) => x.tagName)).toLowerCase();
-    return commonButtonHTML(tag, $(children));
+    return commonButtonHTML(tag, children);
   }
 
   const element = selected[0];
@@ -735,14 +737,14 @@ export function inferButtonHTML(
       ($items.is(element) || $items.has(element).length > 0)
     ) {
       if (buttonTag === "input") {
-        const commonType = commonAttribute($items, "type") ?? "button";
+        const commonType = commonAttribute($items.get(), "type") ?? "button";
         const inputType = ["submit", "reset"].includes(commonType)
           ? "button"
           : commonType;
         return `<input type="${inputType}" value="{{{ caption }}}" />`;
       }
 
-      return commonButtonHTML(buttonTag, $items);
+      return commonButtonHTML(buttonTag, $items.get());
     }
   }
 

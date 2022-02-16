@@ -48,6 +48,7 @@ import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
 import {
+  clearLogs,
   getLoggingConfig,
   recordError,
   recordLog,
@@ -98,6 +99,7 @@ declare global {
     REGISTRY_FIND: typeof registry.find;
     LOCATE_SERVICE: typeof locator.locate;
     REFRESH_SERVICES: typeof refreshServices;
+    LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
 
     REQUEST_RUN_ON_SERVER: typeof requestRunOnServer;
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
@@ -118,6 +120,7 @@ declare global {
     RECORD_EVENT: typeof recordEvent;
     GET_LOGGING_CONFIG: typeof getLoggingConfig;
     SET_LOGGING_CONFIG: typeof setLoggingConfig;
+    CLEAR_LOGS: typeof clearLogs;
 
     ADD_TRACE_ENTRY: typeof addTraceEntry;
     ADD_TRACE_EXIT: typeof addTraceExit;
@@ -161,6 +164,7 @@ export default function registerMessenger(): void {
     REGISTRY_SYNC: registry.syncRemote,
     REGISTRY_FIND: registry.find,
     LOCATE_SERVICE: locator.locate.bind(locator),
+    LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
     REFRESH_SERVICES: refreshServices,
 
     REQUEST_RUN_ON_SERVER: requestRunOnServer,
@@ -182,6 +186,7 @@ export default function registerMessenger(): void {
     RECORD_EVENT: recordEvent,
     GET_LOGGING_CONFIG: getLoggingConfig,
     SET_LOGGING_CONFIG: setLoggingConfig,
+    CLEAR_LOGS: clearLogs,
 
     ADD_TRACE_ENTRY: addTraceEntry,
     ADD_TRACE_EXIT: addTraceExit,

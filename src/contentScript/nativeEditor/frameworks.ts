@@ -17,16 +17,9 @@
 
 import { Framework } from "@/messaging/constants";
 import adapters from "@/frameworks/adapters";
-import { uniq, isEmpty } from "lodash";
-import { inferSelectors } from "@/nativeEditor/infer";
-
-export interface ElementInfo {
-  selectors: string[];
-  framework: Framework;
-  tagName: string;
-  hasData: boolean;
-  parent?: ElementInfo;
-}
+import { isEmpty, uniq } from "lodash";
+import { inferSelectors } from "@/contentScript/nativeEditor/infer";
+import { ElementInfo } from "@/contentScript/nativeEditor/types";
 
 export async function elementInfo(
   element: HTMLElement,
