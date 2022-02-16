@@ -35,7 +35,7 @@ import {
   faSortAmountUpAlt,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
-import TableView from "./tableView/TableView";
+import ListView from "./listView/ListView";
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import GridView from "./gridView/GridView";
@@ -186,7 +186,7 @@ const BlueprintsCard: React.FunctionComponent<{
     return { groupByOptions, sortByOptions };
   }, [flatHeaders]);
 
-  const BlueprintsView = view === "list" ? TableView : GridView;
+  const BlueprintsView = view === "list" ? ListView : GridView;
 
   return (
     <BootstrapRow className={styles.root}>

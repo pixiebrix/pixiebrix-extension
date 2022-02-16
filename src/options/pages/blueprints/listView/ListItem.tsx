@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/options/pages/blueprints/TableRow.module.scss";
+import styles from "./ListItem.module.scss";
 
 import React from "react";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
@@ -25,11 +25,11 @@ import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes"
 import Status from "@/options/pages/blueprints/Status";
 import { ListGroup } from "react-bootstrap";
 
-const TableRow: React.VoidFunctionComponent<{
+const ListItem: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
   style: unknown;
 }> = ({ installableItem, style }) => {
-  const { name, description, sharing, updatedAt, icon } = installableItem;
+  const { name, sharing, updatedAt, icon } = installableItem;
 
   return (
     <ListGroup.Item className={styles.root} style={style}>
@@ -55,4 +55,4 @@ const TableRow: React.VoidFunctionComponent<{
   );
 };
 
-export default TableRow;
+export default ListItem;

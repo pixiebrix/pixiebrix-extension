@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import { Card, ListGroup, Table } from "react-bootstrap";
-import TableRow from "./TableRow";
+import { ListGroup } from "react-bootstrap";
+import ListItem from "./ListItem";
 import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 import { FixedSizeList as List } from "react-window";
 
-const TableView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
+const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
   rows,
   height,
@@ -32,16 +32,17 @@ const TableView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
       height={height}
       width={width}
       itemCount={rows.length}
-      itemSize={67.656}
+      // Arbitrary number that looks aesthetic
+      itemSize={67}
     >
       {({ index, style }) => {
         const row = rows[index];
         tableInstance.prepareRow(row);
 
-        return <TableRow installableItem={row.original} style={style} />;
+        return <ListItem installableItem={row.original} style={style} />;
       }}
     </List>
   </ListGroup>
 );
 
-export default TableView;
+export default ListView;
