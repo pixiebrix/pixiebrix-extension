@@ -22,7 +22,7 @@ import {
   BlueprintListViewProps,
   InstallableViewItem,
 } from "@/options/pages/blueprints/blueprintsTypes";
-import { FixedSizeList as List } from "react-window";
+import { VariableSizeList as List } from "react-window";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { Row } from "react-table";
 
@@ -54,6 +54,10 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     return expandRows(rows);
   }, [rows]);
 
+  const getItemSize = (index: number) =>
+    // Arbitrary numbers that look aesthetic
+    expandedRows[index].isGrouped ? 43 : 67;
+
   return (
     <ListGroup {...tableInstance.getTableProps()}>
       <List
@@ -61,7 +65,7 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
         width={width}
         itemCount={expandedRows.length}
         // Arbitrary number that looks aesthetic
-        itemSize={67}
+        itemSize={getItemSize}
       >
         {({ index, style }) => {
           const row = expandedRows[index];
