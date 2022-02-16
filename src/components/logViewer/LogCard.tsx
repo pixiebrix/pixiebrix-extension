@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { MessageLevel } from "@/background/logging";
 import Loader from "@/components/Loader";
 import { Card } from "react-bootstrap";

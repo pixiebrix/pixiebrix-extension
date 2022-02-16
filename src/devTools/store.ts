@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnyAction, configureStore, Middleware } from "@reduxjs/toolkit";
+import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
 import { editorSlice, EditorState } from "@/devTools/editor/slices/editorSlice";
@@ -108,6 +108,7 @@ export const persistor = persistStore(store);
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
 
-store.dispatch(logActions.pollLogs() as AnyAction);
+// @ts-expect-error -- AsyncThunkAction is a valid action
+store.dispatch(logActions.pollLogs());
 
 export default store;

@@ -17,7 +17,7 @@
 
 import styles from "./ElementWizard.module.scss";
 
-import React, { useCallback, useContext, useState } from "react";
+import React, { useState } from "react";
 import { useFormikContext } from "formik";
 import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";

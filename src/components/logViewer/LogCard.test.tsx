@@ -26,15 +26,17 @@ import { LogState } from "./logViewerTypes";
 jest.unmock("react-redux");
 
 function renderLogCard(state?: LogState) {
+  // @ts-expect-error -- assigning state with collections of LogEntries is perfectly fine
   const store = configureStore({
     reducer: {
       logs: logSlice.reducer,
     },
-    preloadedState: state
-      ? {
-          logs: state,
-        }
-      : undefined,
+    preloadedState:
+      state == null
+        ? undefined
+        : {
+            logs: state,
+          },
   });
 
   return render(

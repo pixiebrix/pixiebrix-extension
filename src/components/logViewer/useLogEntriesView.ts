@@ -16,7 +16,7 @@
  */
 
 import { LOG_LEVELS, MessageLevel } from "@/background/logging";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { selectLogs } from "@/components/logViewer/logSelectors";
 import { useSelector } from "react-redux";
 

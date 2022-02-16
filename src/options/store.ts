@@ -43,6 +43,7 @@ import blueprintsSlice, {
   BlueprintsState,
   persistBlueprintsConfig,
 } from "./pages/blueprints/blueprintsSlice";
+import { logActions, logSlice } from "@/components/logViewer/logSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -85,6 +86,7 @@ const store = configureStore({
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
     installedPage: installedPageSlice.reducer,
+    logs: logSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware: (getDefaultMiddleware) => [
@@ -107,5 +109,8 @@ export const persistor = persistStore(store);
 // Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
+
+// @ts-expect-error -- AsyncThunkAction is a valid action
+store.dispatch(logActions.pollLogs());
 
 export default store;

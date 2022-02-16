@@ -74,12 +74,14 @@ export const logSlice = createSlice({
       // Do deep equality check. On the log array of ~3k items it takes only a fraction of a ms.
       // Makes sense to spend some cycles here to save on re-rendering of the children.
       if (!isEqual(state.allEntries, allEntries)) {
+        // @ts-expect-error -- LogEntry[] is assignable to WritableDraft<LogEntry>[]
         state.allEntries = allEntries;
       }
 
       // If this is the first time we've loaded the log from storage, we want to display all of it.
       if (state.isLoading) {
         state.isLoading = false;
+        // @ts-expect-error -- LogEntry[] is assignable to WritableDraft<LogEntry>[]
         state.displayedEntries = allEntries;
       }
     });
