@@ -68,8 +68,11 @@ const DynamicEntry: React.FunctionComponent<{
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
     >
-      {isNested && <span className={styles.space} />}
-      <span className={styles.icon}>
+      <span
+        className={cx(styles.icon, {
+          [styles.nested]: isNested,
+        })}
+      >
         <ExtensionIcon type={item.type} />
       </span>
       <span className={styles.name}>{getLabel(item)}</span>
