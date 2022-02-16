@@ -21,8 +21,9 @@
  * @usage $("input:labelledby(label:contains('Name'))")
  * @usage $(":labelledby(:contains('Name'))") // Poor performance
  */
-$.expr.pseudos.labelledby = $.expr.createPseudo((labelSelector) => (element) =>
-  $<HTMLLabelElement>(labelSelector)
-    .get()
-    .some((labelElement) => labelElement.htmlFor === element.id)
+$.expr.pseudos.labelledby = $.expr.createPseudo(
+  (labelSelector) => (element) =>
+    $<HTMLLabelElement>(labelSelector)
+      .get()
+      .some((labelElement) => labelElement.htmlFor === element.id)
 );
