@@ -16,31 +16,32 @@
  */
 
 import React from "react";
-import { Card, Table } from "react-bootstrap";
+import { Card, ListGroup, Table } from "react-bootstrap";
 import TableRow from "./TableRow";
-import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import { FixedSizeList as List } from "react-window";
 
 const TableView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
   rows,
+  height,
+  width,
 }) => (
-  <Card>
-    <Table {...tableInstance.getTableProps()}>
-      <tbody {...tableInstance.getTableBodyProps()}>
-        {rows.map((row) => {
-          tableInstance.prepareRow(row);
+  <ListGroup {...tableInstance.getTableProps()}>
+    <List
+      height={height}
+      width={width}
+      itemCount={rows.length}
+      itemSize={67.656}
+    >
+      {({ index, style }) => {
+        const row = rows[index];
+        tableInstance.prepareRow(row);
 
-          return (
-            <TableRow
-              key={getUniqueId(row.original.installable)}
-              installableItem={row.original}
-            />
-          );
-        })}
-      </tbody>
-    </Table>
-  </Card>
+        return <TableRow installableItem={row.original} style={style} />;
+      }}
+    </List>
+  </ListGroup>
 );
 
 export default TableView;

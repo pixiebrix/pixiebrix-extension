@@ -273,12 +273,9 @@ const BlueprintsCard: React.FunctionComponent<{
         </div>
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
-          <AutoSizer>
+          <AutoSizer defaultHeight={500}>
             {({ height, width }) => (
-              <div
-                style={{ height: `${height}px`, width: `${width}px` }}
-                className={styles.blueprintsList}
-              >
+              <div>
                 {globalFilter && (
                   <p>
                     {numberOfBlueprints} results for{" "}
@@ -293,12 +290,19 @@ const BlueprintsCard: React.FunctionComponent<{
                         <BlueprintsView
                           tableInstance={tableInstance}
                           rows={row.subRows}
+                          height={height}
+                          width={width}
                         />
                       </Fragment>
                     ))}
                   </>
                 ) : (
-                  <BlueprintsView tableInstance={tableInstance} rows={rows} />
+                  <BlueprintsView
+                    tableInstance={tableInstance}
+                    rows={rows}
+                    width={width}
+                    height={height}
+                  />
                 )}
               </div>
             )}
