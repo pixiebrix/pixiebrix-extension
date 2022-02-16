@@ -68,7 +68,11 @@ function arrangeElements({
     if (extension._recipe && groupByRecipe) {
       const recipeId = extension._recipe.id;
       if (elementsByRecipeId.has(recipeId)) {
-        elementsByRecipeId.get(recipeId).push(extension);
+        const recipeElements = elementsByRecipeId.get(recipeId);
+        elementsByRecipeId.set(
+          recipeId,
+          sortBy([extension, ...recipeElements], (element) => element.label)
+        );
       } else {
         elementsByRecipeId.set(recipeId, [extension]);
       }
@@ -81,7 +85,11 @@ function arrangeElements({
     if (element.recipe && groupByRecipe) {
       const recipeId = element.recipe.id;
       if (elementsByRecipeId.has(recipeId)) {
-        elementsByRecipeId.get(recipeId).push(element);
+        const recipeElements = elementsByRecipeId.get(recipeId);
+        elementsByRecipeId.set(
+          recipeId,
+          sortBy([element, ...recipeElements], (element) => element.label)
+        );
       } else {
         elementsByRecipeId.set(recipeId, [element]);
       }

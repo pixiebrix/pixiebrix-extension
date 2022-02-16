@@ -285,7 +285,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
                 elements={elements}
                 activeRecipeId={activeRecipeId}
               >
-                {sortBy(elements, (element) => element.label).map((element) => (
+                {elements.map((element) => (
                   <ElementListItem
                     key={getIdForElement(element)}
                     element={element}
