@@ -1,4 +1,3 @@
-import { matchesAnyPattern } from "@/utils";
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -21,6 +20,7 @@ import {
   isApiVersionAtLeast,
   joinName,
   removeUndefined,
+  matchesAnyPattern,
 } from "@/utils";
 import type { SafeString } from "@/core";
 
