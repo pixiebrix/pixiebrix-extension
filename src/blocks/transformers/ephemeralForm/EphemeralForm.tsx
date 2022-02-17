@@ -57,11 +57,12 @@ const EphemeralForm: React.FC = () => {
   const opener = JSON.parse(params.get("opener")) as Target;
   const mode = params.get("mode") ?? "modal";
 
+  const isModal = mode === "modal";
+
   // The opener for a sidebar panel will be the sidebar frame, not the host panel frame. The sidebar only opens in the
   // top-level frame, so hard-code the top-level frameId
-  const target =
-    mode === "modal" ? opener : { tabId: opener.tabId, frameId: 0 };
-  const FormContainer = mode === "modal" ? ModalLayout : PanelLayout;
+  const target = isModal ? opener : { tabId: opener.tabId, frameId: 0 };
+  const FormContainer = isModal ? ModalLayout : PanelLayout;
 
   const [definition, isLoading, error] = useAsyncState(
     async () => getFormDefinition(target, nonce),
@@ -80,6 +81,17 @@ const EphemeralForm: React.FC = () => {
     return (
       <FormContainer>
         <div className="text-danger">{getErrorMessage(error)}</div>
+        {isModal && (
+          <button
+            className="btn btn-link"
+            type="button"
+            onClick={() => {
+              void cancelForm(target, nonce);
+            }}
+          >
+            Close
+          </button>
+        )}
       </FormContainer>
     );
   }
