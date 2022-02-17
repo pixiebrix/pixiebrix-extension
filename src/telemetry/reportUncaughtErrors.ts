@@ -18,22 +18,13 @@
 /**
  * @file This file must be imported as early as possible in each entrypoint, once
  */
-import {
-  CONNECTION_ERROR_MESSAGES,
-  getErrorMessage,
-  selectError,
-} from "@/errors";
+import { isConnectionError } from "@/errors";
 import reportError from "@/telemetry/reportError";
-import { matchesAnyPattern } from "@/utils";
 
-function ignoreMessengerErrors(
+function ignoreConnectionErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ): void {
-  const error = selectError(errorEvent);
-  const errorMessage = getErrorMessage(error);
-
-  // Ignore any errors that indicate that it's not possible to send messages
-  if (matchesAnyPattern(errorMessage, CONNECTION_ERROR_MESSAGES)) {
+  if (isConnectionError(errorEvent)) {
     errorEvent.preventDefault();
   }
 }
@@ -55,7 +46,7 @@ function defaultErrorHandler(
  * Array of handlers to run in order before the default one.
  * They can call `event.preventDefault()` to avoid reporting the error.
  */
-export const uncaughtErrorHandlers = [ignoreMessengerErrors];
+export const uncaughtErrorHandlers = [ignoreConnectionErrors];
 
 // Refactor beware: Do not add an `init` function or it will run too late.
 // When imported, the file will be executed immediately, whereas if it exports

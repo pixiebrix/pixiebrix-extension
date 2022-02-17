@@ -19,7 +19,7 @@ import { Transformer, UnknownObject } from "@/types";
 import { BlockArg, BlockOptions, RegistryId, Schema, UUID } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { merge, cloneDeep } from "lodash";
-import { BusinessError } from "@/errors";
+import { BusinessError, PropError } from "@/errors";
 
 const extensionState = new Map<UUID, UnknownObject>();
 
@@ -132,7 +132,12 @@ export class SetPageState extends Transformer {
 
       default: {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Invalid namespace: ${namespace}`);
+        throw new PropError(
+          `Invalid namespace: ${namespace}`,
+          this.id,
+          "namespace",
+          namespace
+        );
       }
     }
   }
@@ -185,7 +190,12 @@ export class GetPageState extends Transformer {
 
       default: {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Invalid namespace: ${namespace}`);
+        throw new PropError(
+          `Invalid namespace: ${namespace}`,
+          this.id,
+          "namespace",
+          namespace
+        );
       }
     }
   }
