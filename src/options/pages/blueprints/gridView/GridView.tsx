@@ -34,19 +34,33 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 }) => {
   // TODO: move expandedRows up a level
   const expandedRows = useMemo(() => expandRows(rows), [rows]);
+  const cardSizeInPixels = 200;
+
+  const columnCount = useMemo(() => {
+    return Math.floor(width / cardSizeInPixels);
+  }, [width]);
+
+  const rowCount = useMemo(() => {
+    return Math.ceil(rows.length / columnCount);
+  }, [columnCount, rows]);
+
+  const getRow = (rowIndex: number, columnIndex: number) => {
+    const flatIndex = 3 * rowIndex + columnIndex;
+    return rows[flatIndex];
+  };
 
   return (
     <div className={styles.root}>
       <Grid
         height={height}
         width={width}
-        rowHeight={200}
-        rowCount={rows.length}
-        columnCount={1}
-        columnWidth={200}
+        rowHeight={cardSizeInPixels}
+        rowCount={rowCount}
+        columnCount={columnCount}
+        columnWidth={cardSizeInPixels}
       >
-        {({ rowIndex, style }) => {
-          const row = rows[rowIndex];
+        {({ rowIndex, columnIndex, style }) => {
+          const row = getRow(rowIndex, columnIndex);
           tableInstance.prepareRow(row);
 
           return <GridCard installableItem={row.original} style={style} />;
