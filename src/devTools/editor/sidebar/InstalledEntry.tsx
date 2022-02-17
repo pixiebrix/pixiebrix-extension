@@ -41,6 +41,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
 import { resolveDefinitions } from "@/registry/internal";
+import cx from "classnames";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
@@ -51,7 +52,8 @@ const InstalledEntry: React.FunctionComponent<{
   recipes: RecipeDefinition[];
   active: boolean;
   available: boolean;
-}> = ({ extension, recipes, available, active }) => {
+  isNested?: boolean;
+}> = ({ extension, recipes, available, active, isNested = false }) => {
   const dispatch = useDispatch();
   const [type] = useAsyncState(
     async () => selectType(extension),
@@ -102,7 +104,11 @@ const InstalledEntry: React.FunctionComponent<{
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={async () => selectHandler(extension)}
     >
-      <span className={styles.icon}>
+      <span
+        className={cx(styles.icon, {
+          [styles.nested]: isNested,
+        })}
+      >
         <ExtensionIcon type={type} />
       </span>
       <span className={styles.name}>{extension.label ?? extension.id}</span>

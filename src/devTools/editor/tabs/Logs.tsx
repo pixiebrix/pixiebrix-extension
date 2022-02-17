@@ -15,23 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  gap: 0.5em;
-  padding: 0.8em 0.6em !important;
-}
-.icon {
-  width: 1.5em;
-  text-align: center;
-  flex-shrink: 0;
-  border: none;
-  background: none;
-  color: inherit;
-}
-.name {
-  flex-grow: 1;
-  cursor: pointer;
-}
-.nested {
-  margin-left: 0.75rem;
-}
+import React from "react";
+
+// eslint-disable-next-line arrow-body-style
+const Logs: React.VoidFunctionComponent = () => {
+  return <div>Logs Placeholder</div>;
+};
+
+export default Logs;

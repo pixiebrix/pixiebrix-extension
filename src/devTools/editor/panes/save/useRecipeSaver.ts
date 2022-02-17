@@ -15,23 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  gap: 0.5em;
-  padding: 0.8em 0.6em !important;
+import { useCallback } from "react";
+
+function useRecipeSaver(): [() => void, boolean] {
+  // Stubs
+  const save = useCallback(() => {}, []);
+  const isSaving = false;
+
+  return [save, isSaving];
 }
-.icon {
-  width: 1.5em;
-  text-align: center;
-  flex-shrink: 0;
-  border: none;
-  background: none;
-  color: inherit;
-}
-.name {
-  flex-grow: 1;
-  cursor: pointer;
-}
-.nested {
-  margin-left: 0.75rem;
-}
+
+export default useRecipeSaver;

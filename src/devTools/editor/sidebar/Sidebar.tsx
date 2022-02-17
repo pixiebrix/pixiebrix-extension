@@ -21,7 +21,7 @@ import browser from "webextension-polyfill";
 import React, { FormEvent, useContext, useMemo, useState } from "react";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
-import { sortBy } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import { sleep } from "@/utils";
 import {
   Badge,
@@ -32,7 +32,7 @@ import {
   ListGroup,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IExtension, UUID } from "@/core";
+import { IExtension, RegistryId, UUID } from "@/core";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import hash from "object-hash";
 import logoUrl from "@/icons/custom-icons/favicon.svg";
@@ -53,7 +53,9 @@ import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 import { RecipeDefinition } from "@/types/definitions";
 import Loader from "@/components/Loader";
+import RecipeEntry from "@/devTools/editor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
+import arrangeElements from "@/devTools/editor/sidebar/arrangeElements";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -78,6 +80,7 @@ const ReloadButton: React.VoidFunctionComponent = () => (
     <FontAwesomeIcon icon={faSync} />
   </Button>
 );
+
 const DropdownEntry: React.VoidFunctionComponent<{
   caption: string;
   icon: IconProp;
@@ -102,9 +105,14 @@ const Logo: React.VoidFunctionComponent = () => (
   <img src={logoUrl} alt="PixiBrix logo" className={styles.logo} />
 );
 
+export function getIdForElement(element: IExtension | FormState): string {
+  return isExtension(element) ? element.id : element.uuid;
+}
+
 type SidebarProps = {
   isInsertingElement: boolean;
   activeElementId: UUID | null;
+  activeRecipeId: RegistryId | null;
   readonly elements: FormState[];
   installed: IExtension[];
   recipes: RecipeDefinition[];
@@ -118,6 +126,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
 > = ({
   isInsertingElement,
   activeElementId,
+  activeRecipeId,
   installed,
   elements,
   recipes,
@@ -131,6 +140,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
     process.env.ENVIRONMENT === "development" ||
     flagOn("page-editor-developer");
   const showBetaExtensionPoints = flagOn("page-editor-beta");
+  const groupByRecipe = flagOn("page-editor-beta");
 
   const {
     tabState: { hasPermissions },
@@ -144,28 +154,28 @@ const SidebarExpanded: React.VoidFunctionComponent<
   const elementHash = hash(
     sortBy(elements.map((formState) => `${formState.uuid}-${formState.label}`))
   );
-  const entries = useMemo(
-    () => {
-      const elementIds = new Set(elements.map((formState) => formState.uuid));
-      const entries = [
-        ...elements.filter(
-          (formState) =>
-            showAll ||
-            availableDynamicIds?.has(formState.uuid) ||
-            activeElementId === formState.uuid
-        ),
-        ...installed.filter(
-          (extension) =>
-            !elementIds.has(extension.id) &&
-            (showAll || availableInstalledIds?.has(extension.id))
-        ),
-      ];
-      return sortBy(entries, (x) => x.label);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash to track element changes
+  const recipeHash = hash(
+    recipes
+      ? recipes.map((recipe) => `${recipe.metadata.id}-${recipe.metadata.name}`)
+      : ""
+  );
+  const { elementsByRecipeId, orphanedElements } = useMemo(
+    () =>
+      arrangeElements({
+        elements,
+        installed,
+        recipes,
+        availableInstalledIds,
+        availableDynamicIds,
+        showAll,
+        groupByRecipe,
+        activeElementId,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash and recipeHash to track changes
     [
       installed,
       elementHash,
+      recipeHash,
       availableDynamicIds,
       showAll,
       availableInstalledIds,
@@ -174,6 +184,33 @@ const SidebarExpanded: React.VoidFunctionComponent<
   );
 
   const addElement = useAddElement();
+
+  const ElementListItem: React.FC<{
+    element: IExtension | FormState;
+    isNested?: boolean;
+  }> = ({ element, isNested = false }) =>
+    isExtension(element) ? (
+      <InstalledEntry
+        key={`installed-${element.id}`}
+        extension={element}
+        recipes={recipes}
+        active={activeElementId === element.id}
+        available={
+          !availableInstalledIds || availableInstalledIds.has(element.id)
+        }
+        isNested={isNested}
+      />
+    ) : (
+      <DynamicEntry
+        key={`dynamic-${element.uuid}`}
+        item={element}
+        active={activeElementId === element.uuid}
+        available={
+          !availableDynamicIds || availableDynamicIds.has(element.uuid)
+        }
+        isNested={isNested}
+      />
+    );
 
   return (
     <div className={cx(styles.root, styles.expanded)}>
@@ -240,29 +277,30 @@ const SidebarExpanded: React.VoidFunctionComponent<
           <Loader />
         ) : (
           <ListGroup>
-            {entries.map((entry) =>
-              isExtension(entry) ? (
-                <InstalledEntry
-                  key={`installed-${entry.id}`}
-                  extension={entry}
-                  recipes={recipes}
-                  active={activeElementId === entry.id}
-                  available={
-                    !availableInstalledIds ||
-                    availableInstalledIds.has(entry.id)
-                  }
+            {elementsByRecipeId.map(([recipeId, elements]) => (
+              <RecipeEntry
+                key={recipeId}
+                recipeId={recipeId}
+                recipes={recipes}
+                elements={elements}
+                activeRecipeId={activeRecipeId}
+              >
+                {elements.map((element) => (
+                  <ElementListItem
+                    key={getIdForElement(element)}
+                    element={element}
+                    isNested={true}
+                  />
+                ))}
+              </RecipeEntry>
+            ))}
+            {!isEmpty(orphanedElements) &&
+              orphanedElements.map((element) => (
+                <ElementListItem
+                  key={getIdForElement(element)}
+                  element={element}
                 />
-              ) : (
-                <DynamicEntry
-                  key={`dynamic-${entry.uuid}`}
-                  item={entry}
-                  active={activeElementId === entry.uuid}
-                  available={
-                    !availableDynamicIds || availableDynamicIds.has(entry.uuid)
-                  }
-                />
-              )
-            )}
+              ))}
           </ListGroup>
         )}
       </div>

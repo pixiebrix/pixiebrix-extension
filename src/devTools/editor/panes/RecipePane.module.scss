@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,6 @@
  */
 
 .root {
-  display: flex;
-  gap: 0.5em;
-  padding: 0.8em 0.6em !important;
-}
-.icon {
-  width: 1.5em;
-  text-align: center;
-  flex-shrink: 0;
-  border: none;
-  background: none;
-  color: inherit;
-}
-.name {
+  // This should be moved higher up to Editor styling for Panes at some point
   flex-grow: 1;
-  cursor: pointer;
-}
-.nested {
-  margin-left: 0.75rem;
 }
