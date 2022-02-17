@@ -20,10 +20,7 @@ import styles from "./GridView.module.scss";
 import React, { useMemo } from "react";
 import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 import { FixedSizeGrid as Grid } from "react-window";
-import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 import GridCard from "./GridCard";
-import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
-import ListItem from "@/options/pages/blueprints/listView/ListItem";
 import { expandRows } from "@/options/pages/blueprints/listView/ListView";
 
 const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
@@ -34,14 +31,15 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 }) => {
   // TODO: move expandedRows up a level
   const expandedRows = useMemo(() => expandRows(rows), [rows]);
-  const minCardSizeInPixels = 200;
+  // 200px card width & height, 15px padding
+  const minCardSizeInPixels = 215;
 
   const columnCount = useMemo(() => {
     return Math.floor(width / minCardSizeInPixels);
   }, [width]);
 
-  // A column width that is at least minCardSizeInPixels,
-  // that expands to fill container
+  // A column width that expands to fill container, but is at least
+  // `minCardSizeInPixels` wide
   const columnWidth = useMemo(() => {
     const remainingSpace = width - columnCount * minCardSizeInPixels;
     const columnDifference = remainingSpace / columnCount;
@@ -66,11 +64,12 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
         rowCount={rowCount}
         columnCount={columnCount}
         columnWidth={columnWidth}
+        // overscanRowCount={5}
       >
         {({ rowIndex, columnIndex, style }) => {
           const row = getRow(rowIndex, columnIndex);
 
-          if (!row) {
+          if (!row || row.isGrouped) {
             return null;
           }
 
