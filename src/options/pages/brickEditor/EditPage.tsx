@@ -136,7 +136,7 @@ const EditPage: React.FunctionComponent = () => {
 
   const { submit, validate, remove } = useSubmitBrick({ url, create: false });
 
-  const logContext = useLogContext(data?.config);
+  useLogContext(data?.config);
 
   const name = rawConfig?.metadata?.name;
   const title = useMemo(
@@ -197,7 +197,7 @@ const EditPage: React.FunctionComponent = () => {
               </div>
               <Row>
                 <Col className="mt-4">
-                  <Editor logContext={logContext} />
+                  <Editor />
                 </Col>
               </Row>
             </Form>

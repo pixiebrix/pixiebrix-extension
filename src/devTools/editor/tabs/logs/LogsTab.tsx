@@ -16,17 +16,17 @@
  */
 
 import React from "react";
-import GridLoader from "react-spinners/GridLoader";
+import { Tab } from "react-bootstrap";
+import LogCard from "@/components/logViewer/LogCard";
 
-const DEFAULT_STYLE = {
-  margin: "20px auto", // Centet
-  display: "flex",
-  justifyContent: "center",
-};
-const Loader: React.FunctionComponent = () => (
-  <div style={DEFAULT_STYLE} data-testid="loader">
-    <GridLoader />
-  </div>
+export const LOGS_EVENT_KEY = "logs";
+
+const LogsTab: React.FunctionComponent<{
+  eventKey: string;
+}> = ({ eventKey = LOGS_EVENT_KEY }) => (
+  <Tab.Pane eventKey={eventKey} mountOnEnter unmountOnExit className="h-100">
+    <LogCard />
+  </Tab.Pane>
 );
 
-export default Loader;
+export default LogsTab;
