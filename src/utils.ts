@@ -424,18 +424,6 @@ export async function allSettledValues<T = unknown>(
     .map(({ value }) => value);
 }
 
-export async function allSettledRejections(
-  promises: Array<Promise<unknown>>
-): Promise<unknown[]> {
-  const settled = await Promise.allSettled(promises);
-  return settled
-    .filter(
-      (promise): promise is PromiseRejectedResult =>
-        promise.status === "rejected"
-    )
-    .map(({ reason }) => reason);
-}
-
 export function freshIdentifier(
   root: SafeString,
   identifiers: string[],

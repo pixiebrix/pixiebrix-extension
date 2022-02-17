@@ -19,27 +19,21 @@
  * @file This file must be imported as early as possible in each entrypoint, once
  */
 import {
-  ContextError,
+  CONNECTION_ERROR_MESSAGES,
   getErrorMessage,
-  IGNORED_ERRORS,
   selectError,
 } from "@/errors";
 import reportError from "@/telemetry/reportError";
 import { matchesAnyPattern } from "@/utils";
 
-// Ignore these only if they're not ContextError
-const IGNORED_NON_CONTEXT_ERRORS = [/^No tab with id/, "The tab was closed"];
-
-function ignoreSomeErrors(
+function ignoreMessengerErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ): void {
   const error = selectError(errorEvent);
   const errorMessage = getErrorMessage(error);
-  if (
-    matchesAnyPattern(errorMessage, IGNORED_ERRORS) ||
-    (!(error instanceof ContextError) &&
-      matchesAnyPattern(errorMessage, IGNORED_NON_CONTEXT_ERRORS))
-  ) {
+
+  // Ignore any errors that indicate that it's not possible to send messages
+  if (matchesAnyPattern(errorMessage, CONNECTION_ERROR_MESSAGES)) {
     errorEvent.preventDefault();
   }
 }
@@ -58,16 +52,14 @@ function defaultErrorHandler(
 }
 
 /**
- * Set of error event handlers to run before the default one.
+ * Array of handlers to run in order before the default one.
  * They can call `event.preventDefault()` to avoid reporting the error.
  */
-export const uncaughtErrorHandlers = new Set([ignoreSomeErrors]);
+export const uncaughtErrorHandlers = [ignoreMessengerErrors];
 
-/*
-Refactor beware: Do not add an `init` function or it will run too late.
-When imported, the file will be executed immediately, whereas if it exports
-an `init` function will be called after every top-level imports (and their deps)
-has been executed.
-*/
+// Refactor beware: Do not add an `init` function or it will run too late.
+// When imported, the file will be executed immediately, whereas if it exports
+// an `init` function will be called after every top-level imports (and their deps)
+// has been executed.
 window.addEventListener("error", defaultErrorHandler);
 window.addEventListener("unhandledrejection", defaultErrorHandler);

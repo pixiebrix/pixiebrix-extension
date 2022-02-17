@@ -18,7 +18,7 @@
 import { Block } from "@/types";
 import { readerFactory } from "@/blocks/readers/factory";
 import { Validator, Schema as ValidatorSchema } from "@cfworker/json-schema";
-import { ValidationError } from "@/errors";
+import { InvalidDefinitionError } from "@/errors";
 import { castArray } from "lodash";
 import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import {
@@ -62,7 +62,10 @@ function validateBlockDefinition(
       component,
       result,
     });
-    throw new ValidationError("Invalid block configuration", result.errors);
+    throw new InvalidDefinitionError(
+      "Invalid block configuration",
+      result.errors
+    );
   }
 }
 
@@ -147,7 +150,7 @@ class ExternalBlock extends Block {
 
 export function fromJS(component: Config): IBlock {
   if (component.kind == null) {
-    throw new ValidationError(
+    throw new InvalidDefinitionError(
       "Component definition is missing a 'kind' property",
       null
     );
