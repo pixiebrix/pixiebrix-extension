@@ -40,6 +40,12 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     return Math.floor(width / cardSizeInPixels);
   }, [width]);
 
+  const columnWidth = useMemo(() => {
+    const remainingSpace = width - columnCount * 200;
+    const columnDifference = remainingSpace / columnCount;
+    return 200 + columnDifference;
+  }, [columnCount, width]);
+
   const rowCount = useMemo(() => {
     return Math.ceil(rows.length / columnCount);
   }, [columnCount, rows]);
@@ -57,12 +63,16 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
         rowHeight={cardSizeInPixels}
         rowCount={rowCount}
         columnCount={columnCount}
-        columnWidth={cardSizeInPixels}
+        columnWidth={columnWidth}
       >
         {({ rowIndex, columnIndex, style }) => {
           const row = getRow(rowIndex, columnIndex);
-          tableInstance.prepareRow(row);
 
+          if (!row) {
+            return null;
+          }
+
+          tableInstance.prepareRow(row);
           return <GridCard installableItem={row.original} style={style} />;
         }}
       </Grid>
