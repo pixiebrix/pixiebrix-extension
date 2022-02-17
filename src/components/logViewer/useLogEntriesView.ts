@@ -20,13 +20,13 @@ import { useMemo } from "react";
 import { selectLogs } from "@/components/logViewer/logSelectors";
 import { useSelector } from "react-redux";
 
-type config = {
+type Config = {
   level: MessageLevel;
   page: number;
   perPage: number;
 };
 
-function useLogEntriesView({ level, page, perPage }: config) {
+function useLogEntriesView({ level, page, perPage }: Config) {
   const { availableEntries, entries } = useSelector(selectLogs);
 
   const filteredAvailableEntries = useMemo(

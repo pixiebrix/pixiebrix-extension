@@ -21,6 +21,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { isEqual } from "lodash";
 import { selectActiveContext } from "./logSelectors";
 import { LogRootState, LogState } from "./logViewerTypes";
+import { castDraft } from "immer";
 
 const REFRESH_INTERVAL = 750;
 
@@ -86,15 +87,13 @@ export const logSlice = createSlice({
         // Do deep equality check. On the log array of ~3k items it takes only a fraction of a ms.
         // Makes sense to spend some cycles here to save on re-rendering of the children.
         if (!isEqual(state.availableEntries, availableEntries)) {
-          // @ts-expect-error -- LogEntry[] is assignable to WritableDraft<LogEntry>[]
-          state.availableEntries = availableEntries;
+          state.availableEntries = castDraft(availableEntries);
         }
 
         // If this is the first time we've loaded the log from storage, we want to display all of it.
         if (state.isLoading) {
           state.isLoading = false;
-          // @ts-expect-error -- LogEntry[] is assignable to WritableDraft<LogEntry>[]
-          state.entries = availableEntries;
+          state.entries = castDraft(availableEntries);
         }
       }
     );
