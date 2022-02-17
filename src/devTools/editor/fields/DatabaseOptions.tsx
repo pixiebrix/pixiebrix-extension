@@ -46,6 +46,14 @@ const valueSchema: Schema = {
   additionalProperties: true,
 };
 
+const missingKeySchema: Schema = {
+  type: "string",
+  title: "Missing",
+  description: "Behavior if the key does not exist",
+  enum: ["blank", "error"],
+  default: "error",
+};
+
 const serviceSchema: Schema = {
   $ref: `${SERVICE_BASE_SCHEMA}${PIXIEBRIX_SERVICE_ID}`,
 };
@@ -132,11 +140,16 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
 
       <SchemaField name={configName("key")} schema={keySchema} isRequired />
 
-      {showValueField && (
+      {showValueField ? (
         <SchemaField
           name={configName("value")}
           schema={valueSchema}
           isRequired
+        />
+      ) : (
+        <SchemaField
+          name={configName("missingKey")}
+          schema={missingKeySchema}
         />
       )}
 
