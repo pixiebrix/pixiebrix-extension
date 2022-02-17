@@ -314,9 +314,10 @@ export async function recordError(
       error,
       data,
     });
-  } catch {
+  } catch (recordError) {
     console.error("An error occurred while recording another error", {
-      error,
+      error: recordError,
+      originalError: error,
       context,
     });
   }

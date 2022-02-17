@@ -131,8 +131,8 @@ export class SetPageState extends Transformer {
       }
 
       default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
         throw new PropError(
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
           `Invalid namespace: ${namespace}`,
           this.id,
           "namespace",
@@ -189,8 +189,8 @@ export class GetPageState extends Transformer {
       }
 
       default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
         throw new PropError(
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
           `Invalid namespace: ${namespace}`,
           this.id,
           "namespace",
