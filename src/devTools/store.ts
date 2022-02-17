@@ -92,16 +92,17 @@ const store = configureStore({
     logs: logSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => [
-    ...getDefaultMiddleware({
-      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
-      serializableCheck: {
-        ignoredActions: ["persist/PERSIST"],
-      },
-    }),
-    appApi.middleware,
-    ...conditionalMiddleware,
-  ],
+  middleware: (getDefaultMiddleware) =>
+    [
+      ...getDefaultMiddleware({
+        // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
+        serializableCheck: {
+          ignoredActions: ["persist/PERSIST"],
+        },
+      }),
+      appApi.middleware,
+      ...conditionalMiddleware,
+    ] as const,
   devTools: REDUX_DEV_TOOLS,
 });
 
@@ -112,7 +113,6 @@ export const persistor = persistStore(store);
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
 
-// @ts-expect-error -- AsyncThunkAction is a valid action
-store.dispatch(logActions.pollLogs());
+void store.dispatch(logActions.pollLogs());
 
 export default store;
