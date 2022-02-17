@@ -34,16 +34,18 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 }) => {
   // TODO: move expandedRows up a level
   const expandedRows = useMemo(() => expandRows(rows), [rows]);
-  const cardSizeInPixels = 200;
+  const minCardSizeInPixels = 200;
 
   const columnCount = useMemo(() => {
-    return Math.floor(width / cardSizeInPixels);
+    return Math.floor(width / minCardSizeInPixels);
   }, [width]);
 
+  // A column width that is at least minCardSizeInPixels,
+  // that expands to fill container
   const columnWidth = useMemo(() => {
-    const remainingSpace = width - columnCount * 200;
+    const remainingSpace = width - columnCount * minCardSizeInPixels;
     const columnDifference = remainingSpace / columnCount;
-    return 200 + columnDifference;
+    return minCardSizeInPixels + columnDifference;
   }, [columnCount, width]);
 
   const rowCount = useMemo(() => {
@@ -60,7 +62,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
       <Grid
         height={height}
         width={width}
-        rowHeight={cardSizeInPixels}
+        rowHeight={minCardSizeInPixels}
         rowCount={rowCount}
         columnCount={columnCount}
         columnWidth={columnWidth}
