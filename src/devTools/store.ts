@@ -44,6 +44,8 @@ import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { SettingsState } from "@/store/settingsTypes";
+import { LogRootState } from "@/components/logViewer/logViewerTypes";
+import { logSlice, logActions } from "@/components/logViewer/logSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -52,7 +54,7 @@ const persistSettingsConfig = {
   storage: localStorage,
 };
 
-export type RootState = {
+export type RootState = LogRootState & {
   options: OptionsState;
   editor: EditorState;
   savingExtension: SavingExtensionState;
@@ -66,7 +68,12 @@ const conditionalMiddleware: Middleware[] = [];
 if (process.env.NODE_ENV === "development") {
   // Allow tree shaking of logger in production
   // https://github.com/LogRocket/redux-logger/issues/6
-  conditionalMiddleware.push(createLogger());
+  conditionalMiddleware.push(
+    createLogger({
+      // Do not log polling actions (they happen too often)
+      predicate: (getState, action) => !action.type.includes("logs/polling"),
+    })
+  );
 }
 
 const store = configureStore({
@@ -82,18 +89,20 @@ const store = configureStore({
     runtime: runtimeSlice.reducer,
     formBuilder: formBuilderSlice.reducer,
     documentBuilder: documentBuilderSlice.reducer,
+    logs: logSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => [
-    ...getDefaultMiddleware({
-      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
-      serializableCheck: {
-        ignoredActions: ["persist/PERSIST"],
-      },
-    }),
-    appApi.middleware,
-    ...conditionalMiddleware,
-  ],
+  middleware: (getDefaultMiddleware) =>
+    [
+      ...getDefaultMiddleware({
+        // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
+        serializableCheck: {
+          ignoredActions: ["persist/PERSIST"],
+        },
+      }),
+      appApi.middleware,
+      ...conditionalMiddleware,
+    ] as const,
   devTools: REDUX_DEV_TOOLS,
 });
 
@@ -103,5 +112,7 @@ export const persistor = persistStore(store);
 // Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
+
+void store.dispatch(logActions.pollLogs());
 
 export default store;

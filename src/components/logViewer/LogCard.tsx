@@ -15,43 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
-// eslint-disable-next-line import/no-restricted-paths -- Types only
-import type { MessageLevel } from "@/background/logging";
+import React, { useState } from "react";
+import { MessageLevel } from "@/background/logging";
 import Loader from "@/components/Loader";
 import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
-import useLogEntries from "@/components/logViewer/useLogEntries";
 import LogToolbar from "@/components/logViewer/LogToolbar";
-import { UUID } from "@/core";
+import useLogEntriesView from "@/components/logViewer/useLogEntriesView";
+import { useDispatch, useSelector } from "react-redux";
+import { selectLogs } from "./logSelectors";
+import { logActions } from "./logSlice";
 
 type OwnProps = {
   initialLevel?: MessageLevel;
-  extensionId: UUID;
   perPage?: number;
-  refreshInterval?: number;
 };
 
-const RunLogCard: React.FunctionComponent<OwnProps> = ({
-  extensionId,
-  initialLevel = "info",
+const LogCard: React.FunctionComponent<OwnProps> = ({
+  initialLevel = "debug",
   perPage = 10,
-  refreshInterval,
 }) => {
   const [level, setLevel] = useState<MessageLevel>(initialLevel);
   const [page, setPage] = useState(0);
 
-  const messageContext = useMemo(() => ({ extensionId }), [extensionId]);
+  const { isLoading } = useSelector(selectLogs);
+  const dispatch = useDispatch();
+  const refreshEntries = () => dispatch(logActions.refreshEntries());
+  const clearAvailableEntries = () => dispatch(logActions.clear());
 
-  const logs = useLogEntries({
-    context: messageContext,
-    perPage,
-    refreshInterval,
-    level,
-    page,
-  });
+  const logs = useLogEntriesView({ level, page, perPage });
 
-  if (logs.isLoading) {
+  if (isLoading) {
     return (
       <Card.Body>
         <Loader />
@@ -62,15 +56,19 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   return (
     <>
       <LogToolbar
-        setLevel={setLevel}
         level={level}
+        setLevel={setLevel}
         page={page}
         setPage={setPage}
-        {...logs}
+        numPages={logs.numPages}
+        hasEntries={logs.hasEntries}
+        numNew={logs.numNew}
+        refresh={refreshEntries}
+        clear={clearAvailableEntries}
       />
-      <LogTable {...logs} />
+      <LogTable pageEntries={logs.pageEntries} hasEntries={logs.hasEntries} />
     </>
   );
 };
 
-export default RunLogCard;
+export default LogCard;

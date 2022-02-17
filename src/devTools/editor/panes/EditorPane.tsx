@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   actions as editorActions,
   FormState,
@@ -27,19 +27,18 @@ import { Formik } from "formik";
 import Effect from "@/devTools/editor/components/Effect";
 import ElementWizard from "@/devTools/editor/ElementWizard";
 import useEditable from "@/devTools/editor/hooks/useEditable";
-import { LogContextWrapper } from "@/components/logViewer/LogContext";
 import SaveExtensionWizard from "./save/SaveExtensionWizard";
 import useSavingWizard from "./save/useSavingWizard";
+import { logActions } from "@/components/logViewer/logSlice";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
 const CHANGE_DETECT_DELAY_MILLIS = 100;
 const REDUX_SYNC_WAIT_MILLIS = 500;
 
-const EditorPane: React.FunctionComponent<{
-  selectedElement: FormState;
-  selectionSeq: number;
-}> = ({ selectedElement, selectionSeq }) => {
+const EditorPaneContent: React.VoidFunctionComponent<{
+  element: FormState;
+}> = ({ element }) => {
   const dispatch = useDispatch();
   const editable = useEditable();
   const { isWizardOpen } = useSavingWizard();
@@ -53,9 +52,33 @@ const EditorPane: React.FunctionComponent<{
     { trailing: true, leading: false }
   );
 
+  useEffect(() => {
+    const messageContext = {
+      extensionId: element.uuid,
+      blueprintId: element.recipe ? element.recipe.id : undefined,
+    };
+    dispatch(logActions.setContext(messageContext));
+  }, [element.uuid, element.recipe, dispatch]);
+
+  return (
+    <>
+      <Effect
+        values={element}
+        onChange={syncReduxState}
+        delayMillis={CHANGE_DETECT_DELAY_MILLIS}
+      />
+      <ElementWizard element={element} editable={editable} />
+      {isWizardOpen && <SaveExtensionWizard />}
+    </>
+  );
+};
+
+const EditorPane: React.FunctionComponent<{
+  selectedElement: FormState;
+  selectionSeq: number;
+}> = ({ selectedElement, selectionSeq }) => {
   // Key to force reload of component when user selects a different element from the sidebar
   const key = `${selectedElement.uuid}-${selectedElement.installed}-${selectionSeq}`;
-
   return (
     <>
       <ErrorBoundary key={key}>
@@ -76,19 +99,7 @@ const EditorPane: React.FunctionComponent<{
           validateOnChange={false}
           validateOnBlur={true}
         >
-          {({ values: element }) => (
-            <>
-              <Effect
-                values={element}
-                onChange={syncReduxState}
-                delayMillis={CHANGE_DETECT_DELAY_MILLIS}
-              />
-              <LogContextWrapper>
-                <ElementWizard element={element} editable={editable} />
-              </LogContextWrapper>
-              {isWizardOpen && <SaveExtensionWizard />}
-            </>
-          )}
+          {({ values: element }) => <EditorPaneContent element={element} />}
         </Formik>
       </ErrorBoundary>
     </>

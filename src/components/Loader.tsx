@@ -24,7 +24,7 @@ const DEFAULT_STYLE = {
   justifyContent: "center",
 };
 const Loader: React.FunctionComponent = () => (
-  <div style={DEFAULT_STYLE}>
+  <div style={DEFAULT_STYLE} data-testid="loader">
     <GridLoader />
   </div>
 );

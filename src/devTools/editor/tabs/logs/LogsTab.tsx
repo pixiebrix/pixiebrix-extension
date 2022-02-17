@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,17 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-html {
-  // Always show the scrollbar track to avoid shifting the layout after the content loads
-  overflow-y: scroll;
-}
+import React from "react";
+import { Tab } from "react-bootstrap";
+import LogCard from "@/components/logViewer/LogCard";
 
-.modal-backdrop {
-  // keep behind services modal of 999
-  z-index: 998;
-}
+export const LOGS_EVENT_KEY = "logs";
 
-// Notifications must be above everything
-.react-toast-notifications__container {
-  z-index: 2147483647 !important;
-}
+const LogsTab: React.FunctionComponent<{
+  eventKey: string;
+}> = ({ eventKey = LOGS_EVENT_KEY }) => (
+  <Tab.Pane eventKey={eventKey} mountOnEnter unmountOnExit className="h-100">
+    <LogCard />
+  </Tab.Pane>
+);
+
+export default LogsTab;

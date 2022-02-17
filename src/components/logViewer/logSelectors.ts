@@ -15,28 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { Tab } from "react-bootstrap";
-import RunLogCard from "./RunLogCard";
-import { useFormikContext } from "formik";
+import { LogRootState } from "./logViewerTypes";
 
-export const LOGS_EVENT_KEY = "logs";
+export function selectLogs({ logs }: LogRootState) {
+  return logs;
+}
 
-const LogsTab: React.FunctionComponent<{
-  eventKey: string;
-}> = ({ eventKey = LOGS_EVENT_KEY }) => {
-  const { values } = useFormikContext<FormState>();
-
-  return (
-    <Tab.Pane eventKey={eventKey} mountOnEnter unmountOnExit className="h-100">
-      <RunLogCard
-        extensionId={values.uuid}
-        initialLevel="debug"
-        refreshInterval={750}
-      />
-    </Tab.Pane>
-  );
-};
-
-export default LogsTab;
+export function selectActiveContext({ logs }: LogRootState) {
+  return logs.activeContext;
+}

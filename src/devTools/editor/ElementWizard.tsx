@@ -17,18 +17,16 @@
 
 import styles from "./ElementWizard.module.scss";
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useFormikContext } from "formik";
-import { groupBy } from "lodash";
-import { Badge, Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
+import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
 import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
-import LogContext from "@/components/logViewer/LogContext";
-import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
+import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/logs/LogsTab";
 import { thisTab } from "@/devTools/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
@@ -41,6 +39,8 @@ import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab"
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
+import LogNavItemBadge from "./tabs/logs/NavItemBadge";
+import { logActions } from "@/components/logViewer/logSlice";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
@@ -58,42 +58,14 @@ const blueprintOptionsStep = {
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
-}> = ({ step }) => {
-  const { unread } = useContext(LogContext);
-
-  const logBadge = useMemo(() => {
-    if (step.step !== LOG_STEP_NAME) {
-      return null;
-    }
-
-    const levels = groupBy(unread, (x) => x.level);
-    for (const [level, variant] of [
-      ["error", "danger"],
-      ["warning", "warning"],
-    ]) {
-      // eslint-disable-next-line security/detect-object-injection -- constant levels above
-      const numLevel = levels[level];
-      if (numLevel) {
-        return (
-          <Badge className="mx-1" variant={variant}>
-            {numLevel.length}
-          </Badge>
-        );
-      }
-    }
-
-    return null;
-  }, [step.step, unread]);
-
-  return (
-    <Nav.Item>
-      <Nav.Link eventKey={step.step}>
-        {step.step}
-        {logBadge}
-      </Nav.Link>
-    </Nav.Item>
-  );
-};
+}> = ({ step }) => (
+  <Nav.Item>
+    <Nav.Link eventKey={step.step}>
+      {step.step}
+      {step.step === LOG_STEP_NAME && <LogNavItemBadge />}
+    </Nav.Link>
+  </Nav.Item>
+);
 
 const ElementWizard: React.FunctionComponent<{
   element: FormState;
@@ -101,7 +73,6 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, editable }) => {
   const [step, setStep] = useState(wizard[0].step);
 
-  const { refresh: refreshLogs } = useContext(LogContext);
   const { flagOn } = useFlags();
 
   const availableDefinition = element.extensionPoint.definition.isAvailable;
@@ -123,16 +94,17 @@ const ElementWizard: React.FunctionComponent<{
     }
   };
 
-  const selectTabHandler = useCallback(
-    (step: string) => {
-      setStep(step);
-      if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
-        // If user is clicking over to the logs tab, they most likely want to see the most recent logs
-        void refreshLogs();
-      }
-    },
-    [setStep, refreshLogs]
-  );
+  const dispatch = useDispatch();
+
+  const refreshEntries = () => dispatch(logActions.refreshEntries());
+
+  const selectTabHandler = (step: string) => {
+    setStep(step);
+    if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
+      // If user is clicking over to the logs tab, they most likely want to see the most recent logs
+      refreshEntries();
+    }
+  };
 
   const { values: formState, setValues: setFormState } =
     useFormikContext<FormState>();
@@ -141,8 +113,6 @@ const ElementWizard: React.FunctionComponent<{
   if (formState.recipe?.id && flagOn("page-editor-beta")) {
     wizardSteps.push(blueprintOptionsStep);
   }
-
-  const dispatch = useDispatch();
 
   useAsyncEffect(async () => {
     if (formState.apiVersion === "v2") {

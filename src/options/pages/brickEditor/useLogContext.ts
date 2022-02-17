@@ -16,23 +16,25 @@
  */
 
 import { useDebounce } from "use-debounce";
-import { useState } from "react";
 import { MessageContext, RawConfig } from "@/core";
 import { useAsyncEffect } from "use-async-effect";
 import { loadBrickYaml } from "@/runtime/brickYaml";
+import { useDispatch } from "react-redux";
+import { logActions } from "@/components/logViewer/logSlice";
 
 const LOG_MESSAGE_CONTEXT_DEBOUNCE_MS = 350;
 
 /**
  * Hook that returns the log message MessageContext corresponding to a YAML brick config.
  */
-function useLogContext(config: string | null): MessageContext | undefined {
+function useLogContext(config: string | null) {
   // Track latest context, as there will be intermediate states where the YAML is invalid
-  const [context, setContext] = useState<MessageContext | undefined>();
   const [debouncedConfig] = useDebounce(
     config,
     LOG_MESSAGE_CONTEXT_DEBOUNCE_MS
   );
+
+  const dispatch = useDispatch();
 
   // Use async so we don't block the main render loop (is that actually needed?)
   useAsyncEffect(async () => {
@@ -46,35 +48,36 @@ function useLogContext(config: string | null): MessageContext | undefined {
 
     const id = json.metadata?.id;
 
+    let messageContext: MessageContext | null;
     switch (json.kind) {
       case "service": {
-        setContext({ serviceId: id });
+        messageContext = { serviceId: id };
         break;
       }
 
       case "extensionPoint": {
-        setContext({ extensionPointId: id });
+        messageContext = { extensionPointId: id };
         break;
       }
 
       case "component":
       case "reader": {
-        setContext({ blockId: id });
+        messageContext = { blockId: id };
         break;
       }
 
       case "recipe": {
-        setContext({ blueprintId: id });
+        messageContext = { blueprintId: id };
         break;
       }
 
       default: {
-        return null;
+        messageContext = null;
       }
     }
-  }, [debouncedConfig, setContext]);
 
-  return context;
+    dispatch(logActions.setContext(messageContext));
+  }, [debouncedConfig]);
 }
 
 export default useLogContext;
