@@ -15,28 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { Tab } from "react-bootstrap";
-import RunLogCard from "./RunLogCard";
-import { useFormikContext } from "formik";
+import { useCallback } from "react";
 
-export const LOGS_EVENT_KEY = "logs";
+function useRecipeSaver(): [() => void, boolean] {
+  // Stubs
+  const save = useCallback(() => {}, []);
+  const isSaving = false;
 
-const LogsTab: React.FunctionComponent<{
-  eventKey: string;
-}> = ({ eventKey = LOGS_EVENT_KEY }) => {
-  const { values } = useFormikContext<FormState>();
+  return [save, isSaving];
+}
 
-  return (
-    <Tab.Pane eventKey={eventKey} mountOnEnter unmountOnExit className="h-100">
-      <RunLogCard
-        extensionId={values.uuid}
-        initialLevel="debug"
-        refreshInterval={750}
-      />
-    </Tab.Pane>
-  );
-};
-
-export default LogsTab;
+export default useRecipeSaver;

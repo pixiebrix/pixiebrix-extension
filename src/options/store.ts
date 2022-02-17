@@ -43,19 +43,21 @@ import blueprintsSlice, {
   BlueprintsState,
   persistBlueprintsConfig,
 } from "./pages/blueprints/blueprintsSlice";
+import { logActions, logSlice } from "@/components/logViewer/logSlice";
+import { LogRootState } from "@/components/logViewer/logViewerTypes";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
 export const hashHistory = createHashHistory({ hashType: "slash" });
 
-export interface RootState {
+export type RootState = LogRootState & {
   options: OptionsState;
   blueprints: BlueprintsState;
   services: ServicesState;
   settings: SettingsState;
   workshop: WorkshopState;
   installedPage: InstalledPageState;
-}
+};
 
 export const persistWorkshopConfig = {
   key: "workshop",
@@ -66,7 +68,12 @@ const conditionalMiddleware: Middleware[] = [];
 if (process.env.NODE_ENV === "development") {
   // Allow tree shaking of logger in production
   // https://github.com/LogRocket/redux-logger/issues/6
-  conditionalMiddleware.push(createLogger());
+  conditionalMiddleware.push(
+    createLogger({
+      // Do not log polling actions (they happen too often)
+      predicate: (getState, action) => !action.type.includes("logs/polling"),
+    })
+  );
 }
 
 const store = configureStore({
@@ -85,19 +92,21 @@ const store = configureStore({
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
     installedPage: installedPageSlice.reducer,
+    logs: logSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => [
-    ...getDefaultMiddleware({
-      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
-      serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
-      },
-    }),
-    appApi.middleware,
-    routerMiddleware(hashHistory),
-    ...conditionalMiddleware,
-  ],
+  middleware: (getDefaultMiddleware) =>
+    [
+      ...getDefaultMiddleware({
+        // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
+        serializableCheck: {
+          ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
+        },
+      }),
+      appApi.middleware,
+      routerMiddleware(hashHistory),
+      ...conditionalMiddleware,
+    ] as const,
   devTools: REDUX_DEV_TOOLS,
 });
 
@@ -107,5 +116,7 @@ export const persistor = persistStore(store);
 // Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
+
+void store.dispatch(logActions.pollLogs());
 
 export default store;

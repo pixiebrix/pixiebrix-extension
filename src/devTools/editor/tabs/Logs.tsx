@@ -16,17 +16,10 @@
  */
 
 import React from "react";
-import GridLoader from "react-spinners/GridLoader";
 
-const DEFAULT_STYLE = {
-  margin: "20px auto", // Centet
-  display: "flex",
-  justifyContent: "center",
+// eslint-disable-next-line arrow-body-style
+const Logs: React.VoidFunctionComponent = () => {
+  return <div>Logs Placeholder</div>;
 };
-const Loader: React.FunctionComponent = () => (
-  <div style={DEFAULT_STYLE} data-testid="loader">
-    <GridLoader />
-  </div>
-);
 
-export default Loader;
+export default Logs;

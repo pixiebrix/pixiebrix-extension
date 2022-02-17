@@ -15,18 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import GridLoader from "react-spinners/GridLoader";
+import { RecipeDefinition } from "@/types/definitions";
+import { useCallback } from "react";
 
-const DEFAULT_STYLE = {
-  margin: "20px auto", // Centet
-  display: "flex",
-  justifyContent: "center",
-};
-const Loader: React.FunctionComponent = () => (
-  <div style={DEFAULT_STYLE} data-testid="loader">
-    <GridLoader />
-  </div>
-);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function useRemoveRecipe(recipe: RecipeDefinition): () => void {
+  // Stub
+  const remove = useCallback(() => {}, []);
 
-export default Loader;
+  return remove;
+}
+
+export default useRemoveRecipe;

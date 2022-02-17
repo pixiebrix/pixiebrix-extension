@@ -40,8 +40,12 @@ import {
 } from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/devTools/utils";
-import { selectActiveElement } from "@/devTools/editor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectActiveRecipe,
+} from "@/devTools/editor/slices/editorSelectors";
 import Loader from "@/components/Loader";
+import RecipePane from "@/devTools/editor/panes/RecipePane";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -60,11 +64,13 @@ const Editor: React.FunctionComponent = () => {
     inserting,
     elements,
     activeElement: activeElementId,
+    activeRecipeId,
     error: editorError,
     beta,
   } = useSelector(selectEditor);
 
   const selectedElement = useSelector(selectActiveElement);
+  const selectedRecipe = useSelector(selectActiveRecipe);
 
   const cancelInsert = useCallback(async () => {
     dispatch(actions.toggleInsert(null));
@@ -117,6 +123,8 @@ const Editor: React.FunctionComponent = () => {
           selectionSeq={selectionSeq}
         />
       );
+    } else if (selectedRecipe) {
+      return <RecipePane recipe={selectedRecipe} />;
     } else if (
       availableDynamicIds?.size ||
       installed.length > unavailableCount
@@ -156,6 +164,7 @@ const Editor: React.FunctionComponent = () => {
         elements={elements}
         recipes={recipes}
         activeElementId={activeElementId}
+        activeRecipeId={activeRecipeId}
         isInsertingElement={Boolean(inserting)}
         isLoadingItems={loadingRecipes}
       />

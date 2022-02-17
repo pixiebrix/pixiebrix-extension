@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,18 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import GridLoader from "react-spinners/GridLoader";
+.root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-const DEFAULT_STYLE = {
-  margin: "20px auto", // Centet
-  display: "flex",
-  justifyContent: "center",
-};
-const Loader: React.FunctionComponent = () => (
-  <div style={DEFAULT_STYLE} data-testid="loader">
-    <GridLoader />
-  </div>
-);
+.nav {
+  min-height: 31px; // To match the height of the actions of the Sidebar
+  box-shadow: 0 2px 2px gray;
+  z-index: 1; // Paint the shadow above the content below
+}
 
-export default Loader;
+.badge {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
+.actionButtonIcon {
+  margin-right: 0.25rem;
+}
+
+.content {
+  flex-grow: 1;
+}

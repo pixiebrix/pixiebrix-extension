@@ -15,18 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import GridLoader from "react-spinners/GridLoader";
+import { LogRootState } from "./logViewerTypes";
 
-const DEFAULT_STYLE = {
-  margin: "20px auto", // Centet
-  display: "flex",
-  justifyContent: "center",
-};
-const Loader: React.FunctionComponent = () => (
-  <div style={DEFAULT_STYLE} data-testid="loader">
-    <GridLoader />
-  </div>
-);
+export function selectLogs({ logs }: LogRootState) {
+  return logs;
+}
 
-export default Loader;
+export function selectActiveContext({ logs }: LogRootState) {
+  return logs.activeContext;
+}
