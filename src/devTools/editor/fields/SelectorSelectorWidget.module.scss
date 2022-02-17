@@ -15,9 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Overridea and extend Bootstrap’s style
+// Override and extend Bootstrap’s style
 .root {
   flex-wrap: nowrap;
+
+  div[role="combobox"] {
+    flex-grow: 1;
+  }
+
   input {
     position: relative;
     z-index: 3;
