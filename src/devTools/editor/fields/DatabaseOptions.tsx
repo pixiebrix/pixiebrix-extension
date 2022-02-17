@@ -39,6 +39,15 @@ const keySchema: Schema = {
   description: "The unique key for the record",
 };
 
+const mergeStrategySchema: Schema = {
+  type: "string",
+  title: "Merge Strategy",
+  description:
+    "Strategy to update the record if it already exists (default: replace)",
+  enum: ["replace", "shallow", "deep"],
+  default: "replace",
+};
+
 const valueSchema: Schema = {
   type: "object",
   title: "Value",
@@ -48,7 +57,7 @@ const valueSchema: Schema = {
 
 const missingKeySchema: Schema = {
   type: "string",
-  title: "Missing",
+  title: "Missing Behavior",
   description: "Behavior if the key does not exist",
   enum: ["blank", "error"],
   default: "error",
@@ -141,11 +150,17 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
       <SchemaField name={configName("key")} schema={keySchema} isRequired />
 
       {showValueField ? (
-        <SchemaField
-          name={configName("value")}
-          schema={valueSchema}
-          isRequired
-        />
+        <>
+          <SchemaField
+            name={configName("mergeStrategy")}
+            schema={mergeStrategySchema}
+          />
+          <SchemaField
+            name={configName("value")}
+            schema={valueSchema}
+            isRequired
+          />
+        </>
       ) : (
         <SchemaField
           name={configName("missingKey")}
