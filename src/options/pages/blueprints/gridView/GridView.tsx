@@ -18,10 +18,49 @@
 import styles from "./GridView.module.scss";
 
 import React, { useMemo } from "react";
-import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import {
+  BlueprintListViewProps,
+  InstallableViewItem,
+} from "@/options/pages/blueprints/blueprintsTypes";
 import { FixedSizeGrid as Grid } from "react-window";
+import { FixedSizeList as List } from "react-window";
 import GridCard from "./GridCard";
 import { expandRows } from "@/options/pages/blueprints/listView/ListView";
+import { Row } from "react-table";
+import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
+
+// TODO: refactor with just Rows, it will be more legible and efficient
+function expandGridRows(
+  rows: Array<Row<InstallableViewItem>>,
+  columnCount: number
+) {
+  const gridRows = [];
+  let nextGridRow = [];
+  for (const row of rows) {
+    if (row.isGrouped) {
+      if (nextGridRow.length > 0) {
+        gridRows.push(nextGridRow);
+        nextGridRow = [];
+      }
+
+      gridRows.push(row);
+      continue;
+    }
+
+    if (nextGridRow.length >= columnCount) {
+      gridRows.push(nextGridRow);
+      nextGridRow = [];
+    }
+
+    nextGridRow.push(row);
+  }
+
+  if (nextGridRow.length > 0) {
+    gridRows.push(nextGridRow);
+  }
+
+  return gridRows;
+}
 
 const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
@@ -29,8 +68,8 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   width,
   height,
 }) => {
-  // TODO: move expandedRows up a level
   const expandedRows = useMemo(() => expandRows(rows), [rows]);
+
   // 200px card width & height, 15px padding
   const minCardSizeInPixels = 215;
 
@@ -38,45 +77,40 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     return Math.floor(width / minCardSizeInPixels);
   }, [width]);
 
-  // A column width that expands to fill container, but is at least
-  // `minCardSizeInPixels` wide
-  const columnWidth = useMemo(() => {
-    const remainingSpace = width - columnCount * minCardSizeInPixels;
-    const columnDifference = remainingSpace / columnCount;
-    return minCardSizeInPixels + columnDifference;
-  }, [columnCount, width]);
-
-  const rowCount = useMemo(() => {
-    return Math.ceil(rows.length / columnCount);
-  }, [columnCount, rows]);
-
-  const getRow = (rowIndex: number, columnIndex: number) => {
-    const flatIndex = 3 * rowIndex + columnIndex;
-    return rows[flatIndex];
-  };
+  const expandedGridRows = useMemo(
+    () => expandGridRows(expandedRows, columnCount),
+    [columnCount, expandedRows]
+  );
+  console.log("expanded grid rows:", expandedGridRows);
 
   return (
-    <div className={styles.root}>
-      <Grid
+    <div>
+      <List
         height={height}
         width={width}
-        rowHeight={minCardSizeInPixels}
-        rowCount={rowCount}
-        columnCount={columnCount}
-        columnWidth={columnWidth}
-        // overscanRowCount={5}
+        itemSize={minCardSizeInPixels}
+        itemCount={expandedGridRows.length}
       >
-        {({ rowIndex, columnIndex, style }) => {
-          const row = getRow(rowIndex, columnIndex);
+        {({ index, style }) => {
+          const gridRow = expandedGridRows[index];
 
-          if (!row || row.isGrouped) {
-            return null;
+          if (gridRow.isGrouped) {
+            tableInstance.prepareRow(gridRow);
+            return (
+              <ListGroupHeader groupName={gridRow.groupByVal} style={style} />
+            );
           }
 
-          tableInstance.prepareRow(row);
-          return <GridCard installableItem={row.original} style={style} />;
+          return (
+            <div style={style} className={styles.root}>
+              {gridRow.map((row) => {
+                tableInstance.prepareRow(row);
+                return <GridCard key={row.id} installableItem={row.original} />;
+              })}
+            </div>
+          );
         }}
-      </Grid>
+      </List>
     </div>
   );
 };
