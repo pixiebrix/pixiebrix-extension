@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
 import ListItem from "./ListItem";
 import {
   BlueprintListViewProps,
   InstallableViewItem,
 } from "@/options/pages/blueprints/blueprintsTypes";
-import { FixedSizeList as List } from "react-window";
+import { VariableSizeList as List } from "react-window";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { Row } from "react-table";
 
@@ -50,7 +50,18 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   height,
   width,
 }) => {
+  const rowSizeInPixels = 67;
+  const headerSizeInPixels = 43;
+
   const expandedRows = useMemo(() => expandRows(rows), [rows]);
+
+  const getItemSize = useCallback(
+    (index: number) => {
+      const row = expandedRows[index];
+      return row.isGrouped ? headerSizeInPixels : rowSizeInPixels;
+    },
+    [expandedRows]
+  );
 
   return (
     <ListGroup {...tableInstance.getTableProps()}>
@@ -59,7 +70,7 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
         width={width}
         itemCount={expandedRows.length}
         // Arbitrary number that fits content aesthetically
-        itemSize={67}
+        itemSize={getItemSize}
       >
         {({ index, style }) => {
           const row = expandedRows[index];

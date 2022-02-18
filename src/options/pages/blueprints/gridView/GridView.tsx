@@ -17,13 +17,12 @@
 
 import styles from "./GridView.module.scss";
 
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   BlueprintListViewProps,
   InstallableViewItem,
 } from "@/options/pages/blueprints/blueprintsTypes";
-import { FixedSizeGrid as Grid } from "react-window";
-import { FixedSizeList as List } from "react-window";
+import { VariableSizeList as List } from "react-window";
 import GridCard from "./GridCard";
 import { expandRows } from "@/options/pages/blueprints/listView/ListView";
 import { Row } from "react-table";
@@ -83,12 +82,20 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   );
   console.log("expanded grid rows:", expandedGridRows);
 
+  const getItemSize = useCallback(
+    (index: number) => {
+      const row = expandedGridRows[index];
+      return row.isGrouped ? 43 : minCardSizeInPixels;
+    },
+    [expandedGridRows]
+  );
+
   return (
     <div>
       <List
         height={height}
         width={width}
-        itemSize={minCardSizeInPixels}
+        itemSize={getItemSize}
         itemCount={expandedGridRows.length}
       >
         {({ index, style }) => {
