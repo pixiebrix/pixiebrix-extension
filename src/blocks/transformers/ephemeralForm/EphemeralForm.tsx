@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -31,6 +31,7 @@ import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 // eslint-disable-next-line import/no-named-as-default -- need default export here
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
+import reportError from "@/telemetry/reportError";
 
 const fields = {
   DescriptionField,
@@ -57,16 +58,25 @@ const EphemeralForm: React.FC = () => {
   const opener = JSON.parse(params.get("opener")) as Target;
   const mode = params.get("mode") ?? "modal";
 
+  const isModal = mode === "modal";
+
   // The opener for a sidebar panel will be the sidebar frame, not the host panel frame. The sidebar only opens in the
   // top-level frame, so hard-code the top-level frameId
-  const target =
-    mode === "modal" ? opener : { tabId: opener.tabId, frameId: 0 };
-  const FormContainer = mode === "modal" ? ModalLayout : PanelLayout;
+  const target = isModal ? opener : { tabId: opener.tabId, frameId: 0 };
+  const FormContainer = isModal ? ModalLayout : PanelLayout;
 
   const [definition, isLoading, error] = useAsyncState(
     async () => getFormDefinition(target, nonce),
     [nonce]
   );
+
+  // Report error once
+  useEffect(() => {
+    if (error) {
+      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2769
+      reportError(error);
+    }
+  }, [error]);
 
   if (isLoading) {
     return (
@@ -79,7 +89,21 @@ const EphemeralForm: React.FC = () => {
   if (error) {
     return (
       <FormContainer>
-        <div className="text-danger">{getErrorMessage(error)}</div>
+        <div>Form Error</div>
+
+        <div className="text-danger my-3">{getErrorMessage(error)}</div>
+
+        <div>
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={() => {
+              void cancelForm(target, nonce);
+            }}
+          >
+            Close
+          </button>
+        </div>
       </FormContainer>
     );
   }
