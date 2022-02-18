@@ -16,21 +16,21 @@
  */
 
 import React from "react";
-import { ListGroup } from "react-bootstrap";
 import styles from "@/options/pages/blueprints/listView/ListItem.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 
 const ListGroupHeader: React.VoidFunctionComponent<{
   groupName: string;
   style: unknown;
 }> = ({ groupName, style }) => {
   return (
-    <ListGroup.Item
-      variant="secondary"
-      className={styles.listHeader}
-      style={style}
-    >
-      {groupName}
-    </ListGroup.Item>
+    <div className={styles.listHeader} style={style}>
+      <span>
+        <FontAwesomeIcon icon={faAngleDown} /> {groupName}
+      </span>
+      <span>3 grouped results</span>
+    </div>
   );
 };
 

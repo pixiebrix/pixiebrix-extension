@@ -23,8 +23,11 @@
 .listHeader {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   font-weight: bold;
   color: #bba8bff5;
+  background: transparent;
+  border: none;
 }
 
 .icon {
