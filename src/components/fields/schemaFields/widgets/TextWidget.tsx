@@ -34,7 +34,6 @@ import {
   schemaSupportsTemplates,
 } from "@/components/fields/schemaFields/BasicSchemaField";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 
 function isVarValue(value: string): boolean {
@@ -55,7 +54,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   focusInput,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, { error }, { setValue }] =
+  const [{ value, ...restInputProps }, { error }, { setValue, setError }] =
     useField(name);
   const { allowExpressions: allowExpressionsContext } =
     useContext(FieldRuntimeContext);
@@ -161,9 +160,18 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     return [fieldValue, onChange];
   }, [allowExpressions, onChangeForTemplate, setValue, value]);
 
-  if (isTemplateExpression(value) && isMustacheOnly(value.__value__)) {
-    return <WorkshopMessageWidget />;
-  }
+  const setErrorStatic = useCallback((error: string | undefined) => {
+    setError(error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- prevent function reference from changing
+  }, []);
+
+  useEffect(() => {
+    if (isTemplateExpression(value) && isMustacheOnly(value.__value__)) {
+      setErrorStatic(
+        "Mustache syntax is not supported, please use nunjucks template syntax"
+      );
+    }
+  }, [setErrorStatic, value]);
 
   if (
     value !== null &&
