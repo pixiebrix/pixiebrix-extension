@@ -37,6 +37,7 @@ import { expectContext, forbidContext } from "@/utils/expectContext";
 import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
 import { readAuthData } from "@/auth/token";
 import { UnknownObject } from "@/types";
+import browser from "webextension-polyfill";
 import { isObject, matchesAnyPattern } from "@/utils";
 
 const STORAGE_KEY = "LOG";
@@ -267,12 +268,17 @@ export async function recordError(
   try {
     const message = getErrorMessage(error);
 
-    // For noisy errors, don't record/submit telemetry unless the error caused prevented an extension point
+    // For noisy errors, don't record/submit telemetry unless the error prevented an extension point
     // from being installed or an extension to fail. (In that case, we'd have some context about the error)
     if (
       isEmpty(context) &&
       matchesAnyPattern(message, IGNORED_ERROR_PATTERNS)
     ) {
+      console.debug("Ignoring error matching IGNORED_ERROR_PATTERNS", {
+        error,
+        context,
+      });
+
       return;
     }
 
