@@ -39,5 +39,5 @@ function backgroundErrorsBadge() {
 }
 
 if (process.env.ENVIRONMENT === "development") {
-  uncaughtErrorHandlers.add(backgroundErrorsBadge);
+  uncaughtErrorHandlers.push(backgroundErrorsBadge);
 }

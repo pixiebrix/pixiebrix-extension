@@ -17,7 +17,7 @@
 
 import nytimes from "@contrib/blocks/nytimes-org.yaml";
 import trelloReader from "@contrib/readers/trello-card-reader.yaml";
-import { ValidationError } from "@/errors";
+import { InvalidDefinitionError } from "@/errors";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 
 test("two plus two is four", () => {
@@ -42,6 +42,6 @@ test("reject invalid fixture fixture", async () => {
   try {
     fromJS({ foo: "bar" });
   } catch (error) {
-    expect(error).toBeInstanceOf(ValidationError);
+    expect(error).toBeInstanceOf(InvalidDefinitionError);
   }
 });

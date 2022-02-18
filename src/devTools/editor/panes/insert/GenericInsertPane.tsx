@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import paneStyles from "@/devTools/editor/panes/Pane.module.scss";
 import styles from "./GenericInsertPane.module.scss";
 
 import React, { useCallback } from "react";
@@ -118,7 +119,7 @@ const GenericInsertPane: React.FunctionComponent<{
 
   return (
     <Centered isScrollable>
-      <div className="PaneTitle">Build new {config.label} extension</div>
+      <div className={paneStyles.title}>Build new {config.label} extension</div>
       {config.InsertModeHelpText && (
         <div className="text-left">
           <config.InsertModeHelpText />

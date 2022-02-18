@@ -17,7 +17,7 @@
 
 import { uniq, compact, sortBy, unary, intersection } from "lodash";
 import { getCssSelector } from "css-selector-generator";
-import { isNullOrBlank, mostCommonElement } from "@/utils";
+import { isNullOrBlank, mostCommonElement, matchesAnyPattern } from "@/utils";
 import { BusinessError } from "@/errors";
 import { CssSelectorType } from "css-selector-generator/types/types";
 import { $safeFind } from "@/helpers";
@@ -127,7 +127,7 @@ function commonAttribute(items: Element[], attribute: string) {
   const exclude = TEMPLATE_VALUE_EXCLUDE_PATTERNS.get(attribute) ?? [];
 
   const filtered = unfiltered.filter(
-    (value) => !exclude.some((regex) => regex.test(value))
+    (value) => !matchesAnyPattern(value, exclude)
   );
 
   return filtered.length > 0 ? filtered.join(" ") : null;
@@ -147,9 +147,7 @@ function setCommonAttributes(common: Element, items: Element[]) {
       if (
         value
           .split(" ")
-          .some((value) =>
-            ATTR_SKIP_ELEMENT_PATTERNS.some((test) => test.test(value))
-          )
+          .some((value) => matchesAnyPattern(value, ATTR_SKIP_ELEMENT_PATTERNS))
       ) {
         throw new SkipElement(
           "Attribute value contains value in the skip list"

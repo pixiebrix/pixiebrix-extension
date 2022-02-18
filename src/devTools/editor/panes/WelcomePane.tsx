@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "@/devTools/editor/panes/Pane.module.scss";
+
 import React from "react";
 import Centered from "@/devTools/editor/components/Centered";
 import IntroButtons from "./IntroButtons";
 
 const WelcomePane: React.FunctionComponent = () => (
   <Centered isScrollable>
-    <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
+    <div className={styles.title}>Welcome to the PixieBrix Page Editor!</div>
 
     <div className="text-center">
       <p>

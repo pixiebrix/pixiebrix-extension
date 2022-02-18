@@ -24,7 +24,14 @@
   width: 1.5em;
   text-align: center;
   flex-shrink: 0;
+  border: none;
+  background: none;
+  color: inherit;
 }
 .name {
   flex-grow: 1;
+  cursor: pointer;
+}
+.nested {
+  margin-left: 0.75rem;
 }

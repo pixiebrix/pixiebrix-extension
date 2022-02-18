@@ -40,7 +40,8 @@ const DynamicEntry: React.FunctionComponent<{
   item: FormState;
   available: boolean;
   active: boolean;
-}> = ({ item, available, active }) => {
+  isNested?: boolean;
+}> = ({ item, available, active, isNested = false }) => {
   const dispatch = useDispatch();
 
   const isDirty = useSelector<RootState>(
@@ -67,7 +68,11 @@ const DynamicEntry: React.FunctionComponent<{
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
     >
-      <span className={styles.icon}>
+      <span
+        className={cx(styles.icon, {
+          [styles.nested]: isNested,
+        })}
+      >
         <ExtensionIcon type={item.type} />
       </span>
       <span className={styles.name}>{getLabel(item)}</span>
