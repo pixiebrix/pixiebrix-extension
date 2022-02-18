@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { ListGroup } from "react-bootstrap";
 import ListItem from "./ListItem";
 import {
@@ -53,6 +53,11 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   const rowSizeInPixels = 67;
   const headerSizeInPixels = 43;
 
+  // This ref is required in order to update row height upon
+  // data change (assigning a unique itemKey does not work in this case)
+  // see https://github.com/bvaughn/react-window/issues/199#issuecomment-479957451
+  const listRef = useRef();
+
   const expandedRows = useMemo(() => expandRows(rows), [rows]);
 
   const getItemSize = useCallback(
@@ -63,6 +68,10 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     [expandedRows]
   );
 
+  useEffect(() => {
+    listRef.current.resetAfterIndex(0, false);
+  }, [expandedRows]);
+
   return (
     <ListGroup {...tableInstance.getTableProps()}>
       <List
@@ -71,6 +80,7 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
         itemCount={expandedRows.length}
         // Arbitrary number that fits content aesthetically
         itemSize={getItemSize}
+        ref={listRef}
       >
         {({ index, style }) => {
           const row = expandedRows[index];

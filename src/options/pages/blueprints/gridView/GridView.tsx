@@ -17,32 +17,35 @@
 
 import styles from "./GridView.module.scss";
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   BlueprintListViewProps,
   InstallableViewItem,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import { VariableSizeList as List } from "react-window";
 import GridCard from "./GridCard";
-import { expandRows } from "@/options/pages/blueprints/listView/ListView";
 import { Row } from "react-table";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
+import { uuidv4 } from "@/types/helpers";
 
-// TODO: refactor with just Rows, it will be more legible and efficient
+// Expands react-table grouped rows recursively, and groups
+// rows in chunks of `columnCount` for easy grid rendering
 function expandGridRows(
   rows: Array<Row<InstallableViewItem>>,
   columnCount: number
-) {
+): Array<Row<InstallableViewItem> | Array<Row<InstallableViewItem>>> {
   const gridRows = [];
   let nextGridRow = [];
   for (const row of rows) {
     if (row.isGrouped) {
+      gridRows.push(row);
+
       if (nextGridRow.length > 0) {
         gridRows.push(nextGridRow);
         nextGridRow = [];
       }
 
-      gridRows.push(row);
+      gridRows.push(...expandGridRows(row.subRows, columnCount));
       continue;
     }
 
@@ -67,20 +70,23 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   width,
   height,
 }) => {
-  const expandedRows = useMemo(() => expandRows(rows), [rows]);
-
-  // 200px card width & height, 15px padding
+  // 200px min card width & height, 15px padding
+  // see: GridView.module.scss
   const minCardSizeInPixels = 215;
+
+  // This ref is required in order to update row height upon
+  // data change (assigning a unique itemKey does not work in this case)
+  // see https://github.com/bvaughn/react-window/issues/199#issuecomment-479957451
+  const listRef = useRef();
 
   const columnCount = useMemo(() => {
     return Math.floor(width / minCardSizeInPixels);
   }, [width]);
 
   const expandedGridRows = useMemo(
-    () => expandGridRows(expandedRows, columnCount),
-    [columnCount, expandedRows]
+    () => expandGridRows(rows, columnCount),
+    [columnCount, rows]
   );
-  console.log("expanded grid rows:", expandedGridRows);
 
   const getItemSize = useCallback(
     (index: number) => {
@@ -90,6 +96,10 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     [expandedGridRows]
   );
 
+  useEffect(() => {
+    listRef.current.resetAfterIndex(0, false);
+  }, [expandedGridRows, columnCount]);
+
   return (
     <div>
       <List
@@ -97,6 +107,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
         width={width}
         itemSize={getItemSize}
         itemCount={expandedGridRows.length}
+        ref={listRef}
       >
         {({ index, style }) => {
           const gridRow = expandedGridRows[index];
