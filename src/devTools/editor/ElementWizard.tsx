@@ -59,8 +59,8 @@ const blueprintOptionsStep = {
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
 }> = ({ step }) => (
-  <Nav.Item>
-    <Nav.Link eventKey={step.step}>
+  <Nav.Item className="d-flex align-items-stretch">
+    <Nav.Link className="d-flex align-items-center" eventKey={step.step}>
       {step.step}
       {step.step === LOG_STEP_NAME && <LogNavItemBadge />}
     </Nav.Link>

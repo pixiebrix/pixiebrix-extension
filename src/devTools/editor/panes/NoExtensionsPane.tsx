@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "@/devTools/editor/panes/Pane.module.scss";
+
 import React from "react";
 import Centered from "@/devTools/editor/components/Centered";
 import IntroButtons from "./IntroButtons";
@@ -23,7 +25,7 @@ const NoExtensionsPane: React.FunctionComponent<{
   unavailableCount: number;
 }> = ({ unavailableCount }) => (
   <Centered isScrollable>
-    <div className="PaneTitle">No custom extensions on the page</div>
+    <div className={styles.title}>No custom extensions on the page</div>
 
     <div className="text-left">
       <p>

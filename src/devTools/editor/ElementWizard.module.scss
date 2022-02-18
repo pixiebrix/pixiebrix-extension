@@ -22,6 +22,14 @@
   position: relative;
   z-index: 1; // Paint the shadow above the content below
   padding-bottom: 0;
+  font-size: 0.875rem;
+
+  a,
+  button {
+    border-radius: 0 !important;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+  }
 }
 
 .form {

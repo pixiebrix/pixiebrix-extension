@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "@/devTools/editor/panes/Pane.module.scss";
+
 import {
   PanelDefinition,
   PanelExtensionPoint,
@@ -47,7 +49,7 @@ const InsertPanelPane: React.FunctionComponent<{
 
   return (
     <Centered isScrollable>
-      <div className="PaneTitle">Inserting Panel</div>
+      <div className={styles.title}>Inserting Panel</div>
 
       <div className="text-left">
         <p>

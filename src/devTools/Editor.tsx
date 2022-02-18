@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import styles from "./Editor.module.scss";
+
 import React, { useCallback, useContext, useMemo } from "react";
 import Sidebar from "@/devTools/editor/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
@@ -158,7 +161,7 @@ const Editor: React.FunctionComponent = () => {
   }
 
   return (
-    <div className="DevToolsContainer">
+    <div className={styles.root}>
       <Sidebar
         installed={installed}
         elements={elements}

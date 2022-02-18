@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "@/devTools/editor/panes/Pane.module.scss";
+
 import Centered from "@/devTools/editor/components/Centered";
 import React from "react";
 
 const BetaPane: React.FunctionComponent = () => (
   <Centered>
-    <div className="PaneTitle">
+    <div className={styles.title}>
       This Page Editor feature is currently in private beta
     </div>
 

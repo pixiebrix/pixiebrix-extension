@@ -17,7 +17,7 @@
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@/vendors/overrides.scss";
-import "@/devTools/Panel.scss";
+import "@/utils/layout.scss";
 
 import "@/development/darkMode";
 import "@/telemetry/reportUncaughtErrors";

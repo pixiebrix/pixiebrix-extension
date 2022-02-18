@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "@/devTools/editor/panes/Pane.module.scss";
+
 import React from "react";
 import config from "@/devTools/editor/extensionPoints/menuItem";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
@@ -50,7 +52,7 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
 
   return (
     <Centered isScrollable>
-      <div className="PaneTitle">Inserting Button/Menu Item</div>
+      <div className={styles.title}>Inserting Button/Menu Item</div>
 
       <div className="text-left">
         <p>
