@@ -67,6 +67,8 @@ export class ParseDate extends Transformer {
     ["date"]
   );
 
+  // The brick returns date and time in locale, so it may not match the format that JSON Schema is expecting
+  // https://json-schema.org/understanding-json-schema/reference/string.html#dates-and-times
   override outputSchema: Schema = {
     type: "object",
     properties: {
@@ -79,11 +81,9 @@ export class ParseDate extends Transformer {
           },
           date: {
             type: "string",
-            format: "date",
           },
           time: {
             type: "string",
-            format: "time",
           },
           humanReadable: {
             type: "string",
@@ -99,11 +99,9 @@ export class ParseDate extends Transformer {
           },
           date: {
             type: "string",
-            format: "date",
           },
           time: {
             type: "string",
-            format: "time",
           },
           humanReadable: {
             type: "string",

@@ -19,6 +19,7 @@ import { getLocalISOString, ParseDate } from "@/blocks/transformers/parseDate";
 import { register, TimeZone, unregister } from "timezone-mock";
 import { BusinessError } from "@/errors";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { validateOutput } from "@/validators/generic";
 
 const refDate = "2021-12-07T06:17:09.258Z";
 
@@ -75,6 +76,9 @@ describe("ParseDate block", () => {
         humanReadable: "2021-12-10T03:00:00.000Z UTC (MockDate: GMT-0500)",
       },
     });
+
+    const validation = await validateOutput(brick.outputSchema, result);
+    expect(validation.valid).toBeTruthy();
   });
 });
 
@@ -129,4 +133,7 @@ test("Results snapshot - GMT input", async () => {
       humanReadable: "2021-12-09T03:00:00.000Z UTC (MockDate: GMT-0500)",
     },
   });
+
+  const validation = await validateOutput(brick.outputSchema, result);
+  expect(validation.valid).toBeTruthy();
 });
