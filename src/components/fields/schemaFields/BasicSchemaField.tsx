@@ -484,6 +484,8 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
       name={name}
       label={fieldLabel}
       description={fieldDescription}
+      error={error}
+      touched={touched}
       className={cx({ "mb-0": hideLabel })} // Remove bottom margin if we're already hiding the label
       as={TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
