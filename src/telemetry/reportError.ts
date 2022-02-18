@@ -48,7 +48,7 @@ async function _reportError(
 ): Promise<void> {
   const errorObject = selectError(error);
 
-  // Events are already natively logged by the browser
+  // Events are already natively logged to the console by the browser
   if (
     !(error instanceof ErrorEvent || error instanceof PromiseRejectionEvent)
   ) {

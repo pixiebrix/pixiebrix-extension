@@ -18,7 +18,7 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { BusinessError } from "@/errors";
+import { PropError } from "@/errors";
 import { isEmpty } from "lodash";
 
 export function getLocalISOString(date: Date): string {
@@ -121,11 +121,11 @@ export class ParseDate extends Transformer {
     const parsed = parseDate(date);
 
     if (isEmpty(date.trim())) {
-      throw new BusinessError("Date/time text is empty");
+      throw new PropError("Date/time text is empty", this.id, "date", date);
     }
 
     if (parsed == null) {
-      throw new BusinessError("Unrecognized date/time");
+      throw new PropError("Unrecognized date/time", this.id, "date", date);
     }
 
     const millisPerMinute = 60 * 1000;

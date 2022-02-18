@@ -424,18 +424,6 @@ export async function allSettledValues<T = unknown>(
     .map(({ value }) => value);
 }
 
-export async function allSettledRejections(
-  promises: Array<Promise<unknown>>
-): Promise<unknown[]> {
-  const settled = await Promise.allSettled(promises);
-  return settled
-    .filter(
-      (promise): promise is PromiseRejectedResult =>
-        promise.status === "rejected"
-    )
-    .map(({ reason }) => reason);
-}
-
 export function freshIdentifier(
   root: SafeString,
   identifiers: string[],
@@ -537,4 +525,14 @@ export async function waitFor<T>(
 export function isMac(): boolean {
   // https://stackoverflow.com/a/27862868/402560
   return navigator.platform.includes("Mac");
+}
+
+/** Tests a target string against a list of strings (full match) or regexes (can be mixed) */
+export function matchesAnyPattern(
+  target: string,
+  patterns: Array<string | RegExp>
+): boolean {
+  return patterns.some((pattern) =>
+    typeof pattern === "string" ? pattern === target : pattern.test(target)
+  );
 }
