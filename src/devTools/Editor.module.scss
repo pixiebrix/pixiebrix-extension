@@ -15,25 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/devTools/editor/panes/Pane.module.scss";
+.root {
+  display: flex;
+  height: inherit;
 
-import React from "react";
-import Centered from "@/devTools/editor/components/Centered";
-import IntroButtons from "./IntroButtons";
-
-const WelcomePane: React.FunctionComponent = () => (
-  <Centered isScrollable>
-    <div className={styles.title}>Welcome to the PixieBrix Page Editor!</div>
-
-    <div className="text-center">
-      <p>
-        Click <span className="text-info">Add</span> in the sidebar to edit the
-        page.
-      </p>
-
-      <IntroButtons />
-    </div>
-  </Centered>
-);
-
-export default WelcomePane;
+  & > * {
+    height: auto !important;
+  }
+}

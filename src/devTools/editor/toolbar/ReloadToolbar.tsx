@@ -102,7 +102,7 @@ const ReloadToolbar: React.FunctionComponent<{
 
   return (
     <>
-      <label className="AutoRun my-auto mr-1">
+      <label className="small my-auto mx-2 text-center">
         {isPanel ? "Auto-Render" : "Auto-Run"}
       </label>
       <ToggleField name="autoReload" />
