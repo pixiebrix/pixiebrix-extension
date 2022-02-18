@@ -166,7 +166,11 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   }, []);
 
   useEffect(() => {
-    if (isTemplateExpression(value) && isMustacheOnly(value.__value__)) {
+    if (
+      isTemplateExpression(value) &&
+      value.__type__ !== "mustache" &&
+      isMustacheOnly(value.__value__)
+    ) {
       setErrorStatic(
         "Mustache syntax is not supported, please use nunjucks template syntax"
       );
