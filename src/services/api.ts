@@ -99,7 +99,6 @@ export const appApi = createApi({
       }: ProfileResponse) => {
         if (id) {
           void updateUserData({
-            user: id,
             email,
             organizationId: organization?.id,
             telemetryOrganizationId: telemetryOrganization?.id,
