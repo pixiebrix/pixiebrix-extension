@@ -273,7 +273,7 @@ export async function recordError(
 
     // For noisy errors, don't record/submit telemetry unless the error prevented an extension point
     // from being installed or an extension to fail. (In that case, we'd have some context about the error).
-    const { pageName, ...extensionContext } = context;
+    const { pageName, ...extensionContext } = context ?? {};
     if (
       isEmpty(extensionContext) &&
       matchesAnyPattern(message, IGNORED_ERROR_PATTERNS)
