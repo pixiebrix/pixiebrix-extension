@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./AdvancedSettings.module.scss";
+
 import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
 import React, { useCallback } from "react";
@@ -102,7 +104,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
           </Form.Group>
         </Form>
       </Card.Body>
-      <Card.Footer>
+      <Card.Footer className={styles.footer}>
         <Button variant="info" onClick={reload}>
           Reload Extension
         </Button>
