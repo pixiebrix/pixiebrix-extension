@@ -31,15 +31,13 @@ export type RecipeConfiguration = {
   description?: string;
 };
 
-// @ts-expect-error TODO: The `id` property should be a RegistryId
-const recipeConfigurationSchema: yup.SchemaOf<RecipeConfiguration> = yup
-  .object()
-  .shape({
-    id: yup.string().matches(PACKAGE_REGEX, "Invalid registry id").required(),
-    name: yup.string().required(),
-    version: yup.string().required(),
-    description: yup.string(),
-  });
+// TODO: This should be yup.SchemaOf<RecipeConfiguration> but we can't set the `id` property to `RegistryId`
+const recipeConfigurationSchema = yup.object().shape({
+  id: yup.string().matches(PACKAGE_REGEX, "Invalid registry id").required(),
+  name: yup.string().required(),
+  version: yup.string().required(),
+  description: yup.string(),
+});
 
 const SAVE_AS_NEW_BLUEPRINT = "Save as New Blueprint";
 const UPDATE_BLUEPRINT = "Update Blueprint";
