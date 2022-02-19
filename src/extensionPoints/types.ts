@@ -24,6 +24,7 @@ export type ExtensionPointType =
   | "trigger"
   | "contextMenu"
   | "sidebar"
+  | "actionPanel" // Renamed to "sidebar"
   | "quickBar";
 
 export interface ExtensionPointDefinition {

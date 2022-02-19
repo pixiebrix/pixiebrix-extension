@@ -269,7 +269,7 @@ export function fromJS(
   config: ExtensionPointConfig<PanelDefinition>
 ): IExtensionPoint {
   const { type } = config.definition;
-  if (type !== "sidebar") {
+  if (type !== "sidebar" && type !== "actionPanel") {
     throw new Error(`Expected type=sidebar, got ${type}`);
   }
 

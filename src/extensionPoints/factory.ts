@@ -30,6 +30,7 @@ const TYPE_MAP = {
   trigger: deserializeTrigger,
   contextMenu: deserializeContextMenu,
   sidebar: deserializeSidebar,
+  actionPanel: deserializeSidebar,
   quickBar: deserializeQuickBar,
 };
 
