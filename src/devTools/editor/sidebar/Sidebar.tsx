@@ -140,7 +140,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
     process.env.ENVIRONMENT === "development" ||
     flagOn("page-editor-developer");
   const showBetaExtensionPoints = flagOn("page-editor-beta");
-  const groupByRecipe = flagOn("page-editor-beta");
+  const groupByRecipe = flagOn("page-editor-blueprints");
 
   const {
     tabState: { hasPermissions },

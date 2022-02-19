@@ -172,7 +172,7 @@ export const _InstalledPage: React.FunctionComponent<{
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Page Editor Quickstart Guide
+                      Page Editor Quick Start Guide
                     </a>{" "}
                     to create your own.
                   </>

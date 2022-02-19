@@ -83,7 +83,7 @@ const CreateBrickColumn: React.FunctionComponent = () => (
   <Col xs={6}>
     <h4>Create your Own</h4>
     <p>
-      Follow the Quickstart Guide in our documentation area to start creating
+      Follow the Quick Start Guide in our documentation area to start creating
       your own bricks in minutes.
     </p>
     <a
@@ -92,7 +92,7 @@ const CreateBrickColumn: React.FunctionComponent = () => (
       target="_blank"
       rel="noopener noreferrer"
     >
-      <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Open Quickstart Guide
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Open Quick Start
     </a>
   </Col>
 );

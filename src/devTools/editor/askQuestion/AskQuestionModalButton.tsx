@@ -55,7 +55,6 @@ const AskQuestionModalButton: React.VoidFunctionComponent = () => {
     <>
       <Button
         variant="info"
-        size="sm"
         onClick={() => {
           setShowModal(true);
         }}
