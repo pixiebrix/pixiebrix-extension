@@ -20,6 +20,7 @@ import { recordError } from "@/background/messenger/api";
 import { serializeError } from "serialize-error";
 import { selectError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
+import { getContextName } from "webext-detect-page";
 
 expectContext(
   "extension",
@@ -32,7 +33,13 @@ expectContext(
  * @param context optional context for error telemetry
  */
 function reportError(error: unknown, context?: MessageContext): void {
-  void _reportError(error, context).catch((reportingError) => {
+  // Add on the reporter side of the message. On the receiving side it would always be `background`
+  const extendedContext: MessageContext = {
+    ...context,
+    pageName: getContextName(),
+  };
+
+  void _reportError(error, extendedContext).catch((reportingError) => {
     console.error("An error occurred when reporting an error", {
       originalError: error,
       reportingError,
