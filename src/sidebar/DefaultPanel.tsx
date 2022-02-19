@@ -90,7 +90,7 @@ const NoAvailablePanelsContent: React.FunctionComponent = () => (
   </Container>
 );
 
-const DefaultActionPanel: React.FunctionComponent = () => {
+const DefaultPanel: React.FunctionComponent = () => {
   const extensions = useSelector(selectExtensions);
 
   return (
@@ -104,4 +104,4 @@ const DefaultActionPanel: React.FunctionComponent = () => {
   );
 };
 
-export default DefaultActionPanel;
+export default DefaultPanel;

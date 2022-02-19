@@ -16,7 +16,7 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { FormEntry, PanelEntry } from "@/actionPanel/types";
+import { FormEntry, PanelEntry } from "@/sidebar/types";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { UUID } from "@/core";
 

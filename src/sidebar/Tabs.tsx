@@ -16,8 +16,8 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { ActionPanelStore, PanelEntry } from "@/actionPanel/types";
-import { mapTabEventKey } from "@/actionPanel/actionPanelUtils";
+import { SidebarStore, PanelEntry } from "@/sidebar/types";
+import { mapTabEventKey } from "@/sidebar/utils";
 import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { UUID } from "@/core";
 import { reportEvent } from "@/telemetry/events";
@@ -26,15 +26,15 @@ import { Card, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import PanelBody from "@/actionPanel/PanelBody";
-import FormBody from "@/actionPanel/FormBody";
+import PanelBody from "@/sidebar/PanelBody";
+import FormBody from "@/sidebar/FormBody";
 
-type ActionPanelTabsProps = ActionPanelStore & {
+type SidebarTabsProps = SidebarStore & {
   activeKey: string;
   onSelectTab: (eventKey: string) => void;
 };
 
-const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
+const Tabs: React.FunctionComponent<SidebarTabsProps> = ({
   activeKey,
   panels,
   forms,
@@ -123,4 +123,4 @@ const ActionPanelTabs: React.FunctionComponent<ActionPanelTabsProps> = ({
   );
 };
 
-export default ActionPanelTabs;
+export default Tabs;

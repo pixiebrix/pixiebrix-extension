@@ -13,7 +13,7 @@ function validateRenderers(
   allBlocks: TypedBlockMap,
   extensionPointType: ExtensionPointType
 ) {
-  if (extensionPointType !== "actionPanel" && extensionPointType !== "panel") {
+  if (extensionPointType !== "sidebar" && extensionPointType !== "panel") {
     return;
   }
 

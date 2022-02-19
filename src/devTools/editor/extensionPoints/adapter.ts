@@ -27,7 +27,7 @@ import quickBarExtension from "@/devTools/editor/extensionPoints/quickBar";
 import triggerExtension from "@/devTools/editor/extensionPoints/trigger";
 import panelExtension from "@/devTools/editor/extensionPoints/panel";
 import contextMenuExtension from "@/devTools/editor/extensionPoints/contextMenu";
-import actionPanelExtension from "@/devTools/editor/extensionPoints/actionPanel";
+import sidebarExtension from "@/devTools/editor/extensionPoints/sidebar";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { hasInnerExtensionPoint } from "@/registry/internal";
 
@@ -35,7 +35,7 @@ export const ADAPTERS = new Map<ExtensionPointType, ElementConfig>([
   ["trigger", triggerExtension],
   ["panel", panelExtension],
   ["contextMenu", contextMenuExtension],
-  ["actionPanel", actionPanelExtension],
+  ["sidebar", sidebarExtension],
   ["menuItem", menuItemExtension],
   ["quickBar", quickBarExtension],
 ]);

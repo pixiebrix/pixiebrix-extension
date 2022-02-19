@@ -17,26 +17,26 @@
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
-import { hideForm, renderPanels, showForm } from "@/actionPanel/protocol";
-import { isBrowserActionPanel } from "@/chrome";
+import { hideForm, renderPanels, showForm } from "@/sidebar/protocol";
+import { isBrowserSidebar } from "@/chrome";
 
 // TODO: Use `expectContext("sidebar")` when it’s supported
-if (!isBrowserActionPanel()) {
-  throw new Error('This code can only run in the "actionPanel" context');
+if (!isBrowserSidebar()) {
+  throw new Error('This code can only run in the "sidebar" context');
 }
 
 declare global {
   interface MessengerMethods {
-    ACTION_PANEL_RENDER_PANELS: typeof renderPanels;
-    ACTION_PANEL_SHOW_FORM: typeof showForm;
-    ACTION_PANEL_HIDE_FORM: typeof hideForm;
+    SIDEBAR_RENDER_PANELS: typeof renderPanels;
+    SIDEBAR_SHOW_FORM: typeof showForm;
+    SIDEBAR_HIDE_FORM: typeof hideForm;
   }
 }
 
 export default function registerMessenger(): void {
   registerMethods({
-    ACTION_PANEL_RENDER_PANELS: renderPanels,
-    ACTION_PANEL_SHOW_FORM: showForm,
-    ACTION_PANEL_HIDE_FORM: hideForm,
+    SIDEBAR_RENDER_PANELS: renderPanels,
+    SIDEBAR_SHOW_FORM: showForm,
+    SIDEBAR_HIDE_FORM: hideForm,
   });
 }

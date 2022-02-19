@@ -36,7 +36,7 @@ import { Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/blocks/available";
 import { notifyError } from "@/contentScript/notify";
 import {
-  isActionPanelVisible,
+  isSidebarVisible,
   registerShowCallback,
   removeExtensionPoint,
   removeShowCallback,
@@ -44,7 +44,7 @@ import {
   ShowCallback,
   updateHeading,
   upsertPanel,
-} from "@/contentScript/actionPanel";
+} from "@/contentScript/sidebar";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
 import { BusinessError, getErrorMessage } from "@/errors";
@@ -58,19 +58,19 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
-export type ActionPanelConfig = {
+export type SidebarConfig = {
   heading: string;
   body: BlockConfig | BlockPipeline;
 };
 
-export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPanelConfig> {
+export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig> {
   readonly permissions: Permissions.Permissions = {};
 
   readonly showCallback: ShowCallback;
 
   protected constructor(metadata: Metadata, logger: Logger) {
     super(metadata, logger);
-    this.showCallback = ActionPanelExtensionPoint.prototype.run.bind(this);
+    this.showCallback = SidebarExtensionPoint.prototype.run.bind(this);
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -92,12 +92,12 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     ["heading", "body"]
   );
 
-  public get kind(): "actionPanel" {
-    return "actionPanel";
+  public get kind(): "sidebar" {
+    return "sidebar";
   }
 
   async getBlocks(
-    extension: ResolvedExtension<ActionPanelConfig>
+    extension: ResolvedExtension<SidebarConfig>
   ): Promise<IBlock[]> {
     return blockList(extension.config.body);
   }
@@ -114,7 +114,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
   private async runExtension(
     readerContext: ReaderOutput,
-    extension: ResolvedExtension<ActionPanelConfig>
+    extension: ResolvedExtension<SidebarConfig>
   ) {
     const extensionLogger = this.logger.childLogger(
       selectExtensionContext(extension)
@@ -173,15 +173,15 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
     if (this.extensions.length === 0) {
       console.debug(
-        "actionPanel extension point %s has no installed extensions",
+        "sidebar extension point %s has no installed extensions",
         this.id
       );
       return;
     }
 
-    if (!isActionPanelVisible()) {
+    if (!isSidebarVisible()) {
       console.debug(
-        "Skipping run for %s because actionPanel is not visible",
+        "Skipping run for %s because sidebar is not visible",
         this.id
       );
       return;
@@ -243,7 +243,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
 export type PanelDefinition = ExtensionPointDefinition;
 
-class RemotePanelExtensionPoint extends ActionPanelExtensionPoint {
+class RemotePanelExtensionPoint extends SidebarExtensionPoint {
   private readonly definition: PanelDefinition;
 
   public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
@@ -269,8 +269,8 @@ export function fromJS(
   config: ExtensionPointConfig<PanelDefinition>
 ): IExtensionPoint {
   const { type } = config.definition;
-  if (type !== "actionPanel") {
-    throw new Error(`Expected type=actionPanel, got ${type}`);
+  if (type !== "sidebar") {
+    throw new Error(`Expected type=sidebar, got ${type}`);
   }
 
   return new RemotePanelExtensionPoint(config);

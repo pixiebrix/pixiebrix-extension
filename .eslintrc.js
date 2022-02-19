@@ -3,7 +3,7 @@ const contexts = [
   "contentScript",
   "devTools",
   "options",
-  "actionPanel",
+  "sidebar",
   // "pageScript", // TODO: After Messenger migration
 ];
 

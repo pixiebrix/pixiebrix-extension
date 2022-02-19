@@ -23,19 +23,19 @@ import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef, UUID } from "@/core";
 import type {
-  ActionPanelStore,
+  SidebarStore,
   FormEntry,
   PanelEntry,
   RendererError,
-} from "@/actionPanel/types";
+} from "@/sidebar/types";
 import { RendererPayload } from "@/runtime/runtimeTypes";
-import { hideForm, renderPanels, showForm } from "@/actionPanel/messenger/api";
+import { hideForm, renderPanels, showForm } from "@/sidebar/messenger/api";
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/common";
 import pDefer from "p-defer";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_FRAME_ID;
-export const PANEL_HIDING_EVENT = "pixiebrix:hideActionPanel";
+export const PANEL_HIDING_EVENT = "pixiebrix:hideSidebar";
 
 let renderSequenceNumber = 0;
 
@@ -89,9 +89,9 @@ function restoreDocumentStyle(): void {
   $html.css("margin-right", originalMarginRight);
 }
 
-function insertActionPanel(): string {
+function insertSidebar(): string {
   const nonce = uuidv4();
-  const actionURL = browser.runtime.getURL("action.html");
+  const actionURL = browser.runtime.getURL("sidebar.html");
 
   $("<iframe>")
     .attr({
@@ -119,7 +119,7 @@ function insertActionPanel(): string {
  * Add the action panel to the page if it's not already on the page
  * @param callbacks callbacks to refresh the panels, leave blank to refresh all extension panels
  */
-export function showActionPanel(callbacks = extensionCallbacks): string {
+export function showSidebar(callbacks = extensionCallbacks): string {
   reportEvent("SidePanelShow");
 
   const container: HTMLElement = document.querySelector(
@@ -131,7 +131,7 @@ export function showActionPanel(callbacks = extensionCallbacks): string {
   if (!nonce) {
     console.debug("SidePanel is not on the page, attaching side panel");
     adjustDocumentStyle();
-    nonce = insertActionPanel();
+    nonce = insertSidebar();
   }
 
   // Run the extension points available on the page. If the action panel is already in the page, running
@@ -151,16 +151,16 @@ export function showActionPanel(callbacks = extensionCallbacks): string {
 }
 
 /**
- * Awaitable version of showActionPanel which does not reload existing panels if the action panel is already visible
- * @see showActionPanel
+ * Awaitable version of showSidebar which does not reload existing panels if the action panel is already visible
+ * @see showSidebar
  */
-export async function ensureActionPanel(): Promise<void> {
+export async function ensureSidebar(): Promise<void> {
   const show = pDefer();
 
-  if (!isActionPanelVisible()) {
+  if (!isSidebarVisible()) {
     registerShowCallback(show.resolve);
     try {
-      showActionPanel();
+      showSidebar();
       await show.promise;
     } finally {
       removeShowCallback(show.resolve);
@@ -168,7 +168,7 @@ export async function ensureActionPanel(): Promise<void> {
   }
 }
 
-export function hideActionPanel(): void {
+export function hideSidebar(): void {
   reportEvent("SidePanelHide");
   restoreDocumentStyle();
   $(PANEL_CONTAINER_SELECTOR).remove();
@@ -176,19 +176,19 @@ export function hideActionPanel(): void {
   window.dispatchEvent(new CustomEvent(PANEL_HIDING_EVENT));
 }
 
-export function toggleActionPanel(): string | void {
-  if (!isActionPanelVisible()) {
-    return showActionPanel();
+export function toggleSidebar(): string | void {
+  if (!isSidebarVisible()) {
+    return showSidebar();
   }
 
-  hideActionPanel();
+  hideSidebar();
 }
 
-export function isActionPanelVisible(): boolean {
+export function isSidebarVisible(): boolean {
   return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
 }
 
-export function getActionPanelStore(): ActionPanelStore {
+export function getSidebarStore(): SidebarStore {
   // `forms` state is managed by the action panel react component
   return { panels, forms: [] };
 }
@@ -196,10 +196,10 @@ export function getActionPanelStore(): ActionPanelStore {
 function renderPanelsIfVisible() {
   expectContext("contentScript");
 
-  if (isActionPanelVisible()) {
+  if (isSidebarVisible()) {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
-    void renderPanels({ tabId: "this", page: "/action.html" }, seqNum, panels);
+    void renderPanels({ tabId: "this", page: "/sidebar.html" }, seqNum, panels);
   } else {
     console.debug(
       "Skipping renderPanels because the action panel is not visible"
@@ -207,10 +207,10 @@ function renderPanelsIfVisible() {
   }
 }
 
-export function showActionPanelForm(entry: FormEntry) {
+export function showSidebarForm(entry: FormEntry) {
   expectContext("contentScript");
 
-  if (!isActionPanelVisible()) {
+  if (!isSidebarVisible()) {
     throw new Error(
       "Cannot add action panel form if the action panel is not visible"
     );
@@ -218,20 +218,20 @@ export function showActionPanelForm(entry: FormEntry) {
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-  void showForm({ tabId: "this", page: "/action.html" }, seqNum, entry);
+  void showForm({ tabId: "this", page: "/sidebar.html" }, seqNum, entry);
 }
 
-export function hideActionPanelForm(nonce: UUID) {
+export function hideSidebarForm(nonce: UUID) {
   expectContext("contentScript");
 
-  if (!isActionPanelVisible()) {
+  if (!isSidebarVisible()) {
     // Already hidden
     return;
   }
 
   const seqNum = renderSequenceNumber;
   renderSequenceNumber++;
-  void hideForm({ tabId: "this", page: "/action.html" }, seqNum, nonce);
+  void hideForm({ tabId: "this", page: "/sidebar.html" }, seqNum, nonce);
 }
 
 export function removeExtension(extensionId: string): void {

@@ -46,8 +46,8 @@ export type EntryType = "panel" | "form";
 export type PanelPayload = RendererPayload | RendererError | null;
 
 /**
- * A panel added by an extension attached to an ActionPanelExtensionPoint
- * @see ActionPanelExtensionPoint
+ * A panel added by an extension attached to an SidebarExtensionPoint
+ * @see SidebarExtensionPoint
  */
 export type PanelEntry = {
   /**
@@ -55,8 +55,8 @@ export type PanelEntry = {
    */
   extensionId: UUID;
   /**
-   * The actionPanel extension point
-   * @see ActionPanelExtensionPoint
+   * The sidebar extension point
+   * @see SidebarExtensionPoint
    */
   extensionPointId: RegistryId;
   /**
@@ -91,7 +91,7 @@ export type FormEntry = {
 /**
  * The store/state of entries currently added to the action panel
  */
-export type ActionPanelStore = {
+export type SidebarStore = {
   panels: PanelEntry[];
   forms: FormEntry[];
 };

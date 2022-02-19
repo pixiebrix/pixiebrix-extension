@@ -214,7 +214,7 @@ const EditTab: React.FC<{
 
   const [relevantBlocksToAdd] = useAsyncState(
     async () => {
-      const excludeType: BlockType = ["actionPanel", "panel"].includes(
+      const excludeType: BlockType = ["sidebar", "panel"].includes(
         extensionPointType
       )
         ? "effect"

@@ -15,17 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `registerMethod` in this file */
-import { getMethod } from "webext-messenger";
-import { isBrowserActionPanel } from "@/chrome";
+// Keep in order so precedence is preserved
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
+import "@/utils/layout.scss";
+import "@/sidebar.scss";
 
-// TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
-if (isBrowserActionPanel() && process.env.DEBUG) {
-  console.warn(
-    "This should not have been imported in the action panel. Use the API directly instead."
-  );
-}
+import "@/extensionContext";
 
-export const renderPanels = getMethod("ACTION_PANEL_RENDER_PANELS");
-export const showForm = getMethod("ACTION_PANEL_SHOW_FORM");
-export const hideForm = getMethod("ACTION_PANEL_HIDE_FORM");
+import registerMessenger from "@/sidebar/messenger/registration";
+import App from "@/sidebar/SidebarApp";
+import ReactDOM from "react-dom";
+import React from "react";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
+
+registerMessenger();
+registerContribBlocks();
+registerBuiltinBlocks();
+
+ReactDOM.render(<App />, document.querySelector("#container"));
