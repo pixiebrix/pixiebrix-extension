@@ -17,7 +17,10 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 import { useToasts } from "react-toast-notifications";
-import { getAdditionalPermissions } from "webext-additional-permissions";
+import {
+  getAdditionalPermissions,
+  dropOverlappingPermissions,
+} from "webext-additional-permissions";
 import browser, { Manifest } from "webextension-polyfill";
 import { sortBy } from "lodash";
 import { useAsyncEffect } from "use-async-effect";
@@ -55,7 +58,9 @@ const PermissionsSettings: React.FunctionComponent = () => {
   const [permissions, setPermissions] = useState<Permissions>();
 
   const refresh = useCallback(async () => {
-    setPermissions(await getAdditionalPermissions());
+    setPermissions(
+      dropOverlappingPermissions(await getAdditionalPermissions())
+    );
   }, [setPermissions]);
 
   const removeOrigin = useCallback(
