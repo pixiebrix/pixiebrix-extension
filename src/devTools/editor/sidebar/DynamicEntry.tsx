@@ -82,7 +82,7 @@ const DynamicEntry: React.FunctionComponent<{
         </span>
       )}
       {isDirty && (
-        <span className={cx(styles.icon, "text-danger")}>
+        <span className={styles.icon}>
           <UnsavedChangesIcon />
         </span>
       )}
