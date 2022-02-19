@@ -27,7 +27,7 @@ type FormBodyProps = {
 };
 
 /**
- * JSON Schema form for embedding in an action panel tab
+ * JSON Schema form for embedding in an sidebar tab
  * @param form the form definition and extension metadata
  * @constructor
  */

@@ -31,7 +31,7 @@ export type RendererError = {
 };
 
 /**
- * Entry types supported by the action panel.
+ * Entry types supported by the sidebar.
  *
  * Current supports panels and ephemeral forms. In the future we may also support button entries, etc.
  *
@@ -60,7 +60,7 @@ export type PanelEntry = {
    */
   extensionPointId: RegistryId;
   /**
-   * Heading for tab name in the action panel
+   * Heading for tab name in the sidebar
    */
   heading: string;
   /**
@@ -89,7 +89,7 @@ export type FormEntry = {
 };
 
 /**
- * The store/state of entries currently added to the action panel
+ * The store/state of entries currently added to the sidebar
  */
 export type SidebarStore = {
   panels: PanelEntry[];

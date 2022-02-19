@@ -116,7 +116,7 @@ function insertSidebar(): string {
 }
 
 /**
- * Add the action panel to the page if it's not already on the page
+ * Add the sidebar to the page if it's not already on the page
  * @param callbacks callbacks to refresh the panels, leave blank to refresh all extension panels
  */
 export function showSidebar(callbacks = extensionCallbacks): string {
@@ -134,7 +134,7 @@ export function showSidebar(callbacks = extensionCallbacks): string {
     nonce = insertSidebar();
   }
 
-  // Run the extension points available on the page. If the action panel is already in the page, running
+  // Run the extension points available on the page. If the sidebar is already in the page, running
   // all the callbacks ensures the content is up-to-date
   for (const callback of callbacks) {
     try {
@@ -151,7 +151,7 @@ export function showSidebar(callbacks = extensionCallbacks): string {
 }
 
 /**
- * Awaitable version of showSidebar which does not reload existing panels if the action panel is already visible
+ * Awaitable version of showSidebar which does not reload existing panels if the sidebar is already visible
  * @see showSidebar
  */
 export async function ensureSidebar(): Promise<void> {
@@ -189,7 +189,7 @@ export function isSidebarVisible(): boolean {
 }
 
 export function getSidebarStore(): SidebarStore {
-  // `forms` state is managed by the action panel react component
+  // `forms` state is managed by the sidebar react component
   return { panels, forms: [] };
 }
 
@@ -201,9 +201,7 @@ function renderPanelsIfVisible() {
     renderSequenceNumber++;
     void renderPanels({ tabId: "this", page: "/sidebar.html" }, seqNum, panels);
   } else {
-    console.debug(
-      "Skipping renderPanels because the action panel is not visible"
-    );
+    console.debug("Skipping renderPanels because the sidebar is not visible");
   }
 }
 
@@ -211,9 +209,7 @@ export function showSidebarForm(entry: FormEntry) {
   expectContext("contentScript");
 
   if (!isSidebarVisible()) {
-    throw new Error(
-      "Cannot add action panel form if the action panel is not visible"
-    );
+    throw new Error("Cannot add sidebar form if the sidebar is not visible");
   }
 
   const seqNum = renderSequenceNumber;
