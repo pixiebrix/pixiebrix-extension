@@ -160,13 +160,7 @@ export interface ElementConfig<
   readonly icon: IconProp;
 
   /**
-   * True if the element type should be considered "beta" functionality in the page editor. E.g., for showing a
-   * "beta" badge/indicator and/or warning the user that using this element is currently in beta
-   */
-  readonly beta?: boolean;
-
-  /**
-   * Feature flag that indicates whether or not the element type is enabled for the user. `undefined` to indicate
+   * Feature flag that indicates whether the element type is enabled for the user. `undefined` to indicate
    * all users should be able to create/edit the elements of this type.
    */
   readonly flag?: string;

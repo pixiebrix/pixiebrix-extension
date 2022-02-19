@@ -29,18 +29,36 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card } from "react-bootstrap";
+import { Card, Alert } from "react-bootstrap";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { resolveRecipe } from "@/registry/internal";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { isMac } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
 import { isEmpty } from "lodash";
-import { faChrome } from "@fortawesome/free-brands-svg-icons";
 import reportError from "@/telemetry/reportError";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
+
+const QuickBarAlert = () => (
+  <Alert variant="warning">
+    <FontAwesomeIcon icon={faExclamationTriangle} /> This blueprint contains a
+    Quick Bar action, but you have not{" "}
+    <a
+      href="chrome://extensions/shortcuts"
+      onClick={(event) => {
+        event.preventDefault();
+        void browser.tabs.create({ url: event.currentTarget.href });
+      }}
+    >
+      <u>configured your Quick Bar shortcut</u>.
+    </a>{" "}
+    Learn more about{" "}
+    <a href="https://docs.pixiebrix.com/quick-bar-setup">
+      <u>configuring keyboard shortcuts</u>
+    </a>
+  </Alert>
+);
 
 const ActivateBody: React.FunctionComponent<{
   blueprint: RecipeDefinition;
@@ -86,41 +104,21 @@ const ActivateBody: React.FunctionComponent<{
     <>
       <Card.Body className="mb-0 p-3">
         <Card.Title>Review Permissions & Activate</Card.Title>
-        <p className="text-info">
-          <FontAwesomeIcon icon={faInfoCircle} /> You can de-activate bricks at
-          any time on the{" "}
-          <Link to={isBlueprintsPageEnabled ? "/blueprints" : "/installed"}>
-            <u className="text-nowrap">
-              <FontAwesomeIcon icon={faCubes} />{" "}
-              {isBlueprintsPageEnabled
-                ? "Blueprints page"
-                : "Active Bricks page"}
-            </u>
-          </Link>
-        </p>
-        {hasQuickBar && !hasShortcut && (
+
+        {hasQuickBar && !hasShortcut ? (
+          <QuickBarAlert />
+        ) : (
           <p className="text-info">
-            <FontAwesomeIcon icon={faExclamationTriangle} /> This blueprint
-            contains one or more Quick Bar extensions, but you have not
-            configured a Quick Bar shortcut in Chrome. Go to{" "}
-            <a
-              href="chrome://extensions/shortcuts"
-              onClick={(event) => {
-                event.preventDefault();
-                void browser.tabs.create({ url: event.currentTarget.href });
-              }}
-            >
-              <FontAwesomeIcon icon={faChrome} />
-              <u>chrome://extensions/shortcuts</u>
-            </a>{" "}
-            to configure a shortcut. For now, the default is{" "}
-            <kbd style={{ fontFamily: "system" }}>
-              {isMac() ? "⌘K" : "Ctrl+K"}
-            </kbd>
-            .{" "}
-            <a href="https://docs.pixiebrix.com/quick-bar-setup">
-              <u>Learn more about extension shortcuts.</u>
-            </a>
+            <FontAwesomeIcon icon={faInfoCircle} /> You can de-activate bricks
+            at any time on the{" "}
+            <Link to={isBlueprintsPageEnabled ? "/blueprints" : "/installed"}>
+              <u className="text-nowrap">
+                <FontAwesomeIcon icon={faCubes} />{" "}
+                {isBlueprintsPageEnabled
+                  ? "Blueprints page"
+                  : "Active Bricks page"}
+              </u>
+            </Link>
           </p>
         )}
       </Card.Body>
