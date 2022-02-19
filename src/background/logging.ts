@@ -79,7 +79,10 @@ interface LogDB extends DBSchema {
   };
 }
 
-type IndexKey = keyof Except<MessageContext, "deploymentId" | "label">;
+type IndexKey = keyof Except<
+  MessageContext,
+  "deploymentId" | "label" | "pageName"
+>;
 const indexKeys: IndexKey[] = [
   "extensionId",
   "blueprintId",
@@ -269,9 +272,10 @@ export async function recordError(
     const message = getErrorMessage(error);
 
     // For noisy errors, don't record/submit telemetry unless the error prevented an extension point
-    // from being installed or an extension to fail. (In that case, we'd have some context about the error)
+    // from being installed or an extension to fail. (In that case, we'd have some context about the error).
+    const { pageName, ...extensionContext } = context;
     if (
-      isEmpty(context) &&
+      isEmpty(extensionContext) &&
       matchesAnyPattern(message, IGNORED_ERROR_PATTERNS)
     ) {
       console.debug("Ignoring error matching IGNORED_ERROR_PATTERNS", {
