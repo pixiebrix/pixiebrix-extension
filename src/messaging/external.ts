@@ -43,6 +43,8 @@ export const setExtensionAuth = lift(
   async (auth: TokenAuthData) => {
     const updated = await linkExtension(auth);
     if (updated) {
+      reportEvent("LinkExtension");
+
       // A hack to ensure the SET_EXTENSION_AUTH response flows to the front-end before the backend
       // page is reloaded, causing the message port to close.
       setTimeout(async () => {
@@ -96,7 +98,7 @@ type ActivateBlueprintOptions = {
   newTab?: boolean;
 
   /**
-   * The "source" page to associate with the activate. This affects the wording in the ActivateWizard
+   * The "source" page to associate with the activation. This affects the wording in the ActivateWizard
    * component
    */
   pageSource?: "marketplace";
