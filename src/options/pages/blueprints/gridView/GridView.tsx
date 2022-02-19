@@ -17,7 +17,13 @@
 
 import styles from "./GridView.module.scss";
 
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   BlueprintListViewProps,
   InstallableViewItem,
@@ -74,14 +80,12 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   // see: GridView.module.scss
   const minCardSizeInPixels = 215;
 
-  // This ref is required in order to update row height upon
-  // data change (assigning a unique itemKey does not work in this case)
-  // see https://github.com/bvaughn/react-window/issues/199#issuecomment-479957451
-  const listRef = useRef();
+  const [listKey, setListKey] = useState(uuidv4());
 
-  const columnCount = useMemo(() => {
-    return Math.floor(width / minCardSizeInPixels);
-  }, [width]);
+  const columnCount = useMemo(
+    () => Math.floor(width / minCardSizeInPixels),
+    [width]
+  );
 
   const expandedGridRows = useMemo(
     () => expandGridRows(rows, columnCount),
@@ -89,33 +93,38 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   );
 
   const getItemSize = useCallback(
-    (index: number) => {
+    (index: number): number => {
       const row = expandedGridRows[index];
-      return row.isGrouped ? 43 : minCardSizeInPixels;
+      return row.isGrouped ? 58 : minCardSizeInPixels;
     },
     [expandedGridRows]
   );
 
   useEffect(() => {
-    listRef.current.resetAfterIndex(0, false);
+    setListKey(uuidv4);
   }, [expandedGridRows, columnCount]);
 
   return (
-    <div>
+    <div key={listKey}>
       <List
         height={height}
         width={width}
         itemSize={getItemSize}
         itemCount={expandedGridRows.length}
-        ref={listRef}
       >
         {({ index, style }) => {
           const gridRow = expandedGridRows[index];
 
           if (gridRow.isGrouped) {
             tableInstance.prepareRow(gridRow);
+
             return (
-              <ListGroupHeader groupName={gridRow.groupByVal} style={style} />
+              <div style={style}>
+                <ListGroupHeader
+                  groupName={gridRow.groupByVal}
+                  style={{ height: "43px" }}
+                />
+              </div>
             );
           }
 

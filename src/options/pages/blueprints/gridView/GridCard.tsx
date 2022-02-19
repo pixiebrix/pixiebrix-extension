@@ -27,12 +27,10 @@ import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 
 type GridCardProps = {
   installableItem: InstallableViewItem;
-  //style: unknown;
 };
 
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   installableItem,
-  //style,
 }) => {
   const { name, updatedAt, sharing, icon } = installableItem;
 

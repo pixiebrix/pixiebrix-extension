@@ -58,7 +58,7 @@ function useInstallableActions(installable: Installable) {
     data: { scope },
   } = useGetAuthQuery();
 
-  const reinstall = () => {
+  const reinstall = useCallback(() => {
     if (!isExtension(installable) || !installable._recipe) {
       return;
     }
@@ -70,9 +70,9 @@ function useInstallableActions(installable: Installable) {
         )}?reinstall=1`
       )
     );
-  };
+  }, [dispatch, installable]);
 
-  const activate = () => {
+  const activate = useCallback(() => {
     if (!isExtension(installable)) {
       dispatch(
         push(
@@ -83,9 +83,9 @@ function useInstallableActions(installable: Installable) {
     }
 
     dispatch(push(`/extensions/install/${installable.id}`));
-  };
+  }, [dispatch, installable]);
 
-  const viewShare = () => {
+  const viewShare = useCallback(() => {
     let shareContext = null;
 
     if (isBlueprint(installable) || isShared(installable)) {
@@ -99,7 +99,7 @@ function useInstallableActions(installable: Installable) {
     }
 
     dispatch(installedPageSlice.actions.setShareContext(shareContext));
-  };
+  }, [dispatch, installable, scope]);
 
   const deleteExtension = useUserAction(
     async () => {
@@ -132,7 +132,7 @@ function useInstallableActions(installable: Installable) {
     [modals]
   );
 
-  const uninstall = () => {
+  const uninstall = useCallback(() => {
     if (!isExtension(installable)) {
       return;
     }
@@ -149,9 +149,9 @@ function useInstallableActions(installable: Installable) {
     notify.success(`Removed brick ${getLabel(installable)}`, {
       event: "ExtensionRemove",
     });
-  };
+  }, [dispatch, installable, notify]);
 
-  const viewLogs = () => {
+  const viewLogs = useCallback(() => {
     if (!isExtension(installable)) {
       return;
     }
@@ -162,7 +162,7 @@ function useInstallableActions(installable: Installable) {
         messageContext: selectExtensionContext(installable),
       })
     );
-  };
+  }, [dispatch, installable]);
 
   const exportBlueprint = useCallback(() => {
     const extension = isExtension(installable) ? installable : null;

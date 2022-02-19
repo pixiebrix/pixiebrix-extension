@@ -25,7 +25,7 @@ import {
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
+import React, { useMemo } from "react";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { InstallableViewItem } from "./blueprintsTypes";
 import { useGetAuthQuery } from "@/services/api";
@@ -45,92 +45,92 @@ const BlueprintActions: React.FunctionComponent<{
     deleteExtension,
     reinstall,
   } = useInstallableActions(installable);
-  const isCloudExtension =
-    sharing.source.type === "Personal" && status !== "Active";
+  const isCloudExtension = useMemo(
+    () => sharing.source.type === "Personal" && status !== "Active",
+    [sharing.source.type, status]
+  );
 
   return (
-    <>
-      <EllipsisMenu
-        items={[
-          ...(viewShare
-            ? [
-                {
-                  title: (
-                    <>
-                      <FontAwesomeIcon icon={faShare} /> Share
-                    </>
-                  ),
-                  action: viewShare,
-                  hide: isCloudExtension,
-                },
-              ]
-            : []),
-          {
-            title: (
-              <>
-                <FontAwesomeIcon icon={faDownload} /> Export
-              </>
-            ),
-            action: exportBlueprint,
-          },
-          {
-            title: (
-              <>
-                <FontAwesomeIcon icon={faList} /> View Logs
-              </>
-            ),
-            action: viewLogs,
-            hide: status !== "Active",
-          },
-          ...(reinstall
-            ? [
-                {
-                  title: (
-                    <>
-                      {hasUpdate ? (
-                        <span className="text-info">
-                          <FontAwesomeIcon icon={faSyncAlt} /> Update
-                        </span>
-                      ) : (
-                        <>
-                          <FontAwesomeIcon icon={faSyncAlt} /> Reactivate
-                        </>
-                      )}
-                    </>
-                  ),
-                  action: reinstall,
-                  // Managed extensions are updated via the deployment banner
-                  hide: sharing.source.type === "Deployment",
-                },
-              ]
-            : []),
-          {
-            title: (
-              <>
-                <FontAwesomeIcon icon={faTimes} /> Uninstall
-              </>
-            ),
-            action: uninstall,
-            // TODO: shift all hide logic to useInstallableActions
-            hide:
-              status !== "Active" ||
-              (sharing.source.type === "Deployment" &&
-                flags.includes("restricted-uninstall")),
-            className: "text-danger",
-          },
-          {
-            title: (
-              <span className="text-danger">
-                <FontAwesomeIcon icon={faTrash} /> Delete
-              </span>
-            ),
-            action: deleteExtension,
-            hide: !isCloudExtension,
-            className: "text-danger",
-          },
-        ]}
-      />
-    </>
+    <EllipsisMenu
+      items={[
+        ...(viewShare
+          ? [
+              {
+                title: (
+                  <>
+                    <FontAwesomeIcon icon={faShare} /> Share
+                  </>
+                ),
+                action: viewShare,
+                hide: isCloudExtension,
+              },
+            ]
+          : []),
+        {
+          title: (
+            <>
+              <FontAwesomeIcon icon={faDownload} /> Export
+            </>
+          ),
+          action: exportBlueprint,
+        },
+        {
+          title: (
+            <>
+              <FontAwesomeIcon icon={faList} /> View Logs
+            </>
+          ),
+          action: viewLogs,
+          hide: status !== "Active",
+        },
+        ...(reinstall
+          ? [
+              {
+                title: (
+                  <>
+                    {hasUpdate ? (
+                      <span className="text-info">
+                        <FontAwesomeIcon icon={faSyncAlt} /> Update
+                      </span>
+                    ) : (
+                      <>
+                        <FontAwesomeIcon icon={faSyncAlt} /> Reactivate
+                      </>
+                    )}
+                  </>
+                ),
+                action: reinstall,
+                // Managed extensions are updated via the deployment banner
+                hide: sharing.source.type === "Deployment",
+              },
+            ]
+          : []),
+        {
+          title: (
+            <>
+              <FontAwesomeIcon icon={faTimes} /> Uninstall
+            </>
+          ),
+          action: uninstall,
+          // TODO: shift all hide logic to useInstallableActions
+          hide:
+            status !== "Active" ||
+            (sharing.source.type === "Deployment" &&
+              flags.includes("restricted-uninstall")),
+          className: "text-danger",
+        },
+        {
+          title: (
+            <span className="text-danger">
+              <FontAwesomeIcon icon={faTrash} /> Delete
+            </span>
+          ),
+          action: deleteExtension,
+          hide: !isCloudExtension,
+          className: "text-danger",
+        },
+      ]}
+    />
   );
 };
 

@@ -29,7 +29,6 @@ const ListGroupHeader: React.VoidFunctionComponent<{
       <span>
         <FontAwesomeIcon icon={faAngleDown} /> {groupName}
       </span>
-      <span>3 grouped results</span>
     </div>
   );
 };
