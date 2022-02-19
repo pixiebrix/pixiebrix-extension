@@ -44,7 +44,7 @@ export type RenderStatus = (state: { status: string }) => ReactElement;
 
 type FormProps = {
   initialValues: FormikValues;
-  validationSchema: yup.ObjectSchema;
+  validationSchema: yup.AnyObjectSchema;
   validateOnMount?: boolean;
   renderBody?: RenderBody;
   renderSubmit?: RenderSubmit;

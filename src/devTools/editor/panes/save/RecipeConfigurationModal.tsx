@@ -31,13 +31,11 @@ export type RecipeConfiguration = {
   description?: string;
 };
 
-const recipeConfigurationSchema: yup.ObjectSchema<RecipeConfiguration> = yup
+// @ts-expect-error TODO: The `id` property should be a RegistryId
+const recipeConfigurationSchema: yup.SchemaOf<RecipeConfiguration> = yup
   .object()
   .shape({
-    id: yup
-      .string<RegistryId>()
-      .matches(PACKAGE_REGEX, "Invalid registry id")
-      .required(),
+    id: yup.string().matches(PACKAGE_REGEX, "Invalid registry id").required(),
     name: yup.string().required(),
     version: yup.string().required(),
     description: yup.string(),
