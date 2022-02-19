@@ -17,12 +17,14 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 import { useToasts } from "react-toast-notifications";
-import { getAdditionalPermissions } from "webext-additional-permissions";
+import {
+  getAdditionalPermissions,
+  dropOverlappingPermissions,
+} from "webext-additional-permissions";
 import browser, { Manifest } from "webextension-polyfill";
 import { sortBy } from "lodash";
 import { useAsyncEffect } from "use-async-effect";
 import { Button, Card, ListGroup } from "react-bootstrap";
-import { patternToRegex } from "webext-patterns";
 
 type OptionalPermission = Manifest.OptionalPermission;
 type Permissions = chrome.permissions.Permissions;
@@ -32,9 +34,7 @@ const PermissionRow: React.FunctionComponent<{
   remove: (value: string) => void;
 }> = ({ value, remove }) => (
   <ListGroup.Item className="d-flex">
-    <div className="flex-grow-1 align-self-center">
-      {value === "*://*/*" ? "Every website" : value}
-    </div>
+    <div className="flex-grow-1 align-self-center">{value}</div>
     <div className="align-self-center">
       <Button
         variant="danger"
@@ -58,35 +58,6 @@ const PermissionsSettings: React.FunctionComponent = () => {
   const [permissions, setPermissions] = useState<Permissions>();
 
   const refresh = useCallback(async () => {
-    function dropOverlappingPermissions({
-      origins,
-      permissions,
-    }: chrome.permissions.Permissions): chrome.permissions.Permissions {
-      const result: chrome.permissions.Permissions = {};
-      if (origins) {
-        if (origins.includes("<all_urls>")) {
-          result.origins = ["<all_urls>"];
-        } else if (origins.includes("*://*/*")) {
-          result.origins = ["*://*/*"];
-        } else {
-          result.origins = origins.filter(
-            (possibleSubset) =>
-              !origins.some(
-                (possibleSuperset) =>
-                  possibleSubset !== possibleSuperset &&
-                  patternToRegex(possibleSuperset).test(possibleSubset)
-              )
-          );
-        }
-      }
-
-      if (permissions) {
-        result.permissions = [...permissions];
-      }
-
-      return result;
-    }
-
     setPermissions(
       dropOverlappingPermissions(await getAdditionalPermissions())
     );
