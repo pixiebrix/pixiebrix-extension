@@ -48,7 +48,7 @@ export const DescriptionField: React.VoidFunctionComponent<
 
       return description;
     },
-    [],
+    [description],
     ""
   );
 
