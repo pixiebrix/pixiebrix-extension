@@ -24,7 +24,7 @@ import {
 } from "@/services/errors";
 import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
-import { AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import {
   DEFAULT_SERVICE_URL,
@@ -34,6 +34,7 @@ import {
 import { getReasonPhrase } from "http-status-codes";
 import { isAbsoluteUrl } from "@/utils";
 import urljoin from "url-join";
+import { isEmpty } from "lodash";
 
 // eslint-disable-next-line prefer-destructuring -- process.env variable
 const DEBUG = process.env.DEBUG;
@@ -83,6 +84,21 @@ export async function isAppRequest(
 }
 
 /**
+ * Try to select the most user-friendly error message for an Axios response
+ */
+function selectResponseErrorMessage(response: AxiosResponse): string {
+  if (!isEmpty(response.data?.message)) {
+    return response.data?.message;
+  }
+
+  if (!isEmpty(response.statusText)) {
+    return response.statusText;
+  }
+
+  return safeGuessStatusText(response.status) ?? "Unknown error";
+}
+
+/**
  * Decorate an AxiosError with additional debugging information
  * @param maybeAxiosError
  */
@@ -117,7 +133,7 @@ export async function enrichRequestError(
 
   if (maybeAxiosError.response) {
     return new RemoteServiceError(
-      maybeAxiosError.response.statusText ?? maybeAxiosError.message,
+      selectResponseErrorMessage(maybeAxiosError.response),
       maybeAxiosError
     );
   }
