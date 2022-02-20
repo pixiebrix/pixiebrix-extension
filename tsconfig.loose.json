@@ -1,0 +1,7 @@
+// This is the configuration used by the build
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strictNullChecks": false
+  }
+}
