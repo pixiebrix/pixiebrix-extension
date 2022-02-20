@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DateTime } from "luxon";
+import { formatDistanceToNowStrict } from "date-fns";
 
 export function timeSince(dateIso: string): string {
-  return DateTime.fromISO(dateIso).toRelative();
+  return formatDistanceToNowStrict(new Date(dateIso), {
+    addSuffix: true /* "ago" */,
+  });
 }
