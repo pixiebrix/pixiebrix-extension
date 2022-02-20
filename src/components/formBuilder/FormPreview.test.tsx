@@ -71,6 +71,7 @@ describe("FormPreview", () => {
   });
 
   testItRenders({
+    isAsync: true,
     testName: "it renders markdown in description",
     Component: FormPreview,
     props: {
