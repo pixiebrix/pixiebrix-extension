@@ -29,11 +29,15 @@ const merge = mergeWithCustomize({
 
 const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
 
+/** @type import("webpack").Configuration */
 const shared = {
   stats: {
     preset: "errors-warnings",
-    entrypoints: true,
+    entrypoints: process.argv.includes("production"),
     timings: true,
+  },
+  watchOptions: {
+    aggregateTimeout: 200,
   },
   resolve: {
     alias: {
@@ -116,4 +120,7 @@ for (const [from, [to]] of Object.entries(tsconfig.compilerOptions.paths)) {
   );
 }
 
+/**
+ * @param {import("webpack").Configuration} baseConfig
+ */
 module.exports = (baseConfig) => merge(shared, baseConfig);

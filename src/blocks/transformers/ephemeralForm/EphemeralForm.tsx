@@ -47,7 +47,9 @@ const ModalLayout: React.FC = ({ children }) => (
   </div>
 );
 
-const PanelLayout: React.FC = ({ children }) => <div>{children}</div>;
+const PanelLayout: React.FC = ({ children }) => (
+  <div className="p-3">{children}</div>
+);
 
 /**
  * @see FormTransformer

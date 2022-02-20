@@ -33,6 +33,7 @@ $logoSize: 31px;
 
   &.exitActive {
     position: absolute; // Take out of the flow during the transition
+    height: 100vh !important;
   }
 
   label {

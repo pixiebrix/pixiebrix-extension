@@ -187,6 +187,16 @@ export interface Message<
   meta?: TMeta;
 }
 
+// `ContextName`s from webext-detect-page
+export type ContextName =
+  | "contentScript"
+  | "background"
+  | "options"
+  | "devToolsPage"
+  | "extension"
+  | "web"
+  | "unknown";
+
 /**
  * Log event metadata for the extensions internal logging infrastructure.
  * @see Logger
@@ -204,6 +214,7 @@ export type MessageContext = {
   readonly extensionId?: UUID;
   readonly serviceId?: RegistryId;
   readonly authId?: UUID;
+  readonly pageName?: ContextName;
 };
 
 export type SerializedError = Primitive | ErrorObject;

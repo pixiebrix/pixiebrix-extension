@@ -51,7 +51,7 @@ const OnboardingContent: React.FunctionComponent = () => (
       <Col>
         <h4 className="display-6">Create your Own</h4>
         <p>
-          Follow the Quickstart Guide to start creating your own bricks in
+          Follow the Quick Start Guide to start creating your own bricks in
           minutes.
         </p>
         <a
@@ -60,7 +60,7 @@ const OnboardingContent: React.FunctionComponent = () => (
           target="_blank"
           rel="noopener noreferrer"
         >
-          Open Quickstart Guide&nbsp;
+          Open Quick Start Guide&nbsp;
           <FontAwesomeIcon icon={faExternalLinkAlt} />
         </a>
       </Col>
