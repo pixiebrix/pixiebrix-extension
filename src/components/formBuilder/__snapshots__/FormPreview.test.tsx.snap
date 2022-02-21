@@ -130,7 +130,15 @@ exports[`FormPreview it renders simple schema 1`] = `
       <div
         class="field-description"
         id="root-description"
-      />
+      >
+        <div>
+          <p>
+            A form example.
+          </p>
+          
+
+        </div>
+      </div>
       <div
         class="p-0 container-fluid"
       >
