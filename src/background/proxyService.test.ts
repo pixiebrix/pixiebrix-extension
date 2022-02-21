@@ -227,7 +227,7 @@ describe("proxy service requests", () => {
 
       expect((cause as RemoteServiceError).error.response.status).toEqual(500);
       expect((cause as RemoteServiceError).message).toEqual(
-        "Request failed with status code 500"
+        "Internal Server Error"
       );
     }
   });

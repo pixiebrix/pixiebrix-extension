@@ -25,6 +25,7 @@ import {
   useOptionsResolver,
 } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors";
+import useReportError from "@/hooks/useReportError";
 
 type RemoteMultiSelectWidgetProps = {
   id?: string;
@@ -52,6 +53,7 @@ const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProps> = ({
     config,
     optionsFactory
   );
+  useReportError(loadError);
 
   if (loadError) {
     return (
