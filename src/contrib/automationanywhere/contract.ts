@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema } from "@/core";
+import { validateRegistryId } from "@/types/helpers";
+
+export const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
+  "automation-anywhere/control-room"
+);
 
 export type ListResponse<TData> = {
   page: {
@@ -28,11 +32,20 @@ export type ListResponse<TData> = {
 
 export const BOT_TYPE = "application/vnd.aa.taskbot";
 
+type VariableType = "STRING" | "NUMBER" | "BOOLEAN";
+
 export type Variable = {
   name: string;
   input: boolean;
-  type: "STRING";
+  output: boolean;
+  type: VariableType;
   description: string;
+  defaultValue?: {
+    type: VariableType;
+    string: string;
+    number: string;
+    boolean: string;
+  };
 };
 
 export type Interface = {
@@ -57,35 +70,40 @@ export type Device = {
   nickname: string;
 };
 
+export type DevicePool = {
+  id: string;
+  name: string;
+  status: string;
+  deviceCount: string;
+};
+
+export type RunAsUser = {
+  id: string;
+  username: string;
+};
+
 export type DeployResponse = {
   // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-deploy.html
   automationId: string;
   deploymentId: string;
 };
 
+export const FAILURE_STATUSES = new Set([
+  // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-progress.html
+  "DEPLOY_FAILED",
+  "RUN_FAILED",
+  "RUN_ABORTED",
+  "RUN_TIMED_OUT",
+]);
+
 export type Activity = {
   status: string;
   outputVariables?: Record<
     string,
     {
-      string: string;
+      string?: string;
+      number?: number;
+      boolean?: boolean;
     }
   >;
 };
-
-export function interfaceToInputSchema(botInterface: Interface): Schema {
-  return {
-    type: "object",
-    properties: Object.fromEntries(
-      botInterface.variables
-        .filter((variable) => variable.input)
-        .map((variable) => [
-          variable.name,
-          {
-            type: "string",
-            description: variable.description,
-          },
-        ])
-    ),
-  };
-}

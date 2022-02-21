@@ -161,7 +161,7 @@ export function useDevConnection(): Context {
           ...initialFrameState,
           navSequence: uuidv4(),
           error:
-            "The connection with the rest of the extension was lost. The editor should be reloaded.",
+            "The connection to the PixieBrix browser extension was lost. Reload the Page Editor.",
         });
       }
     }, 500);
