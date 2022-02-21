@@ -40,7 +40,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@reduxjs/toolkit": "^1.6.0",
-    "@rjsf/bootstrap-4": "^3.1.0",
+    "@rjsf/bootstrap-4": "^4.0.0",
     "@rjsf/core": "^3.0.0",
     "@uipath/robot": "1.2.5",
     "@vespaiach/axios-fetch-adapter": "^0.1.1",
