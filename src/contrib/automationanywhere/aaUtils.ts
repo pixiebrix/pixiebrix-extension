@@ -20,12 +20,14 @@ import { Schema } from "@/core";
 import {
   Activity,
   Interface,
+  OutputValue,
   Variable,
 } from "@/contrib/automationanywhere/contract";
 import { JSONSchema7Type } from "json-schema";
 import { UnknownObject } from "@/types";
 import { mapValues } from "lodash";
 import { BusinessError } from "@/errors";
+import { Primitive } from "type-fest";
 
 const COMMUNITY_HOSTNAME_REGEX =
   /^community\d+\..*\.automationanywhere\.digital$/;
@@ -115,11 +117,11 @@ export function mapBotInput(data: UnknownObject) {
       }
 
       case "number": {
-        return { type: "NUMBER", number: value };
+        return { type: "NUMBER", number: String(value) };
       }
 
       case "boolean": {
-        return { type: "BOOLEAN", boolean: value };
+        return { type: "BOOLEAN", boolean: String(value) };
       }
 
       default: {
@@ -129,10 +131,29 @@ export function mapBotInput(data: UnknownObject) {
   });
 }
 
-export function selectBotOutput(activity: Activity) {
-  return mapValues(
-    activity.outputVariables ?? {},
-    // FIXME: rewrite for actual output format
-    (variable) => variable.string ?? variable.number ?? variable.boolean
+export function mapBotOutput(value: OutputValue): Primitive {
+  switch (value.type) {
+    case "STRING": {
+      return value.string;
+    }
+
+    case "NUMBER": {
+      return Number(value.number);
+    }
+
+    case "BOOLEAN": {
+      return boolean(value.boolean);
+    }
+
+    default: {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+      throw new BusinessError(`Type not supported by PixieBrix: ${value.type}`);
+    }
+  }
+}
+
+export function selectBotOutput(activity: Activity): Record<string, Primitive> {
+  return mapValues(activity.botOutVariables?.values ?? {}, (value) =>
+    mapBotOutput(value)
   );
 }

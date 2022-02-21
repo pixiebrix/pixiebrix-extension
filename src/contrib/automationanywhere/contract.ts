@@ -96,14 +96,16 @@ export const FAILURE_STATUSES = new Set([
   "RUN_TIMED_OUT",
 ]);
 
+export type OutputValue = {
+  type: VariableType;
+  string: string;
+  number: string;
+  boolean: string;
+};
+
 export type Activity = {
   status: string;
-  outputVariables?: Record<
-    string,
-    {
-      string?: string;
-      number?: number;
-      boolean?: boolean;
-    }
-  >;
+  botOutVariables?: {
+    values: Record<string, OutputValue>;
+  };
 };

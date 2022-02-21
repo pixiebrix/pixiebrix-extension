@@ -243,15 +243,23 @@ export async function pollEnterpriseResult({
       }
     );
 
-    if (activityList.list.length > 0) {
-      logger.error(`Multiple activities found for deployment: ${deploymentId}`);
+    if (activityList.list.length > 1) {
+      logger.error(
+        `Multiple activities found for deployment: ${deploymentId}`,
+        {
+          deploymentId,
+          activities: activityList.list,
+        }
+      );
       throw new BusinessError(
         "Multiple activity instances found for automation"
       );
     }
 
     if (activityList.list.length === 0) {
-      logger.error(`Activity not found for deployment: ${deploymentId}`);
+      logger.error(`Activity not found for deployment: ${deploymentId}`, {
+        deploymentId,
+      });
       throw new BusinessError("Activity not found for deployment");
     }
 

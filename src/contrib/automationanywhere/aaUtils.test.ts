@@ -52,6 +52,19 @@ describe("interfaceToInputSchema", () => {
           },
         },
         {
+          name: "in_Boolean",
+          input: true,
+          output: false,
+          description: "The description",
+          type: "BOOLEAN",
+          defaultValue: {
+            type: "BOOLEAN",
+            string: "",
+            number: "",
+            boolean: "true",
+          },
+        },
+        {
           name: "out_Number",
           input: false,
           output: true,
@@ -80,8 +93,13 @@ describe("interfaceToInputSchema", () => {
           description: "The description",
           default: 42,
         },
+        in_Boolean: {
+          type: "boolean",
+          description: "The description",
+          default: true,
+        },
       },
-      required: ["in_String", "in_Number"],
+      required: ["in_String", "in_Number", "in_Boolean"],
     });
   });
 });
@@ -90,15 +108,26 @@ describe("selectBotOutput", () => {
   test("select outputs", () => {
     const activity: Activity = {
       status: "COMPLETED",
-      outputVariables: {
-        out_String: {
-          string: "foo",
-        },
-        out_Number: {
-          number: 42,
-        },
-        out_Boolean: {
-          boolean: true,
+      botOutVariables: {
+        values: {
+          out_String: {
+            type: "STRING",
+            string: "foo",
+            number: "",
+            boolean: "",
+          },
+          out_Number: {
+            type: "NUMBER",
+            string: "",
+            number: "42",
+            boolean: "",
+          },
+          out_Boolean: {
+            type: "BOOLEAN",
+            boolean: "true",
+            string: "",
+            number: "",
+          },
         },
       },
     };
