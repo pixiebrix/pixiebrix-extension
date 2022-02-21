@@ -90,7 +90,7 @@
     "marked": "^4.0.3",
     "mustache": "^4.2.0",
     "nunjucks": "^3.2.3",
-    "object-hash": "^2.2.0",
+    "object-hash": "^3.0.0",
     "one-mutation": "^2.0.0",
     "p-defer": "^4.0.0",
     "p-memoize": "^6.0.1",
