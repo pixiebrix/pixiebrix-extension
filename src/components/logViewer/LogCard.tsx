@@ -28,14 +28,17 @@ import { logActions } from "./logSlice";
 import { LogRootState } from "./logViewerTypes";
 import { ThunkDispatch } from "@reduxjs/toolkit";
 
-type LogCardProps = {
-  initialLevel?: MessageLevel;
-  perPage?: number;
+type ConnectedProps = {
   isLoading: boolean;
   availableEntries: LogEntry[];
   entries: LogEntry[];
   refreshEntries: () => void;
   clearAvailableEntries: () => void;
+};
+
+type LogCardProps = ConnectedProps & {
+  initialLevel?: MessageLevel;
+  perPage?: number;
 };
 
 export const LogCard: React.FunctionComponent<LogCardProps> = ({
