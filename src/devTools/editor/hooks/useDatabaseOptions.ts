@@ -15,14 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetDatabasesQuery, useGetOrganizationsQuery } from "@/services/api";
+import { Database, Organization } from "@/types/contract";
 import { useMemo } from "react";
 
-const useDatabaseOptions = () => {
+export type UseQuery<TData> = () => {
+  data: TData;
+  isLoading: boolean;
+};
+
+type Config = {
+  useDatabasesQuery: UseQuery<Array<Database>>;
+  useOrganizationsQuery: UseQuery<Array<Organization>>;
+};
+
+const useDatabaseOptions = ({
+  useDatabasesQuery,
+  useOrganizationsQuery,
+}: Config) => {
   const { data: databases, isLoading: isLoadingDatabases } =
-    useGetDatabasesQuery();
+    useDatabasesQuery();
   const { data: organizations, isLoading: isLoadingOrganizations } =
-    useGetOrganizationsQuery();
+    useOrganizationsQuery();
 
   const isLoading = isLoadingDatabases || isLoadingOrganizations;
 

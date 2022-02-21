@@ -18,11 +18,14 @@
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
+import { connect } from "react-redux";
 import { Expression, Schema, UUID } from "@/core";
 import { joinName } from "@/utils";
 import { partial } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
-import useDatabaseOptions from "@/devTools/editor/hooks/useDatabaseOptions";
+import useDatabaseOptions, {
+  UseQuery,
+} from "@/devTools/editor/hooks/useDatabaseOptions";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import DatabaseCreateModal from "./DatabaseCreateModal";
 import AppServiceField from "@/components/fields/schemaFields/AppServiceField";
@@ -32,9 +35,8 @@ import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 import { isExpression } from "@/runtime/mapArgs";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
-import { appApi } from "@/services/api";
-import { RootState } from "@/devTools/store";
-import { connect, ConnectedProps } from "react-redux";
+import { Database, Organization } from "@/types/contract";
+import { useGetDatabasesQuery, useGetOrganizationsQuery } from "@/services/api";
 
 const keySchema: Schema = {
   type: "string",
@@ -75,19 +77,22 @@ export type DatabaseGetPutOptionsProps = {
   configKey: string;
 };
 
-type DatabaseOptionsConnectedProps = ConnectedProps<typeof connector>;
-type DatabaseOptionsProps = DatabaseGetPutOptionsProps &
-  DatabaseOptionsConnectedProps & {
+type ConnectedProps = {
+  useDatabasesQuery: UseQuery<Database[]>;
+  useOrganizationsQuery: UseQuery<Organization[]>;
+};
+
+type DatabaseOptionsProps = ConnectedProps &
+  DatabaseGetPutOptionsProps & {
     showValueField: boolean;
   };
 
-const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
+export const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
   name,
   configKey,
   showValueField,
-  databaseOptions,
-  isLoadingDatabaseOptions,
-  loadDatabases,
+  useDatabasesQuery,
+  useOrganizationsQuery,
 }) => {
   const configName = partial(joinName, name, configKey);
   const databaseFieldName = configName("databaseId");
@@ -97,10 +102,11 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
     UUID | Expression
   >(databaseFieldName);
 
-  useEffect(() => {
-    const { unsubscribe } = loadDatabases();
-    return unsubscribe;
-  }, [loadDatabases]);
+  const { databaseOptions, isLoading: isLoadingDatabaseOptions } =
+    useDatabaseOptions({
+      useDatabasesQuery,
+      useOrganizationsQuery,
+    });
 
   const isMountedRef = useRef(true);
   useEffect(
@@ -183,17 +189,10 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  const { data, status } = appApi.endpoints.getDatabases.select()(state);
-  return {
-    databaseOptions: data,
-    isLoadingDatabaseOptions: status === "pending",
-  };
-};
+const mapStateToProps = () => ({
+  // These 2 queries (hooks) have nothing to do with mapStateToProps, but for the sake of consistency we can use the same pattern
+  useDatabaseQuery: useGetDatabasesQuery,
+  useOrganizationsQuery: useGetOrganizationsQuery,
+});
 
-const mapDispatchToProps = {
-  loadDatabases: appApi.endpoints.getDatabases.initiate,
-};
-
-const connector = connect(mapStateToProps, mapDispatchToProps);
-export default connector(DatabaseOptions);
+export default connect(mapStateToProps)(DatabaseOptions);
