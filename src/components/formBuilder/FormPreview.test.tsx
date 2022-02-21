@@ -27,6 +27,7 @@ describe("FormPreview", () => {
   };
 
   testItRenders({
+    isAsync: true,
     testName: "it renders empty schema",
     Component: FormPreview,
     props: defaultProps,
@@ -62,6 +63,7 @@ describe("FormPreview", () => {
     };
 
     const options: ItRendersOptions<FormPreviewProps> = {
+      isAsync: true,
       testName: "it renders simple schema",
       Component: FormPreview,
       props,

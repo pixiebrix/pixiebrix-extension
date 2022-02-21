@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import sanitize from "@/utils/sanitize";
 import { Field } from "@rjsf/core";
 import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";
+import safeMarkdown from "@/utils/safeMarkdown";
 
 type FormPreviewDescriptionFieldProps = {
   id: string;
@@ -34,13 +34,11 @@ export const DescriptionField: React.VoidFunctionComponent<
   const [content] = useAsyncState(
     async () => {
       if (typeof description === "string") {
-        const { marked } = await import(
-          /* webpackChunkName: "marked" */ "marked"
-        );
+        const markdown = await safeMarkdown(description);
         return (
           <div
             dangerouslySetInnerHTML={{
-              __html: sanitize(marked(description)),
+              __html: markdown,
             }}
           />
         );
