@@ -24,11 +24,17 @@ type Config = {
   level: MessageLevel;
   page: number;
   perPage: number;
+  availableEntries: LogEntry[];
+  entries: LogEntry[];
 };
 
-function useLogEntriesView({ level, page, perPage }: Config) {
-  const { availableEntries, entries } = useSelector(selectLogs);
-
+function useLogEntriesView({
+  level,
+  page,
+  perPage,
+  availableEntries,
+  entries,
+}: Config) {
   const filteredAvailableEntries = useMemo(
     () =>
       availableEntries.filter(

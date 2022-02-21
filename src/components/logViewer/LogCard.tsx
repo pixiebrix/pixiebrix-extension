@@ -16,34 +16,47 @@
  */
 
 import React, { useState } from "react";
-import { MessageLevel } from "@/background/logging";
+import { AnyAction } from "redux";
+import { LogEntry, MessageLevel } from "@/background/logging";
 import Loader from "@/components/Loader";
 import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
 import LogToolbar from "@/components/logViewer/LogToolbar";
 import useLogEntriesView from "@/components/logViewer/useLogEntriesView";
-import { useDispatch, useSelector } from "react-redux";
-import { selectLogs } from "./logSelectors";
+import { connect } from "react-redux";
 import { logActions } from "./logSlice";
+import { LogRootState } from "./logViewerTypes";
+import { ThunkDispatch } from "@reduxjs/toolkit";
 
-type OwnProps = {
+type LogCardProps = {
   initialLevel?: MessageLevel;
   perPage?: number;
+  isLoading: boolean;
+  availableEntries: LogEntry[];
+  entries: LogEntry[];
+  refreshEntries: () => void;
+  clearAvailableEntries: () => void;
 };
 
-const LogCard: React.FunctionComponent<OwnProps> = ({
+export const LogCard: React.FunctionComponent<LogCardProps> = ({
+  isLoading,
+  availableEntries,
+  entries,
+  refreshEntries,
+  clearAvailableEntries,
   initialLevel = "debug",
   perPage = 10,
 }) => {
   const [level, setLevel] = useState<MessageLevel>(initialLevel);
   const [page, setPage] = useState(0);
 
-  const { isLoading } = useSelector(selectLogs);
-  const dispatch = useDispatch();
-  const refreshEntries = () => dispatch(logActions.refreshEntries());
-  const clearAvailableEntries = () => dispatch(logActions.clear());
-
-  const logs = useLogEntriesView({ level, page, perPage });
+  const logs = useLogEntriesView({
+    level,
+    page,
+    perPage,
+    availableEntries,
+    entries,
+  });
 
   if (isLoading) {
     return (
@@ -71,4 +84,17 @@ const LogCard: React.FunctionComponent<OwnProps> = ({
   );
 };
 
-export default LogCard;
+const mapStateToProps = ({ logs }: LogRootState) => ({
+  isLoading: logs.isLoading,
+  availableEntries: logs.availableEntries,
+  entries: logs.entries,
+});
+
+const mapDispatchToProps = (
+  dispatch: ThunkDispatch<LogRootState, void, AnyAction>
+) => ({
+  refreshEntries: () => dispatch(logActions.refreshEntries()),
+  clearAvailableEntries: () => dispatch(logActions.clear()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(LogCard);

@@ -15,48 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore } from "@reduxjs/toolkit";
+import { LogEntry } from "@/background/logging";
 import { render } from "@testing-library/react";
 import React from "react";
-import { Provider } from "react-redux";
-import LogCard from "./LogCard";
-import { initialLogState, logSlice } from "./logSlice";
-import { LogState } from "./logViewerTypes";
+import { LogCard } from "./LogCard";
 
-jest.unmock("react-redux");
-
-function renderLogCard(state?: LogState) {
-  // @ts-expect-error -- assigning state with collections of LogEntries is perfectly fine
-  const store = configureStore({
-    reducer: {
-      logs: logSlice.reducer,
-    },
-    preloadedState:
-      state == null
-        ? undefined
-        : {
-            logs: state,
-          },
-  });
-
-  return render(
-    <Provider store={store}>
-      <LogCard />
-    </Provider>
-  );
-}
+const defaultProps = {
+  isLoading: false,
+  availableEntries: [] as LogEntry[],
+  entries: [] as LogEntry[],
+  refreshEntries: jest.fn(),
+  clearAvailableEntries: jest.fn(),
+};
 
 test("shows loader", () => {
-  const rendered = renderLogCard({
-    ...initialLogState,
-    isLoading: true,
-  });
+  const rendered = render(<LogCard {...defaultProps} isLoading />);
 
   expect(rendered.getByTestId("loader")).toBeInTheDocument();
 });
 
 test("renders empty table", () => {
-  const rendered = renderLogCard();
+  const rendered = render(<LogCard {...defaultProps} />);
 
   expect(rendered.asFragment()).toMatchSnapshot();
 });
