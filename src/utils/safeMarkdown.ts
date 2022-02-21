@@ -15,32 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types";
-import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, SafeHTML } from "@/core";
-import safeMarkdown from "@/utils/safeMarkdown";
+import { SafeHTML } from "@/core";
+import sanitize from "@/utils/sanitize";
 
-export class MarkdownRenderer extends Renderer {
-  constructor() {
-    super(
-      "@pixiebrix/markdown",
-      "Render Markdown",
-      "Render Markdown to sanitized HTML"
-    );
-  }
-
-  inputSchema = propertiesToSchema(
-    {
-      markdown: {
-        type: "string",
-        description: "The Markdown to render",
-        format: "markdown",
-      },
-    },
-    ["markdown"]
-  );
-
-  async render({ markdown }: BlockArg): Promise<SafeHTML> {
-    return safeMarkdown(markdown);
-  }
+async function safeMarkdown(markdown: string): Promise<SafeHTML> {
+  const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
+  return sanitize(marked(markdown));
 }
+
+export default safeMarkdown;

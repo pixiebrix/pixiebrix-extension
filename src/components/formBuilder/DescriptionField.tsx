@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import sanitize from "@/utils/sanitize";
-import { marked } from "marked";
 import { Field } from "@rjsf/core";
 import cx from "classnames";
+import { useAsyncState } from "@/hooks/common";
+import safeMarkdown from "@/utils/safeMarkdown";
 
 type FormPreviewDescriptionFieldProps = {
   id: string;
@@ -31,21 +31,32 @@ type FormPreviewDescriptionFieldProps = {
 export const DescriptionField: React.VoidFunctionComponent<
   FormPreviewDescriptionFieldProps
 > = ({ id, description, className: classNameProp }) => {
+  const [content] = useAsyncState(
+    async () => {
+      if (typeof description === "string") {
+        const markdown = await safeMarkdown(description);
+        return (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: markdown,
+            }}
+          />
+        );
+      }
+
+      return description;
+    },
+    [description],
+    ""
+  );
+
   if (!description) {
     return null;
   }
 
-  const className = cx("field-description", classNameProp);
-
-  return typeof description === "string" ? (
-    <div
-      id={id}
-      className={className}
-      dangerouslySetInnerHTML={{ __html: sanitize(marked(description)) }}
-    />
-  ) : (
-    <div id={id} className={className}>
-      {description}
+  return (
+    <div id={id} className={cx("field-description", classNameProp)}>
+      {content}
     </div>
   );
 };
