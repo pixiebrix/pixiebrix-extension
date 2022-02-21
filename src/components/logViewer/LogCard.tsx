@@ -16,25 +16,13 @@
  */
 
 import React, { useState } from "react";
-import { AnyAction } from "redux";
-import { LogEntry, MessageLevel } from "@/background/logging";
+import { MessageLevel } from "@/background/logging";
 import Loader from "@/components/Loader";
 import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
 import LogToolbar from "@/components/logViewer/LogToolbar";
 import useLogEntriesView from "@/components/logViewer/useLogEntriesView";
-import { connect } from "react-redux";
-import { logActions } from "./logSlice";
-import { LogRootState } from "./logViewerTypes";
-import { ThunkDispatch } from "@reduxjs/toolkit";
-
-type ConnectedProps = {
-  isLoading: boolean;
-  availableEntries: LogEntry[];
-  entries: LogEntry[];
-  refreshEntries: () => void;
-  clearAvailableEntries: () => void;
-};
+import { ConnectedProps, connectLogCard } from "./LogCard.connector";
 
 type LogCardProps = ConnectedProps & {
   initialLevel?: MessageLevel;
@@ -87,17 +75,4 @@ export const LogCard: React.FunctionComponent<LogCardProps> = ({
   );
 };
 
-const mapStateToProps = ({ logs }: LogRootState) => ({
-  isLoading: logs.isLoading,
-  availableEntries: logs.availableEntries,
-  entries: logs.entries,
-});
-
-const mapDispatchToProps = (
-  dispatch: ThunkDispatch<LogRootState, void, AnyAction>
-) => ({
-  refreshEntries: () => dispatch(logActions.refreshEntries()),
-  clearAvailableEntries: () => dispatch(logActions.clear()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(LogCard);
+export default connectLogCard(LogCard);

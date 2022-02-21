@@ -32,6 +32,9 @@ import { SERVICE_BASE_SCHEMA } from "@/services/serviceUtils";
 import { isExpression } from "@/runtime/mapArgs";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
+import { appApi } from "@/services/api";
+import { RootState } from "@/devTools/store";
+import { connect, ConnectedProps } from "react-redux";
 
 const keySchema: Schema = {
   type: "string",
@@ -72,14 +75,19 @@ export type DatabaseGetPutOptionsProps = {
   configKey: string;
 };
 
-type DatabaseOptionsProps = DatabaseGetPutOptionsProps & {
-  showValueField: boolean;
-};
+type DatabaseOptionsConnectedProps = ConnectedProps<typeof connector>;
+type DatabaseOptionsProps = DatabaseGetPutOptionsProps &
+  DatabaseOptionsConnectedProps & {
+    showValueField: boolean;
+  };
 
 const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
   name,
   configKey,
   showValueField,
+  databaseOptions,
+  isLoadingDatabaseOptions,
+  loadDatabases,
 }) => {
   const configName = partial(joinName, name, configKey);
   const databaseFieldName = configName("databaseId");
@@ -89,8 +97,10 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
     UUID | Expression
   >(databaseFieldName);
 
-  const { databaseOptions, isLoading: isLoadingDatabaseOptions } =
-    useDatabaseOptions();
+  useEffect(() => {
+    const { unsubscribe } = loadDatabases();
+    return unsubscribe;
+  }, [loadDatabases]);
 
   const isMountedRef = useRef(true);
   useEffect(
@@ -173,4 +183,17 @@ const DatabaseOptions: React.FC<DatabaseOptionsProps> = ({
   );
 };
 
-export default DatabaseOptions;
+const mapStateToProps = (state: RootState) => {
+  const { data, status } = appApi.endpoints.getDatabases.select()(state);
+  return {
+    databaseOptions: data,
+    isLoadingDatabaseOptions: status === "pending",
+  };
+};
+
+const mapDispatchToProps = {
+  loadDatabases: appApi.endpoints.getDatabases.initiate,
+};
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+export default connector(DatabaseOptions);
