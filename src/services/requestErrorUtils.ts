@@ -15,16 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BusinessError, getErrorMessage, isAxiosError } from "@/errors";
+import {
+  BusinessError,
+  ContextError,
+  getErrorMessage,
+  isAxiosError,
+} from "@/errors";
 import {
   ClientNetworkError,
+  ClientRequestError,
   ClientNetworkPermissionError,
   RemoteServiceError,
   SerializableAxiosError,
 } from "@/services/errors";
 import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
-import { AxiosRequestConfig, AxiosResponse } from "axios";
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import {
   DEFAULT_SERVICE_URL,
@@ -35,6 +41,7 @@ import { getReasonPhrase } from "http-status-codes";
 import { isAbsoluteUrl } from "@/utils";
 import urljoin from "url-join";
 import { isEmpty } from "lodash";
+import { Except } from "type-fest";
 
 // eslint-disable-next-line prefer-destructuring -- process.env variable
 const DEBUG = process.env.DEBUG;
@@ -52,6 +59,11 @@ export function selectAbsoluteUrl({
   return isAbsoluteUrl(url) ? url : urljoin(baseURL, url);
 }
 
+/**
+ * Version of getReasonPhrase that returns null for unknown status codes
+ * @param code the HTML status code
+ * @see getReasonPhrase
+ */
 export function safeGuessStatusText(code: string | number): string | null {
   try {
     return getReasonPhrase(code);
@@ -84,11 +96,13 @@ export async function isAppRequest(
 }
 
 /**
- * Try to select the most user-friendly error message for an Axios response
+ * Heuristically select the most user-friendly error message for an Axios response.
  */
 function selectResponseErrorMessage(response: AxiosResponse): string {
-  if (!isEmpty(response.data?.message)) {
-    return response.data?.message;
+  const message = response.data?.message;
+
+  if (typeof message === "string" && !isEmpty(message)) {
+    return message;
   }
 
   if (!isEmpty(response.statusText)) {
@@ -96,6 +110,26 @@ function selectResponseErrorMessage(response: AxiosResponse): string {
   }
 
   return safeGuessStatusText(response.status) ?? "Unknown error";
+}
+
+/**
+ * Return the AxiosError associated with an error, or null if error is not associated with an AxiosError
+ * @param error
+ */
+export function selectAxiosError(error: unknown): Except<AxiosError, "toJSON"> {
+  if (isAxiosError(error)) {
+    return error;
+  }
+
+  if (error instanceof ClientRequestError) {
+    return error.error;
+  }
+
+  if (error instanceof ContextError) {
+    return selectAxiosError(error.cause);
+  }
+
+  return null;
 }
 
 /**

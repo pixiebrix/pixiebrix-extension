@@ -29,6 +29,7 @@ export type EnterpriseBotArgs = {
   service: SanitizedServiceConfiguration;
   fileId: string;
   runAsUserIds: number[];
+  poolIds: string[];
   data: UnknownObject;
 };
 

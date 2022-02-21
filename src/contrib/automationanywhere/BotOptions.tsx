@@ -30,6 +30,7 @@ import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 import {
   cachedFetchBots,
+  cachedFetchDevicePools,
   cachedFetchDevices,
   cachedFetchRunAsUsers,
   cachedFetchSchema,
@@ -98,6 +99,15 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                 description="The user(s) to run the bots"
                 as={RemoteMultiSelectWidget}
                 optionsFactory={cachedFetchRunAsUsers}
+                config={config}
+              />
+              <ConnectedFieldTemplate
+                label="Device Pools"
+                name={configName("poolIds")}
+                description="A device pool that has at least one active device (optional)"
+                as={RemoteMultiSelectWidget}
+                optionsFactory={cachedFetchDevicePools}
+                blankValue={[]}
                 config={config}
               />
               <ConnectedFieldTemplate

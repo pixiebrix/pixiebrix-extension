@@ -70,6 +70,13 @@ export type Device = {
   nickname: string;
 };
 
+export type DevicePool = {
+  id: string;
+  name: string;
+  status: string;
+  deviceCount: string;
+};
+
 export type RunAsUser = {
   id: string;
   username: string;

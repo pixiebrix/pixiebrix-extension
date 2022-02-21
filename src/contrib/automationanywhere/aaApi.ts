@@ -24,6 +24,7 @@ import {
   BOT_TYPE,
   DeployResponse,
   Device,
+  DevicePool,
   FAILURE_STATUSES,
   Interface,
   ListResponse,
@@ -42,8 +43,8 @@ import {
   EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
 
-const MAX_WAIT_MILLIS = 30_000;
-const POLL_MILLIS = 1000;
+const MAX_WAIT_MILLIS = 60_000;
+const POLL_MILLIS = 2000;
 
 async function fetchBots(
   config: SanitizedServiceConfiguration
@@ -96,6 +97,30 @@ export const cachedFetchDevices = cachePromiseMethod(
   fetchDevices
 );
 
+async function fetchDevicePools(
+  config: SanitizedServiceConfiguration
+): Promise<Option[]> {
+  // HACK: depend on cachedFetchBots to avoid concurrent requests to the proxy. Simultaneous calls to get the
+  // token causes a server error on Community Edition
+  await cachedFetchBots(config);
+
+  const response = await proxyService<ListResponse<DevicePool>>(config, {
+    url: "/v2/devices/pools/list",
+    method: "POST",
+    data: {},
+  });
+  const devicePools = response.data.list ?? [];
+  return devicePools.map((pool) => ({
+    value: pool.id,
+    label: pool.name,
+  }));
+}
+
+export const cachedFetchDevicePools = cachePromiseMethod(
+  ["aa:fetchDevicePools"],
+  fetchDevicePools
+);
+
 async function fetchRunAsUsers(
   config: SanitizedServiceConfiguration
 ): Promise<Option[]> {
@@ -106,7 +131,7 @@ async function fetchRunAsUsers(
   const { data } = await proxyService<ListResponse<RunAsUser>>(config, {
     url: "/v1/devices/runasusers/list",
     method: "POST",
-    // TODO: handle pagination
+    // TODO: handle pagination - potentially via search query?
     data: {},
   });
   const users = data.list ?? [];
@@ -147,18 +172,15 @@ export async function runCommunityBot({
   deviceId,
 }: CommunityBotArgs): Promise<void> {
   // Don't bother returning the DeployResponse because it's just "0" for all community deployments
+  // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-deploy.html
   await proxyService<DeployResponse>(service, {
     url: "/v2/automations/deploy",
     method: "post",
     data: {
       fileId,
-      botInput: mapBotInput(data),
-      rdpEnabled: false,
-      runElevated: false,
-      setAsDefaultDevice: false,
-      poolIds: [],
+      // https://apeople.automationanywhere.com/s/question/0D56F00008YEOjSSAX/how-to-pass-input-values-while-triggering-the-bot-through-control-room-api-?language=en_US
+      botVariables: mapBotInput(data),
       currentUserDeviceId: deviceId,
-      runAsUserIds: [],
       scheduleType: "INSTANT",
     },
   });
@@ -169,19 +191,20 @@ export async function runEnterpriseBot({
   fileId,
   data,
   runAsUserIds,
+  poolIds,
 }: EnterpriseBotArgs) {
+  // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-bot-deploy-task.html
   const { data: deployData } = await proxyService<DeployResponse>(service, {
     url: "/v3/automations/deploy",
     method: "post",
     data: {
       fileId,
       botInput: mapBotInput(data),
-      rdpEnabled: false,
-      runElevated: false,
-      setAsDefaultDevice: false,
-      poolIds: [],
+      // Use the runAsUser's default device instead of a device pool
+      overrideDefaultDevice: poolIds.length > 0,
+      numOfRunAsUsersToUse: 1,
+      poolIds,
       runAsUserIds,
-      scheduleType: "INSTANT",
     },
   });
 
@@ -199,6 +222,7 @@ export async function pollEnterpriseResult({
 }) {
   const start = Date.now();
 
+  // Sleep first because it's unlikely it will be completed immediately after the running the bot
   await sleep(POLL_MILLIS);
 
   do {
@@ -228,7 +252,7 @@ export async function pollEnterpriseResult({
 
     if (activityList.list.length === 0) {
       logger.error(`Activity not found for deployment: ${deploymentId}`);
-      throw new BusinessError("Activity not found for automation");
+      throw new BusinessError("Activity not found for deployment");
     }
 
     const activity = activityList.list[0];
@@ -249,8 +273,6 @@ export async function pollEnterpriseResult({
   } while (Date.now() - start < MAX_WAIT_MILLIS);
 
   throw new BusinessError(
-    `Automation Anywhere deploy did not finish in ${
-      MAX_WAIT_MILLIS / 1000
-    } seconds`
+    `Bot did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
   );
 }

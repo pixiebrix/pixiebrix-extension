@@ -50,14 +50,8 @@ export const COMMON_PROPERTIES: SchemaProperties = {
 const COMMUNITY_EDITION_PROPERTIES: SchemaProperties = {
   deviceId: {
     type: "string",
-    description: "The device to run the bot on",
+    description: "The device to run the bot",
     format: "\\d+",
-  },
-  awaitResult: {
-    type: "boolean",
-    const: false,
-    default: false,
-    description: "Wait for the bot to complete and output the results.",
   },
 };
 
@@ -65,6 +59,12 @@ const ENTERPRISE_EDITION_PROPERTIES: SchemaProperties = {
   runAsUsers: {
     type: "array",
     description: "The user(s) to run the bot",
+    items: {
+      type: "string",
+    },
+  },
+  poolIds: {
+    description: "A device pool that has at least one active device (optional)",
     items: {
       type: "string",
     },
