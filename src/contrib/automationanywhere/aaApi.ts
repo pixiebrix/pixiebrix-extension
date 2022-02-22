@@ -190,8 +190,8 @@ export async function runEnterpriseBot({
   service,
   fileId,
   data,
-  runAsUserIds,
-  poolIds,
+  runAsUserIds = [],
+  poolIds = [],
 }: EnterpriseBotArgs) {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-bot-deploy-task.html
   const { data: deployData } = await proxyService<DeployResponse>(service, {
@@ -201,7 +201,7 @@ export async function runEnterpriseBot({
       fileId,
       botInput: mapBotInput(data),
       // Use the runAsUser's default device instead of a device pool
-      overrideDefaultDevice: poolIds.length > 0,
+      overrideDefaultDevice: poolIds?.length > 0,
       numOfRunAsUsersToUse: 1,
       poolIds,
       runAsUserIds,
