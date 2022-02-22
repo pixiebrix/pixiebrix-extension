@@ -104,7 +104,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
           </Form.Group>
         </Form>
       </Card.Body>
-      <Card.Footer className={styles.footer}>
+      <Card.Footer className={styles.cardFooter}>
         <Button variant="info" onClick={reload}>
           Reload Extension
         </Button>

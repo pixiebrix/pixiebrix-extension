@@ -15,8 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.footer {
+$card-footer-padding: 0.75rem;
+
+.cardFooter {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 7px;
+  gap: $card-footer-padding;
+  & > * {
+    margin: 0; // Drop Bootstrap’s automatic margin on buttons
+  }
 }
