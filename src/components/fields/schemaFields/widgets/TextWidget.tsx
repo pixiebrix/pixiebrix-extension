@@ -54,7 +54,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   focusInput,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, { error }, { setValue, setError }] =
+  const [{ value, ...restInputProps }, { error }, { setValue }] =
     useField(name);
   const { allowExpressions: allowExpressionsContext } =
     useContext(FieldRuntimeContext);
@@ -159,23 +159,6 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
 
     return [fieldValue, onChange];
   }, [allowExpressions, onChangeForTemplate, setValue, value]);
-
-  const setErrorStatic = useCallback((error: string | undefined) => {
-    setError(error);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- prevent function reference from changing
-  }, []);
-
-  useEffect(() => {
-    if (
-      isTemplateExpression(value) &&
-      value.__type__ !== "mustache" &&
-      isMustacheOnly(value.__value__)
-    ) {
-      setErrorStatic(
-        "Mustache syntax is not supported, please use nunjucks template syntax"
-      );
-    }
-  }, [setErrorStatic, value]);
 
   if (
     value !== null &&
