@@ -27,6 +27,7 @@ beforeEach(() => {
 
 describe("@pixiebrix/state/get", () => {
   test("default to blueprint state", async () => {
+    // eslint-disable-next-line import/dynamic-import-chunkname -- test file
     const { GetPageState } = await import("@/blocks/effects/pageState");
 
     const brick = new GetPageState();
@@ -62,7 +63,7 @@ describe("@pixiebrix/state/set", () => {
     expect(result).toStrictEqual({ foo: 1, bar: 42 });
   });
 
-  test("deep merge", async () => {
+  test("deep merge does not append array elements", async () => {
     // eslint-disable-next-line import/dynamic-import-chunkname -- test file
     const { SetPageState } = await import("@/blocks/effects/pageState");
 
@@ -72,17 +73,40 @@ describe("@pixiebrix/state/set", () => {
       blueprintId: validateRegistryId("test/123"),
     });
 
+    const original = {
+      primitiveArray: [42],
+      primitive: 42,
+      obj: { a: 42 },
+      objectArray: [{ a: 42 }],
+    };
+
     let result = await brick.transform(
-      { data: { foo: [42], bar: 42 } } as any,
+      { data: original } as any,
       { logger } as BlockOptions
     );
-    expect(result).toStrictEqual({ foo: [42], bar: 42 });
+    expect(result).toStrictEqual(original);
 
     result = await brick.transform(
-      { data: { foo: [1], bar: 1 }, mergeStrategy: "deep" } as any,
+      {
+        data: {
+          primitiveArray: [1],
+          primitive: 1,
+          obj: { b: 1 },
+          objectArray: [{ b: 1 }, { a: 2 }],
+        },
+        mergeStrategy: "deep",
+      } as any,
       { logger } as BlockOptions
     );
-    expect(result).toStrictEqual({ foo: [42, 1], bar: 1 });
+
+    // NOTE: lodash's `merge` behavior is different from deepmerge from Python. Lodash will zip the list items together
+    // but will not append items to an array
+    expect(result).toStrictEqual({
+      primitiveArray: [1],
+      primitive: 1,
+      obj: { a: 42, b: 1 },
+      objectArray: [{ a: 42, b: 1 }, { a: 2 }],
+    });
   });
 });
 
