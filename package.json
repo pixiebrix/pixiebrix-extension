@@ -133,7 +133,7 @@
     "regenerator-runtime": "^0.13.9",
     "reselect": "^4.0.0",
     "rollbar": "^2.24.0",
-    "schema-to-yup": "1.10.0",
+    "schema-to-yup": "1.11.5",
     "semver": "^7.3.5",
     "serialize-error": "^9.0.0",
     "simple-icons": "^5.8.0",
@@ -155,7 +155,8 @@
     "webext-polyfill-kinda": "^0.1.0",
     "webext-tools": "^0.3.0",
     "webextension-polyfill": "^0.8.0",
-    "whatwg-mimetype": "^3.0.0"
+    "whatwg-mimetype": "^3.0.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-common-types": "^0.2.36",
