@@ -86,4 +86,11 @@ describe("getFieldNamesFromPathString", () => {
       "baz",
     ]);
   });
+
+  test("path with periods", () => {
+    expect(getFieldNamesFromPathString("foo['bar.baz']")).toStrictEqual([
+      "foo",
+      "bar.baz",
+    ]);
+  });
 });

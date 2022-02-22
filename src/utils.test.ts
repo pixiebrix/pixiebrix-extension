@@ -74,10 +74,6 @@ describe("joinName", () => {
     expect(joinName("foo", null, "bar")).toBe("foo.bar");
   });
 
-  test("rejects path part with period", () => {
-    expect(() => joinName("foo", "bar.baz")).toThrow("cannot contain periods");
-  });
-
   test("accepts base path part with period", () => {
     expect(joinName("foo.bar", "baz")).toBe("foo.bar.baz");
   });

@@ -60,11 +60,18 @@ export function joinName(
     );
   }
 
-  if (fieldNames.some((x) => x.includes("."))) {
-    throw new Error("Formik path parts cannot contain periods");
+  let path = baseFieldName || "";
+  for (const fieldName of fieldNames) {
+    if (fieldName.includes(".")) {
+      path += `[${fieldName}]`;
+    } else if (path === "") {
+      path = fieldName;
+    } else {
+      path += `.${fieldName}`;
+    }
   }
 
-  return compact([baseFieldName, ...fieldNames]).join(".");
+  return path;
 }
 
 export function mostCommonElement<T>(items: T[]): T {

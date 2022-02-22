@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { identity } from "lodash";
+import { identity, toPath } from "lodash";
 import { getErrorMessage } from "@/errors";
 import { cleanValue, InvalidPathError, isObject } from "@/utils";
 import { UnknownObject } from "@/types";
@@ -136,11 +136,12 @@ export function getPropByPath(
 export function getFieldNamesFromPathString(
   name: string
 ): [parentFieldName: string | undefined, fieldName: string] {
-  const fieldName = name.includes(".")
-    ? name.slice(name.lastIndexOf(".") + 1)
-    : name;
-  const parentFieldName = name.includes(".")
-    ? name.slice(0, name.lastIndexOf("."))
-    : undefined;
+  const path = toPath(name);
+  console.log("getFieldNamesFromPathString", {
+    path,
+    name,
+  });
+  const fieldName = path.pop();
+  const parentFieldName = path.length > 0 ? path.join(".") : undefined;
   return [parentFieldName, fieldName];
 }
