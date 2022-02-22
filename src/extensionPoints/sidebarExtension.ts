@@ -92,8 +92,8 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     ["heading", "body"]
   );
 
-  public get kind(): "sidebar" {
-    return "sidebar";
+  public get kind(): "actionPanel" {
+    return "actionPanel";
   }
 
   async getBlocks(
@@ -269,8 +269,8 @@ export function fromJS(
   config: ExtensionPointConfig<PanelDefinition>
 ): IExtensionPoint {
   const { type } = config.definition;
-  if (type !== "sidebar" && type !== "actionPanel") {
-    throw new Error(`Expected type=sidebar, got ${type}`);
+  if (type !== "actionPanel") {
+    throw new Error(`Expected type=actionPanel, got ${type}`);
   }
 
   return new RemotePanelExtensionPoint(config);

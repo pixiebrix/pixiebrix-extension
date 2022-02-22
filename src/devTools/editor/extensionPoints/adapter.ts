@@ -35,7 +35,7 @@ export const ADAPTERS = new Map<ExtensionPointType, ElementConfig>([
   ["trigger", triggerExtension],
   ["panel", panelExtension],
   ["contextMenu", contextMenuExtension],
-  ["sidebar", sidebarExtension],
+  ["actionPanel", sidebarExtension],
   ["menuItem", menuItemExtension],
   ["quickBar", quickBarExtension],
 ]);

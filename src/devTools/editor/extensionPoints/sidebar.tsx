@@ -54,7 +54,7 @@ import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 type Extension = BaseExtensionState & Except<SidebarConfig, "body">;
 
 export interface SidebarFormState extends BaseFormState<Extension> {
-  type: "sidebar";
+  type: "actionPanel";
   extension: Extension;
 }
 
@@ -64,14 +64,14 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const heading = `${getDomain(url)} side panel`;
 
   return {
-    type: "sidebar",
+    type: "actionPanel",
     label: heading,
     ...base,
     extensionPoint: {
       metadata,
       definition: {
         isAvailable: makeIsAvailable(url),
-        reader: getImplicitReader("sidebar"),
+        reader: getImplicitReader("actionPanel"),
       },
     },
     extension: {
@@ -91,7 +91,7 @@ function selectExtensionPoint(
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
-      type: "sidebar",
+      type: "actionPanel",
       reader,
       isAvailable,
     },
@@ -116,7 +116,7 @@ function selectExtension(
 
 function asDynamicElement(element: SidebarFormState): DynamicDefinition {
   return {
-    type: "sidebar",
+    type: "actionPanel",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
   };
@@ -126,8 +126,8 @@ export async function fromExtensionPoint(
   url: string,
   extensionPoint: ExtensionPointConfig<PanelDefinition>
 ): Promise<SidebarFormState> {
-  if (extensionPoint.definition.type !== "sidebar") {
-    throw new Error("Expected sidebar extension point type");
+  if (extensionPoint.definition.type !== "actionPanel") {
+    throw new Error("Expected actionPanel extension point type");
   }
 
   const heading = `${getDomain(url)} side panel`;
@@ -166,8 +166,8 @@ async function fromExtension(
   const extensionPoint = await lookupExtensionPoint<
     PanelDefinition,
     SidebarConfig,
-    "sidebar"
-  >(config, "sidebar");
+    "actionPanel"
+  >(config, "actionPanel");
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = extensionWithNormalizedPipeline(config.config, "body");
@@ -190,7 +190,7 @@ async function fromExtension(
 
 const config: ElementConfig<never, SidebarFormState> = {
   displayOrder: 3,
-  elementType: "sidebar",
+  elementType: "actionPanel",
   label: "Sidebar Panel",
   baseClass: SidebarExtensionPoint,
   selectNativeElement: undefined,

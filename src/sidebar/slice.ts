@@ -34,7 +34,7 @@ export const blankSidebarState: AppState = {
 
 const slice = createSlice({
   initialState: blankSidebarState,
-  name: "sidebar",
+  name: "actionPanel",
   reducers: {
     selectTab: (state, action: PayloadAction<string>) => {
       state.activeKey = action.payload;

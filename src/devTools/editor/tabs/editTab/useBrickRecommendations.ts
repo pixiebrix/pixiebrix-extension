@@ -62,7 +62,7 @@ const typeRecommendations = new Map<ExtensionPointType, RegistryId[]>([
     ["@pixiebrix/property-table", "@pixiebrix/iframe", "@pixiebrix/get"],
   ],
   [
-    "sidebar",
+    "actionPanel",
     ["@pixiebrix/property-table", "@pixiebrix/iframe", "@pixiebrix/get"],
   ],
 ] as Array<[ExtensionPointType, RegistryId[]]>);

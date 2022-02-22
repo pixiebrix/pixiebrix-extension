@@ -29,7 +29,6 @@ const TYPE_MAP = {
   menuItem: deserializeMenuItem,
   trigger: deserializeTrigger,
   contextMenu: deserializeContextMenu,
-  sidebar: deserializeSidebar,
   actionPanel: deserializeSidebar,
   quickBar: deserializeQuickBar,
 };

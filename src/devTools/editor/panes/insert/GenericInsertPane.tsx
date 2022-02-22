@@ -59,7 +59,7 @@ const GenericInsertPane: React.FunctionComponent<{
           type: config.elementType,
         });
 
-        if (config.elementType === "sidebar") {
+        if (config.elementType === "actionPanel") {
           // For convenience, open the side panel if it's not already open so that the user doesn't
           // have to manually toggle it
           void showSidebar(thisTab);

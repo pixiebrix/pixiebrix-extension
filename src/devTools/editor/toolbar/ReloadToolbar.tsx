@@ -28,7 +28,7 @@ import { thisTab } from "@/devTools/utils";
 const DEFAULT_RELOAD_MILLIS = 350;
 
 function isPanelElement(element: FormState | null): boolean {
-  return ["panel", "sidebar"].includes(element?.type);
+  return ["panel", "actionPanel"].includes(element?.type);
 }
 
 /**

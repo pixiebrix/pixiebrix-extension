@@ -33,7 +33,7 @@ const elementTypesToSkipValidation: ExtensionPointType[] = [
   "trigger",
   "contextMenu",
 ];
-const elementTypesToValidate: ExtensionPointType[] = ["panel", "sidebar"];
+const elementTypesToValidate: ExtensionPointType[] = ["panel", "actionPanel"];
 
 test.each(elementTypesToSkipValidation)(
   "skips validation for %s",
