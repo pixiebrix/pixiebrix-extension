@@ -18,7 +18,7 @@
 import { Logger, MessageContext } from "@/core";
 import { JsonObject } from "type-fest";
 import { getErrorMessage, isConnectionError } from "@/errors";
-import { isContentScript } from "webext-detect-page";
+import { getContextName, isContentScript } from "webext-detect-page";
 import { showConnectionLost } from "@/contentScript/connection";
 import { serializeError } from "serialize-error";
 import { recordError, recordLog } from "@/background/messenger/api";
@@ -81,7 +81,13 @@ class BackgroundLogger implements Logger {
       showConnectionLost();
     }
 
-    recordError(serializeError(error), this.context, data);
+    // Add on the reporter side of the message. On the receiving side it would always be `background`
+    const extendedContext: MessageContext = {
+      ...this.context,
+      pageName: getContextName(),
+    };
+
+    recordError(serializeError(error), extendedContext, data);
   }
 }
 
