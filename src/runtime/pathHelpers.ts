@@ -137,10 +137,6 @@ export function getFieldNamesFromPathString(
   name: string
 ): [parentFieldName: string | undefined, fieldName: string] {
   const path = toPath(name);
-  console.log("getFieldNamesFromPathString", {
-    path,
-    name,
-  });
   const fieldName = path.pop();
   const parentFieldName = path.length > 0 ? path.join(".") : undefined;
   return [parentFieldName, fieldName];

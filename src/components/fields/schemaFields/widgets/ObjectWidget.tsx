@@ -81,7 +81,6 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
     [onRename]
   );
 
-  console.log("field name", field.name);
   const currentProperty = getFieldNamesFromPathString(field.name)[1];
 
   return (

@@ -63,7 +63,7 @@ export function joinName(
   let path = baseFieldName || "";
   for (const fieldName of fieldNames) {
     if (fieldName.includes(".")) {
-      path += `[${fieldName}]`;
+      path += `["${fieldName}"]`;
     } else if (path === "") {
       path = fieldName;
     } else {
