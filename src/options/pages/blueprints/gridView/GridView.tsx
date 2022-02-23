@@ -17,13 +17,7 @@
 
 import styles from "./GridView.module.scss";
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BlueprintListViewProps,
   InstallableViewItem,
@@ -95,6 +89,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 
   const getItemSize = useCallback(
     (index: number): number => {
+      // eslint-disable-next-line security/detect-object-injection
       const row = expandedGridRows[index];
       return "isGrouped" in row ? 58 : minCardSizeInPixels;
     },
@@ -105,23 +100,12 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     setListKey(uuidv4);
   }, [expandedGridRows, columnCount]);
 
-  const getItemKey = useCallback((index: number, data) => {
-    const gridRow = data[index];
-
-    if ("isGrouped" in gridRow) {
-      return gridRow.id;
-    }
-
-    return "".concat(
-      ...gridRow.map((row) => getUniqueId(row.original.installable) as string)
-    );
-  }, []);
-
   const GridRow = useCallback(
-    ({ index, style, data }) => {
-      const gridRow = data[index];
+    ({ index, style }) => {
+      // eslint-disable-next-line security/detect-object-injection
+      const gridRow = expandedGridRows[index];
 
-      if (gridRow.isGrouped) {
+      if ("isGrouped" in gridRow) {
         tableInstance.prepareRow(gridRow);
 
         return (
@@ -136,7 +120,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 
       return (
         <div style={style} className={styles.root}>
-          {gridRow.map((row) => {
+          {gridRow.map((row: Row<InstallableViewItem>) => {
             tableInstance.prepareRow(row);
             return (
               <GridCard
@@ -151,16 +135,12 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     [expandedGridRows, tableInstance]
   );
 
-  console.log("expanded grid rows:", expandedGridRows);
-
   return (
     <List
       height={height}
       width={width}
       itemSize={getItemSize}
       itemCount={expandedGridRows.length}
-      itemKey={getItemKey}
-      itemData={expandedGridRows}
       key={listKey}
     >
       {GridRow}

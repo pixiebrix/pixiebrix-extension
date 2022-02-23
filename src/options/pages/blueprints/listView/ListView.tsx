@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import ListItem from "./ListItem";
 import {
@@ -61,15 +55,11 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   const headerSizeInPixels = 43;
   const [listKey, setListKey] = useState(uuidv4());
 
-  // This ref is required in order to update row height upon
-  // data change (assigning a unique itemKey does not work in this case)
-  // see https://github.com/bvaughn/react-window/issues/199#issuecomment-479957451
-  const listRef = useRef();
-
   const expandedRows = useMemo(() => expandRows(rows), [rows]);
 
   const getItemSize = useCallback(
     (index: number) => {
+      // eslint-disable-next-line security/detect-object-injection
       const row = expandedRows[index];
       return row.isGrouped ? headerSizeInPixels : rowSizeInPixels;
     },
@@ -90,6 +80,7 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
         key={listKey}
       >
         {({ index, style }) => {
+          // eslint-disable-next-line security/detect-object-injection
           const row = expandedRows[index];
           tableInstance.prepareRow(row);
 

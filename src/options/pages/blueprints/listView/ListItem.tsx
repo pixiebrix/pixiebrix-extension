@@ -55,4 +55,4 @@ const ListItem: React.VoidFunctionComponent<{
   );
 };
 
-export default ListItem;
+export default React.memo(ListItem);

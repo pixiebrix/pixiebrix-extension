@@ -33,4 +33,4 @@ const ListGroupHeader: React.VoidFunctionComponent<{
   );
 };
 
-export default ListGroupHeader;
+export default React.memo(ListGroupHeader);
