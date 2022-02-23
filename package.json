@@ -57,7 +57,7 @@
     "connected-react-router": "^6.9.1",
     "copy-to-clipboard": "^3.3.1",
     "csharp-helpers": "^0.9.3",
-    "css-selector-generator": "^3.4.4",
+    "css-selector-generator": "^3.6.0",
     "dompurify": "^2.3.0",
     "exifreader": "^4.0.0",
     "export-to-csv": "^0.2.1",

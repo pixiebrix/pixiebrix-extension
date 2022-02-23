@@ -471,7 +471,7 @@ function commonPanelHTML(tag: string, $items: JQuery): string {
   return outerHTML(common);
 }
 
-const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
+const DEFAULT_SELECTOR_PRIORITIES: Array<keyof typeof CssSelectorType> = [
   "id",
   "tag",
   "class",
@@ -486,7 +486,7 @@ const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
  */
 export function safeCssSelector(
   element: HTMLElement,
-  selectors: CssSelectorType[] | undefined,
+  selectors: Array<keyof typeof CssSelectorType> | undefined,
   root: Element | null = null
 ): string {
   // https://github.com/fczbkk/css-selector-generator
@@ -506,9 +506,9 @@ export function safeCssSelector(
     ],
     whitelist: [
       // Data attributes people use in automated tests are unlikely to change frequently
-      ["data-cy"],
-      ["data-testid"],
-      ["data-test"],
+      "[data-cy]",
+      "[data-testid]",
+      "[data-test]",
     ],
     selectors: selectors ?? DEFAULT_SELECTOR_PRIORITIES,
     combineWithinSelector: true,
@@ -533,7 +533,7 @@ export function inferSelectors(
   element: HTMLElement,
   root: Element | null = null
 ): string[] {
-  const makeSelector = (allowed?: CssSelectorType[]) => {
+  const makeSelector = (allowed?: Array<keyof typeof CssSelectorType>) => {
     try {
       return safeCssSelector(element, allowed, root);
     } catch (error) {
