@@ -166,7 +166,10 @@ const FieldTemplate: React.FC<FieldProps> = ({
           </BootstrapForm.Text>
         )}
         {isInvalid && (
-          <div className={styles.invalidMessage}>{getErrorMessage(error)}</div>
+          <div
+            className={styles.invalidMessage}
+            dangerouslySetInnerHTML={{ __html: getErrorMessage(error) }}
+          />
         )}
       </Col>
     </BootstrapForm.Group>
