@@ -18,11 +18,35 @@
 import { FormikErrorTree } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { BlockPipeline } from "@/blocks/types";
 import { isEmpty, set } from "lodash";
-import { isTemplateExpression } from "@/runtime/mapArgs";
+import { isExpression, isTemplateExpression } from "@/runtime/mapArgs";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
+import { UnknownObject } from "@/types";
+import { joinName } from "@/utils";
 
 const MUSTACHE_ERROR_MESSAGE =
   "Mustache syntax is not supported, please use nunjucks template syntax";
+
+function validateObject(
+  config: UnknownObject,
+  namePath: string,
+  errors: FormikErrorTree
+) {
+  // eslint-disable-next-line guard-for-in
+  for (const prop in config) {
+    const propNamePath = joinName(namePath, prop);
+    // eslint-disable-next-line security/detect-object-injection -- iterating through props
+    const value = config[prop];
+    if (
+      isTemplateExpression(value) &&
+      value.__type__ !== "mustache" &&
+      isMustacheOnly(value.__value__)
+    ) {
+      set(errors, propNamePath, MUSTACHE_ERROR_MESSAGE);
+    } else if (typeof value === "object" && !isExpression(value)) {
+      validateObject(value as UnknownObject, propNamePath, errors);
+    }
+  }
+}
 
 function validateStringTemplates(
   pipelineErrors: FormikErrorTree,
@@ -33,19 +57,11 @@ function validateStringTemplates(
   }
 
   for (const [index, block] of pipeline.entries()) {
-    // eslint-disable-next-line guard-for-in
-    for (const prop in block.config) {
-      // eslint-disable-next-line security/detect-object-injection
-      const value = block.config[prop];
-      if (
-        isTemplateExpression(value) &&
-        value.__type__ !== "mustache" &&
-        isMustacheOnly(value.__value__)
-      ) {
-        const propNamePath = `${index}.config.${prop}`;
-        set(pipelineErrors, propNamePath, MUSTACHE_ERROR_MESSAGE);
-      }
-    }
+    validateObject(
+      block.config,
+      joinName(index.toString(), "config"),
+      pipelineErrors
+    );
   }
 }
 

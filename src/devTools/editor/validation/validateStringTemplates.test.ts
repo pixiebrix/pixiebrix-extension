@@ -302,4 +302,39 @@ describe("validateStringTemplates()", () => {
       },
     });
   });
+
+  test("handles nested fields", () => {
+    const errors: FormikErrorTree = {};
+    validateStringTemplates(
+      errors,
+      pipelineFactory({
+        config: {
+          foo: {
+            bar: {
+              __type__: "nunjucks",
+              __value__: "{{^items}}Items not found{{/items}}",
+            },
+            baz: 42,
+          },
+        },
+      })
+    );
+
+    expect(errors).toEqual({
+      0: {
+        config: {
+          foo: {
+            bar: expect.any(String),
+          },
+        },
+      },
+      1: {
+        config: {
+          foo: {
+            bar: expect.any(String),
+          },
+        },
+      },
+    });
+  });
 });
