@@ -56,8 +56,8 @@ const EditorTabLayout: React.FC<{
           className={styles.nav}
         >
           {items.map(({ itemName, badgeCount, badgeVariant }) => (
-            <Nav.Item key={`nav-tab-${itemName}`}>
-              <Nav.Link eventKey={itemName}>
+            <Nav.Item key={`nav-tab-${itemName}`} className={styles.navItem}>
+              <Nav.Link eventKey={itemName} className={styles.navLink}>
                 {itemName}
                 {badgeCount && badgeVariant && (
                   <Badge className={styles.badge} variant={badgeVariant}>
