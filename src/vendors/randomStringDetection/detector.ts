@@ -151,7 +151,10 @@ for (var i = 0; i < number.length; i++) {
 regex = makeRegex(dbl);
 regexwl = makeRegex(whitelist);
 
-export default function detector(str: string, options?: { min: number }) {
+export default function detectRandomString(
+  str: string,
+  options?: { min: number }
+) {
   var defaults = { min: 5 };
   var settings = defaults;
   if (typeof options === "object") {

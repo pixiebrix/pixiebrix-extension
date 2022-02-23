@@ -27,6 +27,7 @@ import {
   PIXIEBRIX_DATA_ATTR,
   PIXIEBRIX_READY_ATTRIBUTE,
 } from "@/common";
+import detectRandomString from "@/vendors/randomStringDetection/detector";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -503,6 +504,15 @@ export function safeCssSelector(
       `[${EXTENSION_POINT_DATA_ATTR}='*']`,
       `[${PIXIEBRIX_DATA_ATTR}='*']`,
       `[${PIXIEBRIX_READY_ATTRIBUTE}='*']`,
+      (selector) => {
+        if (!selector.startsWith(".")) {
+          return false;
+        }
+
+        const randomness = detectRandomString(selector);
+        console.debug("css-selector-generator:", { selector, randomness });
+        return randomness > 0.5;
+      },
     ],
     whitelist: [
       // Data attributes people use in automated tests are unlikely to change frequently
