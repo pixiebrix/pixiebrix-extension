@@ -19,15 +19,27 @@
 
 function showErrors(errorEvent) {
   const logger = document.querySelector(".global-loading-message");
-  if (logger.childElementCount > 0) {
+  if (!logger) {
     // The view was initialized, stop showing errors
     window.removeEventListener("error", showErrors);
     return;
   }
 
-  logger.textContent = String(errorEvent.error);
-  logger.style.fontFamily = "monospace";
-  logger.style.whiteSpace = "pre";
+  logger.textContent = ""; // Drop loading or previous errors
+  const wrapper = document.createElement("div");
+
+  const error = document.createElement("p");
+  error.textContent = String(errorEvent.error);
+  error.style.fontFamily = "monospace";
+  error.style.whiteSpace = "pre-wrap";
+
+  const reloadButton = document.createElement("button");
+  reloadButton.textContent = "Retry";
+  reloadButton.classList.add("btn", "btn-sm", "btn-primary");
+  reloadButton.addEventListener("click", location.reload.bind(location));
+
+  wrapper.append(error, document.createElement("br"), reloadButton);
+  logger.append(wrapper);
 }
 
 window.addEventListener("error", showErrors);

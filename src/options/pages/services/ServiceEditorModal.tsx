@@ -123,8 +123,6 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   return (
     <Modal
       show
-      backdropClassName={styles.backdrop}
-      className={styles.modal}
       dialogClassName={styles.dialog}
       onHide={onClose}
       backdrop="static"

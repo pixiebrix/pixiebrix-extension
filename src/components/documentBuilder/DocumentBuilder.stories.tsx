@@ -31,7 +31,7 @@ import DocumentEditor from "./edit/DocumentEditor";
 import DocumentPreview from "./preview/DocumentPreview";
 import { action } from "@storybook/addon-actions";
 
-const schemaShape: yup.ObjectSchema = yup.object().shape({
+const schemaShape = yup.object().shape({
   body: yup.array(yup.object()).required(),
 });
 

@@ -80,7 +80,7 @@ export class ProxiedRemoteServiceError extends BusinessError {
 /**
  * Abstract base class for request errors from client to 3rd-party service.
  */
-abstract class ClientRequestError extends BusinessError {
+export abstract class ClientRequestError extends BusinessError {
   readonly error: SerializableAxiosError;
 
   protected constructor(message: string, error: AxiosError) {

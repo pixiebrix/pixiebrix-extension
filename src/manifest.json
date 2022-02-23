@@ -49,7 +49,7 @@
     "action.html",
     "action.css",
     "devtoolsPanel.css",
-    "script.js",
+    "pageScript.js",
     "ephemeralForm.html",
     "ephemeralForm.css",
     "audio/*",

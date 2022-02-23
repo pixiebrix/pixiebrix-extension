@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IRobotSDK } from "@uipath/robot/dist/iRobotSDK";
-import UiPathRobot from "@/contrib/uipath/UiPathRobot";
-import { RobotProcess } from "@uipath/robot/dist/models";
+import type { IRobotSDK } from "@uipath/robot/dist/iRobotSDK";
+import type { RobotProcess } from "@uipath/robot/dist/models";
 
 let _robot: IRobotSDK;
 
@@ -34,6 +33,10 @@ export async function initRobot(): Promise<InitResponse> {
       available: true,
     };
   }
+
+  const { UiPathRobot } = await import(
+    /* webpackChunkName: "uipath-robot" */ "@/contrib/uipath/UiPathRobot"
+  );
 
   return new Promise((resolve) => {
     UiPathRobot.on("missing-components", () => {

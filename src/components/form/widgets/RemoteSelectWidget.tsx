@@ -25,6 +25,7 @@ import { AsyncState, useAsyncState } from "@/hooks/common";
 import { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import { BusinessError } from "@/errors";
 import isPromise from "is-promise";
+import useReportError from "@/hooks/useReportError";
 
 export type OptionsFactory<T = unknown> = (
   config: SanitizedServiceConfiguration
@@ -73,6 +74,8 @@ const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
     config,
     optionsFactory
   );
+
+  useReportError(error);
 
   return (
     <SelectWidget

@@ -96,7 +96,9 @@ const ElementWizard: React.FunctionComponent<{
 
   const dispatch = useDispatch();
 
-  const refreshEntries = () => dispatch(logActions.refreshEntries());
+  const refreshEntries = () => {
+    dispatch(logActions.refreshEntries());
+  };
 
   const selectTabHandler = (step: string) => {
     setStep(step);
@@ -110,7 +112,7 @@ const ElementWizard: React.FunctionComponent<{
     useFormikContext<FormState>();
 
   const wizardSteps = [...wizard];
-  if (formState.recipe?.id && flagOn("page-editor-beta")) {
+  if (formState.recipe?.id && flagOn("page-editor-blueprint-options")) {
     wizardSteps.push(blueprintOptionsStep);
   }
 

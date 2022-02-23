@@ -139,8 +139,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
   const showDeveloperUI =
     process.env.ENVIRONMENT === "development" ||
     flagOn("page-editor-developer");
-  const showBetaExtensionPoints = flagOn("page-editor-beta");
-  const groupByRecipe = flagOn("page-editor-beta");
+  const groupByRecipe = flagOn("page-editor-blueprints");
 
   const {
     tabState: { hasPermissions },
@@ -232,13 +231,13 @@ const SidebarExpanded: React.VoidFunctionComponent<
               id="add-extension-point"
             >
               {sortBy([...ADAPTERS.values()], (x) => x.displayOrder)
-                .filter((element) => showBetaExtensionPoints || !element.beta)
+                .filter((element) => !element.flag || flagOn(element.flag))
                 .map((element) => (
                   <DropdownEntry
                     key={element.elementType}
                     caption={element.label}
                     icon={element.icon}
-                    beta={element.beta}
+                    beta={Boolean(element.flag)}
                     onClick={() => {
                       addElement(element);
                     }}

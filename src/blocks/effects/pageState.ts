@@ -97,8 +97,8 @@ export class SetPageState extends Transformer {
       namespace = "blueprint",
     }: BlockArg<{
       data: UnknownObject;
-      namespace: Namespace;
-      mergeStrategy: MergeStrategy;
+      namespace?: Namespace;
+      mergeStrategy?: MergeStrategy;
     }>,
     { logger }: BlockOptions
   ): Promise<UnknownObject> {
@@ -166,7 +166,7 @@ export class GetPageState extends Transformer {
   );
 
   async transform(
-    { namespace }: BlockArg<{ namespace: Namespace }>,
+    { namespace = "blueprint" }: BlockArg<{ namespace?: Namespace }>,
     { logger }: BlockOptions
   ): Promise<UnknownObject> {
     const { blueprintId = null, extensionId } = logger.context;
