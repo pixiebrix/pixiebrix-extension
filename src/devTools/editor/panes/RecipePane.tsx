@@ -16,8 +16,8 @@
  */
 
 import styles from "./RecipePane.module.scss";
-import React, { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { selectActiveRecipe } from "@/devTools/editor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
@@ -38,27 +38,15 @@ import useResetRecipe from "@/devTools/editor/hooks/useResetRecipe";
 import useRemoveRecipe from "@/devTools/editor/hooks/useRemoveRecipe";
 import Logs from "@/devTools/editor/tabs/Logs";
 import EditRecipe from "@/devTools/editor/tabs/editRecipeTab/EditRecipe";
+import { MessageContext } from "@/core";
+import { logActions } from "@/components/logViewer/logSlice";
+import useLogsBadgeState from "@/devTools/editor/tabs/logs/useLogsBadgeState";
 
 const EDIT_ITEM_NAME = "Edit";
 
 const OptionsPlaceholder: React.VoidFunctionComponent = () => (
   <div>Configure Blueprint Options</div>
 );
-
-const tabItems: TabItem[] = [
-  {
-    itemName: EDIT_ITEM_NAME,
-    TabContent: EditRecipe,
-  },
-  {
-    itemName: "Options",
-    TabContent: OptionsPlaceholder,
-  },
-  {
-    itemName: "Logs",
-    TabContent: Logs,
-  },
-];
 
 const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   const recipe = useSelector(selectActiveRecipe);
@@ -67,6 +55,46 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   const [saveRecipe, isSavingRecipe] = useRecipeSaver();
   const resetRecipe = useResetRecipe(recipe);
   const removeRecipe = useRemoveRecipe(recipe);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const messageContext: MessageContext = {
+      blueprintId: recipe.metadata.id,
+    };
+    dispatch(logActions.setContext(messageContext));
+  }, [dispatch, recipe.metadata.id]);
+
+  const [unreadLogsCount, logsBadgeVariant] = useLogsBadgeState();
+
+  const tabItems = useMemo<TabItem[]>(() => {
+    const items: TabItem[] = [
+      {
+        itemName: EDIT_ITEM_NAME,
+        TabContent: EditRecipe,
+      },
+      {
+        itemName: "Options",
+        TabContent: OptionsPlaceholder,
+      },
+    ];
+    if (unreadLogsCount > 0) {
+      items.push({
+        itemName: "Logs",
+        badgeCount: unreadLogsCount,
+        badgeVariant: logsBadgeVariant,
+        TabContent: Logs,
+        mountWhenActive: true,
+      });
+    } else {
+      items.push({
+        itemName: "Logs",
+        TabContent: Logs,
+        mountWhenActive: true,
+      });
+    }
+
+    return items;
+  }, [logsBadgeVariant, unreadLogsCount]);
 
   const buttons = useMemo<ActionButton[]>(() => {
     const results: ActionButton[] = [];
