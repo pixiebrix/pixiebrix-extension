@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ListGroup } from "react-bootstrap";
 import ListItem from "./ListItem";
 import {
@@ -25,6 +31,7 @@ import {
 import { VariableSizeList as List } from "react-window";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { Row } from "react-table";
+import { uuidv4 } from "@/types/helpers";
 
 // Expands react-table grouped rows recursively, as
 // compensation for react-tables instance property flatRows,
@@ -52,6 +59,7 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 }) => {
   const rowSizeInPixels = 67;
   const headerSizeInPixels = 43;
+  const [listKey, setListKey] = useState(uuidv4());
 
   // This ref is required in order to update row height upon
   // data change (assigning a unique itemKey does not work in this case)
@@ -69,7 +77,7 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   );
 
   useEffect(() => {
-    listRef.current.resetAfterIndex(0, false);
+    setListKey(uuidv4);
   }, [expandedRows]);
 
   return (
@@ -78,9 +86,8 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
         height={height}
         width={width}
         itemCount={expandedRows.length}
-        // Arbitrary number that fits content aesthetically
         itemSize={getItemSize}
-        ref={listRef}
+        key={listKey}
       >
         {({ index, style }) => {
           const row = expandedRows[index];

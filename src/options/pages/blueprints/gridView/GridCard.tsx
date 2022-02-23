@@ -56,4 +56,4 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   );
 };
 
-export default GridCard;
+export default React.memo(GridCard);

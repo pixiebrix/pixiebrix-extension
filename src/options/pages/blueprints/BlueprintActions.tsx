@@ -33,105 +33,101 @@ import { useGetAuthQuery } from "@/services/api";
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
+  // FIXME: useFlags
   const {
     data: { flags },
   } = useGetAuthQuery();
+
   const { installable, hasUpdate, status, sharing } = installableViewItem;
-  const {
-    uninstall,
-    viewLogs,
-    exportBlueprint,
-    viewShare,
-    deleteExtension,
-    reinstall,
-  } = useInstallableActions(installable);
+  const actions = useInstallableActions(installableViewItem.installable);
   const isCloudExtension = useMemo(
     () => sharing.source.type === "Personal" && status !== "Active",
     [sharing.source.type, status]
   );
 
-  return (
-    <EllipsisMenu
-      items={[
-        ...(viewShare
-          ? [
-              {
-                title: (
-                  <>
-                    <FontAwesomeIcon icon={faShare} /> Share
-                  </>
-                ),
-                action: viewShare,
-                hide: isCloudExtension,
-              },
-            ]
-          : []),
-        {
-          title: (
-            <>
-              <FontAwesomeIcon icon={faDownload} /> Export
-            </>
-          ),
-          action: exportBlueprint,
-        },
-        {
-          title: (
-            <>
-              <FontAwesomeIcon icon={faList} /> View Logs
-            </>
-          ),
-          action: viewLogs,
-          hide: status !== "Active",
-        },
-        ...(reinstall
-          ? [
-              {
-                title: (
-                  <>
-                    {hasUpdate ? (
-                      <span className="text-info">
-                        <FontAwesomeIcon icon={faSyncAlt} /> Update
-                      </span>
-                    ) : (
-                      <>
-                        <FontAwesomeIcon icon={faSyncAlt} /> Reactivate
-                      </>
-                    )}
-                  </>
-                ),
-                action: reinstall,
-                // Managed extensions are updated via the deployment banner
-                hide: sharing.source.type === "Deployment",
-              },
-            ]
-          : []),
-        {
-          title: (
-            <>
-              <FontAwesomeIcon icon={faTimes} /> Uninstall
-            </>
-          ),
-          action: uninstall,
-          // TODO: shift all hide logic to useInstallableActions
-          hide:
-            status !== "Active" ||
-            (sharing.source.type === "Deployment" &&
-              flags.includes("restricted-uninstall")),
-          className: "text-danger",
-        },
-        {
-          title: (
-            <span className="text-danger">
-              <FontAwesomeIcon icon={faTrash} /> Delete
-            </span>
-          ),
-          action: deleteExtension,
-          hide: !isCloudExtension,
-          className: "text-danger",
-        },
-      ]}
-    />
+  const actionItems = useMemo(
+    () => [
+      ...(actions.viewShare
+        ? [
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon icon={faShare} /> Share
+                </>
+              ),
+              action: actions.viewShare,
+              hide: isCloudExtension,
+            },
+          ]
+        : []),
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faDownload} /> Export
+          </>
+        ),
+        action: actions.exportBlueprint,
+      },
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faList} /> View Logs
+          </>
+        ),
+        action: actions.viewLogs,
+        hide: status !== "Active",
+      },
+      ...(actions.reinstall
+        ? [
+            {
+              title: (
+                <>
+                  {hasUpdate ? (
+                    <span className="text-info">
+                      <FontAwesomeIcon icon={faSyncAlt} /> Update
+                    </span>
+                  ) : (
+                    <>
+                      <FontAwesomeIcon icon={faSyncAlt} /> Reactivate
+                    </>
+                  )}
+                </>
+              ),
+              action: actions.reinstall,
+              // Managed extensions are updated via the deployment banner
+              hide: sharing.source.type === "Deployment",
+            },
+          ]
+        : []),
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faTimes} /> Uninstall
+          </>
+        ),
+        action: actions.uninstall,
+        // TODO: shift all hide logic to useInstallableActions
+        hide:
+          status !== "Active" ||
+          (sharing.source.type === "Deployment" &&
+            flags.includes("restricted-uninstall")),
+        className: "text-danger",
+      },
+      {
+        title: (
+          <span className="text-danger">
+            <FontAwesomeIcon icon={faTrash} /> Delete
+          </span>
+        ),
+        action: actions.deleteExtension,
+        hide: !isCloudExtension,
+        className: "text-danger",
+      },
+    ],
+    [actions, flags, hasUpdate, isCloudExtension, sharing.source.type, status]
   );
+
+  return <EllipsisMenu items={actionItems} />;
 };
 
 export default BlueprintActions;

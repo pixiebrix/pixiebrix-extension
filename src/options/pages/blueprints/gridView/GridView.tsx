@@ -33,6 +33,7 @@ import GridCard from "./GridCard";
 import { Row } from "react-table";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
+import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 
 // Expands react-table grouped rows recursively, and groups
 // rows in chunks of `columnCount` for easy grid rendering
@@ -95,7 +96,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   const getItemSize = useCallback(
     (index: number): number => {
       const row = expandedGridRows[index];
-      return row.isGrouped ? 58 : minCardSizeInPixels;
+      return "isGrouped" in row ? 58 : minCardSizeInPixels;
     },
     [expandedGridRows]
   );
@@ -104,41 +105,66 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     setListKey(uuidv4);
   }, [expandedGridRows, columnCount]);
 
-  return (
-    <div key={listKey}>
-      <List
-        height={height}
-        width={width}
-        itemSize={getItemSize}
-        itemCount={expandedGridRows.length}
-      >
-        {({ index, style }) => {
-          const gridRow = expandedGridRows[index];
+  const getItemKey = useCallback((index: number, data) => {
+    const gridRow = data[index];
 
-          if (gridRow.isGrouped) {
-            tableInstance.prepareRow(gridRow);
+    if ("isGrouped" in gridRow) {
+      return gridRow.id;
+    }
 
+    return "".concat(
+      ...gridRow.map((row) => getUniqueId(row.original.installable) as string)
+    );
+  }, []);
+
+  const GridRow = useCallback(
+    ({ index, style, data }) => {
+      const gridRow = data[index];
+
+      if (gridRow.isGrouped) {
+        tableInstance.prepareRow(gridRow);
+
+        return (
+          <div style={style}>
+            <ListGroupHeader
+              groupName={gridRow.groupByVal}
+              style={{ height: "43px" }}
+            />
+          </div>
+        );
+      }
+
+      return (
+        <div style={style} className={styles.root}>
+          {gridRow.map((row) => {
+            tableInstance.prepareRow(row);
             return (
-              <div style={style}>
-                <ListGroupHeader
-                  groupName={gridRow.groupByVal}
-                  style={{ height: "43px" }}
-                />
-              </div>
+              <GridCard
+                key={getUniqueId(row.original.installable)}
+                installableItem={row.original}
+              />
             );
-          }
+          })}
+        </div>
+      );
+    },
+    [expandedGridRows, tableInstance]
+  );
 
-          return (
-            <div style={style} className={styles.root}>
-              {gridRow.map((row) => {
-                tableInstance.prepareRow(row);
-                return <GridCard key={row.id} installableItem={row.original} />;
-              })}
-            </div>
-          );
-        }}
-      </List>
-    </div>
+  console.log("expanded grid rows:", expandedGridRows);
+
+  return (
+    <List
+      height={height}
+      width={width}
+      itemSize={getItemSize}
+      itemCount={expandedGridRows.length}
+      itemKey={getItemKey}
+      itemData={expandedGridRows}
+      key={listKey}
+    >
+      {GridRow}
+    </List>
   );
 };
 
