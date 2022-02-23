@@ -15,27 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import { Button } from "react-bootstrap";
-import AskQuestionModalButton from "@/devTools/editor/askQuestion/AskQuestionModalButton";
-
-const IntroButtons: React.VoidFunctionComponent = () => (
-  <>
-    <p className="text-center">
-      <Button
-        href="https://docs.pixiebrix.com/quick-start-guide"
-        target="_blank"
-      >
-        <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Quick Start
-      </Button>
-    </p>
-
-    <p className="text-center">
-      <AskQuestionModalButton />
-    </p>
-  </>
-);
-
-export default IntroButtons;
+:global(.picker-dialog),
+:global(.picker-dialog-bg) {
+  z-index: 2000 !important; // Above the service modal, which sits at 1050
+}

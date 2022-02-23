@@ -44,7 +44,7 @@ const componentMeta: ComponentMeta<typeof Form> = {
   },
 };
 
-const SchemaShape: yup.ObjectSchema = yup.object().shape({
+const SchemaShape = yup.object().shape({
   title: yup.string().optional().oneOf(["Mr.", "Ms.", "Mrs.", "other"]),
   name: yup.string().required(),
   age: yup.number().required("What's your age again?").positive().integer(),
@@ -83,7 +83,7 @@ export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
   </Form>
 );
 
-const AllFieldsSchema: yup.ObjectSchema = yup.object().shape({
+const AllFieldsSchema = yup.object().shape({
   name: yup.string().required(),
   story: yup.string(),
   select: yup.string(),

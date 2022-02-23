@@ -15,27 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import { Button } from "react-bootstrap";
-import AskQuestionModalButton from "@/devTools/editor/askQuestion/AskQuestionModalButton";
+import { SafeHTML } from "@/core";
+import sanitize from "@/utils/sanitize";
 
-const IntroButtons: React.VoidFunctionComponent = () => (
-  <>
-    <p className="text-center">
-      <Button
-        href="https://docs.pixiebrix.com/quick-start-guide"
-        target="_blank"
-      >
-        <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Quick Start
-      </Button>
-    </p>
+async function safeMarkdown(markdown: string): Promise<SafeHTML> {
+  const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
+  return sanitize(marked(markdown));
+}
 
-    <p className="text-center">
-      <AskQuestionModalButton />
-    </p>
-  </>
-);
-
-export default IntroButtons;
+export default safeMarkdown;

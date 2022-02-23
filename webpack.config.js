@@ -259,7 +259,7 @@ module.exports = (env, options) =>
       devtools: "./src/devtools",
 
       // The script that gets injected into the host page should not have a vendor chunk
-      script: "./src/script",
+      pageScript: "./src/pageScript",
     },
 
     resolve: {

@@ -20,11 +20,6 @@ html {
   overflow-y: scroll;
 }
 
-.modal-backdrop {
-  // keep behind services modal of 999
-  z-index: 998;
-}
-
 // Notifications must be above everything
 .react-toast-notifications__container {
   z-index: 2147483647 !important;

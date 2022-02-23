@@ -140,10 +140,7 @@ function useCreate(): CreateCallback {
       try {
         const adapter = ADAPTERS.get(element.type);
 
-        try {
-          await ensurePermissions(element, addToast);
-        } catch (error) {
-          // Continue to allow saving (because there's a workaround)
+        void ensurePermissions(element, addToast).catch((error) => {
           reportError(error);
           console.error("Error checking/enabling permissions", { error });
           addToast(
@@ -153,7 +150,7 @@ function useCreate(): CreateCallback {
               autoDismiss: true,
             }
           );
-        }
+        });
 
         const extensionPointId = element.extensionPoint.metadata.id;
         const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);

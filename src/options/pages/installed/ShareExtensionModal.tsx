@@ -272,13 +272,7 @@ const ShareExtensionModal: React.FC<{
   );
 
   return (
-    <Modal
-      show
-      onHide={onCancel}
-      backdropClassName={styles.backdrop}
-      className={styles.modal}
-      dialogClassName={styles.dialog}
-    >
+    <Modal show onHide={onCancel} dialogClassName={styles.dialog}>
       <Modal.Header>
         <Modal.Title>Share as Blueprint</Modal.Title>
       </Modal.Header>

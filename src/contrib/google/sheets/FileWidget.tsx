@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "./FileWidget.module.scss";
+
 import React, { useCallback, useEffect, useState } from "react";
 import { Data, SheetMeta } from "@/contrib/google/sheets/types";
 import { useField } from "formik";
@@ -103,12 +105,8 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
 
       console.debug(`Using Google token: ${token}`);
 
-      await new Promise<void>((resolve) => {
-        gapi.load("picker", {
-          callback: () => {
-            resolve();
-          },
-        });
+      await new Promise((callback) => {
+        gapi.load("picker", { callback });
       });
 
       if (isNullOrBlank(APP_ID)) {

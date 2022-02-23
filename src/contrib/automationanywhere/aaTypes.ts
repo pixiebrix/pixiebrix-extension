@@ -15,27 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import { Button } from "react-bootstrap";
-import AskQuestionModalButton from "@/devTools/editor/askQuestion/AskQuestionModalButton";
+import { SanitizedServiceConfiguration } from "@/core";
+import { UnknownObject } from "@/types";
 
-const IntroButtons: React.VoidFunctionComponent = () => (
-  <>
-    <p className="text-center">
-      <Button
-        href="https://docs.pixiebrix.com/quick-start-guide"
-        target="_blank"
-      >
-        <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Quick Start
-      </Button>
-    </p>
+export type CommunityBotArgs = {
+  service: SanitizedServiceConfiguration;
+  fileId: string;
+  deviceId: string;
+  data: UnknownObject;
+};
 
-    <p className="text-center">
-      <AskQuestionModalButton />
-    </p>
-  </>
-);
+export type EnterpriseBotArgs = {
+  service: SanitizedServiceConfiguration;
+  fileId: string;
+  runAsUserIds: number[];
+  poolIds: string[];
+  data: UnknownObject;
+};
 
-export default IntroButtons;
+export type BotArgs = (CommunityBotArgs | EnterpriseBotArgs) & {
+  awaitResult: boolean;
+};

@@ -50,7 +50,7 @@ async function installScriptOnce(): Promise<void> {
     console.debug("Installing page script");
     _scriptPromise = new Promise((resolve) => {
       const script = document.createElement("script");
-      script.src = browser.runtime.getURL("script.js");
+      script.src = browser.runtime.getURL("pageScript.js");
       (document.head || document.documentElement).append(script);
       script.addEventListener("load", () => {
         script.remove();

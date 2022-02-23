@@ -96,7 +96,8 @@ async function initRollbar(): Promise<Rollbar> {
         for (const frame of payload.body.trace?.frames ?? []) {
           if (frame.filename && !frame.filename.startsWith("http")) {
             frame.filename = frame.filename.replace(
-              location.origin,
+              // Include the slash because location.origin does not have a trailing slash but the ENV does
+              location.origin + "/",
               process.env.ROLLBAR_PUBLIC_PATH
             );
           }

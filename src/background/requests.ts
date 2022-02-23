@@ -26,7 +26,6 @@ import {
   BusinessError,
   ContextError,
   ExtensionNotLinkedError,
-  isAxiosError,
   selectError,
 } from "@/errors";
 import { isEmpty } from "lodash";
@@ -48,6 +47,7 @@ import {
 import {
   enrichRequestError,
   safeGuessStatusText,
+  selectAxiosError,
 } from "@/services/requestErrorUtils";
 
 // eslint-disable-next-line prefer-destructuring -- process.env variable
@@ -130,9 +130,7 @@ async function authenticate(
     const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
     if (isEmpty(data)) {
-      console.debug(
-        `Fetching token for ${config.id} because no auth cached locally`
-      );
+      console.debug(`Fetching token for ${config.id}`);
       data = await getToken(service, localConfig);
     }
 
@@ -190,7 +188,7 @@ async function proxyRequest<T>(
   };
 }
 
-const UNAUTHORIZED_STATUS_CODES = [401, 403];
+const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
 
 async function performConfiguredRequest(
   serviceConfig: SanitizedServiceConfiguration,
@@ -207,9 +205,12 @@ async function performConfiguredRequest(
     );
   } catch (error) {
     // Try again - have the user login again, or automatically try to get a new token
+
+    const axiosError = selectAxiosError(error);
+
     if (
-      isAxiosError(error) &&
-      UNAUTHORIZED_STATUS_CODES.includes(error.response?.status)
+      axiosError &&
+      UNAUTHORIZED_STATUS_CODES.has(axiosError.response?.status)
     ) {
       const service = await serviceRegistry.lookup(serviceConfig.serviceId);
       if (service.isOAuth2 || service.isToken) {

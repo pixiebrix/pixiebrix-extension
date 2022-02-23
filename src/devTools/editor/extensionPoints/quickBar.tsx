@@ -35,7 +35,10 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { getDomain } from "@/permissions/patterns";
-import { faThLarge } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle,
+  faThLarge,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   BaseExtensionState,
   BaseFormState,
@@ -45,6 +48,7 @@ import {
 import browser, { Menus } from "webextension-polyfill";
 import { NormalizedAvailability } from "@/blocks/types";
 import React, { useEffect, useState } from "react";
+import { Alert } from "react-bootstrap";
 import { Except } from "type-fest";
 import {
   QuickBarConfig,
@@ -54,9 +58,9 @@ import {
   QuickBarTargetMode,
 } from "@/extensionPoints/quickBarExtension";
 import QuickBarConfiguration from "@/devTools/editor/tabs/quickBar/QuickBarConfiguration";
-import { isMac } from "@/utils";
 import { isEmpty } from "lodash";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type Extension = BaseExtensionState & Except<QuickBarConfig, "action">;
 
@@ -240,13 +244,10 @@ function asDynamicElement(element: QuickBarFormState): DynamicDefinition {
   };
 }
 
-const DEFAULT_SHORTCUT = isMac() ? "⌘K" : "Ctrl+K";
-
 const config: ElementConfig<undefined, QuickBarFormState> = {
   displayOrder: 1,
   elementType: "quickBar",
   label: "Quick Bar",
-  beta: true,
   baseClass: QuickBarExtensionPoint,
   EditorNode: QuickBarConfiguration,
   selectNativeElement: undefined,
@@ -272,27 +273,37 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
     }, []);
 
     return (
-      <div className="pb-2">
-        <p>
-          The quick bar can be triggered on any page by pressing{" "}
-          <kbd style={{ fontFamily: "system" }}>
-            {isEmpty(shortcut) ? DEFAULT_SHORTCUT : shortcut}
-          </kbd>
-          .{" "}
-          {isEmpty(shortcut) &&
-            "You have not configured a Quick Bar shortcut in Chrome, you're currently using the default. "}
-        </p>
-        <p>
-          <a
-            href="chrome://extensions/shortcuts"
-            onClick={(event) => {
-              event.preventDefault();
-              void browser.tabs.create({ url: event.currentTarget.href });
-            }}
-          >
-            Configure a Quick Bar shortcut in Chrome
-          </a>
-        </p>
+      <div className="text-center pb-2">
+        {isEmpty(shortcut) ? (
+          <Alert variant="warning">
+            <FontAwesomeIcon icon={faExclamationTriangle} />
+            &nbsp;You have not{" "}
+            <a
+              href="chrome://extensions/shortcuts"
+              onClick={(event) => {
+                event.preventDefault();
+                void browser.tabs.create({ url: event.currentTarget.href });
+              }}
+            >
+              configured a Quick Bar shortcut
+            </a>
+          </Alert>
+        ) : (
+          <p>
+            You&apos;ve configured&nbsp;
+            <kbd style={{ fontFamily: "system" }}>{shortcut}</kbd>&nbsp; to open
+            the Quick Bar.{" "}
+            <a
+              href="chrome://extensions/shortcuts"
+              onClick={(event) => {
+                event.preventDefault();
+                void browser.tabs.create({ url: event.currentTarget.href });
+              }}
+            >
+              Change your Quick Bar shortcut
+            </a>
+          </p>
+        )}
       </div>
     );
   },
