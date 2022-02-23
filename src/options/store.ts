@@ -45,6 +45,8 @@ import blueprintsSlice, {
 } from "./pages/blueprints/blueprintsSlice";
 import { logActions, logSlice } from "@/components/logViewer/logSlice";
 import { LogRootState } from "@/components/logViewer/logViewerTypes";
+import { AuthState } from "@/core";
+import authSlice from "@/store/authSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -53,6 +55,7 @@ export const hashHistory = createHashHistory({ hashType: "slash" });
 export type RootState = LogRootState & {
   options: OptionsState;
   blueprints: BlueprintsState;
+  auth: AuthState;
   services: ServicesState;
   settings: SettingsState;
   workshop: WorkshopState;
@@ -87,6 +90,7 @@ const store = configureStore({
       persistBlueprintsConfig,
       blueprintsSlice.reducer
     ),
+    auth: authSlice.reducer,
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),

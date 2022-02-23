@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
-import { Provider, useSelector } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import Loader from "@/components/Loader";
 import { Container } from "react-bootstrap";
@@ -57,6 +57,7 @@ import { SettingsState } from "@/store/settingsTypes";
 import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
 import { selectSettings } from "@/store/settingsSelectors";
+import { setAuth } from "@/store/authSlice";
 
 // Register the built-in bricks
 registerEditors();
@@ -84,15 +85,18 @@ const Layout = () => {
   // Get the latest brick definitions. Put it here in Layout instead of App to ensure the Redux store has been hydrated
   // by the time refresh is called.
   useRefresh();
+  const dispatch = useDispatch();
 
   const { permit } = useFlags();
   const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
-  const { isLoading } = useGetAuthQuery();
+  const { data, isLoading } = useGetAuthQuery();
 
   if (isLoading) {
     return <Loader />;
   }
+
+  dispatch(setAuth(data));
 
   return (
     <div>

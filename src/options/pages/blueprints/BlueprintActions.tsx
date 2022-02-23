@@ -28,14 +28,14 @@ import {
 import React from "react";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { InstallableViewItem } from "./blueprintsTypes";
-import { useGetAuthQuery } from "@/services/api";
+import { selectAuth } from "@/store/authSelectors";
+import { useSelector } from "react-redux";
 
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { flags } = useSelector(selectAuth);
+
   const { installable, hasUpdate, status, sharing } = installableViewItem;
   const {
     uninstall,
