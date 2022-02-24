@@ -522,9 +522,9 @@ export function safeCssSelector(
     ],
     whitelist: [
       // Data attributes people use in automated tests are unlikely to change frequently
-      ["data-cy"],
-      ["data-testid"],
-      ["data-test"],
+      "[data-cy='*']",
+      "[data-testid='*']",
+      "[data-test='*']",
     ],
     selectors: selectors ?? DEFAULT_SELECTOR_PRIORITIES,
     combineWithinSelector: true,

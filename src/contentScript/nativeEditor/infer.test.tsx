@@ -370,6 +370,18 @@ describe("inferSelectors", () => {
     );
   });
 
+  test("prefer unique selectors", () => {
+    expectSelectors(
+      ["[data-cy='baz']", ".zoo"],
+      html`
+        <div>
+          <input aria-label="foo" data-cy="baz" class="zoo" />
+          <input aria-label="bar" data-cy="zan" />
+        </div>
+      `
+    );
+  });
+
   test.each([["data-testid"], ["data-cy"], ["data-test"]])(
     "infer test attribute: %s",
     (attribute: string) => {
