@@ -263,7 +263,12 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
             <ObjectFieldRow
               key={property}
               parentSchema={schema}
-              name={joinName(field.name, property)}
+              name={
+                // Always use nesting even if property name is empty
+                property == null
+                  ? `${field.name}.`
+                  : joinName(field.name, property)
+              }
               property={property}
               defined={Object.prototype.hasOwnProperty.call(
                 declaredProperties,
