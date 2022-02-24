@@ -91,7 +91,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     (index: number): number => {
       // eslint-disable-next-line security/detect-object-injection
       const row = expandedGridRows[index];
-      return "isGrouped" in row ? 58 : minCardSizeInPixels;
+      return "isGrouped" in row ? 43 : minCardSizeInPixels;
     },
     [expandedGridRows]
   );
@@ -108,14 +108,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
       if ("isGrouped" in gridRow) {
         tableInstance.prepareRow(gridRow);
 
-        return (
-          <div style={style}>
-            <ListGroupHeader
-              groupName={gridRow.groupByVal}
-              style={{ height: "43px" }}
-            />
-          </div>
-        );
+        return <ListGroupHeader groupName={gridRow.groupByVal} style={style} />;
       }
 
       return (

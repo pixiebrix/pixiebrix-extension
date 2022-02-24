@@ -17,8 +17,6 @@
 
 import React from "react";
 import styles from "@/options/pages/blueprints/listView/ListItem.module.scss";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 
 const ListGroupHeader: React.VoidFunctionComponent<{
   groupName: string;
@@ -26,9 +24,7 @@ const ListGroupHeader: React.VoidFunctionComponent<{
 }> = ({ groupName, style }) => {
   return (
     <div className={styles.listHeader} style={style}>
-      <span>
-        <FontAwesomeIcon icon={faAngleDown} /> {groupName}
-      </span>
+      {groupName}
     </div>
   );
 };

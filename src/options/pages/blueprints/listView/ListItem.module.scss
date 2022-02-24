@@ -20,18 +20,17 @@
   justify-content: space-between;
   border: none;
   border-bottom: rgb(231, 222, 233) 1px solid;
+  border-top: rgb(231, 222, 233) 1px solid;
 }
 
 .listHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-weight: bold;
+  font-weight: bolder;
   color: #bba8bff5;
   background: transparent;
   border: none;
-  border-top: rgb(231, 222, 233) 1px solid;
-  border-bottom: rgb(231, 222, 233) 1px solid;
 }
 
 .icon {
