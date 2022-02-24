@@ -24,7 +24,7 @@ import { UnknownObject } from "@/types";
 import { joinName } from "@/utils";
 
 const MUSTACHE_ERROR_MESSAGE =
-  "Invalid string template. <a href='https://docs.pixiebrix.com/nunjucks-templates'>Read more about string templates.</a>";
+  "Invalid string template. Read more about string templates: https://docs.pixiebrix.com/nunjucks-templates";
 
 function validateObject(
   config: UnknownObject,
