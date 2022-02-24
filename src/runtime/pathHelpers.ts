@@ -17,7 +17,7 @@
 
 import { identity, toPath } from "lodash";
 import { getErrorMessage } from "@/errors";
-import { cleanValue, InvalidPathError, isObject } from "@/utils";
+import { cleanValue, InvalidPathError, isObject, joinName } from "@/utils";
 import { UnknownObject } from "@/types";
 
 // First part of the path can be global context with a @
@@ -138,6 +138,6 @@ export function getFieldNamesFromPathString(
 ): [parentFieldName: string | undefined, fieldName: string] {
   const path = toPath(name);
   const fieldName = path.pop();
-  const parentFieldName = path.length > 0 ? path.join(".") : undefined;
+  const parentFieldName = path.length > 0 ? joinName(null, ...path) : undefined;
   return [parentFieldName, fieldName];
 }

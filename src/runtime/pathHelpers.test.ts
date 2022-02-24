@@ -87,10 +87,12 @@ describe("getFieldNamesFromPathString", () => {
     ]);
   });
 
-  test("path with periods", () => {
-    expect(getFieldNamesFromPathString("foo['bar.baz']")).toStrictEqual([
-      "foo",
-      "bar.baz",
-    ]);
+  test.each([
+    ['foo["bar.baz"]', ["foo", "bar.baz"]],
+    ['foo.bar["baz.qux"]', ["foo.bar", "baz.qux"]],
+    ['foo["bar.baz"].qux', ['foo["bar.baz"]', "qux"]],
+    ['foo["bar.baz"].qux.quux', ['foo["bar.baz"].qux', "quux"]],
+  ])("path with periods", (name, expected) => {
+    expect(getFieldNamesFromPathString(name)).toStrictEqual(expected);
   });
 });
