@@ -20,13 +20,11 @@ import styles from "@/options/pages/blueprints/listView/ListItem.module.scss";
 
 const ListGroupHeader: React.VoidFunctionComponent<{
   groupName: string;
-  style: unknown;
-}> = ({ groupName, style }) => {
-  return (
-    <div className={styles.listHeader} style={style}>
-      {groupName}
-    </div>
-  );
-};
+  style: React.CSSProperties;
+}> = ({ groupName, style }) => (
+  <div className={styles.listHeader} style={style}>
+    {groupName}
+  </div>
+);
 
 export default React.memo(ListGroupHeader);

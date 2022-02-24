@@ -27,7 +27,7 @@ import { ListGroup } from "react-bootstrap";
 
 const ListItem: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
-  style: unknown;
+  style: React.CSSProperties;
 }> = ({ installableItem, style }) => {
   const { name, sharing, updatedAt, icon } = installableItem;
 

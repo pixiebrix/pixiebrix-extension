@@ -66,6 +66,10 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     [expandedRows]
   );
 
+  // `react-window` caches itemSize which causes inconsistent
+  // row heights/row height flickering on scroll when data changes,
+  // even with non-index `itemKeys`.
+  // Re-render the list when expandedRows changes.
   useEffect(() => {
     setListKey(uuidv4);
   }, [expandedRows]);
