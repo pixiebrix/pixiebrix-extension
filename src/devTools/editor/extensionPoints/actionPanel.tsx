@@ -102,9 +102,10 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { extension, ...state }: ActionPanelFormState,
+  state: ActionPanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ActionPanelConfig> {
+  const { extension } = state;
   const config: ActionPanelConfig = {
     heading: extension.heading,
     body: options.includeInstanceIds
