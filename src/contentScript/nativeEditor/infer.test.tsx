@@ -23,6 +23,7 @@ import {
   safeCssSelector,
 } from "@/contentScript/nativeEditor/infer";
 import { PIXIEBRIX_DATA_ATTR, EXTENSION_POINT_DATA_ATTR } from "@/common";
+import { html } from "@/utils";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";
@@ -325,19 +326,73 @@ test("infer header structure mismatch", () => {
 });
 
 describe("safeCssSelector", () => {
-  test("infer aria-label", () => {
-    document.body.innerHTML =
-      "<div>" +
-      "<input aria-label='foo'/>" +
-      "<input aria-label='bar'/>" +
-      "</div>";
+  const expectSelector = (selector: string, body: string) => {
+    document.body.innerHTML = body;
 
-    const selector = safeCssSelector(
-      document.body.querySelector("input[aria-label='foo']"),
-      null
+    const inferredSelector = safeCssSelector(
+      document.body.querySelector(selector)
     );
 
-    expect(selector).toBe("[aria-label='foo']");
+    expect(inferredSelector).toBe(selector);
+  };
+
+  test("infer aria-label", () => {
+    expectSelector(
+      "[aria-label='foo']",
+      html`
+        <div>
+          <input aria-label="foo" />
+          <input aria-label="bar" />
+        </div>
+      `
+    );
+  });
+  test("infer class", () => {
+    expectSelector(
+      ".contacts",
+      html`
+        <ul>
+          <li><a class="navItem about" href="/about">About</a></li>
+          <li><a class="navItem contacts" href="/contacts">Contacts</a></li>
+        </ul>
+      `
+    );
+  });
+
+  test("infer preferring class over aria-label", () => {
+    expectSelector(
+      ".foo",
+      html`
+        <div>
+          <input class="foo" aria-label="foo" />
+          <input class="bar" aria-label="bar" />
+        </div>
+      `
+    );
+  });
+
+  test("infer preferring aria-label over random classes", () => {
+    expectSelector(
+      "[aria-label='foo']",
+      html`
+        <div>
+          <input class="asij340snlslnakdi9" aria-label="foo" />
+          <input class="aksjhd93rqansld00s" aria-label="bar" />
+        </div>
+      `
+    );
+  });
+
+  test("infer class discarding random ones", () => {
+    expectSelector(
+      ".contacts",
+      html`
+        <ul>
+          <li><a class="i3349fj9 about" href="/about">About</a></li>
+          <li><a class="iauoff23 contacts" href="/contacts">Contacts</a></li>
+        </ul>
+      `
+    );
   });
 });
 

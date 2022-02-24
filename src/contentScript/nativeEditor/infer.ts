@@ -487,8 +487,8 @@ const DEFAULT_SELECTOR_PRIORITIES: Array<keyof typeof CssSelectorType> = [
  */
 export function safeCssSelector(
   element: HTMLElement,
-  selectors: Array<keyof typeof CssSelectorType> | undefined,
-  root: Element | null = null
+  selectors?: Array<keyof typeof CssSelectorType>,
+  root?: Element
 ): string {
   // https://github.com/fczbkk/css-selector-generator
 
@@ -511,7 +511,7 @@ export function safeCssSelector(
 
         const randomness = detectRandomString(selector);
         console.debug("css-selector-generator:", { selector, randomness });
-        return randomness > 0.5;
+        return randomness >= 0.5;
       },
     ],
     whitelist: [
