@@ -265,7 +265,7 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
               parentSchema={schema}
               name={
                 // Always use nesting even if property name is empty
-                property == null
+                property == null || property === ""
                   ? `${field.name}.`
                   : joinName(field.name, property)
               }
