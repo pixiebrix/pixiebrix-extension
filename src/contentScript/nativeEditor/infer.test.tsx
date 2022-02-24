@@ -23,6 +23,8 @@ import {
   safeCssSelector,
 } from "@/contentScript/nativeEditor/infer";
 import { PIXIEBRIX_DATA_ATTR, EXTENSION_POINT_DATA_ATTR } from "@/common";
+import { html } from "@/utils";
+import { uniq } from "lodash";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";
@@ -342,47 +344,54 @@ describe("safeCssSelector", () => {
 });
 
 describe("inferSelectors", () => {
-  test("infer aria-label", () => {
-    document.body.innerHTML =
-      "<div>" +
-      "<input aria-label='foo'/>" +
-      "<input aria-label='bar'/>" +
-      "</div>";
+  const expectSelectors = (selectors: string[], body: string) => {
+    document.body.innerHTML = body;
 
-    const selector = inferSelectors(
-      document.body.querySelector("input[aria-label='foo']")
+    // The provided selector list should only match one element
+    const userSelectedElements = selectors.map((selector) =>
+      document.body.querySelector<HTMLElement>(selector)
     );
+    expect(uniq(userSelectedElements)).toEqual([userSelectedElements[0]]);
 
-    expect(selector).toStrictEqual(["[aria-label='foo']"]);
+    // The provided selector list should match the inferred list
+    const inferredSelectors = inferSelectors(userSelectedElements[0]);
+    expect(inferredSelectors).toEqual(selectors);
+  };
+
+  test("infer aria-label", () => {
+    expectSelectors(
+      ["[aria-label='foo']"],
+      html`
+        <div>
+          <input aria-label="foo" />
+          <input aria-label="bar" />
+        </div>
+      `
+    );
   });
 
   test.each([["data-testid"], ["data-cy"], ["data-test"]])(
     "infer test attribute: %s",
     (attribute: string) => {
-      document.body.innerHTML = `<div><input ${attribute}='a' /><input ${attribute}='b' /></div>`;
-
-      const selector = inferSelectors(
-        document.body.querySelector(`input[${attribute}='a']`)
+      expectSelectors(
+        [`[${attribute}='a']`],
+        html`<div><input ${attribute}="a" /><input ${attribute}="b" /></div>`
       );
-
-      expect(selector).toStrictEqual([`[${attribute}='a']`]);
     }
   );
 
   test.each([[PIXIEBRIX_DATA_ATTR], [EXTENSION_POINT_DATA_ATTR]])(
     "don't infer pixiebrix attribute: %s",
     (attribute: string) => {
-      document.body.innerHTML =
-        "<div>" +
-        `<input ${attribute}='foo' aria-label='foo'/>` +
-        `<input ${attribute}='bar' aria-label='bar'/>` +
-        "</div>";
-
-      const selector = inferSelectors(
-        document.body.querySelector(`input[${attribute}='foo']`)
+      expectSelectors(
+        ["[aria-label='foo']"],
+        html`
+          <div>
+            <input ${attribute}="foo" aria-label="foo" />
+            <input ${attribute}="bar" aria-label="bar" />
+          </div>
+        `
       );
-
-      expect(selector).toStrictEqual(["[aria-label='foo']"]);
     }
   );
 });
