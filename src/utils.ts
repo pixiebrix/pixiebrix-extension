@@ -42,6 +42,8 @@ import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
 
+const specialCharsRegex = /[.[\]]/;
+
 /**
  * Create a Formik field name, validating the individual path parts.
  * @param baseFieldName The base field name
@@ -62,7 +64,7 @@ export function joinName(
 
   let path = baseFieldName || "";
   for (const fieldName of fieldNames) {
-    if (fieldName.includes(".")) {
+    if (specialCharsRegex.test(fieldName)) {
       path += `["${fieldName}"]`;
     } else if (path === "") {
       path = fieldName;

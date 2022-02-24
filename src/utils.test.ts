@@ -90,6 +90,13 @@ describe("joinName", () => {
   ])("accepts periods in path parts (%s)", (pathParts, expected) => {
     expect(joinName("foo", ...pathParts)).toBe(expected);
   });
+  test.each([
+    [["bar[baz"], 'foo["bar[baz"]'],
+    [["bar", "[baz]qux"], 'foo.bar["[baz]qux"]'],
+    [["bar[]baz", "qux"], 'foo["bar[]baz"].qux'],
+  ])("accepts square brackets in path parts (%s)", (pathParts, expected) => {
+    expect(joinName("foo", ...pathParts)).toBe(expected);
+  });
 });
 
 describe("matchesAnyPattern", () => {

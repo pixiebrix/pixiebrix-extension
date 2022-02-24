@@ -61,8 +61,8 @@ describe("getPropByPath", () => {
       '["foo.bar"].baz',
       "qux",
     ],
-  ])("can get property accessed by []", (ctx, path, expected) => {
-    expect(getPropByPath(ctx, path)).toBe(expected);
+  ])("can get property accessed by []", (context, path, expected) => {
+    expect(getPropByPath(context, path)).toBe(expected);
   });
 });
 
