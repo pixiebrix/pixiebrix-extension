@@ -25,7 +25,7 @@ import {
   isShared,
 } from "@/options/pages/blueprints/installableUtils";
 import { Installable } from "./blueprintsTypes";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import {
   reactivateEveryTab,
@@ -37,10 +37,7 @@ import { useCallback } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
 import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/installed/exportBlueprint";
-import {
-  useDeleteCloudExtensionMutation,
-  useGetAuthQuery,
-} from "@/services/api";
+import { appApi, useDeleteCloudExtensionMutation } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
@@ -54,9 +51,10 @@ function useInstallableActions(installable: Installable) {
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
 
+  // Select cached auth data for performance reasons
   const {
     data: { scope },
-  } = useGetAuthQuery();
+  } = useSelector(appApi.endpoints.getAuth.select());
 
   const reinstall = useCallback(() => {
     if (!isExtension(installable) || !installable._recipe) {

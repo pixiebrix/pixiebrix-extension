@@ -28,15 +28,16 @@ import {
 import React, { useMemo } from "react";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { InstallableViewItem } from "./blueprintsTypes";
-import { useGetAuthQuery } from "@/services/api";
+import { appApi } from "@/services/api";
+import { useSelector } from "react-redux";
 
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
-  // FIXME: useFlags
+  // Select cached auth data for performance reasons
   const {
     data: { flags },
-  } = useGetAuthQuery();
+  } = useSelector(appApi.endpoints.getAuth.select());
 
   const { installable, hasUpdate, status, sharing } = installableViewItem;
   const actions = useInstallableActions(installable);
