@@ -85,7 +85,7 @@ export function getPropByPath(
   const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
 
   let value: unknown = obj;
-  const rawParts = path.trim().split(".");
+  const rawParts = toPath(path.trim());
 
   for (const [index, rawPart] of rawParts.entries()) {
     const previous = value;

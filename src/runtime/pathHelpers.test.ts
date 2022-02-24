@@ -41,6 +41,29 @@ describe("getPropByPath", () => {
       getPropByPath({ array: [{ key: "foo" }] }, "array.1?.key")
     ).toBeNull();
   });
+
+  test.each([
+    [
+      {
+        foo: {
+          "bar.baz": "qux",
+        },
+      },
+      'foo["bar.baz"]',
+      "qux",
+    ],
+    [
+      {
+        "foo.bar": {
+          baz: "qux",
+        },
+      },
+      '["foo.bar"].baz',
+      "qux",
+    ],
+  ])("can get property accessed by []", (ctx, path, expected) => {
+    expect(getPropByPath(ctx, path)).toBe(expected);
+  });
 });
 
 describe("isSimplePath", () => {
