@@ -54,7 +54,7 @@ jest.mock("@/telemetry/events", () => ({
   reportEvent: jest.fn(),
 }));
 
-jest.mock("@/actionPanel/messenger/api", () => {});
+jest.mock("@/sidebar/messenger/api", () => {});
 jest.mock("@/contentScript/messenger/api", () => ({
   insertButton: jest.fn(),
 }));

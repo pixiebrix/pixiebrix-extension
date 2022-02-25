@@ -28,11 +28,11 @@ export const resetTab = getNotifier("RESET_TAB");
 
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
-export const toggleActionPanel = getMethod("TOGGLE_ACTION_PANEL");
-export const showActionPanel = getMethod("SHOW_ACTION_PANEL");
-export const hideActionPanel = getMethod("HIDE_ACTION_PANEL");
-export const removeActionPanel = getMethod("REMOVE_ACTION_PANEL");
-export const getActionPanelStore = getMethod("GET_ACTION_PANEL_STORE");
+export const toggleSidebar = getMethod("TOGGLE_SIDEBAR");
+export const showSidebar = getMethod("SHOW_SIDEBAR");
+export const hideSidebar = getMethod("HIDE_SIDEBAR");
+export const removeSidebar = getMethod("REMOVE_SIDEBAR");
+export const getSidebarStore = getMethod("GET_SIDEBAR_STORE");
 export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");
 

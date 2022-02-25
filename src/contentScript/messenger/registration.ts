@@ -32,12 +32,12 @@ import {
   cancelForm,
 } from "@/contentScript/ephemeralFormProtocol";
 import {
-  hideActionPanel,
-  showActionPanel,
-  toggleActionPanel,
-  removeExtension as removeActionPanel,
-  getActionPanelStore,
-} from "@/contentScript/actionPanel";
+  hideSidebar,
+  showSidebar,
+  toggleSidebar,
+  removeExtension as removeSidebar,
+  getSidebarStore,
+} from "@/contentScript/sidebar";
 import { insertPanel } from "@/contentScript/nativeEditor/insertPanel";
 import { insertButton } from "@/contentScript/nativeEditor/insertButton";
 import {
@@ -85,11 +85,11 @@ declare global {
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
-    TOGGLE_ACTION_PANEL: typeof toggleActionPanel;
-    SHOW_ACTION_PANEL: typeof showActionPanel;
-    HIDE_ACTION_PANEL: typeof hideActionPanel;
-    REMOVE_ACTION_PANEL: typeof removeActionPanel;
-    GET_ACTION_PANEL_STORE: typeof getActionPanelStore;
+    TOGGLE_SIDEBAR: typeof toggleSidebar;
+    SHOW_SIDEBAR: typeof showSidebar;
+    HIDE_SIDEBAR: typeof hideSidebar;
+    REMOVE_SIDEBAR: typeof removeSidebar;
+    GET_SIDEBAR_STORE: typeof getSidebarStore;
 
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
@@ -136,11 +136,11 @@ export default function registerMessenger(): void {
 
     TOGGLE_QUICK_BAR: toggleQuickBar,
     HANDLE_MENU_ACTION: handleMenuAction,
-    TOGGLE_ACTION_PANEL: toggleActionPanel,
-    SHOW_ACTION_PANEL: showActionPanel,
-    HIDE_ACTION_PANEL: hideActionPanel,
-    REMOVE_ACTION_PANEL: removeActionPanel,
-    GET_ACTION_PANEL_STORE: getActionPanelStore,
+    TOGGLE_SIDEBAR: toggleSidebar,
+    SHOW_SIDEBAR: showSidebar,
+    HIDE_SIDEBAR: hideSidebar,
+    REMOVE_SIDEBAR: removeSidebar,
+    GET_SIDEBAR_STORE: getSidebarStore,
 
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,

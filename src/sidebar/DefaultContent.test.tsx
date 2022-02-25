@@ -22,7 +22,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { extensionFactory } from "@/tests/factories";
 import { ExtensionOptionsState } from "@/store/extensionsTypes";
 import { PersistedExtension } from "@/core";
-import DefaultActionPanel from "./DefaultActionPanel";
+import DefaultPanel from "./DefaultPanel";
 import extensionsSlice from "@/store/extensionsSlice";
 
 jest.unmock("react-redux");
@@ -34,11 +34,11 @@ function optionsStore(initialState?: ExtensionOptionsState) {
   });
 }
 
-describe("renders DefaultActionPanel", () => {
+describe("renders DefaultPanel", () => {
   it("renders no active extensions", () => {
     render(
       <Provider store={optionsStore()}>
-        <DefaultActionPanel />
+        <DefaultPanel />
       </Provider>
     );
 
@@ -52,7 +52,7 @@ describe("renders DefaultActionPanel", () => {
 
     render(
       <Provider store={optionsStore(state)}>
-        <DefaultActionPanel />
+        <DefaultPanel />
       </Provider>
     );
 

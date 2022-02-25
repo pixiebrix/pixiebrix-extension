@@ -17,15 +17,15 @@
 
 /* Do not use `registerMethod` in this file */
 import { getMethod } from "webext-messenger";
-import { isBrowserActionPanel } from "@/chrome";
+import { isBrowserSidebar } from "@/chrome";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
-if (isBrowserActionPanel() && process.env.DEBUG) {
+if (isBrowserSidebar() && process.env.DEBUG) {
   console.warn(
-    "This should not have been imported in the action panel. Use the API directly instead."
+    "This should not have been imported in the sidebar. Use the API directly instead."
   );
 }
 
-export const renderPanels = getMethod("ACTION_PANEL_RENDER_PANELS");
-export const showForm = getMethod("ACTION_PANEL_SHOW_FORM");
-export const hideForm = getMethod("ACTION_PANEL_HIDE_FORM");
+export const renderPanels = getMethod("SIDEBAR_RENDER_PANELS");
+export const showForm = getMethod("SIDEBAR_SHOW_FORM");
+export const hideForm = getMethod("SIDEBAR_HIDE_FORM");

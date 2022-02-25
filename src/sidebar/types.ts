@@ -31,7 +31,7 @@ export type RendererError = {
 };
 
 /**
- * Entry types supported by the action panel.
+ * Entry types supported by the sidebar.
  *
  * Current supports panels and ephemeral forms. In the future we may also support button entries, etc.
  *
@@ -46,8 +46,8 @@ export type EntryType = "panel" | "form";
 export type PanelPayload = RendererPayload | RendererError | null;
 
 /**
- * A panel added by an extension attached to an ActionPanelExtensionPoint
- * @see ActionPanelExtensionPoint
+ * A panel added by an extension attached to an SidebarExtensionPoint
+ * @see SidebarExtensionPoint
  */
 export type PanelEntry = {
   /**
@@ -55,12 +55,12 @@ export type PanelEntry = {
    */
   extensionId: UUID;
   /**
-   * The actionPanel extension point
-   * @see ActionPanelExtensionPoint
+   * The sidebar extension point
+   * @see SidebarExtensionPoint
    */
   extensionPointId: RegistryId;
   /**
-   * Heading for tab name in the action panel
+   * Heading for tab name in the sidebar
    */
   heading: string;
   /**
@@ -89,9 +89,9 @@ export type FormEntry = {
 };
 
 /**
- * The store/state of entries currently added to the action panel
+ * The store/state of entries currently added to the sidebar
  */
-export type ActionPanelStore = {
+export type SidebarStore = {
   panels: PanelEntry[];
   forms: FormEntry[];
 };
