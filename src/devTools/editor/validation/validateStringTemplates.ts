@@ -31,8 +31,7 @@ function validateObject(
   namePath: string,
   errors: FormikErrorTree
 ) {
-  // eslint-disable-next-line guard-for-in
-  for (const prop in config) {
+  for (const prop of Object.keys(config)) {
     const propNamePath = joinName(namePath, prop);
     // eslint-disable-next-line security/detect-object-injection -- iterating through props
     const value = config[prop];
