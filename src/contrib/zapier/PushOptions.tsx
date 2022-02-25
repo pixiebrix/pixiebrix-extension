@@ -17,7 +17,6 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { compact } from "lodash";
 import { Expression, Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
@@ -37,6 +36,7 @@ import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schema
 import { isExpression } from "@/runtime/mapArgs";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
+import { joinName } from "@/utils";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -92,7 +92,7 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
-  const basePath = compact([name, configKey]).join(".");
+  const basePath = joinName(name, configKey);
 
   const [grantedPermissions, setGrantedPermissions] = useState<boolean>(false);
   const [hasPermissions] = useAsyncState(

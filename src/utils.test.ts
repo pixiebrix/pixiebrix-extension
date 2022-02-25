@@ -74,10 +74,6 @@ describe("joinName", () => {
     expect(joinName("foo", null, "bar")).toBe("foo.bar");
   });
 
-  test("rejects path part with period", () => {
-    expect(() => joinName("foo", "bar.baz")).toThrow("cannot contain periods");
-  });
-
   test("accepts base path part with period", () => {
     expect(joinName("foo.bar", "baz")).toBe("foo.bar.baz");
   });
@@ -85,6 +81,21 @@ describe("joinName", () => {
   test("accepts null/undefined base path part", () => {
     expect(joinName(null, "foo")).toBe("foo");
     expect(joinName(undefined, "foo")).toBe("foo");
+  });
+
+  test.each([
+    [["bar.baz"], 'foo["bar.baz"]'],
+    [["bar", "baz.qux"], 'foo.bar["baz.qux"]'],
+    [["bar.baz", "qux"], 'foo["bar.baz"].qux'],
+  ])("accepts periods in path parts (%s)", (pathParts, expected) => {
+    expect(joinName("foo", ...pathParts)).toBe(expected);
+  });
+  test.each([
+    [["bar[baz"], 'foo["bar[baz"]'],
+    [["bar", "[baz]qux"], 'foo.bar["[baz]qux"]'],
+    [["bar[]baz", "qux"], 'foo["bar[]baz"].qux'],
+  ])("accepts square brackets in path parts (%s)", (pathParts, expected) => {
+    expect(joinName("foo", ...pathParts)).toBe(expected);
   });
 });
 
