@@ -34,7 +34,7 @@ import { useToasts } from "react-toast-notifications";
 import reportError from "@/telemetry/reportError";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
 import {
-  showActionPanel,
+  showSidebar,
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
 
@@ -62,7 +62,7 @@ const GenericInsertPane: React.FunctionComponent<{
         if (config.elementType === "actionPanel") {
           // For convenience, open the side panel if it's not already open so that the user doesn't
           // have to manually toggle it
-          void showActionPanel(thisTab);
+          void showSidebar(thisTab);
         }
       } catch (error) {
         // If you're looking for the error message, it's in the logs for the page editor, not the host page

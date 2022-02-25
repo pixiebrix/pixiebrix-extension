@@ -72,7 +72,7 @@ type CommonOptions = ApiVersionOptions & {
   logger: Logger;
   /**
    * `true` to throw an error if a renderer is encountered. Used to abort execution in the contentScript to pass
-   * data over to be rendered in a PixieBrix sidebar actionPanel.
+   * data over to be rendered in a PixieBrix sidebar sidebar.
    */
   headless: boolean;
 };

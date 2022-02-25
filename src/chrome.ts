@@ -50,8 +50,8 @@ export class RequestError extends Error {
   }
 }
 
-export function isBrowserActionPanel(): boolean {
-  return isExtensionContext() && location.pathname === "/action.html";
+export function isBrowserSidebar(): boolean {
+  return isExtensionContext() && location.pathname === "/sidebar.html";
 }
 
 export function setChromeExtensionId(extensionId = ""): void {

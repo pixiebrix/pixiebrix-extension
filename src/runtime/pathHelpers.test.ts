@@ -41,6 +41,29 @@ describe("getPropByPath", () => {
       getPropByPath({ array: [{ key: "foo" }] }, "array.1?.key")
     ).toBeNull();
   });
+
+  test.each([
+    [
+      {
+        foo: {
+          "bar.baz": "qux",
+        },
+      },
+      'foo["bar.baz"]',
+      "qux",
+    ],
+    [
+      {
+        "foo.bar": {
+          baz: "qux",
+        },
+      },
+      '["foo.bar"].baz',
+      "qux",
+    ],
+  ])("can get property accessed by []", (context, path, expected) => {
+    expect(getPropByPath(context, path)).toBe(expected);
+  });
 });
 
 describe("isSimplePath", () => {
@@ -85,5 +108,14 @@ describe("getFieldNamesFromPathString", () => {
       "foo.bar",
       "baz",
     ]);
+  });
+
+  test.each([
+    ['foo["bar.baz"]', ["foo", "bar.baz"]],
+    ['foo.bar["baz.qux"]', ["foo.bar", "baz.qux"]],
+    ['foo["bar.baz"].qux', ['foo["bar.baz"]', "qux"]],
+    ['foo["bar.baz"].qux.quux', ['foo["bar.baz"].qux', "quux"]],
+  ])("path with periods", (name, expected) => {
+    expect(getFieldNamesFromPathString(name)).toStrictEqual(expected);
   });
 });

@@ -15,28 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ActionPanelStore, FormEntry, PanelEntry } from "@/actionPanel/types";
+import { SidebarStore, FormEntry, PanelEntry } from "@/sidebar/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {
-  defaultEventKey,
-  mapTabEventKey,
-} from "@/actionPanel/actionPanelUtils";
+import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
 import { UUID } from "@/core";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 
-type AppState = ActionPanelStore & {
+type AppState = SidebarStore & {
   activeKey: string;
 };
 
-export const blankActionPanelState: AppState = {
+export const blankSidebarState: AppState = {
   panels: [],
   forms: [],
   activeKey: null,
 };
 
-const actionPanelSlice = createSlice({
-  initialState: blankActionPanelState,
+const slice = createSlice({
+  initialState: blankSidebarState,
   name: "actionPanel",
   reducers: {
     selectTab: (state, action: PayloadAction<string>) => {
@@ -81,4 +78,4 @@ const actionPanelSlice = createSlice({
   },
 });
 
-export default actionPanelSlice;
+export default slice;

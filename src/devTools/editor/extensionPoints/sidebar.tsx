@@ -34,14 +34,14 @@ import {
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import {
-  ActionPanelConfig,
-  ActionPanelExtensionPoint,
+  SidebarConfig,
+  SidebarExtensionPoint,
   PanelDefinition,
-} from "@/extensionPoints/actionPanelExtension";
+} from "@/extensionPoints/sidebarExtension";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
-import ActionPanelConfiguration from "@/devTools/editor/tabs/actionPanel/ActionPanelConfiguration";
+import Configuration from "@/devTools/editor/tabs/sidebar/Configuration";
 import {
   BaseExtensionState,
   BaseFormState,
@@ -51,17 +51,14 @@ import React from "react";
 import { Except } from "type-fest";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 
-type Extension = BaseExtensionState & Except<ActionPanelConfig, "body">;
+type Extension = BaseExtensionState & Except<SidebarConfig, "body">;
 
-export interface ActionPanelFormState extends BaseFormState<Extension> {
+export interface SidebarFormState extends BaseFormState<Extension> {
   type: "actionPanel";
   extension: Extension;
 }
 
-function fromNativeElement(
-  url: string,
-  metadata: Metadata
-): ActionPanelFormState {
+function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const base = makeInitialBaseState();
 
   const heading = `${getDomain(url)} side panel`;
@@ -85,7 +82,7 @@ function fromNativeElement(
 }
 
 function selectExtensionPoint(
-  formState: ActionPanelFormState
+  formState: SidebarFormState
 ): ExtensionPointConfig<PanelDefinition> {
   const { extensionPoint } = formState;
   const {
@@ -102,11 +99,11 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  state: ActionPanelFormState,
+  state: SidebarFormState,
   options: { includeInstanceIds?: boolean } = {}
-): IExtension<ActionPanelConfig> {
+): IExtension<SidebarConfig> {
   const { extension } = state;
-  const config: ActionPanelConfig = {
+  const config: SidebarConfig = {
     heading: extension.heading,
     body: options.includeInstanceIds
       ? extension.blockPipeline
@@ -118,7 +115,7 @@ function selectExtension(
   });
 }
 
-function asDynamicElement(element: ActionPanelFormState): DynamicDefinition {
+function asDynamicElement(element: SidebarFormState): DynamicDefinition {
   return {
     type: "actionPanel",
     extension: selectExtension(element, { includeInstanceIds: true }),
@@ -129,7 +126,7 @@ function asDynamicElement(element: ActionPanelFormState): DynamicDefinition {
 export async function fromExtensionPoint(
   url: string,
   extensionPoint: ExtensionPointConfig<PanelDefinition>
-): Promise<ActionPanelFormState> {
+): Promise<SidebarFormState> {
   if (extensionPoint.definition.type !== "actionPanel") {
     throw new Error("Expected actionPanel extension point type");
   }
@@ -165,11 +162,11 @@ export async function fromExtensionPoint(
 }
 
 async function fromExtension(
-  config: IExtension<ActionPanelConfig>
-): Promise<ActionPanelFormState> {
+  config: IExtension<SidebarConfig>
+): Promise<SidebarFormState> {
   const extensionPoint = await lookupExtensionPoint<
     PanelDefinition,
-    ActionPanelConfig,
+    SidebarConfig,
     "actionPanel"
   >(config, "actionPanel");
 
@@ -192,11 +189,11 @@ async function fromExtension(
   };
 }
 
-const config: ElementConfig<never, ActionPanelFormState> = {
+const config: ElementConfig<never, SidebarFormState> = {
   displayOrder: 3,
   elementType: "actionPanel",
   label: "Sidebar Panel",
-  baseClass: ActionPanelExtensionPoint,
+  baseClass: SidebarExtensionPoint,
   selectNativeElement: undefined,
   icon: faColumns,
   fromNativeElement,
@@ -205,7 +202,7 @@ const config: ElementConfig<never, ActionPanelFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  EditorNode: ActionPanelConfiguration,
+  EditorNode: Configuration,
   InsertModeHelpText: () => (
     <div>
       <p>
