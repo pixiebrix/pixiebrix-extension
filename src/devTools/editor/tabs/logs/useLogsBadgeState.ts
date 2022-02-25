@@ -21,7 +21,7 @@ import { selectLogs } from "@/components/logViewer/logSelectors";
 import { useMemo } from "react";
 import { groupBy } from "lodash";
 
-function useLogsBadgeState(): [number, Variant] {
+function useLogsBadgeState(): [number, Variant] | [undefined, undefined] {
   const { availableEntries, entries } = useSelector(selectLogs);
 
   const unreadByLevels = useMemo(() => {
@@ -44,7 +44,7 @@ function useLogsBadgeState(): [number, Variant] {
     }
   }
 
-  return [0, "info"];
+  return [undefined, undefined];
 }
 
 export default useLogsBadgeState;

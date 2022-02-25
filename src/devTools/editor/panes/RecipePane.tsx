@@ -66,35 +66,23 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
 
   const [unreadLogsCount, logsBadgeVariant] = useLogsBadgeState();
 
-  const tabItems = useMemo<TabItem[]>(() => {
-    const items: TabItem[] = [
-      {
-        itemName: EDIT_ITEM_NAME,
-        TabContent: EditRecipe,
-      },
-      {
-        itemName: "Options",
-        TabContent: OptionsPlaceholder,
-      },
-    ];
-    if (unreadLogsCount > 0) {
-      items.push({
-        itemName: "Logs",
-        badgeCount: unreadLogsCount,
-        badgeVariant: logsBadgeVariant,
-        TabContent: Logs,
-        mountWhenActive: true,
-      });
-    } else {
-      items.push({
-        itemName: "Logs",
-        TabContent: Logs,
-        mountWhenActive: true,
-      });
-    }
-
-    return items;
-  }, [logsBadgeVariant, unreadLogsCount]);
+  const tabItems: TabItem[] = [
+    {
+      itemName: EDIT_ITEM_NAME,
+      TabContent: EditRecipe,
+    },
+    {
+      itemName: "Options",
+      TabContent: OptionsPlaceholder,
+    },
+    {
+      itemName: "Logs",
+      badgeCount: unreadLogsCount,
+      badgeVariant: logsBadgeVariant,
+      TabContent: Logs,
+      mountWhenActive: true,
+    },
+  ];
 
   const buttons = useMemo<ActionButton[]>(() => {
     const results: ActionButton[] = [];
