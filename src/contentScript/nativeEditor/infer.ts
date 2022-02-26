@@ -48,8 +48,12 @@ const UNIQUE_ATTRIBUTES: string[] = [
   "id",
   "name",
 
-  // Cypress attributes
-  "data-cy",
+  // Testing attributes
+  "data-cy", // Cypress
+  "data-testid",
+  "data-id",
+  "data-test",
+  "data-test-id",
 ];
 // eslint-disable-next-line security/detect-non-literal-regexp -- Not user-provided
 const UNIQUE_ATTRIBUTES_REGEX = new RegExp(
@@ -65,8 +69,6 @@ const UNIQUE_ATTRIBUTES_REGEX = new RegExp(
  */
 const TEMPLATE_ATTR_EXCLUDE_PATTERNS = [
   ...UNIQUE_ATTRIBUTES,
-
-  /^data([\w-]*)-test([\w-]*)$/,
 
   EXTENSION_POINT_DATA_ATTR,
   PIXIEBRIX_DATA_ATTR,
@@ -93,7 +95,7 @@ const TEMPLATE_VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
 class SkipElement extends Error {}
 
 /** ID selectors and certain other attributes can uniquely identify items */
-function willSelectOneElement(selector: string): boolean {
+function isSelectorUsuallyUnique(selector: string): boolean {
   return selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector);
 }
 
@@ -570,10 +572,18 @@ export function inferSelectors(
         makeSelector(["id", "tag", "attribute", "nthchild"]),
         makeSelector(["id", "tag", "attribute"]),
         makeSelector(),
-      ].filter((x) => x?.trim())
+
+        // Excludes empty or short selectors (must have more than 3 letters, no numbers)
+      ].filter((x) => x && x.replace(/[^a-z]/gi, "").length > 3)
     ),
-    // Always put unique selectors first
-    (x) => (willSelectOneElement(x) ? 0 : x.length)
+
+    // Unique selectors will be placed first in the array, regardless of length, e.g.
+    // 1. #best-link-on-the-page
+    // 2. [data-cy="b4da55"]
+    // 3. .navItem
+    // 4. .birdsArentReal
+    // 5. [aria-label="Click elsewhere"]
+    (x) => (isSelectorUsuallyUnique(x) ? 0 : x.length)
   );
 }
 

@@ -351,7 +351,7 @@ describe("inferSelectors", () => {
     const userSelectedElements = selectors.map((selector) =>
       document.body.querySelector<HTMLElement>(selector)
     );
-    expect(uniq(userSelectedElements)).toEqual([userSelectedElements[0]]);
+    expect(uniq(userSelectedElements)).toHaveLength(1);
 
     // The provided selector list should match the inferred list
     const inferredSelectors = inferSelectors(userSelectedElements[0]);
@@ -372,10 +372,10 @@ describe("inferSelectors", () => {
 
   test("prefer unique selectors", () => {
     expectSelectors(
-      ["[data-cy='baz']", ".zoo"],
+      ["[data-cy='baz']", ".zoolander"],
       html`
         <div>
-          <input aria-label="foo" data-cy="baz" class="zoo" />
+          <input aria-label="foo" data-cy="baz" class="zoolander" />
           <input aria-label="bar" data-cy="zan" />
         </div>
       `
