@@ -595,13 +595,14 @@ export function inferSelectors(
       });
     }
   };
+
   const generatedSelectors = uniq([
     makeSelector(["id", "class", "tag", "attribute", "nthchild"]),
     makeSelector(["tag", "class", "attribute", "nthchild"]),
     makeSelector(["id", "tag", "attribute", "nthchild"]),
     makeSelector(["id", "tag", "attribute"]),
     makeSelector(),
-  ]).filter(isSelectorPotentiallyUseful);
+  ]).filter((x) => isSelectorPotentiallyUseful(x));
 
   return sortBy(generatedSelectors, getSelectorPreference);
 }
