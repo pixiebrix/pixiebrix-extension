@@ -583,7 +583,21 @@ export function inferSelectors(
     // 3. .navItem
     // 4. .birdsArentReal
     // 5. [aria-label="Click elsewhere"]
-    (x) => (isSelectorUsuallyUnique(x) ? 0 : x.length)
+    (x) => {
+      if (x.startsWith("#")) {
+        return 0;
+      }
+
+      if (isSelectorUsuallyUnique(x)) {
+        return 1;
+      }
+
+      if (x.startsWith(".")) {
+        return 2;
+      }
+
+      return x.length;
+    }
   );
 }
 
