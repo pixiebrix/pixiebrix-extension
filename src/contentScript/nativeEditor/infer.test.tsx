@@ -17,9 +17,11 @@
 
 import { $safeFind } from "@/helpers";
 import {
+  getSelectorPreference,
   inferButtonHTML,
   inferPanelHTML,
   inferSelectors,
+  isSelectorPotentiallyUseful,
   safeCssSelector,
 } from "@/contentScript/nativeEditor/infer";
 import { PIXIEBRIX_DATA_ATTR, EXTENSION_POINT_DATA_ATTR } from "@/common";
@@ -341,6 +343,30 @@ describe("safeCssSelector", () => {
 
     expect(selector).toBe("[aria-label='foo']");
   });
+});
+
+test("getSelectorPreference: matches expected sorting", () => {
+  expect(getSelectorPreference("#best-link-on-the-page")).toBe(0);
+  expect(getSelectorPreference('[data-cy="b4da55"]')).toBe(1);
+  expect(getSelectorPreference(".navItem")).toBe(2);
+  expect(getSelectorPreference(".birdsArentReal")).toBe(2);
+  expect(getSelectorPreference('[aria-label="Click elsewhere"]')).toBe(30);
+});
+
+test("isSelectorPotentiallyUseful", () => {
+  const fn = isSelectorPotentiallyUseful;
+  expect(fn(".navItem")).toBeTruthy();
+  expect(fn(".birdsArentReal")).toBeTruthy();
+  expect(fn('[aria-label="Click elsewhere"]')).toBeTruthy();
+
+  // Always allow IDs
+  expect(fn("#yes")).toBeTruthy();
+
+  // Exclude utility classes
+  expect(fn(".p-1")).toBeFalsy();
+
+  // Exclude some short random classes
+  expect(fn("._d3f32f")).toBeFalsy();
 });
 
 describe("inferSelectors", () => {

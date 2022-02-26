@@ -99,6 +99,38 @@ function isSelectorUsuallyUnique(selector: string): boolean {
   return selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector);
 }
 
+/**
+ * Prefers unique selectors and classes. A lower number means higher preference. To be used with lodash.sortBy
+ * @example
+ * 0   '#best-link-on-the-page'
+ * 1   '[data-cy="b4da55"]'
+ * 2   '.navItem'
+ * 2   '.birdsArentReal'
+ * 30  '[aria-label="Click elsewhere"]'
+ */
+export function getSelectorPreference(selector: string): number {
+  if (selector.startsWith("#")) {
+    return 0;
+  }
+
+  if (isSelectorUsuallyUnique(selector)) {
+    return 1;
+  }
+
+  if (selector.startsWith(".")) {
+    return 2;
+  }
+
+  return selector.length;
+}
+
+/** Excludes empty or short selectors (must have more than 3 letters, no numbers) */
+export function isSelectorPotentiallyUseful(selector: string): boolean {
+  return (
+    selector.startsWith("#") || selector.replace(/[^a-z]/gi, "").length > 3
+  );
+}
+
 function outerHTML(element: Element | string): string {
   if (typeof element === "string") {
     return element;
@@ -563,42 +595,15 @@ export function inferSelectors(
       });
     }
   };
+  const generatedSelectors = uniq([
+    makeSelector(["id", "class", "tag", "attribute", "nthchild"]),
+    makeSelector(["tag", "class", "attribute", "nthchild"]),
+    makeSelector(["id", "tag", "attribute", "nthchild"]),
+    makeSelector(["id", "tag", "attribute"]),
+    makeSelector(),
+  ]).filter(isSelectorPotentiallyUseful);
 
-  return sortBy(
-    uniq(
-      [
-        makeSelector(["id", "class", "tag", "attribute", "nthchild"]),
-        makeSelector(["tag", "class", "attribute", "nthchild"]),
-        makeSelector(["id", "tag", "attribute", "nthchild"]),
-        makeSelector(["id", "tag", "attribute"]),
-        makeSelector(),
-
-        // Excludes empty or short selectors (must have more than 3 letters, no numbers)
-      ].filter((x) => x && x.replace(/[^a-z]/gi, "").length > 3)
-    ),
-
-    // Unique selectors will be placed first in the array, regardless of length, e.g.
-    // 1. #best-link-on-the-page
-    // 2. [data-cy="b4da55"]
-    // 3. .navItem
-    // 4. .birdsArentReal
-    // 5. [aria-label="Click elsewhere"]
-    (x) => {
-      if (x.startsWith("#")) {
-        return 0;
-      }
-
-      if (isSelectorUsuallyUnique(x)) {
-        return 1;
-      }
-
-      if (x.startsWith(".")) {
-        return 2;
-      }
-
-      return x.length;
-    }
-  );
+  return sortBy(generatedSelectors, getSelectorPreference);
 }
 
 /**
