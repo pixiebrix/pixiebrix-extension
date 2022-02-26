@@ -233,7 +233,7 @@ module.exports = (env, options) =>
           "devtoolsPanel",
           "ephemeralForm",
           "options",
-          "action",
+          "sidebar",
           "permissionsPopup",
         ].map((name) => [
           name,

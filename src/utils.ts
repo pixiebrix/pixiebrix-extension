@@ -42,6 +42,8 @@ import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
 
+const specialCharsRegex = /[.[\]]/;
+
 /**
  * Create a Formik field name, validating the individual path parts.
  * @param baseFieldName The base field name
@@ -60,11 +62,18 @@ export function joinName(
     );
   }
 
-  if (fieldNames.some((x) => x.includes("."))) {
-    throw new Error("Formik path parts cannot contain periods");
+  let path = baseFieldName || "";
+  for (const fieldName of fieldNames) {
+    if (specialCharsRegex.test(fieldName)) {
+      path += `["${fieldName}"]`;
+    } else if (path === "") {
+      path = fieldName;
+    } else {
+      path += `.${fieldName}`;
+    }
   }
 
-  return compact([baseFieldName, ...fieldNames]).join(".");
+  return path;
 }
 
 export function mostCommonElement<T>(items: T[]): T {

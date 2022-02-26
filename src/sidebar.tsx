@@ -19,12 +19,12 @@
 import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
 import "@/utils/layout.scss";
-import "@/action.scss";
+import "@/sidebar.scss";
 
 import "@/extensionContext";
 
-import registerMessenger from "@/actionPanel/messenger/registration";
-import App from "@/actionPanel/ActionPanelApp";
+import registerMessenger from "@/sidebar/messenger/registration";
+import App from "@/sidebar/SidebarApp";
 import ReactDOM from "react-dom";
 import React from "react";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ActionPanelApp.module.scss";
+import styles from "./SidebarApp.module.scss";
 
 import React, { Dispatch, useEffect, useMemo, useReducer } from "react";
 import { Button } from "react-bootstrap";
@@ -23,24 +23,20 @@ import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 // eslint-disable-next-line import/no-restricted-paths -- TODO: This should be called in the content script, but it currently has to be sync
-import { getActionPanelStore } from "@/contentScript/actionPanel";
-import {
-  addListener,
-  removeListener,
-  StoreListener,
-} from "@/actionPanel/protocol";
-import DefaultActionPanel from "@/actionPanel/DefaultActionPanel";
+import { getSidebarStore } from "@/contentScript/sidebar";
+import { addListener, removeListener, StoreListener } from "@/sidebar/protocol";
+import DefaultPanel from "@/sidebar/DefaultPanel";
 import { ToastProvider } from "react-toast-notifications";
 // eslint-disable-next-line import/no-restricted-paths -- TODO: move out of @/options or use Messenger
 import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
 import Loader from "@/components/Loader";
 import { PersistGate } from "redux-persist/integration/react";
-import { PanelEntry, FormEntry } from "@/actionPanel/types";
-import ActionPanelTabs from "@/actionPanel/ActionPanelTabs";
-import slice, { blankActionPanelState } from "./actionPanelSlice";
+import { PanelEntry, FormEntry } from "@/sidebar/types";
+import Tabs from "@/sidebar/Tabs";
+import slice, { blankSidebarState } from "./slice";
 import { AnyAction } from "redux";
-import { hideActionPanel } from "@/contentScript/messenger/api";
+import { hideSidebar } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 
 function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
@@ -57,10 +53,10 @@ function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
   };
 }
 
-const ActionPanelApp: React.FunctionComponent = () => {
+const SidebarApp: React.FunctionComponent = () => {
   const [state, dispatch] = useReducer(slice.reducer, {
-    ...blankActionPanelState,
-    ...getActionPanelStore(),
+    ...blankSidebarState,
+    ...getSidebarStore(),
   });
 
   const listener: StoreListener = useMemo(
@@ -73,7 +69,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
     addListener(listener);
     return () => {
       // NOTE: we don't need to cancel any outstanding forms on unmount because the FormTransformer is set up to watch
-      // for PANEL_HIDING_EVENT. (and the only time this ActionPanelApp would unmount is if the sidebar was closing)
+      // for PANEL_HIDING_EVENT. (and the only time this SidebarApp would unmount is if the sidebar was closing)
       removeListener(listener);
     };
   }, [listener]);
@@ -88,7 +84,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 className={styles.button}
                 onClick={async () => {
                   const sidebar = await whoAmI();
-                  await hideActionPanel({ tabId: sidebar.tab.id });
+                  await hideSidebar({ tabId: sidebar.tab.id });
                 }}
                 size="sm"
                 variant="link"
@@ -118,14 +114,14 @@ const ActionPanelApp: React.FunctionComponent = () => {
 
             <div className="full-height">
               {state.panels?.length || state.forms?.length ? (
-                <ActionPanelTabs
+                <Tabs
                   {...state}
                   onSelectTab={(eventKey: string) => {
                     dispatch(slice.actions.selectTab(eventKey));
                   }}
                 />
               ) : (
-                <DefaultActionPanel />
+                <DefaultPanel />
               )}
             </div>
           </div>
@@ -135,4 +131,4 @@ const ActionPanelApp: React.FunctionComponent = () => {
   );
 };
 
-export default ActionPanelApp;
+export default SidebarApp;

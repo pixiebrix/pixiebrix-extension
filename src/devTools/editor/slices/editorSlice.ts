@@ -17,7 +17,7 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ActionFormState } from "@/devTools/editor/extensionPoints/menuItem";
-import { ActionPanelFormState } from "@/devTools/editor/extensionPoints/actionPanel";
+import { SidebarFormState } from "@/devTools/editor/extensionPoints/sidebar";
 import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
 import { PanelFormState } from "@/devTools/editor/extensionPoints/panel";
 import { ContextMenuFormState } from "@/devTools/editor/extensionPoints/contextMenu";
@@ -40,7 +40,7 @@ import { RecipeDefinition } from "@/types/definitions";
 
 export type FormState =
   | ActionFormState
-  | ActionPanelFormState
+  | SidebarFormState
   | TriggerFormState
   | PanelFormState
   | ContextMenuFormState;
