@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./SettingsPage.module.scss";
+
 import React from "react";
 import Page from "@/layout/Page";
 import { faCogs } from "@fortawesome/free-solid-svg-icons";
@@ -24,7 +26,6 @@ import LoggingSettings from "@/options/pages/settings/LoggingSettings";
 import PermissionsSettings from "@/options/pages/settings/PermissionsSettings";
 import FactoryResetSettings from "@/options/pages/settings/FactoryResetSettings";
 import AdvancedSettings from "@/options/pages/settings/AdvancedSettings";
-import { Col, Row } from "react-bootstrap";
 import ExperimentalSettings from "@/options/pages/settings/ExperimentalSettings";
 import useFlags from "@/hooks/useFlags";
 
@@ -32,11 +33,7 @@ import useFlags from "@/hooks/useFlags";
 const DEBUG = process.env.DEBUG;
 
 const Section: React.FunctionComponent = ({ children }) => (
-  <Row className="mb-4">
-    <Col lg={6} md={8}>
-      {children}
-    </Col>
-  </Row>
+  <div className={styles.root}>{children}</div>
 );
 
 const SettingsPage: React.FunctionComponent = () => {
