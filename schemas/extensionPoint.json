@@ -54,7 +54,7 @@
             "panel",
             "trigger",
             "contextMenu",
-            "actionPanel",
+            "sidebar",
             "quickBar"
           ]
         },

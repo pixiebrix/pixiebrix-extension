@@ -18,7 +18,7 @@
 import reportError from "@/telemetry/reportError";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import browser, { Tabs } from "webextension-polyfill";
-import { toggleActionPanel } from "@/contentScript/messenger/api";
+import { toggleSidebar } from "@/contentScript/messenger/api";
 import { isScriptableUrl } from "webext-content-scripts";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
@@ -42,7 +42,7 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
 
   try {
     await ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID });
-    await toggleActionPanel({
+    await toggleSidebar({
       tabId: tab.id,
     });
   } catch (error) {

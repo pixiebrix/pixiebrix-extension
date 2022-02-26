@@ -16,7 +16,7 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { FormEntry, PanelEntry } from "@/actionPanel/types";
+import { FormEntry, PanelEntry } from "@/sidebar/types";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { UUID } from "@/core";
 
@@ -38,7 +38,7 @@ const listeners: StoreListener[] = [];
 
 export function addListener(fn: StoreListener): void {
   if (listeners.includes(fn)) {
-    console.warn("Listener already registered for action panel");
+    console.warn("Listener already registered for sidebar");
   } else {
     listeners.push(fn);
   }
