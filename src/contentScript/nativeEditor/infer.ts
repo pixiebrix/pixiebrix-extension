@@ -27,7 +27,7 @@ import {
   PIXIEBRIX_DATA_ATTR,
   PIXIEBRIX_READY_ATTRIBUTE,
 } from "@/common";
-import detectRandomString from "@/vendors/randomStringDetection/detector";
+import { guessUsefulness } from "@/utils/detectRandomString";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -509,9 +509,9 @@ export function safeCssSelector(
           return false;
         }
 
-        const randomness = detectRandomString(selector);
-        console.debug("css-selector-generator:", { selector, randomness });
-        return randomness >= 0.5;
+        const usefulness = guessUsefulness(selector);
+        console.debug("css-selector-generator:", usefulness);
+        return usefulness.isRandom;
       },
     ],
     whitelist: [
