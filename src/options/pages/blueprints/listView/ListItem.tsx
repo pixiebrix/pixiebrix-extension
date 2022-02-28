@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./TableRow.module.scss";
+import styles from "./ListItem.module.scss";
 
 import React from "react";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
@@ -23,35 +23,36 @@ import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 import { timeSince } from "@/utils/timeUtils";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import Status from "@/options/pages/blueprints/Status";
+import { ListGroup } from "react-bootstrap";
 
-const TableRow: React.VoidFunctionComponent<{
+const ListItem: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
-}> = ({ installableItem }) => {
-  const { name, description, sharing, updatedAt, icon } = installableItem;
+  style: React.CSSProperties;
+}> = ({ installableItem, style }) => {
+  const { name, sharing, updatedAt, icon } = installableItem;
 
   return (
-    <tr>
-      <td>{icon}</td>
-      <td className="text-wrap">
-        <h5 className="text-wrap m-0">{name}</h5>
-        <span className="text-muted text-wrap">{description}</span>
-      </td>
-      <td>
+    <ListGroup.Item className={styles.root} style={style}>
+      <div className={styles.icon}>{icon}</div>
+      <div className={styles.name}>
+        <h5>{name}</h5>
+      </div>
+      <div>
         <div className={styles.sharing}>
-          <span className="small text-wrap">
+          <span className={styles.updatedAt}>
             Updated: {timeSince(updatedAt)}
           </span>
           <SharingLabel sharing={sharing.source} />
         </div>
-      </td>
-      <td>
+      </div>
+      <div className={styles.status}>
         <Status installableViewItem={installableItem} />
-      </td>
-      <td>
+      </div>
+      <div>
         <BlueprintActions installableViewItem={installableItem} />
-      </td>
-    </tr>
+      </div>
+    </ListGroup.Item>
   );
 };
 
-export default TableRow;
+export default React.memo(ListItem);
