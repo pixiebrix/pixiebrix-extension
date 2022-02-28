@@ -29,9 +29,6 @@ import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader
 import { uuidv4 } from "@/types/helpers";
 import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 
-// Expands react-table grouped rows recursively, and groups
-// rows in chunks of `columnCount` for easy grid rendering
-
 /**
  *  Expands `react-table` rows recursively in chunks of
  *  `columnCount`, preserving grouped row positioning
