@@ -90,18 +90,18 @@ const useSavingWizard = () => {
   const [updateRecipe] = useUpdateRecipeMutation();
 
   const save = async () => {
-    if (!element.recipe) {
+    if (element.recipe == null) {
       void saveNonRecipeElement();
-    }
-
-    // The user might loose access to the recipe while they were editing it (the recipe or an extension)
-    // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
-    const recipe = recipes.find((x) => x.metadata.id === element.recipe.id);
-    if (!recipe) {
-      notify.error(
-        "Looks like you lost access to the recipe you were editing. Please reload the Editor."
-      );
-      return;
+    } else {
+      // The user might loose access to the recipe while they were editing it (the recipe or an extension)
+      // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
+      const recipe = recipes.find((x) => x.metadata.id === element.recipe.id);
+      if (!recipe) {
+        notify.error(
+          "Looks like you lost access to the recipe you were editing. Please reload the Editor."
+        );
+        return;
+      }
     }
 
     savingDeferred = pDefer<void>();
