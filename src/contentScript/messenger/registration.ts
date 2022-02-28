@@ -57,7 +57,7 @@ import {
   resetTab,
 } from "@/contentScript/devTools";
 import { checkAvailable } from "@/blocks/available";
-import { showNotification } from "@/contentScript/notify";
+import { showNotification } from "@/utils/notify";
 import { runBrick } from "@/contentScript/executor";
 import {
   cancelSelect,

@@ -41,7 +41,7 @@ import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
 } from "@/types/definitions";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { push } from "connected-react-router";
 import { getHumanDetail } from "@/hooks/useUserAction";
 import { isAxiosError } from "@/errors";
@@ -114,7 +114,6 @@ const ShareExtensionModal: React.FC<{
   extensionId: UUID;
 }> = ({ extensionId }) => {
   const extensions = useSelector(selectExtensions);
-  const notify = useNotifications();
   const dispatch = useDispatch();
 
   const extension = useMemo(() => {
@@ -184,7 +183,7 @@ const ShareExtensionModal: React.FC<{
         helpers.setSubmitting(false);
       }
     },
-    [dispatch, notify, extension]
+    [dispatch, extension]
   );
 
   const renderBody: RenderBody = ({ values, setFieldValue }) => (

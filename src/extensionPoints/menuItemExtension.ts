@@ -48,12 +48,11 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
-import {
+import notify, {
   DEFAULT_ACTION_RESULTS,
   MessageConfig,
-  notifyError,
   notifyResult,
-} from "@/contentScript/notify";
+} from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
 import { PromiseCancelled, rejectOnCancelled } from "@/utils";
 import getSvgIcon from "@/icons/getSvgIcon";
@@ -164,13 +163,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   private uninstalled = false;
 
   private readonly notifyError = debounce(
-    notifyError,
+    notify.error,
     MENU_INSTALL_ERROR_DEBOUNCE_MS,
     {
       leading: true,
       trailing: false,
     }
-  );
+  ) as typeof notify.error; // `debounce` loses the overloads
 
   public get kind(): "menuItem" {
     return "menuItem";

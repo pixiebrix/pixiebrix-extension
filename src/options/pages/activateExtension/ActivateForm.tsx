@@ -21,7 +21,7 @@ import { CloudExtension } from "@/types/contract";
 import { Form, Formik, FormikProps } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { push } from "connected-react-router";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import ServicesCard from "@/options/pages/activateExtension/ServicesCard";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
 import ActivateCard from "@/options/pages/activateExtension/ActivateCard";
@@ -34,7 +34,6 @@ const ActivateForm: React.FunctionComponent<{
   extension: CloudExtension;
   authOptions: AuthOption[];
 }> = ({ extension, authOptions }) => {
-  const notify = useNotifications();
   const dispatch = useDispatch();
   const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
@@ -71,7 +70,7 @@ const ActivateForm: React.FunctionComponent<{
         helpers.setSubmitting(false);
       }
     },
-    [notify, extension, dispatch]
+    [extension, dispatch]
   );
 
   return (

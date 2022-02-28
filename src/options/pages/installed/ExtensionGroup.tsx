@@ -32,7 +32,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { IExtension, MessageContext, ResolvedExtension } from "@/core";
-import useNotifications from "@/hooks/useNotifications";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 import useUserAction from "@/hooks/useUserAction";
 import {
@@ -82,7 +81,6 @@ const ExtensionGroup: React.FunctionComponent<{
   onExportBlueprint,
   hasUpdate,
 }) => {
-  const notify = useNotifications();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -114,7 +112,7 @@ const ExtensionGroup: React.FunctionComponent<{
       successMessage: `Uninstalled ${label}`,
       errorMessage: `Error uninstalling ${label}`,
     },
-    [notify, onRemove]
+    [onRemove]
   );
 
   const status = useMemo(() => {

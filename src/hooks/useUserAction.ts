@@ -16,7 +16,7 @@
  */
 
 import { DependencyList, useCallback } from "react";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { CancelError, getErrorMessage, isAxiosError } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
 import { AxiosResponse } from "axios";
@@ -71,7 +71,6 @@ function useUserAction<T extends (...args: never[]) => unknown>(
   options: Options,
   deps: DependencyList
 ): T {
-  const notify = useNotifications();
   const { event, successMessage, errorMessage = "An error occurred" } = options;
 
   const enhancedCallback = (async (...args) => {
@@ -102,7 +101,6 @@ function useUserAction<T extends (...args: never[]) => unknown>(
   // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally leaving callback out of deps
   return useCallback<T>(enhancedCallback, [
     ...deps,
-    notify,
     options,
     errorMessage,
     event,

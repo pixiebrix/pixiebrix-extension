@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { hideNotification, showNotification } from "@/contentScript/notify";
+import { hideNotification, showNotification } from "@/utils/notify";
 
 const id = "connection-lost";
 

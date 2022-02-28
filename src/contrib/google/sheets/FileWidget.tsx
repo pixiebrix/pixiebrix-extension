@@ -28,7 +28,7 @@ import { ensureAuth } from "@/contrib/google/auth";
 import { isOptionsPage } from "webext-detect-page";
 import browser from "webextension-polyfill";
 import { Form, InputGroup } from "react-bootstrap";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors";
 import AsyncButton from "@/components/AsyncButton";
 import { Expression } from "@/core";
@@ -46,8 +46,6 @@ type FileWidgetProps = {
 };
 
 const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
-  const notify = useNotifications();
-
   const [field, , helpers] = useField<string | Expression>(props);
   const [sheetError, setSheetError] = useState(null);
 
@@ -150,7 +148,7 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
         error,
       });
     }
-  }, [notify, helpers, onSelect]);
+  }, [helpers, onSelect]);
 
   return isExpression(field.value) ? (
     <WorkshopMessageWidget />

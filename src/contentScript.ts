@@ -34,7 +34,7 @@ import { markReady, updateTabInfo } from "@/contentScript/context";
 import { whoAmI, initTelemetry } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { addListenerForUpdateSelectedElement } from "@/devTools/getSelectedElement";
-import { initToaster } from "@/contentScript/notify";
+import { initToaster } from "@/utils/notify";
 import { isConnectionError } from "@/errors";
 import { showConnectionLost } from "@/contentScript/connection";
 

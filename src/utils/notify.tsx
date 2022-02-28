@@ -21,13 +21,18 @@ import { toast, Toaster } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
 import { DefaultToastOptions } from "react-hot-toast/dist/core/types";
 import { NOTIFICATIONS_Z_INDEX } from "@/common";
+import reportError from "@/telemetry/reportError";
+import { Except } from "type-fest";
+import { getErrorMessage } from "@/errors";
 
-type NotificationType = "info" | "success" | "error" | "loading";
+type NotificationType = "info" | "success" | "error" | "warning" | "loading";
 interface Notification {
   message: string;
   type?: NotificationType;
   id?: string;
   duration?: number;
+  error?: unknown;
+  report?: boolean;
 }
 
 const containerStyle: React.CSSProperties = {
@@ -59,10 +64,12 @@ export function initToaster(): void {
 }
 
 export function showNotification({
+  error,
   message,
-  type,
+  type = error ? "error" : undefined,
   id = uuidv4(),
   duration,
+  report = false,
 }: Notification): string {
   const options = { id, duration };
   switch (type) {
@@ -75,6 +82,10 @@ export function showNotification({
 
     default:
       toast(message, options);
+  }
+
+  if (type === "error" && report) {
+    reportError(error ?? message);
   }
 
   return id;
@@ -110,8 +121,52 @@ export interface MessageConfig {
   config: Partial<NotificationOptions>;
 }
 
-export function notifyError(message: string): void {
-  showNotification({ message, type: "error" });
+/**
+ * @example notifyError('User message')
+ * @example notifyError('User message', new Error('DetailedError'))
+ * @example notifyError({error: new Error('Error that can be shown to the user')})
+ * @example notifyError({message: "User message", error: new Error('DetailedError'), id: 123})
+ */
+function notifyError(message: string, error?: unknown): void;
+function notifyError(
+  notification: Except<Notification, "type" | "message"> & { message?: string }
+  // If an object is supplied, it must include the error, but the message is optional
+): void;
+function notifyError(
+  notification:
+    | string
+    | (Except<Notification, "type" | "message"> & { message?: string }),
+  error?: unknown
+): void {
+  if (typeof notification === "string") {
+    notification = { message: notification, error };
+  }
+
+  showNotification({
+    ...notification,
+    message: notification.message ?? getErrorMessage(notification.error),
+    type: "error",
+  });
+}
+
+function notifyInfo(
+  notification: string | Exclude<Notification, "type">
+): void {
+  if (typeof notification === "string") {
+    notification = { message: notification };
+  }
+
+  showNotification({ ...notification, type: "info" });
+}
+
+function notifySuccess(
+  notification: string | Exclude<Notification, "type">
+): void {
+  if (typeof notification === "string") {
+    notification = { message: notification };
+  }
+
+  showNotification({ ...notification, type: "success" });
 }
 
 export function notifyResult(
@@ -120,3 +175,12 @@ export function notifyResult(
 ): void {
   showNotification({ message, type: className as NotificationType });
 }
+
+const notify = {
+  error: notifyError,
+  info: notifyInfo,
+  success: notifySuccess,
+  warning: notifyError,
+};
+
+export default notify;

@@ -18,7 +18,7 @@
 import styles from "./SelectorSelectorWidget.module.scss";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { compact, isEmpty, sortBy, uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors";
 import { Button, InputGroup } from "react-bootstrap";
@@ -105,7 +105,6 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   const defaultSort = selectMode === "element";
   const sort = rawSort ?? defaultSort;
 
-  const notify = useNotifications();
   const [element, setElement] = useState(initialElement);
   const [isSelecting, setSelecting] = useState(false);
 
@@ -181,7 +180,6 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   }, [
     sort,
     framework,
-    notify,
     setSelecting,
     traverseUp,
     selectMode,

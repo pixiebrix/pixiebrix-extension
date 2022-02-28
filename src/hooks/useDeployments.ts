@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { getErrorMessage } from "@/errors";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { getUID } from "@/background/telemetry";
 import { getExtensionVersion } from "@/chrome";
 import { selectInstalledDeployments } from "@/background/deployment";
@@ -182,7 +182,6 @@ function checkExtensionUpdateRequired(deployments: Deployment[]): boolean {
 }
 
 function useDeployments(): DeploymentState {
-  const notify = useNotifications();
   const dispatch = useDispatch();
   const installedExtensions = useSelector(selectExtensions);
 
@@ -257,7 +256,7 @@ function useDeployments(): DeploymentState {
         error,
       });
     }
-  }, [deployments, dispatch, notify, installedExtensions]);
+  }, [deployments, dispatch, installedExtensions]);
 
   const updateExtension = useCallback(async () => {
     await chromeP.runtime.requestUpdateCheck();

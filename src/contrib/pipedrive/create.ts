@@ -19,7 +19,7 @@ import { Effect } from "@/types";
 import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
-import { showNotification } from "@/contentScript/notify";
+import { showNotification } from "@/utils/notify";
 
 export class AddOrganization extends Effect {
   // https://developers.pipedrive.com/docs/api/v1/#!/Organizations/post_organizations

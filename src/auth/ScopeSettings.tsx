@@ -28,7 +28,7 @@ import { StatusCodes } from "http-status-codes";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
 import reportError from "@/telemetry/reportError";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useGetAuthQuery } from "@/services/api";
 
@@ -56,7 +56,6 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
   title,
   description,
 }) => {
-  const notify = useNotifications();
   const { refetch: refetchAuth } = useGetAuthQuery();
 
   const submit = useCallback(
@@ -99,7 +98,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
 
       refetchAuth();
     },
-    [notify]
+    []
   );
 
   return (

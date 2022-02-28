@@ -21,7 +21,7 @@ import serviceRegistry from "@/services/registry";
 import { stubTrue } from "lodash";
 import { useCallback, useState } from "react";
 import { getErrorMessage } from "@/errors";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { clearServiceCache, services } from "@/background/messenger/api";
 
 /**
@@ -52,7 +52,6 @@ function useRefresh(options?: {
   };
 
   const [loaded, setLoaded] = useState(false);
-  const notify = useNotifications();
 
   const refresh = useCallback(
     async (isMounted = stubTrue) => {
@@ -76,7 +75,7 @@ function useRefresh(options?: {
         }
       }
     },
-    [notify, setLoaded]
+    [setLoaded]
   );
 
   useAsyncEffect(
