@@ -1,4 +1,3 @@
-import { reportEvent } from "@/telemetry/events";
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -27,6 +26,7 @@ import useRefresh from "@/hooks/useRefresh";
 import { Definition, UnsavedRecipeDefinition } from "@/types/definitions";
 import useReinstall from "@/pages/marketplace/useReinstall";
 import notify from "@/utils/notify";
+import { reportEvent } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { getErrorMessage, isAxiosError } from "@/errors";
 import {
