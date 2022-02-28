@@ -27,6 +27,7 @@ export interface TabItem {
   badgeCount?: number;
   badgeVariant?: Variant;
   TabContent: React.VoidFunctionComponent;
+  mountWhenActive?: boolean;
 }
 
 export interface ActionButton {
@@ -56,8 +57,8 @@ const EditorTabLayout: React.FC<{
           className={styles.nav}
         >
           {items.map(({ itemName, badgeCount, badgeVariant }) => (
-            <Nav.Item key={`nav-tab-${itemName}`}>
-              <Nav.Link eventKey={itemName}>
+            <Nav.Item key={`nav-tab-${itemName}`} className={styles.navItem}>
+              <Nav.Link eventKey={itemName} className={styles.navLink}>
                 {itemName}
                 {badgeCount && badgeVariant && (
                   <Badge className={styles.badge} variant={badgeVariant}>
@@ -98,8 +99,13 @@ const EditorTabLayout: React.FC<{
         </Nav>
 
         <Tab.Content className={styles.content}>
-          {items.map(({ itemName, TabContent }) => (
-            <Tab.Pane key={itemName} eventKey={itemName}>
+          {items.map(({ itemName, TabContent, mountWhenActive }) => (
+            <Tab.Pane
+              key={itemName}
+              eventKey={itemName}
+              mountOnEnter={mountWhenActive}
+              unmountOnExit={mountWhenActive}
+            >
               <TabContent key={itemName} />
             </Tab.Pane>
           ))}
