@@ -76,7 +76,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       if (selected.length === 0) {
         notify.error({
           message: "Select at least one brick to activate",
-          report: false,
+          reportError: false,
         });
         setSubmitting(false);
         return;
@@ -86,7 +86,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         const missing = missingServiceIds.join(", ");
         notify.error({
           message: `You must select a configuration for each service: ${missing}`,
-          report: false,
+          reportError: false,
         });
         setSubmitting(false);
         return;
@@ -96,7 +96,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         notify.error({
           message:
             "You must accept browser permissions for the selected bricks",
-          report: false,
+          reportError: false,
         });
         setSubmitting(false);
         return;

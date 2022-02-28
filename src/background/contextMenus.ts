@@ -101,7 +101,7 @@ async function dispatchMenu(
         error
       )}`;
       reportError(error);
-      notify.error(target, { message, report: false });
+      notify.error(target, { message, reportError: false });
     }
   }
 }

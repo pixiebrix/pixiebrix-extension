@@ -217,7 +217,7 @@ function useDeployments(): DeploymentState {
           error
         )}`,
         error,
-        report: true,
+        reportError: true,
       });
     }
 

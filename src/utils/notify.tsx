@@ -26,14 +26,19 @@ import { Except, RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors";
 
 type NotificationType = "info" | "success" | "error" | "warning" | "loading";
-interface Notification {
-  message: string;
-  type?: NotificationType;
-  id?: string;
-  duration?: number;
-  error?: unknown;
-  report?: boolean;
-}
+type Notification = RequireAtLeastOne<
+  {
+    message: string;
+    type?: NotificationType;
+    id?: string;
+    duration?: number;
+    error?: unknown;
+    reportError?: boolean;
+  },
+  "message" | "error"
+>;
+
+type SimpleNotification = string | Except<Notification, "type">;
 
 const containerStyle: React.CSSProperties = {
   zIndex: NOTIFICATIONS_Z_INDEX,
@@ -69,9 +74,19 @@ export function showNotification({
   type = error ? "error" : undefined,
   id = uuidv4(),
   duration,
-  report = true,
-}: Notification): string {
+
+  /** Only errors are reported by default */
+  reportError: willReport = type === "error",
+}: RequireAtLeastOne<Notification, "message" | "error">): string {
   const options = { id, duration };
+  message = message ?? getErrorMessage(error);
+
+  // TODO: Temporary style override until warnings are natively supported
+  //  https://github.com/timolins/react-hot-toast/issues/29
+  if (type === "warning") {
+    type = "error";
+  }
+
   switch (type) {
     case "error":
     case "success":
@@ -84,7 +99,7 @@ export function showNotification({
       toast(message, options);
   }
 
-  if (type === "error" && report) {
+  if (willReport) {
     reportError(error ?? message);
   }
 
@@ -121,58 +136,6 @@ export interface MessageConfig {
   config: Partial<NotificationOptions>;
 }
 
-/**
- * @example notifyError('User message')
- * @example notifyError({error: new Error('Error that can be shown to the user')})
- * @example notifyError({message: "User message", error: new Error('DetailedError'), id: 123})
- */
-function notifyError(
-  notification:
-    | string
-    | RequireAtLeastOne<Except<Notification, "type">, "message" | "error">
-): string {
-  if (typeof notification === "string") {
-    notification = { message: notification };
-  }
-
-  return showNotification({
-    ...notification,
-    message: notification.message ?? getErrorMessage(notification.error),
-    type: "error",
-  });
-}
-
-function notifyInfo(
-  notification: string | Except<Notification, "type">
-): string {
-  if (typeof notification === "string") {
-    notification = { message: notification };
-  }
-
-  return showNotification({ ...notification, type: "info" });
-}
-
-function notifySuccess(
-  notification: string | Except<Notification, "type">
-): string {
-  if (typeof notification === "string") {
-    notification = { message: notification };
-  }
-
-  return showNotification({ ...notification, type: "success" });
-}
-
-function notifyWarning(
-  notification: string | Except<Notification, "type">
-): string {
-  if (typeof notification === "string") {
-    notification = { message: notification };
-  }
-
-  // TODO: Use warning style when it's natively supported https://github.com/timolins/react-hot-toast/issues/29
-  return showNotification({ ...notification, type: "error", report: false });
-}
-
 export function notifyResult(
   extensionId: string,
   { message, config: { className } }: MessageConfig
@@ -180,11 +143,30 @@ export function notifyResult(
   showNotification({ message, type: className as NotificationType });
 }
 
+// Private method to prevent adding logic to the `notify.*` helpers.
+// Always add logic to `showNotification` instead so it's in one place.
+function _show(
+  type: NotificationType,
+  notification: string | Except<Notification, "type">
+): string {
+  if (typeof notification === "string") {
+    notification = { message: notification };
+  }
+
+  return showNotification({ ...notification, type });
+}
+
+// Please only add logic to `showNotification`
 const notify = {
-  error: notifyError,
-  info: notifyInfo,
-  success: notifySuccess,
-  warning: notifyWarning,
-};
+  /**
+   * @example notify.error('User message')
+   * @example notify.error({error: new Error('Error that can be shown to the user')})
+   * @example notify.error({message: "User message", error: new Error('DetailedError'), id: 123})
+   */
+  error: (notification: SimpleNotification) => _show("error", notification),
+  info: (notification: SimpleNotification) => _show("info", notification),
+  success: (notification: SimpleNotification) => _show("success", notification),
+  warning: (notification: SimpleNotification) => _show("warning", notification),
+} as const;
 
 export default notify;
