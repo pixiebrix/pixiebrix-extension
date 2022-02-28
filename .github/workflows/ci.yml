@@ -31,8 +31,7 @@ jobs:
   build-stage:
     runs-on: ubuntu-latest
     env:
-      # Uploads sourcemaps to S3, if it's a public release
-      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
+      SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com/sourcemaps/${{ github.job }}/${{ github.sha }}/
 
     steps:
       - uses: actions/checkout@v2
@@ -71,7 +70,7 @@ jobs:
           retention-days: 5
           if-no-files-found: error
 
-      - run: npm run upload:sourcemaps
+      - run: bash scripts/upload-sourcemaps.sh
         if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}

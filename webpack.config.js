@@ -89,8 +89,7 @@ const produceSourcemap =
   !parseEnv(process.env.CI) || parseEnv(process.env.PUBLIC_RELEASE);
 
 const sourceMapPublicUrl =
-  parseEnv(process.env.PUBLIC_RELEASE) &&
-  `https://pixiebrix-extension-source-maps.s3.amazonaws.com/${process.env.SOURCE_MAP_PATH}/`;
+  parseEnv(process.env.PUBLIC_RELEASE) && process.env.SOURCE_MAP_URL_BASE;
 console.log(
   "Sourcemaps:",
   sourceMapPublicUrl ? sourceMapPublicUrl : produceSourcemap ? "Local" : "No"
@@ -336,7 +335,7 @@ module.exports = (env, options) =>
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
         WEBEXT_MESSENGER_LOGGING: "false",
-        ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost",
+        ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
