@@ -200,6 +200,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   );
 
   return (
+    // Do not replace this with `InputGroup` because that requires too many style overrides #2658 #2835
     <div className={styles.root}>
       <Button
         onClick={select}
