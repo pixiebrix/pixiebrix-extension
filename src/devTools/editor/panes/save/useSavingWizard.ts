@@ -174,7 +174,8 @@ const useSavingWizard = () => {
 
     if ("error" in createRecipeResponse) {
       const errorMessage = "Failed to create new Blueprint";
-      notify.error(errorMessage, {
+      notify.error({
+        message: errorMessage,
         error: createRecipeResponse.error,
       });
       closeWizard(errorMessage);
@@ -232,7 +233,8 @@ const useSavingWizard = () => {
 
     if ("error" in updateRecipeResponse) {
       const errorMessage = "Failed to update the Blueprint";
-      notify.error(errorMessage, {
+      notify.error({
+        message: errorMessage,
         error: updateRecipeResponse.error,
       });
       closeWizard(errorMessage);

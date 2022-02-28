@@ -154,7 +154,8 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
       });
 
       if (isEmpty(selected)) {
-        notify.error("Unknown error selecting element", {
+        notify.error({
+          message: "Unknown error selecting element",
           error: new Error("selectElement returned empty object"),
         });
         return;
@@ -171,7 +172,8 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
       console.debug("Setting selector", { selected, firstSelector });
       setValue(firstSelector);
     } catch (error) {
-      notify.error(`Error selecting element: ${getErrorMessage(error)}`, {
+      notify.error({
+        message: `Error selecting element: ${getErrorMessage(error)}`,
         error,
       });
     } finally {

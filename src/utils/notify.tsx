@@ -22,7 +22,7 @@ import { uuidv4 } from "@/types/helpers";
 import { DefaultToastOptions } from "react-hot-toast/dist/core/types";
 import { NOTIFICATIONS_Z_INDEX } from "@/common";
 import reportError from "@/telemetry/reportError";
-import { Except } from "type-fest";
+import { Except, RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors";
 
 type NotificationType = "info" | "success" | "error" | "warning" | "loading";
@@ -123,23 +123,16 @@ export interface MessageConfig {
 
 /**
  * @example notifyError('User message')
- * @example notifyError('User message', new Error('DetailedError'))
  * @example notifyError({error: new Error('Error that can be shown to the user')})
  * @example notifyError({message: "User message", error: new Error('DetailedError'), id: 123})
  */
-function notifyError(message: string, error?: unknown): void;
-function notifyError(
-  notification: Except<Notification, "type" | "message"> & { message?: string }
-  // If an object is supplied, it must include the error, but the message is optional
-): void;
 function notifyError(
   notification:
     | string
-    | (Except<Notification, "type" | "message"> & { message?: string }),
-  error?: unknown
+    | RequireAtLeastOne<Except<Notification, "type">, "message" | "error">
 ): void {
   if (typeof notification === "string") {
-    notification = { message: notification, error };
+    notification = { message: notification };
   }
 
   showNotification({

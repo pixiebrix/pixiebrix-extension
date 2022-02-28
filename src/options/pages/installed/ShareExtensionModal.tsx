@@ -173,12 +173,11 @@ const ShareExtensionModal: React.FC<{
           return;
         }
 
-        notify.error(
-          `Error converting/sharing brick: ${getHumanDetail(error)}`,
-          {
-            error,
-          }
-        );
+        notify.error({
+          message: `Error converting/sharing brick: ${getHumanDetail(error)}`,
+
+          error,
+        });
       } finally {
         helpers.setSubmitting(false);
       }

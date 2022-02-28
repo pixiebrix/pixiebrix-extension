@@ -58,7 +58,8 @@ function useEnsurePermissions(
     try {
       accepted = await ensureAllPermissions(permissions);
     } catch (error) {
-      notify.error(`Error granting permissions: ${getErrorMessage(error)}`, {
+      notify.error({
+        message: `Error granting permissions: ${getErrorMessage(error)}`,
         error,
       });
       return false;

@@ -101,7 +101,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
     });
 
     if ("error" in createDatabaseResult) {
-      notify.error(createDatabaseResult.error);
+      notify.error({ error: createDatabaseResult.error });
       onClose();
       return;
     }
@@ -115,7 +115,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
       });
 
       if ("error" in addToGroupResult) {
-        notify.error(addToGroupResult.error);
+        notify.error({ error: addToGroupResult.error });
         onClose();
         return;
       }

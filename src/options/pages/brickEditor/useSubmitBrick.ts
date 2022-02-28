@@ -68,9 +68,7 @@ function useSubmitBrick({
     try {
       await (await getLinkedApiClient()).delete(url);
     } catch (error) {
-      notify.error("Error deleting brick", {
-        error,
-      });
+      notify.error({ message: "Error deleting brick", error });
       return;
     }
 
@@ -125,12 +123,11 @@ function useSubmitBrick({
             reactivateEveryTab();
           })
           .catch((error) => {
-            notify.warning(
-              `Error re-activating bricks: ${getErrorMessage(error)}`,
-              {
-                error,
-              }
-            );
+            notify.warning({
+              message: `Error re-activating bricks: ${getErrorMessage(error)}`,
+
+              error,
+            });
           });
 
         // Reset initial values of the form so dirty=false

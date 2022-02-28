@@ -63,12 +63,13 @@ function useRefresh(options?: {
           return;
         }
 
-        notify.error(
-          `Error refreshing bricks from server: ${getErrorMessage(error)}`,
-          {
-            error,
-          }
-        );
+        notify.error({
+          message: `Error refreshing bricks from server: ${getErrorMessage(
+            error
+          )}`,
+
+          error,
+        });
       } finally {
         if (isMounted()) {
           setLoaded(true);

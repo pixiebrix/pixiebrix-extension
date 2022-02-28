@@ -82,12 +82,11 @@ const ActivateButton: React.FunctionComponent<{
           activate();
         })
         .catch((error) => {
-          notify.error(
-            `Error re-installing bricks: ${getErrorMessage(error)}`,
-            {
-              error,
-            }
-          );
+          notify.error({
+            message: `Error re-installing bricks: ${getErrorMessage(error)}`,
+
+            error,
+          });
         });
     } else {
       activate();

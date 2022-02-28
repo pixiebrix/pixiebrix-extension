@@ -89,9 +89,7 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
         if (!isMounted()) return;
         onSelect(null);
         setSheetError(error);
-        notify.error("Error retrieving sheet information", {
-          error,
-        });
+        notify.error({ message: "Error retrieving sheet information", error });
       }
     },
     [doc?.id, field.value, onSelect, setSheetError]
@@ -144,7 +142,8 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
         .build();
       picker.setVisible(true);
     } catch (error) {
-      notify.error(`Error loading file picker: ${getErrorMessage(error)}`, {
+      notify.error({
+        message: `Error loading file picker: ${getErrorMessage(error)}`,
         error,
       });
     }

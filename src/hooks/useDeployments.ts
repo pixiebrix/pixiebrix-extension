@@ -212,20 +212,22 @@ function useDeployments(): DeploymentState {
       await refreshRegistries();
     } catch (error) {
       // Try to proceed if we can't refresh the brick definitions
-      notify.warning(
-        `Error fetching latest bricks from server: ${getErrorMessage(error)}`,
-        { error, report: true }
-      );
+      notify.warning({
+        message: `Error fetching latest bricks from server: ${getErrorMessage(
+          error
+        )}`,
+        error,
+        report: true,
+      });
     }
 
     if (checkExtensionUpdateRequired(deployments)) {
       await chromeP.runtime.requestUpdateCheck();
-      notify.warning(
-        "You must update the PixieBrix browser extension to activate the deployment",
-        {
-          event: "DeploymentRejectVersion",
-        }
-      );
+      notify.warning({
+        message:
+          "You must update the PixieBrix browser extension to activate the deployment",
+      });
+      reportEvent("DeploymentRejectVersion");
       return;
     }
 
@@ -235,16 +237,16 @@ function useDeployments(): DeploymentState {
     try {
       accepted = await ensureAllPermissions(permissions);
     } catch (error) {
-      notify.error(`Error granting permissions: ${getErrorMessage(error)}`, {
+      notify.error({
+        message: `Error granting permissions: ${getErrorMessage(error)}`,
         error,
       });
       return;
     }
 
     if (!accepted) {
-      notify.warning("You declined the permissions", {
-        event: "DeploymentRejectPermissions",
-      });
+      notify.warning("You declined the permissions");
+      reportEvent("DeploymentRejectPermissions");
       return;
     }
 
@@ -252,9 +254,7 @@ function useDeployments(): DeploymentState {
       activateDeployments(dispatch, deployments, installedExtensions);
       notify.success("Activated team deployments");
     } catch (error) {
-      notify.error("Error activating team deployments", {
-        error,
-      });
+      notify.error({ message: "Error activating team deployments", error });
     }
   }, [deployments, dispatch, installedExtensions]);
 
