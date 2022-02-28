@@ -1,4 +1,3 @@
-r;
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
