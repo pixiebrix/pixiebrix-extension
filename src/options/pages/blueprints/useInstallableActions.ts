@@ -33,7 +33,6 @@ import {
 } from "@/background/messenger/api";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { useCallback } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
 import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/installed/exportBlueprint";
@@ -56,7 +55,7 @@ function useInstallableActions(installable: Installable) {
     data: { scope },
   } = useSelector(appApi.endpoints.getAuth.select());
 
-  const reinstall = useCallback(() => {
+  const reinstall = () => {
     if (!isExtension(installable) || !installable._recipe) {
       return;
     }
@@ -68,7 +67,7 @@ function useInstallableActions(installable: Installable) {
         )}?reinstall=1`
       )
     );
-  }, [dispatch, installable]);
+  };
 
   const activate = () => {
     if (!isExtension(installable)) {
