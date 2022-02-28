@@ -39,7 +39,7 @@ jest.mock("@/services/api", () => ({
 jest.mock("@/hooks/useDeployments", () => jest.fn());
 
 // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
-jest.mock("@/hooks/useNotifications", () => {
+jest.mock("@/utils/notify", () => {
   // We're not asserting any specific calls yet, so just pass generic mocks
   return () => ({
     success: jest.fn(),

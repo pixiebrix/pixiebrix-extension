@@ -18,7 +18,7 @@
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { showNotification } from "@/utils/notify";
+import notify from "@/utils/notify";
 
 export class AlertEffect extends Effect {
   constructor() {
@@ -63,7 +63,7 @@ export class AlertEffect extends Effect {
       // eslint-disable-next-line no-alert
       window.alert(messageString);
     } else {
-      showNotification({ message: messageString, type, duration });
+      notify.info({ message: messageString, type, duration });
     }
   }
 }

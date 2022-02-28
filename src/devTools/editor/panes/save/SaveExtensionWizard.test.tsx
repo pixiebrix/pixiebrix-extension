@@ -33,7 +33,7 @@ import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/tests/testHelpers";
 import { anonAuth } from "@/hooks/auth";
 
-jest.mock("@/hooks/useNotifications");
+jest.mock("@/utils/notify");
 jest.mock("./useSavingWizard");
 
 jest.mock("@/services/api", () => ({

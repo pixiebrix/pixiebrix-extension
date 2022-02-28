@@ -57,7 +57,7 @@ import {
   resetTab,
 } from "@/contentScript/devTools";
 import { checkAvailable } from "@/blocks/available";
-import { showNotification } from "@/utils/notify";
+import notify from "@/utils/notify";
 import { runBrick } from "@/contentScript/executor";
 import {
   cancelSelect,
@@ -112,7 +112,7 @@ declare global {
     INSTALLED_EXTENSIONS: typeof getInstalledIds;
     CHECK_AVAILABLE: typeof checkAvailable;
     HANDLE_NAVIGATE: typeof handleNavigate;
-    SHOW_NOTIFICATION: typeof showNotification;
+    SHOW_NOTIFICATION: typeof notify.info;
     RUN_BRICK: typeof runBrick;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
@@ -163,7 +163,7 @@ export default function registerMessenger(): void {
     INSTALLED_EXTENSIONS: getInstalledIds,
     CHECK_AVAILABLE: checkAvailable,
     HANDLE_NAVIGATE: handleNavigate,
-    SHOW_NOTIFICATION: showNotification,
+    SHOW_NOTIFICATION: notify.info,
 
     RUN_BRICK: runBrick,
     CANCEL_SELECT_ELEMENT: cancelSelect,

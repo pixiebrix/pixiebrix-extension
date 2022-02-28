@@ -33,7 +33,7 @@ import {
   sendDeploymentAlert,
   traces,
 } from "@/background/messenger/api";
-import { hideNotification, showNotification } from "@/utils/notify";
+import notify, { hideNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
@@ -367,7 +367,7 @@ export async function runBlock(
   let notification: string;
 
   if (stage.notifyProgress) {
-    notification = showNotification({
+    notification = notify.info({
       message: stage.label ?? block.name,
       type: "loading",
     });

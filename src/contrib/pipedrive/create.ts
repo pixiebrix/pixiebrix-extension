@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 PixieBrix, Inc.
+ * Copyright (C) 2022´ PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@ import { Effect } from "@/types";
 import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
-import { showNotification } from "@/utils/notify";
+import notify from "@/utils/notify";
 
 export class AddOrganization extends Effect {
   // https://developers.pipedrive.com/docs/api/v1/#!/Organizations/post_organizations
@@ -62,7 +62,7 @@ export class AddOrganization extends Effect {
     });
 
     if (data.items.length > 0) {
-      showNotification({ message: `Organization already exists for ${name}` });
+      notify.info({ message: `Organization already exists for ${name}` });
       return;
     }
 
@@ -72,12 +72,12 @@ export class AddOrganization extends Effect {
         method: "post",
         data: { name, owner_id },
       });
-      showNotification({
+      notify.info({
         message: `Added ${name} to Pipedrive`,
         type: "success",
       });
     } catch {
-      showNotification({
+      notify.info({
         message: `Error adding ${name} to Pipedrive`,
         type: "error",
       });
@@ -140,7 +140,7 @@ export class AddPerson extends Effect {
     });
 
     if (data.items.length > 0) {
-      showNotification({ message: `Person record already exists for ${name}` });
+      notify.info({ message: `Person record already exists for ${name}` });
       return;
     }
 
@@ -155,12 +155,12 @@ export class AddPerson extends Effect {
           phone: phone ? [phone] : undefined,
         },
       });
-      showNotification({
+      notify.info({
         message: `Added ${name} to Pipedrive`,
         type: "success",
       });
     } catch {
-      showNotification({
+      notify.info({
         message: `Error adding ${name} to Pipedrive`,
         type: "error",
       });
