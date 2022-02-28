@@ -70,7 +70,7 @@ function useInstallableActions(installable: Installable) {
     );
   }, [dispatch, installable]);
 
-  const activate = useCallback(() => {
+  const activate = () => {
     if (!isExtension(installable)) {
       dispatch(
         push(
@@ -81,9 +81,9 @@ function useInstallableActions(installable: Installable) {
     }
 
     dispatch(push(`/extensions/install/${installable.id}`));
-  }, [dispatch, installable]);
+  };
 
-  const viewShare = useCallback(() => {
+  const viewShare = () => {
     let shareContext = null;
 
     if (isBlueprint(installable) || isShared(installable)) {
@@ -97,7 +97,7 @@ function useInstallableActions(installable: Installable) {
     }
 
     dispatch(installedPageSlice.actions.setShareContext(shareContext));
-  }, [dispatch, installable, scope]);
+  };
 
   const deleteExtension = useUserAction(
     async () => {
@@ -130,7 +130,7 @@ function useInstallableActions(installable: Installable) {
     [modals]
   );
 
-  const uninstall = useCallback(() => {
+  const uninstall = () => {
     if (!isExtension(installable)) {
       return;
     }
@@ -147,9 +147,9 @@ function useInstallableActions(installable: Installable) {
     notify.success(`Removed brick ${getLabel(installable)}`, {
       event: "ExtensionRemove",
     });
-  }, [dispatch, installable, notify]);
+  };
 
-  const viewLogs = useCallback(() => {
+  const viewLogs = () => {
     if (!isExtension(installable)) {
       return;
     }
@@ -160,9 +160,9 @@ function useInstallableActions(installable: Installable) {
         messageContext: selectExtensionContext(installable),
       })
     );
-  }, [dispatch, installable]);
+  };
 
-  const exportBlueprint = useCallback(() => {
+  const exportBlueprint = () => {
     const extension = isExtension(installable) ? installable : null;
 
     if (extension == null) {
@@ -171,7 +171,7 @@ function useInstallableActions(installable: Installable) {
     }
 
     exportBlueprintYaml(extension);
-  }, [installable, notify]);
+  };
 
   return {
     viewShare,

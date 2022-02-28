@@ -48,19 +48,15 @@ const BlueprintActions: React.FunctionComponent<{
 
   const actionItems = useMemo(
     () => [
-      ...(actions.viewShare
-        ? [
-            {
-              title: (
-                <>
-                  <FontAwesomeIcon icon={faShare} /> Share
-                </>
-              ),
-              action: actions.viewShare,
-              hide: isCloudExtension,
-            },
-          ]
-        : []),
+      {
+        title: (
+          <>
+            <FontAwesomeIcon icon={faShare} /> Share
+          </>
+        ),
+        action: actions.viewShare,
+        hide: !actions.viewShare || isCloudExtension,
+      },
       {
         title: (
           <>
@@ -78,28 +74,24 @@ const BlueprintActions: React.FunctionComponent<{
         action: actions.viewLogs,
         hide: status !== "Active",
       },
-      ...(actions.reinstall
-        ? [
-            {
-              title: (
-                <>
-                  {hasUpdate ? (
-                    <span className="text-info">
-                      <FontAwesomeIcon icon={faSyncAlt} /> Update
-                    </span>
-                  ) : (
-                    <>
-                      <FontAwesomeIcon icon={faSyncAlt} /> Reactivate
-                    </>
-                  )}
-                </>
-              ),
-              action: actions.reinstall,
-              // Managed extensions are updated via the deployment banner
-              hide: sharing.source.type === "Deployment",
-            },
-          ]
-        : []),
+      {
+        title: (
+          <>
+            {hasUpdate ? (
+              <span className="text-info">
+                <FontAwesomeIcon icon={faSyncAlt} /> Update
+              </span>
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faSyncAlt} /> Reactivate
+              </>
+            )}
+          </>
+        ),
+        action: actions.reinstall,
+        // Managed extensions are updated via the deployment banner
+        hide: !actions.reinstall || sharing.source.type === "Deployment",
+      },
       {
         title: (
           <>

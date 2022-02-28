@@ -31,7 +31,16 @@ import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 
 // Expands react-table grouped rows recursively, and groups
 // rows in chunks of `columnCount` for easy grid rendering
-function expandGridRows(
+
+/**
+ *  Expands `react-table` rows recursively in chunks of
+ *  `columnCount`, preserving grouped row positioning
+ *  for easy grid rendering.
+ *  @param rows - `react-table` rows that are either flat or grouped
+ *  @param columnCount - number >= 1 of chunked rows to render grid columns
+ *  @returns {array} - an array of groupBy rows and/or chunked rows
+ */
+export function expandGridRows(
   rows: Array<Row<InstallableViewItem>>,
   columnCount: number
 ): Array<Row<InstallableViewItem> | Array<Row<InstallableViewItem>>> {
@@ -67,6 +76,7 @@ function expandGridRows(
 
 const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
+  // TODO: remove rows because they are a part of tableInstance
   rows,
   width,
   height,
@@ -74,6 +84,8 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   // 200px min card width & height, 15px padding
   // see: GridView.module.scss
   const minCardSizeInPixels = 215;
+
+  console.log("rows:", rows);
 
   const [listKey, setListKey] = useState(uuidv4());
 
@@ -101,7 +113,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   // even with non-index `itemKeys`.
   // Re-render the list when expandedRows changes.
   useEffect(() => {
-    setListKey(uuidv4);
+    setListKey(uuidv4());
   }, [expandedGridRows, columnCount]);
 
   const GridRow = useCallback(

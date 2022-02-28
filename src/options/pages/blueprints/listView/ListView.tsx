@@ -18,32 +18,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import ListItem from "./ListItem";
-import {
-  BlueprintListViewProps,
-  InstallableViewItem,
-} from "@/options/pages/blueprints/blueprintsTypes";
+import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
 import { VariableSizeList as List } from "react-window";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
-import { Row } from "react-table";
 import { uuidv4 } from "@/types/helpers";
-
-// Expands react-table grouped rows recursively, as
-// compensation for react-tables instance property flatRows,
-// which is depth-first
-export function expandRows(
-  rows: Array<Row<InstallableViewItem>>
-): Array<Row<InstallableViewItem>> {
-  const flatRows = [];
-  for (const row of rows) {
-    flatRows.push(row);
-
-    if (row.isGrouped) {
-      flatRows.push(...expandRows(row.subRows));
-    }
-  }
-
-  return flatRows;
-}
 
 const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
@@ -55,7 +33,10 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   const headerSizeInPixels = 43;
   const [listKey, setListKey] = useState(uuidv4());
 
-  const expandedRows = useMemo(() => expandRows(rows), [rows]);
+  const expandedRows = useMemo(
+    () => rows.flatMap((row) => [row, ...row.subRows]),
+    [rows]
+  );
 
   const getItemSize = useCallback(
     (index: number) => {
@@ -71,7 +52,7 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   // even with non-index `itemKeys`.
   // Re-render the list when expandedRows changes.
   useEffect(() => {
-    setListKey(uuidv4);
+    setListKey(uuidv4());
   }, [expandedRows]);
 
   return (
