@@ -14,19 +14,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-// Override and extend Bootstrap’s style
 .root {
-  flex-wrap: nowrap;
-
-  div[role="combobox"] {
-    flex-grow: 1;
+  display: flex;
+  align-items: stretch;
+  button {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
   }
-
   input {
-    position: relative;
-    z-index: 3;
+    border-left: none;
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
+  }
+  [role="combobox"] {
+    flex-grow: 1;
   }
 }
