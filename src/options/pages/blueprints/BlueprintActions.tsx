@@ -41,10 +41,8 @@ const BlueprintActions: React.FunctionComponent<{
 
   const { installable, hasUpdate, status, sharing } = installableViewItem;
   const actions = useInstallableActions(installable);
-  const isCloudExtension = useMemo(
-    () => sharing.source.type === "Personal" && status !== "Active",
-    [sharing.source.type, status]
-  );
+  const isCloudExtension =
+    sharing.source.type === "Personal" && status !== "Active";
 
   const actionItems = useMemo(
     () => [

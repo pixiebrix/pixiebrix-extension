@@ -27,4 +27,4 @@ const ListGroupHeader: React.VoidFunctionComponent<{
   </div>
 );
 
-export default React.memo(ListGroupHeader);
+export default ListGroupHeader;

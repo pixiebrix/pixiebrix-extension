@@ -23,14 +23,15 @@ import { VariableSizeList as List } from "react-window";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
 
+const ROW_HEIGHT_PX = 67;
+const HEADER_ROW_HEIGHT_PX = 43;
+
 const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
   rows,
   height,
   width,
 }) => {
-  const rowSizeInPixels = 67;
-  const headerSizeInPixels = 43;
   const [listKey, setListKey] = useState(uuidv4());
 
   const expandedRows = useMemo(
@@ -42,7 +43,7 @@ const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     (index: number) => {
       // eslint-disable-next-line security/detect-object-injection
       const row = expandedRows[index];
-      return row.isGrouped ? headerSizeInPixels : rowSizeInPixels;
+      return row.isGrouped ? HEADER_ROW_HEIGHT_PX : ROW_HEIGHT_PX;
     },
     [expandedRows]
   );
