@@ -89,7 +89,8 @@ const produceSourcemap =
   !parseEnv(process.env.CI) || parseEnv(process.env.PUBLIC_RELEASE);
 
 const sourceMapPublicUrl =
-  parseEnv(process.env.PUBLIC_RELEASE) && process.env.SOURCE_MAP_URL_BASE;
+  parseEnv(process.env.PUBLIC_RELEASE) &&
+  `${process.env.SOURCE_MAP_URL_BASE}/${process.env.SOURCE_MAP_PATH}/`;
 console.log(
   "Sourcemaps:",
   sourceMapPublicUrl ? sourceMapPublicUrl : produceSourcemap ? "Local" : "No"

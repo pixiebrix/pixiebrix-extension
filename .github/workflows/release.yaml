@@ -13,7 +13,8 @@ jobs:
   build-for-store:
     runs-on: ubuntu-latest
     env:
-      SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com/sourcemaps/${{ github.job }}/${{ github.sha }}/
+      SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com/
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
     steps:
       - uses: actions/checkout@v2
@@ -47,7 +48,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com/sourcemaps/${{ github.job }}/${{ github.sha }}/
+      SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com/
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
     steps:
       - uses: actions/checkout@v2
