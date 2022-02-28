@@ -69,7 +69,7 @@ export function showNotification({
   type = error ? "error" : undefined,
   id = uuidv4(),
   duration,
-  report = false,
+  report = true,
 }: Notification): string {
   const options = { id, duration };
   switch (type) {
@@ -162,6 +162,17 @@ function notifySuccess(
   return showNotification({ ...notification, type: "success" });
 }
 
+function notifyWarning(
+  notification: string | Except<Notification, "type">
+): string {
+  if (typeof notification === "string") {
+    notification = { message: notification };
+  }
+
+  // TODO: Use warning style when it's natively supported https://github.com/timolins/react-hot-toast/issues/29
+  return showNotification({ ...notification, type: "error", report: false });
+}
+
 export function notifyResult(
   extensionId: string,
   { message, config: { className } }: MessageConfig
@@ -173,7 +184,7 @@ const notify = {
   error: notifyError,
   info: notifyInfo,
   success: notifySuccess,
-  warning: notifyError,
+  warning: notifyWarning,
 };
 
 export default notify;
