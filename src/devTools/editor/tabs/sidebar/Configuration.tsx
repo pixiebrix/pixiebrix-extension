@@ -22,7 +22,7 @@ import UrlMatchPatternField from "@/devTools/editor/fields/UrlMatchPatternField"
 import FieldSection from "@/devTools/editor/fields/FieldSection";
 import { makeLockableFieldProps } from "@/devTools/editor/fields/makeLockableFieldProps";
 
-const ActionPanelConfiguration: React.FC<{
+const Configuration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
   <Card>
@@ -41,4 +41,4 @@ const ActionPanelConfiguration: React.FC<{
   </Card>
 );
 
-export default ActionPanelConfiguration;
+export default Configuration;

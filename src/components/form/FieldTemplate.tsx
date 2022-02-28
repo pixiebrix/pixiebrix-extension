@@ -25,7 +25,6 @@ import {
   Row,
 } from "react-bootstrap";
 import styles from "./FieldTemplate.module.scss";
-import { getErrorMessage } from "@/errors";
 import cx from "classnames";
 import { isPlainObject } from "lodash";
 
@@ -165,8 +164,8 @@ const FieldTemplate: React.FC<FieldProps> = ({
             {description}
           </BootstrapForm.Text>
         )}
-        {isInvalid && (
-          <div className={styles.invalidMessage}>{getErrorMessage(error)}</div>
+        {isInvalid && typeof error === "string" && (
+          <div className={styles.invalidMessage}>{error}</div>
         )}
       </Col>
     </BootstrapForm.Group>

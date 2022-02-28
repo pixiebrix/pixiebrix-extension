@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { FormEntry } from "@/actionPanel/types";
+import { FormEntry } from "@/sidebar/types";
 import { useAsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
@@ -27,7 +27,7 @@ type FormBodyProps = {
 };
 
 /**
- * JSON Schema form for embedding in an action panel tab
+ * JSON Schema form for embedding in an sidebar tab
  * @param form the form definition and extension metadata
  * @constructor
  */

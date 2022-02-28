@@ -29,6 +29,7 @@ import { useField } from "formik";
 import { ServiceAuthPair } from "@/core";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetServicesQuery } from "@/services/api";
+import { joinName } from "@/utils";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -97,7 +98,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                   <AuthWidget
                     authOptions={authOptions}
                     serviceId={serviceId}
-                    name={[field.name, index, "config"].join(".")}
+                    name={joinName(field.name, String(index), "config")}
                     onRefresh={refreshAuthOptions}
                   />
                 </td>

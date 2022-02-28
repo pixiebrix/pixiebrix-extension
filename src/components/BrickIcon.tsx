@@ -37,7 +37,7 @@ import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
 import { MenuItemExtensionPoint } from "@/extensionPoints/menuItemExtension";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
-import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtension";
+import { SidebarExtensionPoint } from "@/extensionPoints/sidebarExtension";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import { useAsyncEffect } from "use-async-effect";
@@ -81,7 +81,7 @@ export function getDefaultBrickIcon(
     return faWindowMaximize;
   }
 
-  if (brick instanceof ActionPanelExtensionPoint) {
+  if (brick instanceof SidebarExtensionPoint) {
     return faColumns;
   }
 

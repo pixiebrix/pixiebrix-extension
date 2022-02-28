@@ -27,7 +27,7 @@ import { uninstallContextMenu } from "@/background/messenger/api";
 import { thisTab } from "@/devTools/utils";
 import {
   clearDynamicElements,
-  removeActionPanel,
+  removeSidebar,
 } from "@/contentScript/messenger/api";
 import extensionsSlice from "@/store/extensionsSlice";
 
@@ -68,7 +68,7 @@ function useRemove(element: FormState): () => void {
 
       await Promise.allSettled([
         uninstallContextMenu(ref),
-        removeActionPanel(thisTab, ref.extensionId),
+        removeSidebar(thisTab, ref.extensionId),
       ]);
 
       // Remove from page editor

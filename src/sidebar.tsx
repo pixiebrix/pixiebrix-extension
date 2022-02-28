@@ -15,10 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { formatDistanceToNowStrict } from "date-fns";
+// Keep in order so precedence is preserved
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
+import "@/utils/layout.scss";
+import "@/sidebar.scss";
 
-export function timeSince(dateIso: string): string {
-  return formatDistanceToNowStrict(new Date(dateIso), {
-    addSuffix: true /* "ago" */,
-  });
-}
+import "@/extensionContext";
+
+import registerMessenger from "@/sidebar/messenger/registration";
+import App from "@/sidebar/SidebarApp";
+import ReactDOM from "react-dom";
+import React from "react";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
+
+registerMessenger();
+registerContribBlocks();
+registerBuiltinBlocks();
+
+ReactDOM.render(<App />, document.querySelector("#container"));

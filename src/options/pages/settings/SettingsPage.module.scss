@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { formatDistanceToNowStrict } from "date-fns";
-
-export function timeSince(dateIso: string): string {
-  return formatDistanceToNowStrict(new Date(dateIso), {
-    addSuffix: true /* "ago" */,
-  });
+.root {
+  max-width: 550px;
+  margin-bottom: 20px;
 }
