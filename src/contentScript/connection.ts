@@ -20,10 +20,9 @@ import notify, { hideNotification } from "@/utils/notify";
 const id = "connection-lost";
 
 export function showConnectionLost(): void {
-  notify.info({
+  notify.error({
     id,
     message: "Connection to PixieBrix lost. Please reload the page",
-    type: "error",
     duration: Number.POSITIVE_INFINITY,
   });
 }

@@ -62,7 +62,7 @@ export class AddOrganization extends Effect {
     });
 
     if (data.items.length > 0) {
-      notify.info({ message: `Organization already exists for ${name}` });
+      notify.info(`Organization already exists for ${name}`);
       return;
     }
 
@@ -72,15 +72,9 @@ export class AddOrganization extends Effect {
         method: "post",
         data: { name, owner_id },
       });
-      notify.info({
-        message: `Added ${name} to Pipedrive`,
-        type: "success",
-      });
+      notify.success(`Added ${name} to Pipedrive`);
     } catch {
-      notify.info({
-        message: `Error adding ${name} to Pipedrive`,
-        type: "error",
-      });
+      notify.error(`Error adding ${name} to Pipedrive`);
     }
   }
 }
@@ -155,15 +149,9 @@ export class AddPerson extends Effect {
           phone: phone ? [phone] : undefined,
         },
       });
-      notify.info({
-        message: `Added ${name} to Pipedrive`,
-        type: "success",
-      });
+      notify.success(`Added ${name} to Pipedrive`);
     } catch {
-      notify.info({
-        message: `Error adding ${name} to Pipedrive`,
-        type: "error",
-      });
+      notify.error(`Error adding ${name} to Pipedrive`);
     }
   }
 }

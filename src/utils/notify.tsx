@@ -63,7 +63,7 @@ export function initToaster(): void {
   render(<Toaster {...{ containerStyle, toastOptions }} />, root);
 }
 
-function showNotification({
+export function showNotification({
   error,
   message,
   type = error ? "error" : undefined,
@@ -143,7 +143,7 @@ function notifyError(
 }
 
 function notifyInfo(
-  notification: string | Exclude<Notification, "type">
+  notification: string | Except<Notification, "type">
 ): string {
   if (typeof notification === "string") {
     notification = { message: notification };
@@ -153,7 +153,7 @@ function notifyInfo(
 }
 
 function notifySuccess(
-  notification: string | Exclude<Notification, "type">
+  notification: string | Except<Notification, "type">
 ): string {
   if (typeof notification === "string") {
     notification = { message: notification };

@@ -20,10 +20,7 @@ import browser, { Menus, Tabs } from "webextension-polyfill";
 import { getErrorMessage, hasCancelRootCause } from "@/errors";
 import reportError from "@/telemetry/reportError";
 import { noop } from "lodash";
-import {
-  handleMenuAction,
-  showNotification,
-} from "@/contentScript/messenger/api";
+import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
 import { UUID, IExtension, ResolvedExtension } from "@/core";
@@ -95,21 +92,16 @@ async function dispatchMenu(
       extensionId: info.menuItemId.slice(MENU_PREFIX.length) as UUID,
       args: info,
     });
-    void showNotification(target, {
-      message: "Ran content menu item action",
-      type: "success",
-    });
+    notify.success(target, "Ran content menu item action");
   } catch (error) {
     if (hasCancelRootCause(error)) {
-      void showNotification(target, {
-        message: "The action was cancelled",
-      });
+      notify.info(target, "The action was cancelled");
     } else {
       const message = `Error handling context menu action: ${getErrorMessage(
         error
       )}`;
-      reportError(new Error(message));
-      void showNotification(target, { message, type: "error" });
+      reportError(error);
+      notify.error(target, { message, report: false });
     }
   }
 }
