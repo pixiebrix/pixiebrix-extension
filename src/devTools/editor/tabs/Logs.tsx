@@ -15,11 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { logActions } from "@/components/logViewer/logSlice";
+import LogCard from "@/components/logViewer/LogCard";
 
-// eslint-disable-next-line arrow-body-style
 const Logs: React.VoidFunctionComponent = () => {
-  return <div>Logs Placeholder</div>;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(logActions.refreshEntries());
+  }, [dispatch]);
+
+  return <LogCard />;
 };
 
 export default Logs;

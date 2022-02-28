@@ -137,9 +137,10 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { extension, ...state }: TriggerFormState,
+  state: TriggerFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<TriggerConfig> {
+  const { extension } = state;
   const config: TriggerConfig = {
     action: options.includeInstanceIds
       ? extension.blockPipeline
