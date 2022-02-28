@@ -34,7 +34,6 @@ import {
   schemaSupportsTemplates,
 } from "@/components/fields/schemaFields/BasicSchemaField";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 
 function isVarValue(value: string): boolean {
@@ -159,10 +158,6 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
 
     return [fieldValue, onChange];
   }, [allowExpressions, onChangeForTemplate, setValue, value]);
-
-  if (isTemplateExpression(value) && isMustacheOnly(value.__value__)) {
-    return <WorkshopMessageWidget />;
-  }
 
   if (
     value !== null &&
