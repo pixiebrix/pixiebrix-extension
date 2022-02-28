@@ -32,7 +32,7 @@ type Notification = RequireAtLeastOne<
     type?: NotificationType;
     id?: string;
     duration?: number;
-    error?: unknown;
+    error: unknown;
     reportError?: boolean;
   },
   "message" | "error"
