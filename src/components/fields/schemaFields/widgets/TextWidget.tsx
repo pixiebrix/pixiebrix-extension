@@ -55,8 +55,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   focusInput,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, { error }, { setValue }] =
-    useField(name);
+  const [{ value, ...restInputProps }, , { setValue }] = useField(name);
   const { allowExpressions: allowExpressionsContext } =
     useContext(FieldRuntimeContext);
   const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);
@@ -182,7 +181,6 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
       {...formControlProps}
       value={fieldInputValue}
       onChange={fieldOnChange}
-      isInvalid={Boolean(error)}
       ref={textAreaRef}
     />
   );
