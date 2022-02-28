@@ -54,7 +54,10 @@ export function isRecipeEditable(
   editablePackages: EditablePackage[],
   recipe: RecipeDefinition
 ) {
-  return editablePackages.some((x) => x.name === recipe.metadata.id);
+  // The user might loose access to the recipe while they were editing it (the recipe or an extension)
+  // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
+  const recipeId = recipe?.metadata?.id;
+  return recipeId != null && editablePackages.some((x) => x.name === recipeId);
 }
 
 /**

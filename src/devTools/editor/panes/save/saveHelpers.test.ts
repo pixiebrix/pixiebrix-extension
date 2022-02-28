@@ -17,6 +17,7 @@
 
 import {
   generateScopeBrickId,
+  isRecipeEditable,
   replaceRecipeExtension,
 } from "@/devTools/editor/panes/save/saveHelpers";
 import { validateRegistryId } from "@/types/helpers";
@@ -40,7 +41,7 @@ import {
   MINIMAL_SCHEMA,
   MINIMAL_UI_SCHEMA,
 } from "@/components/formBuilder/formBuilderHelpers";
-import { OptionsDefinition } from "@/types/definitions";
+import { EditablePackage, OptionsDefinition } from "@/types/definitions";
 
 jest.mock("@/background/contextMenus");
 jest.mock("@/background/messenger/api");
@@ -539,5 +540,46 @@ describe("blueprint options", () => {
     );
 
     expect(updatedRecipe.options).toBeUndefined();
+  });
+});
+
+describe("isRecipeEditable", () => {
+  test("returns true if recipe is in editable packages", () => {
+    const recipe = recipeFactory();
+    const editablePackages: EditablePackage[] = [
+      {
+        id: null,
+        name: validateRegistryId("test/recipe"),
+      },
+      {
+        id: null,
+        name: recipe.metadata.id,
+      },
+    ];
+
+    expect(isRecipeEditable(editablePackages, recipe)).toBe(true);
+  });
+
+  test("returns false if recipe is not in editable packages", () => {
+    const recipe = recipeFactory();
+    const editablePackages: EditablePackage[] = [
+      {
+        id: null,
+        name: validateRegistryId("test/recipe"),
+      },
+    ];
+
+    expect(isRecipeEditable(editablePackages, recipe)).toBe(false);
+  });
+
+  test("returns false if recipe is null", () => {
+    const editablePackages: EditablePackage[] = [
+      {
+        id: null,
+        name: validateRegistryId("test/recipe"),
+      },
+    ];
+
+    expect(isRecipeEditable(editablePackages, null)).toBe(false);
   });
 });
