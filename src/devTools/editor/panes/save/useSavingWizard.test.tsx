@@ -85,10 +85,16 @@ const renderUseSavingWizard = (store: Store) =>
   });
 
 test("maintains wizard open state", () => {
-  const metadata = installedRecipeMetadataFactory();
-  const element = formStateFactory({
-    recipe: metadata,
+  const recipe = recipeFactory();
+  (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
+    data: [recipe],
+    isLoading: false,
   });
+  const recipeMetadata = installedRecipeMetadataFactory(recipe.metadata);
+  const element = formStateFactory({
+    recipe: recipeMetadata,
+  });
+
   const store = createStore();
   store.dispatch(editorSlice.actions.addElement(element));
 

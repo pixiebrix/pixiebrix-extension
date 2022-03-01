@@ -25,11 +25,8 @@ import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
 import { MarketplaceListing } from "@/types/contract";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { isBlueprint } from "@/options/pages/blueprints/installableUtils";
-import { useAsyncState } from "@/hooks/common";
 
-async function getDefaultInstallableIcon(
-  installable: Installable
-): Promise<IconProp> {
+function getDefaultInstallableIcon(installable: Installable) {
   if (isBlueprint(installable)) {
     return faScroll;
   }
@@ -51,9 +48,7 @@ const InstallableIcon: React.FunctionComponent<{
 }> = ({ listing, installable, isLoading, size = "1x", faIconClass = "" }) => {
   const [listingFaIcon, setFaListingIcon] = useState<IconProp | undefined>();
 
-  const [defaultIcon] = useAsyncState(async () =>
-    getDefaultInstallableIcon(installable)
-  );
+  const defaultIcon = useMemo(() => getDefaultInstallableIcon(installable), []);
 
   const iconToUse = useMemo(
     () => listingFaIcon ?? defaultIcon,
