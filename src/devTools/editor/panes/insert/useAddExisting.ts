@@ -17,9 +17,8 @@
 
 import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
-import reportError from "@/telemetry/reportError";
 import { useDispatch } from "react-redux";
-import { useToasts } from "react-toast-notifications";
+import notify from "@/utils/notify";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
@@ -32,8 +31,6 @@ function useAddExisting<T extends { rawConfig: ExtensionPointConfig }>(
   cancel: () => void
 ): (extensionPoint: { rawConfig: ExtensionPointConfig }) => Promise<void> {
   const dispatch = useDispatch();
-  const { addToast } = useToasts();
-
   return useCallback(
     async (extensionPoint: T) => {
       try {
@@ -53,14 +50,10 @@ function useAddExisting<T extends { rawConfig: ExtensionPointConfig }>(
 
         dispatch(addElement(state as FormState));
       } catch (error) {
-        reportError(error);
-        addToast(`Error adding ${config.label}`, {
-          autoDismiss: true,
-          appearance: "error",
-        });
+        notify.error({ message: `Error adding ${config.label}`, error });
       }
     },
-    [config, dispatch, cancel, addToast]
+    [config, dispatch, cancel]
   );
 }
 

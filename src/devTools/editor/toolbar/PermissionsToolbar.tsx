@@ -26,7 +26,7 @@ import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { Permissions } from "webextension-polyfill";
 import { useAsyncEffect } from "use-async-effect";
 import { useDebounce } from "use-debounce";
-import { useToasts } from "react-toast-notifications";
+import notify from "@/utils/notify";
 import { containsPermissions } from "@/background/messenger/api";
 
 type PermissionsState = {
@@ -40,8 +40,6 @@ const PermissionsToolbar: React.FunctionComponent<{
   element: FormState;
   disabled: boolean;
 }> = ({ element, disabled }) => {
-  const { addToast } = useToasts();
-
   const [state, setState] = useState<PermissionsState>({
     hasPermissions: true,
     permissions: {},
@@ -89,24 +87,12 @@ const PermissionsToolbar: React.FunctionComponent<{
 
   const request = useCallback(async () => {
     if (await ensureAllPermissions(state.permissions)) {
-      addToast("Granted additional permissions", {
-        appearance: "success",
-        autoDismiss: true,
-      });
+      notify.success("Granted additional permissions");
       await detectPermissions(debouncedElement, disabled);
     } else {
-      addToast("You declined the additional required permissions", {
-        appearance: "info",
-        autoDismiss: true,
-      });
+      notify.info("You declined the additional required permissions");
     }
-  }, [
-    addToast,
-    state.permissions,
-    detectPermissions,
-    debouncedElement,
-    disabled,
-  ]);
+  }, [state.permissions, detectPermissions, debouncedElement, disabled]);
 
   return (
     <ButtonGroup>

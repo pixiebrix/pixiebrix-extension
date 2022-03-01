@@ -30,8 +30,7 @@ import { faPlus, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { reportEvent } from "@/telemetry/events";
-import { useToasts } from "react-toast-notifications";
-import reportError from "@/telemetry/reportError";
+import notify from "@/utils/notify";
 import { getCurrentURL, thisTab } from "@/devTools/utils";
 import {
   showSidebar,
@@ -45,8 +44,6 @@ const GenericInsertPane: React.FunctionComponent<{
   config: ElementConfig;
 }> = ({ cancel, config }) => {
   const dispatch = useDispatch();
-  const { addToast } = useToasts();
-
   const start = useCallback(
     async (state: FormState) => {
       try {
@@ -66,14 +63,10 @@ const GenericInsertPane: React.FunctionComponent<{
         }
       } catch (error) {
         // If you're looking for the error message, it's in the logs for the page editor, not the host page
-        reportError(error);
-        addToast("Error adding element", {
-          autoDismiss: true,
-          appearance: "error",
-        });
+        notify.error({ message: "Error adding element", error });
       }
     },
-    [config, dispatch, addToast]
+    [config, dispatch]
   );
 
   const addExisting = useCallback(
@@ -87,14 +80,10 @@ const GenericInsertPane: React.FunctionComponent<{
           )) as FormState
         );
       } catch (error) {
-        reportError(error);
-        addToast("Error using existing foundation", {
-          autoDismiss: true,
-          appearance: "error",
-        });
+        notify.error({ message: "Error using existing foundation", error });
       }
     },
-    [start, config, addToast]
+    [start, config]
   );
 
   const addNew = useCallback(async () => {
@@ -107,13 +96,9 @@ const GenericInsertPane: React.FunctionComponent<{
         config.fromNativeElement(url, metadata, undefined, []) as FormState
       );
     } catch (error) {
-      reportError(error);
-      addToast("Error using adding new element", {
-        autoDismiss: true,
-        appearance: "error",
-      });
+      notify.error({ message: "Error using adding new element", error });
     }
-  }, [start, config, addToast]);
+  }, [start, config]);
 
   const extensionPoints = useAvailableExtensionPoints(config.baseClass);
 

@@ -20,7 +20,7 @@ import type { MessageLevel } from "@/background/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync, faTrash } from "@fortawesome/free-solid-svg-icons";
 import React, { useCallback } from "react";
-import { useToasts } from "react-toast-notifications";
+import notify from "@/utils/notify";
 import AsyncButton from "@/components/AsyncButton";
 import Pagination from "@/components/pagination/Pagination";
 
@@ -48,30 +48,22 @@ const LogToolbar: React.FunctionComponent<{
   // Don't support "trace" by default
   levelOptions = ["debug", "info", "warn", "error"],
 }) => {
-  const { addToast } = useToasts();
-
   const onClear = () => {
     try {
       clear();
-      addToast("Cleared the log entries for this extension", {
-        appearance: "success",
-        autoDismiss: true,
-      });
-    } catch {
-      addToast("Error clearing log entries for extension", {
-        appearance: "error",
-        autoDismiss: true,
+      notify.success("Cleared the log entries for this extension");
+    } catch (error) {
+      notify.error({
+        message: "Error clearing log entries for extension",
+        error,
       });
     }
   };
 
   const onRefresh = useCallback(() => {
     refresh();
-    addToast("Refreshed the log entries", {
-      appearance: "success",
-      autoDismiss: true,
-    });
-  }, [refresh, addToast]);
+    notify.success("Refreshed the log entries");
+  }, [refresh]);
 
   return (
     <div className="px-3 pt-2">
