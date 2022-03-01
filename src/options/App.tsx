@@ -29,7 +29,7 @@ import BrickEditPage from "@/options/pages/brickEditor/EditPage";
 import MarketplacePage from "@/options/pages/MarketplacePage";
 import BlueprintsPage from "@/options/pages/blueprints/BlueprintsPage";
 import SettingsPage from "@/options/pages/settings/SettingsPage";
-import Navbar from "@/layout/Navbar";
+import Navbar from "@/options/Navbar";
 import Footer from "@/layout/Footer";
 import Sidebar from "@/layout/Sidebar";
 import { Route, Switch } from "react-router-dom";
