@@ -17,7 +17,6 @@
 
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { ToastProvider } from "react-toast-notifications";
 import JsonTree from "./JsonTree";
 
 export default {
@@ -26,9 +25,7 @@ export default {
 } as ComponentMeta<typeof JsonTree>;
 
 const Template: ComponentStory<typeof JsonTree> = (args) => (
-  <ToastProvider>
-    <JsonTree {...args} />
-  </ToastProvider>
+  <JsonTree {...args} />
 );
 
 const exampleValues = {
