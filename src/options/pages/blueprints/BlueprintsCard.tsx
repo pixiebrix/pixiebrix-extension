@@ -17,9 +17,8 @@
 
 import styles from "./BlueprintsCard.module.scss";
 
-import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
+import { Col, Row as BootstrapRow } from "react-bootstrap";
 import React, { useMemo } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Column,
   useFilters,
@@ -28,13 +27,6 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import Select from "react-select";
-import {
-  faList,
-  faSortAmountDownAlt,
-  faSortAmountUpAlt,
-  faThLarge,
-} from "@fortawesome/free-solid-svg-icons";
 import ListView from "./listView/ListView";
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";

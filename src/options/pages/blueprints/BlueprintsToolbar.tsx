@@ -17,7 +17,7 @@
 
 import styles from "@/options/pages/blueprints/BlueprintsCard.module.scss";
 import Select from "react-select";
-import { Button } from "react-bootstrap";
+import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faList,
@@ -145,25 +145,28 @@ const BlueprintsToolbar: React.FunctionComponent<{
             />
           </Button>
         )}
-        <Button
-          variant={view === "list" ? "link" : "outline-link"}
-          size="sm"
-          className="ml-3"
-          onClick={() => {
-            setView("list");
-          }}
-        >
-          <FontAwesomeIcon icon={faList} size="lg" />
-        </Button>
-        <Button
-          variant={view === "grid" ? "link" : "outline-link"}
-          size="sm"
-          onClick={() => {
-            setView("grid");
-          }}
-        >
-          <FontAwesomeIcon icon={faThLarge} size="lg" />
-        </Button>
+
+        <ButtonGroup>
+          <Button
+            variant={view === "list" ? "info" : "outline-info"}
+            size="sm"
+            className="ml-3"
+            onClick={() => {
+              setView("list");
+            }}
+          >
+            <FontAwesomeIcon icon={faList} size="1x" />
+          </Button>
+          <Button
+            variant={view === "grid" ? "info" : "outline-info"}
+            size="sm"
+            onClick={() => {
+              setView("grid");
+            }}
+          >
+            <FontAwesomeIcon icon={faThLarge} size="1x" />
+          </Button>
+        </ButtonGroup>
       </span>
     </div>
   );
