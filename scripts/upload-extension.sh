@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Automatically exit on error
+set -e
+
 # Ensure ENVs are set https://stackoverflow.com/a/307735/288906
 : "${BUILD_PATH?Need to set BUILD_PATH}"
 : "${BUILD_FILENAME?Need to set BUILD_FILENAME}"
