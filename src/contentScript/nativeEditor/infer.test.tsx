@@ -350,7 +350,8 @@ test("getSelectorPreference: matches expected sorting", () => {
   expect(getSelectorPreference('[data-cy="b4da55"]')).toBe(1);
   expect(getSelectorPreference(".navItem")).toBe(2);
   expect(getSelectorPreference(".birdsArentReal")).toBe(2);
-  expect(getSelectorPreference('[aria-label="Click elsewhere"]')).toBe(30);
+  const selector = '[aria-label="Click elsewhere"]';
+  expect(getSelectorPreference(selector)).toBe(selector.length);
 });
 
 test("isSelectorPotentiallyUseful", () => {

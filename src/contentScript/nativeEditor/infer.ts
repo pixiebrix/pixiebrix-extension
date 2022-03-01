@@ -126,6 +126,7 @@ export function getSelectorPreference(selector: string): number {
 
 /** Excludes empty or short selectors (must have more than 3 letters, no numbers) */
 export function isSelectorPotentiallyUseful(selector: string): boolean {
+  // Remove the non-letter characters, and then compare the number of remaining letter characters
   return (
     selector.startsWith("#") || selector.replace(/[^a-z]/gi, "").length > 3
   );
