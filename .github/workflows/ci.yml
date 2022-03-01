@@ -4,7 +4,7 @@ on: push
 
 env:
   # Creates and uploads sourcemaps to Rollbar, and save the built extension as an artifact
-  PUBLIC_RELEASE: true
+  PUBLIC_RELEASE: ${{ github.ref == 'refs/heads/main' }}
 
 jobs:
   test:
