@@ -37,7 +37,7 @@ const ListItem: React.VoidFunctionComponent<{
       <div className={styles.name}>
         <h5>{name}</h5>
       </div>
-      <div>
+      <div className="flex-shrink-0">
         <div className={styles.sharing}>
           <span className={styles.updatedAt}>
             Updated: {timeSince(updatedAt)}
@@ -48,7 +48,7 @@ const ListItem: React.VoidFunctionComponent<{
       <div className={styles.status}>
         <Status installableViewItem={installableItem} />
       </div>
-      <div>
+      <div className="flex-shrink-0">
         <BlueprintActions installableViewItem={installableItem} />
       </div>
     </ListGroup.Item>
