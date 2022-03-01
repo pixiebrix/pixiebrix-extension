@@ -19,7 +19,8 @@ import React from "react";
 import GridLoader from "react-spinners/GridLoader";
 
 const DEFAULT_STYLE = {
-  margin: "20px auto", // Centet
+  margin: "auto", // Center
+  padding: "20px",
   display: "flex",
   justifyContent: "center",
 };
