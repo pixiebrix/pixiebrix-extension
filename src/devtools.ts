@@ -20,6 +20,6 @@ if (typeof tabId === "number") {
   chrome.devtools.panels.create(
     "PixieBrix",
     "",
-    `devtoolsPanel.html?tabId=${tabId}`
+    `pageEditor.html?tabId=${tabId}`
   );
 }
