@@ -1,7 +1,7 @@
 const contexts = [
   "background",
   "contentScript",
-  "devTools",
+  "pageEditor",
   "options",
   "sidebar",
   // "pageScript", // TODO: After Messenger migration

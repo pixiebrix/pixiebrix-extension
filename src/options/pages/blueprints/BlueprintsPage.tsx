@@ -32,7 +32,7 @@ import {
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import ShareLinkModal from "@/options/pages/installed/ShareLinkModal";
 import { useTitle } from "@/hooks/title";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { ErrorDisplay } from "@/layout/Page";
 
 const BlueprintsPage: React.FunctionComponent = () => {
@@ -47,7 +47,7 @@ const BlueprintsPage: React.FunctionComponent = () => {
 
   const body = useMemo(() => {
     if (isLoading) {
-      return <GridLoader />;
+      return <Loader />;
     }
 
     if (error) {

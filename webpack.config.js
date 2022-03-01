@@ -230,7 +230,7 @@ module.exports = (env, options) =>
         [
           "background",
           "contentScript",
-          "devtoolsPanel",
+          "pageEditor",
           "ephemeralForm",
           "options",
           "sidebar",

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uniq, compact, sortBy, unary, intersection } from "lodash";
+import { uniq, sortBy, unary, intersection } from "lodash";
 import { getCssSelector } from "css-selector-generator";
 import { isNullOrBlank, mostCommonElement, matchesAnyPattern } from "@/utils";
 import { BusinessError } from "@/errors";
@@ -45,6 +45,22 @@ const ATTR_SKIP_ELEMENT_PATTERNS = [
   /^([\dA-Za-z]+)-chevron-down$/,
 ];
 
+const UNIQUE_ATTRIBUTES: string[] = [
+  "id",
+  "name",
+
+  // Testing attributes
+  "data-cy", // Cypress
+  "data-testid",
+  "data-id",
+  "data-test",
+  "data-test-id",
+];
+// eslint-disable-next-line security/detect-non-literal-regexp -- Not user-provided
+const UNIQUE_ATTRIBUTES_REGEX = new RegExp(
+  UNIQUE_ATTRIBUTES.map((attribute) => `^\\[${attribute}=`).join("|")
+);
+
 /**
  * Attribute names to exclude from button/panel template inference.
  *
@@ -53,23 +69,20 @@ const ATTR_SKIP_ELEMENT_PATTERNS = [
  * @see commonAttribute
  */
 const TEMPLATE_ATTR_EXCLUDE_PATTERNS = [
-  /^id$/,
-  /^name$/,
-  /^data([\w-]*)-test([\w-]*)$/,
+  ...UNIQUE_ATTRIBUTES,
 
-  /* eslint-disable security/detect-non-literal-regexp -- Our variables */
-  new RegExp(`^${EXTENSION_POINT_DATA_ATTR}$`),
-  new RegExp(`^${PIXIEBRIX_DATA_ATTR}$`),
-  new RegExp(`^${PIXIEBRIX_READY_ATTRIBUTE}$`),
+  EXTENSION_POINT_DATA_ATTR,
+  PIXIEBRIX_DATA_ATTR,
+  PIXIEBRIX_READY_ATTRIBUTE,
 
-  // Cypress attributes
-  /^data-cy$/,
   // Angular attributes
-  /^_ngcontent-.*/,
-  /^_nghost-.*/,
-  /^ng-.*/,
+  /^_ngcontent-/,
+  /^_nghost-/,
+  /^ng-/,
+
   // Exclude tabindex to avoid breaking standard tab navigation
-  /^tabindex$/,
+  "tabindex",
+
   // Exclude non-role aria attributes because they're generally unique across elements
   /^aria-(?!role).*$/,
 ];
@@ -81,6 +94,44 @@ const TEMPLATE_VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
 ]);
 
 class SkipElement extends Error {}
+
+/** ID selectors and certain other attributes can uniquely identify items */
+function isSelectorUsuallyUnique(selector: string): boolean {
+  return selector.startsWith("#") || UNIQUE_ATTRIBUTES_REGEX.test(selector);
+}
+
+/**
+ * Prefers unique selectors and classes. A lower number means higher preference. To be used with lodash.sortBy
+ * @example
+ * 0   '#best-link-on-the-page'
+ * 1   '[data-cy="b4da55"]'
+ * 2   '.navItem'
+ * 2   '.birdsArentReal'
+ * 30  '[aria-label="Click elsewhere"]'
+ */
+export function getSelectorPreference(selector: string): number {
+  if (selector.startsWith("#")) {
+    return 0;
+  }
+
+  if (isSelectorUsuallyUnique(selector)) {
+    return 1;
+  }
+
+  if (selector.startsWith(".")) {
+    return 2;
+  }
+
+  return selector.length;
+}
+
+/** Excludes empty or short selectors (must have more than 3 letters, no numbers) */
+export function isSelectorPotentiallyUseful(selector: string): boolean {
+  // Remove the non-letter characters, and then compare the number of remaining letter characters
+  return (
+    selector.startsWith("#") || selector.replace(/[^a-z]/gi, "").length > 3
+  );
+}
 
 function outerHTML(element: Element | string): string {
   if (typeof element === "string") {
@@ -139,7 +190,7 @@ function setCommonAttributes(common: Element, items: Element[]) {
 
   // Find the common attributes between the elements
   for (const { name } of attributes) {
-    if (TEMPLATE_ATTR_EXCLUDE_PATTERNS.some((x) => x.test(name))) {
+    if (matchesAnyPattern(name, TEMPLATE_ATTR_EXCLUDE_PATTERNS)) {
       continue;
     }
 
@@ -516,9 +567,9 @@ export function safeCssSelector(
     ],
     whitelist: [
       // Data attributes people use in automated tests are unlikely to change frequently
-      "[data-cy]",
-      "[data-testid]",
-      "[data-test]",
+      "[data-cy='*']",
+      "[data-testid='*']",
+      "[data-test='*']",
     ],
     selectors: selectors ?? DEFAULT_SELECTOR_PRIORITIES,
     combineWithinSelector: true,
@@ -556,24 +607,21 @@ export function inferSelectors(
     }
   };
 
-  return sortBy(
-    uniq(
-      compact([
-        makeSelector(["id", "class", "tag", "attribute", "nthchild"]),
-        makeSelector(["tag", "class", "attribute", "nthchild"]),
-        makeSelector(["id", "tag", "attribute", "nthchild"]),
-        makeSelector(["id", "tag", "attribute"]),
-        makeSelector(),
-      ])
-    ).filter((x) => (x ?? "").trim() !== ""),
-    (x) => x.length
-  );
+  const generatedSelectors = uniq([
+    makeSelector(["id", "class", "tag", "attribute", "nthchild"]),
+    makeSelector(["tag", "class", "attribute", "nthchild"]),
+    makeSelector(["id", "tag", "attribute", "nthchild"]),
+    makeSelector(["id", "tag", "attribute"]),
+    makeSelector(),
+  ]).filter((x) => isSelectorPotentiallyUseful(x));
+
+  return sortBy(generatedSelectors, getSelectorPreference);
 }
 
 /**
  * Returns true if selector uniquely identifies an element on the page
  */
-function isUniqueSelector(selector: string): boolean {
+function doesSelectOneElement(selector: string): boolean {
   return $safeFind(selector).length === 1;
 }
 
@@ -641,7 +689,7 @@ export function findContainerForElement(element: HTMLElement): {
   return {
     container,
     selectors: uniq([
-      ...extra.filter((selector) => isUniqueSelector(selector)),
+      ...extra.filter((selector) => doesSelectOneElement(selector)),
       ...inferSelectors(container),
     ]),
   };

@@ -261,7 +261,7 @@ let loggedDNT = false;
 export async function recordError(
   error: SerializedError,
   context: MessageContext,
-  data: JsonObject | undefined
+  data?: JsonObject
 ): Promise<void> {
   forbidContext(
     "contentScript",
