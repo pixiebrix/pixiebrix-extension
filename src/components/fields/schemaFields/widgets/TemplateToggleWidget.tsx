@@ -25,7 +25,7 @@ import { UnknownObject } from "@/types";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { JSONSchema7Array } from "json-schema";
 import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
-import useToggleFormField from "@/devTools/editor/hooks/useToggleFormField";
+import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
 import { useField } from "formik";
 
 interface InputModeOptionBase<

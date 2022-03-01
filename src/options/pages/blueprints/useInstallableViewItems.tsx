@@ -22,8 +22,8 @@ import {
 import React, { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { ResolvedExtension, UUID } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
+import { UUID } from "@/core";
+
 import {
   getDescription,
   getLabel,
@@ -66,12 +66,12 @@ function useInstallableViewItems(
   );
 
   const isActive = useCallback(
-    (extensionOrRecipe: RecipeDefinition | ResolvedExtension) => {
-      if ("_recipe" in extensionOrRecipe) {
-        return installedExtensionIds.has(extensionOrRecipe.id);
+    (installable: Installable) => {
+      if (isExtension(installable)) {
+        return installedExtensionIds.has(installable.id);
       }
 
-      return installedRecipeIds.has(extensionOrRecipe.metadata.id);
+      return installedRecipeIds.has(installable.metadata.id);
     },
     [installedExtensionIds, installedRecipeIds]
   );

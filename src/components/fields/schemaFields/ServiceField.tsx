@@ -47,7 +47,7 @@ import {
   SERVICE_BASE_SCHEMA,
   SERVICE_FIELD_REFS,
 } from "@/services/serviceUtils";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { FormState } from "@/pageEditor/slices/editorSlice";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { isExpression } from "@/runtime/mapArgs";
 

@@ -23,7 +23,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Loader from "@/components/Loader";
-import { searchData } from "@/devTools/utils";
+import { searchData } from "@/pageEditor/utils";
 import { useLabelRenderer } from "./treeHooks";
 
 const SEARCH_DEBOUNCE_MS = 100;

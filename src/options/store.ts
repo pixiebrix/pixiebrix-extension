@@ -95,18 +95,19 @@ const store = configureStore({
     logs: logSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    [
-      ...getDefaultMiddleware({
-        // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
-        serializableCheck: {
-          ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
-        },
-      }),
-      appApi.middleware,
-      routerMiddleware(hashHistory),
-      ...conditionalMiddleware,
-    ] as const,
+  middleware(getDefaultMiddleware) {
+    /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
+    return getDefaultMiddleware({
+      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
+      serializableCheck: {
+        ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
+      },
+    })
+      .concat(appApi.middleware)
+      .concat(routerMiddleware(hashHistory))
+      .concat(conditionalMiddleware);
+    /* eslint-enable unicorn/prefer-spread */
+  },
   devTools: REDUX_DEV_TOOLS,
 });
 
