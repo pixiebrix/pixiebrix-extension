@@ -223,10 +223,9 @@ function useDeployments(): DeploymentState {
 
     if (checkExtensionUpdateRequired(deployments)) {
       await chromeP.runtime.requestUpdateCheck();
-      notify.warning({
-        message:
-          "You must update the PixieBrix browser extension to activate the deployment",
-      });
+      notify.warning(
+        "You must update the PixieBrix browser extension to activate the deployment"
+      );
       reportEvent("DeploymentRejectVersion");
       return;
     }

@@ -134,7 +134,7 @@ export class AddPerson extends Effect {
     });
 
     if (data.items.length > 0) {
-      notify.info({ message: `Person record already exists for ${name}` });
+      notify.info(`Person record already exists for ${name}`);
       return;
     }
 
