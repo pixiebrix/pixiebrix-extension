@@ -28,9 +28,11 @@ import React from "react";
 import Panel from "@/devTools/Panel";
 import { watchNavigation } from "@/devTools/protocol";
 import initGoogle from "@/contrib/google/initGoogle";
+import { initToaster } from "@/utils/notify";
 
 registerMessenger();
 initGoogle();
 watchNavigation();
+initToaster();
 
 ReactDOM.render(<Panel />, document.querySelector("#container"));
