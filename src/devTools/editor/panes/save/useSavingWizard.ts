@@ -90,8 +90,18 @@ const useSavingWizard = () => {
   const [updateRecipe] = useUpdateRecipeMutation();
 
   const save = async () => {
-    if (!element.recipe) {
+    if (element.recipe == null) {
       void saveNonRecipeElement();
+    } else {
+      // The user might lose access to the recipe while they were editing it (the recipe or an extension)
+      // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
+      const recipe = recipes.find((x) => x.metadata.id === element.recipe.id);
+      if (!recipe) {
+        notify.error(
+          "You no longer have edit permissions for the blueprint. Please reload the Editor."
+        );
+        return;
+      }
     }
 
     savingDeferred = pDefer<void>();
