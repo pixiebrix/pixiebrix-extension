@@ -15,20 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  padding-bottom: 15px;
-}
+$card-footer-padding: 0.75rem;
 
-.card {
-  padding: 15px;
-  height: 100%;
+.cardFooter {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: $card-footer-padding;
+  & > * {
+    margin: 0; // Drop Bootstrap’s automatic margin on buttons
+  }
 }

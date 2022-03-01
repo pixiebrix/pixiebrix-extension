@@ -137,9 +137,10 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { extension, ...state }: QuickBarFormState,
+  state: QuickBarFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<QuickBarConfig> {
+  const { extension } = state;
   const config: QuickBarConfig = {
     title: extension.title,
     icon: extension.icon,

@@ -43,4 +43,6 @@ export type InstallableViewItem = {
 export type BlueprintListViewProps = {
   tableInstance: TableInstance;
   rows: Array<Row<InstallableViewItem>>;
+  width: number;
+  height: number;
 };

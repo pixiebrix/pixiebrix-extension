@@ -32,6 +32,7 @@ import {
 } from "@/devTools/editor/tabs/editTab/editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
 import { ExtensionPointType } from "@/extensionPoints/types";
+import validateStringTemplates from "@/devTools/editor/validation/validateStringTemplates";
 
 export const PIPELINE_BLOCKS_FIELD_NAME = "extension.blockPipeline";
 
@@ -51,6 +52,7 @@ function usePipelineField(
 
       validateOutputKey(formikErrors, pipeline, allBlocks);
       validateRenderers(formikErrors, pipeline, allBlocks, extensionPointType);
+      validateStringTemplates(formikErrors, pipeline);
       applyTraceError(formikErrors, errorTraceEntry, pipeline);
 
       return isEmpty(formikErrors) ? undefined : formikErrors;

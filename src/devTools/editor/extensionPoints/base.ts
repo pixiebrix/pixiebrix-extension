@@ -159,26 +159,28 @@ export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
 }
 
 export function baseSelectExtension({
-  uuid,
   apiVersion,
-  extensionPoint,
+  uuid,
   label,
-  services,
   optionsArgs,
-}: Except<BaseFormState, "extension">): Pick<
+  services,
+  extensionPoint,
+  recipe,
+}: BaseFormState): Pick<
   IExtension,
   | "id"
   | "apiVersion"
   | "extensionPointId"
+  | "_recipe"
   | "label"
   | "services"
   | "optionsArgs"
-> & { _recipe: null } {
+> {
   return {
     id: uuid,
     apiVersion,
     extensionPointId: extensionPoint.metadata.id,
-    _recipe: null,
+    _recipe: recipe,
     label,
     services,
     optionsArgs,
