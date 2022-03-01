@@ -31,7 +31,7 @@ import BlueprintsPage from "@/options/pages/blueprints/BlueprintsPage";
 import SettingsPage from "@/options/pages/settings/SettingsPage";
 import Navbar from "@/options/Navbar";
 import Footer from "@/layout/Footer";
-import Sidebar from "@/layout/Sidebar";
+import Sidebar from "@/options/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import { ToastProvider } from "react-toast-notifications";

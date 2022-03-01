@@ -35,7 +35,7 @@ import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import { isLinked } from "@/auth/token";
 import { useSelector } from "react-redux";
-import { toggleSidebar } from "../layout/toggleSidebar";
+import { toggleSidebar } from "./toggleSidebar";
 import { SettingsState } from "@/store/settingsTypes";
 import cx from "classnames";
 
