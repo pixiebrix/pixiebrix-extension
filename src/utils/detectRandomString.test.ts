@@ -20,7 +20,6 @@ import { guessUsefulness } from "./detectRandomString";
 test("guessUsefulness", () => {
   expect(guessUsefulness(".Nav-item")).toMatchInlineSnapshot(`
     Object {
-      "combination": 0.23,
       "detectorFactor": 0.13,
       "isRandom": false,
       "lettersFactor": 0.22,
@@ -29,25 +28,22 @@ test("guessUsefulness", () => {
   `);
   expect(guessUsefulness("._s2dF")).toMatchInlineSnapshot(`
     Object {
-      "combination": 0.47,
       "detectorFactor": 0.2,
-      "isRandom": false,
+      "isRandom": true,
       "lettersFactor": 0.5,
       "string": "._s2dF",
     }
   `);
   expect(guessUsefulness(".Nav-wd32")).toMatchInlineSnapshot(`
     Object {
-      "combination": 0.55,
       "detectorFactor": 0.38,
-      "isRandom": true,
+      "isRandom": false,
       "lettersFactor": 0.44,
       "string": ".Nav-wd32",
     }
   `);
   expect(guessUsefulness(".footerlink")).toMatchInlineSnapshot(`
     Object {
-      "combination": 0.26,
       "detectorFactor": 0.3,
       "isRandom": false,
       "lettersFactor": 0.09,

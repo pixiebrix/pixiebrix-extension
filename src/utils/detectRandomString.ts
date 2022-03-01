@@ -24,12 +24,8 @@ export function guessUsefulness(string: string) {
   const meaningfulCharacters = string.replaceAll(nonLetters, "").length;
   const lettersFactor = round(1 - meaningfulCharacters / string.length, 2);
   const detectorFactor = round(Number(detectRandomString(string)), 2);
-  const combination = round(
-    Math.min(1, (detectorFactor + lettersFactor) / 1.5),
-    2
-  );
-  const isRandom = combination >= 0.5;
-  return { string, detectorFactor, lettersFactor, combination, isRandom };
+  const isRandom = detectorFactor >= 0.5 || lettersFactor >= 0.5;
+  return { string, detectorFactor, lettersFactor, isRandom };
 }
 
 export function isRandomString(string: string): boolean {
