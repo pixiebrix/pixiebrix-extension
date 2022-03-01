@@ -39,7 +39,8 @@ function defaultErrorHandler(
     }
   }
 
-  reportError(errorEvent);
+  // The browser already shows uncaught errors in the console
+  reportError(errorEvent, undefined, { logToConsole: false });
 }
 
 /**

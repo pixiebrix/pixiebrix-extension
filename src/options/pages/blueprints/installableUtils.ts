@@ -68,7 +68,7 @@ export const getSharingType = (
 
 export const isExtension = (
   installable: Installable
-): installable is ResolvedExtension => "_recipe" in installable;
+): installable is ResolvedExtension => "extensionPointId" in installable;
 
 export const isExtensionFromRecipe = (installable: Installable) =>
   isExtension(installable) && Boolean(installable._recipe);
@@ -173,10 +173,9 @@ export const getOrganization = (
   installable: Installable,
   organizations: Organization[]
 ) => {
-  const sharing =
-    "_recipe" in installable
-      ? installable._recipe?.sharing
-      : installable.sharing;
+  const sharing = isExtension(installable)
+    ? installable._recipe?.sharing
+    : installable.sharing;
 
   if (!sharing || sharing.organizations.length === 0) {
     return null;
