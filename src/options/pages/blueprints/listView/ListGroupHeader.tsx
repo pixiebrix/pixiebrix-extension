@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.sharing {
-  max-width: 150px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
+import React from "react";
+import styles from "@/options/pages/blueprints/listView/ListItem.module.scss";
 
-.packageId {
-  padding: 0;
-  margin-bottom: 7px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+const ListGroupHeader: React.VoidFunctionComponent<{
+  groupName: string;
+  style: React.CSSProperties;
+}> = ({ groupName, style }) => (
+  <div className={styles.listHeader} style={style}>
+    {groupName}
+  </div>
+);
+
+export default ListGroupHeader;

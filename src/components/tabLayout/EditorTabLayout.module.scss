@@ -25,11 +25,29 @@
   min-height: 31px; // To match the height of the actions of the Sidebar
   box-shadow: 0 2px 2px gray;
   z-index: 1; // Paint the shadow above the content below
+  font-size: 0.875rem;
+  padding-bottom: 0;
+
+  a,
+  button {
+    border-radius: 0 !important;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+  }
+}
+
+.navItem {
+  display: flex;
+  align-items: stretch;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
 }
 
 .badge {
-  margin-left: 0.25rem;
-  margin-right: 0.25rem;
+  margin-left: 0.3rem;
 }
 
 .actionButtonIcon {
@@ -38,4 +56,5 @@
 
 .content {
   flex-grow: 1;
+  overflow-y: auto;
 }

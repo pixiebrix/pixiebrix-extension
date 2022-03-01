@@ -134,9 +134,10 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { extension, ...state }: ContextMenuFormState,
+  state: ContextMenuFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ContextMenuConfig> {
+  const { extension } = state;
   const config: ContextMenuConfig = {
     title: extension.title,
     action: options.includeInstanceIds
