@@ -55,7 +55,7 @@ import {
   runReader,
   readSelected,
   resetTab,
-} from "@/contentScript/devTools";
+} from "@/contentScript/pageEditor";
 import { checkAvailable } from "@/blocks/available";
 import { showNotification } from "@/contentScript/notify";
 import { runBrick } from "@/contentScript/executor";

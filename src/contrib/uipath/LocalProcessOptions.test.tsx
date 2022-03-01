@@ -26,12 +26,12 @@ import {
 } from "@/tests/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/tests/testHelpers";
-import { DevToolsContext } from "@/devTools/context";
+import { PageEditorTabContext } from "@/pageEditor/context";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { OutputKey, SanitizedServiceConfiguration } from "@/core";
 import * as auth from "@/hooks/auth";
 import * as dependencyHooks from "@/services/useDependency";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { FormState } from "@/pageEditor/slices/editorSlice";
 import { Service } from "@/types";
 
 jest.mock("webext-detect-page", () => ({
@@ -99,14 +99,14 @@ function makeBaseState() {
 
 function renderOptions(formState: FormState = makeBaseState()) {
   return render(
-    <DevToolsContext.Provider value={activeDevToolContextFactory()}>
+    <PageEditorTabContext.Provider value={activeDevToolContextFactory()}>
       <Formik onSubmit={jest.fn()} initialValues={formState}>
         <LocalProcessOptions
           name="extension.blockPipeline.0"
           configKey="config"
         />
       </Formik>
-    </DevToolsContext.Provider>
+    </PageEditorTabContext.Provider>
   );
 }
 
