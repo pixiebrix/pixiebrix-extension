@@ -28,6 +28,7 @@ import type { Permissions } from "webextension-polyfill";
 import type React from "react";
 
 import { pick } from "lodash";
+import { contextNames } from "webext-detect-page";
 
 // Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
@@ -188,14 +189,7 @@ export interface Message<
 }
 
 // `ContextName`s from webext-detect-page
-export type ContextName =
-  | "contentScript"
-  | "background"
-  | "options"
-  | "devToolsPage"
-  | "extension"
-  | "web"
-  | "unknown";
+export type ContextName = keyof typeof contextNames | "unknown";
 
 /**
  * Log event metadata for the extensions internal logging infrastructure.

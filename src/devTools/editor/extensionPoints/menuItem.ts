@@ -134,9 +134,10 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { extension, ...state }: ActionFormState,
+  state: ActionFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<MenuItemExtensionConfig> {
+  const { extension } = state;
   const config: MenuItemExtensionConfig = {
     caption: extension.caption,
     icon: extension.icon,

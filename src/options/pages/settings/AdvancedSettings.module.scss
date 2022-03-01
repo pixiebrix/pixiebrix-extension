@@ -14,19 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-.root {
+
+$card-footer-padding: 0.75rem;
+
+.cardFooter {
   display: flex;
-  align-items: stretch;
-  button {
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-  }
-  input {
-    border-left: none;
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
-  }
-  [role="combobox"] {
-    flex-grow: 1;
+  flex-wrap: wrap;
+  gap: $card-footer-padding;
+  & > * {
+    margin: 0; // Drop Bootstrap’s automatic margin on buttons
   }
 }

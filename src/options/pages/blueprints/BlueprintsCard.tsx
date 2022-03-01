@@ -18,7 +18,7 @@
 import styles from "./BlueprintsCard.module.scss";
 
 import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { Fragment, useMemo } from "react";
+import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Column,
@@ -35,7 +35,7 @@ import {
   faSortAmountUpAlt,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
-import TableView from "./tableView/TableView";
+import ListView from "./listView/ListView";
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import GridView from "./gridView/GridView";
@@ -186,7 +186,7 @@ const BlueprintsCard: React.FunctionComponent<{
     return { groupByOptions, sortByOptions };
   }, [flatHeaders]);
 
-  const BlueprintsView = view === "list" ? TableView : GridView;
+  const BlueprintsView = view === "list" ? ListView : GridView;
 
   return (
     <BootstrapRow className={styles.root}>
@@ -198,7 +198,7 @@ const BlueprintsCard: React.FunctionComponent<{
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h3 className={styles.filterTitle}>
             {globalFilter
-              ? "Search results"
+              ? `${numberOfBlueprints} results for "${globalFilter}"`
               : `${filters.length > 0 ? filters[0].value : "All"} Blueprints`}
           </h3>
           <span className="d-flex align-items-center small">
@@ -273,33 +273,15 @@ const BlueprintsCard: React.FunctionComponent<{
         </div>
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
-          <AutoSizer>
+          <AutoSizer defaultHeight={500}>
             {({ height, width }) => (
-              <div
-                style={{ height: `${height}px`, width: `${width}px` }}
-                className={styles.blueprintsList}
-              >
-                {globalFilter && (
-                  <p>
-                    {numberOfBlueprints} results for{" "}
-                    <strong>&quot;{globalFilter}&quot;</strong>
-                  </p>
-                )}
-                {isGrouped ? (
-                  <>
-                    {rows.map((row) => (
-                      <Fragment key={row.groupByVal}>
-                        <h5 className="text-muted mt-3">{row.groupByVal}</h5>
-                        <BlueprintsView
-                          tableInstance={tableInstance}
-                          rows={row.subRows}
-                        />
-                      </Fragment>
-                    ))}
-                  </>
-                ) : (
-                  <BlueprintsView tableInstance={tableInstance} rows={rows} />
-                )}
+              <div>
+                <BlueprintsView
+                  tableInstance={tableInstance}
+                  rows={rows}
+                  width={width}
+                  height={height}
+                />
               </div>
             )}
           </AutoSizer>

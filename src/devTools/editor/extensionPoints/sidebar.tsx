@@ -99,9 +99,10 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { extension, ...state }: SidebarFormState,
+  state: SidebarFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<SidebarConfig> {
+  const { extension } = state;
   const config: SidebarConfig = {
     heading: extension.heading,
     body: options.includeInstanceIds
