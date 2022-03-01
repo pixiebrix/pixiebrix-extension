@@ -30,7 +30,7 @@ jobs:
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
 
-      - run: npm run upload:extension
+      - run: bash scripts/upload-extension.sh
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
