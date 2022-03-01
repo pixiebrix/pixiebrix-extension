@@ -20,11 +20,50 @@
 }
 
 .card {
-  padding: 15px;
   height: 100%;
+}
+
+.cardBody {
+  padding: 15px !important;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.primaryInfo {
+  max-height: 100px;
+  overflow: hidden;
+}
+
+.name {
+  margin-left: 1rem;
+}
+
+.cardFooter {
+  background-color: transparent;
+  border: none;
+  font-size: 0.7rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: darkgray;
+  padding: 0 15px 15px 15px;
+  //white-space: nowrap;
+
+  div {
+    width: auto;
+    white-space: nowrap;
+  }
+
+  span {
+    flex-grow: 1;
+    text-align: right;
+  }
+}
+
+.description {
+  font-size: 0.8rem;
+  align-self: center;
 }
 
 .actions {

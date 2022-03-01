@@ -94,7 +94,9 @@ const InstallableIcon: React.FunctionComponent<{
   const cssSize = `${sizeMultiplier}em`;
 
   if (isLoading) {
-    return <FontAwesomeIcon icon={faCube} color="darkGrey" size={size} />;
+    return (
+      <FontAwesomeIcon icon={faCube} color="rgb(101, 98, 170)" size={size} />
+    );
   }
 
   return listing?.image ? (
@@ -107,7 +109,7 @@ const InstallableIcon: React.FunctionComponent<{
   ) : (
     <FontAwesomeIcon
       icon={iconToUse}
-      color={listing?.icon_color ?? "darkGrey"}
+      color={listing?.icon_color ?? "rgb(101, 98, 170)"}
       className={faIconClass}
       size={size}
       fixedWidth

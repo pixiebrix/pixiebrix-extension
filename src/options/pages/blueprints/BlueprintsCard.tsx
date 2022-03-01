@@ -84,7 +84,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     disableGlobalFilter: true,
   },
   {
-    Header: "Last modified",
+    Header: "Last updated",
     accessor: "updatedAt",
     disableGroupBy: true,
     disableFilters: true,
