@@ -22,7 +22,6 @@ import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
-import "./InstalledPage.scss";
 import {
   reactivateEveryTab,
   uninstallContextMenu,
@@ -173,7 +172,7 @@ export const _InstalledPage: React.FunctionComponent<{
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Page Editor Quickstart Guide
+                      Page Editor Quick Start Guide
                     </a>{" "}
                     to create your own.
                   </>

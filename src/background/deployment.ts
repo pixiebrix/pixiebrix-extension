@@ -328,7 +328,6 @@ export async function updateDeployments(): Promise<void> {
 
   // Ensure the user's flags and telemetry information is up-to-date
   void updateUserData({
-    user: profile.id,
     email: profile.email,
     organizationId: profile.organization?.id,
     telemetryOrganizationId: profile.telemetry_organization?.id,

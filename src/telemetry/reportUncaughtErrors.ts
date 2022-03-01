@@ -18,13 +18,13 @@
 /**
  * @file This file must be imported as early as possible in each entrypoint, once
  */
-import { getErrorMessage, IGNORED_ERRORS } from "@/errors";
+import { isConnectionError } from "@/errors";
 import reportError from "@/telemetry/reportError";
 
-function ignoreSomeErrors(
+function ignoreConnectionErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ): void {
-  if (IGNORED_ERRORS.includes(getErrorMessage(errorEvent))) {
+  if (isConnectionError(errorEvent)) {
     errorEvent.preventDefault();
   }
 }
@@ -39,20 +39,19 @@ function defaultErrorHandler(
     }
   }
 
-  reportError(errorEvent);
+  // The browser already shows uncaught errors in the console
+  reportError(errorEvent, undefined, { logToConsole: false });
 }
 
 /**
- * Set of error event handlers to run before the default one.
+ * Array of handlers to run in order before the default one.
  * They can call `event.preventDefault()` to avoid reporting the error.
  */
-export const uncaughtErrorHandlers = new Set([ignoreSomeErrors]);
+export const uncaughtErrorHandlers = [ignoreConnectionErrors];
 
-/*
-Refactor beware: Do not add an `init` function or it will run too late.
-When imported, the file will be executed immediately, whereas if it exports
-an `init` function will be called after every top-level imports (and their deps)
-has been executed.
-*/
+// Refactor beware: Do not add an `init` function or it will run too late.
+// When imported, the file will be executed immediately, whereas if it exports
+// an `init` function will be called after every top-level imports (and their deps)
+// has been executed.
 window.addEventListener("error", defaultErrorHandler);
 window.addEventListener("unhandledrejection", defaultErrorHandler);

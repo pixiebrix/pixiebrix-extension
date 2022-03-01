@@ -29,13 +29,16 @@ import {
   getRootCause,
   hasBusinessRootCause,
   hasCancelRootCause,
+  IGNORED_ERROR_PATTERNS,
   isAxiosError,
+  isContextError,
 } from "@/errors";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
 import { readAuthData } from "@/auth/token";
 import { UnknownObject } from "@/types";
-import { isObject } from "@/utils";
+import browser from "webextension-polyfill";
+import { isObject, matchesAnyPattern } from "@/utils";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -76,7 +79,10 @@ interface LogDB extends DBSchema {
   };
 }
 
-type IndexKey = keyof Except<MessageContext, "deploymentId" | "label">;
+type IndexKey = keyof Except<
+  MessageContext,
+  "deploymentId" | "label" | "pageName"
+>;
 const indexKeys: IndexKey[] = [
   "extensionId",
   "blueprintId",
@@ -199,14 +205,14 @@ function flattenContext(
   error: SerializedError,
   context: MessageContext
 ): MessageContext {
-  if (typeof error === "object" && error && error.name === "ContextError") {
+  if (isContextError(error)) {
     const currentContext =
       typeof error.context === "object" ? error.context : {};
     const innerContext = flattenContext(
       error.cause as SerializedError,
       context
     );
-    // Prefer the inner context
+    // Prefer the outer context which should have the most accurate detail about which brick the error occurred in
     return { ...context, ...innerContext, ...currentContext };
   }
 
@@ -215,14 +221,17 @@ function flattenContext(
 
 /**
  * Select extra error context for:
+ * - Extension version, so we don't have to maintain a separate mapping of commit SHAs to versions for reporting
  * - Requests to PixieBrix API to detect network problems client side
  * - Any service request if enterprise has enabled `enterprise-telemetry`
  */
 async function selectExtraContext(
   error: SerializedError
 ): Promise<UnknownObject> {
+  const { version: extensionVersion } = browser.runtime.getManifest();
+
   if (!isObject(error)) {
-    return {};
+    return { extensionVersion };
   }
 
   const cause = getRootCause(error);
@@ -235,12 +244,13 @@ async function selectExtraContext(
       flags.includes("enterprise-telemetry")
     ) {
       return {
+        extensionVersion,
         url: selectAbsoluteUrl(cause.error.config),
       };
     }
   }
 
-  return {};
+  return { extensionVersion };
 }
 
 /**
@@ -251,7 +261,7 @@ let loggedDNT = false;
 export async function recordError(
   error: SerializedError,
   context: MessageContext,
-  data: JsonObject | undefined
+  data?: JsonObject
 ): Promise<void> {
   forbidContext(
     "contentScript",
@@ -260,6 +270,22 @@ export async function recordError(
 
   try {
     const message = getErrorMessage(error);
+
+    // For noisy errors, don't record/submit telemetry unless the error prevented an extension point
+    // from being installed or an extension to fail. (In that case, we'd have some context about the error).
+    const { pageName, ...extensionContext } = context ?? {};
+    if (
+      isEmpty(extensionContext) &&
+      matchesAnyPattern(message, IGNORED_ERROR_PATTERNS)
+    ) {
+      console.debug("Ignoring error matching IGNORED_ERROR_PATTERNS", {
+        error,
+        context,
+      });
+
+      return;
+    }
+
     const flatContext = flattenContext(error, context);
 
     if (await allowsTrack()) {
@@ -278,11 +304,11 @@ export async function recordError(
         // Send at debug level so it doesn't trigger devops notifications
         const rollbar = await getRollbar();
         const details = await selectExtraContext(error);
-        rollbar.debug(message, errorObj, { ...flatContext, details });
+        rollbar.debug(message, errorObj, { ...flatContext, ...details });
       } else {
         const rollbar = await getRollbar();
         const details = await selectExtraContext(error);
-        rollbar.error(message, errorObj, { flatContext, ...details });
+        rollbar.error(message, errorObj, { ...flatContext, ...details });
       }
     } else if (!loggedDNT) {
       console.warn("Rollbar telemetry is disabled because DNT is turned on");
@@ -298,9 +324,10 @@ export async function recordError(
       error,
       data,
     });
-  } catch {
+  } catch (recordError) {
     console.error("An error occurred while recording another error", {
-      error,
+      error: recordError,
+      originalError: error,
       context,
     });
   }

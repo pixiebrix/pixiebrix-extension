@@ -23,7 +23,7 @@ import DocumentContext from "@/components/documentBuilder/render/DocumentContext
 import { runRendererPipeline } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import PanelBody from "@/actionPanel/PanelBody";
+import PanelBody from "@/sidebar/PanelBody";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 

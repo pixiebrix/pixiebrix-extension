@@ -18,89 +18,27 @@
 import React from "react";
 import { partial } from "lodash";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
-import { SanitizedServiceConfiguration, Schema } from "@/core";
+import { COMMON_PROPERTIES } from "@/contrib/automationanywhere/RunBot";
+import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
-import { proxyService } from "@/background/messenger/api";
 import useDependency from "@/services/useDependency";
-import {
-  Bot,
-  BOT_TYPE,
-  Device,
-  Interface,
-  interfaceToInputSchema,
-  ListResponse,
-} from "@/contrib/automationanywhere/contract";
-import { validateRegistryId } from "@/types/helpers";
-import { Option } from "@/components/form/widgets/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import { joinName } from "@/utils";
 import RequireServiceConfig from "@/contrib/RequireServiceConfig";
-import { cachePromiseMethod } from "@/utils/cachePromise";
-
-const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
-  "automation-anywhere/control-room"
-);
-
-async function fetchBots(
-  config: SanitizedServiceConfiguration
-): Promise<Option[]> {
-  const response = await proxyService<ListResponse<Bot>>(config, {
-    url: `/v2/repository/folders/${config.config.folderId}/list`,
-    method: "POST",
-    data: {},
-  });
-  const bots = response.data.list?.filter((x) => x.type === BOT_TYPE) ?? [];
-  return bots.map((bot) => ({
-    value: bot.id,
-    label: bot.name,
-  }));
-}
-
-const cachedFetchBots = cachePromiseMethod(["aa:fetchBots"], fetchBots);
-
-async function fetchDevices(
-  config: SanitizedServiceConfiguration
-): Promise<Option[]> {
-  // HACK: hack to avoid concurrent requests to the proxy. Simultaneous calls to get the token causes a
-  // server error on community edition
-  await cachedFetchBots(config);
-
-  const response = await proxyService<ListResponse<Device>>(config, {
-    url: "/v2/devices/list",
-    method: "POST",
-    data: {},
-  });
-  const devices = response.data.list ?? [];
-  return devices.map((device) => ({
-    value: device.id,
-    label: `${device.nickname} (${device.hostName})`,
-  }));
-}
-
-const cachedFetchDevices = cachePromiseMethod(
-  ["aa:fetchDevices"],
-  fetchDevices
-);
-
-async function fetchSchema(
-  config: SanitizedServiceConfiguration,
-  fileId: string
-) {
-  if (config && fileId) {
-    const response = await proxyService<Interface>(config, {
-      url: `/v1/filecontent/${fileId}/interface`,
-      method: "GET",
-    });
-
-    return interfaceToInputSchema(response.data);
-  }
-}
-
-const cachedFetchSchema = cachePromiseMethod(["aa:fetchSchema"], fetchSchema);
+import {
+  cachedFetchBots,
+  cachedFetchDevicePools,
+  cachedFetchDevices,
+  cachedFetchRunAsUsers,
+  cachedFetchSchema,
+} from "@/contrib/automationanywhere/aaApi";
+import { AUTOMATION_ANYWHERE_SERVICE_ID } from "./contract";
+import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
+import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
 
 const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
@@ -121,6 +59,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
         // server error on community edition
         await cachedFetchDevices(config);
         await cachedFetchBots(config);
+        await cachedFetchRunAsUsers(config);
         return cachedFetchSchema(config, fileId);
       }
 
@@ -129,7 +68,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   return (
     <RequireServiceConfig
-      serviceSchema={AUTOMATION_ANYWHERE_PROPERTIES.service as Schema}
+      serviceSchema={COMMON_PROPERTIES.service as Schema}
       serviceFieldName={configName("service")}
     >
       {({ config }) => (
@@ -143,14 +82,42 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
             config={config}
           />
 
-          <ConnectedFieldTemplate
-            label="Device"
-            name={configName("deviceId")}
-            description="The device to run the bot on"
-            as={RemoteSelectWidget}
-            optionsFactory={cachedFetchDevices}
-            config={config}
-          />
+          {isCommunityControlRoom(config.config.controlRoomUrl) ? (
+            <ConnectedFieldTemplate
+              label="Device"
+              name={configName("deviceId")}
+              description="The device to run the bot on"
+              as={RemoteSelectWidget}
+              optionsFactory={cachedFetchDevices}
+              config={config}
+            />
+          ) : (
+            <>
+              <ConnectedFieldTemplate
+                label="Run as Users"
+                name={configName("runAsUserIds")}
+                description="The user(s) to run the bots"
+                as={RemoteMultiSelectWidget}
+                optionsFactory={cachedFetchRunAsUsers}
+                config={config}
+              />
+              <ConnectedFieldTemplate
+                label="Device Pools"
+                name={configName("poolIds")}
+                description="A device pool that has at least one active device (optional)"
+                as={RemoteMultiSelectWidget}
+                optionsFactory={cachedFetchDevicePools}
+                blankValue={[]}
+                config={config}
+              />
+              <ConnectedFieldTemplate
+                label="Await Result"
+                name={configName("awaitResult")}
+                description="Wait for the bot to run and return the output"
+                as={BooleanWidget}
+              />
+            </>
+          )}
 
           {fileId != null && (
             <ChildObjectField

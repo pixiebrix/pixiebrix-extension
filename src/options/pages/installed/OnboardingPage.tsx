@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./OnboardingPage.module.scss";
+
 import React, { useMemo } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -81,7 +83,7 @@ const CreateBrickColumn: React.FunctionComponent = () => (
   <Col xs={6}>
     <h4>Create your Own</h4>
     <p>
-      Follow the Quickstart Guide in our documentation area to start creating
+      Follow the Quick Start Guide in our documentation area to start creating
       your own bricks in minutes.
     </p>
     <a
@@ -90,7 +92,7 @@ const CreateBrickColumn: React.FunctionComponent = () => (
       target="_blank"
       rel="noopener noreferrer"
     >
-      <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Open Quickstart Guide
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Open Quick Start
     </a>
   </Col>
 );
@@ -152,9 +154,9 @@ const OnboardingPage: React.FunctionComponent = () => {
         <>
           <Row>
             <Col className="VideoCard">
-              <Card>
+              <Card className={styles.card}>
                 <Card.Header>Activate Bricks</Card.Header>
-                <Card.Body>
+                <Card.Body className={styles.cardBody}>
                   <Row>{onBoardingInformation}</Row>
                 </Card.Body>
               </Card>

@@ -18,7 +18,7 @@
 import { Renderer } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, SafeHTML } from "@/core";
-import sanitize from "@/utils/sanitize";
+import safeMarkdown from "@/utils/safeMarkdown";
 
 export class MarkdownRenderer extends Renderer {
   constructor() {
@@ -41,7 +41,6 @@ export class MarkdownRenderer extends Renderer {
   );
 
   async render({ markdown }: BlockArg): Promise<SafeHTML> {
-    const { marked } = await import(/* webpackChunkName: "marked" */ "marked");
-    return sanitize(marked(markdown));
+    return safeMarkdown(markdown);
   }
 }

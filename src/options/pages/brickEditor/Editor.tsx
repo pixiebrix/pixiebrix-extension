@@ -29,8 +29,7 @@ import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";
 import SharingTable from "./SharingTable";
 import { sortBy } from "lodash";
-import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
-import { MessageContext, UUID } from "@/core";
+import { UUID } from "@/core";
 import BrickReference from "@/options/pages/brickEditor/referenceTab/BrickReference";
 import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/services/registry";
@@ -45,6 +44,7 @@ import { ReferenceEntry } from "./brickEditorTypes";
 import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
 import { isMac } from "@/utils";
+import LogCard from "@/components/logViewer/LogCard";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -71,7 +71,6 @@ export interface EditorValues {
 interface OwnProps {
   showTemplates?: boolean;
   showLogs?: boolean;
-  logContext: MessageContext | null;
 }
 
 function useOpenEditorTab() {
@@ -93,10 +92,7 @@ function useOpenEditorTab() {
   );
 }
 
-const Editor: React.FunctionComponent<OwnProps> = ({
-  showLogs = true,
-  logContext,
-}) => {
+const Editor: React.FunctionComponent<OwnProps> = ({ showLogs = true }) => {
   const notify = useNotifications();
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState();
@@ -209,13 +205,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
 
             {showLogs && (
               <Tab.Pane eventKey="logs" className="p-0">
-                {logContext ? (
-                  <BrickLogs context={logContext} />
-                ) : (
-                  <div className="p-4">
-                    Cannot determine log context for brick
-                  </div>
-                )}
+                <LogCard />
               </Tab.Pane>
             )}
 

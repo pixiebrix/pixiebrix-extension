@@ -35,11 +35,10 @@ export interface UserData {
   flags?: string[];
 }
 
-export type UserDataUpdate = Required<Except<UserData, "hostname">>;
+export type UserDataUpdate = Required<Except<UserData, "hostname" | "user">>;
 
 export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "email",
-  "user",
   "organizationId",
   "telemetryOrganizationId",
   "flags",

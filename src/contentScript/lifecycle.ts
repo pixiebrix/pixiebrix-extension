@@ -19,7 +19,7 @@ import { loadOptions } from "@/store/extensionsStorage";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import * as context from "@/contentScript/context";
-import * as actionPanel from "@/actionPanel/native";
+import * as sidebar from "@/contentScript/sidebar";
 import { PromiseCancelled, sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
@@ -28,7 +28,7 @@ import browser from "webextension-polyfill";
 import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
-import { isDeploymentActive } from "@/options/deploymentUtils";
+import { isDeploymentActive } from "@/utils/deployment";
 import { $safeFind } from "@/helpers";
 
 let _scriptPromise: Promise<void> | undefined;
@@ -50,7 +50,7 @@ async function installScriptOnce(): Promise<void> {
     console.debug("Installing page script");
     _scriptPromise = new Promise((resolve) => {
       const script = document.createElement("script");
-      script.src = browser.runtime.getURL("script.js");
+      script.src = browser.runtime.getURL("pageScript.js");
       (document.head || document.documentElement).append(script);
       script.addEventListener("load", () => {
         script.remove();
@@ -157,7 +157,7 @@ export function clearDynamic(
       const extensionPoint = _dynamic.get(extensionId);
       extensionPoint.uninstall({ global: true });
       _dynamic.delete(extensionId);
-      actionPanel.removeExtension(extensionId);
+      sidebar.removeExtension(extensionId);
       markUninstalled(extensionPoint.id);
     } else {
       console.debug(`No dynamic extension exists for uuid: ${extensionId}`);
@@ -170,7 +170,7 @@ export function clearDynamic(
     for (const extensionPoint of _dynamic.values()) {
       try {
         extensionPoint.uninstall({ global: true });
-        actionPanel.removeExtensionPoint(extensionPoint.id);
+        sidebar.removeExtensionPoint(extensionPoint.id);
         markUninstalled(extensionPoint.id);
       } catch (error) {
         reportError(error);

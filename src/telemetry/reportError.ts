@@ -20,6 +20,7 @@ import { recordError } from "@/background/messenger/api";
 import { serializeError } from "serialize-error";
 import { selectError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
+import { getContextName } from "webext-detect-page";
 
 expectContext(
   "extension",
@@ -31,31 +32,30 @@ expectContext(
  * @param error the error object
  * @param context optional context for error telemetry
  */
-function reportError(error: unknown, context?: MessageContext): void {
-  void _reportError(error, context).catch((reportingError) => {
+function reportError(
+  error: unknown, // It might also be an ErrorEvent
+  context?: MessageContext,
+  { logToConsole = true } = {}
+): void {
+  if (logToConsole) {
+    console.error(error);
+  }
+
+  try {
+    recordError(serializeError(selectError(error)), {
+      ...context,
+      // Add on the reporter side of the message. On the receiving side it would always be `background`
+      pageName: getContextName(),
+    });
+  } catch (reportingError) {
+    // The messenger does not throw async errors on "notifiers" but if this is
+    // called in the background the call will be executed directly and it could
+    // theoretically throw a synchronous error
     console.error("An error occurred when reporting an error", {
       originalError: error,
       reportingError,
     });
-  });
-}
-
-// Extracted async function to avoid turning `reportError` into an async function
-// which would trigger `eslint/no-floating-promises` at every `reportError` call
-async function _reportError(
-  error: unknown, // It might also be an ErrorEvent
-  context?: MessageContext
-): Promise<void> {
-  const errorObject = selectError(error);
-
-  // Events are already natively logged by the browser
-  if (
-    !(error instanceof ErrorEvent || error instanceof PromiseRejectionEvent)
-  ) {
-    console.error(error);
   }
-
-  recordError(serializeError(errorObject), context, null);
 }
 
 export default reportError;

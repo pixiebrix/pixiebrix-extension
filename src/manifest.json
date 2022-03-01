@@ -23,7 +23,7 @@
     {
       "matches": ["https://*.pixiebrix.com/*"],
       "js": ["vendors.js", "contentScript.js"],
-      "css": ["styles.css"],
+      "css": ["contentScript.css"],
       "run_at": "document_idle"
     }
   ],
@@ -46,10 +46,10 @@
     "bundles/*",
     "frame.html",
     "frame.css",
-    "action.html",
-    "action.css",
-    "devtoolsPanel.css",
-    "script.js",
+    "sidebar.html",
+    "sidebar.css",
+    "pageEditor.css",
+    "pageScript.js",
     "ephemeralForm.html",
     "ephemeralForm.css",
     "audio/*",

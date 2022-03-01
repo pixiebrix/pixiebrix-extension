@@ -108,7 +108,8 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
     }
 
     try {
-      return buildYup(schema, {});
+      // The dereferenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
+      return buildYup(cloneDeep(schema), {});
     } catch (error) {
       console.error("Error building Yup validator from JSON Schema");
       reportError(error);
@@ -123,8 +124,6 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   return (
     <Modal
       show
-      backdropClassName={styles.backdrop}
-      className={styles.modal}
       dialogClassName={styles.dialog}
       onHide={onClose}
       backdrop="static"

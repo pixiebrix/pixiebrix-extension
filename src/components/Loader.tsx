@@ -19,12 +19,13 @@ import React from "react";
 import GridLoader from "react-spinners/GridLoader";
 
 const DEFAULT_STYLE = {
-  margin: "20px auto", // Centet
+  margin: "auto", // Center
+  padding: "20px",
   display: "flex",
   justifyContent: "center",
 };
 const Loader: React.FunctionComponent = () => (
-  <div style={DEFAULT_STYLE}>
+  <div style={DEFAULT_STYLE} data-testid="loader">
     <GridLoader />
   </div>
 );

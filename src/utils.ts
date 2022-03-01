@@ -42,6 +42,8 @@ import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
 
+const specialCharsRegex = /[.[\]]/;
+
 /**
  * Create a Formik field name, validating the individual path parts.
  * @param baseFieldName The base field name
@@ -60,11 +62,18 @@ export function joinName(
     );
   }
 
-  if (fieldNames.some((x) => x.includes("."))) {
-    throw new Error("Formik path parts cannot contain periods");
+  let path = baseFieldName || "";
+  for (const fieldName of fieldNames) {
+    if (specialCharsRegex.test(fieldName)) {
+      path += `["${fieldName}"]`;
+    } else if (path === "") {
+      path = fieldName;
+    } else {
+      path += `.${fieldName}`;
+    }
   }
 
-  return compact([baseFieldName, ...fieldNames]).join(".");
+  return path;
 }
 
 export function mostCommonElement<T>(items: T[]): T {
@@ -424,18 +433,6 @@ export async function allSettledValues<T = unknown>(
     .map(({ value }) => value);
 }
 
-export async function allSettledRejections(
-  promises: Array<Promise<unknown>>
-): Promise<unknown[]> {
-  const settled = await Promise.allSettled(promises);
-  return settled
-    .filter(
-      (promise): promise is PromiseRejectedResult =>
-        promise.status === "rejected"
-    )
-    .map(({ reason }) => reason);
-}
-
 export function freshIdentifier(
   root: SafeString,
   identifiers: string[],
@@ -517,7 +514,48 @@ export async function asyncLoop<Item>(
   await Promise.all([...iterable].map(unary(iteratee)));
 }
 
+export async function waitFor<T>(
+  looper: (...args: unknown[]) => Promise<T> | T,
+  { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 }
+): Promise<T | undefined> {
+  const endBy = Date.now() + maxWaitMillis;
+  do {
+    // eslint-disable-next-line no-await-in-loop -- It's a retry loop
+    const result = await looper();
+    if (result) {
+      return result;
+    }
+
+    // eslint-disable-next-line no-await-in-loop -- It's a retry loop
+    await sleep(intervalMillis);
+  } while (Date.now() < endBy);
+}
+
 export function isMac(): boolean {
   // https://stackoverflow.com/a/27862868/402560
   return navigator.platform.includes("Mac");
 }
+
+/** Tests a target string against a list of strings (full match) or regexes (can be mixed) */
+export function matchesAnyPattern(
+  target: string,
+  patterns: Array<string | RegExp>
+): boolean {
+  return patterns.some((pattern) =>
+    typeof pattern === "string" ? pattern === target : pattern.test(target)
+  );
+}
+
+// Enables highlighting/prettifying when used as html`<div>` or css`.a {}`
+// https://prettier.io/blog/2020/08/24/2.1.0.html
+function concatenateTemplateLiteralTag(
+  strings: TemplateStringsArray,
+  ...keys: string[]
+): string {
+  return strings
+    .map((string, i) => string + (i < keys.length ? keys[i] : ""))
+    .join("");
+}
+
+export const html = concatenateTemplateLiteralTag;
+export const css = concatenateTemplateLiteralTag;

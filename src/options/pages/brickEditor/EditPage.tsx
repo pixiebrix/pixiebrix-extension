@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./EditPage.scss";
-
 import React, { useEffect, useMemo } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
@@ -138,7 +136,7 @@ const EditPage: React.FunctionComponent = () => {
 
   const { submit, validate, remove } = useSubmitBrick({ url, create: false });
 
-  const logContext = useLogContext(data?.config);
+  useLogContext(data?.config);
 
   const name = rawConfig?.metadata?.name;
   const title = useMemo(
@@ -199,7 +197,7 @@ const EditPage: React.FunctionComponent = () => {
               </div>
               <Row>
                 <Col className="mt-4">
-                  <Editor logContext={logContext} />
+                  <Editor />
                 </Col>
               </Row>
             </Form>

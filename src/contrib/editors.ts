@@ -28,27 +28,33 @@ import { UIPATH_ID } from "@/contrib/uipath/process";
 import { UIPATH_ID as LOCAL_UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { GOOGLE_SHEETS_APPEND_ID } from "@/contrib/google/sheets/append";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
-import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/run";
+import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import FormModalOptions, {
   FORM_MODAL_ID,
-} from "@/devTools/editor/fields/FormModalOptions";
+} from "@/pageEditor/fields/FormModalOptions";
 import FormRendererOptions, {
   FORM_RENDERER_ID,
-} from "@/devTools/editor/fields/FormRendererOptions";
+} from "@/pageEditor/fields/FormRendererOptions";
 import { COMPONENT_READER_ID } from "@/blocks/transformers/component/ComponentReader";
 import ComponentReaderOptions from "@/blocks/transformers/component/ComponentReaderOptions";
 import { GOOGLE_SHEETS_LOOKUP_ID } from "@/contrib/google/sheets/lookup";
 import LookupSpreadsheetOptions from "@/contrib/google/sheets/LookupSpreadsheetOptions";
 import DatabaseGetOptions, {
   DATABASE_GET_ID,
-} from "@/devTools/editor/fields/DatabaseGetOptions";
+} from "@/pageEditor/fields/DatabaseGetOptions";
 import DatabasePutOptions, {
   DATABASE_PUT_ID,
-} from "@/devTools/editor/fields/DatabasePutOptions";
+} from "@/pageEditor/fields/DatabasePutOptions";
 import DocumentOptions, {
   DOCUMENT_ID,
-} from "@/devTools/editor/fields/DocumentOptions";
+} from "@/pageEditor/fields/DocumentOptions";
 
+/**
+ * Custom BlockConfiguration pageEditor components.
+ *
+ * @see BlockOptionProps
+ * @see BlockConfiguration
+ */
 export default function registerEditors() {
   optionsRegistry.set(SERVICE_GOOGLE_SHEET_ID, SheetServiceOptions);
   optionsRegistry.set(ZAPIER_ID, PushOptions);

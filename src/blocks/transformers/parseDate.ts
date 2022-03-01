@@ -18,7 +18,7 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { BusinessError } from "@/errors";
+import { PropError } from "@/errors";
 import { isEmpty } from "lodash";
 
 export function getLocalISOString(date: Date): string {
@@ -67,6 +67,8 @@ export class ParseDate extends Transformer {
     ["date"]
   );
 
+  // The brick returns date and time in locale, so it may not match the format that JSON Schema is expecting
+  // https://json-schema.org/understanding-json-schema/reference/string.html#dates-and-times
   override outputSchema: Schema = {
     type: "object",
     properties: {
@@ -79,11 +81,9 @@ export class ParseDate extends Transformer {
           },
           date: {
             type: "string",
-            format: "date",
           },
           time: {
             type: "string",
-            format: "time",
           },
           humanReadable: {
             type: "string",
@@ -99,11 +99,9 @@ export class ParseDate extends Transformer {
           },
           date: {
             type: "string",
-            format: "date",
           },
           time: {
             type: "string",
-            format: "time",
           },
           humanReadable: {
             type: "string",
@@ -121,11 +119,11 @@ export class ParseDate extends Transformer {
     const parsed = parseDate(date);
 
     if (isEmpty(date.trim())) {
-      throw new BusinessError("Date/time text is empty");
+      throw new PropError("Date/time text is empty", this.id, "date", date);
     }
 
     if (parsed == null) {
-      throw new BusinessError("Unrecognized date/time");
+      throw new PropError("Unrecognized date/time", this.id, "date", date);
     }
 
     const millisPerMinute = 60 * 1000;

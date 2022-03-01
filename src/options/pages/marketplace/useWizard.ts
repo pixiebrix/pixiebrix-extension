@@ -22,7 +22,7 @@ const STEPS: WizardStep[] = [
   // to realize it's OK to pass in a whole RecipeDefinition for something that just needs the options prop
   {
     key: "options",
-    label: "Personalize",
+    label: "Personalize Blueprint",
     Component: OptionsBody as React.FunctionComponent<{
       blueprint: RecipeDefinition;
     }>,

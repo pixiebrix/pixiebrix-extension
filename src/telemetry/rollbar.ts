@@ -16,7 +16,6 @@
  */
 
 import Rollbar from "rollbar";
-import { IGNORED_ERRORS } from "@/errors";
 import { isContentScript } from "webext-detect-page";
 import { addListener as addAuthListener, readAuthData } from "@/auth/token";
 import { UserData } from "@/auth/authTypes";
@@ -69,6 +68,10 @@ async function initRollbar(): Promise<Rollbar> {
     // reportUncaughtErrors. The default for rollbar is false
     // https://docs.rollbar.com/docs/rollbarjs-configuration-reference#:~:text=captureEmail-,captureUncaught,-This%20determines%20whether
 
+    // NOTE: we aren't passing ignoredMessages, because we are applying our own filtering in reportUncaughtErrors and
+    // reportError
+    // https://docs.rollbar.com/docs/reduce-noisy-javascript-errors#ignore-certain-types-of-messages
+
     return Rollbar.init({
       enabled: accessToken && accessToken !== "undefined" && !isContentScript(),
       accessToken,
@@ -77,8 +80,6 @@ async function initRollbar(): Promise<Rollbar> {
       // https://docs.rollbar.com/docs/rollbarjs-telemetry
       // disable autoInstrument until we can set up scrubbing rules
       autoInstrument: false,
-      // https://docs.rollbar.com/docs/reduce-noisy-javascript-errors#ignore-certain-types-of-messages
-      ignoredMessages: IGNORED_ERRORS,
       payload: {
         client: {
           javascript: {
@@ -95,7 +96,8 @@ async function initRollbar(): Promise<Rollbar> {
         for (const frame of payload.body.trace?.frames ?? []) {
           if (frame.filename && !frame.filename.startsWith("http")) {
             frame.filename = frame.filename.replace(
-              location.origin,
+              // Include the slash because location.origin does not have a trailing slash but the ENV does
+              location.origin + "/",
               process.env.ROLLBAR_PUBLIC_PATH
             );
           }

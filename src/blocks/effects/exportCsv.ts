@@ -17,7 +17,7 @@
 
 import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
-import { BusinessError } from "@/errors";
+import { PropError } from "@/errors";
 
 export class ExportCsv extends Effect {
   constructor() {
@@ -71,7 +71,13 @@ export class ExportCsv extends Effect {
     const rows = data ?? ctxt;
 
     if (!Array.isArray(rows)) {
-      throw new BusinessError(`Expected array for data, got ${typeof rows}`);
+      // Don't pass `value` because it may be a large amount of data
+      throw new PropError(
+        `Expected array for data, got ${typeof rows}`,
+        this.id,
+        "data",
+        null
+      );
     }
 
     csvExporter.generateCsv(rows);
