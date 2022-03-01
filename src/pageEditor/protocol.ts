@@ -19,7 +19,7 @@ import browser from "webextension-polyfill";
 import { resetTab } from "@/contentScript/messenger/api";
 import { thisTab } from "./utils";
 import { Target } from "@/types";
-import { updateEditor } from "./events";
+import { updatePageEditor } from "./events";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
@@ -33,7 +33,7 @@ function isCurrentTopFrame({ tabId, frameId }: Target) {
 
 async function onNavigation(target: Target): Promise<void> {
   if (isCurrentTopFrame(target)) {
-    updateEditor();
+    updatePageEditor();
   }
 }
 
@@ -43,8 +43,8 @@ function onEditorClose(): void {
 
 export function watchNavigation(): void {
   browser.webNavigation.onDOMContentLoaded.addListener(onNavigation);
-  browser.permissions.onAdded.addListener(updateEditor);
-  browser.permissions.onRemoved.addListener(updateEditor);
+  browser.permissions.onAdded.addListener(updatePageEditor);
+  browser.permissions.onRemoved.addListener(updatePageEditor);
   window.addEventListener("beforeunload", onEditorClose);
 
   if (process.env.DEBUG)

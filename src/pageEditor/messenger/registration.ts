@@ -18,18 +18,18 @@
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { expectContext } from "@/utils/expectContext";
 import { registerMethods } from "webext-messenger";
-import { updateEditor } from "@/pageEditor/events";
+import { updatePageEditor } from "@/pageEditor/events";
 
 expectContext("devTools");
 
 declare global {
   interface MessengerMethods {
-    UPDATE_EDITOR: typeof updateEditor;
+    UPDATE_PAGE_EDITOR: typeof updatePageEditor;
   }
 }
 
 export default function registerMessenger(): void {
   registerMethods({
-    UPDATE_EDITOR: updateEditor,
+    UPDATE_PAGE_EDITOR: updatePageEditor,
   });
 }

@@ -19,14 +19,14 @@ import styles from "./Footer.module.scss";
 
 import React, { useContext } from "react";
 import { useGetAuthQuery } from "@/services/api";
-import { EditorContext } from "@/pageEditor/context";
+import { PageEditorTabContext } from "@/pageEditor/context";
 import BeatLoader from "react-spinners/BeatLoader";
 
 const Footer: React.FunctionComponent = () => {
   const {
     data: { scope },
   } = useGetAuthQuery();
-  const { connecting } = useContext(EditorContext);
+  const { connecting } = useContext(PageEditorTabContext);
 
   return (
     <div className={styles.root}>

@@ -18,7 +18,7 @@
 import React from "react";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { EditorContext, useDevConnection } from "@/pageEditor/context";
+import { PageEditorTabContext, useDevConnection } from "@/pageEditor/context";
 import Editor from "@/pageEditor/Editor";
 import store, { persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
@@ -49,7 +49,7 @@ const Panel: React.VoidFunctionComponent = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={<Loader />} persistor={persistor}>
-        <EditorContext.Provider value={context}>
+        <PageEditorTabContext.Provider value={context}>
           <ToastProvider>
             <ModalProvider>
               <ErrorBoundary>
@@ -60,7 +60,7 @@ const Panel: React.VoidFunctionComponent = () => {
               </ErrorBoundary>
             </ModalProvider>
           </ToastProvider>
-        </EditorContext.Provider>
+        </PageEditorTabContext.Provider>
       </PersistGate>
     </Provider>
   );

@@ -25,4 +25,4 @@ if (isDevToolsPage()) {
   );
 }
 
-export const updateEditor = getNotifier("UPDATE_EDITOR");
+export const updatePageEditor = getNotifier("UPDATE_PAGE_EDITOR");

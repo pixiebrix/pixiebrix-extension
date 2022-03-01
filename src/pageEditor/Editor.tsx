@@ -21,7 +21,7 @@ import React, { useCallback, useContext, useMemo } from "react";
 import Sidebar from "@/pageEditor/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/pageEditor/store";
-import { EditorContext } from "@/pageEditor/context";
+import { PageEditorTabContext } from "@/pageEditor/context";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import PermissionsPane from "@/pageEditor/panes/PermissionsPane";
 import BetaPane from "@/pageEditor/panes/BetaPane";
@@ -53,7 +53,7 @@ import RecipePane from "@/pageEditor/panes/RecipePane";
 const selectEditor = ({ editor }: RootState) => editor;
 
 const Editor: React.FunctionComponent = () => {
-  const { tabState, connecting } = useContext(EditorContext);
+  const { tabState, connecting } = useContext(PageEditorTabContext);
   const installed = useSelector(selectExtensions);
   const { data: recipes, isLoading: loadingRecipes } = useGetRecipesQuery();
   const { isLoading: authLoading } = useGetAuthQuery();

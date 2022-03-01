@@ -18,7 +18,7 @@
 import { IExtension, UUID } from "@/core";
 import { FormState } from "@/pageEditor/slices/editorSlice";
 import { useContext } from "react";
-import { EditorContext } from "@/pageEditor/context";
+import { PageEditorTabContext } from "@/pageEditor/context";
 import { useAsyncState } from "@/hooks/common";
 import { zip } from "lodash";
 import hash from "object-hash";
@@ -41,7 +41,7 @@ function useInstallState(
 ): InstallState {
   const {
     tabState: { navSequence, meta, error },
-  } = useContext(EditorContext);
+  } = useContext(PageEditorTabContext);
 
   const [availableInstalledIds] = useAsyncState(
     async () => {

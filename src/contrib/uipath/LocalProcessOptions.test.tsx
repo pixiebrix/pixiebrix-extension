@@ -26,7 +26,7 @@ import {
 } from "@/tests/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/tests/testHelpers";
-import { EditorContext } from "@/pageEditor/context";
+import { PageEditorTabContext } from "@/pageEditor/context";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { OutputKey, SanitizedServiceConfiguration } from "@/core";
 import * as auth from "@/hooks/auth";
@@ -99,14 +99,14 @@ function makeBaseState() {
 
 function renderOptions(formState: FormState = makeBaseState()) {
   return render(
-    <EditorContext.Provider value={activeDevToolContextFactory()}>
+    <PageEditorTabContext.Provider value={activeDevToolContextFactory()}>
       <Formik onSubmit={jest.fn()} initialValues={formState}>
         <LocalProcessOptions
           name="extension.blockPipeline.0"
           configKey="config"
         />
       </Formik>
-    </EditorContext.Provider>
+    </PageEditorTabContext.Provider>
   );
 }
 

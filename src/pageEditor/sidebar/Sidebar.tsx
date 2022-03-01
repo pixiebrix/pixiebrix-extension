@@ -20,7 +20,7 @@ import styles from "./Sidebar.module.scss";
 import browser from "webextension-polyfill";
 import React, { FormEvent, useContext, useMemo, useState } from "react";
 import { FormState } from "@/pageEditor/slices/editorSlice";
-import { EditorContext } from "@/pageEditor/context";
+import { PageEditorTabContext } from "@/pageEditor/context";
 import { isEmpty, sortBy } from "lodash";
 import { sleep } from "@/utils";
 import {
@@ -133,7 +133,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
   isLoadingItems,
   collapseSidebar,
 }) => {
-  const context = useContext(EditorContext);
+  const context = useContext(PageEditorTabContext);
 
   const { flagOn } = useFlags();
   const showDeveloperUI =

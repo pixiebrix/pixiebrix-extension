@@ -53,7 +53,7 @@ import {
   ExtensionPointType,
 } from "@/extensionPoints/types";
 import {
-  Context as EditorContextType,
+  Context as PageEditorTabContextType,
   FrameConnectionState,
 } from "@/pageEditor/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
@@ -88,7 +88,7 @@ const tabStateFactory = define<FrameConnectionState>({
   meta: null,
 });
 
-export const activeDevToolContextFactory = define<EditorContextType>({
+export const activeDevToolContextFactory = define<PageEditorTabContextType>({
   connecting: false,
   tabState: tabStateFactory,
 });

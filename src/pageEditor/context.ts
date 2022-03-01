@@ -78,7 +78,7 @@ const initialValue: Context = {
   tabState: initialFrameState,
 };
 
-export const EditorContext = React.createContext(initialValue);
+export const PageEditorTabContext = React.createContext(initialValue);
 
 async function connectToFrame(): Promise<FrameConnectionState> {
   const uuid = uuidv4();

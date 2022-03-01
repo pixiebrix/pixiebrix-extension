@@ -17,7 +17,7 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useContext } from "react";
-import { EditorContext } from "@/pageEditor/context";
+import { PageEditorTabContext } from "@/pageEditor/context";
 import { useToasts } from "react-toast-notifications";
 import { actions, FormState } from "@/pageEditor/slices/editorSlice";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
@@ -33,7 +33,7 @@ type AddElement = (config: ElementConfig) => void;
 
 function useAddElement(): AddElement {
   const dispatch = useDispatch();
-  const { tabState } = useContext(EditorContext);
+  const { tabState } = useContext(PageEditorTabContext);
   const { flagOff } = useFlags();
   const { addToast } = useToasts();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
