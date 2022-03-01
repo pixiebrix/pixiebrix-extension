@@ -225,6 +225,8 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
 
   return (
     <Autosuggest
+      // Always show when the field is focused #2822
+      shouldRenderSuggestions={() => true}
       suggestions={currentSuggestions}
       focusInputOnSuggestionClick
       getSuggestionValue={getSuggestionValue}
