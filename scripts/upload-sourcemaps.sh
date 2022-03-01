@@ -6,7 +6,7 @@ set -e
 # Ensure ENVs are set https://stackoverflow.com/a/307735/288906
 : "${SOURCE_MAP_PATH?Need to set SOURCE_MAP_PATH}"
 : "${SOURCE_MAP_URL_BASE?Need to set SOURCE_MAP_URL_BASE}"
-: "${ROLLBAR_BROWSER_ACCESS_TOKEN?Need to set ROLLBAR_BROWSER_ACCESS_TOKEN}"
+: "${ROLLBAR_POST_SERVER_ITEM_TOKEN?Need to set ROLLBAR_POST_SERVER_ITEM_TOKEN}"
 
 : "${AWS_ACCESS_KEY_ID?Need to set AWS_ACCESS_KEY_ID}"
 : "${AWS_SECRET_ACCESS_KEY?Need to set AWS_SECRET_ACCESS_KEY}"
@@ -40,7 +40,10 @@ sed s/dist\\/// | \
 # etc
 #
 # `curl` automatically retries if the server is busy
+# https://curl.se/docs/manpage.html#--fail-with-body
 parallel curl https://api.rollbar.com/api/1/sourcemap/download \
+	--fail-with-body \
+	--no-progress-meter \
 	-F version="$SOURCE_VERSION" \
-	-F access_token="$ROLLBAR_BROWSER_ACCESS_TOKEN" \
+	-F access_token="$ROLLBAR_POST_SERVER_ITEM_TOKEN" \
 	-F minified_url="$SOURCE_MAP_URL_BASE/$SOURCE_MAP_PATH/{}"
