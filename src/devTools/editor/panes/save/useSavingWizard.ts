@@ -93,12 +93,12 @@ const useSavingWizard = () => {
     if (element.recipe == null) {
       void saveNonRecipeElement();
     } else {
-      // The user might loose access to the recipe while they were editing it (the recipe or an extension)
+      // The user might lose access to the recipe while they were editing it (the recipe or an extension)
       // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
       const recipe = recipes.find((x) => x.metadata.id === element.recipe.id);
       if (!recipe) {
         notify.error(
-          "Looks like you lost access to the recipe you were editing. Please reload the Editor."
+          "You no longer have edit permissions for the blueprint. Please reload the Editor."
         );
         return;
       }
