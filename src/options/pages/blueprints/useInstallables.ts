@@ -88,13 +88,15 @@ function useInstallables(): InstallablesState {
       []
     );
 
-  const extensionsWithoutRecipe = useMemo(() => {
-    return resolvedExtensions.filter((extension) =>
-      extension._recipe?.id
-        ? !installedRecipeIds.has(extension._recipe?.id)
-        : true
-    );
-  }, [installedRecipeIds, resolvedExtensions]);
+  const extensionsWithoutRecipe = useMemo(
+    () =>
+      resolvedExtensions.filter((extension) =>
+        extension._recipe?.id
+          ? !installedRecipeIds.has(extension._recipe?.id)
+          : true
+      ),
+    [installedRecipeIds, resolvedExtensions]
+  );
 
   return {
     installables: [...extensionsWithoutRecipe, ...personalOrTeamBlueprints],

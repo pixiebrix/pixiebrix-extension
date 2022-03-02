@@ -56,7 +56,6 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
         </Card.Body>
         <Card.Footer className={styles.cardFooter}>
           <SharingLabel sharing={sharing.source} />
-          {/*//TODO: add a middle date truncation where the year is, that expands on hover */}
           <span className="small">
             <FontAwesomeIcon icon={faClock} /> {updatedAtFormatted}
           </span>
