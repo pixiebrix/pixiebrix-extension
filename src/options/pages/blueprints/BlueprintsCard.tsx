@@ -85,6 +85,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     Header: "Status",
     accessor: "status",
     disableGlobalFilter: true,
+    filter: "exactText",
   },
 ];
 
