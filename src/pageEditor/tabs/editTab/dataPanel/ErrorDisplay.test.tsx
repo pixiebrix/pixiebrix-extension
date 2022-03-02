@@ -18,6 +18,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import ErrorDisplay from "./ErrorDisplay";
+import { waitForEffect } from "@/tests/testHelpers";
 
 test("Template render error", () => {
   const error = {
@@ -101,7 +102,7 @@ test("Input validation error", () => {
   expect(rendered.asFragment()).toMatchSnapshot();
 });
 
-test("Network error", () => {
+test("Network error", async () => {
   const error = {
     error: {
       config: {
@@ -140,5 +141,6 @@ test("Network error", () => {
   };
 
   const rendered = render(<ErrorDisplay error={error} />);
+  await waitForEffect();
   expect(rendered.asFragment()).toMatchSnapshot();
 });

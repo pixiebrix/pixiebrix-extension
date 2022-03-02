@@ -16,8 +16,15 @@
  */
 
 import JsonTree from "@/components/jsonTree/JsonTree";
+import { getRootCause, isAxiosError } from "@/errors";
 import React from "react";
 import { ErrorObject } from "serialize-error";
+import { InputValidationError, OutputValidationError } from "@/blocks/errors";
+import InputValidationErrorDetail from "@/components/logViewer/details/InputValidationErrorDetail";
+import OutputValidationErrorDetail from "@/components/logViewer/details/OutputValidationErrorDetail";
+import { Col, Container, Row } from "react-bootstrap";
+import NetworkErrorDetail from "@/components/logViewer/details/NetworkErrorDetail";
+import { AxiosError } from "axios";
 
 type ErrorDisplayProps = {
   error: ErrorObject;
@@ -26,41 +33,67 @@ type ErrorDisplayProps = {
 const ErrorDisplay: React.VoidFunctionComponent<ErrorDisplayProps> = ({
   error,
 }) => {
-  console.log("Got an error", error);
-  const { name, message, stack, ...rest } = error;
+  const rootError = getRootCause(error);
+  const { name, message, stack, ...rest } = rootError;
 
-  let title = "";
-  let text = "";
+  let errorDetail;
 
   if (typeof name === "string") {
     switch (name) {
       case "InputValidationError":
-        title = message;
-        text = (rest as any)?.errors[0]?.error;
+        errorDetail = (
+          <InputValidationErrorDetail
+            error={rootError as unknown as InputValidationError}
+          />
+        );
         break;
-      case "ClientNetworkError":
-        title = "Network Error";
-        text = message;
+      case "OutputValidationError":
+        errorDetail = (
+          <OutputValidationErrorDetail
+            error={rootError as unknown as OutputValidationError}
+          />
+        );
         break;
+      case "ClientNetworkError": {
+        const networkError: AxiosError = isAxiosError(rootError.error)
+          ? rootError.error
+          : (rootError as unknown as AxiosError);
+        errorDetail = (
+          <>
+            <Row>
+              <Col>
+                <p>Network error</p>
+              </Col>
+            </Row>
+            <NetworkErrorDetail error={networkError} />
+          </>
+        );
+        break;
+      }
+
       default:
-        title = name;
-        if (typeof message === "string") {
-          text = message;
-        }
+        errorDetail = (
+          <>
+            <Row>
+              <Col>
+                <p>Error</p>
+                <p className="text-danger">{name}</p>
+                <p>
+                  Message: <br />
+                  {message}
+                </p>
+              </Col>
+            </Row>
+          </>
+        );
     }
   }
 
-  return typeof title === "string" ? (
-    <div>
-      <p>Error</p>
-      <p className="text-danger">{title}</p>
-      <p>
-        Message: <br />
-        {text}
-      </p>
-    </div>
+  return typeof errorDetail === "undefined" ? (
+    // Not showing the stack trace on the UI
+    <JsonTree label="Error" data={{ name, message, ...rest }} />
   ) : (
-    <JsonTree label="Error" data={error} />
+    <Container>{errorDetail}</Container>
   );
 };
 

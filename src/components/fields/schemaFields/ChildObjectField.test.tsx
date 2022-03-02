@@ -16,7 +16,7 @@
  */
 
 import { Schema } from "@/core";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { Formik } from "formik";
 import React from "react";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
