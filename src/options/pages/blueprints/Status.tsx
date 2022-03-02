@@ -20,7 +20,7 @@ import { Button } from "react-bootstrap";
 import { InstallableViewItem } from "./blueprintsTypes";
 import useInstallableActions from "./useInstallableActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faRedo, faSync } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faSync } from "@fortawesome/free-solid-svg-icons";
 
 type StatusProps = {
   installableViewItem: InstallableViewItem;
