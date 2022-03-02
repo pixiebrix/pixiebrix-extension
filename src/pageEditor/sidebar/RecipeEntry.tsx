@@ -70,8 +70,9 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
       >
         <button
           className={styles.icon}
-          onClick={() => {
+          onClick={(event) => {
             setExpanded(!expanded);
+            event.stopPropagation();
           }}
         >
           <FontAwesomeIcon icon={caretIcon} />
