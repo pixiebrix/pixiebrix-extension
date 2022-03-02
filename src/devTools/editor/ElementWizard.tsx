@@ -73,7 +73,7 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, editable }) => {
   const [step, setStep] = useState(wizard[0].step);
 
-  const { flagOn } = useFlags();
+  const { flagOn, flagOff } = useFlags();
 
   const availableDefinition = element.extensionPoint.definition.isAvailable;
   const [available] = useAsyncState(
@@ -112,7 +112,11 @@ const ElementWizard: React.FunctionComponent<{
     useFormikContext<FormState>();
 
   const wizardSteps = [...wizard];
-  if (formState.recipe?.id && flagOn("page-editor-blueprint-options")) {
+  if (
+    formState.recipe?.id &&
+    flagOn("page-editor-blueprint-options") &&
+    flagOff("page-editor-blueprints")
+  ) {
     wizardSteps.push(blueprintOptionsStep);
   }
 

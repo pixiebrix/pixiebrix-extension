@@ -38,12 +38,36 @@ import useResetRecipe from "@/devTools/editor/hooks/useResetRecipe";
 import useRemoveRecipe from "@/devTools/editor/hooks/useRemoveRecipe";
 import Logs from "@/devTools/editor/tabs/Logs";
 import EditRecipe from "@/devTools/editor/tabs/editRecipeTab/EditRecipe";
+<<<<<<< Updated upstream
 import { MessageContext } from "@/core";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/devTools/editor/tabs/logs/useLogsBadgeState";
+
+const EDIT_ITEM_NAME = "Edit";
+
+const OptionsPlaceholder: React.VoidFunctionComponent = () => (
+  <div>Configure Blueprint Options</div>
+);
+=======
 import RecipeOptions from "@/devTools/editor/tabs/RecipeOptions";
 
 const EDIT_ITEM_NAME = "Edit";
+
+const tabItems: TabItem[] = [
+  {
+    itemName: EDIT_ITEM_NAME,
+    TabContent: EditRecipe,
+  },
+  {
+    itemName: "Blueprint Options",
+    TabContent: RecipeOptions,
+  },
+  {
+    itemName: "Logs",
+    TabContent: Logs,
+  },
+];
+>>>>>>> Stashed changes
 
 const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   const recipe = useSelector(selectActiveRecipe);
@@ -69,8 +93,8 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
       TabContent: EditRecipe,
     },
     {
-      itemName: "Blueprint Options",
-      TabContent: RecipeOptions,
+      itemName: "Options",
+      TabContent: OptionsPlaceholder,
     },
     {
       itemName: "Logs",
