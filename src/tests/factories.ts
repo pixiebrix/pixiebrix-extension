@@ -35,14 +35,14 @@ import {
 import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
 import { Permissions } from "webextension-polyfill";
-import { BaseExtensionState } from "@/devTools/editor/extensionPoints/elementConfig";
+import { BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
 import trigger, {
   TriggerFormState,
-} from "@/devTools/editor/extensionPoints/trigger";
+} from "@/pageEditor/extensionPoints/trigger";
 import menuItem, {
   ActionFormState,
-} from "@/devTools/editor/extensionPoints/menuItem";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
+} from "@/pageEditor/extensionPoints/menuItem";
+import { FormState } from "@/pageEditor/slices/editorSlice";
 import {
   RecipeDefinition,
   ExtensionPointConfig,
@@ -53,9 +53,9 @@ import {
   ExtensionPointType,
 } from "@/extensionPoints/types";
 import {
-  Context as DevtoolsContextType,
+  Context as PageEditorTabContextType,
   FrameConnectionState,
-} from "@/devTools/context";
+} from "@/pageEditor/context";
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
 import { Deployment } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
@@ -88,7 +88,7 @@ const tabStateFactory = define<FrameConnectionState>({
   meta: null,
 });
 
-export const activeDevToolContextFactory = define<DevtoolsContextType>({
+export const activeDevToolContextFactory = define<PageEditorTabContextType>({
   connecting: false,
   tabState: tabStateFactory,
 });

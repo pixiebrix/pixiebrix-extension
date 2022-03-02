@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { DevToolsContext } from "@/devTools/context";
+import { PageEditorTabContext } from "@/pageEditor/context";
 import { useField } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
@@ -70,7 +70,7 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const {
     tabState: { meta },
-  } = useContext(DevToolsContext);
+  } = useContext(PageEditorTabContext);
 
   const [{ value: framework }, , frameworkHelpers] =
     useField<Framework>(frameworkFieldName);
