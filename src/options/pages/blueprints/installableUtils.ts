@@ -83,10 +83,18 @@ export const getUniqueId = (installable: Installable): UUID | RegistryId =>
 export const getLabel = (installable: Installable): string =>
   isExtension(installable) ? installable.label : installable.metadata.name;
 
-export const getDescription = (installable: Installable): string =>
-  isExtension(installable)
+export const getDescription = (installable: Installable): string => {
+  let description = isExtension(installable)
     ? installable._recipe?.description
     : installable.metadata.description;
+
+  if (!description && isExtension(installable)) {
+    const createDate = new Date(installable.createTimestamp);
+    description = `Created on ${createDate.toLocaleDateString()} at ${createDate.toLocaleTimeString()} in the page editor.`;
+  }
+
+  return description;
+};
 
 export const getPackageId = (installable: Installable): RegistryId =>
   isExtension(installable) ? installable._recipe?.id : installable.metadata.id;

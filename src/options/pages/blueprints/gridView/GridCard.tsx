@@ -42,7 +42,7 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
         <Card.Body className={styles.cardBody}>
           <div className={styles.primaryInfo}>
             <div className="d-flex">
-              {icon}
+              <span className="mb-2">{icon}</span>
               <h5 className={styles.name}>{name}</h5>
             </div>
             <span className={styles.description}>{description}</span>
