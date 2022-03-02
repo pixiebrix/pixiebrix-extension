@@ -29,6 +29,8 @@ const nonLetters = /[^a-z]/gi;
 export function guessUsefulness(string: string) {
   const detectorFactor = round(Number(detectRandomString(string)), 2);
 
+  // Useful to catch short sequences like `.d_b-3` that wouldn't otherwise be detected
+  // by the other factors, without sacrificing short human classes like `.nav`
   const meaningfulCharacters = string.replaceAll(nonLetters, "").length;
   const lettersFactor = round(1 - meaningfulCharacters / string.length, 2);
 

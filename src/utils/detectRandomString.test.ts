@@ -27,6 +27,15 @@ test("guessUsefulness", () => {
       "string": ".Nav-item",
     }
   `);
+  expect(guessUsefulness(".ePGuZuxBTv9BWrjZL4l3")).toMatchInlineSnapshot(`
+    Object {
+      "detectorFactor": 0.55,
+      "isRandom": true,
+      "isSus": true,
+      "lettersFactor": 0.19,
+      "string": ".ePGuZuxBTv9BWrjZL4l3",
+    }
+  `);
   expect(guessUsefulness("._s2dF")).toMatchInlineSnapshot(`
     Object {
       "detectorFactor": 0.2,
