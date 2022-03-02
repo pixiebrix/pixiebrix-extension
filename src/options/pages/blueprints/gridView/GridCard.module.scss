@@ -31,7 +31,7 @@
 }
 
 .primaryInfo {
-  height: 110px;
+  max-height: 110px;
   overflow: hidden;
 }
 
@@ -48,16 +48,18 @@
   align-items: center;
   color: darkgray;
   padding: 0 15px 15px 15px;
+}
 
-  div {
-    width: auto;
-    white-space: nowrap;
-  }
+.sharingLabel {
+  width: auto;
+  white-space: nowrap;
+}
 
-  span {
-    flex-grow: 1;
-    text-align: right;
-  }
+.updatedAt {
+  flex-grow: 1;
+  text-align: right;
+  font-size: 80%;
+  padding-left: 0.5rem;
 }
 
 .description {

@@ -89,8 +89,13 @@ export const getDescription = (installable: Installable): string => {
     : installable.metadata.description;
 
   if (!description && isExtension(installable)) {
-    const createDate = new Date(installable.createTimestamp);
-    description = `Created on ${createDate.toLocaleDateString()} at ${createDate.toLocaleTimeString()} in the page editor.`;
+    const createDate =
+      "createTimestamp" in installable
+        ? new Date(installable.createTimestamp)
+        : null;
+    description = createDate
+      ? `Created on ${createDate.toLocaleDateString()} at ${createDate.toLocaleTimeString()} in the page editor`
+      : "Created in the page editor";
   }
 
   return description;

@@ -55,8 +55,10 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
           </div>
         </Card.Body>
         <Card.Footer className={styles.cardFooter}>
-          <SharingLabel sharing={sharing.source} />
-          <span className="small">
+          <span className={styles.sharingLabel}>
+            <SharingLabel sharing={sharing.source} />
+          </span>
+          <span className={styles.updatedAt}>
             <FontAwesomeIcon icon={faClock} /> {updatedAtFormatted}
           </span>
         </Card.Footer>

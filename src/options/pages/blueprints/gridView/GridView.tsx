@@ -71,9 +71,10 @@ export function expandGridRows(
   return gridRows;
 }
 
-// 200px min card width & height, 15px padding
+// 220px min card width + 15px padding
 // see: GridView.module.scss
-const MIN_CARD_DIMENSIONS_PX = 215;
+const MIN_CARD_WIDTH_PX = 235;
+const CARD_HEIGHT_PX = 230;
 const HEADER_ROW_HEIGHT_PX = 43;
 
 const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
@@ -86,7 +87,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   const [listKey, setListKey] = useState(uuidv4());
 
   const columnCount = useMemo(
-    () => Math.floor(width / MIN_CARD_DIMENSIONS_PX),
+    () => Math.floor(width / MIN_CARD_WIDTH_PX),
     [width]
   );
 
@@ -99,7 +100,7 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     (index: number): number => {
       // eslint-disable-next-line security/detect-object-injection
       const row = expandedGridRows[index];
-      return "isGrouped" in row ? HEADER_ROW_HEIGHT_PX : MIN_CARD_DIMENSIONS_PX;
+      return "isGrouped" in row ? HEADER_ROW_HEIGHT_PX : CARD_HEIGHT_PX;
     },
     [expandedGridRows]
   );

@@ -31,14 +31,12 @@ import ListView from "./listView/ListView";
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import GridView from "./gridView/GridView";
-import useReduxState from "@/hooks/useReduxState";
 import {
   selectFilters,
   selectGroupBy,
   selectSortBy,
   selectView,
 } from "./blueprintsSelectors";
-import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
@@ -103,18 +101,9 @@ const BlueprintsCard: React.FunctionComponent<{
     [data]
   );
 
-  const [view] = useReduxState(selectView, blueprintsSlice.actions.setView);
-
-  const [groupBy] = useReduxState(
-    selectGroupBy,
-    blueprintsSlice.actions.setGroupBy
-  );
-
-  const [sortBy] = useReduxState(
-    selectSortBy,
-    blueprintsSlice.actions.setSortBy
-  );
-
+  const view = useSelector(selectView);
+  const groupBy = useSelector(selectGroupBy);
+  const sortBy = useSelector(selectSortBy);
   const filters = useSelector(selectFilters);
 
   const tableInstance = useTable<InstallableViewItem>(
