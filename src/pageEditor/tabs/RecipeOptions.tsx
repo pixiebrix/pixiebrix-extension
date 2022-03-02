@@ -25,14 +25,14 @@ import { isEmpty } from "lodash";
 import styles from "./RecipeOptions.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import FormEditor from "@/components/formBuilder/FormEditor";
-import dataPanelStyles from "@/devTools/editor/tabs/dataPanelTabs.module.scss";
+import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import cx from "classnames";
 import FormPreview from "@/components/formBuilder/FormPreview";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import { FIELD_TYPE_OPTIONS } from "@/components/formBuilder/formBuilderHelpers";
 import { useSelector } from "react-redux";
-import { selectActiveRecipeId } from "@/devTools/editor/slices/editorSelectors";
-import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/devTools/editor/extensionPoints/base";
+import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
+import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
 import { useGetRecipesQuery } from "@/services/api";
 import { Formik } from "formik";
 

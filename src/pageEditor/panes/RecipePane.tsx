@@ -40,8 +40,8 @@ import Logs from "@/pageEditor/tabs/Logs";
 import EditRecipe from "@/pageEditor/tabs/editRecipeTab/EditRecipe";
 import { MessageContext } from "@/core";
 import { logActions } from "@/components/logViewer/logSlice";
-import useLogsBadgeState from "@/pageEditor/editor/tabs/logs/useLogsBadgeState";
-import RecipeOptions from "@/pageEditor/editor/tabs/RecipeOptions";
+import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
+import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
 
 const EDIT_ITEM_NAME = "Edit";
 
