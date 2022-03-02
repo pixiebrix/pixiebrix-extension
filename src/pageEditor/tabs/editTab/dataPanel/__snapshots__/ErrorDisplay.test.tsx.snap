@@ -1,0 +1,62 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Input validation error 1`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      Error
+    </p>
+    <p
+      class="text-danger"
+    >
+      Invalid inputs for block
+    </p>
+    <p>
+      Message: 
+      <br />
+      Property "message" does not match schema.
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Network error 1`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      Error
+    </p>
+    <p
+      class="text-danger"
+    >
+      Network Error
+    </p>
+    <p>
+      Message: 
+      <br />
+      No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Template render error 1`] = `
+<DocumentFragment>
+  <div>
+    <p>
+      Error
+    </p>
+    <p
+      class="text-danger"
+    >
+      Template render error
+    </p>
+    <p>
+      Message: 
+      <br />
+      (unknown path) [Line 1, Column 3]
+  parseAggregate: expected colon after dict key
+    </p>
+  </div>
+</DocumentFragment>
+`;

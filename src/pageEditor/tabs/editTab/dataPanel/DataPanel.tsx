@@ -49,6 +49,7 @@ import documentBuilderSelectors from "@/pageEditor/slices/documentBuilderSelecto
 import { actions as documentBuilderActions } from "@/pageEditor/slices/documentBuilderSlice";
 import copy from "copy-to-clipboard";
 import useFlags from "@/hooks/useFlags";
+import ErrorDisplay from "./ErrorDisplay";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -285,7 +286,7 @@ const DataPanel: React.FC<{
               </>
             )}
             {record && "error" in record && (
-              <JsonTree data={record.error} label="Error" />
+              <ErrorDisplay error={record.error} />
             )}
           </DataTab>
           <DataTab
