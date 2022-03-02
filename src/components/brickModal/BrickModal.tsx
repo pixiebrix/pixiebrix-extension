@@ -150,7 +150,7 @@ const ItemRenderer = ({
         }}
         onSelect={() => {
           onSelect(brick);
-          reportEvent("BrickAdd",{ brickId: brick.id });
+          reportEvent("BrickAdd", { brickId: brick.id });
           close();
         }}
         selectCaption={selectCaption}
@@ -292,7 +292,7 @@ function ActualModal<T extends IBrick>({
                   selectCaption={selectCaption}
                   onSelect={() => {
                     onSelect(detailBrick);
-                    reportEvent("BrickAdd",{ brickId: detailBrick.id });
+                    reportEvent("BrickAdd", { brickId: detailBrick.id });
                     close();
                   }}
                 />
