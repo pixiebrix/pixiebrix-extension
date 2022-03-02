@@ -18,14 +18,24 @@
 import detectRandomString from "@/vendors/randomStringDetection/detector";
 import { round } from "lodash";
 
-const nonLetters = /[^a-z]/gi; // Excludes numbers and symbols
+// Checks, in order:
+// - has numbers surrounded by letters: r4Nd0m
+// - starts or ends with dash: _cls, -cls, cls_, cls-
+const suspiciousRegex = /[a-z]\d+[a-z]|^\.?[_-]|[_-]$/i;
+
+// Excludes numbers and symbols
+const nonLetters = /[^a-z]/gi;
 
 export function guessUsefulness(string: string) {
+  const detectorFactor = round(Number(detectRandomString(string)), 2);
+
   const meaningfulCharacters = string.replaceAll(nonLetters, "").length;
   const lettersFactor = round(1 - meaningfulCharacters / string.length, 2);
-  const detectorFactor = round(Number(detectRandomString(string)), 2);
-  const isRandom = detectorFactor >= 0.5 || lettersFactor >= 0.5;
-  return { string, detectorFactor, lettersFactor, isRandom };
+
+  const isSus = suspiciousRegex.test(string);
+
+  const isRandom = isSus || lettersFactor >= 0.5 || detectorFactor >= 0.5;
+  return { string, detectorFactor, isSus, lettersFactor, isRandom };
 }
 
 export function isRandomString(string: string): boolean {

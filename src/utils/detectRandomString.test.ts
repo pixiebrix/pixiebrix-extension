@@ -22,6 +22,7 @@ test("guessUsefulness", () => {
     Object {
       "detectorFactor": 0.13,
       "isRandom": false,
+      "isSus": false,
       "lettersFactor": 0.22,
       "string": ".Nav-item",
     }
@@ -30,6 +31,7 @@ test("guessUsefulness", () => {
     Object {
       "detectorFactor": 0.2,
       "isRandom": true,
+      "isSus": true,
       "lettersFactor": 0.5,
       "string": "._s2dF",
     }
@@ -38,6 +40,7 @@ test("guessUsefulness", () => {
     Object {
       "detectorFactor": 0.38,
       "isRandom": false,
+      "isSus": false,
       "lettersFactor": 0.44,
       "string": ".Nav-wd32",
     }
@@ -46,6 +49,7 @@ test("guessUsefulness", () => {
     Object {
       "detectorFactor": 0.3,
       "isRandom": false,
+      "isSus": false,
       "lettersFactor": 0.09,
       "string": ".footerlink",
     }
