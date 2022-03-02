@@ -36,10 +36,12 @@
   padding-right: 1rem;
 }
 
-.name {
+.primaryInfo {
   text-wrap: normal;
   flex-grow: 1;
+}
 
+.name {
   h5 {
     text-overflow: ellipsis;
     margin: 0;

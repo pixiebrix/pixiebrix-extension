@@ -35,8 +35,10 @@ const ListItem: React.VoidFunctionComponent<{
   return (
     <ListGroup.Item className={styles.root} style={style}>
       <div className={styles.icon}>{icon}</div>
-      <div className={styles.name}>
-        <h5>{name}</h5>
+      <div className={styles.primaryInfo}>
+        <div className={styles.name}>
+          <h5>{name}</h5>
+        </div>
         <span className="small">{description}</span>
       </div>
       <div>
