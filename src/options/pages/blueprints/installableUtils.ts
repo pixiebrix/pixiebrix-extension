@@ -16,7 +16,13 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import { IExtension, RegistryId, ResolvedExtension, UUID } from "@/core";
+import {
+  IExtension,
+  PersistedExtension,
+  RegistryId,
+  ResolvedExtension,
+  UUID,
+} from "@/core";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
 import { Installable } from "./blueprintsTypes";
@@ -91,11 +97,12 @@ export const getDescription = (installable: Installable): string => {
   if (!description && isExtension(installable)) {
     const createDate =
       "createTimestamp" in installable
-        ? new Date(installable.createTimestamp)
+        ? new Date((installable as PersistedExtension).createTimestamp)
         : null;
-    description = createDate
-      ? `Created on ${createDate.toLocaleDateString()} at ${createDate.toLocaleTimeString()} in the page editor`
-      : "Created in the page editor";
+    description =
+      "createTimestamp" in installable
+        ? `Created on ${createDate.toLocaleDateString()} at ${createDate.toLocaleTimeString()} in the page editor`
+        : "Created in the page editor";
   }
 
   return description;
