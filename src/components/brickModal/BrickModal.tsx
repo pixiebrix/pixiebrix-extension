@@ -49,7 +49,6 @@ import { Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { reportEvent } from "@/telemetry/events";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -150,7 +149,6 @@ const ItemRenderer = ({
         }}
         onSelect={() => {
           onSelect(brick);
-          reportEvent("BrickAdd", { brickId: brick.id });
           close();
         }}
         selectCaption={selectCaption}
@@ -292,7 +290,6 @@ function ActualModal<T extends IBrick>({
                   selectCaption={selectCaption}
                   onSelect={() => {
                     onSelect(detailBrick);
-                    reportEvent("BrickAdd", { brickId: detailBrick.id });
                     close();
                   }}
                 />
