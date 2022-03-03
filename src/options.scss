@@ -19,8 +19,3 @@ html {
   // Always show the scrollbar track to avoid shifting the layout after the content loads
   overflow-y: scroll;
 }
-
-// Notifications must be above everything
-.react-toast-notifications__container {
-  z-index: 2147483647 !important;
-}

@@ -31,7 +31,7 @@ import settingsSlice from "@/store/settingsSlice";
 import { anonAuth } from "@/hooks/auth";
 
 jest.unmock("react-redux");
-jest.mock("@/hooks/useNotifications");
+jest.mock("@/utils/notify");
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
   useGetAuthQuery: jest.fn(),

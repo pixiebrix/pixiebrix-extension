@@ -33,7 +33,7 @@ import {
   sendDeploymentAlert,
   traces,
 } from "@/background/messenger/api";
-import { hideNotification, showNotification } from "@/contentScript/notify";
+import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";

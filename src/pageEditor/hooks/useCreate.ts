@@ -18,9 +18,8 @@
 import { editorSlice, FormState } from "@/pageEditor/slices/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
-import { AddToast, useToasts } from "react-toast-notifications";
+import notify from "@/utils/notify";
 import { getErrorMessage, isAxiosError } from "@/errors";
-import reportError from "@/telemetry/reportError";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
@@ -69,7 +68,7 @@ function selectErrorMessage(error: unknown): string {
   return getErrorMessage(error);
 }
 
-async function ensurePermissions(element: FormState, addToast: AddToast) {
+async function ensurePermissions(element: FormState) {
   const adapter = ADAPTERS.get(element.type);
 
   const { extension, extensionPoint: extensionPointConfig } =
@@ -92,12 +91,8 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
   const hasPermissions = await requestPermissions(permissions);
 
   if (!hasPermissions) {
-    addToast(
-      "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions",
-      {
-        appearance: "warning",
-        autoDismiss: true,
-      }
+    notify.warning(
+      "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions"
     );
   }
 }
@@ -119,20 +114,15 @@ function useCreate(): CreateCallback {
   //  fire-and-forget notification).
 
   const dispatch = useDispatch();
-  const { addToast } = useToasts();
   const { data: editablePackages } = useGetEditablePackagesQuery();
 
   return useCallback(
     async ({ element, pushToCloud }): Promise<string | null> => {
       const onStepError = (error: unknown, step: string): string => {
-        reportError(error);
         const message = selectErrorMessage(error);
         console.warn("Error %s: %s", step, message, { error });
         const errorMessage = `Error ${step}: ${message}`;
-        addToast(errorMessage, {
-          appearance: "error",
-          autoDismiss: true,
-        });
+        notify.error({ message: errorMessage, error });
 
         return errorMessage;
       };
@@ -140,16 +130,14 @@ function useCreate(): CreateCallback {
       try {
         const adapter = ADAPTERS.get(element.type);
 
-        void ensurePermissions(element, addToast).catch((error) => {
-          reportError(error);
+        void ensurePermissions(element).catch((error) => {
           console.error("Error checking/enabling permissions", { error });
-          addToast(
-            "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
-            {
-              appearance: "warning",
-              autoDismiss: true,
-            }
-          );
+          notify.warning({
+            message:
+              "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
+            error,
+            reportError: true,
+          });
         });
 
         const extensionPointId = element.extensionPoint.metadata.id;
@@ -199,14 +187,13 @@ function useCreate(): CreateCallback {
             extensionPointRegistry.fetch(),
           ]);
         } catch (error) {
-          reportError(error);
-          addToast(
-            `Error fetching remote bricks: ${selectErrorMessage(error)}`,
-            {
-              appearance: "warning",
-              autoDismiss: true,
-            }
-          );
+          notify.warning({
+            message: `Error fetching remote bricks: ${selectErrorMessage(
+              error
+            )}`,
+            error,
+            reportError: true,
+          });
         }
 
         try {
@@ -233,22 +220,18 @@ function useCreate(): CreateCallback {
 
         reactivateEveryTab();
 
-        addToast("Saved extension", {
-          appearance: "success",
-          autoDismiss: true,
-        });
+        notify.success("Saved extension");
         return null;
       } catch (error) {
         console.error("Error saving extension", { error });
-        reportError(error);
-        addToast(`Error saving extension: ${getErrorMessage(error)}`, {
-          appearance: "error",
-          autoDismiss: true,
+        notify.error({
+          message: `Error saving extension: ${getErrorMessage(error)}`,
+          error,
         });
         return "Error saving extension";
       }
     },
-    [dispatch, addToast, editablePackages]
+    [dispatch, editablePackages]
   );
 }
 

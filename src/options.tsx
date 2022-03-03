@@ -26,7 +26,9 @@ import { render } from "react-dom";
 import React from "react";
 import App from "@/options/App";
 import initGoogle from "@/contrib/google/initGoogle";
+import { initToaster } from "@/utils/notify";
 
 initGoogle();
+initToaster();
 
 render(<App />, document.querySelector("#container"));

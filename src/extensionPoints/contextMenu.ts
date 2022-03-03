@@ -40,7 +40,7 @@ import {
 import { registerHandler } from "@/contentScript/contextMenus";
 import { BusinessError, isErrorObject } from "@/errors";
 import reportError from "@/telemetry/reportError";
-import { notifyError } from "@/contentScript/notify";
+import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
@@ -221,7 +221,9 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
     const numErrors = results.filter((x) => x.status === "rejected").length;
     if (numErrors > 0) {
-      notifyError(`An error occurred adding ${numErrors} context menu item(s)`);
+      notify.error(
+        `An error occurred adding ${numErrors} context menu item(s)`
+      );
     }
   }
 

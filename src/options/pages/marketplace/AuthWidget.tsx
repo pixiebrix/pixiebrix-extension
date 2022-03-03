@@ -31,7 +31,7 @@ import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import servicesSlice from "@/store/servicesSlice";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 
@@ -55,7 +55,6 @@ const AuthWidget: React.FunctionComponent<{
 }> = ({ name, serviceId, authOptions, onRefresh }) => {
   const helpers = useField<UUID>(name)[2];
   const dispatch = useDispatch();
-  const notify = useNotifications();
 
   const [showServiceModal, setShowServiceModal] = useState(false);
 
@@ -100,7 +99,7 @@ const AuthWidget: React.FunctionComponent<{
 
       setShowServiceModal(false);
     },
-    [helpers, notify, dispatch, setShowServiceModal, serviceId, onRefresh]
+    [helpers, dispatch, setShowServiceModal, serviceId, onRefresh]
   );
 
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();

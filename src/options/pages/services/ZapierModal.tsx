@@ -21,7 +21,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import copy from "copy-to-clipboard";
 import useFetch from "@/hooks/useFetch";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
+import { reportEvent } from "@/telemetry/events";
 
 interface OwnProps {
   onClose: () => void;
@@ -29,14 +30,12 @@ interface OwnProps {
 
 const ZapierModal: React.FunctionComponent<OwnProps> = ({ onClose }) => {
   const { data } = useFetch<{ api_key: string }>("/api/webhooks/key/");
-  const notify = useNotifications();
 
   const handleCopy = useCallback(() => {
     copy(data?.api_key);
-    notify.success("Copied API Key to clipboard", {
-      event: "ZapierKeyCopy",
-    });
-  }, [notify, data?.api_key]);
+    notify.success("Copied API Key to clipboard");
+    reportEvent("ZapierKeyCopy");
+  }, [data?.api_key]);
 
   return (
     <Modal show onHide={onClose} backdrop="static" keyboard={false}>

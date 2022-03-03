@@ -18,7 +18,6 @@
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import LogToolbar from "./LogToolbar";
-import { ToastProvider } from "react-toast-notifications";
 import { action } from "@storybook/addon-actions";
 
 const promiseAction = (name: string) => {
@@ -42,9 +41,7 @@ const componentMeta: ComponentMeta<typeof LogToolbar> = {
 };
 
 const Template: ComponentStory<typeof LogToolbar> = (args) => (
-  <ToastProvider>
-    <LogToolbar {...args} />
-  </ToastProvider>
+  <LogToolbar {...args} />
 );
 
 export const Default = Template.bind({});

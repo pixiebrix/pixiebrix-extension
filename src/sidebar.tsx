@@ -29,9 +29,11 @@ import ReactDOM from "react-dom";
 import React from "react";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
+import { initToaster } from "@/utils/notify";
 
 registerMessenger();
 registerContribBlocks();
 registerBuiltinBlocks();
+initToaster();
 
 ReactDOM.render(<App />, document.querySelector("#container"));

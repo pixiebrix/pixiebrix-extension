@@ -21,7 +21,6 @@ import { action } from "@storybook/addon-actions";
 import DeploymentModal from "@/options/pages/deployments/DeploymentModal";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { ToastProvider } from "react-toast-notifications";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
 
@@ -52,17 +51,15 @@ type StoryType = ComponentProps<typeof DeploymentModal> & {
 
 const Template: Story<StoryType> = ({ extensionUpdateRequired }) => (
   <Provider store={extensionsStore}>
-    <ToastProvider>
-      <DeploymentModal
-        update={async () => {
-          action("update");
-        }}
-        extensionUpdateRequired={extensionUpdateRequired}
-        updateExtension={async () => {
-          action("updateExtension");
-        }}
-      />
-    </ToastProvider>
+    <DeploymentModal
+      update={async () => {
+        action("update");
+      }}
+      extensionUpdateRequired={extensionUpdateRequired}
+      updateExtension={async () => {
+        action("updateExtension");
+      }}
+    />
   </Provider>
 );
 

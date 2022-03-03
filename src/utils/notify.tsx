@@ -21,14 +21,24 @@ import { toast, Toaster } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
 import { DefaultToastOptions } from "react-hot-toast/dist/core/types";
 import { NOTIFICATIONS_Z_INDEX } from "@/common";
+import reportError from "@/telemetry/reportError";
+import { Except, RequireAtLeastOne } from "type-fest";
+import { getErrorMessage } from "@/errors";
 
-type NotificationType = "info" | "success" | "error" | "loading";
-interface Notification {
-  message: string;
-  type?: NotificationType;
-  id?: string;
-  duration?: number;
-}
+type NotificationType = "info" | "success" | "error" | "warning" | "loading";
+type Notification = RequireAtLeastOne<
+  {
+    message: string;
+    type?: NotificationType;
+    id?: string;
+    duration?: number;
+    error: unknown;
+    reportError?: boolean;
+  },
+  "message" | "error"
+>;
+
+type SimpleNotification = string | Except<Notification, "type">;
 
 const containerStyle: React.CSSProperties = {
   zIndex: NOTIFICATIONS_Z_INDEX,
@@ -59,12 +69,24 @@ export function initToaster(): void {
 }
 
 export function showNotification({
+  error,
   message,
-  type,
+  type = error ? "error" : undefined,
   id = uuidv4(),
   duration,
-}: Notification): string {
+
+  /** Only errors are reported by default */
+  reportError: willReport = type === "error",
+}: RequireAtLeastOne<Notification, "message" | "error">): string {
   const options = { id, duration };
+  message = message ?? getErrorMessage(error);
+
+  // TODO: Temporary style override until warnings are natively supported
+  //  https://github.com/timolins/react-hot-toast/issues/29
+  if (type === "warning") {
+    type = "error";
+  }
+
   switch (type) {
     case "error":
     case "success":
@@ -75,6 +97,10 @@ export function showNotification({
 
     default:
       toast(message, options);
+  }
+
+  if (willReport) {
+    reportError(error ?? message);
   }
 
   return id;
@@ -110,13 +136,37 @@ export interface MessageConfig {
   config: Partial<NotificationOptions>;
 }
 
-export function notifyError(message: string): void {
-  showNotification({ message, type: "error" });
-}
-
 export function notifyResult(
   extensionId: string,
   { message, config: { className } }: MessageConfig
 ): void {
   showNotification({ message, type: className as NotificationType });
 }
+
+// Private method to prevent adding logic to the `notify.*` helpers.
+// Always add logic to `showNotification` instead so it's in one place.
+function _show(
+  type: NotificationType,
+  notification: string | Except<Notification, "type">
+): string {
+  if (typeof notification === "string") {
+    notification = { message: notification };
+  }
+
+  return showNotification({ ...notification, type });
+}
+
+// Please only add logic to `showNotification`
+const notify = {
+  /**
+   * @example notify.error('User message')
+   * @example notify.error({error: new Error('Error that can be shown to the user')})
+   * @example notify.error({message: "User message", error: new Error('DetailedError'), id: 123})
+   */
+  error: (notification: SimpleNotification) => _show("error", notification),
+  info: (notification: SimpleNotification) => _show("info", notification),
+  success: (notification: SimpleNotification) => _show("success", notification),
+  warning: (notification: SimpleNotification) => _show("warning", notification),
+} as const;
+
+export default notify;

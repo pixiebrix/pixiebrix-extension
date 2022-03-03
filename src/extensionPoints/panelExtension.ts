@@ -49,7 +49,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
-import { notifyError } from "@/contentScript/notify";
+import notify from "@/utils/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
@@ -470,7 +470,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
 
     if (errors.length > 0) {
-      notifyError(`An error occurred adding ${errors.length} panels(s)`);
+      notify.error(`An error occurred adding ${errors.length} panels(s)`);
     }
   }
 }
