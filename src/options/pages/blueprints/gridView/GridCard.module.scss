@@ -20,11 +20,51 @@
 }
 
 .card {
-  padding: 15px;
   height: 100%;
+}
+
+.cardBody {
+  padding: 15px !important;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.primaryInfo {
+  max-height: 110px;
+  overflow: hidden;
+}
+
+.name {
+  margin-left: 1rem;
+}
+
+.cardFooter {
+  background-color: transparent;
+  border: none;
+  font-size: 0.7rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: darkgray;
+  padding: 0 15px 15px 15px;
+}
+
+.sharingLabel {
+  width: auto;
+  white-space: nowrap;
+}
+
+.updatedAt {
+  flex-grow: 1;
+  text-align: right;
+  font-size: 80%;
+  padding-left: 0.5rem;
+}
+
+.description {
+  font-size: 0.8rem;
+  align-self: center;
 }
 
 .actions {

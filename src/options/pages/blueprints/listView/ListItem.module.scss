@@ -36,10 +36,12 @@
   padding-right: 1rem;
 }
 
-.name {
+.primaryInfo {
   text-wrap: normal;
   flex-grow: 1;
+}
 
+.name {
   h5 {
     text-overflow: ellipsis;
     margin: 0;
@@ -49,13 +51,8 @@
 .sharing {
   flex-grow: 1;
   text-align: right;
-}
-
-.updatedAt {
-  color: grey;
-  text-wrap: normal;
-  font-size: 80%;
-  font-weight: 400;
+  color: darkgray;
+  font-size: 0.7rem;
 }
 
 .status {

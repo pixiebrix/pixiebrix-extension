@@ -19,6 +19,8 @@ import React from "react";
 import { Button } from "react-bootstrap";
 import { InstallableViewItem } from "./blueprintsTypes";
 import useInstallableActions from "./useInstallableActions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faSync } from "@fortawesome/free-solid-svg-icons";
 
 type StatusProps = {
   installableViewItem: InstallableViewItem;
@@ -33,11 +35,13 @@ const Status: React.VoidFunctionComponent<StatusProps> = ({
   return status === "Active" ? (
     <>
       {hasUpdate ? (
-        <Button size="sm" variant="warning" onClick={reinstall}>
-          Update
+        <Button size="sm" variant="info" onClick={reinstall}>
+          <FontAwesomeIcon icon={faSync} /> Update
         </Button>
       ) : (
-        <div className="text-info py-2">Active</div>
+        <div className="text-success py-2">
+          <FontAwesomeIcon icon={faCheck} /> Active
+        </div>
       )}
     </>
   ) : (
