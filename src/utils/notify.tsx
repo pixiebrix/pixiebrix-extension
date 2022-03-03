@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./notify.module.scss";
+
 import React from "react";
 import { render } from "react-dom";
 import { toast, Toaster } from "react-hot-toast";
@@ -33,6 +35,7 @@ type Notification = RequireAtLeastOne<
     id?: string;
     duration?: number;
     error: unknown;
+    dismissable?: boolean;
     reportError?: boolean;
   },
   "message" | "error"
@@ -59,6 +62,31 @@ const toastOptions: DefaultToastOptions = {
   },
 };
 
+const Message: React.VoidFunctionComponent<{
+  message: string;
+  id: string;
+  dismissable: boolean;
+}> = ({ message, id, dismissable }) => (
+  <span>
+    {message}
+    {dismissable ? (
+      <button
+        className={styles.closeButton}
+        onClick={() => {
+          toast.dismiss(id);
+        }}
+      >
+        ×
+      </button>
+    ) : undefined}
+  </span>
+);
+
+function getMessageDisplayTime(message: string): number {
+  const wpm = 100; // 180 is the average words read per minute, make it slower
+  return (message.split(" ").length / wpm) * 60_000;
+}
+
 export function initToaster(): void {
   const root = document.createElement("div");
   // This style cannot be on containerStyle because it overrides some of its props there
@@ -73,7 +101,8 @@ export function showNotification({
   message,
   type = error ? "error" : undefined,
   id = uuidv4(),
-  duration,
+  duration = getMessageDisplayTime(message),
+  dismissable = true,
 
   /** Only errors are reported by default */
   reportError: willReport = type === "error",
@@ -92,11 +121,11 @@ export function showNotification({
     case "success":
     case "loading":
       // eslint-disable-next-line security/detect-object-injection -- Filtered
-      toast[type](message, options);
+      toast[type](<Message {...{ message, id, dismissable }} />, options);
       break;
 
     default:
-      toast(message, options);
+      toast(<Message {...{ message, id, dismissable }} />, options);
   }
 
   if (willReport) {
