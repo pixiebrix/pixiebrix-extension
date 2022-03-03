@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "./FileWidget.module.scss";
+
 import React, { useCallback, useEffect, useState } from "react";
 import { Data, SheetMeta } from "@/contrib/google/sheets/types";
 import { useField } from "formik";
@@ -26,7 +28,7 @@ import { ensureAuth } from "@/contrib/google/auth";
 import { isOptionsPage } from "webext-detect-page";
 import browser from "webextension-polyfill";
 import { Form, InputGroup } from "react-bootstrap";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors";
 import AsyncButton from "@/components/AsyncButton";
 import { Expression } from "@/core";
@@ -44,8 +46,6 @@ type FileWidgetProps = {
 };
 
 const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
-  const notify = useNotifications();
-
   const [field, , helpers] = useField<string | Expression>(props);
   const [sheetError, setSheetError] = useState(null);
 
@@ -89,9 +89,7 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
         if (!isMounted()) return;
         onSelect(null);
         setSheetError(error);
-        notify.error("Error retrieving sheet information", {
-          error,
-        });
+        notify.error({ message: "Error retrieving sheet information", error });
       }
     },
     [doc?.id, field.value, onSelect, setSheetError]
@@ -103,12 +101,8 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
 
       console.debug(`Using Google token: ${token}`);
 
-      await new Promise<void>((resolve) => {
-        gapi.load("picker", {
-          callback: () => {
-            resolve();
-          },
-        });
+      await new Promise((callback) => {
+        gapi.load("picker", { callback });
       });
 
       if (isNullOrBlank(APP_ID)) {
@@ -148,11 +142,12 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
         .build();
       picker.setVisible(true);
     } catch (error) {
-      notify.error(`Error loading file picker: ${getErrorMessage(error)}`, {
+      notify.error({
+        message: `Error loading file picker: ${getErrorMessage(error)}`,
         error,
       });
     }
-  }, [notify, helpers, onSelect]);
+  }, [helpers, onSelect]);
 
   return isExpression(field.value) ? (
     <WorkshopMessageWidget />

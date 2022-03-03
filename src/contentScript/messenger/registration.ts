@@ -32,20 +32,21 @@ import {
   cancelForm,
 } from "@/contentScript/ephemeralFormProtocol";
 import {
-  hideActionPanel,
-  showActionPanel,
-  toggleActionPanel,
-  removeExtension as removeActionPanel,
-} from "@/actionPanel/native";
-import { insertPanel } from "@/nativeEditor/insertPanel";
-import { insertButton } from "@/nativeEditor/insertButton";
+  hideSidebar,
+  showSidebar,
+  toggleSidebar,
+  removeExtension as removeSidebar,
+  getSidebarStore,
+} from "@/contentScript/sidebar";
+import { insertPanel } from "@/contentScript/nativeEditor/insertPanel";
+import { insertButton } from "@/contentScript/nativeEditor/insertButton";
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/nativeEditor/dynamic";
+} from "@/contentScript/nativeEditor/dynamic";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
 import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
 import {
@@ -54,11 +55,14 @@ import {
   runReader,
   readSelected,
   resetTab,
-} from "@/contentScript/devTools";
+} from "@/contentScript/pageEditor";
 import { checkAvailable } from "@/blocks/available";
-import { showNotification } from "@/contentScript/notify";
+import notify from "@/utils/notify";
 import { runBrick } from "@/contentScript/executor";
-import { cancelSelect, selectElement } from "@/nativeEditor/selector";
+import {
+  cancelSelect,
+  selectElement,
+} from "@/contentScript/nativeEditor/selector";
 import {
   runEffectPipeline,
   runMapArgs,
@@ -81,10 +85,12 @@ declare global {
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
-    TOGGLE_ACTION_PANEL: typeof toggleActionPanel;
-    SHOW_ACTION_PANEL: typeof showActionPanel;
-    HIDE_ACTION_PANEL: typeof hideActionPanel;
-    REMOVE_ACTION_PANEL: typeof removeActionPanel;
+    TOGGLE_SIDEBAR: typeof toggleSidebar;
+    SHOW_SIDEBAR: typeof showSidebar;
+    HIDE_SIDEBAR: typeof hideSidebar;
+    REMOVE_SIDEBAR: typeof removeSidebar;
+    GET_SIDEBAR_STORE: typeof getSidebarStore;
+
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
 
@@ -106,7 +112,6 @@ declare global {
     INSTALLED_EXTENSIONS: typeof getInstalledIds;
     CHECK_AVAILABLE: typeof checkAvailable;
     HANDLE_NAVIGATE: typeof handleNavigate;
-    SHOW_NOTIFICATION: typeof showNotification;
     RUN_BRICK: typeof runBrick;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
@@ -114,53 +119,64 @@ declare global {
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_EFFECT_PIPELINE: typeof runEffectPipeline;
     RUN_MAP_ARGS: typeof runMapArgs;
+
+    NOTIFY_INFO: typeof notify.info;
+    NOTIFY_ERROR: typeof notify.error;
+    NOTIFY_SUCCESS: typeof notify.success;
   }
 }
 
-registerMethods({
-  FORM_GET_DEFINITION: getFormDefinition,
-  FORM_RESOLVE: resolveForm,
-  FORM_CANCEL: cancelForm,
+export default function registerMessenger(): void {
+  registerMethods({
+    FORM_GET_DEFINITION: getFormDefinition,
+    FORM_RESOLVE: resolveForm,
+    FORM_CANCEL: cancelForm,
 
-  QUEUE_REACTIVATE_TAB: queueReactivateTab,
-  REACTIVATE_TAB: reactivateTab,
-  REMOVE_EXTENSION: removeExtension,
-  RESET_TAB: resetTab,
+    QUEUE_REACTIVATE_TAB: queueReactivateTab,
+    REACTIVATE_TAB: reactivateTab,
+    REMOVE_EXTENSION: removeExtension,
+    RESET_TAB: resetTab,
 
-  TOGGLE_QUICK_BAR: toggleQuickBar,
-  HANDLE_MENU_ACTION: handleMenuAction,
-  TOGGLE_ACTION_PANEL: toggleActionPanel,
-  SHOW_ACTION_PANEL: showActionPanel,
-  HIDE_ACTION_PANEL: hideActionPanel,
-  REMOVE_ACTION_PANEL: removeActionPanel,
-  INSERT_PANEL: insertPanel,
-  INSERT_BUTTON: insertButton,
+    TOGGLE_QUICK_BAR: toggleQuickBar,
+    HANDLE_MENU_ACTION: handleMenuAction,
+    TOGGLE_SIDEBAR: toggleSidebar,
+    SHOW_SIDEBAR: showSidebar,
+    HIDE_SIDEBAR: hideSidebar,
+    REMOVE_SIDEBAR: removeSidebar,
+    GET_SIDEBAR_STORE: getSidebarStore,
 
-  UIPATH_INIT: initRobot,
-  UIPATH_GET_PROCESSES: getProcesses,
+    INSERT_PANEL: insertPanel,
+    INSERT_BUTTON: insertButton,
 
-  SEARCH_WINDOW: withSearchWindow,
-  DETECT_FRAMEWORKS: withDetectFrameworkVersions,
-  RUN_SINGLE_BLOCK: runBlock,
-  RUN_READER_BLOCK: runReaderBlock,
-  RUN_READER: runReader,
-  READ_SELECTED: readSelected,
+    UIPATH_INIT: initRobot,
+    UIPATH_GET_PROCESSES: getProcesses,
 
-  CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
-  UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
-  RUN_EXTENSION_POINT_READER: runExtensionPointReader,
-  ENABLE_OVERLAY: enableOverlay,
-  DISABLE_OVERLAY: disableOverlay,
-  INSTALLED_EXTENSIONS: getInstalledIds,
-  CHECK_AVAILABLE: checkAvailable,
-  HANDLE_NAVIGATE: handleNavigate,
-  SHOW_NOTIFICATION: showNotification,
+    SEARCH_WINDOW: withSearchWindow,
+    DETECT_FRAMEWORKS: withDetectFrameworkVersions,
+    RUN_SINGLE_BLOCK: runBlock,
+    RUN_READER_BLOCK: runReaderBlock,
+    RUN_READER: runReader,
+    READ_SELECTED: readSelected,
 
-  RUN_BRICK: runBrick,
-  CANCEL_SELECT_ELEMENT: cancelSelect,
-  SELECT_ELEMENT: selectElement,
+    CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
+    UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
+    RUN_EXTENSION_POINT_READER: runExtensionPointReader,
+    ENABLE_OVERLAY: enableOverlay,
+    DISABLE_OVERLAY: disableOverlay,
+    INSTALLED_EXTENSIONS: getInstalledIds,
+    CHECK_AVAILABLE: checkAvailable,
+    HANDLE_NAVIGATE: handleNavigate,
 
-  RUN_RENDERER_PIPELINE: runRendererPipeline,
-  RUN_EFFECT_PIPELINE: runEffectPipeline,
-  RUN_MAP_ARGS: runMapArgs,
-});
+    RUN_BRICK: runBrick,
+    CANCEL_SELECT_ELEMENT: cancelSelect,
+    SELECT_ELEMENT: selectElement,
+
+    RUN_RENDERER_PIPELINE: runRendererPipeline,
+    RUN_EFFECT_PIPELINE: runEffectPipeline,
+    RUN_MAP_ARGS: runMapArgs,
+
+    NOTIFY_INFO: notify.info,
+    NOTIFY_ERROR: notify.error,
+    NOTIFY_SUCCESS: notify.success,
+  });
+}

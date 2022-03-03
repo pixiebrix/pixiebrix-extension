@@ -17,26 +17,23 @@
 
 import React from "react";
 import { Button, Form, InputGroup, Modal } from "react-bootstrap";
-import { push } from "connected-react-router";
-import { useParams } from "react-router-dom";
 import copy from "copy-to-clipboard";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { useDispatch } from "react-redux";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RegistryId } from "@/core";
+import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 
-const ShareLinkModal = () => {
+const ShareLinkModal: React.FunctionComponent<{
+  blueprintId: RegistryId;
+}> = ({ blueprintId }) => {
   const dispatch = useDispatch();
   const hideModal = () => {
-    dispatch(push("/installed"));
+    dispatch(installedPageSlice.actions.setShareContext(null));
   };
 
-  const { blueprintId } = useParams<{ blueprintId: RegistryId }>();
-
   const installationLink = `https://app.pixiebrix.com/activate?id=${blueprintId}`;
-
-  const notify = useNotifications();
 
   return (
     <Modal show onHide={hideModal}>

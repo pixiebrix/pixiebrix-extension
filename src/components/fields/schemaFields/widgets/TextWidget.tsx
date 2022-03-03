@@ -34,7 +34,6 @@ import {
   schemaSupportsTemplates,
 } from "@/components/fields/schemaFields/BasicSchemaField";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 
 function isVarValue(value: string): boolean {
@@ -55,12 +54,9 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   focusInput,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, { error }, { setValue }] = useField(
-    name
-  );
-  const { allowExpressions: allowExpressionsContext } = useContext(
-    FieldRuntimeContext
-  );
+  const [{ value, ...restInputProps }, , { setValue }] = useField(name);
+  const { allowExpressions: allowExpressionsContext } =
+    useContext(FieldRuntimeContext);
   const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);
 
   const textAreaRef = useRef<HTMLTextAreaElement>();
@@ -95,9 +91,10 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     }
   }, [focusInput]);
 
-  const supportsTemplates = useMemo(() => schemaSupportsTemplates(schema), [
-    schema,
-  ]);
+  const supportsTemplates = useMemo(
+    () => schemaSupportsTemplates(schema),
+    [schema]
+  );
 
   const onChangeForTemplate = useCallback(
     (templateEngine: TemplateEngine) => {
@@ -152,18 +149,15 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     }
 
     const fieldValue = typeof value === "string" ? value : "";
-    const onChange: React.ChangeEventHandler<HTMLInputElement> = allowExpressions
-      ? onChangeForTemplate("nunjucks")
-      : (event) => {
-          setValue(event.target.value);
-        };
+    const onChange: React.ChangeEventHandler<HTMLInputElement> =
+      allowExpressions
+        ? onChangeForTemplate("nunjucks")
+        : (event) => {
+            setValue(event.target.value);
+          };
 
     return [fieldValue, onChange];
   }, [allowExpressions, onChangeForTemplate, setValue, value]);
-
-  if (isTemplateExpression(value) && isMustacheOnly(value.__value__)) {
-    return <WorkshopMessageWidget />;
-  }
 
   if (
     value !== null &&
@@ -182,7 +176,6 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
       {...formControlProps}
       value={fieldInputValue}
       onChange={fieldOnChange}
-      isInvalid={Boolean(error)}
       ref={textAreaRef}
     />
   );

@@ -15,28 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uuidv4 } from "@/types/helpers";
+import "@/contentScript.scss";
 
 const start = Date.now();
-
+// Importing for the side effects. Should import as early as possible
 import "@/extensionContext";
 import { uncaughtErrorHandlers } from "@/telemetry/reportUncaughtErrors";
-import "@/contentScript/messenger/registration";
+import "@/messaging/external";
+
+// Normal imports
+import { uuidv4 } from "@/types/helpers";
+import registerMessenger from "@/contentScript/messenger/registration";
 import browser from "webextension-polyfill";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";
-import "@/messaging/external";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import { whoAmI, initTelemetry } from "@/background/messenger/api";
-import { showConnectionLost } from "@/contentScript/connection";
-import { isConnectionError } from "@/errors";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
-import { addListenerForUpdateSelectedElement } from "@/devTools/getSelectedElement";
-import { initToaster } from "@/contentScript/notify";
+import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
+import { initToaster } from "@/utils/notify";
+import { isConnectionError } from "@/errors";
+import { showConnectionLost } from "@/contentScript/connection";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();
+
+registerMessenger();
+registerBuiltinBlocks();
+registerContribBlocks();
 
 function ignoreConnectionErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
@@ -47,11 +54,8 @@ function ignoreConnectionErrors(
   }
 }
 
-// Must run as early as possible
-uncaughtErrorHandlers.add(ignoreConnectionErrors);
-
-registerBuiltinBlocks();
-registerContribBlocks();
+// Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
+uncaughtErrorHandlers.unshift(ignoreConnectionErrors);
 
 declare global {
   interface Window {

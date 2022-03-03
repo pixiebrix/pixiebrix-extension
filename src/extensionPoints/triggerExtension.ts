@@ -24,6 +24,8 @@ import {
   ReaderOutput,
   ReaderRoot,
   Schema,
+  Metadata,
+  Logger,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import {
@@ -33,13 +35,13 @@ import {
 import { Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, compact, noop } from "lodash";
 import { checkAvailable } from "@/blocks/available";
-import { reportError } from "@/telemetry/rollbar";
+import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
 import {
   awaitElementOnce,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
-import { notifyError } from "@/contentScript/notify";
+import notify from "@/utils/notify";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
@@ -49,6 +51,7 @@ import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { PromiseCancelled, sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -165,16 +168,15 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    */
   private abortController = new AbortController();
 
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon = "faBolt"
-  ) {
-    super(id, name, description, icon);
+  protected constructor(metadata: Metadata, logger: Logger) {
+    super(metadata, logger);
 
     // Bind so we can pass as callback
     this.boundEventHandler = this.eventHandler.bind(this);
+  }
+
+  public get kind(): "trigger" {
+    return "trigger";
   }
 
   async install(): Promise<boolean> {
@@ -200,7 +202,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     console.debug("triggerExtension:removeExtensions");
   }
 
-  uninstall(): void {
+  override uninstall(): void {
     console.debug("triggerExtension:uninstall", {
       id: this.id,
     });
@@ -328,7 +330,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
     if (errors.length > 0) {
       console.debug("Trigger errors", errors);
-      notifyError(`An error occurred running ${errors.length} triggers(s)`);
+      notify.error(`An error occurred running ${errors.length} triggers(s)`);
     }
   }
 
@@ -414,7 +416,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
             console.error("An error occurred while running a trigger", {
               errors,
             });
-            notifyError("An error occurred while running a trigger");
+            notify.error("An error occurred while running a trigger");
           }
         });
       },
@@ -439,7 +441,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
               console.error("An error occurred while running a trigger", {
                 errors,
               });
-              notifyError("An error occurred while running a trigger");
+              notify.error("An error occurred while running a trigger");
             }
           });
         }
@@ -626,15 +628,14 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
 
   public readonly rawConfig: ExtensionPointConfig<TriggerDefinition>;
 
-  public get defaultOptions(): Record<string, string> {
+  public override get defaultOptions(): Record<string, string> {
     return this._definition.defaultOptions ?? {};
   }
 
   constructor(config: ExtensionPointConfig<TriggerDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description, icon } = cloned.metadata;
-    super(id, name, description, icon);
+    super(cloned.metadata, new BackgroundLogger());
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;
@@ -668,7 +669,7 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
     return this._definition.background ?? false;
   }
 
-  async defaultReader() {
+  override async defaultReader() {
     return mergeReaders(this._definition.reader);
   }
 

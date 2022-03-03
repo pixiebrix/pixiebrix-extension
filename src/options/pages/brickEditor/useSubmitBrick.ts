@@ -25,7 +25,8 @@ import { BrickValidationResult, validateSchema } from "./validate";
 import useRefresh from "@/hooks/useRefresh";
 import { Definition, UnsavedRecipeDefinition } from "@/types/definitions";
 import useReinstall from "@/pages/marketplace/useReinstall";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
+import { reportEvent } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { getErrorMessage, isAxiosError } from "@/errors";
 import {
@@ -56,7 +57,6 @@ function useSubmitBrick({
   const [, refresh] = useRefresh({ refreshOnMount: false });
   const reinstall = useReinstall();
   const history = useHistory();
-  const notify = useNotifications();
   const dispatch = useDispatch();
 
   const validate = useCallback(
@@ -68,18 +68,15 @@ function useSubmitBrick({
     try {
       await (await getLinkedApiClient()).delete(url);
     } catch (error) {
-      notify.error("Error deleting brick", {
-        error,
-      });
+      notify.error({ message: "Error deleting brick", error });
       return;
     }
 
-    notify.success("Deleted brick", {
-      event: "BrickDelete",
-    });
+    notify.success("Deleted brick");
+    reportEvent("BrickDelete");
 
     dispatch(push("/workshop"));
-  }, [notify, url, dispatch]);
+  }, [url, dispatch]);
 
   const submit = useCallback(
     async (values, { setErrors, resetForm }) => {
@@ -104,7 +101,8 @@ function useSubmitBrick({
         if (kind === "recipe" && reinstallBlueprint) {
           // Typescript doesn't have enough information to kind === "recipe" distinguishes RecipeDefinition from
           // Definition
-          const unsavedRecipeDefinition = unsavedBrickJson as UnsavedRecipeDefinition;
+          const unsavedRecipeDefinition =
+            unsavedBrickJson as UnsavedRecipeDefinition;
           refreshPromise = reinstall({
             ...unsavedRecipeDefinition,
             sharing: pick(data, ["organizations", "public"]),
@@ -125,12 +123,11 @@ function useSubmitBrick({
             reactivateEveryTab();
           })
           .catch((error) => {
-            notify.warning(
-              `Error re-activating bricks: ${getErrorMessage(error)}`,
-              {
-                error,
-              }
-            );
+            notify.warning({
+              message: `Error re-activating bricks: ${getErrorMessage(error)}`,
+
+              error,
+            });
           });
 
         // Reset initial values of the form so dirty=false
@@ -149,11 +146,11 @@ function useSubmitBrick({
 
           setErrors(error.response.data);
         } else {
-          notify.error(error);
+          notify.error({ error });
         }
       }
     },
-    [history, refresh, reinstall, url, create, notify]
+    [history, refresh, reinstall, url, create]
   );
 
   return { submit, validate, remove: create ? null : remove };

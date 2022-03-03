@@ -15,21 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ExtensionLogsModal.module.scss";
+
 import { MessageContext } from "@/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
-import styles from "./ExtensionLogsModal.module.scss";
 import { installedPageSlice } from "./installedPageSlice";
+import LogCard from "@/components/logViewer/LogCard";
+import { logActions } from "@/components/logViewer/logSlice";
 
 const ExtensionLogsModal: React.FC<{
   title: string;
   context: MessageContext;
 }> = ({ title, context }) => {
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(logActions.setContext(context));
+  }, [context, dispatch]);
+
   const onClose = () => {
     dispatch(installedPageSlice.actions.setLogsContext(null));
+    dispatch(logActions.setContext(null));
   };
 
   return (
@@ -44,7 +51,7 @@ const ExtensionLogsModal: React.FC<{
         <Modal.Title>{`Logs: ${title}`}</Modal.Title>
       </Modal.Header>
       <Modal.Body className={styles.body}>
-        <BrickLogs context={context} />
+        <LogCard />
       </Modal.Body>
     </Modal>
   );

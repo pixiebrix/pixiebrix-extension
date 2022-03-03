@@ -226,13 +226,12 @@ async function validateExtension(
 export function useExtensionValidator(
   extension: IExtension
 ): AsyncState<ExtensionValidationResult> {
-  const validationPromise = useMemo(async () => validateExtension(extension), [
-    extension,
-  ]);
+  const validationPromise = useMemo(
+    async () => validateExtension(extension),
+    [extension]
+  );
   return useAsyncState(validationPromise);
 }
-
-// Const PIXIEBRIX_SCHEMA = /^https:\/\/app.pixiebrix\.com\/schemas\//i;
 
 const pixieResolver: ResolverOptions = {
   order: 1,

@@ -33,7 +33,7 @@ import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { uuidv4 } from "@/types/helpers";
 import { pick } from "lodash";
 import { saveUserExtension } from "@/services/apiClient";
-import { reportError } from "@/telemetry/rollbar";
+import reportError from "@/telemetry/reportError";
 import {
   ExtensionOptionsState,
   LegacyExtensionObjectState,
@@ -225,24 +225,22 @@ const extensionsSlice = createSlice({
         throw new Error("extensionPointId is required");
       }
 
-      const extension: Except<
-        PersistedExtension,
-        "_unresolvedExtensionBrand"
-      > = {
-        id,
-        apiVersion,
-        extensionPointId,
-        _recipe,
-        _deployment: undefined,
-        label,
-        definitions,
-        optionsArgs,
-        services,
-        config,
-        createTimestamp,
-        updateTimestamp: timestamp,
-        active: true,
-      };
+      const extension: Except<PersistedExtension, "_unresolvedExtensionBrand"> =
+        {
+          id,
+          apiVersion,
+          extensionPointId,
+          _recipe,
+          _deployment: undefined,
+          label,
+          definitions,
+          optionsArgs,
+          services,
+          config,
+          createTimestamp,
+          updateTimestamp: timestamp,
+          active: true,
+        };
 
       assertExtensionNotResolved(extension);
 

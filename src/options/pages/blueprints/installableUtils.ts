@@ -16,25 +16,38 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import { IExtension, RegistryId, ResolvedExtension, UUID } from "@/core";
+import {
+  IExtension,
+  PersistedExtension,
+  RegistryId,
+  ResolvedExtension,
+  UUID,
+} from "@/core";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
-import { Installable, InstallStatus } from "./blueprintsTypes";
+import { Installable } from "./blueprintsTypes";
+
+export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
+
+export type SharingSource = {
+  type: SharingType;
+  label: string;
+  organization: Organization;
+};
 
 export const getSharingType = (
   installable: Installable,
+  organizations: Organization[],
   scope: string
-): {
-  type: string;
-  label: string;
-} => {
-  let sharingType = "";
+): SharingSource => {
+  let sharingType: SharingType = null;
+  const organization = getOrganization(installable, organizations);
 
   if (isPersonal(installable, scope)) {
     sharingType = "Personal";
   } else if (isDeployment(installable)) {
     sharingType = "Deployment";
-  } else if (installable.organization) {
+  } else if (organization) {
     sharingType = "Team";
   } else if (isPublic(installable)) {
     sharingType = "Public";
@@ -45,9 +58,9 @@ export const getSharingType = (
     sharingType === "Team" ||
     // There's a corner case for team deployments of public market bricks. The organization will come through as
     // nullish here.
-    (sharingType === "Deployment" && installable.organization?.name)
+    (sharingType === "Deployment" && organization?.name)
   ) {
-    label = installable.organization.name;
+    label = organization.name;
   } else {
     label = sharingType;
   }
@@ -55,30 +68,45 @@ export const getSharingType = (
   return {
     type: sharingType,
     label,
+    organization,
   };
 };
 
 export const isExtension = (
   installable: Installable
-): installable is ResolvedExtension & InstallStatus => "_recipe" in installable;
+): installable is ResolvedExtension => "extensionPointId" in installable;
 
 export const isExtensionFromRecipe = (installable: Installable) =>
   isExtension(installable) && Boolean(installable._recipe);
 
 export const isBlueprint = (
   installable: Installable
-): installable is RecipeDefinition & InstallStatus => !isExtension(installable);
+): installable is RecipeDefinition => !isExtension(installable);
 
-export const getUniqueId = (installable: Installable) =>
+export const getUniqueId = (installable: Installable): UUID | RegistryId =>
   isExtension(installable) ? installable.id : installable.metadata.id;
 
 export const getLabel = (installable: Installable): string =>
   isExtension(installable) ? installable.label : installable.metadata.name;
 
-export const getDescription = (installable: Installable): string =>
-  isExtension(installable)
+export const getDescription = (installable: Installable): string => {
+  let description = isExtension(installable)
     ? installable._recipe?.description
     : installable.metadata.description;
+
+  if (!description && isExtension(installable)) {
+    const createDate =
+      "createTimestamp" in installable
+        ? new Date((installable as PersistedExtension).createTimestamp)
+        : null;
+    description =
+      "createTimestamp" in installable
+        ? `Created on ${createDate.toLocaleDateString()} at ${createDate.toLocaleTimeString()} in the page editor`
+        : "Created in the page editor";
+  }
+
+  return description;
+};
 
 export const getPackageId = (installable: Installable): RegistryId =>
   isExtension(installable) ? installable._recipe?.id : installable.metadata.id;
@@ -91,6 +119,11 @@ export const getUpdatedAt = (installable: Installable): string =>
 
 export const getSharing = (installable: Installable) =>
   isExtension(installable) ? installable._recipe?.sharing : installable.sharing;
+
+export const isShared = (installable: Installable) => {
+  const sharing = getSharing(installable);
+  return sharing?.organizations?.length > 0 || sharing?.public;
+};
 
 export const isPublic = (installable: Installable): boolean =>
   isExtension(installable)
@@ -157,13 +190,12 @@ export function updateAvailable(
 }
 
 export const getOrganization = (
-  extensionOrRecipe: ResolvedExtension | RecipeDefinition,
+  installable: Installable,
   organizations: Organization[]
 ) => {
-  const sharing =
-    "_recipe" in extensionOrRecipe
-      ? extensionOrRecipe._recipe?.sharing
-      : extensionOrRecipe.sharing;
+  const sharing = isExtension(installable)
+    ? installable._recipe?.sharing
+    : installable.sharing;
 
   if (!sharing || sharing.organizations.length === 0) {
     return null;

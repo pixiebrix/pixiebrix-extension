@@ -63,7 +63,7 @@ export class HeadlessModeError extends Error {
 }
 
 /**
- * Error indicating input elements to a block did not match the schema.
+ * Error indicating input elements to a block did not match the JSON schema.
  */
 export class InputValidationError extends BusinessError {
   readonly schema: Schema;

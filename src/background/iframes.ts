@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -36,7 +35,6 @@ function initFrames(): void {
       // Messages from content scripts should have sender.tab set
       switch (request.type) {
         case FORWARD_FRAME_DATA: {
-          console.log("request", { request });
           const { frameId, html } = request.payload;
           frameHTML.set(frameId, html);
           sendResponse({});

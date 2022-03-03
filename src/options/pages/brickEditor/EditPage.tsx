@@ -23,10 +23,9 @@ import { Formik, useField } from "formik";
 import { useParams } from "react-router";
 import Editor from "./Editor";
 import { truncate } from "lodash";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import useSubmitBrick from "./useSubmitBrick";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import "./EditPage.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { RawConfig } from "@/core";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -103,7 +102,7 @@ const LoadingBody: React.FunctionComponent = () => (
       </div>
     </div>
     <div>
-      <GridLoader />
+      <Loader />
     </div>
   </>
 );
@@ -127,15 +126,17 @@ const EditPage: React.FunctionComponent = () => {
 
   const { data } = useFetch<BrickData>(url);
 
-  const { isBlueprint, isInstalled, config: rawConfig } = useParseBrick(
-    data?.config
-  );
+  const {
+    isBlueprint,
+    isInstalled,
+    config: rawConfig,
+  } = useParseBrick(data?.config);
 
   useTouchBrick(id);
 
   const { submit, validate, remove } = useSubmitBrick({ url, create: false });
 
-  const logContext = useLogContext(data?.config);
+  useLogContext(data?.config);
 
   const name = rawConfig?.metadata?.name;
   const title = useMemo(
@@ -196,7 +197,7 @@ const EditPage: React.FunctionComponent = () => {
               </div>
               <Row>
                 <Col className="mt-4">
-                  <Editor logContext={logContext} />
+                  <Editor />
                 </Col>
               </Row>
             </Form>

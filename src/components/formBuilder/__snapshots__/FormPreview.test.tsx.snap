@@ -33,13 +33,15 @@ exports[`FormPreview it renders markdown in description 1`] = `
         class="field-description"
         id="root-description"
       >
-        <p>
-          <em>
-            Form description
-          </em>
-        </p>
-        
+        <div>
+          <p>
+            <em>
+              Form description
+            </em>
+          </p>
+          
 
+        </div>
       </div>
       <div
         class="p-0 container-fluid"
@@ -80,19 +82,21 @@ exports[`FormPreview it renders markdown in description 1`] = `
                 class="field-description text-muted"
                 id="root_firstName"
               >
-                <p>
-                  <a
-                    href="https://example.com"
-                  >
-                    link
-                  </a>
-                   in 
-                  <strong>
-                    description
-                  </strong>
-                </p>
-                
+                <div>
+                  <p>
+                    <a
+                      href="https://example.com"
+                    >
+                      link
+                    </a>
+                     in 
+                    <strong>
+                      description
+                    </strong>
+                  </p>
+                  
 
+                </div>
               </div>
             </div>
           </div>
@@ -127,11 +131,13 @@ exports[`FormPreview it renders simple schema 1`] = `
         class="field-description"
         id="root-description"
       >
-        <p>
-          A form example.
-        </p>
-        
+        <div>
+          <p>
+            A form example.
+          </p>
+          
 
+        </div>
       </div>
       <div
         class="p-0 container-fluid"

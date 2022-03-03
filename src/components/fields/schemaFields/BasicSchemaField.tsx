@@ -394,13 +394,12 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
     hideLabel,
   } = props;
   const fieldLabel = makeLabelForSchemaField(props);
-  const defaultDescription = useMemo(() => description ?? schema.description, [
-    description,
-    schema.description,
-  ]);
-  const [fieldDescription, setFieldDescription] = useState<React.ReactNode>(
-    defaultDescription
+  const defaultDescription = useMemo(
+    () => description ?? schema.description,
+    [description, schema.description]
   );
+  const [fieldDescription, setFieldDescription] =
+    useState<React.ReactNode>(defaultDescription);
 
   const updateFieldDescription = useCallback(
     (newDescription: string | undefined) => {
@@ -485,6 +484,8 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
       name={name}
       label={fieldLabel}
       description={fieldDescription}
+      error={error}
+      touched={touched}
       className={cx({ "mb-0": hideLabel })} // Remove bottom margin if we're already hiding the label
       as={TemplateToggleWidget}
       inputModeOptions={inputModeOptions}

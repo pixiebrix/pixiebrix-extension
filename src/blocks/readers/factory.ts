@@ -17,7 +17,7 @@
 
 import { Reader } from "@/types";
 import { checkAvailable } from "@/blocks/available";
-import { ValidationError } from "@/errors";
+import { InvalidDefinitionError } from "@/errors";
 import {
   Metadata,
   IReader,
@@ -62,7 +62,10 @@ function validateReaderDefinition(
   const result = validator.validate(component);
   if (!result.valid) {
     console.warn("Invalid reader configuration", result);
-    throw new ValidationError("Invalid reader configuration", result.errors);
+    throw new InvalidDefinitionError(
+      "Invalid reader configuration",
+      result.errors
+    );
   }
 }
 
@@ -111,13 +114,13 @@ export function readerFactory(component: unknown): IReader {
       super(id, name, description);
     }
 
-    outputSchema: Schema = outputSchema;
+    override outputSchema: Schema = outputSchema;
 
     async isAvailable() {
       return checkAvailable(isAvailable);
     }
 
-    async isPure(): Promise<boolean> {
+    override async isPure(): Promise<boolean> {
       return true;
     }
 

@@ -37,7 +37,7 @@ export class HtmlReader extends Reader {
     );
   }
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
@@ -57,11 +57,11 @@ export class HtmlReader extends Reader {
     return true;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     // To support reading HTML from current/inherited element
     return true;
   }

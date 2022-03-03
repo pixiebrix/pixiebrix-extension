@@ -22,7 +22,7 @@ const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const rootDir = path.resolve(__dirname, "../");
 
 module.exports = {
-  stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
+  stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
   addons: ["@storybook/addon-links", "@storybook/addon-essentials"],
   core: {
     builder: "webpack5",
@@ -33,16 +33,20 @@ module.exports = {
     config.resolve.fallback = {
       fs: false,
     };
+
+    // Automatically mock any module that appears in __mocks__, e.g. src/__mocks__/webextension-polyfill.js
+    config.resolve.modules.push(path.resolve(rootDir, "src/__mocks__"));
+
     config.resolve.alias = {
-      "@": path.resolve(rootDir, "src"),
+      // Allow automatic mocks of any local file
+      "@": [
+        path.resolve(rootDir, "src/__mocks__/@"),
+        path.resolve(rootDir, "src"),
+      ],
       "@img": path.resolve(rootDir, "img"),
       "@contrib": path.resolve(rootDir, "contrib"),
       "@schemas": path.resolve(rootDir, "schemas"),
-      vendors: path.resolve(rootDir, "src/vendors"),
-      "webextension-polyfill": path.resolve(
-        rootDir,
-        "src/__mocks__/browserMocks.ts"
-      ),
+      "webextension-polyfill": false,
     };
 
     const fileLoaderRule = config.module.rules.find(

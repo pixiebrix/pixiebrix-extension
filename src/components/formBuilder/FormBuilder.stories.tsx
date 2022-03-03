@@ -54,7 +54,7 @@ const componentMeta: ComponentMeta<typeof FormBuilder> = {
   component: FormBuilder,
 };
 
-const schemaShape: yup.ObjectSchema = yup.object().shape({
+const schemaShape = yup.object().shape({
   dynamicForm: yup.object(),
 });
 const initialValues = {

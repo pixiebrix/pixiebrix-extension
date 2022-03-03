@@ -16,12 +16,16 @@
  */
 
 import {
+  getLabel,
+  getPackageId,
+  isBlueprint,
   isExtension,
   isExtensionFromRecipe,
   isPersonal,
+  isShared,
 } from "@/options/pages/blueprints/installableUtils";
 import { Installable } from "./blueprintsTypes";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import {
   reactivateEveryTab,
@@ -29,21 +33,26 @@ import {
 } from "@/background/messenger/api";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { useCallback } from "react";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { push } from "connected-react-router";
-import { exportBlueprint } from "@/options/pages/installed/exportBlueprint";
-import { useGetAuthQuery } from "@/services/api";
+import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/installed/exportBlueprint";
+import { appApi, useDeleteCloudExtensionMutation } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
+import useUserAction from "@/hooks/useUserAction";
+import { CancelError } from "@/errors";
+import { useModals } from "@/components/ConfirmationModal";
 
 const { removeExtension } = extensionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
-  const notify = useNotifications();
+  const modals = useModals();
+  const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
+
+  // Select cached auth data for performance reasons
   const {
     data: { scope },
-  } = useGetAuthQuery();
+  } = useSelector(appApi.endpoints.getAuth.select());
 
   const reinstall = () => {
     if (!isExtension(installable) || !installable._recipe) {
@@ -73,22 +82,58 @@ function useInstallableActions(installable: Installable) {
   };
 
   const viewShare = () => {
-    if (!isExtension(installable)) {
-      return;
+    let shareContext = null;
+
+    if (isBlueprint(installable) || isShared(installable)) {
+      shareContext = {
+        blueprintId: getPackageId(installable),
+      };
+    } else if (isPersonal(installable, scope) && isExtension(installable)) {
+      shareContext = {
+        extensionId: installable.id,
+      };
     }
 
-    dispatch(
-      installedPageSlice.actions.setShareContext({
-        extensionId: installable.id,
-      })
-    );
+    dispatch(installedPageSlice.actions.setShareContext(shareContext));
   };
 
-  const remove = () => {
+  const deleteExtension = useUserAction(
+    async () => {
+      if (isBlueprint(installable)) {
+        return;
+      }
+
+      const confirmed = await modals.showConfirmation({
+        title: "Permanently Delete?",
+        message: "Permanently delete the brick from your account?",
+        submitCaption: "Delete",
+        cancelCaption: "Back to Safety",
+      });
+
+      if (!confirmed) {
+        throw new CancelError();
+      }
+
+      await deleteCloudExtension({ extensionId: installable.id });
+    },
+    {
+      successMessage: `Deleted brick ${getLabel(
+        installable
+      )} from your account`,
+      errorMessage: `Error deleting brick ${getLabel(
+        installable
+      )} from your account`,
+      event: "ExtensionCloudDelete",
+    },
+    [modals]
+  );
+
+  const uninstall = () => {
     if (!isExtension(installable)) {
       return;
     }
 
+    notify.success(`Removed brick ${getLabel(installable)}`);
     reportEvent("ExtensionRemove", {
       extensionId: installable.id,
     });
@@ -112,8 +157,7 @@ function useInstallableActions(installable: Installable) {
     );
   };
 
-  // TODO: refactor with that callback & notify hook
-  const onExportBlueprint = useCallback(() => {
+  const exportBlueprint = () => {
     const extension = isExtension(installable) ? installable : null;
 
     if (extension == null) {
@@ -121,15 +165,16 @@ function useInstallableActions(installable: Installable) {
       return;
     }
 
-    exportBlueprint(extension);
-  }, [installable, notify]);
+    exportBlueprintYaml(extension);
+  };
 
   return {
-    viewShare: isPersonal(installable, scope) ? viewShare : null,
-    remove,
+    viewShare,
+    uninstall,
     viewLogs,
-    onExportBlueprint,
+    exportBlueprint,
     activate,
+    deleteExtension: isExtension(installable) ? deleteExtension : null,
     reinstall: isExtensionFromRecipe(installable) ? reinstall : null,
   };
 }

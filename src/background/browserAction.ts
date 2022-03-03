@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBackground } from "webext-detect-page";
-import { reportError } from "@/telemetry/rollbar";
+import reportError from "@/telemetry/reportError";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import browser, { Tabs } from "webextension-polyfill";
-import { toggleActionPanel } from "@/contentScript/messenger/api";
+import { toggleSidebar } from "@/contentScript/messenger/api";
 import { isScriptableUrl } from "webext-content-scripts";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
@@ -43,7 +42,7 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
 
   try {
     await ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID });
-    await toggleActionPanel({
+    await toggleSidebar({
       tabId: tab.id,
     });
   } catch (error) {
@@ -52,7 +51,7 @@ async function handleBrowserAction(tab: Tabs.Tab): Promise<void> {
   }
 }
 
-if (isBackground()) {
+export default function initBrowserAction() {
   const action = browser.browserAction ?? browser.action;
   action.onClicked.addListener(handleBrowserAction);
 }

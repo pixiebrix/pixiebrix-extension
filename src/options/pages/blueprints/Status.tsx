@@ -17,24 +17,31 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { Installable } from "./blueprintsTypes";
+import { InstallableViewItem } from "./blueprintsTypes";
 import useInstallableActions from "./useInstallableActions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faSync } from "@fortawesome/free-solid-svg-icons";
 
 type StatusProps = {
-  installable: Installable;
+  installableViewItem: InstallableViewItem;
 };
 
-const Status: React.VoidFunctionComponent<StatusProps> = ({ installable }) => {
+const Status: React.VoidFunctionComponent<StatusProps> = ({
+  installableViewItem,
+}) => {
+  const { status, installable, hasUpdate } = installableViewItem;
   const { activate, reinstall } = useInstallableActions(installable);
 
-  return installable.active ? (
+  return status === "Active" ? (
     <>
-      {installable.hasUpdate ? (
-        <Button size="sm" variant="warning" onClick={reinstall}>
-          Update
+      {hasUpdate ? (
+        <Button size="sm" variant="info" onClick={reinstall}>
+          <FontAwesomeIcon icon={faSync} /> Update
         </Button>
       ) : (
-        <div className="text-info py-2">Active</div>
+        <div className="text-success py-2">
+          <FontAwesomeIcon icon={faCheck} /> Active
+        </div>
       )}
     </>
   ) : (

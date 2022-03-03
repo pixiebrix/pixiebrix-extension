@@ -19,15 +19,13 @@ import { connect, useSelector } from "react-redux";
 import React, { useCallback } from "react";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
-import { Link, Route } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { IExtension, UUID } from "@/core";
-import "./InstalledPage.scss";
 import {
   reactivateEveryTab,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { useGetAuthQuery } from "@/services/api";
 import { reportEvent } from "@/telemetry/events";
 import { Dispatch } from "redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -37,7 +35,7 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { CloudExtension } from "@/types/contract";
 import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { exportBlueprint } from "./exportBlueprint";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import ExtensionLogsModal from "./ExtensionLogsModal";
@@ -51,6 +49,7 @@ import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 import extensionsSlice from "@/store/extensionsSlice";
 import { OptionsState } from "@/store/extensionsTypes";
 import ShareLinkModal from "./ShareLinkModal";
+import useFlags from "@/hooks/useFlags";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -58,16 +57,14 @@ export const _InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { flagOn } = useFlags();
 
   const [allExtensions, , cloudError] = useAsyncState(
     async () => {
       const lookup = new Set<UUID>(extensions.map((x) => x.id));
-      const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
-        "/api/extensions/"
-      );
+      const { data } = await (
+        await getLinkedApiClient()
+      ).get<CloudExtension[]>("/api/extensions/");
 
       const cloudExtensions = data
         .filter((x) => !lookup.has(x.id))
@@ -96,8 +93,6 @@ export const _InstalledPage: React.FunctionComponent<{
     selectShowShareContext
   );
 
-  const notify = useNotifications();
-
   const onExportBlueprint = useCallback(
     (extensionIdToExport: UUID) => {
       const extension = allExtensions.find(
@@ -113,7 +108,7 @@ export const _InstalledPage: React.FunctionComponent<{
 
       exportBlueprint(extension);
     },
-    [notify, allExtensions]
+    [allExtensions]
   );
 
   // Guard race condition with load when visiting the URL directly
@@ -128,8 +123,12 @@ export const _InstalledPage: React.FunctionComponent<{
       icon={faCubes}
       error={cloudError ?? resolveError}
     >
-      {showShareContext && (
+      {showShareContext?.extensionId && (
         <ShareExtensionModal extensionId={showShareContext.extensionId} />
+      )}
+
+      {showShareContext?.blueprintId && (
+        <ShareLinkModal blueprintId={showShareContext.blueprintId} />
       )}
 
       {showLogsContext && (
@@ -139,11 +138,6 @@ export const _InstalledPage: React.FunctionComponent<{
         />
       )}
 
-      <Route
-        exact
-        path="/installed/link/:blueprintId"
-        component={ShareLinkModal}
-      />
       <Row>
         <Col>
           <div className="pb-4">
@@ -155,7 +149,7 @@ export const _InstalledPage: React.FunctionComponent<{
             ) : (
               <p>
                 Here&apos;s a list of bricks you currently have activated.{" "}
-                {flags.includes("marketplace") ? (
+                {flagOn("marketplace") ? (
                   <>
                     You can find more to activate in{" "}
                     <Link to={"/blueprints"}>My Blueprints</Link>.
@@ -176,7 +170,7 @@ export const _InstalledPage: React.FunctionComponent<{
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Page Editor Quickstart Guide
+                      Page Editor Quick Start Guide
                     </a>{" "}
                     to create your own.
                   </>

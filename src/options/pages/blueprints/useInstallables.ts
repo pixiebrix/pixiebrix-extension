@@ -15,21 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ResolvedExtension, UUID } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
-import { useCallback, useMemo } from "react";
+import { UUID } from "@/core";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
-import {
-  getOrganization,
-  updateAvailable,
-} from "@/options/pages/blueprints/installableUtils";
 import { Installable } from "./blueprintsTypes";
 import {
   useGetCloudExtensionsQuery,
-  useGetOrganizationsQuery,
   useGetRecipesQuery,
   useGetAuthQuery,
 } from "@/services/api";
@@ -48,7 +42,6 @@ function useInstallables(): InstallablesState {
 
   const recipes = useGetRecipesQuery();
   const cloudExtensions = useGetCloudExtensionsQuery();
-  const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -62,6 +55,20 @@ function useInstallables(): InstallablesState {
     [unresolvedExtensions]
   );
 
+  const personalOrTeamBlueprints = useMemo(
+    () =>
+      (recipes.data ?? []).filter(
+        (recipe) =>
+          // Is personal blueprint
+          recipe.metadata.id.includes(scope) ||
+          // Is blueprint shared with user
+          recipe.sharing.organizations.length > 0 ||
+          // Is blueprint active, e.g. installed via marketplace
+          installedRecipeIds.has(recipe.metadata.id)
+      ),
+    [installedRecipeIds, recipes.data, scope]
+  );
+
   const allExtensions = useMemo(() => {
     const inactiveExtensions =
       cloudExtensions.data
@@ -71,67 +78,28 @@ function useInstallables(): InstallablesState {
     return [...unresolvedExtensions, ...inactiveExtensions];
   }, [cloudExtensions.data, installedExtensionIds, unresolvedExtensions]);
 
-  const [
-    resolvedExtensions,
-    resolvedExtensionsIsLoading,
-    resolveError,
-  ] = useAsyncState(
-    async () =>
-      Promise.all(
-        allExtensions.map(async (extension) => resolveDefinitions(extension))
-      ),
-    [allExtensions],
-    []
-  );
+  const [resolvedExtensions, resolvedExtensionsIsLoading, resolveError] =
+    useAsyncState(
+      async () =>
+        Promise.all(
+          allExtensions.map(async (extension) => resolveDefinitions(extension))
+        ),
+      [allExtensions],
+      []
+    );
 
-  const isActive = useCallback(
-    (extensionOrRecipe: RecipeDefinition | ResolvedExtension) => {
-      if ("_recipe" in extensionOrRecipe) {
-        return installedExtensionIds.has(extensionOrRecipe.id);
-      }
-
-      return installedRecipeIds.has(extensionOrRecipe.metadata.id);
-    },
-    [installedExtensionIds, installedRecipeIds]
-  );
-
-  const personalOrTeamBlueprints = useMemo(
+  const extensionsWithoutRecipe = useMemo(
     () =>
-      (recipes.data ?? []).filter(
-        (recipe) =>
-          (recipe.metadata.id.includes(scope) ||
-            recipe.sharing.organizations.length > 0) &&
-          // Remove duplicate Installable entries for Active extension
-          // and Recipe pairs
-          !installedRecipeIds.has(recipe.metadata.id)
+      resolvedExtensions.filter((extension) =>
+        extension._recipe?.id
+          ? !installedRecipeIds.has(extension._recipe?.id)
+          : true
       ),
-    [recipes.data, scope, installedRecipeIds]
-  );
-
-  const installables = useMemo(
-    () =>
-      [...resolvedExtensions, ...personalOrTeamBlueprints].map(
-        (extensionOrRecipe) => ({
-          ...extensionOrRecipe,
-          active: isActive(extensionOrRecipe),
-          hasUpdate:
-            "_recipe" in extensionOrRecipe
-              ? updateAvailable(recipes.data, extensionOrRecipe)
-              : false,
-          organization: getOrganization(extensionOrRecipe, organizations),
-        })
-      ),
-    [
-      isActive,
-      organizations,
-      personalOrTeamBlueprints,
-      recipes.data,
-      resolvedExtensions,
-    ]
+    [installedRecipeIds, resolvedExtensions]
   );
 
   return {
-    installables,
+    installables: [...extensionsWithoutRecipe, ...personalOrTeamBlueprints],
     isLoading:
       recipes.isLoading ||
       cloudExtensions.isLoading ||

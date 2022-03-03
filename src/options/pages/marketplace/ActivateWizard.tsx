@@ -33,7 +33,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { uninstallContextMenu } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import useWizard from "@/options/pages/marketplace/useWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 
@@ -65,7 +65,6 @@ const ActivateButton: React.FunctionComponent<{
       ),
     [blueprint, localExtensions]
   );
-  const notify = useNotifications();
 
   const uninstallExtensions = async () => {
     for (const extension of installedExtensions) {
@@ -83,12 +82,11 @@ const ActivateButton: React.FunctionComponent<{
           activate();
         })
         .catch((error) => {
-          notify.error(
-            `Error re-installing bricks: ${getErrorMessage(error)}`,
-            {
-              error,
-            }
-          );
+          notify.error({
+            message: `Error re-installing bricks: ${getErrorMessage(error)}`,
+
+            error,
+          });
         });
     } else {
       activate();

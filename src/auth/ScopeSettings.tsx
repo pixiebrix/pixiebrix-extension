@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ScopeSettings.module.scss";
+
 import React, { useCallback } from "react";
 import { Formik, FormikBag, FormikValues } from "formik";
 import { Alert, Button, Container, Form } from "react-bootstrap";
@@ -22,13 +24,12 @@ import * as Yup from "yup";
 import { castArray, mapValues } from "lodash";
 import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { reportError } from "@/telemetry/rollbar";
 import { StatusCodes } from "http-status-codes";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
-import useNotifications from "@/hooks/useNotifications";
+import reportError from "@/telemetry/reportError";
+import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import styles from "./ScopeSettings.module.scss";
 import { useGetAuthQuery } from "@/services/api";
 
 interface Profile {
@@ -55,7 +56,6 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
   title,
   description,
 }) => {
-  const notify = useNotifications();
   const { refetch: refetchAuth } = useGetAuthQuery();
 
   const submit = useCallback(
@@ -67,15 +67,14 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
         await (await getLinkedApiClient()).patch("/api/settings/", values);
       } catch (error) {
         if (!isAxiosError(error)) {
-          notify.error("Error updating account alias", {
-            error,
-          });
+          notify.error({ message: "Error updating account alias", error });
           return;
         }
 
         switch (error.response.status) {
           case StatusCodes.UNAUTHORIZED: {
-            notify.error("Could not authenticate with PixieBrix", {
+            notify.error({
+              message: "Could not authenticate with PixieBrix",
               error,
             });
             return;
@@ -88,9 +87,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
 
           default: {
             reportError(error);
-            notify.error("Error updating account alias", {
-              error,
-            });
+            notify.error({ message: "Error updating account alias", error });
             return;
           }
         }
@@ -98,7 +95,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
 
       refetchAuth();
     },
-    [notify]
+    []
   );
 
   return (

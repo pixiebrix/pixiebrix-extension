@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./AdvancedSettings.module.scss";
+
 import { Button, Card, Form } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
 import React, { useCallback } from "react";
@@ -22,24 +24,21 @@ import { clearExtensionAuth } from "@/auth/token";
 import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import { isEmpty } from "lodash";
-import { useToasts } from "react-toast-notifications";
-import { useGetAuthQuery } from "@/services/api";
+import notify from "@/utils/notify";
+import useFlags from "@/hooks/useFlags";
 
 const AdvancedSettings: React.FunctionComponent = () => {
-  const { addToast } = useToasts();
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { restrict, permit } = useFlags();
+
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
   const clear = useCallback(async () => {
     await clearExtensionAuth();
     location.reload();
-    addToast("Cleared the extension token. Visit the web app to set it again", {
-      appearance: "success",
-      autoDismiss: true,
-    });
-  }, [addToast]);
+    notify.success(
+      "Cleared the extension token. Visit the web app to set it again"
+    );
+  }, []);
 
   const reload = useCallback(() => {
     browser.runtime.reload();
@@ -50,17 +49,11 @@ const AdvancedSettings: React.FunctionComponent = () => {
     if (status === "update_available") {
       browser.runtime.reload();
     } else if (status === "throttled") {
-      addToast("Too many update requests", {
-        appearance: "error",
-        autoDismiss: true,
-      });
+      notify.error({ message: "Too many update requests", reportError: false });
     } else {
-      addToast("No update available", {
-        appearance: "info",
-        autoDismiss: true,
-      });
+      notify.info("No update available");
     }
-  }, [addToast]);
+  }, []);
 
   const handleUpdate = useCallback(
     async (event) => {
@@ -71,12 +64,9 @@ const AdvancedSettings: React.FunctionComponent = () => {
       }
 
       await setServiceURL(newURL);
-      addToast("Updated the service URL", {
-        appearance: "success",
-        autoDismiss: true,
-      });
+      notify.success("Updated the service URL");
     },
-    [addToast, serviceURL, setServiceURL]
+    [serviceURL, setServiceURL]
   );
 
   return (
@@ -95,7 +85,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
               placeholder={DEFAULT_SERVICE_URL}
               defaultValue={serviceURL}
               onBlur={handleUpdate}
-              disabled={flags.includes("restricted-service-url")}
+              disabled={restrict("service-url")}
             />
             <Form.Text className="text-muted">
               The PixieBrix service URL
@@ -103,7 +93,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
           </Form.Group>
         </Form>
       </Card.Body>
-      <Card.Footer>
+      <Card.Footer className={styles.cardFooter}>
         <Button variant="info" onClick={reload}>
           Reload Extension
         </Button>
@@ -112,7 +102,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
           Check Updates
         </Button>
 
-        {!flags.includes("restricted-clear-token") && (
+        {permit("clear-token") && (
           <Button variant="warning" onClick={clear}>
             Clear Token
           </Button>

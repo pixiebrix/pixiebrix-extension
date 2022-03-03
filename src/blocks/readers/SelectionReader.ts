@@ -47,7 +47,7 @@ export class SelectionReader extends Reader {
 
   defaultOutputKey = "selection";
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return false;
   }
 
@@ -55,7 +55,7 @@ export class SelectionReader extends Reader {
     return true;
   }
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     type: "object",
     properties: {
       selectionText: {

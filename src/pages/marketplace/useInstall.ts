@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { reportEvent } from "@/telemetry/events";
 import { RecipeDefinition } from "@/types/definitions";
-import useNotifications from "@/hooks/useNotifications";
-import { useDispatch } from "react-redux";
+import notify from "@/utils/notify";
+import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import { FormikHelpers } from "formik";
 import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
@@ -31,8 +32,9 @@ import { collectPermissions } from "@/permissions";
 import { push } from "connected-react-router";
 import { resolveRecipe } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
-import { useGetAuthQuery } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
+import useFlags from "@/hooks/useFlags";
+import { selectSettings } from "@/store/settingsSelectors";
 
 const { installRecipe } = extensionsSlice.actions;
 
@@ -42,11 +44,9 @@ type InstallRecipe = (
 ) => Promise<void>;
 
 function useInstall(recipe: RecipeDefinition): InstallRecipe {
-  const notify = useNotifications();
   const dispatch = useDispatch();
-  const {
-    data: { flags },
-  } = useGetAuthQuery();
+  const { flagOn } = useFlags();
+  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
   return useCallback(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
@@ -74,24 +74,30 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       );
 
       if (selected.length === 0) {
-        notify.userError("Select at least one brick to activate");
+        notify.error({
+          message: "Select at least one brick to activate",
+          reportError: false,
+        });
         setSubmitting(false);
         return;
       }
 
       if (missingServiceIds.length > 0) {
         const missing = missingServiceIds.join(", ");
-        notify.userError(
-          `You must select a configuration for each service: ${missing}`
-        );
+        notify.error({
+          message: `You must select a configuration for each service: ${missing}`,
+          reportError: false,
+        });
         setSubmitting(false);
         return;
       }
 
       if (!enabled) {
-        notify.userError(
-          "You must accept browser permissions for the selected bricks"
-        );
+        notify.error({
+          message:
+            "You must accept browser permissions for the selected bricks",
+          reportError: false,
+        });
         setSubmitting(false);
         return;
       }
@@ -108,27 +114,27 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           })
         );
 
-        notify.success(`Installed ${recipe.metadata.name}`, {
-          event: "InstallBlueprint",
-        });
+        notify.success(`Installed ${recipe.metadata.name}`);
+        reportEvent("InstallBlueprint");
 
         setSubmitting(false);
 
         reactivateEveryTab();
 
-        if (flags.includes("blueprints-page")) {
-          dispatch(push("/blueprints-page"));
+        if (isBlueprintsPageEnabled) {
+          dispatch(push("/blueprints"));
         } else {
           dispatch(push("/installed"));
         }
       } catch (error) {
-        notify.error(`Error installing ${recipe.metadata.name}`, {
+        notify.error({
+          message: `Error installing ${recipe.metadata.name}`,
           error,
         });
         setSubmitting(false);
       }
     },
-    [notify, dispatch, recipe]
+    [flagOn, dispatch, recipe]
   );
 }
 

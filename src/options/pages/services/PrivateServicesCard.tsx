@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./PrivateServicesCard.module.scss";
+
 import { useSelector } from "react-redux";
 import { Button, Card, Table } from "react-bootstrap";
 import React, { useCallback, useMemo, useState } from "react";
@@ -25,8 +27,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useGetAuthQuery } from "@/services/api";
 import { deleteCachedAuthData } from "@/background/messenger/api";
 import { ServicesState } from "@/store/servicesSlice";
-import useNotifications from "@/hooks/useNotifications";
-import styles from "./PrivateServicesCard.module.scss";
+import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import BrickIcon from "@/components/BrickIcon";
 import Pagination from "@/components/pagination/Pagination";
@@ -45,7 +46,6 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   services,
   navigate,
 }) => {
-  const notify = useNotifications();
   const {
     data: { isLoggedIn },
   } = useGetAuthQuery();
@@ -56,19 +56,14 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
     selectConfiguredServices
   );
 
-  const resetAuth = useCallback(
-    async (authId: UUID) => {
-      try {
-        await deleteCachedAuthData(authId);
-        notify.success("Reset login for integration");
-      } catch (error) {
-        notify.error("Error resetting login for integration", {
-          error,
-        });
-      }
-    },
-    [notify]
-  );
+  const resetAuth = useCallback(async (authId: UUID) => {
+    try {
+      await deleteCachedAuthData(authId);
+      notify.success("Reset login for integration");
+    } catch (error) {
+      notify.error({ message: "Error resetting login for integration", error });
+    }
+  }, []);
 
   const numPages = useMemo(
     () => Math.ceil(configuredServices.length / SERVICES_PER_PAGE),

@@ -17,7 +17,9 @@
 
 import { getLocalISOString, ParseDate } from "@/blocks/transformers/parseDate";
 import { register, TimeZone, unregister } from "timezone-mock";
-import { BlockArg } from "@/core";
+import { BusinessError } from "@/errors";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { validateOutput } from "@/validators/generic";
 
 const refDate = "2021-12-07T06:17:09.258Z";
 
@@ -49,60 +51,89 @@ describe("ParseDate block", () => {
   test("Results snapshot - EST input", async () => {
     register("US/Eastern");
     const brick = new ParseDate();
-    const arg = ({
+
+    const arg = unsafeAssumeValidArg({
       date: "Thursday, December 9th 2021, 10pm, EST",
-    } as unknown) as BlockArg<Record<string, string>>;
-    await brick
-      .run(arg, {
-        ctxt: null,
-        logger: null,
-        root: null,
-      })
-      .then((result) => {
-        expect(result).toEqual({
-          utc: {
-            iso8601: "2021-12-10T03:00:00.000Z",
-            date: "12/10/2021",
-            time: "3:00:00 AM",
-            humanReadable: "Fri, 10 Dec 2021 03:00:00 GMT",
-          },
-          local: {
-            iso8601: "2021-12-09T22:00:00.000-05:00",
-            date: "12/9/2021",
-            time: "10:00:00 PM",
-            humanReadable: "2021-12-10T03:00:00.000Z UTC (MockDate: GMT-0500)",
-          },
-        });
-      });
+    });
+
+    const result = await brick.run(arg, {
+      ctxt: null,
+      logger: null,
+      root: null,
+    });
+
+    expect(result).toEqual({
+      utc: {
+        iso8601: "2021-12-10T03:00:00.000Z",
+        date: "12/10/2021",
+        time: "3:00:00 AM",
+        humanReadable: "Fri, 10 Dec 2021 03:00:00 GMT",
+      },
+      local: {
+        iso8601: "2021-12-09T22:00:00.000-05:00",
+        date: "12/9/2021",
+        time: "10:00:00 PM",
+        humanReadable: "2021-12-10T03:00:00.000Z UTC (MockDate: GMT-0500)",
+      },
+    });
+
+    const validation = await validateOutput(brick.outputSchema, result);
+    expect(validation.valid).toBeTruthy();
+  });
+});
+
+test("Throw BusinessError on whitespace", async () => {
+  const brick = new ParseDate();
+
+  await expect(async () => {
+    await brick.run(unsafeAssumeValidArg({ date: "   " }), {
+      ctxt: null,
+      logger: null,
+      root: null,
+    });
+  }).rejects.toThrowError(BusinessError);
+});
+
+test("Throw BusinessError on invalid date", async () => {
+  const brick = new ParseDate();
+
+  await expect(async () => {
+    await brick.run(unsafeAssumeValidArg({ date: "foo" }), {
+      ctxt: null,
+      logger: null,
+      root: null,
+    });
+  }).rejects.toThrowError(BusinessError);
+});
+
+test("Results snapshot - GMT input", async () => {
+  register("US/Eastern");
+  const brick = new ParseDate();
+  const arg = unsafeAssumeValidArg({
+    date: "Thursday, December 9th 2021, 3am, GMT",
   });
 
-  test("Results snapshot - GMT input", async () => {
-    register("US/Eastern");
-    const brick = new ParseDate();
-    const arg = ({
-      date: "Thursday, December 9th 2021, 3am, GMT",
-    } as unknown) as BlockArg<Record<string, string>>;
-    await brick
-      .run(arg, {
-        ctxt: null,
-        logger: null,
-        root: null,
-      })
-      .then((result) => {
-        expect(result).toEqual({
-          utc: {
-            iso8601: "2021-12-09T03:00:00.000Z",
-            date: "12/9/2021",
-            time: "3:00:00 AM",
-            humanReadable: "Thu, 09 Dec 2021 03:00:00 GMT",
-          },
-          local: {
-            iso8601: "2021-12-08T22:00:00.000-05:00",
-            date: "12/8/2021",
-            time: "10:00:00 PM",
-            humanReadable: "2021-12-09T03:00:00.000Z UTC (MockDate: GMT-0500)",
-          },
-        });
-      });
+  const result = await brick.run(arg, {
+    ctxt: null,
+    logger: null,
+    root: null,
   });
+
+  expect(result).toEqual({
+    utc: {
+      iso8601: "2021-12-09T03:00:00.000Z",
+      date: "12/9/2021",
+      time: "3:00:00 AM",
+      humanReadable: "Thu, 09 Dec 2021 03:00:00 GMT",
+    },
+    local: {
+      iso8601: "2021-12-08T22:00:00.000-05:00",
+      date: "12/8/2021",
+      time: "10:00:00 PM",
+      humanReadable: "2021-12-09T03:00:00.000Z UTC (MockDate: GMT-0500)",
+    },
+  });
+
+  const validation = await validateOutput(brick.outputSchema, result);
+  expect(validation.valid).toBeTruthy();
 });

@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -16,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RunBlock } from "@/contentScript/executor";
+// eslint-disable-next-line import/no-restricted-paths -- Type only
+import type { RunBlock } from "@/contentScript/executor";
 import browser, { Runtime, Tabs } from "webextension-polyfill";
 import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";

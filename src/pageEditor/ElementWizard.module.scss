@@ -1,0 +1,42 @@
+/*!
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.nav {
+  flex-wrap: nowrap !important;
+  align-items: stretch;
+  box-shadow: 0 2px 2px gray;
+  position: relative;
+  z-index: 1; // Paint the shadow above the content below
+  padding-bottom: 0;
+  font-size: 0.875rem;
+
+  a,
+  button {
+    border-radius: 0 !important;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+  }
+}
+
+.form {
+  height: 100%;
+  width: 100%;
+}
+
+.content {
+  overflow: auto;
+}

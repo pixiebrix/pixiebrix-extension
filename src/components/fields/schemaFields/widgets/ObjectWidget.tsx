@@ -23,7 +23,7 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty } from "lodash";
 import { useField, useFormikContext } from "formik";
 import { produce } from "immer";
-import { freshIdentifier } from "@/utils";
+import { freshIdentifier, joinName } from "@/utils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { UnknownObject } from "@/types";
@@ -131,9 +131,10 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
 
   const isRequired = parentSchema.required?.includes(property) ?? false;
 
-  const PropertyRowComponent = useMemo(() => getPropertyRow(propertySchema), [
-    propertySchema,
-  ]);
+  const PropertyRowComponent = useMemo(
+    () => getPropertyRow(propertySchema),
+    [propertySchema]
+  );
 
   const deleteProp = useCallback(() => {
     onDelete(property);
@@ -262,7 +263,12 @@ const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
             <ObjectFieldRow
               key={property}
               parentSchema={schema}
-              name={[field.name, property].join(".")}
+              name={
+                // Always use nesting even if property name is empty
+                property == null || property === ""
+                  ? `${field.name}.`
+                  : joinName(field.name, property)
+              }
               property={property}
               defined={Object.prototype.hasOwnProperty.call(
                 declaredProperties,

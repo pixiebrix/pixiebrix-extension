@@ -16,24 +16,35 @@
  */
 
 import { MessageContext, SerializedError } from "@/core";
-import { ErrorObject } from "serialize-error";
+import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError } from "axios";
-import { isObject } from "@/utils";
+import { isObject, matchesAnyPattern } from "@/utils";
+
+// FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2672
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
-export const IGNORED_ERRORS = [
-  "ResizeObserver loop limit exceeded",
-  "Promise was cancelled",
-  "Uncaught Error: PixieBrix contentScript already installed",
-];
+/**
+ * Base class for Errors arising from business logic in the brick, not the PixieBrix application/extension itself.
+ *
+ * Used for blame analysis for reporting and alerting.
+ */
+export class BusinessError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "BusinessError";
+  }
+}
 
-export class ValidationError extends Error {
+/**
+ * Error that a registry definition is invalid
+ */
+export class InvalidDefinitionError extends BusinessError {
   errors: unknown;
 
   constructor(message: string, errors: unknown) {
     super(message);
-    this.name = "ValidationError";
+    this.name = "InvalidDefinitionError";
     this.errors = errors;
   }
 }
@@ -79,7 +90,7 @@ export class SuspiciousOperationError extends Error {
 }
 
 /**
- * Error indicating the extension is not properly linked to the PixieBrix API.
+ * Error indicating the extension is not linked to the PixieBrix API
  */
 export class ExtensionNotLinkedError extends Error {
   constructor() {
@@ -91,20 +102,10 @@ export class ExtensionNotLinkedError extends Error {
 /**
  * Base class for "Error" of cancelling out of a flow that's in progress
  */
-export class CancelError extends Error {
+export class CancelError extends BusinessError {
   constructor(message?: string) {
     super(message ?? "User cancelled the operation");
     this.name = "CancelError";
-  }
-}
-
-/**
- * Base class for Errors arising from business logic in the brick, not the PixieBrix application itself.
- */
-export class BusinessError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "BusinessError";
   }
 }
 
@@ -131,7 +132,13 @@ export class MultipleElementsFoundError extends BusinessError {
   }
 }
 
-export class PropError extends Error {
+/**
+ * An error indicating an invalid input was provided to a brick. Used for checks that cannot be performed as part
+ * of JSONSchema input validation
+ *
+ * @see InputValidationError
+ */
+export class PropError extends BusinessError {
   public readonly blockId: string;
 
   public readonly prop: string;
@@ -167,9 +174,43 @@ export class ContextError extends Error {
   }
 }
 
+/** Browser Messenger API error message patterns */
+export const CONNECTION_ERROR_MESSAGES = [
+  "Could not establish connection. Receiving end does not exist.",
+  "Extension context invalidated.",
+];
+
+/**
+ * Errors to ignore unless they've caused extension point install or brick execution to fail.
+ *
+ * Can be provided as an exact string, or regex.
+ *
+ * Similar to Rollbar: https://docs.rollbar.com/docs/javascript/#section-ignoring-specific-exception-messages, but
+ * more strict on string matching.
+ *
+ * @see matchesAnyPattern
+ */
+export const IGNORED_ERROR_PATTERNS = [
+  "ResizeObserver loop limit exceeded",
+  "Promise was cancelled",
+  "Uncaught Error: PixieBrix contentScript already installed",
+  "The frame was removed.",
+  /No frame with id \d+ in tab \d+/,
+  /^No tab with id/,
+  "The tab was closed.",
+  ...CONNECTION_ERROR_MESSAGES,
+];
+
 export function isErrorObject(error: unknown): error is ErrorObject {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
   return typeof (error as any)?.message === "string";
+}
+
+export function isContextError(error: unknown): error is ContextError {
+  return (
+    error instanceof ContextError ||
+    (isErrorObject(error) && error.name === "ContextError")
+  );
 }
 
 /**
@@ -189,11 +230,19 @@ export function hasCancelRootCause(error: unknown): boolean {
     return true;
   }
 
-  if (error instanceof ContextError || error.name === "ContextError") {
+  if (isContextError(error)) {
     return hasCancelRootCause(error.cause);
   }
 
   return false;
+}
+
+export function getRootCause(error: ErrorObject): ErrorObject {
+  if (error.name === "ContextError" && (error as ContextError).cause != null) {
+    return getRootCause(error.cause as ErrorObject);
+  }
+
+  return error;
 }
 
 // Manually list subclasses because the prototype chain is lost in serialization/deserialization
@@ -202,16 +251,23 @@ const BUSINESS_ERROR_CLASSES = [
   BusinessError,
   NoElementsFoundError,
   MultipleElementsFoundError,
+  PropError,
 ];
 // Name classes from other modules separately, because otherwise we'll get a circular dependency with this module
 const BUSINESS_ERROR_NAMES = new Set([
-  ...BUSINESS_ERROR_CLASSES.map((x) => x.name),
+  "PropError",
+  "BusinessError",
+  "NoElementsFoundError",
+  "MultipleElementsFoundError",
   "InputValidationError",
   "OutputValidationError",
   "PipelineConfigurationError",
   "MissingConfigurationError",
   "NotConfiguredError",
   "RemoteServiceError",
+  "ClientNetworkPermissionError",
+  "ClientNetworkError",
+  "ProxiedRemoteServiceError",
   "RemoteExecutionError",
 ]);
 
@@ -248,11 +304,6 @@ export function hasBusinessRootCause(
   return false;
 }
 
-const CONNECTION_ERROR_PATTERNS = [
-  "Could not establish connection. Receiving end does not exist.",
-  "Extension context invalidated",
-];
-
 export function isPromiseRejectionEvent(
   event: unknown
 ): event is PromiseRejectionEvent {
@@ -265,13 +316,15 @@ export function isAxiosError(error: unknown): error is AxiosError {
 }
 
 /**
- * Return true if the proximate cause of event is an messaging error.
+ * Return true if the proximate cause of event is a messaging error.
  *
  * NOTE: does not recursively identify the root cause of the error.
  */
 export function isConnectionError(possibleError: unknown): boolean {
-  const message = getErrorMessage(possibleError);
-  return CONNECTION_ERROR_PATTERNS.some((pattern) => message.includes(pattern));
+  return matchesAnyPattern(
+    getErrorMessage(possibleError),
+    CONNECTION_ERROR_MESSAGES
+  );
 }
 
 /**
@@ -310,9 +363,13 @@ export function getErrorMessage(
 }
 
 /**
- * Finds or creates an Error object starting from strings, error event, or real Errors
+ * Finds or creates an Error starting from strings, error event, or real Errors.
+ *
+ * The result is suitable for passing to Rollbar. (Which treats Errors and objects differently.)
  */
-export function selectError(error: unknown): ErrorObject | Error {
+export function selectError(originalError: unknown): Error {
+  let error: unknown = originalError;
+
   // Extract error from event
   if (error instanceof ErrorEvent) {
     error = error.error;
@@ -320,11 +377,20 @@ export function selectError(error: unknown): ErrorObject | Error {
     error = error.reason;
   }
 
-  if (isErrorObject(error)) {
+  if (error instanceof Error) {
     return error;
   }
 
-  console.warn("A non-Error was thrown", { error });
+  if (isErrorObject(error)) {
+    // This shouldn't be necessary, but there's some nested calls to selectError
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2696
+    return deserializeError(error);
+  }
+
+  console.warn("A non-Error was thrown", {
+    originalError,
+    error,
+  });
 
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error message'`, which should never be written

@@ -19,7 +19,7 @@ import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import InstalledPage from "@/options/pages/installed/InstalledPage";
@@ -29,12 +29,11 @@ import BrickEditPage from "@/options/pages/brickEditor/EditPage";
 import MarketplacePage from "@/options/pages/MarketplacePage";
 import BlueprintsPage from "@/options/pages/blueprints/BlueprintsPage";
 import SettingsPage from "@/options/pages/settings/SettingsPage";
-import Navbar from "@/layout/Navbar";
+import Navbar from "@/options/Navbar";
 import Footer from "@/layout/Footer";
-import Sidebar from "@/layout/Sidebar";
+import Sidebar from "@/options/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
-import { ToastProvider } from "react-toast-notifications";
 import { useGetAuthQuery } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
@@ -48,14 +47,18 @@ import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
-import "@/contrib/editors";
+import registerEditors from "@/contrib/editors";
 import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import WorkshopPage from "./pages/workshop/WorkshopPage";
 import InvitationBanner from "@/options/pages/InvitationBanner";
 import { SettingsState } from "@/store/settingsTypes";
+import BrowserBanner from "./pages/BrowserBanner";
+import useFlags from "@/hooks/useFlags";
+import { selectSettings } from "@/store/settingsSelectors";
 
 // Register the built-in bricks
+registerEditors();
 registerBuiltinBlocks();
 registerContribBlocks();
 
@@ -77,26 +80,28 @@ const RequireInstall: React.FunctionComponent = ({ children }) => {
 };
 
 const Layout = () => {
-  // Get the latest brick definitions. Currently in Layout to ensure the Redux store has been hydrated by the time
-  // refresh is called.
+  // Get the latest brick definitions. Put it here in Layout instead of App to ensure the Redux store has been hydrated
+  // by the time refresh is called.
   useRefresh();
 
-  const { data: authData, isLoading } = useGetAuthQuery();
+  const { permit } = useFlags();
+  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
+
+  const { isLoading } = useGetAuthQuery();
 
   if (isLoading) {
-    return <GridLoader />;
+    return <Loader />;
   }
 
-  const { flags } = authData;
-
   return (
-    <div className="w-100">
+    <div>
       <Navbar />
       <Container fluid className="page-body-wrapper">
         <RequireInstall>
           <Sidebar />
           <div className="main-panel">
             <ErrorModal />
+            <BrowserBanner />
             <EnvironmentBanner />
             <UpdateBanner />
             <DeploymentBanner />
@@ -104,14 +109,6 @@ const Layout = () => {
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
-                  {flags.includes("blueprints-page") && (
-                    <Route
-                      exact
-                      path="/blueprints-page"
-                      component={BlueprintsPage}
-                    />
-                  )}
-                  <Route exact path="/blueprints" component={MarketplacePage} />
                   <Route
                     exact
                     path="/extensions/install/:extensionId"
@@ -125,15 +122,17 @@ const Layout = () => {
 
                   <Route exact path="/settings" component={SettingsPage} />
 
-                  {!flags.includes("restricted-services") && (
+                  {permit("services") && (
                     <Route path="/services/:id?" component={ServicesEditor} />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {/* Switch does not support consolidating Routes using a React fragment */}
+
+                  {permit("workshop") && (
                     <Route exact path="/workshop" component={WorkshopPage} />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {permit("workshop") && (
                     <Route
                       exact
                       path="/workshop/create/"
@@ -141,7 +140,7 @@ const Layout = () => {
                     />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {permit("workshop") && (
                     <Route
                       exact
                       path="/workshop/bricks/:id/"
@@ -149,7 +148,19 @@ const Layout = () => {
                     />
                   )}
 
-                  <Route component={InstalledPage} />
+                  {!isBlueprintsPageEnabled && (
+                    <Route
+                      exact
+                      path="/blueprints"
+                      component={MarketplacePage}
+                    />
+                  )}
+
+                  {isBlueprintsPageEnabled ? (
+                    <Route component={BlueprintsPage} />
+                  ) : (
+                    <Route component={InstalledPage} />
+                  )}
                 </Switch>
               </ErrorBoundary>
             </div>
@@ -168,12 +179,10 @@ const App: React.FunctionComponent = () => {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={<GridLoader />} persistor={persistor}>
+      <PersistGate loading={<Loader />} persistor={persistor}>
         <ConnectedRouter history={hashHistory}>
           <ModalProvider>
-            <ToastProvider>
-              <Layout />
-            </ToastProvider>
+            <Layout />
           </ModalProvider>
         </ConnectedRouter>
       </PersistGate>

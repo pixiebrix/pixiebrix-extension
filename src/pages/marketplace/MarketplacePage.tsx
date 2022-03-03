@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./MarketplacePage.module.scss";
+
 import React, { useMemo, useState } from "react";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { PageTitle } from "@/layout/Page";
 import {
   faExternalLinkAlt,
@@ -27,7 +29,6 @@ import {
 import { Metadata, Sharing, UUID } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
-import "./MarketplacePage.scss";
 import type { ButtonProps } from "react-bootstrap";
 import useFetch from "@/hooks/useFetch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,6 +36,7 @@ import { useGetAuthQuery, useGetOrganizationsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import Pagination from "@/components/pagination/Pagination";
 import { Organization } from "@/types/contract";
+import useFlags from "@/hooks/useFlags";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -83,7 +85,7 @@ const Entry: React.FunctionComponent<
         <Button
           size="sm"
           variant="info"
-          className="activate-button"
+          className={styles.activateButton}
           {...buttonProps}
           onClick={onInstall}
         >
@@ -96,7 +98,7 @@ const Entry: React.FunctionComponent<
       <Button
         size="sm"
         variant="info"
-        className="activate-button"
+        className={styles.activateButton}
         {...buttonProps}
         disabled
       >
@@ -179,8 +181,11 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
   const [query, setQuery] = useState("");
   const {
-    data: { scope, flags },
+    data: { scope },
   } = useGetAuthQuery();
+
+  const { permit } = useFlags();
+
   const [page, setPage] = useState(0);
 
   const recipes = useMemo(() => {
@@ -199,10 +204,10 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
     return sortBy(filtered, (x) => x.metadata.name);
   }, [rawRecipes, query, scope]);
 
-  const numPages = useMemo(() => Math.ceil(recipes.length / recipesPerPage), [
-    recipes,
-    recipesPerPage,
-  ]);
+  const numPages = useMemo(
+    () => Math.ceil(recipes.length / recipesPerPage),
+    [recipes, recipesPerPage]
+  );
   const pageRecipes = useMemo(
     () => recipes.slice(page * recipesPerPage, (page + 1) * recipesPerPage),
     [recipes, recipesPerPage, page]
@@ -221,7 +226,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
           </div>
         </Col>
 
-        {!flags.includes("restricted-marketplace") && (
+        {permit("marketplace") && (
           <Col className="text-right">
             <a
               href="https://www.pixiebrix.com/marketplace"
@@ -241,7 +246,9 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
           <Form>
             <InputGroup className="mb-2 mr-sm-2">
               <InputGroup.Prepend>
-                <InputGroup.Text>Search</InputGroup.Text>
+                <InputGroup.Text className={styles.searchLabel}>
+                  Search
+                </InputGroup.Text>
               </InputGroup.Prepend>
               <Form.Control
                 id="query"
@@ -259,7 +266,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
       <Row>
         <Col xl={8} lg={10} md={12}>
           {rawRecipes == null ? (
-            <GridLoader />
+            <Loader />
           ) : (
             <RecipeList
               installedRecipes={installedRecipes}

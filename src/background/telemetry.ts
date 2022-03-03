@@ -55,8 +55,6 @@ async function uid(): Promise<UUID> {
 
   let uuid = await readStorage<UUID>(UUID_STORAGE_KEY);
 
-  console.debug("Current browser UID", { uuid });
-
   if (!uuid || typeof uuid !== "string") {
     uuid = uuidv4();
     console.debug("Generating UID for browser", { uuid });
@@ -96,10 +94,12 @@ async function userSummary() {
   try {
     const { extensions } = await loadOptions();
     numActiveExtensions = extensions.length;
-    numActiveBlueprints = uniq(compact(extensions.map((x) => x._recipe?.id)))
-      .length;
-    numActiveExtensionPoints = uniq(extensions.map((x) => x.extensionPointId))
-      .length;
+    numActiveBlueprints = uniq(
+      compact(extensions.map((x) => x._recipe?.id))
+    ).length;
+    numActiveExtensionPoints = uniq(
+      extensions.map((x) => x.extensionPointId)
+    ).length;
   } catch (error) {
     console.warn("Cannot get number of extensions", { error });
   }

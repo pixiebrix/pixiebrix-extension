@@ -18,6 +18,8 @@
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { PropError } from "@/errors";
+import { isEmpty } from "lodash";
 
 export function getLocalISOString(date: Date): string {
   let offsetInMinutes = date.getTimezoneOffset();
@@ -39,7 +41,7 @@ export function getLocalISOString(date: Date): string {
 }
 
 export class ParseDate extends Transformer {
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
@@ -59,13 +61,15 @@ export class ParseDate extends Transformer {
       date: {
         type: "string",
         title: "Date",
-        description: "A date string value in any format",
+        description: "A textual date in any format",
       },
     },
     ["date"]
   );
 
-  outputSchema: Schema = {
+  // The brick returns date and time in locale, so it may not match the format that JSON Schema is expecting
+  // https://json-schema.org/understanding-json-schema/reference/string.html#dates-and-times
+  override outputSchema: Schema = {
     type: "object",
     properties: {
       utc: {
@@ -77,11 +81,9 @@ export class ParseDate extends Transformer {
           },
           date: {
             type: "string",
-            format: "date",
           },
           time: {
             type: "string",
-            format: "time",
           },
           humanReadable: {
             type: "string",
@@ -97,11 +99,9 @@ export class ParseDate extends Transformer {
           },
           date: {
             type: "string",
-            format: "date",
           },
           time: {
             type: "string",
-            format: "time",
           },
           humanReadable: {
             type: "string",
@@ -111,12 +111,21 @@ export class ParseDate extends Transformer {
     },
   };
 
-  async transform({ date }: BlockArg): Promise<unknown> {
+  async transform({ date }: BlockArg<{ date: string }>): Promise<unknown> {
     const { parseDate } = await import(
       /* webpackChunkName: "chrono-node" */ "chrono-node"
     );
 
     const parsed = parseDate(date);
+
+    if (isEmpty(date.trim())) {
+      throw new PropError("Date/time text is empty", this.id, "date", date);
+    }
+
+    if (parsed == null) {
+      throw new PropError("Unrecognized date/time", this.id, "date", date);
+    }
+
     const millisPerMinute = 60 * 1000;
     const offsetInMinutes = parsed.getTimezoneOffset();
     const utc = new Date(parsed.getTime() + offsetInMinutes * millisPerMinute);

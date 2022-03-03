@@ -61,7 +61,7 @@ const CreatePage: React.FunctionComponent = () => {
 
           <Row>
             <Col xl={8} lg={10} md={12}>
-              <Editor logContext={null} showLogs={false} />
+              <Editor showLogs={false} />
             </Col>
           </Row>
         </Form>

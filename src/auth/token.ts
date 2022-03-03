@@ -17,25 +17,29 @@
 
 import browser from "webextension-polyfill";
 import Cookies from "js-cookie";
-import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
-import { isEqual } from "lodash";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import {
+  TokenAuthData,
+  USER_DATA_UPDATE_KEYS,
+  UserData,
+  UserDataUpdate,
+} from "./authTypes";
+import { isExtensionContext } from "webext-detect-page";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
-interface UserData {
-  email?: string;
-  user?: string;
-  hostname?: string;
-  organizationId?: string;
-  telemetryOrganizationId?: string;
+type AuthListener = (auth: Partial<TokenAuthData>) => void;
+
+const listeners: AuthListener[] = [];
+
+// Use listeners to allow inversion of control and avoid circular dependency with rollbar.
+export function addListener(handler: AuthListener): void {
+  listeners.push(handler);
 }
 
-export interface AuthData extends UserData {
-  token: string;
-}
-
-export async function readAuthData(): Promise<AuthData | Partial<AuthData>> {
+export async function readAuthData(): Promise<
+  TokenAuthData | Partial<TokenAuthData>
+> {
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 
@@ -47,8 +51,9 @@ export async function getExtensionToken(): Promise<string | undefined> {
 /**
  * Return `true` if the extension is linked to the API.
  *
- * NOTE: do not use this as a check before making an authenticated API call. Instead use `maybeGetLinkedApiClient` which
- * avoids a race condition between the time the check is made and underlying `getExtensionToken` call to get the token.
+ * NOTE: do not use this as a check before making an authenticated API call. Instead, use `maybeGetLinkedApiClient`
+ * which avoids a race condition between the time the check is made and underlying `getExtensionToken` call to get
+ * the token.
  *
  * @see maybeGetLinkedApiClient
  */
@@ -61,6 +66,9 @@ export async function getExtensionAuth(): Promise<UserData> {
   return { user, email, hostname };
 }
 
+/**
+ * Clear the extension state. The options page will show as "unlinked" and prompt the user to link their account.
+ */
 export async function clearExtensionAuth(): Promise<void> {
   await browser.storage.local.remove(STORAGE_EXTENSION_KEY);
   Cookies.remove("csrftoken");
@@ -68,31 +76,62 @@ export async function clearExtensionAuth(): Promise<void> {
 }
 
 /**
- * Refresh the Chrome extensions auth (user, email, token, API hostname), and return true if it was updated.
+ * Update user data (for use in Rollbar, etc.), but not the auth token
+ *
+ * This method is currently used to ensure the most up-to-date organization and flags for the user. It's called in:
+ * - The background heartbeat
+ * - The getAuth query made by extension pages
+ *
+ * @see linkExtension
  */
-export async function updateExtensionAuth(
-  auth: AuthData & { browserId: string }
-): Promise<boolean> {
+export async function updateUserData(update: UserDataUpdate): Promise<void> {
+  const updated = await readAuthData();
+
+  for (const key of USER_DATA_UPDATE_KEYS) {
+    // Intentionally overwrite values with null/undefined from the update
+    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-explicit-any -- keys from compile-time constant
+    updated[key] = update[key] as any;
+  }
+
+  await setStorage(STORAGE_EXTENSION_KEY, updated);
+}
+
+/**
+ * Link the browser extension to the user's PixieBrix account. Return true if the link was updated
+ *
+ * This method is called (via messenger) when the user visits the app.
+ *
+ * @see updateUserData
+ */
+export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
   if (!auth) {
     return false;
   }
 
-  void updateRollbarAuth({
-    userId: auth.user,
-    email: auth.email,
-    organizationId: auth.telemetryOrganizationId ?? auth.organizationId,
-    browserId: auth.browserId,
-  });
+  const previous = await readAuthData();
 
-  // Note: `auth` is a `Object.create(null)` object, which for some `isEqual` implementations
-  // isn't deeply equal to `{}`.  _.isEqual is fine, `fast-deep-equal` isn't
-  // https://github.com/pixiebrix/pixiebrix-extension/pull/1016
-  if (isEqual(auth, await readAuthData())) {
-    // The auth hasn't changed
-    return false;
-  }
+  // Previously we used to check all the data, but that was problematic because it made evolving the data fields tricky.
+  // The server would need to change which data it sent based on the version of the extension. There's an interplay
+  // between updateUserData and USER_DATA_UPDATE_KEYS and the data set with updateExtensionAuth
+  const updated =
+    auth.user !== previous.user || auth.hostname !== previous.hostname;
 
   console.debug(`Setting extension auth for ${auth.email}`, auth);
   await setStorage(STORAGE_EXTENSION_KEY, auth);
-  return true;
+  return updated;
+}
+
+if (isExtensionContext()) {
+  browser.storage.onChanged.addListener((changes, storage) => {
+    if (storage === "local") {
+      // eslint-disable-next-line security/detect-object-injection -- compile time constant
+      const change = changes[STORAGE_EXTENSION_KEY];
+
+      if (change) {
+        for (const listener of listeners) {
+          listener(change.newValue);
+        }
+      }
+    }
+  });
 }

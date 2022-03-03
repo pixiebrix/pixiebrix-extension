@@ -15,28 +15,143 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
-import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
 import styles from "./GridView.module.scss";
+
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  BlueprintListViewProps,
+  InstallableViewItem,
+} from "@/options/pages/blueprints/blueprintsTypes";
+import { VariableSizeList as List } from "react-window";
 import GridCard from "./GridCard";
+import { Row } from "react-table";
+import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
+import { uuidv4 } from "@/types/helpers";
+import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
+
+/**
+ *  Expands `react-table` rows recursively in chunks of
+ *  `columnCount`, preserving grouped row positioning
+ *  for easy grid rendering.
+ *  @param rows - `react-table` rows that are either flat or grouped
+ *  @param columnCount - number >= 1 of chunked rows to render grid columns
+ *  @returns {array} - an array of groupBy rows and/or chunked rows
+ */
+export function expandGridRows(
+  rows: Array<Row<InstallableViewItem>>,
+  columnCount: number
+): Array<Row<InstallableViewItem> | Array<Row<InstallableViewItem>>> {
+  const gridRows = [];
+  let nextGridRow = [];
+  for (const row of rows) {
+    if (row.isGrouped) {
+      gridRows.push(row);
+
+      if (nextGridRow.length > 0) {
+        gridRows.push(nextGridRow);
+        nextGridRow = [];
+      }
+
+      gridRows.push(...expandGridRows(row.subRows, columnCount));
+      continue;
+    }
+
+    if (nextGridRow.length >= columnCount) {
+      gridRows.push(nextGridRow);
+      nextGridRow = [];
+    }
+
+    nextGridRow.push(row);
+  }
+
+  if (nextGridRow.length > 0) {
+    gridRows.push(nextGridRow);
+  }
+
+  return gridRows;
+}
+
+// 220px min card width + 15px padding
+// see: GridView.module.scss
+const MIN_CARD_WIDTH_PX = 235;
+const CARD_HEIGHT_PX = 230;
+const HEADER_ROW_HEIGHT_PX = 43;
 
 const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
+  // TODO: remove rows because they are a part of tableInstance
   rows,
-}) => (
-  <div className={styles.root}>
-    {rows.map((row) => {
-      tableInstance.prepareRow(row);
+  width,
+  height,
+}) => {
+  const [listKey, setListKey] = useState(uuidv4());
+
+  const columnCount = useMemo(
+    () => Math.floor(width / MIN_CARD_WIDTH_PX),
+    [width]
+  );
+
+  const expandedGridRows = useMemo(
+    () => expandGridRows(rows, columnCount),
+    [columnCount, rows]
+  );
+
+  const getItemSize = useCallback(
+    (index: number): number => {
+      // eslint-disable-next-line security/detect-object-injection
+      const row = expandedGridRows[index];
+      return "isGrouped" in row ? HEADER_ROW_HEIGHT_PX : CARD_HEIGHT_PX;
+    },
+    [expandedGridRows]
+  );
+
+  // `react-window` caches itemSize which causes inconsistent
+  // row heights/row height flickering on scroll when data changes,
+  // even with non-index `itemKeys`.
+  // Re-render the list when expandedRows changes.
+  useEffect(() => {
+    setListKey(uuidv4());
+  }, [expandedGridRows, columnCount]);
+
+  const GridRow = useCallback(
+    ({ index, style }) => {
+      // eslint-disable-next-line security/detect-object-injection
+      const gridRow = expandedGridRows[index];
+
+      if ("isGrouped" in gridRow) {
+        tableInstance.prepareRow(gridRow);
+
+        return <ListGroupHeader groupName={gridRow.groupByVal} style={style} />;
+      }
 
       return (
-        <GridCard
-          key={getUniqueId(row.original.installable)}
-          installableItem={row.original}
-        />
+        <div style={style} className={styles.root}>
+          {gridRow.map((row: Row<InstallableViewItem>) => {
+            tableInstance.prepareRow(row);
+            return (
+              <GridCard
+                key={getUniqueId(row.original.installable)}
+                installableItem={row.original}
+              />
+            );
+          })}
+        </div>
       );
-    })}
-  </div>
-);
+    },
+    [expandedGridRows, tableInstance]
+  );
+
+  return (
+    <List
+      height={height}
+      width={width}
+      itemSize={getItemSize}
+      itemCount={expandedGridRows.length}
+      key={listKey}
+    >
+      {GridRow}
+    </List>
+  );
+};
 
 export default GridView;

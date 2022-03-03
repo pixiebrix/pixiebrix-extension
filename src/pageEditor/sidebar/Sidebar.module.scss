@@ -1,0 +1,108 @@
+$logoSize: 31px;
+
+.root {
+  flex-direction: column;
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  border-right: 2px solid #c6bfdb;
+  background: white;
+
+  &.collapsed {
+    flex: 0 0 $logoSize;
+    align-items: center;
+  }
+  &.expanded {
+    flex: 0 0 260px;
+    width: 260px; // Preserve width during the transition
+    z-index: 1000; // Always on top of the collapsed one *and* of the content
+    &.enter,
+    &.exit.exitActive {
+      // Both `exit` and `exitActive` are needed
+      clip-path: inset(0 100% 0 0);
+    }
+    &.exitActive,
+    &.enterActive {
+      transition: clip-path 400ms;
+    }
+    &.enterActive,
+    &.exit {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  &.exitActive {
+    position: absolute; // Take out of the flow during the transition
+    height: 100vh !important;
+  }
+
+  label {
+    font-size: 0.875rem;
+  }
+
+  :global {
+    .list-group {
+      border-radius: 0;
+
+      .list-group-item {
+        padding-left: 12px;
+        padding-right: 12px;
+        border-right: none;
+        font-size: 0.875rem;
+      }
+    }
+  }
+}
+
+.logo {
+  background-color: #6462aa; // Make logo icon look square
+  width: $logoSize;
+  height: $logoSize;
+
+  :hover > & {
+    filter: brightness(0.75);
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+
+  button {
+    border-radius: 0;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  :global(.badge) {
+    margin-top: -5px;
+  }
+}
+
+.actionsLeft {
+  display: flex;
+}
+
+.toggle {
+  border: none !important;
+  border-radius: 0 !important;
+  width: $logoSize;
+  padding: 0 !important;
+
+  &:hover {
+    background-color: #e9ecef !important;
+  }
+
+  svg {
+    margin: 5px;
+  }
+}
+
+.unavailable {
+  margin: 5px;
+}
+
+.extensions {
+  overflow-y: auto;
+  flex: 1;
+}

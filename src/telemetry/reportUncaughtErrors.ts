@@ -1,4 +1,3 @@
-import { isBackground } from "webext-detect-page";
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -19,14 +18,13 @@ import { isBackground } from "webext-detect-page";
 /**
  * @file This file must be imported as early as possible in each entrypoint, once
  */
+import { isConnectionError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 
-import { getErrorMessage, IGNORED_ERRORS } from "@/errors";
-import { reportError } from "@/telemetry/rollbar";
-
-function ignoreSomeErrors(
+function ignoreConnectionErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ): void {
-  if (IGNORED_ERRORS.includes(getErrorMessage(errorEvent))) {
+  if (isConnectionError(errorEvent)) {
     errorEvent.preventDefault();
   }
 }
@@ -41,45 +39,19 @@ function defaultErrorHandler(
     }
   }
 
-  reportError(errorEvent);
+  // The browser already shows uncaught errors in the console
+  reportError(errorEvent, undefined, { logToConsole: false });
 }
 
 /**
- * Set of error event handlers to run before the default one.
+ * Array of handlers to run in order before the default one.
  * They can call `event.preventDefault()` to avoid reporting the error.
  */
-export const uncaughtErrorHandlers = new Set([ignoreSomeErrors]);
+export const uncaughtErrorHandlers = [ignoreConnectionErrors];
 
-let counter = 0;
-let timer: NodeJS.Timeout;
-
-function updateCounter(): void {
-  void chrome.browserAction.setBadgeText({
-    text: counter ? String(counter) : undefined,
-  });
-  void chrome.browserAction.setBadgeBackgroundColor({ color: "#F00" });
-}
-
-function backgroundErrorsBadge() {
-  if (process.env.ENVIRONMENT === "development" && isBackground()) {
-    counter++;
-    updateCounter();
-    // Reset the counter after a minute of inactivity
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      counter = 0;
-      updateCounter();
-    }, 60_000);
-  }
-}
-
-uncaughtErrorHandlers.add(backgroundErrorsBadge);
-
-/*
-Refactor beware: Do not add an `init` function or it will run too late.
-When imported, the file will be executed immediately, whereas if it exports
-an `init` function will be called after every top-level imports (and their deps)
-has been executed.
-*/
+// Refactor beware: Do not add an `init` function or it will run too late.
+// When imported, the file will be executed immediately, whereas if it exports
+// an `init` function will be called after every top-level imports (and their deps)
+// has been executed.
 window.addEventListener("error", defaultErrorHandler);
 window.addEventListener("unhandledrejection", defaultErrorHandler);

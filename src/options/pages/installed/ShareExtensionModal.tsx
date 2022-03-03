@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import styles from "./ShareExtensionModal.module.scss";
+
 import React, { useCallback, useMemo } from "react";
 import {
   Button,
@@ -38,7 +41,7 @@ import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
 } from "@/types/definitions";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { push } from "connected-react-router";
 import { getHumanDetail } from "@/hooks/useUserAction";
 import { isAxiosError } from "@/errors";
@@ -55,7 +58,6 @@ import extensionsSlice from "@/store/extensionsSlice";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
-import styles from "./ShareExtensionModal.module.scss";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { RequireScope } from "@/auth/RequireScope";
 
@@ -112,7 +114,6 @@ const ShareExtensionModal: React.FC<{
   extensionId: UUID;
 }> = ({ extensionId }) => {
   const extensions = useSelector(selectExtensions);
-  const notify = useNotifications();
   const dispatch = useDispatch();
 
   const extension = useMemo(() => {
@@ -172,17 +173,16 @@ const ShareExtensionModal: React.FC<{
           return;
         }
 
-        notify.error(
-          `Error converting/sharing brick: ${getHumanDetail(error)}`,
-          {
-            error,
-          }
-        );
+        notify.error({
+          message: `Error converting/sharing brick: ${getHumanDetail(error)}`,
+
+          error,
+        });
       } finally {
         helpers.setSubmitting(false);
       }
     },
-    [dispatch, notify, extension]
+    [dispatch, extension]
   );
 
   const renderBody: RenderBody = ({ values, setFieldValue }) => (
@@ -270,13 +270,7 @@ const ShareExtensionModal: React.FC<{
   );
 
   return (
-    <Modal
-      show
-      onHide={onCancel}
-      backdropClassName={styles.backdrop}
-      className={styles.modal}
-      dialogClassName={styles.dialog}
-    >
+    <Modal show onHide={onCancel} dialogClassName={styles.dialog}>
       <Modal.Header>
         <Modal.Title>Share as Blueprint</Modal.Title>
       </Modal.Header>
