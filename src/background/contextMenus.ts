@@ -100,6 +100,9 @@ async function dispatchMenu(
       const message = `Error handling context menu action: ${getErrorMessage(
         error
       )}`;
+      // Report the original error here. The stack trace will point to this block anyway, but its origin will be
+      // better defined. Here it's called explicitly because the messaging API does not automatically serialize errors,
+      // especially deep inside other objects.
       reportError(error);
       notify.error(target, { message, reportError: false });
     }

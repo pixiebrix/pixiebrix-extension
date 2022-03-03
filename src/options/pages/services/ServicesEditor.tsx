@@ -91,10 +91,9 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       try {
         await services.refresh();
       } catch (error) {
-        notify.warning({
+        notify.error({
           message:
             "Error refreshing service configurations, restart the PixieBrix extension",
-
           error,
         });
       }
@@ -148,10 +147,9 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       try {
         await services.refresh();
       } catch (error) {
-        notify.warning({
+        notify.error({
           message:
             "Error refreshing service configurations, restart the PixieBrix extension",
-
           error,
         });
       }

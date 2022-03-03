@@ -213,9 +213,7 @@ function useDeployments(): DeploymentState {
     } catch (error) {
       // Try to proceed if we can't refresh the brick definitions
       notify.warning({
-        message: `Error fetching latest bricks from server: ${getErrorMessage(
-          error
-        )}`,
+        message: `Unable to fetch latest bricks: ${getErrorMessage(error)}`,
         error,
         reportError: true,
       });
