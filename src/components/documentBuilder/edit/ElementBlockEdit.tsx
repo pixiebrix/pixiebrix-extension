@@ -25,6 +25,7 @@ import blockRegistry from "@/blocks/registry";
 import { BlockType, defaultBlockConfig } from "@/blocks/util";
 import { IBlock } from "@/core";
 import { uuidv4 } from "@/types/helpers";
+import { reportEvent } from "@/telemetry/events";
 
 type ElementBlockEditProps = {
   blockTypes: BlockType[];
@@ -60,6 +61,7 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
       config: defaultBlockConfig(block.inputSchema),
     };
 
+    reportEvent("BrickAdd", { brickId: block.id });
     onBlockSelected(blockConfig);
   };
 
