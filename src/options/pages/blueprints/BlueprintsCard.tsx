@@ -42,6 +42,8 @@ import { uniq } from "lodash";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
 import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/options/pages/blueprints/BlueprintsToolbar";
+import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
+import BlueprintsView from "@/options/pages/blueprints/BlueprintsView";
 
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
@@ -102,7 +104,6 @@ const BlueprintsCard: React.FunctionComponent<{
     [data]
   );
 
-  const view = useSelector(selectView);
   const groupBy = useSelector(selectGroupBy);
   const sortBy = useSelector(selectSortBy);
   const filters = useSelector(selectFilters);
@@ -134,9 +135,7 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  const { rows, setGlobalFilter } = tableInstance;
-
-  const BlueprintsView = view === "list" ? ListView : GridView;
+  const { setGlobalFilter, rows } = tableInstance;
 
   return (
     <BootstrapRow className={styles.root}>
@@ -150,14 +149,21 @@ const BlueprintsCard: React.FunctionComponent<{
         <div style={{ flex: "1 1 auto" }}>
           <AutoSizer defaultHeight={500}>
             {({ height, width }) => (
-              <div>
-                <BlueprintsView
-                  tableInstance={tableInstance}
-                  rows={rows}
-                  width={width}
-                  height={height}
-                />
-              </div>
+              <>
+                {rows.length > 0 ? (
+                  <BlueprintsView
+                    tableInstance={tableInstance}
+                    width={width}
+                    height={height}
+                  />
+                ) : (
+                  <EmptyView
+                    tableInstance={tableInstance}
+                    height={height}
+                    width={width}
+                  />
+                )}
+              </>
             )}
           </AutoSizer>
         </div>
