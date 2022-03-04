@@ -104,7 +104,7 @@ function useInstallableViewItems(
           source: getSharingType(installable, organizations ?? [], scope),
         },
         updatedAt: getUpdatedAt(installable),
-        status: isActive(installable) ? "Active" : "Uninstalled",
+        status: isActive(installable) ? "Active" : "Inactive",
         hasUpdate: isExtension(installable)
           ? updateAvailable(recipes.data, installable)
           : false,

@@ -93,7 +93,7 @@ const BlueprintActions: React.FunctionComponent<{
       {
         title: (
           <>
-            <FontAwesomeIcon icon={faTimes} /> Uninstall
+            <FontAwesomeIcon icon={faTimes} /> Deactivate
           </>
         ),
         action: actions.uninstall,

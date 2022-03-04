@@ -39,7 +39,7 @@ import { fetch } from "@/hooks/fetch";
 import { Brick } from "@/types/contract";
 import browser from "webextension-polyfill";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { ReferenceEntry } from "./brickEditorTypes";
 import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
@@ -74,26 +74,21 @@ interface OwnProps {
 }
 
 function useOpenEditorTab() {
-  const notify = useNotifications();
-  return useCallback(
-    async (id: string) => {
-      const available = await fetch<Brick[]>("/api/bricks/");
-      const brick = available.find((x) => x.name === id);
-      if (brick) {
-        console.debug("Open editor for brick: %s", id, { brick });
-        const url = browser.runtime.getURL("options.html");
-        // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
-        window.open(`${url}#/workshop/bricks/${brick.id}`);
-      } else {
-        notify.warning(`You cannot edit brick: ${id}`);
-      }
-    },
-    [notify]
-  );
+  return useCallback(async (id: string) => {
+    const available = await fetch<Brick[]>("/api/bricks/");
+    const brick = available.find((x) => x.name === id);
+    if (brick) {
+      console.debug("Open editor for brick: %s", id, { brick });
+      const url = browser.runtime.getURL("options.html");
+      // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
+      window.open(`${url}#/workshop/bricks/${brick.id}`);
+    } else {
+      notify.warning(`You cannot edit brick: ${id}`);
+    }
+  }, []);
 }
 
 const Editor: React.FunctionComponent<OwnProps> = ({ showLogs = true }) => {
-  const notify = useNotifications();
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState();
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
@@ -123,7 +118,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({ showLogs = true }) => {
         notify.warning(`Cannot find brick: ${id}`);
       }
     },
-    [setTab, bricks, setSelectedReference, notify]
+    [setTab, bricks, setSelectedReference]
   );
 
   const openEditorTab = useOpenEditorTab();

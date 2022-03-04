@@ -13,15 +13,27 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-const reactToastNotificationsmock = jest.createMockFromModule(
-  "react-toast-notifications"
-);
+// Keep in order so precedence is preserved
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
+import "@/utils/layout.scss";
+import "./sidebar.scss";
 
-export const useToasts = jest.fn(() => ({
-  addToast: jest.fn(),
-}));
+import "@/extensionContext";
 
-export default reactToastNotificationsmock;
+import registerMessenger from "@/sidebar/messenger/registration";
+import App from "@/sidebar/SidebarApp";
+import ReactDOM from "react-dom";
+import React from "react";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
+import { initToaster } from "@/utils/notify";
+
+registerMessenger();
+registerContribBlocks();
+registerBuiltinBlocks();
+initToaster();
+
+ReactDOM.render(<App />, document.querySelector("#container"));

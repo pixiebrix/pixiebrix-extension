@@ -18,11 +18,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useContext } from "react";
 import { PageEditorTabContext } from "@/pageEditor/context";
-import { useToasts } from "react-toast-notifications";
+import notify from "@/utils/notify";
 import { actions, FormState } from "@/pageEditor/slices/editorSlice";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
 import { getErrorMessage } from "@/errors";
-import reportError from "@/telemetry/reportError";
 import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
@@ -35,7 +34,6 @@ function useAddElement(): AddElement {
   const dispatch = useDispatch();
   const { tabState } = useContext(PageEditorTabContext);
   const { flagOff } = useFlags();
-  const { addToast } = useToasts();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
     (x) => x.settings.suggestElements
   );
@@ -83,21 +81,17 @@ function useAddElement(): AddElement {
           return;
         }
 
-        reportError(error);
-        addToast(
-          `Error adding ${config.label.toLowerCase()}: ${getErrorMessage(
+        notify.error({
+          message: `Error adding ${config.label.toLowerCase()}: ${getErrorMessage(
             error
           )}`,
-          {
-            appearance: "error",
-            autoDismiss: true,
-          }
-        );
+          error,
+        });
       } finally {
         dispatch(actions.toggleInsert(null));
       }
     },
-    [dispatch, tabState.meta?.frameworks, addToast, flagOff, suggestElements]
+    [dispatch, tabState.meta?.frameworks, flagOff, suggestElements]
   );
 }
 

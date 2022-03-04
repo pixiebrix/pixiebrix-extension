@@ -15,36 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
-declare module "*.svg" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import "bootstrap/dist/css/bootstrap.min.css";
+import "react-image-crop/dist/ReactCrop.css";
+import "./ephemeralForm.scss";
 
-declare module "*?loadAsUrl" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import "@/extensionContext";
 
-declare module "*?loadAsText" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import React from "react";
+import { render } from "react-dom";
+import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
 
-// Loading svg as React component using @svgr
-declare module "*.svg?loadAsComponent" {
-  import React from "react";
-
-  const SVG: React.VFC<React.SVGProps<SVGSVGElement>>;
-  export default SVG;
-}
-
-declare module "*.txt" {
-  const CONTENT: string;
-  export default CONTENT;
-}
-
-declare module "*.yaml" {
-  const CONTENT: Record<string, unknown>;
-  export default CONTENT;
-}
+render(<EphemeralForm />, document.querySelector("#container"));

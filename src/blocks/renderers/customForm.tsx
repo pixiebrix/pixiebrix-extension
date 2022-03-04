@@ -22,7 +22,7 @@ import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
 import { dataStore } from "@/background/messenger/api";
 import reportError from "@/telemetry/reportError";
-import { notifyResult } from "@/contentScript/notify";
+import { notifyResult } from "@/utils/notify";
 
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import BootstrapStylesheet from "./BootstrapStylesheet";

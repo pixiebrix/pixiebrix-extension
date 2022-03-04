@@ -15,23 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Keep in order so precedence is preserved
-import "@/vendors/theme/app/app.scss";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "@/vendors/overrides.scss";
 import "@/utils/layout.scss";
-import "@/sidebar.scss";
 
-import "@/extensionContext";
+import "@/development/darkMode";
+import "@/telemetry/reportUncaughtErrors";
+import registerMessenger from "@/pageEditor/messenger/registration";
 
-import registerMessenger from "@/sidebar/messenger/registration";
-import App from "@/sidebar/SidebarApp";
 import ReactDOM from "react-dom";
 import React from "react";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
+import Panel from "@/pageEditor/Panel";
+import { watchNavigation } from "@/pageEditor/protocol";
+import initGoogle from "@/contrib/google/initGoogle";
+import { initToaster } from "@/utils/notify";
 
 registerMessenger();
-registerContribBlocks();
-registerBuiltinBlocks();
+initGoogle();
+watchNavigation();
+initToaster();
 
-ReactDOM.render(<App />, document.querySelector("#container"));
+ReactDOM.render(<Panel />, document.querySelector("#container"));

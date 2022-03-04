@@ -37,7 +37,7 @@ import {
   RegistryId,
 } from "@/core";
 import { UnsavedRecipeDefinition } from "@/types/definitions";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
   useCreateRecipeMutation,
@@ -77,7 +77,6 @@ const useSavingWizard = () => {
   const dispatch = useDispatch();
   const create = useCreate();
   const reset = useReset();
-  const notify = useNotifications();
   const isWizardOpen = useSelector(selectIsWizardOpen);
   const isSaving = useSelector(selectIsSaving);
   const extensions = useSelector(selectExtensions);
@@ -185,7 +184,8 @@ const useSavingWizard = () => {
 
     if ("error" in createRecipeResponse) {
       const errorMessage = "Failed to create new Blueprint";
-      notify.error(errorMessage, {
+      notify.error({
+        message: errorMessage,
         error: createRecipeResponse.error,
       });
       closeWizard(errorMessage);
@@ -243,7 +243,8 @@ const useSavingWizard = () => {
 
     if ("error" in updateRecipeResponse) {
       const errorMessage = "Failed to update the Blueprint";
-      notify.error(errorMessage, {
+      notify.error({
+        message: errorMessage,
         error: updateRecipeResponse.error,
       });
       closeWizard(errorMessage);

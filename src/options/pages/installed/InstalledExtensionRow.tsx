@@ -33,12 +33,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { useDispatch } from "react-redux";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { installedPageSlice } from "./installedPageSlice";
+import { reportEvent } from "@/telemetry/events";
 
 function validationMessage(validation: ExtensionValidationResult) {
   let message = "Invalid Configuration";
@@ -69,8 +70,6 @@ const InstalledExtensionRow: React.FunctionComponent<{
   const dispatch = useDispatch();
 
   const { id: extensionId, label, _recipe } = extension;
-
-  const notify = useNotifications();
 
   const [hasPermissions, requestPermissions] =
     useExtensionPermissions(extension);
@@ -125,9 +124,8 @@ const InstalledExtensionRow: React.FunctionComponent<{
 
   const onUninstall = () => {
     onRemove({ extensionId });
-    notify.success(`Removed brick ${label ?? extensionId}`, {
-      event: "ExtensionRemove",
-    });
+    notify.success(`Removed brick ${label ?? extensionId}`);
+    reportEvent("ExtensionRemove");
   };
 
   return (

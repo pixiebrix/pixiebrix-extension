@@ -33,7 +33,7 @@ import {
 } from "@/background/messenger/api";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { push } from "connected-react-router";
 import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/installed/exportBlueprint";
 import { appApi, useDeleteCloudExtensionMutation } from "@/services/api";
@@ -46,7 +46,6 @@ const { removeExtension } = extensionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
-  const notify = useNotifications();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
 
@@ -134,6 +133,7 @@ function useInstallableActions(installable: Installable) {
       return;
     }
 
+    notify.success(`Removed brick ${getLabel(installable)}`);
     reportEvent("ExtensionRemove", {
       extensionId: installable.id,
     });
@@ -142,10 +142,6 @@ function useInstallableActions(installable: Installable) {
     // XXX: also remove remove side panel panels that are already open?
     void uninstallContextMenu({ extensionId: installable.id });
     reactivateEveryTab();
-
-    notify.success(`Removed brick ${getLabel(installable)}`, {
-      event: "ExtensionRemove",
-    });
   };
 
   const viewLogs = () => {
