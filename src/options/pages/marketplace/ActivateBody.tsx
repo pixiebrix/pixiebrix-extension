@@ -29,16 +29,16 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card, Alert } from "react-bootstrap";
+import { Alert, Card } from "react-bootstrap";
 import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import { resolveRecipe } from "@/registry/internal";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useAsyncState } from "@/hooks/common";
 import { isEmpty } from "lodash";
-import reportError from "@/telemetry/reportError";
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settingsSelectors";
+import { allSettledValues } from "@/utils";
 
 const QuickBarAlert = () => (
   <Alert variant="warning">
@@ -86,15 +86,12 @@ const ActivateBody: React.FunctionComponent<{
         blueprint,
         blueprint.extensionPoints
       );
-      return extensions.some(async (config) => {
-        try {
-          const extensionPoint = await extensionPointRegistry.lookup(config.id);
-          return extensionPoint.kind === "quickBar";
-        } catch (error) {
-          reportError(error);
-          return false;
-        }
-      });
+      const extensionPoints = await allSettledValues(
+        extensions.map(async (config) =>
+          extensionPointRegistry.lookup(config.id)
+        )
+      );
+      return extensionPoints.some((x) => x.kind === "quickBar");
     },
     [],
     false
