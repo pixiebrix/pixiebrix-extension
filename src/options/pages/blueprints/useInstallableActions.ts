@@ -41,13 +41,19 @@ import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
 import { useModals } from "@/components/ConfirmationModal";
-
+import { selectExtensions } from "@/store/extensionsSelectors";
+import { IExtension, UUID } from "@/core";
 const { removeExtension } = extensionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
+  const unresolvedExtensions = useSelector(selectExtensions);
+
+  const installedExtensionIds = new Set<UUID>(
+    unresolvedExtensions.map((extension) => extension.id)
+  );
 
   // Select cached auth data for performance reasons
   const {
@@ -55,14 +61,16 @@ function useInstallableActions(installable: Installable) {
   } = useSelector(appApi.endpoints.getAuth.select());
 
   const reinstall = () => {
-    if (!isExtension(installable) || !installable._recipe) {
+    if (!isExtensionFromRecipe(installable) && !isBlueprint(installable)) {
       return;
     }
 
     dispatch(
       push(
         `marketplace/activate/${encodeURIComponent(
-          installable._recipe.id
+          isExtension(installable)
+            ? installable._recipe.id
+            : installable.metadata.id
         )}?reinstall=1`
       )
     );
@@ -129,19 +137,32 @@ function useInstallableActions(installable: Installable) {
   );
 
   const uninstall = () => {
-    if (!isExtension(installable)) {
-      return;
+    const extensionsToUninstall: IExtension[] = [];
+    if (isBlueprint(installable)) {
+      extensionsToUninstall.push(
+        ...unresolvedExtensions.filter(
+          (extension) => extension._recipe?.id === installable.metadata.id
+        )
+      );
+    } else {
+      extensionsToUninstall.push(installable);
     }
 
-    notify.success(`Removed brick ${getLabel(installable)}`);
-    reportEvent("ExtensionRemove", {
-      extensionId: installable.id,
-    });
-    // Remove from storage first so it doesn't get re-added in reactivate step below
-    dispatch(removeExtension({ extensionId: installable.id }));
-    // XXX: also remove remove side panel panels that are already open?
-    void uninstallContextMenu({ extensionId: installable.id });
-    reactivateEveryTab();
+    console.log("extensions to uninstall:", extensionsToUninstall);
+
+    for (const extension of extensionsToUninstall) {
+      // Remove from storage first so it doesn't get re-added in reactivate step below
+      dispatch(removeExtension({ extensionId: extension.id }));
+      // XXX: also remove remove side panel panels that are already open?
+      void uninstallContextMenu({ extensionId: extension.id });
+      reactivateEveryTab();
+
+      reportEvent("ExtensionRemove", {
+        extensionId: extension.id,
+      });
+    }
+
+    notify.success(`Deactivated blueprint ${getLabel(installable)}`);
   };
 
   const viewLogs = () => {
@@ -175,7 +196,10 @@ function useInstallableActions(installable: Installable) {
     exportBlueprint,
     activate,
     deleteExtension: isExtension(installable) ? deleteExtension : null,
-    reinstall: isExtensionFromRecipe(installable) ? reinstall : null,
+    reinstall:
+      isExtensionFromRecipe(installable) || isBlueprint(installable)
+        ? reinstall
+        : null,
   };
 }
 
