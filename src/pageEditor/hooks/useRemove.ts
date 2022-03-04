@@ -21,7 +21,6 @@ import notify from "@/utils/notify";
 import { useFormikContext } from "formik";
 import { useDispatch } from "react-redux";
 import { useModals } from "@/components/ConfirmationModal";
-import { getErrorMessage } from "@/errors";
 import { uninstallContextMenu } from "@/background/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import {
@@ -83,7 +82,7 @@ function useRemove(element: FormState): () => void {
       }
     } catch (error) {
       notify.error({
-        message: `Error removing element: ${getErrorMessage(error)}`,
+        message: "Error removing element",
         error,
       });
     }
