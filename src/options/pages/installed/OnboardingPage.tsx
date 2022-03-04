@@ -25,7 +25,7 @@ import { Link } from "react-router-dom";
 import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
 import Loader from "@/components/Loader";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 
 const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
   <Col xs={6}>

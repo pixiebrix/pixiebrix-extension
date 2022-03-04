@@ -29,7 +29,7 @@ import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import ExtensionPointPreview from "@/pageEditor/tabs/effect/ExtensionPointPreview";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;

@@ -49,7 +49,7 @@ import OnboardingPage from "@/options/pages/installed/OnboardingPage";
 import extensionsSlice from "@/store/extensionsSlice";
 import { OptionsState } from "@/store/extensionsTypes";
 import ShareLinkModal from "./ShareLinkModal";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 
 const { removeExtension } = extensionsSlice.actions;
 

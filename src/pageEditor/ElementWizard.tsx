@@ -38,7 +38,7 @@ import { upgradePipelineToV3 } from "@/pageEditor/extensionPoints/upgrade";
 import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import cx from "classnames";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
 

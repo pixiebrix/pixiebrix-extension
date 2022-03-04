@@ -27,7 +27,7 @@ import PermissionsSettings from "@/options/pages/settings/PermissionsSettings";
 import FactoryResetSettings from "@/options/pages/settings/FactoryResetSettings";
 import AdvancedSettings from "@/options/pages/settings/AdvancedSettings";
 import ExperimentalSettings from "@/options/pages/settings/ExperimentalSettings";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;

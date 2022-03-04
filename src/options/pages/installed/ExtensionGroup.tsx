@@ -44,7 +44,7 @@ import { useDispatch } from "react-redux";
 import { installedPageSlice } from "./installedPageSlice";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;

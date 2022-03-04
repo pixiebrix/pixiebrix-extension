@@ -36,7 +36,7 @@ import { useGetAuthQuery, useGetOrganizationsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import Pagination from "@/components/pagination/Pagination";
 import { Organization } from "@/types/contract";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 

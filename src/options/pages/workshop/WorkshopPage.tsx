@@ -34,7 +34,7 @@ import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
 import { EnrichedBrick, NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 
 const { actions } = workshopSlice;
 

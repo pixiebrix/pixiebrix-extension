@@ -31,7 +31,7 @@ import {
 import cx from "classnames";
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 import { useSelector } from "react-redux";
 import { SettingsState } from "@/store/settingsTypes";
 

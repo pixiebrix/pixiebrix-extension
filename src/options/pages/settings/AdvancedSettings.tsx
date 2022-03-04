@@ -25,7 +25,7 @@ import browser from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import { isEmpty } from "lodash";
 import notify from "@/utils/notify";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const { restrict, permit } = useFlags();

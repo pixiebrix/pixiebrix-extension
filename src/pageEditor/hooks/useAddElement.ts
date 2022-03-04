@@ -26,7 +26,7 @@ import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { SettingsState } from "@/store/settingsTypes";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 
 type AddElement = (config: ElementConfig) => void;
 

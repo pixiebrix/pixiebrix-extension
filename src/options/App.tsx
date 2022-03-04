@@ -54,7 +54,7 @@ import WorkshopPage from "./pages/workshop/WorkshopPage";
 import InvitationBanner from "@/options/pages/InvitationBanner";
 import { SettingsState } from "@/store/settingsTypes";
 import BrowserBanner from "./pages/BrowserBanner";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 import { selectSettings } from "@/store/settingsSelectors";
 
 // Register the built-in bricks

@@ -54,7 +54,7 @@ import { CSSTransitionProps } from "react-transition-group/CSSTransition";
 import { RecipeDefinition } from "@/types/definitions";
 import Loader from "@/components/Loader";
 import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 
 const ReloadButton: React.VoidFunctionComponent = () => (

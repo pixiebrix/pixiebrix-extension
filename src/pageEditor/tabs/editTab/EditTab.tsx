@@ -51,7 +51,7 @@ import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 
 const EditTab: React.FC<{
   eventKey: string;

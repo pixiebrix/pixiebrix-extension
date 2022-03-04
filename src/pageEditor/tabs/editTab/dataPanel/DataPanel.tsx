@@ -48,7 +48,7 @@ import DocumentPreview from "@/components/documentBuilder/preview/DocumentPrevie
 import documentBuilderSelectors from "@/pageEditor/slices/documentBuilderSelectors";
 import { actions as documentBuilderActions } from "@/pageEditor/slices/documentBuilderSlice";
 import copy from "copy-to-clipboard";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 
 /**
  * Exclude irrelevant top-level keys.

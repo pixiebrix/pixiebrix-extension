@@ -33,7 +33,7 @@ import { push } from "connected-react-router";
 import { resolveRecipe } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import extensionsSlice from "@/store/extensionsSlice";
-import useFlags from "@/hooks/useFlags";
+import useFlags from "@/auth/useFlags";
 import { selectSettings } from "@/store/settingsSelectors";
 
 const { installRecipe } = extensionsSlice.actions;
