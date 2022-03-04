@@ -15,27 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Footer.module.scss";
+import { appApi } from "@/services/api";
 
-import React, { useContext } from "react";
-import { PageEditorTabContext } from "@/pageEditor/context";
-import BeatLoader from "react-spinners/BeatLoader";
-import useScope from "@/auth/useScope";
+/**
+ * Hook returns the user scope.
+ *
+ * The hook expects that `getAuth` query (`useGetAuthQuery`) is already resolved.
+ */
+function useScope(): string | null {
+  const { data } = appApi.endpoints.getAuth.useQueryState();
+  return data?.scope ?? null;
+}
 
-const Footer: React.FunctionComponent = () => {
-  const scope = useScope();
-  const { connecting } = useContext(PageEditorTabContext);
-
-  return (
-    <div className={styles.root}>
-      {scope && (
-        <div className={styles.scope}>
-          Scope: <code>{scope}</code>
-        </div>
-      )}
-      {connecting && <BeatLoader size={7} />}
-    </div>
-  );
-};
-
-export default Footer;
+export default useScope;

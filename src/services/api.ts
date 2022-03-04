@@ -293,6 +293,10 @@ export const appApi = createApi({
 });
 
 export const {
+  /**
+   * Get the user info. Used at the top level of the app.
+   * In most cases what you need is a different hook (e.g. useScope or useFlags)
+   */
   useGetAuthQuery,
   useGetDatabasesQuery,
   useCreateDatabaseMutation,
