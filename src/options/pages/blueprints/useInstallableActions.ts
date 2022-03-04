@@ -51,10 +51,6 @@ function useInstallableActions(installable: Installable) {
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
   const unresolvedExtensions = useSelector(selectExtensions);
 
-  const installedExtensionIds = new Set<UUID>(
-    unresolvedExtensions.map((extension) => extension.id)
-  );
-
   // Select cached auth data for performance reasons
   const {
     data: { scope },
@@ -148,8 +144,6 @@ function useInstallableActions(installable: Installable) {
       extensionsToUninstall.push(installable);
     }
 
-    console.log("extensions to uninstall:", extensionsToUninstall);
-
     for (const extension of extensionsToUninstall) {
       // Remove from storage first so it doesn't get re-added in reactivate step below
       dispatch(removeExtension({ extensionId: extension.id }));
@@ -166,14 +160,16 @@ function useInstallableActions(installable: Installable) {
   };
 
   const viewLogs = () => {
-    if (!isExtension(installable)) {
-      return;
-    }
-
+    console.log("installable");
     dispatch(
       installedPageSlice.actions.setLogsContext({
-        title: installable.label,
-        messageContext: selectExtensionContext(installable),
+        title: getLabel(installable),
+        messageContext: isBlueprint(installable)
+          ? {
+              label: getLabel(installable),
+              blueprintId: installable.metadata.id,
+            }
+          : selectExtensionContext(installable),
       })
     );
   };
