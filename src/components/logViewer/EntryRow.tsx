@@ -22,7 +22,7 @@ import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { isErrorObject } from "@/errors";
 import InputDetail from "@/components/logViewer/details/InputDetail";
 import OutputDetail from "@/components/logViewer/details/OutputDetail";
-import getErrorDetails from "../errors/getErrorDetails";
+import getErrorDetails from "@/components/errors/getErrorDetails";
 
 const dateFormat = new Intl.DateTimeFormat("en-US", {
   dateStyle: "short",

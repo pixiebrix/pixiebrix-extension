@@ -19,15 +19,15 @@ import React from "react";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { getRootCause, isAxiosError } from "@/errors";
 import { AxiosError } from "axios";
-import { Row, Col } from "react-bootstrap";
 import { ErrorObject } from "serialize-error";
 import InputValidationErrorDetail from "./InputValidationErrorDetail";
 import NetworkErrorDetail from "./NetworkErrorDetail";
 import OutputValidationErrorDetail from "./OutputValidationErrorDetail";
+import { Col, Row } from "react-bootstrap";
 
 type ErrorDetails = {
   title: string;
-  detailsElement: React.ReactNode;
+  detailsElement: React.ReactElement;
 };
 
 const getErrorDetails: (error: ErrorObject) => ErrorDetails = (error) => {
@@ -72,10 +72,11 @@ const getErrorDetails: (error: ErrorObject) => ErrorDetails = (error) => {
       errorDetails = {
         title: "Error",
         detailsElement: (
-          <p>
-            Message: <br />
-            {message}
-          </p>
+          <Row>
+            <Col>
+              {name}: {message}
+            </Col>
+          </Row>
         ),
       };
   }

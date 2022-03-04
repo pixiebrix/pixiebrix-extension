@@ -15,10 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+/*
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { render } from "@testing-library/react";
-import ErrorDisplay from "./ErrorDisplay";
 import { waitForEffect } from "@/tests/testHelpers";
+import getErrorDetails from "./getErrorDetails";
 
 test("Template render error", () => {
   const error = {
@@ -29,8 +45,9 @@ test("Template render error", () => {
       "Template render error: (unknown path) [Line 1, Column 3]\n  parseAggregate: expected colon after dict key\n    at Object._prettifyError (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/nunjucks.bundle.js:121:11)\n    at Template.render (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/nunjucks.bundle.js:3489:21)\n    at Environment.renderString (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/nunjucks.bundle.js:3331:17)\n    at Object.renderString (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/bundles/nunjucks.bundle.js:5652:14)\n    at default (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:56066:33)\n    at renderExplicit (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:55472:16)\n    at async Promise.all (index 1)\n    at async asyncMapValues (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:58604:20)\n    at async renderExplicit (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:55484:33)\n    at async Promise.all (index 0)",
   };
 
-  const rendered = render(<ErrorDisplay error={error} />);
-  expect(rendered.asFragment()).toMatchSnapshot();
+  const { title, detailsElement } = getErrorDetails(error);
+  expect(title).toBe("Error");
+  expect(render(detailsElement).asFragment()).toMatchSnapshot();
 });
 
 test("Input validation error", () => {
@@ -98,8 +115,9 @@ test("Input validation error", () => {
       "InputValidationError: Invalid inputs for block\n    at throwIfInvalidInput (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:56223:15)\n    at async runBlock (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:55809:9)\n    at async blockReducer (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:55879:20)\n    at async reducePipeline (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:55989:26)\n    at async HTMLAnchorElement.<anonymous> (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/contentScript.js:51535:17)",
   };
 
-  const rendered = render(<ErrorDisplay error={error} />);
-  expect(rendered.asFragment()).toMatchSnapshot();
+  const { title, detailsElement } = getErrorDetails(error);
+  expect(title).toBe("Invalid inputs for block");
+  expect(render(detailsElement).asFragment()).toMatchSnapshot();
 });
 
 test("Network error", async () => {
@@ -140,7 +158,9 @@ test("Network error", async () => {
       "ClientNetworkError: No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information\n    at enrichRequestError (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:54834:12)\n    at async serializableAxiosRequest (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:43429:15)\n    at async handleMessage (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:67712:22)",
   };
 
-  const rendered = render(<ErrorDisplay error={error} />);
+  const { title, detailsElement } = getErrorDetails(error);
+  expect(title).toBe("Network error");
+  const rendered = render(detailsElement);
   await waitForEffect();
   expect(rendered.asFragment()).toMatchSnapshot();
 });
