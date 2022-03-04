@@ -18,8 +18,8 @@
 import { Effect } from "@/types";
 import { proxyService } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg } from "@/core";
-import { showNotification } from "@/contentScript/notify";
+import { BlockArg, BlockOptions, SanitizedServiceConfiguration } from "@/core";
+import { BusinessError } from "@/errors";
 
 export class AddOrganization extends Effect {
   // https://developers.pipedrive.com/docs/api/v1/#!/Organizations/post_organizations
@@ -51,7 +51,18 @@ export class AddOrganization extends Effect {
     ["name"]
   );
 
-  async effect({ pipedrive, name, owner_id }: BlockArg): Promise<void> {
+  async effect(
+    {
+      pipedrive,
+      name,
+      owner_id,
+    }: BlockArg<{
+      name: string;
+      owner_id: number;
+      pipedrive: SanitizedServiceConfiguration;
+    }>,
+    { logger }: BlockOptions
+  ): Promise<void> {
     const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/organizations/search",
       method: "get",
@@ -62,7 +73,7 @@ export class AddOrganization extends Effect {
     });
 
     if (data.items.length > 0) {
-      showNotification({ message: `Organization already exists for ${name}` });
+      logger.info(`Organization already exists for ${name}`);
       return;
     }
 
@@ -72,15 +83,8 @@ export class AddOrganization extends Effect {
         method: "post",
         data: { name, owner_id },
       });
-      showNotification({
-        message: `Added ${name} to Pipedrive`,
-        type: "success",
-      });
     } catch {
-      showNotification({
-        message: `Error adding ${name} to Pipedrive`,
-        type: "error",
-      });
+      throw new BusinessError(`Error adding ${name} to Pipedrive`);
     }
   }
 }
@@ -123,13 +127,10 @@ export class AddPerson extends Effect {
     ["name"]
   );
 
-  async effect({
-    pipedrive,
-    name,
-    owner_id,
-    email,
-    phone,
-  }: BlockArg): Promise<void> {
+  async effect(
+    { pipedrive, name, owner_id, email, phone }: BlockArg,
+    { logger }: BlockOptions
+  ): Promise<void> {
     const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/persons/search",
       method: "get",
@@ -140,7 +141,7 @@ export class AddPerson extends Effect {
     });
 
     if (data.items.length > 0) {
-      showNotification({ message: `Person record already exists for ${name}` });
+      logger.info(`Person record already exists for ${name}`);
       return;
     }
 
@@ -155,15 +156,8 @@ export class AddPerson extends Effect {
           phone: phone ? [phone] : undefined,
         },
       });
-      showNotification({
-        message: `Added ${name} to Pipedrive`,
-        type: "success",
-      });
     } catch {
-      showNotification({
-        message: `Error adding ${name} to Pipedrive`,
-        type: "error",
-      });
+      throw new BusinessError(`Error adding ${name} to Pipedrive`);
     }
   }
 }

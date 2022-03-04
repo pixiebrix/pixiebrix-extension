@@ -15,15 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { hideNotification, showNotification } from "@/contentScript/notify";
+import notify, { hideNotification } from "@/utils/notify";
 
 const id = "connection-lost";
 
 export function showConnectionLost(): void {
-  showNotification({
+  notify.error({
     id,
     message: "Connection to PixieBrix lost. Please reload the page",
-    type: "error",
     duration: Number.POSITIVE_INFINITY,
   });
 }

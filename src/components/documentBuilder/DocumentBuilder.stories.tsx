@@ -26,7 +26,6 @@ import {
   Form as BootstrapForm,
   Row,
 } from "react-bootstrap";
-import { ToastProvider } from "react-toast-notifications";
 import DocumentEditor from "./edit/DocumentEditor";
 import DocumentPreview from "./preview/DocumentPreview";
 import { action } from "@storybook/addon-actions";
@@ -55,13 +54,11 @@ const DocumentBuilder: React.FC = () => {
                 />
               </Col>
               <Col>
-                <ToastProvider>
-                  <DocumentPreview
-                    name="body"
-                    activeElement={activeElement}
-                    setActiveElement={setActiveElement}
-                  />
-                </ToastProvider>
+                <DocumentPreview
+                  name="body"
+                  activeElement={activeElement}
+                  setActiveElement={setActiveElement}
+                />
               </Col>
             </Row>
             <Row className="mt-5">

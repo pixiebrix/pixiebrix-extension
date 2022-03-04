@@ -59,13 +59,14 @@ function useInstallables(): InstallablesState {
     () =>
       (recipes.data ?? []).filter(
         (recipe) =>
-          (recipe.metadata.id.includes(scope) ||
-            recipe.sharing.organizations.length > 0) &&
-          // Remove duplicate Installable entries for Active extension
-          // and Recipe pairs
-          !installedRecipeIds.has(recipe.metadata.id)
+          // Is personal blueprint
+          recipe.metadata.id.includes(scope) ||
+          // Is blueprint shared with user
+          recipe.sharing.organizations.length > 0 ||
+          // Is blueprint active, e.g. installed via marketplace
+          installedRecipeIds.has(recipe.metadata.id)
       ),
-    [recipes.data, scope]
+    [installedRecipeIds, recipes.data, scope]
   );
 
   const allExtensions = useMemo(() => {
@@ -87,13 +88,18 @@ function useInstallables(): InstallablesState {
       []
     );
 
-  const installables = useMemo(
-    () => [...resolvedExtensions, ...personalOrTeamBlueprints],
-    [personalOrTeamBlueprints, resolvedExtensions]
+  const extensionsWithoutRecipe = useMemo(
+    () =>
+      resolvedExtensions.filter((extension) =>
+        extension._recipe?.id
+          ? !installedRecipeIds.has(extension._recipe?.id)
+          : true
+      ),
+    [installedRecipeIds, resolvedExtensions]
   );
 
   return {
-    installables,
+    installables: [...extensionsWithoutRecipe, ...personalOrTeamBlueprints],
     isLoading:
       recipes.isLoading ||
       cloudExtensions.isLoading ||

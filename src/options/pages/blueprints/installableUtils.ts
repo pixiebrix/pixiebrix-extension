@@ -16,7 +16,13 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import { IExtension, RegistryId, ResolvedExtension, UUID } from "@/core";
+import {
+  IExtension,
+  PersistedExtension,
+  RegistryId,
+  ResolvedExtension,
+  UUID,
+} from "@/core";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
 import { Installable } from "./blueprintsTypes";
@@ -68,7 +74,7 @@ export const getSharingType = (
 
 export const isExtension = (
   installable: Installable
-): installable is ResolvedExtension => "_recipe" in installable;
+): installable is ResolvedExtension => "extensionPointId" in installable;
 
 export const isExtensionFromRecipe = (installable: Installable) =>
   isExtension(installable) && Boolean(installable._recipe);
@@ -83,10 +89,24 @@ export const getUniqueId = (installable: Installable): UUID | RegistryId =>
 export const getLabel = (installable: Installable): string =>
   isExtension(installable) ? installable.label : installable.metadata.name;
 
-export const getDescription = (installable: Installable): string =>
-  isExtension(installable)
+export const getDescription = (installable: Installable): string => {
+  let description = isExtension(installable)
     ? installable._recipe?.description
     : installable.metadata.description;
+
+  if (!description && isExtension(installable)) {
+    const createDate =
+      "createTimestamp" in installable
+        ? new Date((installable as PersistedExtension).createTimestamp)
+        : null;
+    description =
+      "createTimestamp" in installable
+        ? `Created on ${createDate.toLocaleDateString()} at ${createDate.toLocaleTimeString()} in the page editor`
+        : "Created in the page editor";
+  }
+
+  return description;
+};
 
 export const getPackageId = (installable: Installable): RegistryId =>
   isExtension(installable) ? installable._recipe?.id : installable.metadata.id;
@@ -173,10 +193,9 @@ export const getOrganization = (
   installable: Installable,
   organizations: Organization[]
 ) => {
-  const sharing =
-    "_recipe" in installable
-      ? installable._recipe?.sharing
-      : installable.sharing;
+  const sharing = isExtension(installable)
+    ? installable._recipe?.sharing
+    : installable.sharing;
 
   if (!sharing || sharing.organizations.length === 0) {
     return null;

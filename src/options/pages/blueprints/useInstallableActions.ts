@@ -25,7 +25,7 @@ import {
   isShared,
 } from "@/options/pages/blueprints/installableUtils";
 import { Installable } from "./blueprintsTypes";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import {
   reactivateEveryTab,
@@ -33,14 +33,10 @@ import {
 } from "@/background/messenger/api";
 import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import { useCallback } from "react";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { push } from "connected-react-router";
 import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/installed/exportBlueprint";
-import {
-  useDeleteCloudExtensionMutation,
-  useGetAuthQuery,
-} from "@/services/api";
+import { appApi, useDeleteCloudExtensionMutation } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
@@ -50,13 +46,13 @@ const { removeExtension } = extensionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
-  const notify = useNotifications();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
 
+  // Select cached auth data for performance reasons
   const {
     data: { scope },
-  } = useGetAuthQuery();
+  } = useSelector(appApi.endpoints.getAuth.select());
 
   const reinstall = () => {
     if (!isExtension(installable) || !installable._recipe) {
@@ -137,6 +133,7 @@ function useInstallableActions(installable: Installable) {
       return;
     }
 
+    notify.success(`Removed brick ${getLabel(installable)}`);
     reportEvent("ExtensionRemove", {
       extensionId: installable.id,
     });
@@ -145,10 +142,6 @@ function useInstallableActions(installable: Installable) {
     // XXX: also remove remove side panel panels that are already open?
     void uninstallContextMenu({ extensionId: installable.id });
     reactivateEveryTab();
-
-    notify.success(`Removed brick ${getLabel(installable)}`, {
-      event: "ExtensionRemove",
-    });
   };
 
   const viewLogs = () => {
@@ -164,7 +157,7 @@ function useInstallableActions(installable: Installable) {
     );
   };
 
-  const exportBlueprint = useCallback(() => {
+  const exportBlueprint = () => {
     const extension = isExtension(installable) ? installable : null;
 
     if (extension == null) {
@@ -173,7 +166,7 @@ function useInstallableActions(installable: Installable) {
     }
 
     exportBlueprintYaml(extension);
-  }, [installable, notify]);
+  };
 
   return {
     viewShare,

@@ -17,9 +17,8 @@
 
 import styles from "./BlueprintsCard.module.scss";
 
-import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { Fragment, useMemo } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Col, Row as BootstrapRow } from "react-bootstrap";
+import React, { useMemo } from "react";
 import {
   Column,
   useFilters,
@@ -28,29 +27,21 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import Select from "react-select";
-import {
-  faList,
-  faSortAmountDownAlt,
-  faSortAmountUpAlt,
-  faThLarge,
-} from "@fortawesome/free-solid-svg-icons";
-import TableView from "./tableView/TableView";
+import ListView from "./listView/ListView";
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
 import GridView from "./gridView/GridView";
-import useReduxState from "@/hooks/useReduxState";
 import {
   selectFilters,
   selectGroupBy,
   selectSortBy,
   selectView,
 } from "./blueprintsSelectors";
-import blueprintsSlice from "./blueprintsSlice";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
 import AutoSizer from "react-virtualized-auto-sizer";
+import BlueprintsToolbar from "@/options/pages/blueprints/BlueprintsToolbar";
 
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
@@ -84,7 +75,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     disableGlobalFilter: true,
   },
   {
-    Header: "Last modified",
+    Header: "Last updated",
     accessor: "updatedAt",
     disableGroupBy: true,
     disableFilters: true,
@@ -94,6 +85,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     Header: "Status",
     accessor: "status",
     disableGlobalFilter: true,
+    filter: "exactText",
   },
 ];
 
@@ -110,21 +102,9 @@ const BlueprintsCard: React.FunctionComponent<{
     [data]
   );
 
-  const [view, setView] = useReduxState(
-    selectView,
-    blueprintsSlice.actions.setView
-  );
-
-  const [groupBy, setGroupBy] = useReduxState(
-    selectGroupBy,
-    blueprintsSlice.actions.setGroupBy
-  );
-
-  const [sortBy, setSortBy] = useReduxState(
-    selectSortBy,
-    blueprintsSlice.actions.setSortBy
-  );
-
+  const view = useSelector(selectView);
+  const groupBy = useSelector(selectGroupBy);
+  const sortBy = useSelector(selectSortBy);
   const filters = useSelector(selectFilters);
 
   const tableInstance = useTable<InstallableViewItem>(
@@ -154,39 +134,9 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  const {
-    rows,
-    flatRows,
-    flatHeaders,
-    setGlobalFilter,
-    state: { globalFilter },
-  } = tableInstance;
+  const { rows, setGlobalFilter } = tableInstance;
 
-  const isGrouped = groupBy.length > 0;
-  const isSorted = sortBy.length > 0;
-  const numberOfBlueprints = isGrouped
-    ? flatRows.length - rows.length
-    : rows.length;
-
-  const { groupByOptions, sortByOptions } = useMemo(() => {
-    const groupByOptions = flatHeaders
-      .filter((column) => column.canGroupBy)
-      .map((column) => ({
-        label: column.Header,
-        value: column.id,
-      }));
-
-    const sortByOptions = flatHeaders
-      .filter((column) => column.canSort)
-      .map((column) => ({
-        label: column.Header,
-        value: column.id,
-      }));
-
-    return { groupByOptions, sortByOptions };
-  }, [flatHeaders]);
-
-  const BlueprintsView = view === "list" ? TableView : GridView;
+  const BlueprintsView = view === "list" ? ListView : GridView;
 
   return (
     <BootstrapRow className={styles.root}>
@@ -195,111 +145,18 @@ const BlueprintsCard: React.FunctionComponent<{
         setGlobalFilter={setGlobalFilter}
       />
       <Col className={styles.mainContainer}>
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h3 className={styles.filterTitle}>
-            {globalFilter
-              ? "Search results"
-              : `${filters.length > 0 ? filters[0].value : "All"} Blueprints`}
-          </h3>
-          <span className="d-flex align-items-center small">
-            <span className="ml-3 mr-2">Group by:</span>
-            <Select
-              isClearable
-              placeholder="Group by"
-              options={groupByOptions}
-              onChange={(option, { action }) => {
-                const value = action === "clear" ? [] : [option.value];
-                setGroupBy(value);
-              }}
-              value={groupByOptions.find((opt) => opt.value === groupBy[0])}
-            />
-
-            <span className="ml-3 mr-2">Sort by:</span>
-            <Select
-              isClearable
-              placeholder="Sort by"
-              options={sortByOptions}
-              onChange={(option, { action }) => {
-                const value =
-                  action === "clear" ? [] : [{ id: option.value, desc: false }];
-                setSortBy(value);
-              }}
-              value={sortByOptions.find((opt) => opt.value === sortBy[0]?.id)}
-            />
-
-            {isSorted && (
-              <Button
-                variant="link"
-                size="sm"
-                onClick={() => {
-                  const value = [{ id: sortBy[0].id, desc: !sortBy[0].desc }];
-                  setSortBy(value);
-                }}
-              >
-                <FontAwesomeIcon
-                  icon={
-                    sortBy[0].id === "updatedAt"
-                      ? sortBy[0].desc
-                        ? faSortAmountDownAlt
-                        : faSortAmountUpAlt
-                      : sortBy[0].desc
-                      ? faSortAmountUpAlt
-                      : faSortAmountDownAlt
-                  }
-                  size="lg"
-                />
-              </Button>
-            )}
-            <Button
-              variant={view === "list" ? "link" : "outline-link"}
-              size="sm"
-              className="ml-3"
-              onClick={() => {
-                setView("list");
-              }}
-            >
-              <FontAwesomeIcon icon={faList} size="lg" />
-            </Button>
-            <Button
-              variant={view === "grid" ? "link" : "outline-link"}
-              size="sm"
-              onClick={() => {
-                setView("grid");
-              }}
-            >
-              <FontAwesomeIcon icon={faThLarge} size="lg" />
-            </Button>
-          </span>
-        </div>
+        <BlueprintsToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
-          <AutoSizer>
+          <AutoSizer defaultHeight={500}>
             {({ height, width }) => (
-              <div
-                style={{ height: `${height}px`, width: `${width}px` }}
-                className={styles.blueprintsList}
-              >
-                {globalFilter && (
-                  <p>
-                    {numberOfBlueprints} results for{" "}
-                    <strong>&quot;{globalFilter}&quot;</strong>
-                  </p>
-                )}
-                {isGrouped ? (
-                  <>
-                    {rows.map((row) => (
-                      <Fragment key={row.groupByVal}>
-                        <h5 className="text-muted mt-3">{row.groupByVal}</h5>
-                        <BlueprintsView
-                          tableInstance={tableInstance}
-                          rows={row.subRows}
-                        />
-                      </Fragment>
-                    ))}
-                  </>
-                ) : (
-                  <BlueprintsView tableInstance={tableInstance} rows={rows} />
-                )}
+              <div>
+                <BlueprintsView
+                  tableInstance={tableInstance}
+                  rows={rows}
+                  width={width}
+                  height={height}
+                />
               </div>
             )}
           </AutoSizer>

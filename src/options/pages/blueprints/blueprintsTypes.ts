@@ -33,7 +33,7 @@ export type InstallableViewItem = {
     source: SharingSource;
   };
   updatedAt: string;
-  status: "Active" | "Uninstalled";
+  status: "Active" | "Inactive";
   hasUpdate: boolean;
   icon: ReactNode;
   // Used to get Installable actions from useInstallableActions
@@ -43,4 +43,6 @@ export type InstallableViewItem = {
 export type BlueprintListViewProps = {
   tableInstance: TableInstance;
   rows: Array<Row<InstallableViewItem>>;
+  width: number;
+  height: number;
 };

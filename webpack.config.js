@@ -90,7 +90,7 @@ const produceSourcemap =
 
 const sourceMapPublicUrl =
   parseEnv(process.env.PUBLIC_RELEASE) &&
-  `https://pixiebrix-extension-source-maps.s3.amazonaws.com/${process.env.SOURCE_MAP_PATH}/`;
+  `${process.env.SOURCE_MAP_URL_BASE}/${process.env.SOURCE_MAP_PATH}/`;
 console.log(
   "Sourcemaps:",
   sourceMapPublicUrl ? sourceMapPublicUrl : produceSourcemap ? "Local" : "No"
@@ -228,15 +228,15 @@ module.exports = (env, options) =>
       // All of these entries require the `vendors.js` file to be included first
       ...Object.fromEntries(
         [
-          "background",
-          "contentScript",
-          "devtoolsPanel",
-          "ephemeralForm",
-          "options",
-          "sidebar",
-          "permissionsPopup",
+          "background/background",
+          "contentScript/contentScript",
+          "pageEditor/pageEditor",
+          "options/options",
+          "sidebar/sidebar",
+          "tinyPages/ephemeralForm",
+          "tinyPages/permissionsPopup",
         ].map((name) => [
-          name,
+          path.basename(name),
           { import: `./src/${name}`, dependOn: "vendors" },
         ])
       ),
@@ -255,11 +255,11 @@ module.exports = (env, options) =>
       ],
 
       // Tiny files without imports, no vendors needed
-      frame: "./src/frame",
-      devtools: "./src/devtools",
+      frame: "./src/tinyPages/frame",
+      devtools: "./src/tinyPages/devtools",
 
       // The script that gets injected into the host page should not have a vendor chunk
-      pageScript: "./src/pageScript",
+      pageScript: "./src/pageScript/pageScript",
     },
 
     resolve: {
@@ -336,7 +336,7 @@ module.exports = (env, options) =>
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
         WEBEXT_MESSENGER_LOGGING: "false",
-        ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost",
+        ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,
@@ -363,8 +363,8 @@ module.exports = (env, options) =>
             },
           },
           {
-            from: "*.{css,html}",
-            context: "src",
+            from: "src/*/*.html", // Only one level deep
+            to: "[name][ext]", // Flat output, no subfolders
           },
           "static",
         ],

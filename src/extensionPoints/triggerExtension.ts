@@ -41,7 +41,7 @@ import {
   awaitElementOnce,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
-import { notifyError } from "@/contentScript/notify";
+import notify from "@/utils/notify";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
@@ -330,7 +330,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
     if (errors.length > 0) {
       console.debug("Trigger errors", errors);
-      notifyError(`An error occurred running ${errors.length} triggers(s)`);
+      notify.error(`An error occurred running ${errors.length} triggers(s)`);
     }
   }
 
@@ -416,7 +416,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
             console.error("An error occurred while running a trigger", {
               errors,
             });
-            notifyError("An error occurred while running a trigger");
+            notify.error("An error occurred while running a trigger");
           }
         });
       },
@@ -441,7 +441,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
               console.error("An error occurred while running a trigger", {
                 errors,
               });
-              notifyError("An error occurred while running a trigger");
+              notify.error("An error occurred while running a trigger");
             }
           });
         }

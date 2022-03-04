@@ -34,7 +34,6 @@ import {
   schemaSupportsTemplates,
 } from "@/components/fields/schemaFields/BasicSchemaField";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 
 function isVarValue(value: string): boolean {
@@ -55,8 +54,7 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   focusInput,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, { error }, { setValue }] =
-    useField(name);
+  const [{ value, ...restInputProps }, , { setValue }] = useField(name);
   const { allowExpressions: allowExpressionsContext } =
     useContext(FieldRuntimeContext);
   const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);
@@ -161,10 +159,6 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     return [fieldValue, onChange];
   }, [allowExpressions, onChangeForTemplate, setValue, value]);
 
-  if (isTemplateExpression(value) && isMustacheOnly(value.__value__)) {
-    return <WorkshopMessageWidget />;
-  }
-
   if (
     value !== null &&
     !isTemplateExpression(value) &&
@@ -182,7 +176,6 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
       {...formControlProps}
       value={fieldInputValue}
       onChange={fieldOnChange}
-      isInvalid={Boolean(error)}
       ref={textAreaRef}
     />
   );

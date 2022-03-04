@@ -25,7 +25,7 @@ module.exports = mergeWithShared({
   target: "node",
   devtool: "nosources-source-map",
   entry: {
-    headers: path.resolve(rootDir, "src/headers"),
+    headers: path.resolve(rootDir, "src/development/headers"),
   },
   output: {
     path: path.resolve(rootDir, "scripts", "bin"),

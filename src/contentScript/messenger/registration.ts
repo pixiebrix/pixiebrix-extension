@@ -55,9 +55,9 @@ import {
   runReader,
   readSelected,
   resetTab,
-} from "@/contentScript/devTools";
+} from "@/contentScript/pageEditor";
 import { checkAvailable } from "@/blocks/available";
-import { showNotification } from "@/contentScript/notify";
+import notify from "@/utils/notify";
 import { runBrick } from "@/contentScript/executor";
 import {
   cancelSelect,
@@ -112,7 +112,6 @@ declare global {
     INSTALLED_EXTENSIONS: typeof getInstalledIds;
     CHECK_AVAILABLE: typeof checkAvailable;
     HANDLE_NAVIGATE: typeof handleNavigate;
-    SHOW_NOTIFICATION: typeof showNotification;
     RUN_BRICK: typeof runBrick;
     CANCEL_SELECT_ELEMENT: typeof cancelSelect;
     SELECT_ELEMENT: typeof selectElement;
@@ -120,6 +119,10 @@ declare global {
     RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
     RUN_EFFECT_PIPELINE: typeof runEffectPipeline;
     RUN_MAP_ARGS: typeof runMapArgs;
+
+    NOTIFY_INFO: typeof notify.info;
+    NOTIFY_ERROR: typeof notify.error;
+    NOTIFY_SUCCESS: typeof notify.success;
   }
 }
 
@@ -163,7 +166,6 @@ export default function registerMessenger(): void {
     INSTALLED_EXTENSIONS: getInstalledIds,
     CHECK_AVAILABLE: checkAvailable,
     HANDLE_NAVIGATE: handleNavigate,
-    SHOW_NOTIFICATION: showNotification,
 
     RUN_BRICK: runBrick,
     CANCEL_SELECT_ELEMENT: cancelSelect,
@@ -172,5 +174,9 @@ export default function registerMessenger(): void {
     RUN_RENDERER_PIPELINE: runRendererPipeline,
     RUN_EFFECT_PIPELINE: runEffectPipeline,
     RUN_MAP_ARGS: runMapArgs,
+
+    NOTIFY_INFO: notify.info,
+    NOTIFY_ERROR: notify.error,
+    NOTIFY_SUCCESS: notify.success,
   });
 }
