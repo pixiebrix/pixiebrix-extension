@@ -358,8 +358,10 @@ export function getErrorMessage(
     return error;
   }
 
-  const { message = defaultMessage } = selectError(error);
-  return String(message);
+  const { message } = isAxiosError(error)
+    ? error.response.data // Looks like `{ message: string }`
+    : selectError(error);
+  return String(message ?? defaultMessage);
 }
 
 /**
@@ -381,16 +383,16 @@ export function selectError(originalError: unknown): Error {
     return error;
   }
 
+  console.warn("A non-Error was thrown", {
+    originalError,
+    error,
+  });
+
   if (isErrorObject(error)) {
     // This shouldn't be necessary, but there's some nested calls to selectError
     // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2696
     return deserializeError(error);
   }
-
-  console.warn("A non-Error was thrown", {
-    originalError,
-    error,
-  });
 
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error message'`, which should never be written
