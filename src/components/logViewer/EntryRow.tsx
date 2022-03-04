@@ -19,59 +19,23 @@ import React, { useMemo, useState } from "react";
 import type { LogEntry } from "@/background/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
-import { ErrorObject } from "serialize-error";
-import { ContextError, isAxiosError, isErrorObject } from "@/errors";
-import { InputValidationError, OutputValidationError } from "@/blocks/errors";
+import { isErrorObject } from "@/errors";
 import InputDetail from "@/components/logViewer/details/InputDetail";
-import InputValidationErrorDetail from "@/components/logViewer/details/InputValidationErrorDetail";
-import NetworkErrorDetail from "@/components/logViewer/details/NetworkErrorDetail";
 import OutputDetail from "@/components/logViewer/details/OutputDetail";
-import OutputValidationErrorDetail from "@/components/logViewer/details/OutputValidationErrorDetail";
+import getErrorDetails from "../errors/getErrorDetails";
 
 const dateFormat = new Intl.DateTimeFormat("en-US", {
   dateStyle: "short",
   timeStyle: "short",
 });
 
-function getRootCause(error: ErrorObject): ErrorObject {
-  if (error.name === "ContextError" && (error as ContextError).cause != null) {
-    return getRootCause(error.cause as ErrorObject);
-  }
-
-  return error;
-}
-
 const ErrorDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
   entry,
 }) => {
   const detail = useMemo(() => {
     if (isErrorObject(entry.error)) {
-      const rootCause = getRootCause(entry.error);
-      if (rootCause.name === "InputValidationError") {
-        return (
-          <InputValidationErrorDetail
-            error={rootCause as unknown as InputValidationError}
-          />
-        );
-      }
-
-      if (rootCause.name === "OutputValidationError") {
-        return (
-          <OutputValidationErrorDetail
-            error={rootCause as unknown as OutputValidationError}
-          />
-        );
-      }
-
-      if (isAxiosError(rootCause)) {
-        return <NetworkErrorDetail error={rootCause} />;
-      }
-
-      if ("error" in rootCause && isAxiosError(rootCause.error)) {
-        return <NetworkErrorDetail error={rootCause.error} />;
-      }
-
-      return entry.error.stack;
+      const { detailsElement } = getErrorDetails(entry.error);
+      return detailsElement;
     }
 
     return entry.error.toString();
