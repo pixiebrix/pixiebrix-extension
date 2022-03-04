@@ -92,7 +92,7 @@ function useUserAction<T extends (...args: never[]) => unknown>(
       }
 
       const message = `${errorMessage}: ${getHumanDetail(error)}`;
-      notify.error({ message, error });
+      notify.error({ message, error, includeErrorDetails: false });
     }
   }) as T;
 

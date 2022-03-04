@@ -191,6 +191,7 @@ function useCreate(): CreateCallback {
             message: `Error fetching remote bricks: ${selectErrorMessage(
               error
             )}`,
+            includeErrorDetails: false, // Using `selectErrorMessage` locally
             error,
             reportError: true,
           });
@@ -225,7 +226,7 @@ function useCreate(): CreateCallback {
       } catch (error) {
         console.error("Error saving extension", { error });
         notify.error({
-          message: `Error saving extension: ${getErrorMessage(error)}`,
+          message: "Error saving extension",
           error,
         });
         return "Error saving extension";

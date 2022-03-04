@@ -28,7 +28,7 @@ import useReinstall from "@/pages/marketplace/useReinstall";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
-import { getErrorMessage, isAxiosError } from "@/errors";
+import { isAxiosError } from "@/errors";
 import {
   clearServiceCache,
   reactivateEveryTab,
@@ -124,7 +124,7 @@ function useSubmitBrick({
           })
           .catch((error) => {
             notify.warning({
-              message: `Error re-activating bricks: ${getErrorMessage(error)}`,
+              message: "Error re-activating bricks",
 
               error,
             });
