@@ -42,9 +42,16 @@ const ErrorDisplay: React.VoidFunctionComponent<ErrorDisplayProps> = ({
     switch (name) {
       case "InputValidationError":
         errorDetail = (
-          <InputValidationErrorDetail
-            error={rootError as unknown as InputValidationError}
-          />
+          <>
+            <Row>
+              <Col>
+                <p>Invalid inputs for block</p>
+              </Col>
+            </Row>
+            <InputValidationErrorDetail
+              error={rootError as unknown as InputValidationError}
+            />
+          </>
         );
         break;
       case "OutputValidationError":
