@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/contentScript.scss";
+import "./contentScript.scss";
 
 const start = Date.now();
 // Importing for the side effects. Should import as early as possible
@@ -33,6 +33,7 @@ import { handleNavigate } from "@/contentScript/lifecycle";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import { whoAmI, initTelemetry } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
+// eslint-disable-next-line import/no-restricted-paths -- Custom devTools mechanism to transfer data
 import { addListenerForUpdateSelectedElement } from "@/pageEditor/getSelectedElement";
 import { initToaster } from "@/utils/notify";
 import { isConnectionError } from "@/errors";

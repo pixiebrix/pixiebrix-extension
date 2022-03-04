@@ -228,15 +228,15 @@ module.exports = (env, options) =>
       // All of these entries require the `vendors.js` file to be included first
       ...Object.fromEntries(
         [
-          "background",
-          "contentScript",
-          "pageEditor",
-          "ephemeralForm",
-          "options",
-          "sidebar",
-          "permissionsPopup",
+          "background/background",
+          "contentScript/contentScript",
+          "pageEditor/pageEditor",
+          "options/options",
+          "sidebar/sidebar",
+          "tinyPages/ephemeralForm",
+          "tinyPages/permissionsPopup",
         ].map((name) => [
-          name,
+          path.basename(name),
           { import: `./src/${name}`, dependOn: "vendors" },
         ])
       ),
@@ -255,11 +255,11 @@ module.exports = (env, options) =>
       ],
 
       // Tiny files without imports, no vendors needed
-      frame: "./src/frame",
-      devtools: "./src/devtools",
+      frame: "./src/tinyPages/frame",
+      devtools: "./src/tinyPages/devtools",
 
       // The script that gets injected into the host page should not have a vendor chunk
-      pageScript: "./src/pageScript",
+      pageScript: "./src/pageScript/pageScript",
     },
 
     resolve: {
@@ -363,8 +363,8 @@ module.exports = (env, options) =>
             },
           },
           {
-            from: "*.{css,html}",
-            context: "src",
+            from: "src/*/*.html", // Only one level deep
+            to: "[name][ext]", // Flat output, no subfolders
           },
           "static",
         ],

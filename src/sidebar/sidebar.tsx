@@ -15,36 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
-declare module "*.svg" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+// Keep in order so precedence is preserved
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
+import "@/utils/layout.scss";
+import "./sidebar.scss";
 
-declare module "*?loadAsUrl" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import "@/extensionContext";
 
-declare module "*?loadAsText" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import registerMessenger from "@/sidebar/messenger/registration";
+import App from "@/sidebar/SidebarApp";
+import ReactDOM from "react-dom";
+import React from "react";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
+import { initToaster } from "@/utils/notify";
 
-// Loading svg as React component using @svgr
-declare module "*.svg?loadAsComponent" {
-  import React from "react";
+registerMessenger();
+registerContribBlocks();
+registerBuiltinBlocks();
+initToaster();
 
-  const SVG: React.VFC<React.SVGProps<SVGSVGElement>>;
-  export default SVG;
-}
-
-declare module "*.txt" {
-  const CONTENT: string;
-  export default CONTENT;
-}
-
-declare module "*.yaml" {
-  const CONTENT: Record<string, unknown>;
-  export default CONTENT;
-}
+ReactDOM.render(<App />, document.querySelector("#container"));

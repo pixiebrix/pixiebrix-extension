@@ -15,14 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "react-image-crop/dist/ReactCrop.css";
-import "@/ephemeralForm.scss";
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
+import "./options.scss";
 
 import "@/extensionContext";
+import "@/development/darkMode";
 
-import React from "react";
 import { render } from "react-dom";
-import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
+import React from "react";
+import App from "@/options/App";
+import initGoogle from "@/contrib/google/initGoogle";
+import { initToaster } from "@/utils/notify";
 
-render(<EphemeralForm />, document.querySelector("#container"));
+initGoogle();
+initToaster();
+
+render(<App />, document.querySelector("#container"));

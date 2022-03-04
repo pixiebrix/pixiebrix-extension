@@ -17,11 +17,11 @@
 
 import "@/extensionContext";
 
-import PermissionsPopup from "@/popups/PermissionsPopup";
+import PermissionsPopupApp from "@/tinyPages/PermissionsPopupApp";
 
 import ReactDOM from "react-dom";
 import React from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
-ReactDOM.render(<PermissionsPopup />, document.querySelector("#container"));
+ReactDOM.render(<PermissionsPopupApp />, document.querySelector("#container"));
