@@ -61,7 +61,10 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
       config: defaultBlockConfig(block.inputSchema),
     };
 
-    reportEvent("BrickAdd", { brickId: block.id });
+    reportEvent("BrickAdd", {
+      brickId: block.id,
+      source: "PageEditor-DocumentBuilder",
+    });
     onBlockSelected(blockConfig);
   };
 

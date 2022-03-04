@@ -32,6 +32,7 @@ import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
+import { reportEvent } from "@/telemetry/events";
 
 type BlockPipelineActions = {
   addBlock: (block: IBlock, pipelineIndex: number) => void;
@@ -77,6 +78,10 @@ function useBlockPipelineActions(
       });
       setFormValues(nextState, true);
       setActiveNodeId(newBlock.instanceId);
+      reportEvent("BrickAdd", {
+        brickId: block.id,
+        source: "PageEditor-BrickSearchModal",
+      });
     },
     [blockPipeline, values, setFormValues, setActiveNodeId]
   );
