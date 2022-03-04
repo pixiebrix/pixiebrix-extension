@@ -42,7 +42,8 @@ import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
 import { useModals } from "@/components/ConfirmationModal";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { IExtension, UUID } from "@/core";
+import { IExtension } from "@/core";
+
 const { removeExtension } = extensionsSlice.actions;
 
 function useInstallableActions(installable: Installable) {
@@ -160,7 +161,6 @@ function useInstallableActions(installable: Installable) {
   };
 
   const viewLogs = () => {
-    console.log("installable");
     dispatch(
       installedPageSlice.actions.setLogsContext({
         title: getLabel(installable),
