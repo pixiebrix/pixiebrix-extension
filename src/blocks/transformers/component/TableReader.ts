@@ -18,7 +18,7 @@
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
-import parseDomTable, { getAllTables } from "@/utils/parseDomTable";
+import { parseDomTable, getAllTables } from "@/utils/parseDomTable";
 import { $safeFind } from "@/helpers";
 
 export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");

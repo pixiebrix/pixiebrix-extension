@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import parseDomTable, { getAllTables } from "./parseDomTable";
+import { parseDomTable, getAllTables } from "./parseDomTable";
 import { JSDOM } from "jsdom";
 
 function getTable(
