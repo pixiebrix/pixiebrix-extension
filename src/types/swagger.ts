@@ -33,6 +33,9 @@ export interface paths {
     get: operations["listUserDatabases"];
     post: operations["createUserDatabase"];
   };
+  "/api/databases/records/": {
+    get: operations["listAllRecords"];
+  };
   "/api/databases/{id}/": {
     get: operations["retrieveUserDatabase"];
     delete: operations["destroyUserDatabase"];
@@ -42,10 +45,27 @@ export interface paths {
     get: operations["listRecords"];
     put: operations["updateRecord"];
     post: operations["createRecord"];
+    delete: operations["clearRecord"];
   };
   "/api/databases/{database_pk}/records/{key}/": {
     get: operations["retrieveRecordDetail"];
     put: operations["updateRecordDetail"];
+    delete: operations["destroyRecordDetail"];
+  };
+  "/api/organizations/{organization_pk}/campaigns/": {
+    get: operations["listCampaignSummarys"];
+    post: operations["createCampaign"];
+  };
+  "/api/organizations/{organization_pk}/campaigns/{id}/": {
+    get: operations["retrieveCampaign"];
+    put: operations["updateCampaign"];
+    delete: operations["destroyCampaign"];
+  };
+  "/api/campaigns/{campaign_pk}/jobs/{id}/": {
+    get: operations["retrieveCampaignEngagementJob"];
+  };
+  "/api/campaigns/{campaign_pk}/databases/": {
+    get: operations["listCampaignDatabases"];
   };
   "/api/deployments/": {
     /** View for individual users to report/retrieve available deployments. */
@@ -54,14 +74,17 @@ export interface paths {
     post: operations["telemetryListUserDeploymentDetail"];
   };
   "/api/deployments/{id}/": {
-    /** View for admins to get/create/update/delete deployments */
-    get: operations["retrievePackageDeployment"];
-    /** View for admins to get/create/update/delete deployments */
-    put: operations["updatePackageDeployment"];
-    /** View for admins to get/create/update/delete deployments */
-    delete: operations["destroyPackageDeployment"];
-    /** View for admins to get/create/update/delete deployments */
-    patch: operations["partialUpdatePackageDeployment"];
+    /** View for admins to get/create/update/delete a deployment. */
+    get: operations["retrieveDeploymentDetail"];
+    /** View for admins to get/create/update/delete a deployment. */
+    put: operations["updateDeploymentDetail"];
+    /** View for admins to get/create/update/delete a deployment. */
+    delete: operations["destroyDeploymentDetail"];
+    /** View for admins to get/create/update/delete a deployment. */
+    patch: operations["partialUpdateDeploymentDetail"];
+  };
+  "/api/deployments/{deployment_pk}/dependencies/": {
+    get: operations["retrieveDeploymentDependencies"];
   };
   "/api/deployments/{deployment_pk}/reports/": {
     get: operations["listDeploymentReportMetadatas"];
@@ -69,12 +92,29 @@ export interface paths {
   "/api/deployments/{deployment_pk}/reports/{id}/": {
     get: operations["retrieveDeploymentReport"];
   };
-  "/api/deployments/{id}/groups/": {
+  "/api/deployments/{deployment_pk}/reports/{report_pk}/jobs/{id}/": {
+    get: operations["retrieveDeploymentReportJob"];
+  };
+  "/api/deployments/{deployment_pk}/users/": {
+    get: operations["listActiveDeployments"];
+  };
+  "/api/deployments/{deployment_pk}/errors/": {
+    /** View to return most recent Rollbar error report for a deployment. */
+    get: operations["retrieveErrorOccurrence"];
+  };
+  "/api/deployments/{deployment_pk}/groups/": {
     get: operations["listDeploymentPermissions"];
     post: operations["createDeploymentPermission"];
   };
-  "/api/deployments/{id}/users/": {
-    get: operations["listActiveDeployments"];
+  "/api/deployments/{deployment_pk}/contacts/": {
+    get: operations["listDeploymentAlertEmails"];
+    post: operations["createDeploymentAlertEmail"];
+  };
+  "/api/deployments/{deployment_pk}/contacts/{id}/": {
+    get: operations["retrieveDeploymentAlertEmail"];
+    put: operations["updateDeploymentAlertEmail"];
+    delete: operations["destroyDeploymentAlertEmail"];
+    patch: operations["partialUpdateDeploymentAlertEmail"];
   };
   "/api/extension-points/": {
     /** List config of current version of each package. */
@@ -92,9 +132,13 @@ export interface paths {
     put: operations["updateUserExtension"];
     delete: operations["destroyUserExtension"];
   };
-  "/api/featured/recipes/": {
-    /** List config of current version of each package. */
-    get: operations["listFeaturedRecipes"];
+  "/api/groups/{group_pk}/memberships/": {
+    /** Add, remove, and list users to/from a group */
+    get: operations["listGroupMembershipActivitys"];
+    /** Add, remove, and list users to/from a group */
+    put: operations["updateList"];
+    /** Add, remove, and list users to/from a group */
+    post: operations["createGroupMembership"];
   };
   "/api/groups/{id}/permissions/": {
     get: operations["listGroupPackagePermissions"];
@@ -111,10 +155,10 @@ export interface paths {
     patch: operations["partialUpdateServiceAuthPermission"];
   };
   "/api/groups/{id}/": {
-    get: operations["retrieveGroupDetail"];
-    put: operations["updateGroupDetail"];
-    delete: operations["destroyGroupDetail"];
-    patch: operations["partialUpdateGroupDetail"];
+    get: operations["retrieveGroup"];
+    put: operations["updateGroup"];
+    delete: operations["destroyGroup"];
+    patch: operations["partialUpdateGroup"];
   };
   "/api/groups/{group_pk}/databases/": {
     get: operations["listDatabasePermissions"];
@@ -147,20 +191,24 @@ export interface paths {
   };
   "/api/me/": {
     get: operations["retrieveMe"];
+    delete: operations["destroyMe"];
   };
   "/api/memberships/{id}/": {
     /** Detail view for an organization's memberships. */
-    get: operations["retrieveMembership"];
+    get: operations["retrieveOrganizationMembership"];
     /** Detail view for an organization's memberships. */
-    put: operations["updateMembership"];
+    put: operations["updateOrganizationMembership"];
     /** Detail view for an organization's memberships. */
-    delete: operations["destroyMembership"];
+    delete: operations["destroyOrganizationMembership"];
     /** Detail view for an organization's memberships. */
-    patch: operations["partialUpdateMembership"];
+    patch: operations["partialUpdateOrganizationMembership"];
   };
   "/api/organizations/": {
     get: operations["listOrganizations"];
     post: operations["createOrganization"];
+  };
+  "/api/organizations/{organization_pk}/": {
+    get: operations["retrieveOrganization"];
   };
   "/api/organizations/{organization_pk}/members/{id}/": {
     get: operations["retrieveUserDetail"];
@@ -174,10 +222,10 @@ export interface paths {
     post: operations["createGroup"];
   };
   "/api/organizations/{organization_pk}/deployments/": {
-    /** View for admins to get/create/update/delete deployments */
-    get: operations["listPackageDeployments"];
-    /** View for admins to get/create/update/delete deployments */
-    post: operations["createPackageDeployment"];
+    /** View for admins to get/create/update/delete deployments. */
+    get: operations["listDeployments"];
+    /** View for admins to get/create/update/delete deployments. */
+    post: operations["createDeployment"];
   };
   "/api/organizations/{organization_pk}/bricks/": {
     get: operations["listOrganizationBricks"];
@@ -193,14 +241,20 @@ export interface paths {
     get: operations["listMemberships"];
   };
   "/api/organizations/{organization_pk}/databases/{id}/": {
-    get: operations["retrieveDatabase"];
-    put: operations["updateDatabase"];
-    delete: operations["destroyDatabase"];
-    patch: operations["partialUpdateDatabase"];
+    get: operations["retrieveDatabaseStatistics"];
+    put: operations["updateDatabaseStatistics"];
+    delete: operations["destroyDatabaseStatistics"];
+    patch: operations["partialUpdateDatabaseStatistics"];
   };
   "/api/organizations/{organization_pk}/databases/": {
-    get: operations["listDatabases"];
-    post: operations["createDatabase"];
+    get: operations["listDatabaseStatistics"];
+    post: operations["createDatabaseStatistics"];
+  };
+  "/api/organizations/{organization_pk}/subscriptions/": {
+    get: operations["listSubscriptions"];
+  };
+  "/api/organizations/{organization_pk}/backup/": {
+    get: operations["exportOrganizationBackup"];
   };
   "/api/permissions/{id}/": {
     get: operations["retrieveGroupPackagePermission"];
@@ -234,22 +288,23 @@ export interface paths {
     put: operations["updateSettings"];
     patch: operations["partialUpdateSettings"];
   };
-  "/api/templates/": {
-    /** List YAML templates for the workshop view. */
-    get: operations["listBrickTemplates"];
+  "/api/campaigns/{campaign_pk}/jobs/": {
+    post: operations["createCampaignEngagementJob"];
   };
-  "/api/deployments/{id}/messages/": {
+  "/api/campaigns/{campaign_pk}/emails/jobs/": {
+    post: operations["createCampaignEmailJob"];
+  };
+  "/api/deployments/{deployment_pk}/messages/": {
     post: operations["createDeploymentMessage"];
   };
-  "/api/deployments/{id}/alerts/": {
+  "/api/deployments/{deployment_pk}/reports/{report_pk}/jobs/": {
+    post: operations["createDeploymentReportJob"];
+  };
+  "/api/deployments/{deployment_pk}/alerts/": {
     post: operations["createDeploymentAlert"];
   };
   "/api/events/": {
     post: operations["createEventList"];
-  };
-  "/api/groups/{id}/memberships/": {
-    /** View to add a user to a group membership. */
-    post: operations["createGroupMembership"];
   };
   "/api/identify/": {
     post: operations["createIdentify"];
@@ -274,7 +329,7 @@ export interface paths {
     delete: operations["destroyDeploymentPermission"];
   };
   "/api/groups/{group_pk}/memberships/{id}/": {
-    /** View to add a user to a group membership. */
+    /** Add, remove, and list users to/from a group */
     delete: operations["destroyGroupMembership"];
   };
   "/api/invitations/{id}/": {
@@ -285,9 +340,12 @@ export interface paths {
 export interface components {
   schemas: {
     AuditEvent: {
+      /** Format: uuid */
       id?: string;
       actor: {
+        /** Format: uuid */
         id?: string;
+        /** Format: email */
         email?: string;
       };
       target_object: {
@@ -302,6 +360,7 @@ export interface components {
       };
       action_type: string;
       data?: { [key: string]: unknown } | null;
+      /** Format: date-time */
       timestamp?: string;
     };
     PackageConfigList: {
@@ -310,21 +369,29 @@ export interface components {
       metadata: { [key: string]: unknown };
     };
     PackageMeta: {
-      /** Surrogate primary key */
+      /**
+       * Format: uuid
+       * @description Surrogate primary key
+       */
       id?: string;
-      /** Unique package identifier, including the scope and collection */
+      /** @description Unique package identifier, including the scope and collection */
       name: string;
-      /** Human-readable name */
+      /** @description Human-readable name */
       verbose_name?: string | null;
       version?: string;
       kind: string;
+      /** Format: date-time */
+      updated_at?: string;
       sharing: {
         public?: boolean;
         organizations?: string[];
       };
     };
     Package: {
-      /** Surrogate primary key */
+      /**
+       * Format: uuid
+       * @description Surrogate primary key
+       */
       id?: string;
       name?: string;
       kind: string;
@@ -333,45 +400,139 @@ export interface components {
       config: string;
       public?: boolean;
       organizations?: string[];
+      /** Format: date-time */
       updated_at?: string;
     };
     PackageVersion: {
+      /** Format: uuid */
       id?: string;
       version?: string;
       config: { [key: string]: unknown };
       raw_config?: string;
+      /** Format: date-time */
       created_at?: string;
+      /** Format: date-time */
       updated_at?: string;
     };
     Database: {
+      /** Format: uuid */
       id?: string;
       name: string;
       organization_id?: string;
+      /** Format: date-time */
+      created_at?: string;
+    };
+    ExportedRecord: {
+      id: string;
+      /** Format: uuid */
+      database: string;
+      data: { [key: string]: unknown };
+      /** Format: date-time */
       created_at?: string;
     };
     Record: {
       id: string;
       data: { [key: string]: unknown };
+      /**
+       * @default replace
+       * @enum {string}
+       */
+      merge_strategy?: "replace" | "deep" | "deep_append" | "shallow";
+      /** Format: date-time */
       created_at?: string;
     };
+    CampaignSummary: {
+      /** Format: uuid */
+      id?: string;
+      name: string;
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: date-time */
+      updated_at?: string;
+    };
+    Campaign: {
+      /** Format: uuid */
+      id?: string;
+      name: string;
+      users: {
+        /** Format: uuid */
+        id?: string;
+        /** Format: email */
+        email: string;
+        data: { [key: string]: unknown };
+        account?: {
+          /** Format: uuid */
+          id?: string;
+          /** Format: date-time */
+          date_joined?: string;
+        };
+        clients?: {
+          extension_version: string;
+          /** Format: date-time */
+          created_at?: string;
+          /** Format: date-time */
+          updated_at?: string;
+          active_deployments?: string[];
+        }[];
+        groups?: string;
+        assigned_deployments?: string;
+        /** Format: date-time */
+        created_at?: string;
+        /** Format: date-time */
+        updated_at?: string;
+        last_active_at?: string | null;
+      }[];
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: date-time */
+      updated_at?: string;
+    };
+    Job: {
+      id: string;
+      /** @enum {string} */
+      status?: "UNKNOWN" | "PENDING" | "STARTED" | "SUCCESS" | "FAILURE";
+    };
+    CampaignDatabase: {
+      /** Format: uuid */
+      id?: string;
+      name: string;
+      organization_id?: string;
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: date-time */
+      last_write_at?: string;
+      num_records?: number;
+      groups: {
+        /** Format: uuid */
+        id?: string;
+        name: string;
+      }[];
+    };
     UserDeploymentDetail: {
+      /** Format: uuid */
       id?: string;
       name?: string;
+      /** Format: date-time */
       created_at?: string;
+      /** Format: date-time */
       updated_at?: string;
       package?: {
+        /** Format: uuid */
         id: string;
         version?: string;
         package_id: string;
         name: string;
-        config: { [key: string]: unknown };
+        config?: string;
       };
       bindings?: {
+        /** Format: uuid */
         id?: string;
+        /** Format: date-time */
         created_at?: string;
-        /** Key for named integration dependencies */
+        /** @description Key for named integration dependencies */
         key?: string | null;
         auth: {
+          /** Format: uuid */
           id?: string;
           service_id: string;
           label?: string | null;
@@ -380,30 +541,40 @@ export interface components {
       active?: boolean;
     };
     DeploymentTelemetry: {
-      /** The UID of the PixieBrix extension instance (varies by install) */
+      /**
+       * Format: uuid
+       * @description The UID of the PixieBrix extension instance (varies by install)
+       */
       uid: string;
-      /** The version of the PixieBrix extension */
+      /** @description The version of the PixieBrix extension */
       version: string;
       active?: { [key: string]: unknown }[];
     };
     DeploymentDetail: {
+      /** Format: uuid */
       id?: string;
       name: string;
+      /** Format: date-time */
       created_at?: string;
+      /** Format: date-time */
       updated_at?: string;
       package?: {
+        /** Format: uuid */
         id: string;
         version?: string;
         package_id: string;
         name: string;
-        config: { [key: string]: unknown };
+        config?: string;
       };
       bindings?: {
+        /** Format: uuid */
         id?: string;
+        /** Format: date-time */
         created_at?: string;
-        /** Key for named integration dependencies */
+        /** @description Key for named integration dependencies */
         key?: string | null;
         auth: {
+          /** Format: uuid */
           id?: string;
           service_id: string;
           label?: string | null;
@@ -415,142 +586,222 @@ export interface components {
       }[];
       active?: boolean;
     };
-    DeploymentReportMetadata: {
-      id: string;
-      /** A human-readable name/label for the report */
+    DependencyTree: {
       name: string;
+      kind: string;
+      id: string;
+      registry_id: string;
+      database_id: string;
+    };
+    DeploymentReportMetadata: {
+      /** Format: uuid */
+      id: string;
+      /** @description A human-readable name/label for the report */
+      name: string;
+      timezone: string;
     };
     DeploymentReport: {
-      /** The id of the report */
+      /**
+       * Format: uuid
+       * @description The id of the report
+       */
       id: string;
-      /** The name of the report */
+      /** @description The name of the report */
       name: string;
-      /** Report generation timestamp */
+      /**
+       * Format: date-time
+       * @description Report generation timestamp
+       */
       timestamp: string;
       data: {
+        /** Format: email */
         email: string;
+        /** Format: date */
         timestamp: string;
         event_name: string;
         event_label: string;
         value: number;
       }[];
     };
-    DeploymentPermission: {
-      id?: string;
-      group_id: string;
-      group_name?: string;
-      created_at?: string;
-    };
     ActiveDeployment: {
+      /** Format: uuid */
       client_uuid: string;
       user: {
+        /** Format: uuid */
         id?: string;
+        /** Format: email */
         email?: string;
       };
+      /** Format: date-time */
       created_at?: string;
+      /** Format: date-time */
       updated_at?: string;
       version?: string;
       client_version?: string;
+    };
+    ErrorOccurrence: {
+      /** Format: uuid */
+      id?: string;
+      title: string;
+      label?: string | null;
+      /** Format: date-time */
+      last_occurrence_timestamp: string;
+      people_count?: number | null;
+      request_url?: string | null;
+      occurrence_count: number;
+      code_version?: string | null;
+    };
+    DeploymentPermission: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      group_id: string;
+      group_name?: string;
+      /** Format: date-time */
+      created_at?: string;
+    };
+    DeploymentAlertEmail: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: email */
+      email: string;
+      notify_error?: boolean;
+      notify_uninstall?: boolean;
     };
     ExtensionToken: {
       extension_token: string;
     };
     UserExtension: {
+      /** Format: uuid */
       id: string;
+      /** Format: date-time */
       createTimestamp: string;
+      /** Format: date-time */
       updateTimestamp: string;
     };
+    GroupMembershipActivity: {
+      last_name: string | null;
+      first_name: string | null;
+      /** Format: email */
+      email: string;
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: date-time */
+      last_active_at?: string;
+      campaigns?: string;
+    };
     GroupPackagePermission: {
+      /** Format: uuid */
       id?: string;
-      permission: 1 | 2;
+      /** @enum {integer} */
+      permission?: 1 | 2;
+      /** Format: date-time */
       created_at?: string;
       package_name: string;
     };
     ServiceAuthPermission: {
+      /** Format: uuid */
       id?: string;
+      /** @enum {integer} */
       permission?: 1 | 2;
+      /** Format: date-time */
       created_at?: string;
       label: string;
       service_id: string;
     };
     GroupDetail: {
+      /** Format: uuid */
       id?: string;
       name: string;
+      /** Format: date-time */
       created_at?: string;
       memberships?: {
+        /** Format: uuid */
         id?: string;
+        /** Format: date-time */
         created_at?: string;
+        last_active_at?: string;
         user: {
+          /** Format: uuid */
           id?: string;
           name?: string;
+          /** Format: email */
           email?: string;
+          service_account?: boolean;
+          /** Format: date-time */
+          date_joined?: string;
         };
+        /** Format: email */
+        email: string;
+        campaigns?: string;
+      }[];
+      deployments?: {
+        /** Format: uuid */
+        id: string;
+        name: string;
       }[];
     };
     DatabasePermission: {
+      /** Format: uuid */
       id?: string;
       database_name?: string;
       database: string;
+      /** @enum {integer} */
       permission?: 1 | 2;
+      /** Format: date-time */
       created_at?: string;
     };
     PendingInvitation: {
+      /** Format: uuid */
       id?: string;
       inviter: {
+        /** Format: uuid */
         id?: string;
         name?: string;
+        /** Format: email */
         email?: string;
+        service_account?: boolean;
+        /** Format: date-time */
+        date_joined?: string;
       };
       organization: {
+        /** Format: uuid */
         id?: string;
         name: string;
-        members?: {
-          id?: number;
-          user?: {
-            id?: string;
-            name?: string;
-            email?: string;
-          };
-          role: 1 | 2 | 3 | 4;
-          groups?: {
-            id?: string;
-            name: string;
-            num_members?: number;
-            created_at?: string;
-          }[];
-        }[];
-        invitations?: {
-          id?: string;
-          email: string;
-          role?: 1 | 2 | 3 | 4;
-          inviter?: {
-            id?: string;
-            name?: string;
-            email?: string;
-          };
-          organization: string;
-          status?: 1 | 2 | 3 | 4;
-        }[];
-        scope?: string;
       };
     };
     Invitation: {
+      /** Format: uuid */
       id?: string;
+      /** Format: email */
       email: string;
+      /** @enum {integer} */
       role?: 1 | 2 | 3 | 4;
       inviter?: {
+        /** Format: uuid */
         id?: string;
         name?: string;
+        /** Format: email */
         email?: string;
+        service_account?: boolean;
+        /** Format: date-time */
+        date_joined?: string;
       };
       organization: string;
+      /** @enum {integer} */
       status?: 1 | 2 | 3 | 4;
     };
     ListingMetadata: {
-      /** Surrogate key of the listing */
+      /**
+       * Format: uuid
+       * @description Surrogate key of the listing
+       */
       id?: string;
       package: {
-        /** Surrogate primary key */
+        /**
+         * Format: uuid
+         * @description Surrogate primary key
+         */
         id?: string;
         name?: string;
         kind: string;
@@ -558,107 +809,206 @@ export interface components {
         version?: string;
       };
       tags: {
-        /** Surrogate key for the tag */
+        /**
+         * Format: uuid
+         * @description Surrogate key for the tag
+         */
         id?: string;
-        /** The name/caption to show in the tag */
+        /** @description The name/caption to show in the tag */
         name: string;
-        /** The URL slug for the tag */
+        /** @description The URL slug for the tag */
         slug?: string;
-        /** Font Awesome 5 icon and css class to show with the tag, e.g., fas fa-coffee */
+        /** @description Font Awesome 5 icon and css class to show with the tag, e.g., fas fa-coffee */
         fa_icon?: string | null;
-        /** The sub-type/category of the tag */
+        /**
+         * @description The sub-type/category of the tag
+         * @enum {string}
+         */
         subtype?: "generic" | "role" | "service";
+        /** Format: date-time */
         created_at?: string;
+        /** Format: date-time */
         updated_at?: string;
       }[];
       image: {
-        /** Alt text for the logo */
+        /** @description Alt text for the logo */
         alt_text?: string | null;
+        /** Format: uri */
         url: string;
       };
+      /** Format: date-time */
       created_at?: string;
+      /** Format: date-time */
       updated_at?: string;
     };
     Tag: {
-      /** Surrogate key for the tag */
+      /**
+       * Format: uuid
+       * @description Surrogate key for the tag
+       */
       id?: string;
-      /** The name/caption to show in the tag */
+      /** @description The name/caption to show in the tag */
       name: string;
-      /** The URL slug for the tag */
+      /** @description The URL slug for the tag */
       slug?: string;
-      /** Font Awesome 5 icon and css class to show with the tag, e.g., fas fa-coffee */
+      /** @description Font Awesome 5 icon and css class to show with the tag, e.g., fas fa-coffee */
       fa_icon?: string | null;
-      /** The sub-type/category of the tag */
+      /**
+       * @description The sub-type/category of the tag
+       * @enum {string}
+       */
       subtype?: "generic" | "role" | "service";
+      /** Format: date-time */
       created_at?: string;
+      /** Format: date-time */
       updated_at?: string;
     };
     Me: {
+      /** Format: uuid */
       id?: string;
       scope?: string | null;
+      /** Format: email */
       email?: string;
       name?: string;
       organization?: {
+        /** Format: uuid */
         id?: string;
         name: string;
         scope?: string | null;
       };
       telemetry_organization?: {
+        /** Format: uuid */
         id?: string;
         name: string;
         scope?: string | null;
       };
+      organization_memberships?: {
+        /** Format: uuid */
+        organization: string;
+        organization_name: string;
+        /** @enum {integer} */
+        role: 1 | 2 | 3 | 4 | 5;
+      }[];
+      group_memberships?: {
+        /** Format: uuid */
+        id: string;
+        name: string;
+      }[];
       is_onboarded?: string;
+      /** @description True if the account is an organization API service account */
+      service_account?: boolean;
       flags?: string;
     };
     Membership: {
       id?: number;
       user?: {
+        /** Format: uuid */
         id?: string;
         name?: string;
+        /** Format: email */
         email?: string;
+        service_account?: boolean;
+        /** Format: date-time */
+        date_joined?: string;
       };
-      role: 1 | 2 | 3 | 4;
+      /** @enum {integer} */
+      role: 1 | 2 | 3 | 4 | 5;
       groups?: {
+        /** Format: uuid */
         id?: string;
         name: string;
         num_members?: number;
+        /** Format: date-time */
         created_at?: string;
       }[];
     };
     Organization: {
+      /** Format: uuid */
       id?: string;
       name: string;
+      members?: {
+        id?: number;
+        user?: {
+          /** Format: uuid */
+          id?: string;
+          name?: string;
+          /** Format: email */
+          email?: string;
+          service_account?: boolean;
+          /** Format: date-time */
+          date_joined?: string;
+        };
+        /** @enum {integer} */
+        role: 1 | 2 | 3 | 4 | 5;
+        groups?: {
+          /** Format: uuid */
+          id?: string;
+          name: string;
+        }[];
+      }[];
+      invitations?: {
+        /** Format: uuid */
+        id?: string;
+        /** Format: email */
+        email: string;
+        /** @enum {integer} */
+        role?: 1 | 2 | 3 | 4;
+        inviter?: {
+          /** Format: uuid */
+          id?: string;
+          name?: string;
+          /** Format: email */
+          email?: string;
+          service_account?: boolean;
+          /** Format: date-time */
+          date_joined?: string;
+        };
+        organization: string;
+        /** @enum {integer} */
+        status?: 1 | 2 | 3 | 4;
+      }[];
       scope?: string;
     };
     UserDetail: {
+      /** Format: uuid */
       id?: string;
       name?: string;
+      /** Format: email */
       email?: string;
       groups: {
+        /** Format: uuid */
         id?: string;
         group_id: string;
         group_name: string;
+        /** Format: date-time */
         created_at?: string;
       }[];
+      /** Format: date-time */
       last_login?: string | null;
+      /** Format: date-time */
       date_joined?: string;
       membership?: {
         id?: number;
-        role: 1 | 2 | 3 | 4;
+        /** @enum {integer} */
+        role: 1 | 2 | 3 | 4 | 5;
       };
     };
     Group: {
+      /** Format: uuid */
       id?: string;
       name: string;
       num_members?: number;
+      /** Format: date-time */
       created_at?: string;
     };
     Deployment: {
+      /** Format: uuid */
       id?: string;
       name: string;
+      /** Format: date-time */
       created_at?: string;
       package?: {
+        /** Format: uuid */
         id: string;
         version?: string;
         package_id: string;
@@ -670,7 +1020,9 @@ export interface components {
       }[];
     };
     DeployableBlueprint: {
+      /** Format: uuid */
       id?: string;
+      /** Format: uuid */
       package_id: string;
       registry_id: string;
       name: string;
@@ -678,33 +1030,75 @@ export interface components {
       config: { [key: string]: unknown };
     };
     ServiceAuthMeta: {
+      /** Format: uuid */
       id?: string;
       label?: string | null;
       service_id: string;
       service_name: string;
     };
-    PackageConfig: {
-      /** Surrogate primary key */
+    DatabaseStatistics: {
+      /** Format: uuid */
       id?: string;
-      /** Unique package identifier, including the scope and collection */
       name: string;
-      /** Human-readable name */
+      organization_id?: string;
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: date-time */
+      last_write_at?: string;
+      num_records?: number;
+    };
+    Subscription: {
+      /** Format: uuid */
+      id?: string;
+      name: string;
+      concurrent?: boolean;
+      /** Format: decimal */
+      seat_price_usd: string;
+      seat_session_hours?: number;
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: date-time */
+      updated_at?: string;
+      utilization?: string;
+    };
+    PackageConfig: {
+      /**
+       * Format: uuid
+       * @description Surrogate primary key
+       */
+      id?: string;
+      /** @description Unique package identifier, including the scope and collection */
+      name: string;
+      /** @description Human-readable name */
       verbose_name?: string | null;
       version?: string;
       kind: string;
       config: { [key: string]: unknown };
+      /** Format: date-time */
+      updated_at: string;
+      sharing: {
+        public?: boolean;
+        organizations?: string[];
+      };
     };
     SanitizedAuth: {
+      /** Format: uuid */
       id?: string;
       label: string | null;
       organization: {
+        /** Format: uuid */
         id?: string;
         name: string;
       };
+      /** Format: uuid */
+      user?: string;
       service: {
-        /** Surrogate primary key */
+        /**
+         * Format: uuid
+         * @description Surrogate primary key
+         */
         id?: string;
-        /** Unique package identifier, including the scope and collection */
+        /** @description Unique package identifier, including the scope and collection */
         name: string;
         config: { [key: string]: unknown };
       };
@@ -712,30 +1106,32 @@ export interface components {
       editable?: string;
     };
     EditableAuth: {
+      /** Format: uuid */
       id?: string;
-      label: string | null;
-      organization: string | null;
+      label?: string | null;
+      organization?: string | null;
       config: { [key: string]: unknown };
+      /** Format: date-time */
       created_at?: string;
       service: string;
+      /** Format: date-time */
       updated_at?: string;
       editable?: string;
     };
     Settings: {
       scope?: string | null;
     };
-    BrickTemplate: {
-      name: string;
-      body: string;
-    };
     UserDatabase: {
+      /** Format: uuid */
       id?: string;
       user?: string;
       name: string;
       organization_id?: string;
+      /** Format: date-time */
       created_at?: string;
     };
     DeploymentMessage: {
+      /** Format: email */
       recipient: string;
       subject: string;
       message: string;
@@ -746,12 +1142,15 @@ export interface components {
         uid?: string;
         event?: string;
       }[];
+      /** Format: date-time */
       timestamp?: string;
     };
     GroupMembership: {
+      /** Format: uuid */
       id?: string;
       group_id: string;
       group_name: string;
+      /** Format: date-time */
       created_at?: string;
     };
     Identify: {
@@ -762,13 +1161,17 @@ export interface components {
       external?: boolean;
     };
     ProxiedRequest: {
-      /** An absolute/relative URL for the request */
+      /** @description An absolute/relative URL for the request */
       url: string;
-      /** The search params for the request */
+      /** @description The search params for the request */
       params?: { [key: string]: unknown };
-      /** The headers for the request */
+      /** @description The headers for the request */
       headers?: { [key: string]: unknown };
-      /** The HTTP method for the request */
+      /**
+       * @description The HTTP method for the request
+       * @default GET
+       * @enum {string}
+       */
       method?:
         | "GET"
         | "POST"
@@ -780,11 +1183,11 @@ export interface components {
         | "put"
         | "patch"
         | "delete";
-      /** The application/json body of the request */
+      /** @description The application/json body of the request */
       data?: { [key: string]: unknown };
-      /** The id of the service to authenticate the request */
+      /** @description The id of the service to authenticate the request */
       service_id?: string;
-      /** The id of the credential to authenticate the request */
+      /** @description The id of the credential to authenticate the request */
       auth_id: string;
     };
     ExecutableBrick: {
@@ -892,7 +1295,6 @@ export interface operations {
     parameters: {};
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Package"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Package"];
@@ -915,7 +1317,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Package"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Package"];
@@ -931,7 +1332,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Package"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Package"];
@@ -997,7 +1397,6 @@ export interface operations {
     parameters: {};
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["UserDatabase"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserDatabase"];
@@ -1012,6 +1411,25 @@ export interface operations {
       };
     };
   };
+  listAllRecords: {
+    parameters: {
+      query: {
+        /** A page number within the paginated result set. */
+        page?: number;
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=1.0": components["schemas"]["ExportedRecord"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ExportedRecord"][];
+          "text/csv; version=1.0": components["schemas"]["ExportedRecord"][];
+          "application/xlsx; version=1.0": components["schemas"]["ExportedRecord"][];
+        };
+      };
+    };
+  };
   retrieveUserDatabase: {
     parameters: {
       path: {
@@ -1020,7 +1438,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Database"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
@@ -1046,7 +1463,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["UserDatabase"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserDatabase"];
@@ -1090,7 +1506,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
@@ -1114,7 +1529,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
@@ -1130,6 +1544,16 @@ export interface operations {
       };
     };
   };
+  clearRecord: {
+    parameters: {
+      path: {
+        database_pk: string;
+      };
+    };
+    responses: {
+      204: never;
+    };
+  };
   retrieveRecordDetail: {
     parameters: {
       path: {
@@ -1139,7 +1563,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
@@ -1157,7 +1580,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
@@ -1170,6 +1592,145 @@ export interface operations {
         "application/json": components["schemas"]["Record"];
         "application/x-www-form-urlencoded": components["schemas"]["Record"];
         "multipart/form-data": components["schemas"]["Record"];
+      };
+    };
+  };
+  destroyRecordDetail: {
+    parameters: {
+      path: {
+        database_pk: string;
+        key: string;
+      };
+    };
+    responses: {
+      204: never;
+    };
+  };
+  listCampaignSummarys: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+      query: {
+        /** A page number within the paginated result set. */
+        page?: number;
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=2.0": components["schemas"]["CampaignSummary"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["CampaignSummary"][];
+        };
+      };
+    };
+  };
+  createCampaign: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["Campaign"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Campaign"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Campaign"];
+        "application/x-www-form-urlencoded": components["schemas"]["Campaign"];
+        "multipart/form-data": components["schemas"]["Campaign"];
+      };
+    };
+  };
+  retrieveCampaign: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["Campaign"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Campaign"];
+        };
+      };
+    };
+  };
+  updateCampaign: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["Campaign"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Campaign"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Campaign"];
+        "application/x-www-form-urlencoded": components["schemas"]["Campaign"];
+        "multipart/form-data": components["schemas"]["Campaign"];
+      };
+    };
+  };
+  destroyCampaign: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      204: never;
+    };
+  };
+  retrieveCampaignEngagementJob: {
+    parameters: {
+      path: {
+        campaign_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["Job"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
+        };
+      };
+    };
+  };
+  listCampaignDatabases: {
+    parameters: {
+      path: {
+        campaign_pk: string;
+      };
+      query: {
+        /** A page number within the paginated result set. */
+        page?: number;
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=2.0": components["schemas"]["CampaignDatabase"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["CampaignDatabase"][];
+        };
       };
     };
   };
@@ -1196,7 +1757,6 @@ export interface operations {
     parameters: {};
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["UserDeploymentDetail"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserDeploymentDetail"];
@@ -1211,17 +1771,15 @@ export interface operations {
       };
     };
   };
-  /** View for admins to get/create/update/delete deployments */
-  retrievePackageDeployment: {
+  /** View for admins to get/create/update/delete a deployment. */
+  retrieveDeploymentDetail: {
     parameters: {
       path: {
-        /** A UUID string identifying this package deployment. */
         id: string;
       };
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["DeploymentDetail"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentDetail"];
@@ -1229,17 +1787,15 @@ export interface operations {
       };
     };
   };
-  /** View for admins to get/create/update/delete deployments */
-  updatePackageDeployment: {
+  /** View for admins to get/create/update/delete a deployment. */
+  updateDeploymentDetail: {
     parameters: {
       path: {
-        /** A UUID string identifying this package deployment. */
         id: string;
       };
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["DeploymentDetail"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentDetail"];
@@ -1254,11 +1810,10 @@ export interface operations {
       };
     };
   };
-  /** View for admins to get/create/update/delete deployments */
-  destroyPackageDeployment: {
+  /** View for admins to get/create/update/delete a deployment. */
+  destroyDeploymentDetail: {
     parameters: {
       path: {
-        /** A UUID string identifying this package deployment. */
         id: string;
       };
     };
@@ -1266,17 +1821,15 @@ export interface operations {
       204: never;
     };
   };
-  /** View for admins to get/create/update/delete deployments */
-  partialUpdatePackageDeployment: {
+  /** View for admins to get/create/update/delete a deployment. */
+  partialUpdateDeploymentDetail: {
     parameters: {
       path: {
-        /** A UUID string identifying this package deployment. */
         id: string;
       };
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["DeploymentDetail"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentDetail"];
@@ -1288,6 +1841,21 @@ export interface operations {
         "application/json": components["schemas"]["DeploymentDetail"];
         "application/x-www-form-urlencoded": components["schemas"]["DeploymentDetail"];
         "multipart/form-data": components["schemas"]["DeploymentDetail"];
+      };
+    };
+  };
+  retrieveDeploymentDependencies: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["DependencyTree"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DependencyTree"];
+        };
       };
     };
   };
@@ -1322,10 +1890,63 @@ export interface operations {
       };
     };
   };
+  retrieveDeploymentReportJob: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+        report_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["Job"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
+        };
+      };
+    };
+  };
+  listActiveDeployments: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+      };
+      query: {
+        /** A page number within the paginated result set. */
+        page?: number;
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=2.0": components["schemas"]["ActiveDeployment"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ActiveDeployment"][];
+        };
+      };
+    };
+  };
+  /** View to return most recent Rollbar error report for a deployment. */
+  retrieveErrorOccurrence: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ErrorOccurrence"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorOccurrence"];
+        };
+      };
+    };
+  };
   listDeploymentPermissions: {
     parameters: {
       path: {
-        id: string;
+        deployment_pk: string;
       };
       query: {
         /** A page number within the paginated result set. */
@@ -1345,12 +1966,11 @@ export interface operations {
   createDeploymentPermission: {
     parameters: {
       path: {
-        id: string;
+        deployment_pk: string;
       };
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["DeploymentPermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentPermission"];
@@ -1365,23 +1985,113 @@ export interface operations {
       };
     };
   };
-  listActiveDeployments: {
+  listDeploymentAlertEmails: {
     parameters: {
       path: {
-        id: string;
-      };
-      query: {
-        /** A page number within the paginated result set. */
-        page?: number;
+        deployment_pk: string;
       };
     };
     responses: {
       200: {
-        headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["ActiveDeployment"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ActiveDeployment"][];
+          "application/json; version=1.0": components["schemas"]["DeploymentAlertEmail"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentAlertEmail"][];
         };
+      };
+    };
+  };
+  createDeploymentAlertEmail: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DeploymentAlertEmail"];
+        "application/x-www-form-urlencoded": components["schemas"]["DeploymentAlertEmail"];
+        "multipart/form-data": components["schemas"]["DeploymentAlertEmail"];
+      };
+    };
+  };
+  retrieveDeploymentAlertEmail: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
+        };
+      };
+    };
+  };
+  updateDeploymentAlertEmail: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DeploymentAlertEmail"];
+        "application/x-www-form-urlencoded": components["schemas"]["DeploymentAlertEmail"];
+        "multipart/form-data": components["schemas"]["DeploymentAlertEmail"];
+      };
+    };
+  };
+  destroyDeploymentAlertEmail: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      204: never;
+    };
+  };
+  partialUpdateDeploymentAlertEmail: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DeploymentAlertEmail"];
+        "application/x-www-form-urlencoded": components["schemas"]["DeploymentAlertEmail"];
+        "multipart/form-data": components["schemas"]["DeploymentAlertEmail"];
       };
     };
   };
@@ -1439,7 +2149,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["UserExtension"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserExtension"];
@@ -1455,7 +2164,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["UserExtension"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserExtension"];
@@ -1480,20 +2188,69 @@ export interface operations {
       204: never;
     };
   };
-  /** List config of current version of each package. */
-  listFeaturedRecipes: {
+  /** Add, remove, and list users to/from a group */
+  listGroupMembershipActivitys: {
     parameters: {
-      query: {
-        /** A page number within the paginated result set. */
-        page?: number;
+      path: {
+        group_pk: string;
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["PackageConfigList"][];
-          "application/vnd.pixiebrix.api+json": components["schemas"]["PackageConfigList"][];
+          "application/json; version=1.0": components["schemas"]["GroupMembershipActivity"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["GroupMembershipActivity"][];
         };
+      };
+    };
+  };
+  /** Add, remove, and list users to/from a group */
+  updateList: {
+    parameters: {
+      path: {
+        group_pk: string;
+      };
+      query: {
+        /** Ignore emails that are not associated with a campaign */
+        require_campaign?: boolean;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": unknown;
+          "application/vnd.pixiebrix.api+json; version=1.0": unknown;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": unknown;
+        "application/x-www-form-urlencoded": unknown;
+        "multipart/form-data": unknown;
+      };
+    };
+  };
+  /** Add, remove, and list users to/from a group */
+  createGroupMembership: {
+    parameters: {
+      path: {
+        group_pk: string;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["GroupMembership"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["GroupMembership"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["GroupMembership"];
+        "application/x-www-form-urlencoded": components["schemas"]["GroupMembership"];
+        "multipart/form-data": components["schemas"]["GroupMembership"];
       };
     };
   };
@@ -1525,7 +2282,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["GroupPackagePermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["GroupPackagePermission"];
@@ -1568,7 +2324,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["ServiceAuthPermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ServiceAuthPermission"];
@@ -1592,7 +2347,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["ServiceAuthPermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ServiceAuthPermission"];
@@ -1609,7 +2363,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["ServiceAuthPermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ServiceAuthPermission"];
@@ -1644,7 +2397,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["ServiceAuthPermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ServiceAuthPermission"];
@@ -1659,9 +2411,10 @@ export interface operations {
       };
     };
   };
-  retrieveGroupDetail: {
+  retrieveGroup: {
     parameters: {
       path: {
+        /** A UUID string identifying this group. */
         id: string;
       };
     };
@@ -1674,9 +2427,10 @@ export interface operations {
       };
     };
   };
-  updateGroupDetail: {
+  updateGroup: {
     parameters: {
       path: {
+        /** A UUID string identifying this group. */
         id: string;
       };
     };
@@ -1696,9 +2450,10 @@ export interface operations {
       };
     };
   };
-  destroyGroupDetail: {
+  destroyGroup: {
     parameters: {
       path: {
+        /** A UUID string identifying this group. */
         id: string;
       };
     };
@@ -1706,9 +2461,10 @@ export interface operations {
       204: never;
     };
   };
-  partialUpdateGroupDetail: {
+  partialUpdateGroup: {
     parameters: {
       path: {
+        /** A UUID string identifying this group. */
         id: string;
       };
     };
@@ -1756,20 +2512,17 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
-          "application/json; version=2.0": { [key: string]: unknown };
-          "application/vnd.pixiebrix.api+json; version=2.0": {
-            [key: string]: unknown;
-          };
+          "application/json; version=2.0": unknown;
+          "application/vnd.pixiebrix.api+json; version=2.0": unknown;
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": { [key: string]: unknown };
-        "application/x-www-form-urlencoded": { [key: string]: unknown };
-        "multipart/form-data": { [key: string]: unknown };
+        "application/json": unknown;
+        "application/x-www-form-urlencoded": unknown;
+        "multipart/form-data": unknown;
       };
     };
   };
@@ -1782,7 +2535,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["DatabasePermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabasePermission"];
@@ -1810,7 +2562,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["DatabasePermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabasePermission"];
@@ -1863,7 +2614,6 @@ export interface operations {
     parameters: {};
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Invitation"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Invitation"];
@@ -1920,7 +2670,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["ListingMetadata"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ListingMetadata"];
@@ -1956,10 +2705,17 @@ export interface operations {
       };
     };
   };
+  destroyMe: {
+    parameters: {};
+    responses: {
+      204: never;
+    };
+  };
   /** Detail view for an organization's memberships. */
-  retrieveMembership: {
+  retrieveOrganizationMembership: {
     parameters: {
       path: {
+        /** A unique integer value identifying this organization membership. */
         id: string;
       };
     };
@@ -1973,9 +2729,10 @@ export interface operations {
     };
   };
   /** Detail view for an organization's memberships. */
-  updateMembership: {
+  updateOrganizationMembership: {
     parameters: {
       path: {
+        /** A unique integer value identifying this organization membership. */
         id: string;
       };
     };
@@ -1996,9 +2753,10 @@ export interface operations {
     };
   };
   /** Detail view for an organization's memberships. */
-  destroyMembership: {
+  destroyOrganizationMembership: {
     parameters: {
       path: {
+        /** A unique integer value identifying this organization membership. */
         id: string;
       };
     };
@@ -2007,9 +2765,10 @@ export interface operations {
     };
   };
   /** Detail view for an organization's memberships. */
-  partialUpdateMembership: {
+  partialUpdateOrganizationMembership: {
     parameters: {
       path: {
+        /** A unique integer value identifying this organization membership. */
         id: string;
       };
     };
@@ -2050,7 +2809,6 @@ export interface operations {
     parameters: {};
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Organization"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Organization"];
@@ -2062,6 +2820,21 @@ export interface operations {
         "application/json": components["schemas"]["Organization"];
         "application/x-www-form-urlencoded": components["schemas"]["Organization"];
         "multipart/form-data": components["schemas"]["Organization"];
+      };
+    };
+  };
+  retrieveOrganization: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["Organization"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Organization"];
+        };
       };
     };
   };
@@ -2092,10 +2865,8 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json; version=1.0": { [key: string]: unknown }[];
-          "application/vnd.pixiebrix.api+json; version=1.0": {
-            [key: string]: unknown;
-          }[];
+          "application/json; version=1.0": unknown[];
+          "application/vnd.pixiebrix.api+json; version=1.0": unknown[];
         };
       };
     };
@@ -2128,7 +2899,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Group"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Group"];
@@ -2143,8 +2913,8 @@ export interface operations {
       };
     };
   };
-  /** View for admins to get/create/update/delete deployments */
-  listPackageDeployments: {
+  /** View for admins to get/create/update/delete deployments. */
+  listDeployments: {
     parameters: {
       path: {
         organization_pk: string;
@@ -2164,8 +2934,8 @@ export interface operations {
       };
     };
   };
-  /** View for admins to get/create/update/delete deployments */
-  createPackageDeployment: {
+  /** View for admins to get/create/update/delete deployments. */
+  createDeployment: {
     parameters: {
       path: {
         organization_pk: string;
@@ -2173,7 +2943,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Deployment"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Deployment"];
@@ -2268,7 +3037,7 @@ export interface operations {
       };
     };
   };
-  retrieveDatabase: {
+  retrieveDatabaseStatistics: {
     parameters: {
       path: {
         organization_pk: string;
@@ -2277,15 +3046,14 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["Database"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
+          "application/json; version=2.0": components["schemas"]["DatabaseStatistics"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabaseStatistics"];
         };
       };
     };
   };
-  updateDatabase: {
+  updateDatabaseStatistics: {
     parameters: {
       path: {
         organization_pk: string;
@@ -2294,22 +3062,21 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["Database"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
+          "application/json; version=2.0": components["schemas"]["DatabaseStatistics"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabaseStatistics"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Database"];
-        "application/x-www-form-urlencoded": components["schemas"]["Database"];
-        "multipart/form-data": components["schemas"]["Database"];
+        "application/json": components["schemas"]["DatabaseStatistics"];
+        "application/x-www-form-urlencoded": components["schemas"]["DatabaseStatistics"];
+        "multipart/form-data": components["schemas"]["DatabaseStatistics"];
       };
     };
   };
-  destroyDatabase: {
+  destroyDatabaseStatistics: {
     parameters: {
       path: {
         organization_pk: string;
@@ -2320,7 +3087,7 @@ export interface operations {
       204: never;
     };
   };
-  partialUpdateDatabase: {
+  partialUpdateDatabaseStatistics: {
     parameters: {
       path: {
         organization_pk: string;
@@ -2329,22 +3096,21 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["Database"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
+          "application/json; version=2.0": components["schemas"]["DatabaseStatistics"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabaseStatistics"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Database"];
-        "application/x-www-form-urlencoded": components["schemas"]["Database"];
-        "multipart/form-data": components["schemas"]["Database"];
+        "application/json": components["schemas"]["DatabaseStatistics"];
+        "application/x-www-form-urlencoded": components["schemas"]["DatabaseStatistics"];
+        "multipart/form-data": components["schemas"]["DatabaseStatistics"];
       };
     };
   };
-  listDatabases: {
+  listDatabaseStatistics: {
     parameters: {
       path: {
         organization_pk: string;
@@ -2358,13 +3124,13 @@ export interface operations {
       200: {
         headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["Database"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"][];
+          "application/json; version=2.0": components["schemas"]["DatabaseStatistics"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabaseStatistics"][];
         };
       };
     };
   };
-  createDatabase: {
+  createDatabaseStatistics: {
     parameters: {
       path: {
         organization_pk: string;
@@ -2372,18 +3138,47 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["Database"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
+          "application/json; version=2.0": components["schemas"]["DatabaseStatistics"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabaseStatistics"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Database"];
-        "application/x-www-form-urlencoded": components["schemas"]["Database"];
-        "multipart/form-data": components["schemas"]["Database"];
+        "application/json": components["schemas"]["DatabaseStatistics"];
+        "application/x-www-form-urlencoded": components["schemas"]["DatabaseStatistics"];
+        "multipart/form-data": components["schemas"]["DatabaseStatistics"];
+      };
+    };
+  };
+  listSubscriptions: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["Subscription"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Subscription"][];
+        };
+      };
+    };
+  };
+  exportOrganizationBackup: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": unknown;
+          "application/vnd.pixiebrix.api+json; version=1.0": unknown;
+        };
       };
     };
   };
@@ -2509,7 +3304,6 @@ export interface operations {
     parameters: {};
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["EditableAuth"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["EditableAuth"];
@@ -2532,7 +3326,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["EditableAuth"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["EditableAuth"];
@@ -2548,7 +3341,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["EditableAuth"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["EditableAuth"];
@@ -2581,7 +3373,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["EditableAuth"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["EditableAuth"];
@@ -2660,28 +3451,54 @@ export interface operations {
       };
     };
   };
-  /** List YAML templates for the workshop view. */
-  listBrickTemplates: {
+  createCampaignEngagementJob: {
     parameters: {
-      query: {
-        /** A page number within the paginated result set. */
-        page?: number;
+      path: {
+        campaign_pk: string;
       };
     };
     responses: {
-      200: {
-        headers: {};
+      201: {
         content: {
-          "application/json; version=2.0": components["schemas"]["BrickTemplate"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["BrickTemplate"][];
+          "application/json; version=1.0": components["schemas"]["Job"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
         };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Job"];
+        "application/x-www-form-urlencoded": components["schemas"]["Job"];
+        "multipart/form-data": components["schemas"]["Job"];
+      };
+    };
+  };
+  createCampaignEmailJob: {
+    parameters: {
+      path: {
+        campaign_pk: string;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": unknown;
+          "application/vnd.pixiebrix.api+json; version=1.0": unknown;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": unknown;
+        "application/x-www-form-urlencoded": unknown;
+        "multipart/form-data": unknown;
       };
     };
   };
   createDeploymentMessage: {
     parameters: {
       path: {
-        id: string;
+        deployment_pk: string;
       };
     };
     responses: {
@@ -2700,27 +3517,48 @@ export interface operations {
       };
     };
   };
-  createDeploymentAlert: {
+  createDeploymentReportJob: {
     parameters: {
       path: {
-        id: string;
+        deployment_pk: string;
+        report_pk: string;
       };
     };
     responses: {
       201: {
         content: {
-          "application/json; version=1.0": { [key: string]: unknown };
-          "application/vnd.pixiebrix.api+json; version=1.0": {
-            [key: string]: unknown;
-          };
+          "application/json; version=1.0": components["schemas"]["Job"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": { [key: string]: unknown };
-        "application/x-www-form-urlencoded": { [key: string]: unknown };
-        "multipart/form-data": { [key: string]: unknown };
+        "application/json": components["schemas"]["Job"];
+        "application/x-www-form-urlencoded": components["schemas"]["Job"];
+        "multipart/form-data": components["schemas"]["Job"];
+      };
+    };
+  };
+  createDeploymentAlert: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=1.0": unknown;
+          "application/vnd.pixiebrix.api+json; version=1.0": unknown;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": unknown;
+        "application/x-www-form-urlencoded": unknown;
+        "multipart/form-data": unknown;
       };
     };
   };
@@ -2739,29 +3577,6 @@ export interface operations {
         "application/json": components["schemas"]["EventList"];
         "application/x-www-form-urlencoded": components["schemas"]["EventList"];
         "multipart/form-data": components["schemas"]["EventList"];
-      };
-    };
-  };
-  /** View to add a user to a group membership. */
-  createGroupMembership: {
-    parameters: {
-      path: {
-        id: string;
-      };
-    };
-    responses: {
-      201: {
-        content: {
-          "application/json; version=1.0": components["schemas"]["GroupMembership"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["GroupMembership"];
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["GroupMembership"];
-        "application/x-www-form-urlencoded": components["schemas"]["GroupMembership"];
-        "multipart/form-data": components["schemas"]["GroupMembership"];
       };
     };
   };
@@ -2791,7 +3606,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["PendingInvitation"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PendingInvitation"];
@@ -2814,7 +3628,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["PendingInvitation"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PendingInvitation"];
@@ -2895,7 +3708,7 @@ export interface operations {
       204: never;
     };
   };
-  /** View to add a user to a group membership. */
+  /** Add, remove, and list users to/from a group */
   destroyGroupMembership: {
     parameters: {
       path: {
