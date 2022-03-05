@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { anonAuth } from "@/hooks/auth";
+import { anonAuth } from "@/auth/authConstants";
 import { useGetAuthQuery } from "@/services/api";
 import { recipeMetadataFactory } from "@/tests/factories";
 import { render, screen } from "@testing-library/react";

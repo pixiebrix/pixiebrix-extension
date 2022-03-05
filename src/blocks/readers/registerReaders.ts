@@ -16,13 +16,6 @@
  */
 
 import { registerBlock } from "@/blocks/registry";
-import {
-  DocumentReader,
-  ManifestReader,
-  PixieBrixProfileReader,
-  PixieBrixSessionReader,
-  TimestampReader,
-} from "./meta";
 import { PageMetadataReader } from "./PageMetadataReader";
 import { PageSemanticReader } from "./PageSemanticReader";
 import { BlankReader } from "./BlankReader";
@@ -30,17 +23,22 @@ import { ImageReader } from "./ImageReader";
 import { SelectionReader } from "./SelectionReader";
 import { ImageExifReader } from "./ImageExifReader";
 import { ElementReader } from "./ElementReader";
-import { registerFactory } from "@/blocks/readers/factory";
-import { frameworkReadFactory } from "@/blocks/readers/frameworkReader";
+import { registerFactory } from "./factory";
+import { frameworkReadFactory } from "./frameworkReader";
 import { readJQuery } from "@/blocks/readers/jquery";
 import { HtmlReader } from "./HtmlReader";
+import DocumentReader from "./DocumentReader";
+import ManifestReader from "./ManifestReader";
+import ProfileReader from "./ProfileReader";
+import SessionReader from "./SessionReader";
+import TimestampReader from "./TimestampReader";
 
 function registerReaders(): void {
   // Built-in readers
   registerBlock(new DocumentReader());
   registerBlock(new ManifestReader());
-  registerBlock(new PixieBrixProfileReader());
-  registerBlock(new PixieBrixSessionReader());
+  registerBlock(new ProfileReader());
+  registerBlock(new SessionReader());
   registerBlock(new TimestampReader());
   registerBlock(new PageMetadataReader());
   registerBlock(new PageSemanticReader());

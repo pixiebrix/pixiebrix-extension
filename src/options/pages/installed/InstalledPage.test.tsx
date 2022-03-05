@@ -28,7 +28,8 @@ import {
 } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
 import { AuthState } from "@/core";
-import { anonAuth } from "@/hooks/auth";
+import { anonAuth } from "@/auth/authConstants";
+import { uuidv4 } from "@/types/helpers";
 
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: jest.fn(),
@@ -175,6 +176,8 @@ describe("OnboardingPage", () => {
     isLoggedIn: true,
     isOnboarded: true,
     extension: true,
+    organizations: [{ id: uuidv4(), name: "Foo" }],
+    groups: [],
   };
 
   beforeEach(() => {
