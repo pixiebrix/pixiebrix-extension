@@ -18,6 +18,7 @@
 import { Reader } from "@/types";
 import { getUserData } from "@/background/messenger/api";
 import { Schema } from "@/core";
+import { UserData } from "@/auth/authTypes";
 
 class ProfileReader extends Reader {
   defaultOutputKey = "profile";
@@ -30,8 +31,16 @@ class ProfileReader extends Reader {
     );
   }
 
-  async read() {
-    return getUserData();
+  async read(): Promise<
+    Required<Pick<UserData, "user" | "email" | "organizations" | "groups">>
+  > {
+    const profile = await getUserData();
+    return {
+      user: profile.user,
+      email: profile.email,
+      organizations: profile.organizations ?? [],
+      groups: profile.groups ?? [],
+    };
   }
 
   override async isPure(): Promise<boolean> {
@@ -45,6 +54,7 @@ class ProfileReader extends Reader {
   override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
+    required: ["user", "email", "groups", "organizations"],
     properties: {
       user: {
         type: "string",
@@ -60,6 +70,7 @@ class ProfileReader extends Reader {
         type: "array",
         items: {
           type: "object",
+          required: ["id", "name"],
           properties: {
             id: {
               type: "string",
@@ -75,6 +86,7 @@ class ProfileReader extends Reader {
         type: "array",
         items: {
           type: "object",
+          required: ["id", "name"],
           properties: {
             id: {
               type: "string",
