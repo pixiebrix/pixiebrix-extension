@@ -24,6 +24,8 @@ import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;
 
+const rootPropertyRegex = /^#\/(?<property>.+)$/;
+
 /**
  * Gets Input validation error from the Trace
  * @param pipelineErrors Pipeline validation errors for the Formik context.
@@ -42,20 +44,43 @@ function applyTraceInputError(
     return;
   }
 
-  for (const unit of traceError.errors) {
-    const property = requiredFieldRegex.exec(unit.error)?.groups.property;
-    if (property) {
+  const errors: string[] = [];
+  for (const inputError of traceError.errors) {
+    const rootProperty = rootPropertyRegex.exec(inputError.instanceLocation)
+      ?.groups.property;
+    if (rootProperty) {
       const propertyNameInPipeline = joinName(
         String(blockIndex),
         "config",
-        property
+        rootProperty
+      );
+      const errorMessage = inputError.error;
+      set(pipelineErrors, propertyNameInPipeline, errorMessage);
+      continue;
+    }
+
+    const requiredProperty = requiredFieldRegex.exec(inputError.error)?.groups
+      .property;
+    if (requiredProperty) {
+      const propertyNameInPipeline = joinName(
+        String(blockIndex),
+        "config",
+        requiredProperty
       );
       const errorMessage = "Error from the last run: This field is required.";
       set(pipelineErrors, propertyNameInPipeline, errorMessage);
-    } else if (unit.error) {
-      // eslint-disable-next-line security/detect-object-injection
-      pipelineErrors[blockIndex] = unit.error;
+      continue;
     }
+
+    if (inputError.error) {
+      errors.push(inputError.error);
+    }
+  }
+
+  // eslint-disable-next-line security/detect-object-injection -- accessing the error tree by index
+  if (typeof pipelineErrors[blockIndex] === "undefined" && errors.length > 0) {
+    // eslint-disable-next-line security/detect-object-injection -- accessing the error tree by index
+    pipelineErrors[blockIndex] = errors.join(" ");
   }
 }
 
