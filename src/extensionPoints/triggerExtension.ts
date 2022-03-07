@@ -442,9 +442,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           const errors = await this.runTrigger(entry.target as HTMLElement);
           if (errors.length > 0) {
             const message = "An error occurred while running a trigger";
-            console.error(message, {
-              errors,
-            });
+            console.error(message, { errors });
             notify.error({ message, error: errors[0] });
           }
         });
