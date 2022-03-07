@@ -116,10 +116,12 @@ export function showNotification({
 }: RequireAtLeastOne<Notification, "message" | "error">): string {
   const options = { id, duration };
 
-  if (!message) {
-    message = getErrorMessage(error);
-  } else if (includeErrorDetails) {
-    message = message.replace(/[\s.:]$/, ": ") + getErrorMessage(error);
+  if (error) {
+    if (!message) {
+      message = getErrorMessage(error);
+    } else if (includeErrorDetails) {
+      message = message.replace(/[\s.:]$/, "") + ": " + getErrorMessage(error);
+    }
   }
 
   duration ??= getMessageDisplayTime(message);
