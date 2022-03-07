@@ -161,7 +161,7 @@ const adapter: WriteableComponentAdapter<Instance> = {
   getParent: (instance: Instance) => instance.$parent,
   hasData: (instance: Instance) => !isEmpty(instance),
   getData: readVueData,
-  setData: (instance: Instance, data) => {
+  setData(instance: Instance, data) {
     for (const [path, value] of Object.entries(data)) {
       set(instance, path, value);
     }

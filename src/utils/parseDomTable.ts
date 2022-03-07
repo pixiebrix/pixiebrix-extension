@@ -81,6 +81,7 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
         }
       }
     }
+    /* eslint-enable security/detect-object-injection */
   }
 
   // Temporary patch to "support" tables with rowspan/colspan without throwing errors

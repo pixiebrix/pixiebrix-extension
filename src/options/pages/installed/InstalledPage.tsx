@@ -198,7 +198,7 @@ const mapStateToProps = (state: { options: OptionsState }) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  onRemove: ({ extensionId }: { extensionId: UUID }) => {
+  onRemove({ extensionId }: { extensionId: UUID }) {
     reportEvent("ExtensionRemove", {
       extensionId,
     });

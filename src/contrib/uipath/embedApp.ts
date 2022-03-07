@@ -138,9 +138,11 @@ export class UiPathAppRenderer extends Renderer {
         blockId: this.id,
         url: subframeUrl,
         inputs,
-      }).catch((error) => {
-        logger.error(error);
-      });
+      })
+        // eslint-disable-next-line promise/prefer-await-to-then -- It must run asynchronously
+        .catch((error) => {
+          logger.error(error);
+        });
     }
 
     return `<iframe src="${localFrame.href}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>` as SafeHTML;

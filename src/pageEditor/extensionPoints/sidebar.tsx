@@ -83,7 +83,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
 
 function selectExtensionPoint(
   formState: SidebarFormState
-): ExtensionPointConfig<PanelDefinition> {
+): ExtensionPointConfig {
   const { extensionPoint } = formState;
   const {
     definition: { isAvailable, reader },
@@ -125,7 +125,7 @@ function asDynamicElement(element: SidebarFormState): DynamicDefinition {
 
 export async function fromExtensionPoint(
   url: string,
-  extensionPoint: ExtensionPointConfig<PanelDefinition>
+  extensionPoint: ExtensionPointConfig
 ): Promise<SidebarFormState> {
   if (extensionPoint.definition.type !== "actionPanel") {
     throw new Error("Expected actionPanel extension point type");

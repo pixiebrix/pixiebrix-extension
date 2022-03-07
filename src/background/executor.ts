@@ -20,7 +20,7 @@ import type { RunBlock } from "@/contentScript/executor";
 import browser, { Runtime, Tabs } from "webextension-polyfill";
 import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
-import { asyncLoop } from "@/utils";
+import { asyncForEach } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
 import { MessengerMeta } from "webext-messenger";
@@ -81,7 +81,7 @@ export async function requestRunInBroadcast(
   const { origins } = await browser.permissions.getAll();
   const tabs = await browser.tabs.query({ url: origins });
 
-  await asyncLoop(tabs, async (tab) => {
+  await asyncForEach(tabs, async (tab) => {
     if (tab.id === sourceTabId) {
       return;
     }

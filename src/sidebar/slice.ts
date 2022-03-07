@@ -36,10 +36,10 @@ const slice = createSlice({
   initialState: blankSidebarState,
   name: "actionPanel",
   reducers: {
-    selectTab: (state, action: PayloadAction<string>) => {
+    selectTab(state, action: PayloadAction<string>) {
       state.activeKey = action.payload;
     },
-    addForm: (state, action: PayloadAction<{ form: FormEntry }>) => {
+    addForm(state, action: PayloadAction<{ form: FormEntry }>) {
       const { form } = action.payload;
 
       // Cancel pre-existing forms for the extension
@@ -57,12 +57,12 @@ const slice = createSlice({
       state.forms.push(form);
       state.activeKey = mapTabEventKey("form", form);
     },
-    removeForm: (state, action: PayloadAction<UUID>) => {
+    removeForm(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
       state.forms = state.forms.filter((x) => x.nonce !== nonce);
       state.activeKey = defaultEventKey(state);
     },
-    setPanels: (state, action: PayloadAction<{ panels: PanelEntry[] }>) => {
+    setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
       state.panels = action.payload.panels;
       // If a panel is no longer available, reset the current tab to a valid tab
       if (

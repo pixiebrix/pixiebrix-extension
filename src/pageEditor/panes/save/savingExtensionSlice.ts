@@ -40,16 +40,16 @@ export const savingExtensionSlice = createSlice({
   name: "savingExtension",
   initialState,
   reducers: {
-    openWizard: (state) => {
+    openWizard(state) {
       state.isWizardOpen = true;
     },
-    setSavingInProgress: (state) => {
+    setSavingInProgress(state) {
       state.isSaving = true;
     },
     /**
      * Closes the Wizard and also disables isSaving flag
      */
-    closeWizard: (state) => {
+    closeWizard(state) {
       state.isWizardOpen = false;
       state.isSaving = false;
     },

@@ -42,11 +42,11 @@ export const installedPageSlice = createSlice({
   name: "installedPage",
   initialState,
   reducers: {
-    setLogsContext: (state, action: PayloadAction<LogsContext>) => {
+    setLogsContext(state, action: PayloadAction<LogsContext>) {
       state.showLogsContext = action.payload;
       state.showShareContext = null;
     },
-    setShareContext: (state, action: PayloadAction<ShareContext | null>) => {
+    setShareContext(state, action: PayloadAction<ShareContext | null>) {
       state.showShareContext = action.payload;
       state.showLogsContext = null;
     },

@@ -68,14 +68,14 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
             {
               name: "save", // Name for the key binding.
               bindKey: { win: "Ctrl-S", mac: "Command-S" }, // Key combination used for the command.
-              exec: () => {
+              exec() {
                 void submitForm();
               },
             },
             {
               name: "openEditor",
               bindKey: { win: "Ctrl-O", mac: "Command-O" },
-              exec: (editor) => {
+              exec(editor) {
                 const { row, column } = editor.getCursorPosition();
                 const id = trim(
                   editor.session.getTokenAt(row, column).value,
@@ -89,7 +89,7 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
             {
               name: "openDefinition",
               bindKey: { win: "Ctrl-B", mac: "Command-B" },
-              exec: (editor) => {
+              exec(editor) {
                 const { row, column } = editor.getCursorPosition();
                 const id = trim(
                   editor.session.getTokenAt(row, column).value,

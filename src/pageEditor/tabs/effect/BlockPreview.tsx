@@ -112,19 +112,19 @@ const previewSlice = createSlice({
   name: "previewSlice",
   initialState,
   reducers: {
-    startRun: (state) => {
+    startRun(state) {
       state.isRunning = true;
     },
-    setSuccess: (
+    setSuccess(
       state,
       action: PayloadAction<{ output: unknown; outputKey: string }>
-    ) => {
+    ) {
       const { output, outputKey } = action.payload;
       state.outputKey = outputKey;
       state.output = outputKey ? { [`@${outputKey}`]: output } : output;
       state.isRunning = false;
     },
-    setError: (state, action: PayloadAction<{ error: unknown }>) => {
+    setError(state, action: PayloadAction<{ error: unknown }>) {
       const { error } = action.payload;
       state.output = error;
       state.outputKey = null;

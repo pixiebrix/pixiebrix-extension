@@ -55,7 +55,7 @@ const AddElementAction: React.FC<AddElementActionProps> = ({
       toggleClassName={styles.toggle}
       items={allowedTypes.map((elementType) => ({
         title: elementTypeLabels[elementType],
-        action: () => {
+        action() {
           addElement(elementType);
         },
       }))}

@@ -54,7 +54,7 @@ Pipedrive.args = {
   fixture: "pipedrive",
   onDelete: action("onDelete"),
   onClose: action("onClose"),
-  onSave: async () => {
+  async onSave() {
     action("onSave");
   },
 };
@@ -64,7 +64,7 @@ AutomationAnywhere.args = {
   fixture: "automationAnywhere",
   onDelete: action("onDelete"),
   onClose: action("onClose"),
-  onSave: async () => {
+  async onSave() {
     action("onSave");
   },
 };

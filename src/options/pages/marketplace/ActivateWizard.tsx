@@ -74,21 +74,20 @@ const ActivateButton: React.FunctionComponent<{
     }
   };
 
-  const activateOrReinstall = () => {
-    if (reinstall) {
-      uninstallExtensions()
-        .then(() => {
-          activate();
-        })
-        .catch((error) => {
-          notify.error({
-            message: "Error re-installing bricks",
-
-            error,
-          });
-        });
-    } else {
+  const activateOrReinstall = async () => {
+    if (!reinstall) {
       activate();
+      return;
+    }
+
+    try {
+      await uninstallExtensions();
+      activate();
+    } catch (error) {
+      notify.error({
+        message: "Error re-installing bricks",
+        error,
+      });
     }
   };
 
