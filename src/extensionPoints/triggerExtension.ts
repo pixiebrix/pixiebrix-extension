@@ -410,15 +410,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     const observer = initialize(
       this.triggerSelector,
-      (index, element) => {
-        void this.runTrigger(element as HTMLElement).then((errors) => {
-          if (errors.length > 0) {
-            console.error("An error occurred while running a trigger", {
-              errors,
-            });
-            notify.error("An error occurred while running a trigger");
-          }
-        });
+      async (index, element) => {
+        const errors = await this.runTrigger(element as HTMLElement);
+        if (errors.length > 0) {
+          console.error("An error occurred while running a trigger", {
+            errors,
+          });
+          notify.error("An error occurred while running a trigger");
+        }
       },
       // `target` is a required option
       { target: document }

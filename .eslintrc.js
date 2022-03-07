@@ -57,9 +57,6 @@ module.exports = {
       },
     ],
 
-    // 100% false positives, we never use the `fs` module
-    "security/detect-non-literal-fs-filename": "off",
-
     // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
     "import/no-named-as-default-member": "off",
 
@@ -74,13 +71,6 @@ module.exports = {
     "unicorn/no-await-expression-member": "warn", // Annoying sometimes, let's try it
     "@typescript-eslint/consistent-type-assertions": "warn",
   },
-  ignorePatterns: [
-    "artifacts",
-    "selenium",
-    "src/vendors",
-    "src/types/swagger.ts",
-    "scripts/bin",
-  ],
   overrides: [
     {
       files: [
@@ -94,7 +84,11 @@ module.exports = {
         node: true,
         jest: true,
       },
+      // Overridden rules: https://github.com/fregante/eslint-config-pixiebrix/blob/main/server.js
       extends: ["pixiebrix/server"],
+      rules: {
+        "@typescript-eslint/consistent-type-assertions": "off",
+      },
     },
   ],
 };

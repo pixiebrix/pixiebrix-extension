@@ -86,10 +86,16 @@ declare module "page-metadata-parser" {
 }
 
 declare module "@/vendors/initialize" {
+  import { Promisable } from "type-fest";
+
   /** Attach a MutationObserver specifically for a selector */
   const initialize: (
     selector: string,
-    callback: (this: Element, index: number, element: Element) => void | false,
+    callback: (
+      this: Element,
+      index: number,
+      element: Element
+    ) => Promisable<void | false>,
     options: { target: Element | Document; observer?: MutationObserverInit }
   ) => MutationObserver;
 

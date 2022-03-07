@@ -128,8 +128,7 @@ function useCreate(): CreateCallback {
       };
 
       try {
-        const adapter = ADAPTERS.get(element.type);
-
+        // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
         void ensurePermissions(element).catch((error) => {
           console.error("Error checking/enabling permissions", { error });
           notify.warning({
@@ -139,6 +138,8 @@ function useCreate(): CreateCallback {
             reportError: true,
           });
         });
+
+        const adapter = ADAPTERS.get(element.type);
 
         const extensionPointId = element.extensionPoint.metadata.id;
         const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);

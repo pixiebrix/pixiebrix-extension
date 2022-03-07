@@ -21,6 +21,7 @@ import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
 import { UUID } from "@/core";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
+import { asyncForEach } from "@/utils";
 
 type AppState = SidebarStore & {
   activeKey: string;
@@ -43,13 +44,12 @@ const slice = createSlice({
       const { form } = action.payload;
 
       // Cancel pre-existing forms for the extension
-      for (const current of state.forms.filter(
-        (x) => x.extensionId === form.extensionId
-      )) {
-        void whoAmI().then(async (sender) =>
-          cancelForm({ tabId: sender.tab.id, frameId: 0 }, current.nonce)
-        );
-      }
+      void asyncForEach(state.forms, async (current) => {
+        if (current.extensionId === form.extensionId) {
+          const sender = await whoAmI();
+          await cancelForm({ tabId: sender.tab.id, frameId: 0 }, current.nonce);
+        }
+      });
 
       state.forms = state.forms.filter(
         (x) => x.extensionId !== form.extensionId

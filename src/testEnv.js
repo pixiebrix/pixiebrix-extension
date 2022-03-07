@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Jest fails without these
+// eslint-disable-next-line node/prefer-global/text-decoder, node/prefer-global/text-encoder
 import { TextEncoder, TextDecoder } from "util";
 
 process.env.SERVICE_URL = "https://app.pixiebrix.com";
