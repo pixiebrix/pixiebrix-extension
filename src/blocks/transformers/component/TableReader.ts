@@ -23,7 +23,7 @@ import {
   parseDefinitionList,
   getAllDefinitionLists,
 } from "@/utils/parseDefinitionList";
-import { $safeFind } from "@/helpers";
+import { requireSingleElement } from "@/utils/requireSingleElement";
 
 export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
 export const TABLE_READER_ALL_ID = validateRegistryId(
@@ -85,7 +85,7 @@ export class TableReader extends Transformer {
   }
 
   async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
-    const [table] = $safeFind<HTMLTableElement | HTMLDListElement>(
+    const table = requireSingleElement<HTMLTableElement | HTMLDListElement>(
       args.selector,
       root
     );
