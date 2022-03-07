@@ -67,6 +67,11 @@ const WizardNavItem: React.FunctionComponent<{
   </Nav.Item>
 );
 
+/**
+ * @deprecated This will soon be split into a new business-logic component, decoupled with the layout, using EditTabLayout
+ * @see EditorTabLayout
+ * @see RecipePane
+ */
 const ElementWizard: React.FunctionComponent<{
   element: FormState;
   editable: Set<string>;
