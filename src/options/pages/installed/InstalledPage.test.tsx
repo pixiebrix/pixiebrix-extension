@@ -27,7 +27,7 @@ import {
   useGetAuthQuery,
 } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
-import { AuthState } from "@/core";
+import { AuthState } from "@/auth/authTypes";
 import { anonAuth } from "@/auth/authConstants";
 import { uuidv4 } from "@/types/helpers";
 

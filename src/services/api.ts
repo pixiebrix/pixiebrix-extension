@@ -23,6 +23,7 @@ import {
   UiSchema,
   UUID,
 } from "@/core";
+import { AuthState } from "@/auth/authTypes";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
   EditablePackage,

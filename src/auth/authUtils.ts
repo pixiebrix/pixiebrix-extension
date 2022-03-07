@@ -17,7 +17,7 @@
 
 import { Me } from "@/types/contract";
 import { UserDataUpdate } from "@/auth/authTypes";
-import { AuthState } from "@/core";
+import { AuthState } from "./authTypes";
 
 export function selectUserDataUpdate({
   email,

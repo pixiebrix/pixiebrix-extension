@@ -82,3 +82,44 @@ export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
 export interface TokenAuthData extends UserData {
   token: string;
 }
+
+type OrganizationAuthState = {
+  readonly id: string;
+  readonly name: string;
+  readonly scope?: string;
+};
+
+export type AuthState = {
+  readonly userId?: string | null;
+
+  readonly email?: string | null;
+
+  readonly scope?: string | null;
+
+  readonly isLoggedIn: boolean;
+
+  readonly isOnboarded: boolean;
+
+  readonly extension: boolean;
+
+  readonly organization?: OrganizationAuthState | null;
+
+  readonly organizations: Array<{
+    id: UUID;
+    name: string;
+  }>;
+
+  readonly groups: Array<{
+    id: UUID;
+    name: string;
+  }>;
+
+  /**
+   * List of feature flags for the user.
+   */
+  readonly flags: string[];
+};
+
+export type AuthRootState = {
+  auth: AuthState;
+};
