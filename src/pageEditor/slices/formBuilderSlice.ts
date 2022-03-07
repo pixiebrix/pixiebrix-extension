@@ -32,7 +32,7 @@ export const formBuilderSlice = createSlice({
   name: "formBuilder",
   initialState,
   reducers: {
-    setActiveField: (state, action: PayloadAction<string>) => {
+    setActiveField(state, action: PayloadAction<string>) {
       state.activeField = action.payload;
     },
   },

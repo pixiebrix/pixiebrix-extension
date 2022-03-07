@@ -58,7 +58,7 @@ const FactoryResetSettings: React.FunctionComponent<{
 );
 
 export default connect(null, (dispatch) => ({
-  resetOptions: () => {
+  resetOptions() {
     dispatch(resetOptions());
     dispatch(resetServices());
   },

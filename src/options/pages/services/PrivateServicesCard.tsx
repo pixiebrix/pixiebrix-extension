@@ -154,7 +154,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                             Configure
                           </>
                         ),
-                        action: () => {
+                        action() {
                           navigate(
                             `/services/${encodeURIComponent(
                               configuredService.id

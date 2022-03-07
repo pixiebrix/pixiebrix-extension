@@ -93,7 +93,7 @@ export const appApi = createApi({
     getAuth: builder.query<AuthState, void>({
       query: () => ({ url: "/api/me/", method: "get" }),
       providesTags: ["Auth"],
-      transformResponse: async (me: Me) => {
+      async transformResponse(me: Me) {
         if (me.id) {
           const update = selectUserDataUpdate(me);
           void updateUserData(update);
@@ -234,7 +234,7 @@ export const appApi = createApi({
         public: boolean;
       }
     >({
-      query: ({ recipe, organizations, public: isPublic }) => {
+      query({ recipe, organizations, public: isPublic }) {
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {
@@ -254,7 +254,7 @@ export const appApi = createApi({
       PackageUpsertResponse,
       { packageId: UUID; recipe: UnsavedRecipeDefinition }
     >({
-      query: ({ packageId, recipe }) => {
+      query({ packageId, recipe }) {
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {

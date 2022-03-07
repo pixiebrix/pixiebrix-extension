@@ -100,8 +100,8 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
 
       console.debug(`Using Google token: ${token}`);
 
-      await new Promise((callback) => {
-        gapi.load("picker", { callback });
+      await new Promise((resolve) => {
+        gapi.load("picker", { callback: resolve });
       });
 
       if (isNullOrBlank(APP_ID)) {

@@ -63,7 +63,6 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
 
   useEffect(() => {
     if (textAreaRef.current) {
-      // eslint-disable-next-line security/detect-non-literal-fs-filename -- not using fs.watch, false positive
       fitTextarea.watch(textAreaRef.current);
     }
   }, []);

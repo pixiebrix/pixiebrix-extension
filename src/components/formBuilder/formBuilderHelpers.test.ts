@@ -96,7 +96,6 @@ describe("updateRjsfSchemaWithDefaultsIfNeeded", () => {
     };
 
     const nextRjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded(rjsfSchema);
-    // eslint-disable-next-line security/detect-object-injection
     expect(nextRjsfSchema.uiSchema[UI_ORDER]).toEqual(["*"]);
   });
 

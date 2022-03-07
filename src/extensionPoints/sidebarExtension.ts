@@ -246,9 +246,9 @@ export type PanelDefinition = ExtensionPointDefinition;
 class RemotePanelExtensionPoint extends SidebarExtensionPoint {
   private readonly definition: PanelDefinition;
 
-  public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
+  public readonly rawConfig: ExtensionPointConfig;
 
-  constructor(config: ExtensionPointConfig<PanelDefinition>) {
+  constructor(config: ExtensionPointConfig) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
     super(cloned.metadata, new BackgroundLogger());
@@ -265,9 +265,7 @@ class RemotePanelExtensionPoint extends SidebarExtensionPoint {
   }
 }
 
-export function fromJS(
-  config: ExtensionPointConfig<PanelDefinition>
-): IExtensionPoint {
+export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
   const { type } = config.definition;
   if (type !== "actionPanel") {
     throw new Error(`Expected type=actionPanel, got ${type}`);

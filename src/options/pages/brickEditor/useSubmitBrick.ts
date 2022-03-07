@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable promise/prefer-await-to-then -- TODO: This can probably be refactored to be more linear */
+
 import { castArray, pick } from "lodash";
 import { useCallback } from "react";
 import { useHistory } from "react-router";

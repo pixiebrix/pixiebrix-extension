@@ -152,7 +152,7 @@ const InstalledExtensionRow: React.FunctionComponent<{
                   <FontAwesomeIcon icon={faDownload} /> Export
                 </>
               ),
-              action: () => {
+              action() {
                 onExportBlueprint(extensionId);
               },
             },

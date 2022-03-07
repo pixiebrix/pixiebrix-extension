@@ -111,7 +111,7 @@ export class CustomFormRenderer extends Renderer {
         formData,
         schema,
         uiSchema,
-        onSubmit: async (values: JsonObject) => {
+        async onSubmit(values: JsonObject) {
           try {
             await dataStore.set(recordId, values);
             notifyResult(logger.context.extensionId, {

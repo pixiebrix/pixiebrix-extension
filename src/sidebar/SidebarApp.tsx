@@ -40,13 +40,13 @@ import { whoAmI } from "@/background/messenger/api";
 
 function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
   return {
-    onRenderPanels: (panels: PanelEntry[]) => {
+    onRenderPanels(panels: PanelEntry[]) {
       dispatch(slice.actions.setPanels({ panels }));
     },
-    onShowForm: (form: FormEntry) => {
+    onShowForm(form: FormEntry) {
       dispatch(slice.actions.addForm({ form }));
     },
-    onHideForm: ({ nonce }: Partial<FormEntry>) => {
+    onHideForm({ nonce }: Partial<FormEntry>) {
       dispatch(slice.actions.removeForm(nonce));
     },
   };

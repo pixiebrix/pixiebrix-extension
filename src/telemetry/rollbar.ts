@@ -90,7 +90,7 @@ async function initRollbar(): Promise<Rollbar> {
         environment: process.env.ENVIRONMENT,
         person: await personFactory(await readAuthData()),
       },
-      transform: (payload: Payload) => {
+      transform(payload: Payload) {
         // Standardize the origin across browsers so that they match the source map we uploaded to rollbar
         // https://docs.rollbar.com/docs/source-maps#section-using-source-maps-on-many-domains
         for (const frame of payload.body.trace?.frames ?? []) {

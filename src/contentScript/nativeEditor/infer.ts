@@ -88,7 +88,7 @@ const TEMPLATE_ATTR_EXCLUDE_PATTERNS = [
 
 const TEMPLATE_VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
   ["class", [/^ember-view$/]],
-  /* eslint-disable security/detect-non-literal-regexp -- Our variables */
+  // eslint-disable-next-line security/detect-non-literal-regexp -- Our variables
   ["id", [new RegExp(`^${PANEL_FRAME_ID}$`)]],
 ]);
 

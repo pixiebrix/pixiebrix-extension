@@ -114,6 +114,7 @@ async function onContentScriptReceiveMessage(
   }
 
   if (!options.asyncResponse) {
+    // eslint-disable-next-line promise/prefer-await-to-then -- Legacy code
     void handler(...payload).catch((error) => {
       console.warn(`${type}: ${meta.nonce}: Notification error`, error);
     });

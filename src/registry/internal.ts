@@ -62,7 +62,6 @@ async function ensureBlock(
   const obj = pick(config, ["inputSchema", "kind", "pipeline", "definition"]);
   const registryId = makeInternalId(obj);
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (await blockRegistry.exists(registryId)) {
     console.debug(
       `Internal ${obj.kind} already exists: ${registryId}; using existing block`
@@ -148,7 +147,6 @@ async function ensureExtensionPoint(
   const obj = pick(config, ["kind", "definition"]);
   const registryId = makeInternalId(obj);
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (await extensionPointRegistry.exists(registryId)) {
     console.debug(
       `Internal ${obj.kind} already exists: ${registryId}; using existing block`
