@@ -57,6 +57,9 @@ module.exports = {
       },
     ],
 
+    // 100% false positives, we never use the `fs` module
+    "security/detect-non-literal-fs-filename": "off",
+
     // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
     "import/no-named-as-default-member": "off",
 
