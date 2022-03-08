@@ -26,11 +26,17 @@ interface NormalizedItem {
 function flattenListContent(list: HTMLDListElement): NormalizedItem[] {
   const flattened: NormalizedItem[] = [];
   let current: NormalizedItem;
-  let seenDefinition = true;
+
+  // This boolean marks the `dd -> dt` sequence, where the old definition ends
+  // and a new term is found. This allows `dt, dt, dd, dd` sequences which are
+  // for a single term group, like:
+  // Terms: hi, hello
+  // Definitions: excl. to begin a conversation, excl. to attract someone's attention
+  let dtStartsNewGroup = true;
   for (const element of list.querySelectorAll("dt, dd")) {
     if (element.tagName === "DT") {
-      if (seenDefinition) {
-        seenDefinition = false;
+      if (dtStartsNewGroup) {
+        dtStartsNewGroup = false;
         current = {
           terms: [],
           definitions: [],
@@ -40,7 +46,7 @@ function flattenListContent(list: HTMLDListElement): NormalizedItem[] {
 
       current.terms.push(element.textContent.trim());
     } else if (element.tagName === "DD") {
-      seenDefinition = true;
+      dtStartsNewGroup = true;
       current.definitions.push(element.textContent.trim());
     }
   }
