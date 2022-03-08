@@ -26,7 +26,6 @@ import { OnboardingType } from "@/options/pages/blueprints/onboardingView/useOnb
 import useReduxState from "@/hooks/useReduxState";
 import { selectFilters } from "@/options/pages/blueprints/blueprintsSelectors";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
-import Loader from "@/components/Loader";
 
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col xs={6}>
@@ -116,9 +115,10 @@ const CreateBrickColumn: React.VoidFunctionComponent = () => (
 const OnboardingView: React.VoidFunctionComponent<{
   onboardingType: OnboardingType;
   isLoading: boolean;
+  filter?: string;
   width: number;
   height: number;
-}> = ({ onboardingType, isLoading, width, height }) => {
+}> = ({ onboardingType, filter, isLoading, width, height }) => {
   const onBoardingInformation = useMemo(() => {
     switch (onboardingType) {
       case "hasDeployments":
@@ -147,7 +147,9 @@ const OnboardingView: React.VoidFunctionComponent<{
       <Card className={styles.root}>
         <Card.Body className={styles.cardBody}>
           <img src={marketplaceImage} alt="Marketplace" width={300} />
-          <h3 className="mb-4">You don't have any active blueprints</h3>
+          <h3 className="mb-4">{`You don't have any ${
+            filter ? filter : ""
+          } blueprints`}</h3>
           {!isLoading && <Row>{onBoardingInformation}</Row>}
         </Card.Body>
       </Card>

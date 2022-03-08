@@ -15,16 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Blueprintsiew.module.scss";
-
-import React, { useCallback, useMemo } from "react";
+import React from "react";
 import ListView from "@/options/pages/blueprints/listView/ListView";
 import GridView from "@/options/pages/blueprints/gridView/GridView";
 import { useSelector } from "react-redux";
 import {
   selectFilters,
-  selectGroupBy,
-  selectSortBy,
   selectView,
 } from "@/options/pages/blueprints/blueprintsSelectors";
 import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
@@ -40,69 +36,38 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   const view = useSelector(selectView);
   const filters = useSelector(selectFilters);
   const { onboardingType, isLoading } = useOnboarding();
-  const isFilter = useCallback(
-    (targetFilter: string) => {
-      for (const filter of filters) {
-        if (filter.value === targetFilter) {
-          return true;
-        }
-      }
-
-      return false;
-    },
-    [filters]
-  );
 
   const {
     state: { globalFilter },
+    rows,
   } = tableInstance;
 
-  const onActivePage = useMemo(() => isFilter("Active"), [isFilter]);
   const BlueprintsList = view === "list" ? ListView : GridView;
-  const EmptyListView = useMemo(() => {
-    if (globalFilter) {
-      return (
-        <EmptyView
-          tableInstance={tableInstance}
-          height={height}
-          width={width}
-        />
-      );
-    }
 
+  if (rows.length > 0) {
     return (
-      <OnboardingView
-        onboardingType={onboardingType}
-        isLoading={isLoading}
+      <BlueprintsList
+        tableInstance={tableInstance}
         width={width}
         height={height}
       />
     );
-  }, [isLoading, globalFilter, height, onboardingType, tableInstance, width]);
+  }
 
-  // if no tableInstance rows
-  //    - if on "Active Blueprints" page
-  //          - show onboarding page
-  //    - if global search query'
-  //          - show "empty search results" page
-  //    - if on "personal" page
-  //          - prompt user to create blueprints
-  //    - if on team page
-  //          ...
-  //     etc.
+  if (globalFilter) {
+    return (
+      <EmptyView tableInstance={tableInstance} height={height} width={width} />
+    );
+  }
 
   return (
-    <>
-      {onActivePage ? (
-        EmptyListView
-      ) : (
-        <BlueprintsList
-          tableInstance={tableInstance}
-          width={width}
-          height={height}
-        />
-      )}
-    </>
+    <OnboardingView
+      onboardingType={onboardingType}
+      isLoading={isLoading}
+      filter={filters[0]?.value.toLowerCase()}
+      width={width}
+      height={height}
+    />
   );
 };
 

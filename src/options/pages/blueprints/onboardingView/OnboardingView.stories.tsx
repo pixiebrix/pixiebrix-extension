@@ -36,6 +36,12 @@ export default {
         type: "select",
       },
     },
+    filter: {
+      options: ["active", "public", "personal", undefined],
+      control: {
+        type: "select",
+      },
+    },
   },
 } as ComponentMeta<typeof OnboardingView>;
 

@@ -27,22 +27,18 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import ListView from "./listView/ListView";
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
-import GridView from "./gridView/GridView";
 import {
   selectFilters,
   selectGroupBy,
   selectSortBy,
-  selectView,
 } from "./blueprintsSelectors";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
 import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/options/pages/blueprints/BlueprintsToolbar";
-import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
 import BlueprintsView from "@/options/pages/blueprints/BlueprintsView";
 
 // These react-table columns aren't rendered as column headings,
@@ -135,7 +131,7 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  const { setGlobalFilter, rows } = tableInstance;
+  const { setGlobalFilter } = tableInstance;
 
   return (
     <BootstrapRow className={styles.root}>
@@ -149,21 +145,11 @@ const BlueprintsCard: React.FunctionComponent<{
         <div style={{ flex: "1 1 auto" }}>
           <AutoSizer defaultHeight={500}>
             {({ height, width }) => (
-              <>
-                {rows.length > 0 ? (
-                  <BlueprintsView
-                    tableInstance={tableInstance}
-                    width={width}
-                    height={height}
-                  />
-                ) : (
-                  <EmptyView
-                    tableInstance={tableInstance}
-                    height={height}
-                    width={width}
-                  />
-                )}
-              </>
+              <BlueprintsView
+                tableInstance={tableInstance}
+                width={width}
+                height={height}
+              />
             )}
           </AutoSizer>
         </div>
