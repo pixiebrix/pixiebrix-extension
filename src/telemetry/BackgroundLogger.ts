@@ -17,7 +17,7 @@
 
 import { Logger, MessageContext } from "@/core";
 import { JsonObject } from "type-fest";
-import { getErrorMessage, isConnectionError } from "@/errors";
+import { isConnectionError } from "@/errors";
 import { getContextName, isContentScript } from "webext-detect-page";
 import { showConnectionLost } from "@/contentScript/connection";
 import { serializeError } from "serialize-error";
@@ -71,8 +71,7 @@ class BackgroundLogger implements Logger {
   }
 
   async error(error: unknown, data: JsonObject): Promise<void> {
-    console.error("An error occurred: %s", getErrorMessage(error), {
-      error,
+    console.error(error, {
       context: this.context,
       data,
     });
