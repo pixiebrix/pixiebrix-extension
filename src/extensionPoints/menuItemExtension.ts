@@ -71,6 +71,7 @@ import sanitize from "@/utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import reportError from "@/telemetry/reportError";
+import pluralize from "@/utils/pluralize";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -726,8 +727,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
 
     if (errors.length > 0) {
-      const subject =
-        errors.length === 1 ? "the button" : `${errors.length} buttons`;
+      const subject = pluralize(errors.length, "the button", "$$ buttons");
       const message = `An error occurred adding ${subject}`;
       console.warn(message, { errors });
       this.notifyError({

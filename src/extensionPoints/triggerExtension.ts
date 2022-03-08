@@ -52,6 +52,7 @@ import { PromiseCancelled, sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import pluralize from "@/utils/pluralize";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -338,8 +339,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       return;
     }
 
-    const subject =
-      errors.length === 1 ? "a trigger" : `${errors.length} triggers`;
+    const subject = pluralize(errors.length, "a trigger", "$$ triggers");
     const message = `An error occurred running ${subject}`;
     console.debug(message, { errors });
     notify.error({
