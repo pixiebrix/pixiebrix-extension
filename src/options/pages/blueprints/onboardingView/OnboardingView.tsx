@@ -23,8 +23,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "@img/marketplace.svg";
 import { OnboardingType } from "@/options/pages/blueprints/onboardingView/useOnboarding";
-import useReduxState from "@/hooks/useReduxState";
-import { selectFilters } from "@/options/pages/blueprints/blueprintsSelectors";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { useDispatch } from "react-redux";
 
