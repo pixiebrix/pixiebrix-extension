@@ -44,7 +44,7 @@ const EmptyView: React.VoidFunctionComponent<{
             <img src={workshopImage} alt="Workshop" width={300} />
             <h3>No blueprints found</h3>
             <div className="mb-4">
-              There weren&apos;t any blueprints with a name, description, or id
+              There {"weren't"} any blueprints with a name, description, or id
               containing your search term <strong>{`"${globalFilter}"`}</strong>
               .
             </div>

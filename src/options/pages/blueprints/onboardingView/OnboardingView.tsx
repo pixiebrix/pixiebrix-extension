@@ -26,6 +26,7 @@ import { OnboardingType } from "@/options/pages/blueprints/onboardingView/useOnb
 import useReduxState from "@/hooks/useReduxState";
 import { selectFilters } from "@/options/pages/blueprints/blueprintsSelectors";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
+import { useDispatch } from "react-redux";
 
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col xs={6}>
@@ -48,11 +49,8 @@ const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
 );
 
 const ActivateTeamBlueprintsColumn: React.VoidFunctionComponent = () => {
-  // TODO: select only setFilters action
-  const [, setFilters] = useReduxState(
-    selectFilters,
-    blueprintsSlice.actions.setFilters
-  );
+  const { setFilters } = blueprintsSlice.actions;
+  const dispatch = useDispatch();
 
   return (
     <Col xs={6}>
@@ -64,7 +62,7 @@ const ActivateTeamBlueprintsColumn: React.VoidFunctionComponent = () => {
       <Button
         size="sm"
         onClick={() => {
-          setFilters([]);
+          dispatch(setFilters([]));
         }}
       >
         View my blueprints
