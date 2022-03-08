@@ -15,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./OnboardingPage.module.scss";
+import styles from "./OnboardingView.module.scss";
 
 import React, { useMemo } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
-import Loader from "@/components/Loader";
-import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
+import marketplaceImage from "@img/marketplace.svg";
+import { OnboardingType } from "@/options/pages/blueprints/onboardingView/useOnboarding";
+import useReduxState from "@/hooks/useReduxState";
+import { selectFilters } from "@/options/pages/blueprints/blueprintsSelectors";
+import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 
-const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
+const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col xs={6}>
     <h4>Activate an Official Blueprint</h4>
     <p>
@@ -38,26 +40,42 @@ const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
       href="https://pixiebrix.com/marketplace/"
       variant="info"
       target="_blank"
+      size="sm"
     >
       <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Browse the Marketplace
     </Button>
   </Col>
 );
 
-const ActivateTeamBlueprintsColumn: React.FunctionComponent = () => (
-  <Col xs={6}>
-    <h4>Activate Team Blueprints</h4>
-    <p>Browse and activate team bricks in the My Blueprints page.</p>
-    <Link to="/blueprints" className="btn btn-info">
-      Open My Blueprints
-    </Link>
-  </Col>
-);
+const ActivateTeamBlueprintsColumn: React.VoidFunctionComponent = () => {
+  // TODO: select only setFilters action
+  const [, setFilters] = useReduxState(
+    selectFilters,
+    blueprintsSlice.actions.setFilters
+  );
 
-const ActivateFromDeploymentBannerColumn: React.FunctionComponent = () => (
+  return (
+    <Col xs={6}>
+      <h4>Activate Team Blueprints</h4>
+      <p>
+        You can browse blueprints shared with you using the category filters on
+        this page.
+      </p>
+      <Button
+        size="sm"
+        onClick={() => {
+          setFilters([]);
+        }}
+      >
+        View my blueprints
+      </Button>
+    </Col>
+  );
+};
+
+const ActivateFromDeploymentBannerColumn: React.VoidFunctionComponent = () => (
   <Col>
-    <h4>You have Team Bricks ready to activate!</h4>
-    <p className="mb-0">
+    <p>
       Click the <strong className="text-primary">Activate</strong> button in the{" "}
       <strong className="text-info">blue banner above</strong> to start using
       your team bricks. You will see this banner every time your team deploys
@@ -66,26 +84,25 @@ const ActivateFromDeploymentBannerColumn: React.FunctionComponent = () => (
   </Col>
 );
 
-const ContactTeamAdminColumn: React.FunctionComponent = () => (
-  <Col xs={6}>
-    <h4>Activate Team Blueprints</h4>
-    <p className="mb-0">
-      It looks like your team hasn&apos;t made any bricks available to you yet.
+const ContactTeamAdminColumn: React.VoidFunctionComponent = () => (
+  <Col>
+    <p>
+      It looks like your team hasn&apos;t made any bricks available to you yet.{" "}
       <strong>Contact your team admin</strong> to get access to your team&apos;s
       bricks.
     </p>
   </Col>
 );
 
-const CreateBrickColumn: React.FunctionComponent = () => (
+const CreateBrickColumn: React.VoidFunctionComponent = () => (
   <Col xs={6}>
     <h4>Create your Own</h4>
     <p>
-      Follow the Quick Start Guide in our documentation area to start creating
-      your own bricks in minutes.
+      Follow the Quick Start Guide to start creating your own blueprints in
+      minutes.
     </p>
     <a
-      className="btn btn-info"
+      className="btn btn-info btn-sm"
       href="https://docs.pixiebrix.com/quick-start-guide"
       target="_blank"
       rel="noopener noreferrer"
@@ -95,9 +112,11 @@ const CreateBrickColumn: React.FunctionComponent = () => (
   </Col>
 );
 
-const OnboardingPage: React.FunctionComponent = () => {
-  const { onboardingType, isLoading } = useOnboarding();
-
+const OnboardingView: React.VoidFunctionComponent<{
+  onboardingType: OnboardingType;
+  width: number;
+  height: number;
+}> = ({ onboardingType, width, height }) => {
   const onBoardingInformation = useMemo(() => {
     switch (onboardingType) {
       case "hasDeployments":
@@ -122,27 +141,16 @@ const OnboardingPage: React.FunctionComponent = () => {
   }, [onboardingType]);
 
   return (
-    <>
-      {isLoading ? (
-        <div id="OnboardingSpinner">
-          <Loader />
-        </div>
-      ) : (
-        <>
-          <Row>
-            <Col className="VideoCard">
-              <Card className={styles.card}>
-                <Card.Header>Activate Bricks</Card.Header>
-                <Card.Body className={styles.cardBody}>
-                  <Row>{onBoardingInformation}</Row>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-        </>
-      )}
-    </>
+    <div style={{ height: `${height}px`, width: `${width}px` }}>
+      <Card className={styles.root}>
+        <Card.Body className={styles.cardBody}>
+          <img src={marketplaceImage} alt="Marketplace" width={300} />
+          <h3 className="mb-4">You don't have any active blueprints</h3>
+          <Row>{onBoardingInformation}</Row>
+        </Card.Body>
+      </Card>
+    </div>
   );
 };
 
-export default OnboardingPage;
+export default OnboardingView;

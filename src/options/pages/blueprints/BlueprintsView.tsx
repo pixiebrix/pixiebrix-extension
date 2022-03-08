@@ -15,12 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import styles from "./Blueprintsiew.module.scss";
+
+import React, { useCallback, useMemo } from "react";
 import ListView from "@/options/pages/blueprints/listView/ListView";
 import GridView from "@/options/pages/blueprints/gridView/GridView";
 import { useSelector } from "react-redux";
-import { selectView } from "@/options/pages/blueprints/blueprintsSelectors";
+import {
+  selectFilters,
+  selectGroupBy,
+  selectSortBy,
+  selectView,
+} from "@/options/pages/blueprints/blueprintsSelectors";
 import { BlueprintListViewProps } from "@/options/pages/blueprints/blueprintsTypes";
+import OnboardingView from "@/options/pages/blueprints/onboardingView/OnboardingView";
+import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
+import EmptyView from "@/options/pages/blueprints/emptyView/EmptyView";
 
 const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
@@ -28,7 +38,51 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   height,
 }) => {
   const view = useSelector(selectView);
+  const filters = useSelector(selectFilters);
+  const { onboardingType } = useOnboarding();
+  const isFilter = useCallback(
+    (targetFilter: string) => {
+      for (const filter of filters) {
+        if (filter.value === targetFilter) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    [filters]
+  );
+
+  const {
+    state: { globalFilter },
+  } = tableInstance;
+
+  const onActivePage = useMemo(
+    () => isFilter("Active"),
+    [isFilter, globalFilter]
+  );
   const BlueprintsList = view === "list" ? ListView : GridView;
+  const EmptyListView = useMemo(() => {
+    if (globalFilter) {
+      return (
+        <EmptyView
+          tableInstance={tableInstance}
+          height={height}
+          width={width}
+        />
+      );
+    }
+
+    if (isFilter("Active")) {
+      return (
+        <OnboardingView
+          onboardingType={onboardingType}
+          width={width}
+          height={height}
+        />
+      );
+    }
+  }, [globalFilter, height, isFilter, onboardingType, tableInstance, width]);
 
   // if no tableInstance rows
   //    - if on "Active Blueprints" page
@@ -41,17 +95,18 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   //          ...
   //     etc.
 
-  // hasOrganization
-  // hasDeployments
-  // isRestricted
-  // hasTeamBlueprints
-
   return (
-    <BlueprintsList
-      tableInstance={tableInstance}
-      width={width}
-      height={height}
-    />
+    <>
+      {onActivePage ? (
+        EmptyListView
+      ) : (
+        <BlueprintsList
+          tableInstance={tableInstance}
+          width={width}
+          height={height}
+        />
+      )}
+    </>
   );
 };
 
