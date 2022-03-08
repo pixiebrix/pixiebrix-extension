@@ -330,7 +330,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
     if (errors.length > 0) {
       console.debug("Trigger errors", errors);
-      notify.error(`An error occurred running ${errors.length} triggers(s)`);
+      notify.error({
+        message: `An error occurred running ${errors.length} triggers(s)`,
+        reportError: false,
+      });
     }
   }
 
