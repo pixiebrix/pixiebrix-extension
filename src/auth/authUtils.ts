@@ -16,8 +16,7 @@
  */
 
 import { Me } from "@/types/contract";
-import { UserDataUpdate } from "@/auth/authTypes";
-import { AuthState } from "./authTypes";
+import { UserDataUpdate, AuthState } from "@/auth/authTypes";
 
 export function selectUserDataUpdate({
   email,
@@ -28,9 +27,10 @@ export function selectUserDataUpdate({
   flags = [],
 }: Me): UserDataUpdate {
   const organizations = organization_memberships.map(
-    ({ organization, organization_name }) => ({
+    ({ organization, organization_name, role }) => ({
       id: organization,
       name: organization_name,
+      role,
     })
   );
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
@@ -56,9 +56,10 @@ export function selectExtensionAuthState({
   group_memberships = [],
 }: Me): AuthState {
   const organizations = organization_memberships.map(
-    ({ organization, organization_name }) => ({
+    ({ organization, organization_name, role }) => ({
       id: organization,
       name: organization_name,
+      role,
     })
   );
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
@@ -67,10 +68,10 @@ export function selectExtensionAuthState({
     userId: id,
     email,
     scope,
-    organization,
-    isOnboarded,
     isLoggedIn: true,
+    isOnboarded,
     extension: true,
+    organization,
     organizations,
     groups,
     flags,

@@ -16,6 +16,7 @@
  */
 
 import { RegistryId, UUID } from "@/core";
+import { Me } from "@/types/contract";
 import { Except } from "type-fest";
 
 export interface AuthOption {
@@ -107,6 +108,7 @@ export type AuthState = {
   readonly organizations: Array<{
     id: UUID;
     name: string;
+    role: Me["organization_memberships"][0]["role"];
   }>;
 
   readonly groups: Array<{

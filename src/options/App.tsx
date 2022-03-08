@@ -127,12 +127,14 @@ const RequireAuth: React.FunctionComponent = ({ children }) => {
     void setAuth(me);
   }, [isLoading, dispatch]);
 
-  if ((error as ApiError)?.status === 401 || (!isLoggedIn && !isLoading)) {
+  // Show SetupPage if there auth error or we're not logged in
+  if ((error as ApiError)?.status === 401 || (!isLoading && !isLoggedIn)) {
     return <SetupPage />;
   }
 
   // Optimistically skip waiting if we have cached auth data
-  if (isAuthLoading || (isLoading && !isLoggedIn)) {
+  // TODO remove isAuthLoading when useGetAuthQuery is no longer used
+  if ((isLoading && !isLoggedIn) || isAuthLoading) {
     return <Loader />;
   }
 
