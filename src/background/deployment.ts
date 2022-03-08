@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Deployment } from "@/types/contract";
+import { Deployment, Me } from "@/types/contract";
 import browser from "webextension-polyfill";
 import { isEmpty, partition, uniqBy } from "lodash";
 import reportError from "@/telemetry/reportError";
@@ -41,7 +41,7 @@ import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import { expectContext } from "@/utils/expectContext";
 import { getSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
-import { ProfileResponse } from "@/hooks/auth";
+import { selectUserDataUpdate } from "@/auth/authUtils";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -315,8 +315,9 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  const { data: profile, status: profileResponseStatus } =
-    await client.get<ProfileResponse>("/api/me/");
+  const { data: profile, status: profileResponseStatus } = await client.get<Me>(
+    "/api/me/"
+  );
 
   if (profileResponseStatus >= 400) {
     // If our server is acting up, check again later
@@ -327,12 +328,7 @@ export async function updateDeployments(): Promise<void> {
   }
 
   // Ensure the user's flags and telemetry information is up-to-date
-  void updateUserData({
-    email: profile.email,
-    organizationId: profile.organization?.id,
-    telemetryOrganizationId: profile.telemetry_organization?.id,
-    flags: profile.flags,
-  });
+  void updateUserData(selectUserDataUpdate(profile));
 
   const { data: deployments, status: deploymentResponseStatus } =
     await client.post<Deployment[]>("/api/deployments/", {

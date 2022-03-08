@@ -32,7 +32,6 @@ import { useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { uninstallContextMenu } from "@/background/messenger/api";
-import { getErrorMessage } from "@/errors";
 import notify from "@/utils/notify";
 import useWizard from "@/options/pages/marketplace/useWizard";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -75,21 +74,20 @@ const ActivateButton: React.FunctionComponent<{
     }
   };
 
-  const activateOrReinstall = () => {
-    if (reinstall) {
-      uninstallExtensions()
-        .then(() => {
-          activate();
-        })
-        .catch((error) => {
-          notify.error({
-            message: `Error re-installing bricks: ${getErrorMessage(error)}`,
-
-            error,
-          });
-        });
-    } else {
+  const activateOrReinstall = async () => {
+    if (!reinstall) {
       activate();
+      return;
+    }
+
+    try {
+      await uninstallExtensions();
+      activate();
+    } catch (error) {
+      notify.error({
+        message: "Error re-installing bricks",
+        error,
+      });
     }
   };
 

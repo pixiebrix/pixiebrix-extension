@@ -48,7 +48,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
-import { PromiseCancelled, sleep } from "@/utils";
+import { asyncForEach, PromiseCancelled, sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -410,15 +410,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     const observer = initialize(
       this.triggerSelector,
-      (index, element) => {
-        void this.runTrigger(element as HTMLElement).then((errors) => {
-          if (errors.length > 0) {
-            console.error("An error occurred while running a trigger", {
-              errors,
-            });
-            notify.error("An error occurred while running a trigger");
-          }
-        });
+      async (index, element) => {
+        const errors = await this.runTrigger(element as HTMLElement);
+        if (errors.length > 0) {
+          console.error("An error occurred while running a trigger", {
+            errors,
+          });
+          notify.error("An error occurred while running a trigger");
+        }
       },
       // `target` is a required option
       { target: document }
@@ -435,16 +434,18 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
     const appearObserver = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries.filter((x) => x.isIntersecting)) {
-          void this.runTrigger(entry.target as HTMLElement).then((errors) => {
-            if (errors.length > 0) {
-              console.error("An error occurred while running a trigger", {
-                errors,
-              });
-              notify.error("An error occurred while running a trigger");
-            }
-          });
-        }
+        void asyncForEach(entries, async (entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          const errors = await this.runTrigger(entry.target as HTMLElement);
+          if (errors.length > 0) {
+            const message = "An error occurred while running a trigger";
+            console.error(message, { errors });
+            notify.error({ message, error: errors[0] });
+          }
+        });
       },
       {
         root: null,

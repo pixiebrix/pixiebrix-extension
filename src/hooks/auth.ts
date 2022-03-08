@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthState as CoreAuthState, RawServiceConfiguration } from "@/core";
+import { RawServiceConfiguration } from "@/core";
 import { AuthOption } from "@/auth/authTypes";
 import { useAsyncState } from "./common";
 import { readRawConfigurations } from "@/services/registry";
@@ -23,32 +23,6 @@ import { useMemo, useCallback } from "react";
 import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { SanitizedAuth } from "@/types/contract";
-
-interface OrganizationResponse {
-  readonly id: string;
-  readonly name: string;
-  readonly scope: string;
-}
-
-export interface ProfileResponse {
-  readonly id: string;
-  readonly email: string;
-  readonly scope: string | null;
-  readonly is_onboarded: boolean;
-  readonly organization: OrganizationResponse | null;
-  readonly telemetry_organization: OrganizationResponse | null;
-  readonly flags: string[];
-}
-
-export const anonAuth: CoreAuthState = {
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: true,
-  scope: null,
-  flags: [],
-};
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();

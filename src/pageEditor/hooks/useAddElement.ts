@@ -82,9 +82,7 @@ function useAddElement(): AddElement {
         }
 
         notify.error({
-          message: `Error adding ${config.label.toLowerCase()}: ${getErrorMessage(
-            error
-          )}`,
+          message: `Error adding ${config.label.toLowerCase()}`,
           error,
         });
       } finally {

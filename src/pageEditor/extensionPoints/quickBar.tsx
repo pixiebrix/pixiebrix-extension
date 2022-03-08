@@ -259,7 +259,7 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  InsertModeHelpText: () => {
+  InsertModeHelpText() {
     const [shortcut, setShortcut] = useState("");
 
     useEffect(() => {

@@ -270,13 +270,14 @@ describe("FormEditor", () => {
       </FormikTemplate>
     );
 
+    /* eslint-disable security/detect-object-injection */
     const getRequiredFieldFromMock = (callNumber: number) =>
-      /* eslint-disable security/detect-object-injection */
       (
         onSubmitMock.mock.calls[callNumber][0][
           RJSF_SCHEMA_PROPERTY_NAME
         ] as RJSFSchema
       ).schema.required;
+    /* eslint-enable security/detect-object-injection */
 
     // Check the field is not required
     await fireFormSubmit();
@@ -382,12 +383,13 @@ describe("FormEditor", () => {
 
     await fireFormSubmit();
 
+    /* eslint-disable security/detect-object-injection */
     expect(
-      /* eslint-disable security/detect-object-injection */
       (
         (onSubmitMock.mock.calls[1][0][RJSF_SCHEMA_PROPERTY_NAME] as RJSFSchema)
           .schema.properties[fieldName] as Schema
       ).default
     ).toBeUndefined();
+    /* eslint-enable security/detect-object-injection */
   });
 });

@@ -84,7 +84,6 @@ const requestConfig: AxiosRequestConfig = {
   method: "get",
 };
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal typing
 const directServiceConfig = {
   id: "124",
   proxy: false,
@@ -92,7 +91,6 @@ const directServiceConfig = {
   config: {},
 } as SanitizedServiceConfiguration;
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- nominal typing
 const proxiedServiceConfig = {
   id: "123",
   proxy: true,

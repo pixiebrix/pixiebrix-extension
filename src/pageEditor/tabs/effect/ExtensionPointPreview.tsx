@@ -48,15 +48,15 @@ const previewSlice = createSlice({
   name: "extensionPointPreview",
   initialState,
   reducers: {
-    startRun: (state) => {
+    startRun(state) {
       state.isRunning = true;
     },
-    runSuccess: (state, { payload }: PayloadAction<UnknownObject>) => {
+    runSuccess(state, { payload }: PayloadAction<UnknownObject>) {
       state.isRunning = false;
       state.output = payload;
       state.error = null;
     },
-    runError: (state, { payload }: PayloadAction<unknown>) => {
+    runError(state, { payload }: PayloadAction<unknown>) {
       state.isRunning = false;
       state.output = null;
       state.error = payload;

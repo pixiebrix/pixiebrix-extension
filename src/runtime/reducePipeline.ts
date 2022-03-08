@@ -527,7 +527,7 @@ export async function blockReducer(
   return { output, context };
 }
 
-async function throwBlockError(
+function throwBlockError(
   blockConfig: BlockConfig,
   state: IntermediateState,
   error: unknown,
@@ -621,9 +621,7 @@ export async function reducePipeline(
         logger: stageLogger,
       });
     } catch (error) {
-      // Must await because it will throw a wrapped error
-      // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
-      await throwBlockError(blockConfig, state, error, options);
+      throwBlockError(blockConfig, state, error, options);
     }
 
     output = nextValues.output;

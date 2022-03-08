@@ -26,21 +26,56 @@ export interface AuthOption {
   local: boolean;
 }
 
-export interface UserData {
-  email?: string;
-  user?: string;
-  hostname?: string;
-  organizationId?: string;
-  telemetryOrganizationId?: string;
-  flags?: string[];
-}
+export type UserData = Partial<{
+  /**
+   * The email of the user
+   */
+  email: string;
+  /**
+   * The id of the user
+   */
+  user: UUID;
+  /**
+   * The hostname of the PixieBrix instance.
+   */
+  hostname: string;
+  /**
+   * The user's primary organization.
+   */
+  organizationId: string;
+  /**
+   * The user's organization for engagement and error attribution
+   */
+  telemetryOrganizationId: string;
+  /**
+   * Feature flags
+   */
+  flags: string[];
+  /**
+   * Organizations the user is a member of
+   */
+  organizations: Array<{
+    id: UUID;
+    name: string;
+  }>;
+  /**
+   * Groups the user is a member of
+   */
+  groups: Array<{
+    id: UUID;
+    name: string;
+  }>;
+}>;
 
+// Exclude tenant information in updates (these are only updated on linking)
 export type UserDataUpdate = Required<Except<UserData, "hostname" | "user">>;
 
 export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "email",
   "organizationId",
   "telemetryOrganizationId",
+  "organizations",
+  "groups",
   "flags",
 ];
 

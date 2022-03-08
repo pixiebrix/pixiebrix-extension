@@ -80,7 +80,6 @@ function useOpenEditorTab() {
     if (brick) {
       console.debug("Open editor for brick: %s", id, { brick });
       const url = browser.runtime.getURL("options.html");
-      // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
       window.open(`${url}#/workshop/bricks/${brick.id}`);
     } else {
       notify.warning(`You cannot edit brick: ${id}`);

@@ -32,6 +32,7 @@ import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import reportError from "@/telemetry/reportError";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const fields = {
   DescriptionField,
@@ -112,33 +113,35 @@ const EphemeralForm: React.FC = () => {
 
   return (
     <FormContainer>
-      <JsonSchemaForm
-        schema={definition.schema}
-        uiSchema={definition.uiSchema}
-        fields={fields}
-        widgets={uiWidgets}
-        FieldTemplate={FieldTemplate}
-        onSubmit={({ formData: values }) => {
-          void resolveForm(target, nonce, values);
-        }}
-      >
-        <div>
-          <button className="btn btn-primary" type="submit">
-            {definition.submitCaption}
-          </button>
-          {definition.cancelable && (
-            <button
-              className="btn btn-link"
-              type="button"
-              onClick={() => {
-                void cancelForm(target, nonce);
-              }}
-            >
-              Cancel
+      <ErrorBoundary>
+        <JsonSchemaForm
+          schema={definition.schema}
+          uiSchema={definition.uiSchema}
+          fields={fields}
+          widgets={uiWidgets}
+          FieldTemplate={FieldTemplate}
+          onSubmit={({ formData: values }) => {
+            void resolveForm(target, nonce, values);
+          }}
+        >
+          <div>
+            <button className="btn btn-primary" type="submit">
+              {definition.submitCaption}
             </button>
-          )}
-        </div>
-      </JsonSchemaForm>
+            {definition.cancelable && (
+              <button
+                className="btn btn-link"
+                type="button"
+                onClick={() => {
+                  void cancelForm(target, nonce);
+                }}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </JsonSchemaForm>
+      </ErrorBoundary>
     </FormContainer>
   );
 };

@@ -626,6 +626,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         } else {
           const [elementPromise, cancel] = awaitElementOnce(dependency);
           cancellers.push(cancel);
+          // eslint-disable-next-line promise/prefer-await-to-then -- TODO: Maybe refactor
           void elementPromise.then(() => {
             rerun();
           });

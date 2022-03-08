@@ -22,7 +22,6 @@ import { blueprintPermissions, ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { getErrorMessage } from "@/errors";
 import notify from "@/utils/notify";
 import { getUID } from "@/background/telemetry";
 import { getExtensionVersion } from "@/chrome";
@@ -213,7 +212,7 @@ function useDeployments(): DeploymentState {
     } catch (error) {
       // Try to proceed if we can't refresh the brick definitions
       notify.warning({
-        message: `Unable to fetch latest bricks: ${getErrorMessage(error)}`,
+        message: "Unable to fetch latest bricks",
         error,
         reportError: true,
       });
@@ -235,7 +234,7 @@ function useDeployments(): DeploymentState {
       accepted = await ensureAllPermissions(permissions);
     } catch (error) {
       notify.error({
-        message: `Error granting permissions: ${getErrorMessage(error)}`,
+        message: "Error granting permissions",
         error,
       });
       return;

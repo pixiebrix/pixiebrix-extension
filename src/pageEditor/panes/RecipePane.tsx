@@ -88,7 +88,7 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
       {
         // Ask a question
         variant: "info",
-        onClick: () => {
+        onClick() {
           setShowQuestionModal(true);
         },
         caption: "Ask a question",

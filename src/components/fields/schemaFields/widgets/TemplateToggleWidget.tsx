@@ -134,7 +134,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
     return inputMode === "omit"
       ? {
           ...schemaFieldProps,
-          onClick: () => {
+          onClick() {
             if (inputModeOptions.some((option) => option.value === "var")) {
               onModeChange("var");
             }

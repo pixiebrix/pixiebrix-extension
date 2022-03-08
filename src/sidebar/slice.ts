@@ -21,6 +21,7 @@ import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
 import { UUID } from "@/core";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
+import { asyncForEach } from "@/utils";
 
 type AppState = SidebarStore & {
   activeKey: string;
@@ -36,20 +37,19 @@ const slice = createSlice({
   initialState: blankSidebarState,
   name: "actionPanel",
   reducers: {
-    selectTab: (state, action: PayloadAction<string>) => {
+    selectTab(state, action: PayloadAction<string>) {
       state.activeKey = action.payload;
     },
-    addForm: (state, action: PayloadAction<{ form: FormEntry }>) => {
+    addForm(state, action: PayloadAction<{ form: FormEntry }>) {
       const { form } = action.payload;
 
       // Cancel pre-existing forms for the extension
-      for (const current of state.forms.filter(
-        (x) => x.extensionId === form.extensionId
-      )) {
-        void whoAmI().then(async (sender) =>
-          cancelForm({ tabId: sender.tab.id, frameId: 0 }, current.nonce)
-        );
-      }
+      void asyncForEach(state.forms, async (current) => {
+        if (current.extensionId === form.extensionId) {
+          const sender = await whoAmI();
+          await cancelForm({ tabId: sender.tab.id, frameId: 0 }, current.nonce);
+        }
+      });
 
       state.forms = state.forms.filter(
         (x) => x.extensionId !== form.extensionId
@@ -57,12 +57,12 @@ const slice = createSlice({
       state.forms.push(form);
       state.activeKey = mapTabEventKey("form", form);
     },
-    removeForm: (state, action: PayloadAction<UUID>) => {
+    removeForm(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
       state.forms = state.forms.filter((x) => x.nonce !== nonce);
       state.activeKey = defaultEventKey(state);
     },
-    setPanels: (state, action: PayloadAction<{ panels: PanelEntry[] }>) => {
+    setPanels(state, action: PayloadAction<{ panels: PanelEntry[] }>) {
       state.panels = action.payload.panels;
       // If a panel is no longer available, reset the current tab to a valid tab
       if (

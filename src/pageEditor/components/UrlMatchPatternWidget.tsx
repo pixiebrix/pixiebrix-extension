@@ -45,14 +45,14 @@ export type Shortcut = {
 export const DEFAULT_SHORTCUTS: Shortcut[] = [
   {
     caption: "Site",
-    getPattern: async () => {
+    async getPattern() {
       const url = await getCurrentURL();
       return createSitePattern(url);
     },
   },
   {
     caption: "Domain",
-    getPattern: async () => {
+    async getPattern() {
       const url = await getCurrentURL();
       return createDomainPattern(url);
     },
