@@ -74,8 +74,8 @@ const ActivateFromDeploymentBannerColumn: React.VoidFunctionComponent = () => (
     <p>
       Click the <strong className="text-primary">Activate</strong> button in the{" "}
       <strong className="text-info">blue banner above</strong> to start using
-      your team bricks. You will see this banner every time your team deploys
-      new or updated bricks for you to use.
+      your team blueprints. You will see this banner every time your team
+      deploys new or updated blueprints for you to use.
     </p>
   </Col>
 );
@@ -83,9 +83,9 @@ const ActivateFromDeploymentBannerColumn: React.VoidFunctionComponent = () => (
 const ContactTeamAdminColumn: React.VoidFunctionComponent = () => (
   <Col>
     <p>
-      It looks like your team hasn&apos;t made any bricks available to you yet.{" "}
-      <strong>Contact your team admin</strong> to get access to your team&apos;s
-      bricks.
+      It looks like your team hasn&apos;t made any blueprints available to you
+      yet. <strong>Contact your team admin</strong> to get access to your
+      team&apos;s blueprints.
     </p>
   </Col>
 );
