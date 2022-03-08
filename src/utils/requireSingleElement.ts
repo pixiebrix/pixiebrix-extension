@@ -23,15 +23,18 @@ import { MultipleElementsFoundError, NoElementsFoundError } from "@/errors";
  * @throws NoElementsFoundError if not elements are found
  * @throws MultipleElementsFoundError if multiple elements are found
  */
-export function requireSingleElement(selector: string): HTMLElement {
-  const $elt = $(document).find(selector);
-  if ($elt.length === 0) {
+export function requireSingleElement<Element extends HTMLElement>(
+  selector: string,
+  parent: Document | HTMLElement | JQuery<HTMLElement | Document> = document
+): Element {
+  const $elements = $(parent).find<Element>(selector);
+  if ($elements.length === 0) {
     throw new NoElementsFoundError(selector);
   }
 
-  if ($elt.length > 1) {
+  if ($elements.length > 1) {
     throw new MultipleElementsFoundError(selector);
   }
 
-  return $elt.get(0);
+  return $elements.get(0);
 }

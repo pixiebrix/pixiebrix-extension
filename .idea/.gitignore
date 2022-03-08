@@ -10,3 +10,5 @@
 /prettier.xml
 /watcherTasks.xml
 /jsLinters/
+# Personal extensions
+codestream.xml
