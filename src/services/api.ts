@@ -59,14 +59,23 @@ import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
 
+export type ApiError = {
+  status: number | undefined;
+  data: unknown | undefined;
+};
+
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery: BaseQueryFn<{
-  url: string;
-  method: AxiosRequestConfig["method"];
-  data?: AxiosRequestConfig["data"];
-  requireLinked?: boolean;
-  meta?: unknown;
-}> = async ({ url, method, data, requireLinked = false, meta }) => {
+const appBaseQuery: BaseQueryFn<
+  {
+    url: string;
+    method: AxiosRequestConfig["method"];
+    data?: AxiosRequestConfig["data"];
+    requireLinked?: boolean;
+    meta?: unknown;
+  },
+  unknown,
+  ApiError
+> = async ({ url, method, data, requireLinked = false, meta }) => {
   try {
     const client = await (requireLinked
       ? getLinkedApiClient()
@@ -126,6 +135,7 @@ export const appApi = createApi({
   reducerPath: "appApi",
   baseQuery: appBaseQuery,
   tagTypes: [
+    "Me",
     "Auth",
     "Databases",
     "Services",
@@ -139,6 +149,11 @@ export const appApi = createApi({
     "CloudExtensions",
   ],
   endpoints: (builder) => ({
+    getMe: builder.query<Me, void>({
+      query: () => ({ url: "/api/me/", method: "get" }),
+      providesTags: ["Me"],
+    }),
+
     getAuth: builder.query<AuthState, void>({
       query: () => ({ url: "/api/me/", method: "get" }),
       providesTags: ["Auth"],
@@ -334,6 +349,7 @@ export const appApi = createApi({
 });
 
 export const {
+  useGetMeQuery,
   useGetAuthQuery,
   useGetDatabasesQuery,
   useCreateDatabaseMutation,

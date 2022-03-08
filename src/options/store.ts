@@ -80,7 +80,6 @@ const store = configureStore({
   reducer: {
     router: connectRouter(hashHistory),
     auth: persistReducer(persistAuthConfig, authSlice.reducer),
-    // auth: authSlice.reducer,
     options: persistReducer(
       persistExtensionOptionsConfig,
       extensionsSlice.reducer

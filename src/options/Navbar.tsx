@@ -26,7 +26,6 @@ import {
   faExternalLinkAlt,
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { useGetAuthQuery } from "@/services/api";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import logo from "@img/logo.svg";
@@ -38,11 +37,10 @@ import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
 import { SettingsState } from "@/store/settingsTypes";
 import cx from "classnames";
+import { selectAuth } from "@/auth/authSelectors";
 
 const Navbar: React.FunctionComponent = () => {
-  const {
-    data: { email, extension },
-  } = useGetAuthQuery();
+  const { email, extension } = useSelector(selectAuth);
   const [serviceURL] = useAsyncState<string>(getBaseURL);
   const [connected, connectedPending] = useAsyncState(isLinked);
   const mode = useSelector<{ settings: SettingsState }, string>(
