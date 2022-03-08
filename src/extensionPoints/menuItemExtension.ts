@@ -726,18 +726,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
 
     if (errors.length > 0) {
-      // Report the error to the user. Don't report to to the telemetry service since we already reported
-      // above in the loop
-      console.warn(`An error occurred adding ${errors.length} menu item(s)`, {
-        errors,
+      const subject =
+        errors.length === 1 ? "the menu item" : `${errors.length} menu items`;
+      const message = `An error occurred adding ${subject}`;
+      console.warn(message, { errors });
+      this.notifyError({
+        message,
+        reportError: false, // We already reported it in the loop above
       });
-      if (errors.length === 1) {
-        this.notifyError("An error occurred adding the menu item/button");
-      } else {
-        this.notifyError(
-          `An error occurred adding ${errors.length} menu items`
-        );
-      }
     }
   }
 }
