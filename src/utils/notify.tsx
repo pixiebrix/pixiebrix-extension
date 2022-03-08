@@ -185,7 +185,11 @@ export function notifyResult(
   extensionId: string,
   { message, config: { className } }: MessageConfig
 ): void {
-  showNotification({ message, type: className as NotificationType });
+  showNotification({
+    message,
+    type: className as NotificationType,
+    reportError: false,
+  });
 }
 
 // Private method to prevent adding logic to the `notify.*` helpers.
