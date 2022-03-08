@@ -470,7 +470,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
 
     if (errors.length > 0) {
-      notify.error(`An error occurred adding ${errors.length} panels(s)`);
+      notify.error(`An error occurred adding ${errors.length} panel(s)`);
     }
   }
 }

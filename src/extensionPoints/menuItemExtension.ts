@@ -727,7 +727,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     if (errors.length > 0) {
       const subject =
-        errors.length === 1 ? "the menu item" : `${errors.length} menu items`;
+        errors.length === 1 ? "the button" : `${errors.length} buttons`;
       const message = `An error occurred adding ${subject}`;
       console.warn(message, { errors });
       this.notifyError({

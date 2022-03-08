@@ -225,7 +225,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     );
 
     if (errors.length > 0) {
-      notify.error(`An error occurred adding ${errors.length} panels(s)`);
+      notify.error(`An error occurred adding ${errors.length} panel(s)`);
     }
   }
 
