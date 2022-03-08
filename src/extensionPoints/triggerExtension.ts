@@ -303,6 +303,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     await this.runTriggersAndNotify(element);
   };
 
+  /**
+   * Run all extensions for a given root (i.e., handle the trigger firing)
+   * @return array of errors from the extensions
+   * @throws Error on non-extension error, e.g., reader error for the default reader
+   */
   private async runTrigger(root: ReaderRoot): Promise<unknown[]> {
     const reader = await this.defaultReader();
     const readerContext = await reader.read(root);
@@ -328,12 +333,18 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     const promises = roots.map(async (root) => this.runTrigger(root));
     const results = await Promise.allSettled(promises);
     const errors = results.flatMap((x) =>
+      // `runTrigger` fulfills with list of extension error from extension, or rejects on other error, e.g., reader
+      // error from the extension point.
       x.status === "fulfilled" ? x.value : x.reason
     );
 
     TriggerExtensionPoint.notifyErrors(errors);
   }
 
+  /**
+   * Show notification for errors to the user. Caller is responsible for sending error telemetry.
+   * @param errors
+   */
   static notifyErrors(errors: unknown[]): void {
     if (errors.length === 0) {
       return;

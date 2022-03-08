@@ -71,10 +71,18 @@ class BackgroundLogger implements Logger {
   }
 
   async error(error: unknown, data: JsonObject): Promise<void> {
-    console.error(error, {
-      context: this.context,
-      data,
-    });
+    if (typeof error === "string") {
+      // Avoid user-defined format strings
+      console.error("%s", error, {
+        context: this.context,
+        data,
+      });
+    } else {
+      console.error(error, {
+        context: this.context,
+        data,
+      });
+    }
 
     if (isConnectionError(error) && isContentScript()) {
       showConnectionLost();
