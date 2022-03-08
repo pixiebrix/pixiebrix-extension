@@ -21,7 +21,7 @@ import FieldRuntimeContext, {
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { Col, Container, Nav, Row, Tab } from "react-bootstrap";
 import Loader from "@/components/Loader";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import styles from "./RecipeOptions.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import FormEditor from "@/components/formBuilder/FormEditor";
@@ -30,11 +30,14 @@ import cx from "classnames";
 import FormPreview from "@/components/formBuilder/FormPreview";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import { FIELD_TYPE_OPTIONS } from "@/components/formBuilder/formBuilderHelpers";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
 import { useGetRecipesQuery } from "@/services/api";
 import { Formik } from "formik";
+import { useDebouncedCallback } from "use-debounce";
+import { OptionsDefinition } from "@/types/definitions";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter(
   (type) => !["File", "Image crop"].includes(type.label)
@@ -50,6 +53,20 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes } = useGetRecipesQuery();
   const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
+  const initialValues = { optionsDefinition: recipe.options };
+
+  const dispatch = useDispatch();
+  let prev = initialValues.optionsDefinition;
+  const updateRedux = useDebouncedCallback(
+    async (options: OptionsDefinition) => {
+      if (!isEqual(prev, options)) {
+        dispatch(actions.editRecipeOptions(options));
+        prev = options;
+      }
+    },
+    500,
+    { trailing: true, leading: false }
+  );
 
   if (recipe.options == null) {
     return (
@@ -69,67 +86,72 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
     <div className={styles.paneContent}>
       <ErrorBoundary>
         <Formik
-          initialValues={{ optionsDefinition: recipe.options }}
+          initialValues={initialValues}
           onSubmit={(values) => {
             // eslint-disable-next-line no-alert
             window.alert(`Submitted! with values: ${JSON.stringify(values)}`);
           }}
         >
-          {({ values }) => (
-            <>
-              <div className={styles.configPanel}>
-                <h5 className="mb-3">
-                  Editing Options for Blueprint &quot;{recipe.metadata.name}
-                  &quot;
-                </h5>
+          {({ values }) => {
+            void updateRedux(values.optionsDefinition);
+            return (
+              <>
+                <div className={styles.configPanel}>
+                  <h5 className="mb-3">
+                    Editing Options for Blueprint &quot;{recipe.metadata.name}
+                    &quot;
+                  </h5>
 
-                {noOptions && (
-                  <div className="mb-3">
-                    No options defined for this Blueprint
-                  </div>
-                )}
+                  {noOptions && (
+                    <div className="mb-3">
+                      No options defined for this Blueprint
+                    </div>
+                  )}
 
-                <FieldRuntimeContext.Provider value={formRuntimeContext}>
-                  <FormEditor
-                    name="optionsDefinition"
-                    showFormTitle={false}
-                    activeField={activeField}
-                    setActiveField={setActiveField}
-                    fieldTypes={fieldTypes}
-                  />
-                </FieldRuntimeContext.Provider>
-              </div>
-              <div className={styles.dataPanel}>
-                <Tab.Container activeKey="preview">
-                  <div className={dataPanelStyles.tabContainer}>
-                    <Nav variant="tabs">
-                      <Nav.Item className={dataPanelStyles.tabNav}>
-                        <Nav.Link eventKey="preview">Preview</Nav.Link>
-                      </Nav.Item>
-                    </Nav>
+                  <FieldRuntimeContext.Provider value={formRuntimeContext}>
+                    <FormEditor
+                      name="optionsDefinition"
+                      showFormTitle={false}
+                      activeField={activeField}
+                      setActiveField={setActiveField}
+                      fieldTypes={fieldTypes}
+                    />
+                  </FieldRuntimeContext.Provider>
+                </div>
+                <div className={styles.dataPanel}>
+                  <Tab.Container activeKey="preview">
+                    <div className={dataPanelStyles.tabContainer}>
+                      <Nav variant="tabs">
+                        <Nav.Item className={dataPanelStyles.tabNav}>
+                          <Nav.Link eventKey="preview">Preview</Nav.Link>
+                        </Nav.Item>
+                      </Nav>
 
-                    <Tab.Content className={dataPanelStyles.tabContent}>
-                      <Tab.Pane
-                        eventKey="preview"
-                        className={cx(
-                          dataPanelStyles.tabPane,
-                          dataPanelStyles.selectablePreviewContainer
-                        )}
-                      >
-                        <ErrorBoundary>
-                          <FormPreview
-                            rjsfSchema={values.optionsDefinition as RJSFSchema}
-                            activeField={activeField}
-                            setActiveField={setActiveField}
-                          />
-                        </ErrorBoundary>
-                      </Tab.Pane>
-                    </Tab.Content>
-                  </div>
-                </Tab.Container>
-              </div>
-            </>
-          )}
+                      <Tab.Content className={dataPanelStyles.tabContent}>
+                        <Tab.Pane
+                          eventKey="preview"
+                          className={cx(
+                            dataPanelStyles.tabPane,
+                            dataPanelStyles.selectablePreviewContainer
+                          )}
+                        >
+                          <ErrorBoundary>
+                            <FormPreview
+                              rjsfSchema={
+                                values.optionsDefinition as RJSFSchema
+                              }
+                              activeField={activeField}
+                              setActiveField={setActiveField}
+                            />
+                          </ErrorBoundary>
+                        </Tab.Pane>
+                      </Tab.Content>
+                    </div>
+                  </Tab.Container>
+                </div>
+              </>
+            );
+          }}
         </Formik>
       </ErrorBoundary>
     </div>

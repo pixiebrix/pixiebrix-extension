@@ -36,7 +36,8 @@ import {
 import { WritableDraft } from "immer/dist/types/types-external";
 import { BlockConfig } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
-import { RecipeDefinition } from "@/types/definitions";
+import { OptionsDefinition, RecipeDefinition } from "@/types/definitions";
+import { isEqual } from "lodash";
 
 export type FormState =
   | ActionFormState
@@ -80,7 +81,7 @@ export interface EditorState {
   /**
    * Recipes (blueprints)
    */
-  readonly recipesById: Record<RegistryId, RecipeDefinition>;
+  readonly installedRecipesById: Record<RegistryId, RecipeDefinition>;
 
   /**
    * Brick ids (not UUIDs) that are known to be editable by the current user
@@ -112,6 +113,11 @@ export interface EditorState {
    * the runtime api for this extension?
    */
   showV3UpgradeMessageByElement: Record<UUID, boolean>;
+
+  /**
+   * Unsaved, changed recipe options
+   */
+  dirtyRecipeOptionsById: Record<RegistryId, OptionsDefinition>;
 }
 
 export const initialState: EditorState = {
@@ -121,13 +127,14 @@ export const initialState: EditorState = {
   error: null,
   beta: false,
   elements: [],
-  recipesById: {},
+  installedRecipesById: {},
   knownEditable: [],
   dirty: {},
   inserting: null,
   isBetaUI: false,
   elementUIStates: {},
   showV3UpgradeMessageByElement: {},
+  dirtyRecipeOptionsById: {},
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
@@ -339,7 +346,7 @@ export const editorSlice = createSlice({
     },
     selectRecipe(state, action: PayloadAction<RecipeDefinition>) {
       const recipe = action.payload;
-      state.recipesById[recipe.metadata.id] = recipe;
+      state.installedRecipesById[recipe.metadata.id] = recipe;
       state.error = null;
       state.beta = null;
       state.activeElement = null;
@@ -396,6 +403,21 @@ export const editorSlice = createSlice({
     },
     hideV3UpgradeMessage(state) {
       state.showV3UpgradeMessageByElement[state.activeElement] = false;
+    },
+    editRecipeOptions(state, action: PayloadAction<OptionsDefinition>) {
+      const recipeId = state.activeRecipeId;
+      if (recipeId == null) {
+        return;
+      }
+
+      const { payload: options } = action;
+      const installed = state.installedRecipesById[recipeId].options;
+
+      if (isEqual(options, installed)) {
+        delete state.dirtyRecipeOptionsById[recipeId];
+      } else {
+        state.dirtyRecipeOptionsById[recipeId] = options;
+      }
     },
   },
 });

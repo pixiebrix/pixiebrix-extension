@@ -36,7 +36,7 @@ export const selectActiveRecipeId = ({ editor }: RootState) =>
 export const selectActiveRecipe = (state: RootState) => {
   const activeRecipeId = selectActiveRecipeId(state);
   // eslint-disable-next-line security/detect-object-injection -- lookup key taken from state
-  return state.editor.recipesById[activeRecipeId];
+  return state.editor.installedRecipesById[activeRecipeId];
 };
 
 export const selectShowV3UpgradeMessageForActiveElement = (
