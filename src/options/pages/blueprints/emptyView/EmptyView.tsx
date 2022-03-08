@@ -23,6 +23,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt, faUndo } from "@fortawesome/free-solid-svg-icons";
 import { Button, Card, Row } from "react-bootstrap";
 import workshopImage from "@img/workshop.svg";
+import useReduxState from "@/hooks/useReduxState";
+import { selectFilters } from "@/options/pages/blueprints/blueprintsSelectors";
+import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 
 const EmptyView: React.VoidFunctionComponent<{
   tableInstance: TableInstance<InstallableViewItem>;
@@ -33,30 +36,53 @@ const EmptyView: React.VoidFunctionComponent<{
     state: { globalFilter },
   } = tableInstance;
 
+  // TODO: select only setFilters action
+  const [filters, setFilters] = useReduxState(
+    selectFilters,
+    blueprintsSlice.actions.setFilters
+  );
+
   const searchResultsView = (
-    <Card className={styles.card}>
-      <Card.Body>
-        <div className={styles.suggestions}>
-          <img src={workshopImage} alt="Workshop" width={300} />
-          <h3>Hmm... no blueprints found.</h3>
-          <div className="mb-4">
-            There weren&apos;t any blueprints with a name, description, or id
-            containing your search term.
-          </div>
-          <div>
-            <Button size="sm">
-              <FontAwesomeIcon icon={faUndo} /> Search again
-            </Button>{" "}
-            or try searching the{" "}
-            {/*This link could go to the public marketplace with filtered blueprints */}
-            {/*and the user's search term*/}
-            <a href="#">
-              <FontAwesomeIcon icon={faExternalLinkAlt} /> Public Marketplace
-            </a>
-          </div>
-        </div>
-      </Card.Body>
-    </Card>
+    <div className={styles.suggestions}>
+      <img src={workshopImage} alt="Workshop" width={300} />
+      <h3>Hmm... no blueprints found.</h3>
+      <div className="mb-4">
+        There weren&apos;t any blueprints with a name, description, or id
+        containing your search term.
+      </div>
+      <div>
+        <Button size="sm">
+          <FontAwesomeIcon icon={faUndo} /> Search again
+        </Button>{" "}
+        or try searching the{" "}
+        {/*This link could go to the public marketplace with filtered blueprints */}
+        {/*and the user's search term*/}
+        <a href="#">
+          <FontAwesomeIcon icon={faExternalLinkAlt} /> Public Marketplace
+        </a>
+      </div>
+    </div>
+  );
+
+  const filterView = (
+    <div className={styles.suggestions}>
+      <img src={workshopImage} alt="Workshop" width={300} />
+      <h3>No blueprints found in this category</h3>
+      <div className="mb-4">
+        There weren&apos;t any blueprints found for this filter.
+      </div>
+      <div>
+        <Button size="sm">
+          <FontAwesomeIcon icon={faUndo} /> View all blueprints
+        </Button>{" "}
+        or try searching the{" "}
+        {/*This link could go to the public marketplace with filtered blueprints */}
+        {/*and the user's search term*/}
+        <a href="#">
+          <FontAwesomeIcon icon={faExternalLinkAlt} /> Public Marketplace
+        </a>
+      </div>
+    </div>
   );
 
   return (
@@ -64,7 +90,9 @@ const EmptyView: React.VoidFunctionComponent<{
       className={styles.root}
       style={{ height: `${height}px`, width: `${width}px` }}
     >
-      {searchResultsView}
+      <Card className={styles.card}>
+        <Card.Body>{searchResultsView}</Card.Body>
+      </Card>
     </div>
   );
 };

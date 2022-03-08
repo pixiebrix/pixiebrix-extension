@@ -39,7 +39,7 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
 }) => {
   const view = useSelector(selectView);
   const filters = useSelector(selectFilters);
-  const { onboardingType } = useOnboarding();
+  const { onboardingType, isLoading } = useOnboarding();
   const isFilter = useCallback(
     (targetFilter: string) => {
       for (const filter of filters) {
@@ -57,10 +57,7 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     state: { globalFilter },
   } = tableInstance;
 
-  const onActivePage = useMemo(
-    () => isFilter("Active"),
-    [isFilter, globalFilter]
-  );
+  const onActivePage = useMemo(() => isFilter("Active"), [isFilter]);
   const BlueprintsList = view === "list" ? ListView : GridView;
   const EmptyListView = useMemo(() => {
     if (globalFilter) {
@@ -73,16 +70,15 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
       );
     }
 
-    if (isFilter("Active")) {
-      return (
-        <OnboardingView
-          onboardingType={onboardingType}
-          width={width}
-          height={height}
-        />
-      );
-    }
-  }, [globalFilter, height, isFilter, onboardingType, tableInstance, width]);
+    return (
+      <OnboardingView
+        onboardingType={onboardingType}
+        isLoading={isLoading}
+        width={width}
+        height={height}
+      />
+    );
+  }, [isLoading, globalFilter, height, onboardingType, tableInstance, width]);
 
   // if no tableInstance rows
   //    - if on "Active Blueprints" page
