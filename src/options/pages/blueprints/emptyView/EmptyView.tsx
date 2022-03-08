@@ -50,9 +50,11 @@ const EmptyView: React.VoidFunctionComponent<{
             </div>
             <div>
               Try different or broader search terms, or searching in the{" "}
-              {/*This link could go to the public marketplace with filtered blueprints */}
-              {/*and the user's search term*/}
-              <a href="#">
+              <a
+                href="https://pixiebrix.com/marketplace/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FontAwesomeIcon icon={faExternalLinkAlt} /> Public Marketplace
               </a>
             </div>

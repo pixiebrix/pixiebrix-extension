@@ -27,7 +27,7 @@ import blueprintsSlice, {
 } from "@/options/pages/blueprints/blueprintsSlice";
 
 export default {
-  title: "BlueprintsPage/OnboardingView",
+  title: "Blueprints/OnboardingView",
   component: OnboardingView,
   argTypes: {
     onboardingType: {
