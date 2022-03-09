@@ -97,7 +97,7 @@ const CloudExtensionRow: React.FunctionComponent<{
                   <FontAwesomeIcon icon={faDownload} /> Export
                 </>
               ),
-              action: () => {
+              action() {
                 onExportBlueprint(id);
               },
             },

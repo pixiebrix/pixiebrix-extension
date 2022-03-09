@@ -26,7 +26,6 @@ import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import { getSidebarStore } from "@/contentScript/sidebar";
 import { addListener, removeListener, StoreListener } from "@/sidebar/protocol";
 import DefaultPanel from "@/sidebar/DefaultPanel";
-import { ToastProvider } from "react-toast-notifications";
 // eslint-disable-next-line import/no-restricted-paths -- TODO: move out of @/options or use Messenger
 import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
@@ -41,13 +40,13 @@ import { whoAmI } from "@/background/messenger/api";
 
 function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
   return {
-    onRenderPanels: (panels: PanelEntry[]) => {
+    onRenderPanels(panels: PanelEntry[]) {
       dispatch(slice.actions.setPanels({ panels }));
     },
-    onShowForm: (form: FormEntry) => {
+    onShowForm(form: FormEntry) {
       dispatch(slice.actions.addForm({ form }));
     },
-    onHideForm: ({ nonce }: Partial<FormEntry>) => {
+    onHideForm({ nonce }: Partial<FormEntry>) {
       dispatch(slice.actions.removeForm(nonce));
     },
   };
@@ -77,55 +76,53 @@ const SidebarApp: React.FunctionComponent = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={<Loader />} persistor={persistor}>
-        <ToastProvider>
-          <div className="full-height">
-            <div className="d-flex p-2 justify-content-between align-content-center">
-              <Button
-                className={styles.button}
-                onClick={async () => {
-                  const sidebar = await whoAmI();
-                  await hideSidebar({ tabId: sidebar.tab.id });
-                }}
-                size="sm"
-                variant="link"
-              >
-                <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
-              </Button>
-              <div className="align-self-center">
-                <img
-                  src={logo}
-                  alt="PixieBrix logo"
-                  height={20}
-                  className="px-4"
-                />
-              </div>
-              <Button
-                href="/options.html"
-                target="_blank"
-                size="sm"
-                variant="link"
-                className={styles.button}
-              >
-                <span>
-                  Options <FontAwesomeIcon icon={faCog} />
-                </span>
-              </Button>
+        <div className="full-height">
+          <div className="d-flex p-2 justify-content-between align-content-center">
+            <Button
+              className={styles.button}
+              onClick={async () => {
+                const sidebar = await whoAmI();
+                await hideSidebar({ tabId: sidebar.tab.id });
+              }}
+              size="sm"
+              variant="link"
+            >
+              <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
+            </Button>
+            <div className="align-self-center">
+              <img
+                src={logo}
+                alt="PixieBrix logo"
+                height={20}
+                className="px-4"
+              />
             </div>
-
-            <div className="full-height">
-              {state.panels?.length || state.forms?.length ? (
-                <Tabs
-                  {...state}
-                  onSelectTab={(eventKey: string) => {
-                    dispatch(slice.actions.selectTab(eventKey));
-                  }}
-                />
-              ) : (
-                <DefaultPanel />
-              )}
-            </div>
+            <Button
+              href="/options.html"
+              target="_blank"
+              size="sm"
+              variant="link"
+              className={styles.button}
+            >
+              <span>
+                Options <FontAwesomeIcon icon={faCog} />
+              </span>
+            </Button>
           </div>
-        </ToastProvider>
+
+          <div className="full-height">
+            {state.panels?.length || state.forms?.length ? (
+              <Tabs
+                {...state}
+                onSelectTab={(eventKey: string) => {
+                  dispatch(slice.actions.selectTab(eventKey));
+                }}
+              />
+            ) : (
+              <DefaultPanel />
+            )}
+          </div>
+        </div>
       </PersistGate>
     </Provider>
   );

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uniq, sortBy, unary, intersection } from "lodash";
+import { uniq, sortBy, unary, intersection, isEmpty } from "lodash";
 import { getCssSelector } from "css-selector-generator";
 import { isNullOrBlank, mostCommonElement, matchesAnyPattern } from "@/utils";
 import { BusinessError } from "@/errors";
@@ -88,7 +88,7 @@ const TEMPLATE_ATTR_EXCLUDE_PATTERNS = [
 
 const TEMPLATE_VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
   ["class", [/^ember-view$/]],
-  /* eslint-disable security/detect-non-literal-regexp -- Our variables */
+  // eslint-disable-next-line security/detect-non-literal-regexp -- Our variables
   ["id", [new RegExp(`^${PANEL_FRAME_ID}$`)]],
 ]);
 
@@ -122,14 +122,6 @@ export function getSelectorPreference(selector: string): number {
   }
 
   return selector.length;
-}
-
-/** Excludes empty or short selectors (must have more than 3 letters, no numbers) */
-export function isSelectorPotentiallyUseful(selector: string): boolean {
-  // Remove the non-letter characters, and then compare the number of remaining letter characters
-  return (
-    selector.startsWith("#") || selector.replace(/[^a-z]/gi, "").length > 3
-  );
 }
 
 function outerHTML(element: Element | string): string {
@@ -603,7 +595,7 @@ export function inferSelectors(
     makeSelector(["id", "tag", "attribute", "nthchild"]),
     makeSelector(["id", "tag", "attribute"]),
     makeSelector(),
-  ]).filter((x) => isSelectorPotentiallyUseful(x));
+  ]).filter((x) => !isEmpty(x));
 
   return sortBy(generatedSelectors, getSelectorPreference);
 }

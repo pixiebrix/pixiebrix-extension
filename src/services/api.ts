@@ -31,6 +31,7 @@ import {
   Database,
   Group,
   MarketplaceListing,
+  Me,
   Organization,
   PackageUpsertResponse,
   PendingInvitation,
@@ -39,8 +40,12 @@ import {
 } from "@/types/contract";
 import { components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
-import { anonAuth, ProfileResponse } from "@/hooks/auth";
+import { anonAuth } from "@/auth/authConstants";
 import { updateUserData } from "@/auth/token";
+import {
+  selectExtensionAuthState,
+  selectUserDataUpdate,
+} from "@/auth/authUtils";
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
 const appBaseQuery: BaseQueryFn<{
@@ -88,33 +93,11 @@ export const appApi = createApi({
     getAuth: builder.query<AuthState, void>({
       query: () => ({ url: "/api/me/", method: "get" }),
       providesTags: ["Auth"],
-      transformResponse: async ({
-        id,
-        email,
-        scope,
-        organization,
-        telemetry_organization: telemetryOrganization,
-        is_onboarded: isOnboarded,
-        flags = [],
-      }: ProfileResponse) => {
-        if (id) {
-          void updateUserData({
-            email,
-            organizationId: organization?.id,
-            telemetryOrganizationId: telemetryOrganization?.id,
-            flags,
-          });
-
-          return {
-            userId: id,
-            email,
-            scope,
-            organization,
-            isOnboarded,
-            isLoggedIn: true,
-            extension: true,
-            flags,
-          };
+      async transformResponse(me: Me) {
+        if (me.id) {
+          const update = selectUserDataUpdate(me);
+          void updateUserData(update);
+          return selectExtensionAuthState(me);
         }
 
         return anonAuth;
@@ -251,7 +234,7 @@ export const appApi = createApi({
         public: boolean;
       }
     >({
-      query: ({ recipe, organizations, public: isPublic }) => {
+      query({ recipe, organizations, public: isPublic }) {
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {
@@ -271,7 +254,7 @@ export const appApi = createApi({
       PackageUpsertResponse,
       { packageId: UUID; recipe: UnsavedRecipeDefinition }
     >({
-      query: ({ packageId, recipe }) => {
+      query({ packageId, recipe }) {
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {

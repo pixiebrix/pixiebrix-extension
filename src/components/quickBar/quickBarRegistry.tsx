@@ -46,7 +46,7 @@ const defaultActions: Action[] = [
     keywords: "marketplace",
     icon: <FontAwesomeIcon icon={faStore} fixedWidth />,
     section: PIXIEBRIX_SECTION,
-    perform: () => {
+    perform() {
       window.location.href = "https://www.pixiebrix.com/marketplace/";
     },
   },
@@ -56,7 +56,7 @@ const defaultActions: Action[] = [
     keywords: "admin, admin console",
     section: PIXIEBRIX_SECTION,
     icon: <FontAwesomeIcon icon={faUsers} fixedWidth />,
-    perform: () => {
+    perform() {
       window.location.href = DEFAULT_SERVICE_URL;
     },
   },
@@ -66,7 +66,7 @@ const defaultActions: Action[] = [
     keywords: "quick start, tutorials",
     section: PIXIEBRIX_SECTION,
     icon: <FontAwesomeIcon icon={faAppleAlt} fixedWidth />,
-    perform: () => {
+    perform() {
       window.location.href = "https://docs.pixiebrix.com/quick-start-guide";
     },
   },
@@ -76,7 +76,7 @@ const defaultActions: Action[] = [
     keywords: "community, how to",
     section: PIXIEBRIX_SECTION,
     icon: <FontAwesomeIcon icon={faSeedling} fixedWidth />,
-    perform: () => {
+    perform() {
       window.location.href = "https://community.pixiebrix.com/";
     },
   },
@@ -86,7 +86,7 @@ const defaultActions: Action[] = [
     keywords: "docs, tutorials, documentation, how to",
     section: PIXIEBRIX_SECTION,
     icon: <FontAwesomeIcon icon={faInfoCircle} fixedWidth />,
-    perform: () => {
+    perform() {
       window.location.href = "https://docs.pixiebrix.com/";
     },
   },

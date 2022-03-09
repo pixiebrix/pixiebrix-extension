@@ -15,13 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Keep in order so precedence is preserved
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
+import "@/utils/layout.scss";
+import "./sidebar.scss";
+
 import "@/extensionContext";
 
-import PermissionsPopup from "@/popups/PermissionsPopup";
-
+import registerMessenger from "@/sidebar/messenger/registration";
+import App from "@/sidebar/SidebarApp";
 import ReactDOM from "react-dom";
 import React from "react";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
+import { initToaster } from "@/utils/notify";
 
-import "bootstrap/dist/css/bootstrap.min.css";
+registerMessenger();
+registerContribBlocks();
+registerBuiltinBlocks();
+initToaster();
 
-ReactDOM.render(<PermissionsPopup />, document.querySelector("#container"));
+ReactDOM.render(<App />, document.querySelector("#container"));

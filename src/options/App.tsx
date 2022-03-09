@@ -34,7 +34,6 @@ import Footer from "@/layout/Footer";
 import Sidebar from "@/options/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
-import { ToastProvider } from "react-toast-notifications";
 import { useGetAuthQuery } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
@@ -183,9 +182,7 @@ const App: React.FunctionComponent = () => {
       <PersistGate loading={<Loader />} persistor={persistor}>
         <ConnectedRouter history={hashHistory}>
           <ModalProvider>
-            <ToastProvider>
-              <Layout />
-            </ToastProvider>
+            <Layout />
           </ModalProvider>
         </ConnectedRouter>
       </PersistGate>

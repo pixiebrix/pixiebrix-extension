@@ -22,8 +22,9 @@ import { DropdownButton, Dropdown, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { SettingsState } from "@/store/settingsTypes";
 import settingsSlice from "@/store/settingsSlice";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { useUpdateAvailable } from "@/options/pages/UpdateBanner";
+import { reportEvent } from "@/telemetry/events";
 
 const FIFTEEN_MINUTES_MILLIS = 900_000;
 const ONE_HOUR_MILLIS = FIFTEEN_MINUTES_MILLIS * 4;
@@ -76,7 +77,6 @@ const DeploymentModal: React.FC<
   >
 > = ({ extensionUpdateRequired, updateExtension, update }) => {
   const dispatch = useDispatch();
-  const notify = useNotifications();
   const hasUpdatesAvailable = useUpdateAvailable();
 
   const nextUpdate = useSelector<{ settings: SettingsState }>(
@@ -85,12 +85,11 @@ const DeploymentModal: React.FC<
 
   const snooze = useCallback(
     (durationMillis: number) => {
-      notify.success("Snoozed extensions and deployment updates", {
-        event: "SnoozeUpdates",
-      });
+      notify.success("Snoozed extensions and deployment updates");
+      reportEvent("SnoozeUpdates");
       dispatch(settingsSlice.actions.snoozeUpdates({ durationMillis }));
     },
-    [notify, dispatch]
+    [dispatch]
   );
 
   if (nextUpdate && nextUpdate > Date.now()) {

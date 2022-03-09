@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,23 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Keep in order so precedence is preserved
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "@/utils/layout.scss";
-import "@/sidebar.scss";
-
-import "@/extensionContext";
-
-import registerMessenger from "@/sidebar/messenger/registration";
-import App from "@/sidebar/SidebarApp";
-import ReactDOM from "react-dom";
-import React from "react";
-import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
-import registerContribBlocks from "@/contrib/registerContribBlocks";
-
-registerMessenger();
-registerContribBlocks();
-registerBuiltinBlocks();
-
-ReactDOM.render(<App />, document.querySelector("#container"));
+html {
+  // Always show the scrollbar track to avoid shifting the layout after the content loads
+  overflow-y: scroll;
+}

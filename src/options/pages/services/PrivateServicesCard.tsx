@@ -27,7 +27,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useGetAuthQuery } from "@/services/api";
 import { deleteCachedAuthData } from "@/background/messenger/api";
 import { ServicesState } from "@/store/servicesSlice";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import BrickIcon from "@/components/BrickIcon";
 import Pagination from "@/components/pagination/Pagination";
@@ -46,7 +46,6 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   services,
   navigate,
 }) => {
-  const notify = useNotifications();
   const {
     data: { isLoggedIn },
   } = useGetAuthQuery();
@@ -57,19 +56,14 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
     selectConfiguredServices
   );
 
-  const resetAuth = useCallback(
-    async (authId: UUID) => {
-      try {
-        await deleteCachedAuthData(authId);
-        notify.success("Reset login for integration");
-      } catch (error) {
-        notify.error("Error resetting login for integration", {
-          error,
-        });
-      }
-    },
-    [notify]
-  );
+  const resetAuth = useCallback(async (authId: UUID) => {
+    try {
+      await deleteCachedAuthData(authId);
+      notify.success("Reset login for integration");
+    } catch (error) {
+      notify.error({ message: "Error resetting login for integration", error });
+    }
+  }, []);
 
   const numPages = useMemo(
     () => Math.ceil(configuredServices.length / SERVICES_PER_PAGE),
@@ -160,7 +154,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                             Configure
                           </>
                         ),
-                        action: () => {
+                        action() {
                           navigate(
                             `/services/${encodeURIComponent(
                               configuredService.id

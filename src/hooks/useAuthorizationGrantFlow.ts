@@ -33,7 +33,6 @@ async function launchAuthorizationGrantFlow(
   url.searchParams.set("id", serviceId);
 
   if (target === "_blank") {
-    // eslint-disable-next-line security/detect-non-literal-fs-filename -- browser window
     window.open(url.href);
   } else {
     location.href = url.href;

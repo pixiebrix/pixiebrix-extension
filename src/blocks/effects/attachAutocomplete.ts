@@ -76,10 +76,10 @@ export class AttachAutocomplete extends Effect {
     for (const input of inputs) {
       autocompleter({
         input: input as HTMLInputElement,
-        onSelect: (item) => {
+        onSelect(item) {
           $elt.val(item.label);
         },
-        fetch: (text: string, update: (items: AutocompleteItem[]) => void) => {
+        fetch(text: string, update: (items: AutocompleteItem[]) => void) {
           const normalized = text.toLowerCase();
           update(
             options

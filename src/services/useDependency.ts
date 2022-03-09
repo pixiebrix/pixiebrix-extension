@@ -29,8 +29,7 @@ import registry from "@/services/registry";
 import { Service } from "@/types";
 import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions } from "@/background/messenger/api";
-import { getErrorMessage } from "@/errors";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 
 type Listener = () => void;
 
@@ -48,7 +47,6 @@ function listenerKey(dependency: ServiceDependency) {
 }
 
 function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
-  const notify = useNotifications();
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
   const [grantedPermissions, setGrantedPermissions] = useState(false);
 
@@ -120,11 +118,12 @@ function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
       }
     } catch (error) {
       setGrantedPermissions(false);
-      notify.error(`Error granting permissions: ${getErrorMessage(error)}`, {
+      notify.error({
+        message: "Error granting permissions",
         error,
       });
     }
-  }, [notify, setGrantedPermissions, serviceResult?.origins, dependency]);
+  }, [setGrantedPermissions, serviceResult?.origins, dependency]);
 
   return {
     config: serviceResult?.localConfig,

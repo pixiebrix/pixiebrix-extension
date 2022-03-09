@@ -15,22 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/vendors/overrides.scss";
-import "@/utils/layout.scss";
+import "@/extensionContext";
 
-import "@/development/darkMode";
-import "@/telemetry/reportUncaughtErrors";
-import registerMessenger from "@/pageEditor/messenger/registration";
+import PermissionsPopupApp from "@/tinyPages/PermissionsPopupApp";
 
 import ReactDOM from "react-dom";
 import React from "react";
-import Panel from "@/pageEditor/Panel";
-import { watchNavigation } from "@/pageEditor/protocol";
-import initGoogle from "@/contrib/google/initGoogle";
 
-registerMessenger();
-initGoogle();
-watchNavigation();
+import "bootstrap/dist/css/bootstrap.min.css";
 
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+ReactDOM.render(<PermissionsPopupApp />, document.querySelector("#container"));

@@ -178,7 +178,7 @@ const EditTab: React.FC<{
             Boolean(blockPipelineErrors?.[index]),
           hasWarning:
             errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
-          onClick: () => {
+          onClick() {
             setActiveNodeId(blockConfig.instanceId);
           },
         };
@@ -196,7 +196,7 @@ const EditTab: React.FC<{
       outputKey: "input",
       title: label,
       icon,
-      onClick: () => {
+      onClick() {
         setActiveNodeId(FOUNDATION_NODE_ID);
       },
     };

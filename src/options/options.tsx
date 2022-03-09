@@ -15,36 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
-declare module "*.svg" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
+import "./options.scss";
 
-declare module "*?loadAsUrl" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import "@/extensionContext";
+import "@/development/darkMode";
 
-declare module "*?loadAsText" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import { render } from "react-dom";
+import React from "react";
+import App from "@/options/App";
+import initGoogle from "@/contrib/google/initGoogle";
+import { initToaster } from "@/utils/notify";
 
-// Loading svg as React component using @svgr
-declare module "*.svg?loadAsComponent" {
-  import React from "react";
+initGoogle();
+initToaster();
 
-  const SVG: React.VFC<React.SVGProps<SVGSVGElement>>;
-  export default SVG;
-}
-
-declare module "*.txt" {
-  const CONTENT: string;
-  export default CONTENT;
-}
-
-declare module "*.yaml" {
-  const CONTENT: Record<string, unknown>;
-  export default CONTENT;
-}
+render(<App />, document.querySelector("#container"));

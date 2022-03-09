@@ -31,13 +31,14 @@ import useServiceDefinitions from "./useServiceDefinitions";
 import { persistor } from "@/options/store";
 import { services } from "@/background/messenger/api";
 import ZapierModal from "@/options/pages/services/ZapierModal";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { useParams } from "react-router";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
 import BrickModal from "@/components/brickModal/BrickModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
+import { reportEvent } from "@/telemetry/events";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -52,7 +53,6 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   deleteServiceConfig,
   navigate,
 }) => {
-  const notify = useNotifications();
   const { id: configurationId } = useParams<{ id: UUID }>();
 
   const [newConfigurationService, setNewConfigurationService] =
@@ -92,29 +92,26 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       try {
         await services.refresh();
       } catch (error) {
-        notify.warning(
-          "Error refreshing service configurations, restart the PixieBrix extension",
-          {
-            error,
-          }
-        );
+        notify.error({
+          message:
+            "Error refreshing service configurations, restart the PixieBrix extension",
+          error,
+        });
       }
 
       navigate("/services");
     },
-    [
-      updateServiceConfig,
-      notify,
-      activeService,
-      newConfigurationService,
-      navigate,
-    ]
+    [updateServiceConfig, activeService, newConfigurationService, navigate]
   );
 
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
 
   const handleCreate = useCallback(
     async (service: IService) => {
+      reportEvent("ServiceAdd", {
+        serviceId: service.id,
+      });
+
       const definition = (serviceDefinitions ?? []).find(
         (x) => x.id === service.id
       );
@@ -155,17 +152,16 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       try {
         await services.refresh();
       } catch (error) {
-        notify.warning(
-          "Error refreshing service configurations, restart the PixieBrix extension",
-          {
-            error,
-          }
-        );
+        notify.error({
+          message:
+            "Error refreshing service configurations, restart the PixieBrix extension",
+          error,
+        });
       }
 
       navigate("/services");
     },
-    [deleteServiceConfig, navigate, notify, activeService]
+    [deleteServiceConfig, navigate, activeService]
   );
 
   return (

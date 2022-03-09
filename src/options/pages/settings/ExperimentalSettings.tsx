@@ -20,7 +20,7 @@ import { Card, Form } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { useDispatch, useSelector } from "react-redux";
 import settingsSlice from "@/store/settingsSlice";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { selectSettings } from "@/store/settingsSelectors";
@@ -29,7 +29,6 @@ const ExperimentalSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { suggestElements, isBlueprintsPageEnabled } =
     useSelector(selectSettings);
-  const notify = useNotifications();
 
   return (
     <Card>

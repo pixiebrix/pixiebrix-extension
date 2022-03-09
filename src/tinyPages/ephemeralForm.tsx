@@ -13,15 +13,16 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-const reactToastNotificationsmock = jest.createMockFromModule(
-  "react-toast-notifications"
-);
+import "bootstrap/dist/css/bootstrap.min.css";
+import "react-image-crop/dist/ReactCrop.css";
+import "./ephemeralForm.scss";
 
-export const useToasts = jest.fn(() => ({
-  addToast: jest.fn(),
-}));
+import "@/extensionContext";
 
-export default reactToastNotificationsmock;
+import React from "react";
+import { render } from "react-dom";
+import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
+
+render(<EphemeralForm />, document.querySelector("#container"));

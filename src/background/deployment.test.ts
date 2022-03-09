@@ -82,7 +82,7 @@ jest.mock("@/auth/token", () => ({
     organizationId: "00000000-00000000-00000000-00000000",
   }),
   isLinked: jest.fn().mockResolvedValue(true),
-  updateUserData: async () => {},
+  async updateUserData() {},
 }));
 
 jest.mock("webext-detect-page", () => ({

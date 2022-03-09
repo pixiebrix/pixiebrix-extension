@@ -15,14 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "react-image-crop/dist/ReactCrop.css";
-import "@/ephemeralForm.scss";
-
-import "@/extensionContext";
-
 import React from "react";
-import { render } from "react-dom";
-import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
+import { ErrorObject } from "serialize-error";
+import { Col, Container, Row } from "react-bootstrap";
+import getErrorDetails from "@/components/errors/getErrorDetails";
 
-render(<EphemeralForm />, document.querySelector("#container"));
+type ErrorDisplayProps = {
+  error: ErrorObject;
+};
+
+const ErrorDisplay: React.VoidFunctionComponent<ErrorDisplayProps> = ({
+  error,
+}) => {
+  const { title, detailsElement } = getErrorDetails(error);
+
+  return (
+    <Container>
+      <Row>
+        <Col>
+          <p>{title}</p>
+        </Col>
+      </Row>
+      {detailsElement}
+    </Container>
+  );
+};
+
+export default ErrorDisplay;

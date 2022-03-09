@@ -28,10 +28,10 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { PersistedExtension } from "@/core";
 import { useGetAuthQuery } from "@/services/api";
 import settingsSlice from "@/store/settingsSlice";
-import { anonAuth } from "@/hooks/auth";
+import { anonAuth } from "@/auth/authConstants";
 
 jest.unmock("react-redux");
-jest.mock("@/hooks/useNotifications");
+jest.mock("@/utils/notify");
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
   useGetAuthQuery: jest.fn(),

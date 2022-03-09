@@ -18,7 +18,7 @@
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { showNotification } from "@/contentScript/notify";
+import { showNotification } from "@/utils/notify";
 
 export class AlertEffect extends Effect {
   constructor() {

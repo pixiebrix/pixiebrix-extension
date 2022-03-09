@@ -37,11 +37,7 @@ import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/blocks/available";
 import { BusinessError, hasCancelRootCause } from "@/errors";
 import reportError from "@/telemetry/reportError";
-import {
-  DEFAULT_ACTION_RESULTS,
-  notifyError,
-  notifyResult,
-} from "@/contentScript/notify";
+import notify, { DEFAULT_ACTION_RESULTS, notifyResult } from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
@@ -166,7 +162,7 @@ export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConf
 
     const numErrors = results.filter((x) => x.status === "rejected").length;
     if (numErrors > 0) {
-      notifyError(`An error occurred adding ${numErrors} quick bar items(s)`);
+      notify.error(`An error occurred adding ${numErrors} quick bar items(s)`);
     }
   }
 

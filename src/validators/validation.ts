@@ -51,7 +51,6 @@ type Options = {
 function blockSchemaFactory(): Yup.AnyObjectSchema {
   return Yup.object().shape({
     id: Yup.string().test("is-block", "Block not found", async (id: string) =>
-      // eslint-disable-next-line security/detect-non-literal-fs-filename -- false positive
       blockRegistry.exists(validateRegistryId(id))
     ),
     templateEngine: Yup.string()

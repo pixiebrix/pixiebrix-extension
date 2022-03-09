@@ -115,6 +115,7 @@ async function callBackground(
     console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {
       extensionId,
     });
+    // eslint-disable-next-line promise/prefer-await-to-then -- Legacy code
     sendMessage(extensionId, message, {}).catch((error) => {
       console.warn(
         `An error occurred processing background notification ${type} (nonce: ${nonce})`,

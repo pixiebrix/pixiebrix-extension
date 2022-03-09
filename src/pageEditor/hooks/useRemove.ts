@@ -17,12 +17,10 @@
 
 import { actions, FormState } from "@/pageEditor/slices/editorSlice";
 import { useCallback } from "react";
-import { useToasts } from "react-toast-notifications";
+import notify from "@/utils/notify";
 import { useFormikContext } from "formik";
 import { useDispatch } from "react-redux";
 import { useModals } from "@/components/ConfirmationModal";
-import { getErrorMessage } from "@/errors";
-import reportError from "@/telemetry/reportError";
 import { uninstallContextMenu } from "@/background/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import {
@@ -36,7 +34,6 @@ import extensionsSlice from "@/store/extensionsSlice";
  * @param element the current Page Editor state
  */
 function useRemove(element: FormState): () => void {
-  const { addToast } = useToasts();
   const { values } = useFormikContext<FormState>();
   const dispatch = useDispatch();
   const { showConfirmation } = useModals();
@@ -84,13 +81,12 @@ function useRemove(element: FormState): () => void {
         console.info("Cannot clear dynamic element from page", { error });
       }
     } catch (error) {
-      reportError(error);
-      addToast(`Error removing element: ${getErrorMessage(error)}`, {
-        appearance: "error",
-        autoDismiss: true,
+      notify.error({
+        message: "Error removing element",
+        error,
       });
     }
-  }, [showConfirmation, values, addToast, element, dispatch]);
+  }, [showConfirmation, values, element, dispatch]);
 }
 
 export default useRemove;

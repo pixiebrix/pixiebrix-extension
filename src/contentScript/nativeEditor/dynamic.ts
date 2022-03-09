@@ -61,7 +61,7 @@ const contextMenuReaderShim = {
 
   outputSchema: new ContextMenuReader().outputSchema,
 
-  read: async () => {
+  async read() {
     const { activeElement } = document;
 
     const linkProps =

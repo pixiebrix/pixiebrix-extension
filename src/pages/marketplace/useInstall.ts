@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { reportEvent } from "@/telemetry/events";
 import { RecipeDefinition } from "@/types/definitions";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import { FormikHelpers } from "formik";
@@ -43,7 +44,6 @@ type InstallRecipe = (
 ) => Promise<void>;
 
 function useInstall(recipe: RecipeDefinition): InstallRecipe {
-  const notify = useNotifications();
   const dispatch = useDispatch();
   const { flagOn } = useFlags();
   const { isBlueprintsPageEnabled } = useSelector(selectSettings);
@@ -74,24 +74,30 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       );
 
       if (selected.length === 0) {
-        notify.userError("Select at least one brick to activate");
+        notify.error({
+          message: "Select at least one brick to activate",
+          reportError: false,
+        });
         setSubmitting(false);
         return;
       }
 
       if (missingServiceIds.length > 0) {
         const missing = missingServiceIds.join(", ");
-        notify.userError(
-          `You must select a configuration for each service: ${missing}`
-        );
+        notify.error({
+          message: `You must select a configuration for each service: ${missing}`,
+          reportError: false,
+        });
         setSubmitting(false);
         return;
       }
 
       if (!enabled) {
-        notify.userError(
-          "You must accept browser permissions for the selected bricks"
-        );
+        notify.error({
+          message:
+            "You must accept browser permissions for the selected bricks",
+          reportError: false,
+        });
         setSubmitting(false);
         return;
       }
@@ -108,9 +114,8 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           })
         );
 
-        notify.success(`Installed ${recipe.metadata.name}`, {
-          event: "InstallBlueprint",
-        });
+        notify.success(`Installed ${recipe.metadata.name}`);
+        reportEvent("InstallBlueprint");
 
         setSubmitting(false);
 
@@ -122,13 +127,14 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           dispatch(push("/installed"));
         }
       } catch (error) {
-        notify.error(`Error installing ${recipe.metadata.name}`, {
+        notify.error({
+          message: `Error installing ${recipe.metadata.name}`,
           error,
         });
         setSubmitting(false);
       }
     },
-    [flagOn, notify, dispatch, recipe]
+    [flagOn, dispatch, recipe]
   );
 }
 

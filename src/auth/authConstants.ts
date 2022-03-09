@@ -15,18 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "@/options.scss";
+import { AuthState } from "@/core";
 
-import "@/extensionContext";
-import "@/development/darkMode";
-
-import { render } from "react-dom";
-import React from "react";
-import App from "@/options/App";
-import initGoogle from "@/contrib/google/initGoogle";
-
-initGoogle();
-
-render(<App />, document.querySelector("#container"));
+export const anonAuth: AuthState = Object.freeze({
+  userId: undefined,
+  email: undefined,
+  isLoggedIn: false,
+  isOnboarded: false,
+  extension: true,
+  scope: null,
+  flags: [],
+  organizations: [],
+  groups: [],
+});

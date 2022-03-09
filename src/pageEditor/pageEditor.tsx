@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,12 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-html {
-  // Always show the scrollbar track to avoid shifting the layout after the content loads
-  overflow-y: scroll;
-}
+import "bootstrap/dist/css/bootstrap.min.css";
+import "@/vendors/overrides.scss";
+import "@/utils/layout.scss";
 
-// Notifications must be above everything
-.react-toast-notifications__container {
-  z-index: 2147483647 !important;
-}
+import "@/development/darkMode";
+import "@/telemetry/reportUncaughtErrors";
+import registerMessenger from "@/pageEditor/messenger/registration";
+
+import ReactDOM from "react-dom";
+import React from "react";
+import Panel from "@/pageEditor/Panel";
+import { watchNavigation } from "@/pageEditor/protocol";
+import initGoogle from "@/contrib/google/initGoogle";
+import { initToaster } from "@/utils/notify";
+
+registerMessenger();
+initGoogle();
+watchNavigation();
+initToaster();
+
+ReactDOM.render(<Panel />, document.querySelector("#container"));

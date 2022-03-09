@@ -18,9 +18,8 @@
 import styles from "./SelectorSelectorWidget.module.scss";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { compact, isEmpty, sortBy, uniqBy } from "lodash";
-import { getErrorMessage } from "@/errors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
@@ -105,7 +104,6 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   const defaultSort = selectMode === "element";
   const sort = rawSort ?? defaultSort;
 
-  const notify = useNotifications();
   const [element, setElement] = useState(initialElement);
   const [isSelecting, setSelecting] = useState(false);
 
@@ -155,7 +153,8 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
       });
 
       if (isEmpty(selected)) {
-        notify.error("Unknown error selecting element", {
+        notify.error({
+          message: "Unknown error selecting element",
           error: new Error("selectElement returned empty object"),
         });
         return;
@@ -172,7 +171,8 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
       console.debug("Setting selector", { selected, firstSelector });
       setValue(firstSelector);
     } catch (error) {
-      notify.error(`Error selecting element: ${getErrorMessage(error)}`, {
+      notify.error({
+        message: "Error selecting element",
         error,
       });
     } finally {
@@ -181,7 +181,6 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   }, [
     sort,
     framework,
-    notify,
     setSelecting,
     traverseUp,
     selectMode,
