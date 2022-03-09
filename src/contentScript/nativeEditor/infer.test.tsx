@@ -21,7 +21,6 @@ import {
   inferButtonHTML,
   inferPanelHTML,
   inferSelectors,
-  isSelectorPotentiallyUseful,
   safeCssSelector,
 } from "@/contentScript/nativeEditor/infer";
 import { PIXIEBRIX_DATA_ATTR, EXTENSION_POINT_DATA_ATTR } from "@/common";
@@ -352,22 +351,6 @@ test("getSelectorPreference: matches expected sorting", () => {
   expect(getSelectorPreference(".birdsArentReal")).toBe(2);
   const selector = '[aria-label="Click elsewhere"]';
   expect(getSelectorPreference(selector)).toBe(selector.length);
-});
-
-test("isSelectorPotentiallyUseful", () => {
-  const fn = isSelectorPotentiallyUseful;
-  expect(fn(".navItem")).toBeTruthy();
-  expect(fn(".birdsArentReal")).toBeTruthy();
-  expect(fn('[aria-label="Click elsewhere"]')).toBeTruthy();
-
-  // Always allow IDs
-  expect(fn("#yes")).toBeTruthy();
-
-  // Exclude utility classes
-  expect(fn(".p-1")).toBeFalsy();
-
-  // Exclude some short random classes
-  expect(fn("._d3f32f")).toBeFalsy();
 });
 
 describe("inferSelectors", () => {
