@@ -19,7 +19,7 @@ import React, { useMemo, useState } from "react";
 import { Split } from "type-fest";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube, faScroll } from "@fortawesome/free-solid-svg-icons";
+import { faCube, faCubes } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncEffect } from "use-async-effect";
 import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
 import { MarketplaceListing } from "@/types/contract";
@@ -27,8 +27,8 @@ import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { isBlueprint } from "@/options/pages/blueprints/installableUtils";
 
 function getDefaultInstallableIcon(installable: Installable) {
-  if (isBlueprint(installable)) {
-    return faScroll;
+  if (isBlueprint(installable) && installable.extensionPoints.length > 1) {
+    return faCubes;
   }
 
   return faCube;

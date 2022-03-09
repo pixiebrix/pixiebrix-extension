@@ -17,14 +17,16 @@
 
 import styles from "./GridCard.module.scss";
 
-import React from "react";
+import React, { useState } from "react";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
-import { Card } from "react-bootstrap";
+import { Card, OverlayTrigger, Popover } from "react-bootstrap";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Status from "@/options/pages/blueprints/Status";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
+import { timeSince } from "@/utils/timeUtils";
+import { faRedo, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
 
 type GridCardProps = {
   installableItem: InstallableViewItem;
@@ -33,34 +35,81 @@ type GridCardProps = {
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   installableItem,
 }) => {
+  const [hovering, setHovering] = useState(false);
   const { name, updatedAt, sharing, icon, description } = installableItem;
   const updatedAtFormatted = new Date(updatedAt).toLocaleString();
 
   return (
-    <div className={styles.root}>
+    <div
+      className={styles.root}
+      onMouseEnter={() => {
+        setHovering(true);
+      }}
+      onMouseLeave={() => {
+        setHovering(false);
+      }}
+    >
       <Card className={styles.card}>
         <Card.Body className={styles.cardBody}>
           <div className={styles.primaryInfo}>
-            <div className="d-flex">
+            <div className="d-flex justify-content-between">
+              <div>
+                <h5 className={styles.name}>{name}</h5>
+                <span className={styles.description}>{description}</span>
+              </div>
               <span className="mb-2">{icon}</span>
-              <h5 className={styles.name}>{name}</h5>
             </div>
-            <span className={styles.description}>{description}</span>
           </div>
           <div>
             <div className={styles.actions}>
-              <Status installableViewItem={installableItem} />
+              <Status
+                installableViewItem={installableItem}
+                showActionButton={true}
+              />
               <BlueprintActions installableViewItem={installableItem} />
             </div>
           </div>
         </Card.Body>
         <Card.Footer className={styles.cardFooter}>
-          <span className={styles.sharingLabel}>
-            <SharingLabel sharing={sharing.source} />
-          </span>
-          <span className={styles.updatedAt}>
-            <FontAwesomeIcon icon={faClock} /> {updatedAtFormatted}
-          </span>
+          <OverlayTrigger
+            trigger="hover"
+            key="updateAt"
+            placement="top"
+            delay={700}
+            overlay={
+              <Popover id="sharingLabelPopover">
+                <Popover.Content>
+                  {sharing.source.type === "Personal" &&
+                    "You created this blueprint."}
+                  {sharing.source.type === "Team" &&
+                    `This blueprint was shared with you by "${sharing.source.label}" team.`}
+                  {sharing.source.type === "Public" &&
+                    "You activated this blueprint from the public marketplace."}
+                </Popover.Content>
+              </Popover>
+            }
+          >
+            <span className={styles.sharingLabel}>
+              <SharingLabel sharing={sharing.source} />
+            </span>
+          </OverlayTrigger>
+          <OverlayTrigger
+            trigger="hover"
+            key="updateAt"
+            placement="top"
+            delay={700}
+            overlay={
+              <Popover id={"updatedAtPopover"}>
+                <Popover.Content>
+                  Last updated {updatedAtFormatted}
+                </Popover.Content>
+              </Popover>
+            }
+          >
+            <span className={styles.updatedAt}>
+              <FontAwesomeIcon icon={faClock} /> {timeSince(updatedAtFormatted)}
+            </span>
+          </OverlayTrigger>
         </Card.Footer>
       </Card>
     </div>

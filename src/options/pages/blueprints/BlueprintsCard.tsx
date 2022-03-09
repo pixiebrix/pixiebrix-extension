@@ -119,7 +119,7 @@ const BlueprintsCard: React.FunctionComponent<{
             ...state,
             groupBy,
             sortBy,
-            filters: state.globalFilter ? [] : filters,
+            filters,
           }),
           // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
           [state, groupBy, sortBy, filters]
@@ -131,14 +131,9 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  const { setGlobalFilter } = tableInstance;
-
   return (
     <BootstrapRow className={styles.root}>
-      <ListFilters
-        teamFilters={teamFilters}
-        setGlobalFilter={setGlobalFilter}
-      />
+      <ListFilters teamFilters={teamFilters} tableInstance={tableInstance} />
       <Col className={styles.mainContainer}>
         <BlueprintsToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}

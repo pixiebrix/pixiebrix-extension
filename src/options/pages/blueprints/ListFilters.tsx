@@ -1,7 +1,7 @@
 import styles from "./ListFilters.module.scss";
 
 import { Col, Form, Nav } from "react-bootstrap";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import { selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
@@ -15,13 +15,16 @@ import {
   faUser,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
+import { TableInstance } from "react-table";
+import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 
 type ListFiltersProps = {
   teamFilters: string[];
-  setGlobalFilter: (filterValue: string) => void;
+  tableInstance: TableInstance<InstallableViewItem>;
 };
 
-function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
+function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
+  const { setGlobalFilter } = tableInstance;
   const [filters, setFilters] = useReduxState(
     selectFilters,
     blueprintsSlice.actions.setFilters
@@ -32,30 +35,21 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
     leading: false,
   });
 
-  // By default, react-table combines filters and globalFilters
-  // If searching via keyword, temporarily
-  // disable category filters
+  // By default, search everything with the option to re-select
+  // filtered category
   useEffect(() => {
     setGlobalFilter(debouncedQuery);
+    setFilters([]);
   }, [debouncedQuery]);
 
-  // Prevent nav-link highlighting when search query
-  // is present by setting an event key that doesn't exist
-  const activeKey = useMemo(() => {
-    if (query) {
-      // Key doesn't exist
-      return "Search results";
-    }
-
-    return filters[0]?.value ?? "All";
-  }, [filters, query]);
+  const activeKey = filters[0]?.value ?? "All";
 
   return (
     <Col sm={3} xl={2} className={styles.root}>
       <Form className="mb-4 mr-3">
         <Form.Control
           id="query"
-          placeholder="Search"
+          placeholder="Search everything"
           size="sm"
           value={query}
           onChange={({ target }) => {
@@ -73,7 +67,6 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
         <Nav.Item>
           <Nav.Link
             eventKey="Active"
-            disabled={Boolean(query)}
             onClick={() => {
               setFilters([{ id: "status", value: "Active" }]);
             }}
@@ -84,7 +77,6 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
         <Nav.Item>
           <Nav.Link
             eventKey="All"
-            disabled={Boolean(query)}
             onClick={() => {
               setFilters([]);
             }}
@@ -92,11 +84,9 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
             <FontAwesomeIcon icon={faAsterisk} /> All Blueprints
           </Nav.Link>
         </Nav.Item>
-        <h5 className="mt-3">My Collections</h5>
         <Nav.Item>
           <Nav.Link
             eventKey="Personal"
-            disabled={Boolean(query)}
             onClick={() => {
               setFilters([{ id: "sharing.source.label", value: "Personal" }]);
             }}
@@ -107,7 +97,6 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
         <Nav.Item>
           <Nav.Link
             eventKey="Public"
-            disabled={Boolean(query)}
             onClick={() => {
               setFilters([{ id: "sharing.source.label", value: "Public" }]);
             }}
@@ -120,7 +109,6 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
           <Nav.Item key={filter}>
             <Nav.Link
               eventKey={filter}
-              disabled={Boolean(query)}
               onClick={() => {
                 setFilters([{ id: "sharing.source.label", value: filter }]);
               }}

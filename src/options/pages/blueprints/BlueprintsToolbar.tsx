@@ -45,6 +45,7 @@ const BlueprintsToolbar: React.FunctionComponent<{
     flatRows,
     rows,
     state: { globalFilter },
+    setGlobalFilter,
   } = tableInstance;
 
   const [view, setView] = useReduxState(
