@@ -24,9 +24,9 @@ import {
   SITES_PATTERN,
 } from "@/permissions/patterns";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
-import { Form } from "react-bootstrap";
 import { useField } from "formik";
 import { LinkButton } from "@/components/LinkButton";
+import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;
@@ -88,7 +88,7 @@ const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
           ))}
         </div>
       )}
-      <Form.Control type="text" {...props} />
+      <ArrayWidget {...props} />
     </>
   );
 };
