@@ -267,6 +267,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       optionsArgs: extension.optionsArgs,
     };
 
+    // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2910
     try {
       await reducePipeline(actionConfig, initialValues, {
         logger: extensionLogger,

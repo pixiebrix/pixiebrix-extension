@@ -17,7 +17,7 @@
 
 import { Logger, MessageContext } from "@/core";
 import { JsonObject } from "type-fest";
-import { isConnectionError } from "@/errors";
+import { isConnectionError, selectError } from "@/errors";
 import { getContextName, isContentScript } from "webext-detect-page";
 import { showConnectionLost } from "@/contentScript/connection";
 import { serializeError } from "serialize-error";
@@ -71,18 +71,11 @@ class BackgroundLogger implements Logger {
   }
 
   async error(error: unknown, data: JsonObject): Promise<void> {
-    if (typeof error === "string") {
-      // Avoid user-defined format strings
-      console.error("%s", error, {
-        context: this.context,
-        data,
-      });
-    } else {
-      console.error(error, {
-        context: this.context,
-        data,
-      });
-    }
+    // Use selectError which returns an error object ot avoid user-defined format strings
+    console.error(selectError(error), {
+      context: this.context,
+      data,
+    });
 
     if (isConnectionError(error) && isContentScript()) {
       showConnectionLost();
