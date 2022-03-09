@@ -90,12 +90,31 @@ const ContactTeamAdminColumn: React.VoidFunctionComponent = () => (
   </Col>
 );
 
+const UnaffiliatedColumn: React.VoidFunctionComponent = () => (
+  <Col className="d-flex justify-content-center flex-column text-center">
+    <p>
+      Learn how to create your own personal automations in minutes by following
+      our <span className="text-primary">step-by-step guide</span>.
+    </p>
+    <div className="align-self-center">
+      <a
+        className="btn btn-primary"
+        href="https://docs.pixiebrix.com/quick-start-guide"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <FontAwesomeIcon icon={faExternalLinkAlt} /> Get started
+      </a>
+    </div>
+  </Col>
+);
+
 const CreateBrickColumn: React.VoidFunctionComponent = () => (
-  <Col xs={6}>
+  <Col>
     <h4>Create your Own</h4>
     <p>
-      Follow the Quick Start Guide to start creating your own blueprints in
-      minutes.
+      Learn how to create your own automations in minutes by following our
+      step-by-step guide.
     </p>
     <a
       className="btn btn-info btn-sm"
@@ -103,7 +122,7 @@ const CreateBrickColumn: React.VoidFunctionComponent = () => (
       target="_blank"
       rel="noopener noreferrer"
     >
-      <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Open Quick Start
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> Get started
     </a>
   </Col>
 );
@@ -129,23 +148,27 @@ const OnboardingView: React.VoidFunctionComponent<{
           </>
         );
       default:
-        return (
-          <>
-            <ActivateFromMarketplaceColumn />
-            <CreateBrickColumn />
-          </>
-        );
+        return <UnaffiliatedColumn />;
     }
   }, [onboardingType]);
+
+  const onboardingCallout = useMemo(() => {
+    switch (filter) {
+      case "active":
+        return "Welcome to PixieBrix! Ready to get started?";
+      case "personal":
+        return "personal callout";
+      default:
+        return "Welcome to PixieBrix! Let's get started.";
+    }
+  }, [filter]);
 
   return (
     <div style={{ height: `${height}px`, width: `${width}px` }}>
       <Card className={styles.root}>
         <Card.Body className={styles.cardBody}>
           <img src={marketplaceImage} alt="Marketplace" width={300} />
-          <h3 className="mb-4">{`You don't have any ${
-            filter ? filter : ""
-          } blueprints`}</h3>
+          <h3 className="mb-4">{onboardingCallout}</h3>
           {!isLoading && <Row>{onBoardingInformation}</Row>}
         </Card.Body>
       </Card>
