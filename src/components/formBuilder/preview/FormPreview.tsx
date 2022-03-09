@@ -32,6 +32,7 @@ import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWi
 // eslint-disable-next-line import/no-named-as-default -- need default export here
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
+import SelectWidgetPreview from "./SelectWidgetPreview";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -102,6 +103,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
   const widgets = {
     imageCrop: ImageCropWidgetPreview,
+    SelectWidget: SelectWidgetPreview,
   };
 
   return (

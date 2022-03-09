@@ -253,17 +253,14 @@ const FieldEditor: React.FC<{
         )}
 
       {propertySchema.enum && (
-        // <ConnectedFieldTemplate
-        //   name={getFullFieldName("enum")}
-        //   label="Options"
-        //   as={OptionsWidget}
-        // />
         <SchemaField
           label="Options"
           name={getFullFieldName("enum")}
           schema={{
             type: "array",
-            description: "Dropdown options",
+            items: {
+              type: "string",
+            },
           }}
         />
       )}
