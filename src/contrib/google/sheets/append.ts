@@ -116,7 +116,7 @@ export class GoogleSheetsAppend extends Effect {
     super(
       GOOGLE_SHEETS_APPEND_ID,
       "Add Google sheet row",
-      "Add a row of data to a Google sheet. The first row must be named headings.",
+      "Add a row of data to a Google sheet. The first row should contain headings.",
       "faTable"
     );
   }
