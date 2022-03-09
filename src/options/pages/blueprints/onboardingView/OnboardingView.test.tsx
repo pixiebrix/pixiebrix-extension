@@ -53,7 +53,7 @@ const mockOnboarding = ({
   (useDeployments as jest.Mock).mockImplementation(() => {
     return {
       hasUpdate: hasDeployments,
-      update: () => {},
+      update() {},
       extensionUpdateRequired: false,
       isLoading: false,
       error: undefined as unknown,
