@@ -27,22 +27,22 @@ import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { useDispatch } from "react-redux";
 
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
-  <Col xs={6}>
-    <h4>Activate an Official Blueprint</h4>
+  <Col className="d-flex justify-content-center flex-column text-center">
     <p>
-      <span className="text-primary">
-        The easiest way to start using PixieBrix!
-      </span>{" "}
-      Activate a pre-made blueprint from the Marketplace.
+      <span className="text-primary">Not sure what to build?</span> Activate a
+      pre-made blueprints from the public marketplace, or just peruse for
+      inspiration!
     </p>
-    <Button
-      href="https://pixiebrix.com/marketplace/"
-      variant="info"
-      target="_blank"
-      size="sm"
-    >
-      <FontAwesomeIcon icon={faExternalLinkAlt} /> &nbsp;Browse the Marketplace
-    </Button>
+    <div className="align-self-center">
+      <a
+        className="btn btn-primary"
+        href="https://pixiebrix.com/marketplace/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <FontAwesomeIcon icon={faExternalLinkAlt} /> Visit the Marketplace
+      </a>
+    </div>
   </Col>
 );
 
@@ -135,31 +135,45 @@ const OnboardingView: React.VoidFunctionComponent<{
   height: number;
 }> = ({ onboardingType, filter, isLoading, width, height }) => {
   const onBoardingInformation = useMemo(() => {
+    if (!(onboardingType === "restricted") && filter === "public") {
+      return <ActivateFromMarketplaceColumn />;
+    }
+
+    if (!(onboardingType === "restricted") && filter === "personal") {
+      return <UnaffiliatedColumn />;
+    }
+
     switch (onboardingType) {
       case "hasDeployments":
         return <ActivateFromDeploymentBannerColumn />;
       case "restricted":
         return <ContactTeamAdminColumn />;
       case "hasTeamBlueprints":
-        return (
-          <>
-            <ActivateTeamBlueprintsColumn />
-            <CreateBrickColumn />
-          </>
-        );
+        if (!(filter === "personal")) {
+          return (
+            <>
+              <ActivateTeamBlueprintsColumn />
+              <CreateBrickColumn />
+            </>
+          );
+        }
       default:
         return <UnaffiliatedColumn />;
     }
-  }, [onboardingType]);
+  }, [filter, onboardingType]);
 
   const onboardingCallout = useMemo(() => {
     switch (filter) {
-      case "active":
-        return "Welcome to PixieBrix! Ready to get started?";
       case "personal":
-        return "personal callout";
+        if (onboardingType !== "restricted") {
+          return "Create your own automations";
+        }
+      case "public":
+        if (onboardingType !== "restricted") {
+          return "Discover pre-made blueprints in the public marketplace";
+        }
       default:
-        return "Welcome to PixieBrix! Let's get started.";
+        return "Welcome to PixieBrix! Ready to get started?";
     }
   }, [filter]);
 
@@ -168,7 +182,7 @@ const OnboardingView: React.VoidFunctionComponent<{
       <Card className={styles.root}>
         <Card.Body className={styles.cardBody}>
           <img src={marketplaceImage} alt="Marketplace" width={300} />
-          <h3 className="mb-4">{onboardingCallout}</h3>
+          <h3 className="mb-4 text-center">{onboardingCallout}</h3>
           {!isLoading && <Row>{onBoardingInformation}</Row>}
         </Card.Body>
       </Card>
