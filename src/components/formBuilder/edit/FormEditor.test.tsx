@@ -26,13 +26,13 @@ import {
   fireTextInput,
   fireFormSubmit,
 } from "@/tests/formHelpers";
-import { RJSFSchema } from "./formBuilderTypes";
+import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor, { FormEditorProps } from "./FormEditor";
 import {
   initAddingFieldCases,
   initOneFieldSchemaCase,
   initRenamingCases,
-} from "./formEditor.testCases";
+} from "@/components/formBuilder/formEditor.testCases";
 import selectEvent from "react-select-event";
 import userEvent from "@testing-library/user-event";
 

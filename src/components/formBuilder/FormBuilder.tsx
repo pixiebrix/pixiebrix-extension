@@ -18,8 +18,8 @@
 import styles from "./FormBuilder.module.scss";
 
 import React, { useState } from "react";
-import FormEditor from "./FormEditor";
-import FormPreview from "./FormPreview";
+import FormEditor from "./edit/FormEditor";
+import FormPreview from "./preview/FormPreview";
 import { useField } from "formik";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 

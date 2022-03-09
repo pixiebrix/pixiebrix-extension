@@ -22,8 +22,8 @@ import {
   RJSFSchema,
   SelectStringOption,
   SetActiveField,
-} from "./formBuilderTypes";
-import { UI_WIDGET } from "./schemaFieldNames";
+} from "@/components/formBuilder/formBuilderTypes";
+import { UI_WIDGET } from "@/components/formBuilder/schemaFieldNames";
 import {
   FIELD_TYPES_WITHOUT_DEFAULT,
   FIELD_TYPE_OPTIONS,
@@ -34,15 +34,13 @@ import {
   stringifyUiType,
   UiType,
   validateNextPropertyName,
-} from "./formBuilderHelpers";
+} from "@/components/formBuilder/formBuilderHelpers";
 import { Schema, SchemaPropertyType } from "@/core";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget, {
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import OptionsWidget from "@/components/form/widgets/OptionsWidget";
 import SwitchButtonWidget, {
   CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
@@ -255,10 +253,18 @@ const FieldEditor: React.FC<{
         )}
 
       {propertySchema.enum && (
-        <ConnectedFieldTemplate
-          name={getFullFieldName("enum")}
+        // <ConnectedFieldTemplate
+        //   name={getFullFieldName("enum")}
+        //   label="Options"
+        //   as={OptionsWidget}
+        // />
+        <SchemaField
           label="Options"
-          as={OptionsWidget}
+          name={getFullFieldName("enum")}
+          schema={{
+            type: "array",
+            description: "Dropdown options",
+          }}
         />
       )}
 
