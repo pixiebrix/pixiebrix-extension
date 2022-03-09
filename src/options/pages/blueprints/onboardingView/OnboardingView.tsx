@@ -31,7 +31,7 @@ const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
     <p>
       <span className="text-primary">Not sure what to build?</span> Activate a
       pre-made blueprints from the public marketplace, or just peruse for
-      inspiration!
+      inspiration.
     </p>
     <div className="align-self-center">
       <a
@@ -149,33 +149,33 @@ const OnboardingView: React.VoidFunctionComponent<{
       case "restricted":
         return <ContactTeamAdminColumn />;
       case "hasTeamBlueprints":
-        if (!(filter === "personal")) {
-          return (
-            <>
-              <ActivateTeamBlueprintsColumn />
-              <CreateBrickColumn />
-            </>
-          );
-        }
+        return (
+          <>
+            <ActivateTeamBlueprintsColumn />
+            <CreateBrickColumn />
+          </>
+        );
       default:
         return <UnaffiliatedColumn />;
     }
   }, [filter, onboardingType]);
 
   const onboardingCallout = useMemo(() => {
-    switch (filter) {
-      case "personal":
-        if (onboardingType !== "restricted") {
+    switch (onboardingType) {
+      case "restricted":
+        return "Welcome to PixieBrix! Ready to get started?";
+      default:
+        if (filter === "personal") {
           return "Create your own automations";
         }
-      case "public":
-        if (onboardingType !== "restricted") {
+
+        if (filter === "public") {
           return "Discover pre-made blueprints in the public marketplace";
         }
-      default:
+
         return "Welcome to PixieBrix! Ready to get started?";
     }
-  }, [filter]);
+  }, [filter, onboardingType]);
 
   return (
     <div style={{ height: `${height}px`, width: `${width}px` }}>
