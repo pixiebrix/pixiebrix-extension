@@ -7,7 +7,14 @@ import { selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAsterisk,
+  faCheck,
+  faExternalLinkAlt,
+  faGlobe,
+  faUser,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 
 type ListFiltersProps = {
   teamFilters: string[];
@@ -71,7 +78,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
               setFilters([{ id: "status", value: "Active" }]);
             }}
           >
-            Active Blueprints
+            <FontAwesomeIcon icon={faCheck} /> Active
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -82,7 +89,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
               setFilters([]);
             }}
           >
-            All Blueprints
+            <FontAwesomeIcon icon={faAsterisk} /> All Blueprints
           </Nav.Link>
         </Nav.Item>
         <h5 className="mt-3">My Collections</h5>
@@ -94,7 +101,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
               setFilters([{ id: "sharing.source.label", value: "Personal" }]);
             }}
           >
-            Personal Blueprints
+            <FontAwesomeIcon icon={faUser} /> Personal
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -105,7 +112,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
               setFilters([{ id: "sharing.source.label", value: "Public" }]);
             }}
           >
-            Public Marketplace Blueprints
+            <FontAwesomeIcon icon={faGlobe} /> Public Marketplace
           </Nav.Link>
         </Nav.Item>
         {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
@@ -118,7 +125,7 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
                 setFilters([{ id: "sharing.source.label", value: filter }]);
               }}
             >
-              {filter} Blueprints
+              <FontAwesomeIcon icon={faUsers} /> {filter}
             </Nav.Link>
           </Nav.Item>
         ))}

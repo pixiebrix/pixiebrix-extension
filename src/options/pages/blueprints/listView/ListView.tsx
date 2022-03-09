@@ -28,15 +28,14 @@ const HEADER_ROW_HEIGHT_PX = 43;
 
 const ListView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
-  rows,
   height,
   width,
 }) => {
   const [listKey, setListKey] = useState(uuidv4());
 
   const expandedRows = useMemo(
-    () => rows.flatMap((row) => [row, ...row.subRows]),
-    [rows]
+    () => tableInstance.rows.flatMap((row) => [row, ...row.subRows]),
+    [tableInstance.rows]
   );
 
   const getItemSize = useCallback(
