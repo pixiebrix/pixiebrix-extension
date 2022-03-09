@@ -49,7 +49,7 @@ const EmptyView: React.VoidFunctionComponent<{
               .
             </div>
             <div>
-              Try different or broader search terms, or searching in the{" "}
+              Try different search terms or search in the{" "}
               <a
                 href="https://pixiebrix.com/marketplace/"
                 target="_blank"
