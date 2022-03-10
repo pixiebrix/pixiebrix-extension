@@ -21,7 +21,6 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
-import browser from "webextension-polyfill";
 import { isBackground } from "webext-detect-page";
 import type { SanitizedServiceConfiguration } from "@/core";
 import type { AxiosRequestConfig } from "axios";

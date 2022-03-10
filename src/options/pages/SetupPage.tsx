@@ -23,7 +23,6 @@ import { Col, Row, Card, Button, ListGroup } from "react-bootstrap";
 import settingsSlice from "@/store/settingsSlice";
 import { useDispatch } from "react-redux";
 import { getBaseURL } from "@/services/baseService";
-import browser from "webextension-polyfill";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";

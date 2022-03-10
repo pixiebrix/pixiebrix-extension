@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// It must be the very first thing or telemetry will fail
-// eslint-disable-next-line import/no-unassigned-import -- Import for side effects
-import "@/extensionPolyfill";
+// This file exists because imports are executed before the local code.
+// Importing another file next to `webextension-polyfill` means that the
+// `globalThis` line will be executed too late.
+// This file can be dropped after https://github.com/mozilla/webextension-polyfill/pull/351
 
-// Init rollbar early so we get error reporting on the other initialization
-import "@/telemetry/reportUncaughtErrors";
+import browser from "webextension-polyfill";
 
-// https://webpack.js.org/guides/public-path/#on-the-fly
-__webpack_public_path__ = chrome.runtime.getURL("/");
+globalThis.browser = browser;

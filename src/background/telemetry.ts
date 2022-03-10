@@ -19,7 +19,6 @@ import { liftBackground } from "@/background/protocol";
 import { JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import { compact, debounce, throttle, uniq } from "lodash";
-import browser from "webextension-polyfill";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
 import { Data, UUID } from "@/core";

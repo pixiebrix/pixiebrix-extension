@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
 import Cookies from "js-cookie";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
