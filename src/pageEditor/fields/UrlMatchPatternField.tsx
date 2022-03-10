@@ -57,6 +57,7 @@ const UrlMatchPatternField: React.VFC<UrlMatchPatternFieldProps> = ({
     label={label}
     description={description}
     shortcuts={shortcuts}
+    isRequired
   />
 );
 

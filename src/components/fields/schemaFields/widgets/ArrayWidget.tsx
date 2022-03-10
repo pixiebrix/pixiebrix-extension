@@ -61,7 +61,6 @@ function getDefaultArrayItem(schema: Schema): unknown {
 
 const ArrayWidget: React.VFC<SchemaFieldProps> = ({ schema, name }) => {
   const [field] = useField<UnknownObject[]>(name);
-  console.log("ArrayWidget", field);
 
   if (Array.isArray(schema.items)) {
     throw new TypeError("Support for arrays of mixed types is not implemented");
