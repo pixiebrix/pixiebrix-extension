@@ -18,7 +18,11 @@
 // eslint-disable-next-line import/no-restricted-paths -- Type only
 import type { RunBlock } from "@/contentScript/executor";
 import browser, { Runtime, Tabs } from "webextension-polyfill";
-import { BusinessError } from "@/errors";
+import {
+  BusinessError,
+  getErrorMessage,
+  NO_TARGET_FOUND_CONNECTION_ERROR,
+} from "@/errors";
 import { expectContext } from "@/utils/expectContext";
 import { asyncForEach } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
@@ -34,6 +38,18 @@ type TabId = number;
 const tabToOpener = new Map<TabId, TabId>();
 const tabToTarget = new Map<TabId, TabId>();
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
+
+async function safelyRunBrick(...args: Parameters<typeof runBrick>) {
+  try {
+    return await runBrick(...args);
+  } catch (error) {
+    if (getErrorMessage(error) === NO_TARGET_FOUND_CONNECTION_ERROR) {
+      throw new BusinessError("The tab doesn't exist or it was closed");
+    }
+
+    throw error;
+  }
+}
 
 export async function waitForTargetByUrl(url: string): Promise<Target> {
   const { promise, resolve } = pDefer<Target>();
@@ -65,7 +81,7 @@ export async function requestRunInOpener(
     tabId: tabToOpener.get(sourceTabId),
   };
   const subRequest = { ...request, sourceTabId };
-  return runBrick(opener, subRequest);
+  return safelyRunBrick(opener, subRequest);
 }
 
 export async function requestRunInBroadcast(
@@ -87,7 +103,7 @@ export async function requestRunInBroadcast(
     }
 
     try {
-      const response = runBrick({ tabId: tab.id }, subRequest);
+      const response = safelyRunBrick({ tabId: tab.id }, subRequest);
       fulfilled.set(tab.id, await response);
     } catch (error) {
       rejected.set(tab.id, error);
@@ -113,7 +129,7 @@ export async function requestRunInTarget(
   }
 
   const subRequest = { ...request, sourceTabId };
-  return runBrick({ tabId: target }, subRequest);
+  return safelyRunBrick({ tabId: target }, subRequest);
 }
 
 export async function openTab(
