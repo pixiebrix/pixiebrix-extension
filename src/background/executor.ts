@@ -43,13 +43,15 @@ async function safelyRunBrick(...args: Parameters<typeof runBrick>) {
   try {
     return await runBrick(...args);
   } catch (error) {
+    // The caught error isn't "The tab was closed" because of:
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/2902#issuecomment-1062658248
     if (getErrorMessage(error) === NO_TARGET_FOUND_CONNECTION_ERROR) {
-      // We can only be sure that the tab was closed because `safelyRunBrick` is called on
-      // specific, existing `tabId`s, and not on named targets that may or may not exist.
-
-      // The caught error isn't "The tab was closed" because of:
-      // https://github.com/pixiebrix/pixiebrix-extension/issues/2902#issuecomment-1062658248
-      throw new BusinessError("The tab was closed");
+      // NO_TARGET_FOUND_CONNECTION_ERROR is thrown when:
+      // - the target has no permissions
+      // - the target was closed after creation
+      throw new BusinessError(
+        "PixieBrix doesn't have access to the tab or it was closed"
+      );
     }
 
     throw error;
