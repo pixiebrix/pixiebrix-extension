@@ -31,5 +31,6 @@
     },
     "lib": ["ES2021", "DOM", "DOM.Iterable"],
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
-  }
+  },
+  "exclude": ["venv", "dist", "node_modules"]
 }
