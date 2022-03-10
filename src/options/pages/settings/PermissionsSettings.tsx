@@ -21,7 +21,7 @@ import {
   getAdditionalPermissions,
   dropOverlappingPermissions,
 } from "webext-additional-permissions";
-import browser, { Manifest } from "webextension-polyfill";
+import { Manifest } from "webextension-polyfill";
 import { sortBy } from "lodash";
 import { useAsyncEffect } from "use-async-effect";
 import { Button, Card, ListGroup } from "react-bootstrap";

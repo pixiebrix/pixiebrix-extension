@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { getChromeExtensionId, RuntimeNotFoundError } from "@/chrome";
-import browser, { Runtime } from "webextension-polyfill";
+import { Runtime } from "webextension-polyfill";
 import { patternToRegex } from "webext-patterns";
 import chromeP from "webext-polyfill-kinda";
 import { isBackground, isExtensionContext } from "webext-detect-page";

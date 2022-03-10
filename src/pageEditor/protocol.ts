@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
 import { resetTab } from "@/contentScript/messenger/api";
 import { thisTab } from "./utils";
 import { Target } from "@/types";

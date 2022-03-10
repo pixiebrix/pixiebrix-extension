@@ -79,8 +79,6 @@ const HEADER_ROW_HEIGHT_PX = 43;
 
 const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   tableInstance,
-  // TODO: remove rows because they are a part of tableInstance
-  rows,
   width,
   height,
 }) => {
@@ -92,8 +90,8 @@ const GridView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
   );
 
   const expandedGridRows = useMemo(
-    () => expandGridRows(rows, columnCount),
-    [columnCount, rows]
+    () => expandGridRows(tableInstance.rows, columnCount),
+    [columnCount, tableInstance.rows]
   );
 
   const getItemSize = useCallback(

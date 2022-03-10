@@ -16,7 +16,6 @@
  */
 
 import { isExtensionContext } from "webext-detect-page";
-import browser from "webextension-polyfill";
 import { forbidContext } from "@/utils/expectContext";
 import { JsonValue } from "type-fest";
 

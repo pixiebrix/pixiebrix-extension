@@ -17,7 +17,6 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import pTimeout from "p-timeout";
-import browser from "webextension-polyfill";
 import { navigationEvent } from "@/pageEditor/events";
 import { useAsyncEffect } from "use-async-effect";
 import { FrameworkMeta } from "@/messaging/constants";

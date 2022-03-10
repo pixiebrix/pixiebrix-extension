@@ -125,7 +125,7 @@
     &:hover,
     &:focus,
     &:active {
-      background: theme-gradient-color($color);
+      background: $color;
       color: $white;
     }
   }

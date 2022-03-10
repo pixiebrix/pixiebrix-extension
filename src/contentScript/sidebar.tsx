@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
 import reportError from "@/telemetry/reportError";
 import { uuidv4 } from "@/types/helpers";
 import { IS_BROWSER } from "@/helpers";

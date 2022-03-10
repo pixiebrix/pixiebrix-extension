@@ -15,28 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEyeSlash,
-  faGlobe,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
-import { SharingSource } from "@/options/pages/blueprints/installableUtils";
+// This file exists because imports are executed before the local code.
+// Importing another file next to `webextension-polyfill` means that the
+// `globalThis` line will be executed too late.
+// This file can be dropped after https://github.com/mozilla/webextension-polyfill/pull/351
 
-const sharingIcons = {
-  Personal: faEyeSlash,
-  Team: faUsers,
-  Public: faGlobe,
-  Deployment: faUsers,
-};
+import browser from "webextension-polyfill";
 
-const SharingLabel: React.FunctionComponent<{
-  sharing: SharingSource;
-}> = ({ sharing }) => (
-  <div>
-    <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
-  </div>
-);
-
-export default SharingLabel;
+globalThis.browser = browser;

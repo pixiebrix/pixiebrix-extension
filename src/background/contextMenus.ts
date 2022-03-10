@@ -16,7 +16,7 @@
  */
 
 import pTimeout from "p-timeout";
-import browser, { Menus, Tabs } from "webextension-polyfill";
+import { Menus, Tabs } from "webextension-polyfill";
 import { getErrorMessage, hasCancelRootCause } from "@/errors";
 import reportError from "@/telemetry/reportError";
 import { noop } from "lodash";
