@@ -32,7 +32,6 @@ const ListItem: React.VoidFunctionComponent<{
   style: React.CSSProperties;
 }> = ({ installableItem, style }) => {
   const { name, sharing, updatedAt, icon, description } = installableItem;
-  const updatedAtFormatted = new Date(updatedAt).toLocaleString();
 
   return (
     <ListGroup.Item className={styles.root} style={style}>
