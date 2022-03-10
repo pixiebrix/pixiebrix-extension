@@ -29,8 +29,12 @@ import { Target } from "@/types";
 import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
 import { canAccessTab } from "webext-tools";
+import { onTabClose } from "@/chrome";
 
 type TabId = number;
+
+// Used to determine which promise was resolved in a race
+const TYPE_WAS_CLOSED = Symbol("Tab was closed");
 
 const tabToOpener = new Map<TabId, TabId>();
 const tabToTarget = new Map<TabId, TabId>();
@@ -41,17 +45,17 @@ async function safelyRunBrick({ tabId }: { tabId: number }, request: RunBlock) {
     throw new BusinessError("PixieBrix doesn't have access to the tab");
   }
 
-  try {
-    return await runBrick({ tabId }, request);
-  } catch (error) {
-    // If https://github.com/pixiebrix/webext-messenger/issues/67 is resolved, we don't need the query
-    const tabStillExists = await browser.tabs.get(tabId).catch(() => false);
-    if (!tabStillExists) {
-      throw new BusinessError("The tab was closed");
-    }
+  const result = await Promise.race([
+    // If https://github.com/pixiebrix/webext-messenger/issues/67 is resolved, we don't need the listener
+    onTabClose(tabId).then(() => TYPE_WAS_CLOSED),
+    runBrick({ tabId }, request),
+  ]);
 
-    throw error;
+  if (result === TYPE_WAS_CLOSED) {
+    throw new BusinessError("The tab was closed");
   }
+
+  return result;
 }
 
 export async function waitForTargetByUrl(url: string): Promise<Target> {
