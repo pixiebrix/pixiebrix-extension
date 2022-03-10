@@ -29,6 +29,8 @@ const LastUpdatedLabel: React.VoidFunctionComponent<{
 }> = ({ timestamp, className }) => {
   const timestampFormatted = new Date(timestamp).toLocaleString();
 
+  // Omitted attributes aren't required
+  // noinspection RequiredAttributes
   return (
     <OverlayTrigger
       trigger="hover"

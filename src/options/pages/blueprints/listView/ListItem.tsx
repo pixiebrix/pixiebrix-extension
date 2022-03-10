@@ -43,7 +43,10 @@ const ListItem: React.VoidFunctionComponent<{
       </div>
       <div className="flex-shrink-0">
         <div className={styles.sharing}>
-          <SharingLabel sharing={sharing.source} />
+          <SharingLabel
+            sharing={sharing.source}
+            className={styles.sharingLabel}
+          />
           <span>Updated {updatedAtFormatted}</span>
         </div>
       </div>

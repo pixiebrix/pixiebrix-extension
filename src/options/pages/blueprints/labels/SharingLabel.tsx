@@ -34,6 +34,8 @@ const sharingIcons = {
   Deployment: faUsers,
 };
 
+// Omitted OverlayTrigger attributes aren't required
+// noinspection RequiredAttributes
 const SharingLabel: React.VoidFunctionComponent<{
   sharing: SharingSource;
   className?: string;
