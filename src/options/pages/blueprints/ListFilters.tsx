@@ -17,6 +17,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { TableInstance } from "react-table";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
+import useFlags from "@/hooks/useFlags";
 
 type ListFiltersProps = {
   teamFilters: string[];
@@ -24,6 +25,7 @@ type ListFiltersProps = {
 };
 
 function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
+  const { permit } = useFlags();
   const { setGlobalFilter } = tableInstance;
   const [filters, setFilters] = useReduxState(
     selectFilters,
@@ -84,26 +86,32 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
             <FontAwesomeIcon icon={faAsterisk} /> All Blueprints
           </Nav.Link>
         </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="Personal"
-            onClick={() => {
-              setFilters([{ id: "sharing.source.label", value: "Personal" }]);
-            }}
-          >
-            <FontAwesomeIcon icon={faUser} /> Personal
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="Public"
-            onClick={() => {
-              setFilters([{ id: "sharing.source.label", value: "Public" }]);
-            }}
-          >
-            <FontAwesomeIcon icon={faGlobe} /> Public Marketplace
-          </Nav.Link>
-        </Nav.Item>
+        {permit("marketplace") && (
+          <>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="Personal"
+                onClick={() => {
+                  setFilters([
+                    { id: "sharing.source.label", value: "Personal" },
+                  ]);
+                }}
+              >
+                <FontAwesomeIcon icon={faUser} /> Personal
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="Public"
+                onClick={() => {
+                  setFilters([{ id: "sharing.source.label", value: "Public" }]);
+                }}
+              >
+                <FontAwesomeIcon icon={faGlobe} /> Public Marketplace
+              </Nav.Link>
+            </Nav.Item>
+          </>
+        )}
         {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
         {teamFilters.map((filter) => (
           <Nav.Item key={filter}>
