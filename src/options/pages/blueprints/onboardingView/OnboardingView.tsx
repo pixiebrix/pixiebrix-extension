@@ -25,6 +25,7 @@ import marketplaceImage from "@img/marketplace.svg";
 import { OnboardingType } from "@/options/pages/blueprints/onboardingView/useOnboarding";
 import blueprintsSlice from "@/options/pages/blueprints/blueprintsSlice";
 import { useDispatch } from "react-redux";
+import workshopImage from "@img/workshop.svg";
 
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
@@ -93,8 +94,8 @@ const ContactTeamAdminColumn: React.VoidFunctionComponent = () => (
 const UnaffiliatedColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
     <p>
-      Learn how to create your own personal automations in minutes by following
-      our <span className="text-primary">step-by-step guide</span>.
+      Learn how to create your own extensions in minutes by following our{" "}
+      <span className="text-primary">step-by-step guide</span>.
     </p>
     <div className="align-self-center">
       <a
@@ -113,7 +114,7 @@ const CreateBrickColumn: React.VoidFunctionComponent = () => (
   <Col>
     <h4>Create your Own</h4>
     <p>
-      Learn how to create your own automations in minutes by following our
+      Learn how to create your own extensions in minutes by following our
       step-by-step guide.
     </p>
     <a
@@ -166,7 +167,7 @@ const OnboardingView: React.VoidFunctionComponent<{
         return "Welcome to PixieBrix! Ready to get started?";
       default:
         if (filter === "personal") {
-          return "Create your own automations";
+          return "Create your own extensions";
         }
 
         if (filter === "public") {
@@ -177,11 +178,18 @@ const OnboardingView: React.VoidFunctionComponent<{
     }
   }, [filter, onboardingType]);
 
+  const headerImage =
+    filter === "personal" ? (
+      <img src={workshopImage} alt="Workshop" width={300} />
+    ) : (
+      <img src={marketplaceImage} alt="Marketplace" width={300} />
+    );
+
   return (
     <div style={{ height: `${height}px`, width: `${width}px` }}>
       <Card className={styles.root}>
         <Card.Body className={styles.cardBody}>
-          <img src={marketplaceImage} alt="Marketplace" width={300} />
+          {headerImage}
           <h3 className="mb-4 text-center">{onboardingCallout}</h3>
           {!isLoading && <Row>{onBoardingInformation}</Row>}
         </Card.Body>
