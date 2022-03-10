@@ -67,7 +67,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     disableSortBy: true,
   },
   {
-    Header: "Sharing",
+    Header: "Origin",
     // @ts-expect-error -- react-table allows nested accessors
     accessor: "sharing.source.label",
     disableGlobalFilter: true,
