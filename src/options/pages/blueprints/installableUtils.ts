@@ -89,7 +89,7 @@ export const getDescription = (installable: Installable): string => {
     : installable.metadata.description;
 
   if (!description && isExtension(installable)) {
-    description = "Created in the page editor.";
+    description = "Created in the page editor";
   }
 
   return description;

@@ -20,7 +20,7 @@ import styles from "./GridCard.module.scss";
 import React from "react";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import { Card, OverlayTrigger, Popover } from "react-bootstrap";
-import SharingLabel from "@/options/pages/blueprints/SharingLabel";
+import SharingLabel from "@/options/pages/blueprints/sharingLabel/SharingLabel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Status from "@/options/pages/blueprints/Status";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
@@ -58,31 +58,12 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
           </div>
         </Card.Body>
         <Card.Footer className={styles.cardFooter}>
-          <OverlayTrigger
-            trigger="hover"
-            key="updateAt"
-            placement="top"
-            delay={700}
-            overlay={
-              <Popover id="sharingLabelPopover">
-                <Popover.Content>
-                  {sharing.source.type === "Personal" &&
-                    "You created this blueprint."}
-                  {sharing.source.type === "Team" &&
-                    `This blueprint was shared with you by "${sharing.source.label}" team.`}
-                  {sharing.source.type === "Public" &&
-                    "You activated this blueprint from the public marketplace."}
-                </Popover.Content>
-              </Popover>
-            }
-          >
-            <span className={styles.sharing}>
-              <SharingLabel
-                sharing={sharing.source}
-                className={styles.sharingLabel}
-              />
-            </span>
-          </OverlayTrigger>
+          <span className={styles.sharing}>
+            <SharingLabel
+              sharing={sharing.source}
+              className={styles.sharingLabel}
+            />
+          </span>
           <OverlayTrigger
             trigger="hover"
             key="updateAt"

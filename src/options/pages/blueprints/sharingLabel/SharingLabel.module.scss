@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,29 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEyeSlash,
-  faGlobe,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
-import { SharingSource } from "@/options/pages/blueprints/installableUtils";
-
-const sharingIcons = {
-  Personal: faEyeSlash,
-  Team: faUsers,
-  Public: faGlobe,
-  Deployment: faUsers,
-};
-
-const SharingLabel: React.FunctionComponent<{
-  sharing: SharingSource;
-  className?: string;
-}> = ({ sharing, className }) => (
-  <div className={className}>
-    <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
-  </div>
-);
-
-export default SharingLabel;
+.root {
+  cursor: help;
+}
