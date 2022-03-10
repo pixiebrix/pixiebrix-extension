@@ -44,7 +44,12 @@ async function safelyRunBrick(...args: Parameters<typeof runBrick>) {
     return await runBrick(...args);
   } catch (error) {
     if (getErrorMessage(error) === NO_TARGET_FOUND_CONNECTION_ERROR) {
-      throw new BusinessError("The tab doesn't exist or it was closed");
+      // We can only be sure that the tab was closed because `safelyRunBrick` is called on
+      // specific, existing `tabId`s, and not on named targets that may or may not exist.
+
+      // The caught error isn't "The tab was closed" because of:
+      // https://github.com/pixiebrix/pixiebrix-extension/issues/2902#issuecomment-1062658248
+      throw new BusinessError("The tab was closed");
     }
 
     throw error;
