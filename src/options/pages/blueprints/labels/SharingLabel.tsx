@@ -34,7 +34,7 @@ const sharingIcons = {
   Deployment: faUsers,
 };
 
-const SharingLabel: React.FunctionComponent<{
+const SharingLabel: React.VoidFunctionComponent<{
   sharing: SharingSource;
   className?: string;
 }> = ({ sharing, className }) => (

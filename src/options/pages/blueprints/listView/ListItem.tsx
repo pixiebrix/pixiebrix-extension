@@ -18,7 +18,7 @@
 import styles from "./ListItem.module.scss";
 
 import React from "react";
-import SharingLabel from "@/options/pages/blueprints/sharingLabel/SharingLabel";
+import SharingLabel from "@/options/pages/blueprints/labels/SharingLabel";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";

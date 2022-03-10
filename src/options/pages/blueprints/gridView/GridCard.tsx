@@ -19,13 +19,11 @@ import styles from "./GridCard.module.scss";
 
 import React from "react";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
-import { Card, OverlayTrigger, Popover } from "react-bootstrap";
-import SharingLabel from "@/options/pages/blueprints/sharingLabel/SharingLabel";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Card } from "react-bootstrap";
+import SharingLabel from "@/options/pages/blueprints/labels/SharingLabel";
 import Status from "@/options/pages/blueprints/Status";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
-import { faClock } from "@fortawesome/free-regular-svg-icons";
-import { timeSince } from "@/utils/timeUtils";
+import LastUpdatedLabel from "@/options/pages/blueprints/labels/LastUpdatedLabel";
 
 type GridCardProps = {
   installableItem: InstallableViewItem;
@@ -35,7 +33,6 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   installableItem,
 }) => {
   const { name, updatedAt, sharing, icon, description } = installableItem;
-  const updatedAtFormatted = new Date(updatedAt).toLocaleString();
 
   return (
     <div className={styles.root}>
@@ -64,23 +61,10 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
               className={styles.sharingLabel}
             />
           </span>
-          <OverlayTrigger
-            trigger="hover"
-            key="updateAt"
-            placement="top"
-            delay={700}
-            overlay={
-              <Popover id={"updatedAtPopover"}>
-                <Popover.Content>
-                  Last updated {updatedAtFormatted}
-                </Popover.Content>
-              </Popover>
-            }
-          >
-            <span className={styles.updatedAt}>
-              <FontAwesomeIcon icon={faClock} /> {timeSince(updatedAtFormatted)}
-            </span>
-          </OverlayTrigger>
+          <LastUpdatedLabel
+            timestamp={updatedAt}
+            className={styles.updatedAt}
+          />
         </Card.Footer>
       </Card>
     </div>
