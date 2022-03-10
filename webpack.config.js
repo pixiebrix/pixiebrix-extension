@@ -52,6 +52,7 @@ function parseEnv(value) {
 const defaults = {
   DEV_NOTIFY: "true",
   DEV_SLIM: "false",
+  DEV_REDUX_LOGGER: "true",
   CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
 
   // PixieBrix URL to enable connection to for credential exchange
@@ -194,19 +195,6 @@ function mockHeavyDependencies() {
   }
 }
 
-/**
- * Ensure that a dependency is never included in a production build.
- * May cause runtime errors if this isn't *also* handled in the code,
- * for example by checking ENV === 'production'
- */
-function devDependenciesOnly(options, ...dependencyName) {
-  if (isProd(options)) {
-    return Object.fromEntries(dependencyName.map((dep) => [dep, false]));
-  }
-
-  return {};
-}
-
 module.exports = (env, options) =>
   mergeWithShared({
     node: {
@@ -224,6 +212,7 @@ module.exports = (env, options) =>
         dynamicImport: true,
       },
     },
+
     entry: {
       // All of these entries require the `vendors.js` file to be included first
       ...Object.fromEntries(
@@ -265,7 +254,10 @@ module.exports = (env, options) =>
     resolve: {
       alias: {
         ...mockHeavyDependencies(),
-        ...devDependenciesOnly(options, "redux-logger"),
+
+        ...(isProd(options) || process.env.DEV_REDUX_LOGGER === "false"
+          ? { "redux-logger": false }
+          : {}),
 
         // Enables static analysis and removal of dead code
         "webext-detect-page": path.resolve(
