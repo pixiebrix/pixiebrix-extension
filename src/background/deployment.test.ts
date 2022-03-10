@@ -118,7 +118,6 @@ jest.mock("@/background/installer", () => ({
   isUpdateAvailable: jest.fn().mockReturnValue(false),
 }));
 
-import browser from "webextension-polyfill";
 import { isLinked, readAuthData } from "@/auth/token";
 import { containsPermissions } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefresh";

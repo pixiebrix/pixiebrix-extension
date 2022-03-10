@@ -26,7 +26,6 @@ import "@/messaging/external";
 // Normal imports
 import { uuidv4 } from "@/types/helpers";
 import registerMessenger from "@/contentScript/messenger/registration";
-import browser from "webextension-polyfill";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { handleNavigate } from "@/contentScript/lifecycle";

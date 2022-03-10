@@ -17,7 +17,7 @@
 
 import reportError from "@/telemetry/reportError";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
-import browser, { Tabs } from "webextension-polyfill";
+import { Tabs } from "webextension-polyfill";
 import { toggleSidebar } from "@/contentScript/messenger/api";
 import { isScriptableUrl } from "webext-content-scripts";
 

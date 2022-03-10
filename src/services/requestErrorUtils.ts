@@ -28,7 +28,6 @@ import {
   RemoteServiceError,
   SerializableAxiosError,
 } from "@/services/errors";
-import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
