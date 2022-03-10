@@ -33,8 +33,9 @@ const sharingIcons = {
 
 const SharingLabel: React.FunctionComponent<{
   sharing: SharingSource;
-}> = ({ sharing }) => (
-  <div>
+  className?: string;
+}> = ({ sharing, className }) => (
+  <div className={className}>
     <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
   </div>
 );

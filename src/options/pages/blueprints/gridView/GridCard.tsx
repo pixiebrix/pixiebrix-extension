@@ -17,7 +17,7 @@
 
 import styles from "./GridCard.module.scss";
 
-import React, { useState } from "react";
+import React from "react";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import { Card, OverlayTrigger, Popover } from "react-bootstrap";
 import SharingLabel from "@/options/pages/blueprints/SharingLabel";
@@ -26,7 +26,6 @@ import Status from "@/options/pages/blueprints/Status";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { timeSince } from "@/utils/timeUtils";
-import { faRedo, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
 
 type GridCardProps = {
   installableItem: InstallableViewItem;
@@ -35,20 +34,11 @@ type GridCardProps = {
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   installableItem,
 }) => {
-  const [hovering, setHovering] = useState(false);
   const { name, updatedAt, sharing, icon, description } = installableItem;
   const updatedAtFormatted = new Date(updatedAt).toLocaleString();
 
   return (
-    <div
-      className={styles.root}
-      onMouseEnter={() => {
-        setHovering(true);
-      }}
-      onMouseLeave={() => {
-        setHovering(false);
-      }}
-    >
+    <div className={styles.root}>
       <Card className={styles.card}>
         <Card.Body className={styles.cardBody}>
           <div className={styles.primaryInfo}>
@@ -62,10 +52,7 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
           </div>
           <div>
             <div className={styles.actions}>
-              <Status
-                installableViewItem={installableItem}
-                showActionButton={true}
-              />
+              <Status installableViewItem={installableItem} />
               <BlueprintActions installableViewItem={installableItem} />
             </div>
           </div>
@@ -89,8 +76,11 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
               </Popover>
             }
           >
-            <span className={styles.sharingLabel}>
-              <SharingLabel sharing={sharing.source} />
+            <span className={styles.sharing}>
+              <SharingLabel
+                sharing={sharing.source}
+                className={styles.sharingLabel}
+              />
             </span>
           </OverlayTrigger>
           <OverlayTrigger

@@ -50,16 +50,21 @@
   padding: 0 15px 15px 15px;
 }
 
-.sharingLabel {
-  width: auto;
-  white-space: nowrap;
+.sharing {
   cursor: help;
+  min-width: 0;
+}
+
+.sharingLabel {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .updatedAt {
   text-align: right;
   padding-left: 0.5rem;
-  whitespace: nowrap;
+  white-space: nowrap;
   text-overflow: ellipsis;
   cursor: help;
 }
