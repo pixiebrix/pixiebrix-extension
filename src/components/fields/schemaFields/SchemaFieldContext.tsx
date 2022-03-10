@@ -32,14 +32,13 @@ import {
 import BooleanField from "@/components/fields/schemaFields/BooleanField";
 import { isEmpty } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
-import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import { InputModeOption } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import AppServiceField, {
   isAppServiceField,
 } from "@/components/fields/schemaFields/AppServiceField";
+import widgetsRegistry from "./widgets/widgetsRegistry";
 
 export function defaultFieldFactory(
   Widget: React.FC<SchemaFieldProps>
@@ -66,9 +65,9 @@ export function defaultFieldFactory(
   return Field;
 }
 
-const TextField = defaultFieldFactory(TextWidget);
+const TextField = defaultFieldFactory(widgetsRegistry.TextWidget);
 
-const ArrayField = defaultFieldFactory(ArrayWidget);
+const ArrayField = defaultFieldFactory(widgetsRegistry.ArrayWidget);
 
 function makeOneOfField(oneOf: Schema): SchemaFieldComponent {
   const Field = getDefaultField(oneOf);

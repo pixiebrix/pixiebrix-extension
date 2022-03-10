@@ -54,7 +54,7 @@ function isVarValue(value: string): boolean {
   return value.startsWith("@") && !value.includes(" ");
 }
 
-const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
+const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   name,
   schema,
   isRequired,

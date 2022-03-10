@@ -22,6 +22,9 @@ import UrlMatchPatternField, {
   UrlMatchPatternFieldProps,
 } from "./UrlMatchPatternField";
 import { action } from "@storybook/addon-actions";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+
+registerDefaultWidgets();
 
 export default {
   title: "Fields/UrlMatchPatternField",

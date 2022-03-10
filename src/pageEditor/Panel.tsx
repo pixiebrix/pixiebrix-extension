@@ -33,10 +33,12 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 import registerEditors from "@/contrib/editors";
 import Loader from "@/components/Loader";
 import ErrorBanner from "@/pageEditor/ErrorBanner";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 registerEditors();
 registerContribBlocks();
 registerBuiltinBlocks();
+registerDefaultWidgets();
 
 const Panel: React.VoidFunctionComponent = () => {
   const context = useDevConnection();

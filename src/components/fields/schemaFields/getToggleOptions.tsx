@@ -6,10 +6,8 @@ import {
   OmitOption,
   StringOption,
 } from "./widgets/TemplateToggleWidget";
-import TextWidget from "./widgets/TextWidget";
 import { ExpressionType, Schema } from "@/core";
 import WorkshopMessageWidget from "./widgets/WorkshopMessageWidget";
-import ArrayWidget from "./widgets/ArrayWidget";
 import ObjectWidget from "./widgets/ObjectWidget";
 import IntegerWidget from "./widgets/IntegerWidget";
 import NumberWidget from "./widgets/NumberWidget";
@@ -22,6 +20,7 @@ import OptionIcon from "./optionIcon/OptionIcon";
 import BooleanWidget from "./widgets/BooleanWidget";
 import OmitFieldWidget from "./widgets/OmitFieldWidget";
 import { CustomFieldToggleMode } from "./SchemaFieldContext";
+import widgetsRegistry from "./widgets/widgetsRegistry";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -36,7 +35,7 @@ const varOption: StringOption = {
   label: "Variable",
   value: "var",
   symbol: <OptionIcon icon="variable" />,
-  Widget: TextWidget,
+  Widget: widgetsRegistry.TextWidget,
   interpretValue(oldValue: unknown) {
     let newValue = "";
     if (typeof oldValue === "string") {
@@ -108,7 +107,7 @@ export function getToggleOptions({
     label: "Text",
     value: "string",
     symbol: <OptionIcon icon="text" />,
-    Widget: TextWidget,
+    Widget: widgetsRegistry.TextWidget,
     interpretValue(oldValue: unknown) {
       let newValue =
         typeof fieldSchema.default === "string" ? fieldSchema.default : "";
@@ -171,7 +170,9 @@ export function getToggleOptions({
   if (fieldSchema.type === "array" || anyType) {
     // Don't allow editing array fields nested inside objects/arrays
     const Widget =
-      isObjectProperty || isArrayItem ? WorkshopMessageWidget : ArrayWidget;
+      isObjectProperty || isArrayItem
+        ? WorkshopMessageWidget
+        : widgetsRegistry.ArrayWidget;
     pushOptions({
       label: "Array items",
       value: "array",

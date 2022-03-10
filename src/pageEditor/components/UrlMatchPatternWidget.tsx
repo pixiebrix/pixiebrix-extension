@@ -29,6 +29,7 @@ import { LinkButton } from "@/components/LinkButton";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
+import produce from "immer";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;
@@ -72,7 +73,19 @@ const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
     ((props as any).shortcuts as Shortcut[]) ?? DEFAULT_SHORTCUTS;
 
   // XXX: can we use props.onChange here? Maybe not unless we construct an event?
-  const { setValue } = useField(name)[2];
+  const [{ value }, , { setValue }] = useField<string[]>(name);
+
+  const onShortcutClick = (pattern: string) => {
+    const nextMatchPatters = produce(value, (draft) => {
+      if (draft.length === 0) {
+        draft.push(pattern);
+      } else {
+        draft[draft.length - 1] = pattern;
+      }
+    });
+
+    setValue(nextMatchPatters);
+  };
 
   return (
     <>
@@ -83,9 +96,7 @@ const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
             <UrlMatchShortcut
               key={caption}
               caption={caption}
-              onClick={async () => {
-                setValue(await getPattern());
-              }}
+              onClick={async () => onShortcutClick(await getPattern())}
             />
           ))}
         </div>

@@ -82,7 +82,7 @@ const ContextMenuConfiguration: React.FC<{
       />
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.documentUrlPatterns[0]"
+        name="extensionPoint.definition.documentUrlPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
       />
     </FieldSection>
@@ -108,7 +108,7 @@ const ContextMenuConfiguration: React.FC<{
       </ConnectedFieldTemplate>
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns[0]"
+        name="extensionPoint.definition.isAvailable.matchPatterns"
         shortcuts={matchPatternShortcuts}
         description={
           <span>
