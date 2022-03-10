@@ -65,7 +65,7 @@ export const persistWorkshopConfig = {
 };
 
 const conditionalMiddleware: Middleware[] = [];
-if (process.env.NODE_ENV === "development") {
+if (typeof createLogger === "function") {
   // Allow tree shaking of logger in production
   // https://github.com/LogRocket/redux-logger/issues/6
   conditionalMiddleware.push(
