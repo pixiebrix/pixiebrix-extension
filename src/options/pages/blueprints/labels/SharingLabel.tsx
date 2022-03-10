@@ -44,7 +44,7 @@ const SharingLabel: React.VoidFunctionComponent<{
     trigger="hover"
     key="updateAt"
     placement="top"
-    delay={700}
+    delay={600}
     overlay={
       <Popover id="sharingLabelPopover">
         <Popover.Content>

@@ -42,7 +42,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   useEffect(() => {
     setGlobalFilter(debouncedQuery);
     setFilters([]);
-  }, [debouncedQuery]);
+  }, [debouncedQuery, setFilters, setGlobalFilter]);
 
   const activeKey = filters[0]?.value ?? "All";
 
@@ -51,7 +51,7 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
       <Form className="mb-4 mr-3">
         <Form.Control
           id="query"
-          placeholder="Search everything"
+          placeholder="Search all blueprints"
           size="sm"
           value={query}
           onChange={({ target }) => {

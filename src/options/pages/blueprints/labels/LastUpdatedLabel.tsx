@@ -36,9 +36,9 @@ const LastUpdatedLabel: React.VoidFunctionComponent<{
       trigger="hover"
       key="updateAt"
       placement="top"
-      delay={700}
+      delay={600}
       overlay={
-        <Popover id={"updatedAtPopover"}>
+        <Popover id="updatedAtPopover">
           <Popover.Content>Last updated {timestampFormatted}</Popover.Content>
         </Popover>
       }

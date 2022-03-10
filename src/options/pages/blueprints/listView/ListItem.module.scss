@@ -37,15 +37,16 @@
 }
 
 .primaryInfo {
-  text-wrap: normal;
+  min-width: 0;
   flex-grow: 1;
+  padding-right: 1rem;
 }
 
 .name {
-  h5 {
-    text-overflow: ellipsis;
-    margin: 0;
-  }
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .sharing {
