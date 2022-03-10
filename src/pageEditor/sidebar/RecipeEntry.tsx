@@ -17,7 +17,7 @@
 
 import React, { useMemo, useState } from "react";
 import { IExtension, RegistryId } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
+import { OptionsDefinition, RecipeDefinition } from "@/types/definitions";
 import styles from "./Entry.module.scss";
 import { UnsavedChangesIcon } from "@/pageEditor/sidebar/ExtensionIcons";
 import { ListGroup } from "react-bootstrap";
@@ -49,13 +49,20 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
     () => recipes.find((recipe) => recipe.metadata.id === recipeId),
     [recipeId, recipes]
   );
-  const dirty = useSelector<RootState, Record<string, boolean>>(
+  const dirtyElements = useSelector<RootState, Record<string, boolean>>(
     (state) => state.editor.dirty
   );
-  const isDirty = useMemo(
-    () => elements.some((element) => dirty[getIdForElement(element)] ?? false),
-    [dirty, elements]
-  );
+  const dirtyOptions = useSelector<
+    RootState,
+    Record<RegistryId, OptionsDefinition>
+  >((state) => state.editor.dirtyRecipeOptionsById);
+  const isDirty = useMemo(() => {
+    const hasDirtyElements = elements.some(
+      (element) => dirtyElements[getIdForElement(element)] ?? false
+    );
+    const hasDirtyOptions = recipeId in dirtyOptions;
+    return hasDirtyElements || hasDirtyOptions;
+  }, [dirtyElements, dirtyOptions, elements, recipeId]);
 
   const caretIcon = expanded ? faCaretDown : faCaretRight;
 
