@@ -27,6 +27,8 @@ import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { useField } from "formik";
 import { LinkButton } from "@/components/LinkButton";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
+import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;
@@ -88,7 +90,15 @@ const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
           ))}
         </div>
       )}
-      <ArrayWidget {...props} />
+      <FieldRuntimeContext.Provider
+        value={{
+          // TODO use the brick's API version
+          apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+          allowExpressions: false,
+        }}
+      >
+        <ArrayWidget schema={{ items: { type: "string" } }} {...props} />
+      </FieldRuntimeContext.Provider>
     </>
   );
 };

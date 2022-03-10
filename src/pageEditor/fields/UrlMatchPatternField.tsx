@@ -21,6 +21,14 @@ import UrlMatchPatternWidget, {
 } from "@/pageEditor/components/UrlMatchPatternWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
+export type UrlMatchPatternFieldProps = {
+  name: string;
+  disabled?: boolean;
+  label?: React.ReactNode;
+  description?: React.ReactNode;
+  shortcuts?: Shortcut[];
+};
+
 const defaultDescription = (
   <span>
     URL match pattern for which pages to run the extension on. See{" "}
@@ -35,13 +43,7 @@ const defaultDescription = (
   </span>
 );
 
-const UrlMatchPatternField: React.FC<{
-  name: string;
-  disabled?: boolean;
-  label?: React.ReactNode;
-  description?: React.ReactNode;
-  shortcuts?: Shortcut[];
-}> = ({
+const UrlMatchPatternField: React.VFC<UrlMatchPatternFieldProps> = ({
   name,
   disabled,
   label = "Sites",
