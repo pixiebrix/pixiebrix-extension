@@ -18,11 +18,7 @@
 // eslint-disable-next-line import/no-restricted-paths -- Type only
 import type { RunBlock } from "@/contentScript/executor";
 import browser, { Runtime, Tabs } from "webextension-polyfill";
-import {
-  BusinessError,
-  getErrorMessage,
-  NO_TARGET_FOUND_CONNECTION_ERROR,
-} from "@/errors";
+import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
 import { asyncForEach } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
@@ -32,6 +28,7 @@ import { runBrick } from "@/contentScript/messenger/api";
 import { Target } from "@/types";
 import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
+import { canAccessTab } from "webext-tools";
 
 type TabId = number;
 
@@ -39,19 +36,18 @@ const tabToOpener = new Map<TabId, TabId>();
 const tabToTarget = new Map<TabId, TabId>();
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
 
-async function safelyRunBrick(...args: Parameters<typeof runBrick>) {
+async function safelyRunBrick({ tabId }: { tabId: number }, request: RunBlock) {
+  if (!(await canAccessTab(tabId))) {
+    throw new BusinessError("PixieBrix doesn't have access to the tab");
+  }
+
   try {
-    return await runBrick(...args);
+    return await runBrick({ tabId }, request);
   } catch (error) {
-    // The caught error isn't "The tab was closed" because of:
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/2902#issuecomment-1062658248
-    if (getErrorMessage(error) === NO_TARGET_FOUND_CONNECTION_ERROR) {
-      // NO_TARGET_FOUND_CONNECTION_ERROR is thrown when:
-      // - the target has no permissions
-      // - the target was closed after creation
-      throw new BusinessError(
-        "PixieBrix doesn't have access to the tab or it was closed"
-      );
+    // If https://github.com/pixiebrix/webext-messenger/issues/67 is resolved, we don't need the query
+    const tabStillExists = await browser.tabs.get(tabId).catch(() => false);
+    if (!tabStillExists) {
+      throw new BusinessError("The tab was closed");
     }
 
     throw error;
