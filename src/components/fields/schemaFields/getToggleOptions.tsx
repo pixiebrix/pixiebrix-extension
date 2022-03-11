@@ -22,44 +22,6 @@ type ToggleOptionInputs = {
   allowExpressions: boolean;
 };
 
-const varOption: StringOption = {
-  label: "Variable",
-  value: "var",
-  symbol: <OptionIcon icon="variable" />,
-  Widget: widgetsRegistry.TextWidget,
-  interpretValue(oldValue: unknown) {
-    let newValue = "";
-    if (typeof oldValue === "string") {
-      newValue = oldValue;
-    } else if (typeof oldValue === "number" && oldValue > 0) {
-      newValue = String(oldValue);
-    } else if (isTemplateExpression(oldValue)) {
-      newValue = oldValue.__value__;
-    }
-
-    return {
-      // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
-      // Typescript treats the return value as string and doesn't unify it with unknown)
-      __type__: "var" as ExpressionType,
-      __value__: newValue,
-    };
-  },
-};
-
-const removeOption: OmitOption = {
-  label: "Remove",
-  value: "omit",
-  symbol: <OptionIcon icon="exclude" />,
-  Widget: widgetsRegistry.OmitFieldWidget,
-};
-
-const excludeOption: OmitOption = {
-  label: "Exclude",
-  value: "omit",
-  symbol: <OptionIcon icon="exclude" />,
-  Widget: widgetsRegistry.OmitFieldWidget,
-};
-
 export function isSelectField(schema: Schema): boolean {
   const values = schema.examples ?? schema.enum;
   return schema.type === "string" && Array.isArray(values) && !isEmpty(values);
@@ -78,6 +40,44 @@ export function getToggleOptions({
   isArrayItem,
   allowExpressions,
 }: ToggleOptionInputs): InputModeOption[] {
+  const varOption: StringOption = {
+    label: "Variable",
+    value: "var",
+    symbol: <OptionIcon icon="variable" />,
+    Widget: widgetsRegistry.TextWidget,
+    interpretValue(oldValue: unknown) {
+      let newValue = "";
+      if (typeof oldValue === "string") {
+        newValue = oldValue;
+      } else if (typeof oldValue === "number" && oldValue > 0) {
+        newValue = String(oldValue);
+      } else if (isTemplateExpression(oldValue)) {
+        newValue = oldValue.__value__;
+      }
+
+      return {
+        // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
+        // Typescript treats the return value as string and doesn't unify it with unknown)
+        __type__: "var" as ExpressionType,
+        __value__: newValue,
+      };
+    },
+  };
+
+  const removeOption: OmitOption = {
+    label: "Remove",
+    value: "omit",
+    symbol: <OptionIcon icon="exclude" />,
+    Widget: widgetsRegistry.OmitFieldWidget,
+  };
+
+  const excludeOption: OmitOption = {
+    label: "Exclude",
+    value: "omit",
+    symbol: <OptionIcon icon="exclude" />,
+    Widget: widgetsRegistry.OmitFieldWidget,
+  };
+
   let options: InputModeOption[] = [];
 
   function pushOptions(...newOptions: InputModeOption[]) {

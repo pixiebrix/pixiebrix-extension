@@ -15,12 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { Schema } from "@/core";
 import { render } from "@testing-library/react";
 import { Formik } from "formik";
-import React from "react";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
+import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
+
+beforeAll(() => {
+  registerDefaultWidgets();
+});
 
 describe("ChildObjectField", () => {
   const renderField = (name: string, schema: Schema, initialValues: any) =>

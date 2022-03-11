@@ -22,6 +22,11 @@ import { Schema } from "@/core";
 import { Formik } from "formik";
 import { fireTextInput } from "@/tests/formHelpers";
 import { waitForEffect } from "@/tests/testHelpers";
+import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
+
+beforeAll(() => {
+  registerDefaultWidgets();
+});
 
 describe("option mode switching", () => {
   const renderSchemaField = (

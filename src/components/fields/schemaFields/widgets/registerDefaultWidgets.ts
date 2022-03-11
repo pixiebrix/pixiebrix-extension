@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import UrlMatchPatternWidget from "@/pageEditor/components/UrlMatchPatternWidget";
 import ArrayWidget from "./ArrayWidget";
 import BooleanWidget from "./BooleanWidget";
 import IntegerWidget from "./IntegerWidget";
@@ -39,6 +40,7 @@ function registerDefaultWidgets() {
   widgetsRegistry.TemplateToggleWidget = TemplateToggleWidget;
   widgetsRegistry.TextWidget = TextWidget;
   widgetsRegistry.UnsupportedWidget = UnsupportedWidget;
+  widgetsRegistry.UrlMatchPatternWidget = UrlMatchPatternWidget;
   widgetsRegistry.WorkshopMessageWidget = WorkshopMessageWidget;
 }
 

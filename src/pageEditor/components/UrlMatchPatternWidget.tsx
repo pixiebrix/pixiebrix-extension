@@ -23,7 +23,6 @@ import {
   HTTPS_PATTERN,
   SITES_PATTERN,
 } from "@/permissions/patterns";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { useField } from "formik";
 import { LinkButton } from "@/components/LinkButton";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";

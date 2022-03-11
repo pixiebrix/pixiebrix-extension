@@ -20,8 +20,6 @@ import { Shortcut } from "@/pageEditor/components/urlMatchPatternWidgetTypes";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import widgetsRegistry from "@/components/fields/schemaFields/widgets/widgetsRegistry";
 
-const { UrlMatchPatternWidget } = widgetsRegistry;
-
 export type UrlMatchPatternFieldProps = {
   name: string;
   disabled?: boolean;
@@ -53,7 +51,7 @@ const UrlMatchPatternField: React.VFC<UrlMatchPatternFieldProps> = ({
 }) => (
   <ConnectedFieldTemplate
     name={name}
-    as={UrlMatchPatternWidget}
+    as={widgetsRegistry.UrlMatchPatternWidget}
     disabled={disabled}
     label={label}
     description={description}

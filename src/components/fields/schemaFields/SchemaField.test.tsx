@@ -25,6 +25,8 @@ import { waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { uniq } from "lodash";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
+import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
+registerDefaultWidgets();
 
 interface SchemaTestCase {
   name: string;
@@ -174,6 +176,8 @@ function expressionValue<T extends TemplateEngine>(
     __value__: value,
   };
 }
+
+beforeAll(() => {});
 
 describe("SchemaField", () => {
   test.each([["v1"], ["v2"]])(
