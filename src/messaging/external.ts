@@ -22,7 +22,6 @@ import { linkExtension } from "@/auth/token";
 import { TokenAuthData } from "@/auth/authTypes";
 import { liftBackground } from "@/background/protocol";
 import { liftExternal } from "@/contentScript/externalProtocol";
-import browser from "webextension-polyfill";
 import { isFirefox } from "webext-detect-page";
 import { reportEvent } from "@/telemetry/events";
 

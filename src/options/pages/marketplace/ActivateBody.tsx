@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
 import { RecipeDefinition } from "@/types/definitions";
 import React from "react";
 import { Link } from "react-router-dom";

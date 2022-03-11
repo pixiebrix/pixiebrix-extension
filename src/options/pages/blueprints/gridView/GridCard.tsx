@@ -20,11 +20,10 @@ import styles from "./GridCard.module.scss";
 import React from "react";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import { Card } from "react-bootstrap";
-import SharingLabel from "@/options/pages/blueprints/SharingLabel";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import SharingLabel from "@/options/pages/blueprints/labels/SharingLabel";
 import Status from "@/options/pages/blueprints/Status";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
-import { faClock } from "@fortawesome/free-regular-svg-icons";
+import LastUpdatedLabel from "@/options/pages/blueprints/labels/LastUpdatedLabel";
 
 type GridCardProps = {
   installableItem: InstallableViewItem;
@@ -34,18 +33,19 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   installableItem,
 }) => {
   const { name, updatedAt, sharing, icon, description } = installableItem;
-  const updatedAtFormatted = new Date(updatedAt).toLocaleString();
 
   return (
     <div className={styles.root}>
       <Card className={styles.card}>
         <Card.Body className={styles.cardBody}>
           <div className={styles.primaryInfo}>
-            <div className="d-flex">
+            <div className="d-flex justify-content-between">
+              <div>
+                <h5 className={styles.name}>{name}</h5>
+                <span className={styles.description}>{description}</span>
+              </div>
               <span className="mb-2">{icon}</span>
-              <h5 className={styles.name}>{name}</h5>
             </div>
-            <span className={styles.description}>{description}</span>
           </div>
           <div>
             <div className={styles.actions}>
@@ -55,12 +55,16 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
           </div>
         </Card.Body>
         <Card.Footer className={styles.cardFooter}>
-          <span className={styles.sharingLabel}>
-            <SharingLabel sharing={sharing.source} />
+          <span className={styles.sharing}>
+            <SharingLabel
+              sharing={sharing.source}
+              className={styles.sharingLabel}
+            />
           </span>
-          <span className={styles.updatedAt}>
-            <FontAwesomeIcon icon={faClock} /> {updatedAtFormatted}
-          </span>
+          <LastUpdatedLabel
+            timestamp={updatedAt}
+            className={styles.updatedAt}
+          />
         </Card.Footer>
       </Card>
     </div>

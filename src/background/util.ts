@@ -16,7 +16,6 @@
  */
 
 import pDefer from "p-defer";
-import browser from "webextension-polyfill";
 import { executeFunction, injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";

@@ -18,7 +18,6 @@
 import React, { useMemo } from "react";
 import { AxiosError } from "axios";
 import { useAsyncState } from "@/hooks/common";
-import browser from "webextension-polyfill";
 import { Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

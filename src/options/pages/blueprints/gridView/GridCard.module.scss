@@ -36,7 +36,7 @@
 }
 
 .name {
-  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .cardFooter {
@@ -50,16 +50,20 @@
   padding: 0 15px 15px 15px;
 }
 
+.sharing {
+  min-width: 0;
+}
+
 .sharingLabel {
-  width: auto;
+  overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .updatedAt {
-  flex-grow: 1;
   text-align: right;
-  font-size: 80%;
   padding-left: 0.5rem;
+  white-space: nowrap;
 }
 
 .description {

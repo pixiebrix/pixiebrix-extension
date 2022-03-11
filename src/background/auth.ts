@@ -24,7 +24,6 @@ import {
   UUID,
   OAuth2Context,
 } from "@/core";
-import browser from "webextension-polyfill";
 import {
   computeChallenge,
   generateVerifier,

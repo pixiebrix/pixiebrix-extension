@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser, { Manifest, Permissions } from "webextension-polyfill";
+import { Manifest, Permissions } from "webextension-polyfill";
 import { cloneDeep, remove, uniq } from "lodash";
 import {
   containsPermissions,

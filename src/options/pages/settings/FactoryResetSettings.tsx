@@ -16,7 +16,6 @@
  */
 
 import { Button, Card } from "react-bootstrap";
-import browser from "webextension-polyfill";
 import React from "react";
 import { connect } from "react-redux";
 import notify from "@/utils/notify";

@@ -60,6 +60,7 @@ module.exports = mergeWithShared({
       "window.CSSStyleSheet": "{}",
       window: "globalThis.window",
       document: "globalThis.document",
+      browser: "({})",
       self: "globalThis.self",
     }),
     // Don't fail on import of styles.

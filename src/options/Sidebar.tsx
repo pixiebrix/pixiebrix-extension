@@ -50,7 +50,7 @@ const Sidebar: React.FunctionComponent = () => {
             <SidebarLink
               route="/blueprints"
               title="Blueprints"
-              icon={faScroll}
+              icon={faCubes}
               isActive={(match, location) =>
                 match ||
                 location.pathname === "/" ||
@@ -71,7 +71,7 @@ const Sidebar: React.FunctionComponent = () => {
               />
               <SidebarLink
                 route="/blueprints"
-                title={isBlueprintsPageEnabled ? "Blueprints" : "My Blueprints"}
+                title="My Blueprints"
                 icon={faScroll}
               />
             </>

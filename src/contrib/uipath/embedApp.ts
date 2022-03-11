@@ -19,7 +19,7 @@ import { Renderer, UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
 import { BlockArg, BlockOptions, RegistryId, SafeHTML, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import browser, { Permissions } from "webextension-polyfill";
+import { Permissions } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { waitForTargetByUrl } from "@/background/messenger/api";
 import { runBrick } from "@/contentScript/messenger/api";

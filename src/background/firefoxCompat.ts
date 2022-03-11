@@ -16,7 +16,7 @@
  */
 
 import { isFirefox } from "webext-detect-page";
-import browser, { Menus } from "webextension-polyfill";
+import { Menus } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 
 const FIREFOX_OPTIONS_MENU_ID = "PIXIEBRIX_FIREFOX_OPTIONS";

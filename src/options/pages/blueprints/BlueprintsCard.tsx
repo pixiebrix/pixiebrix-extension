@@ -27,21 +27,19 @@ import {
   useSortBy,
   useTable,
 } from "react-table";
-import ListView from "./listView/ListView";
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
-import GridView from "./gridView/GridView";
 import {
   selectFilters,
   selectGroupBy,
   selectSortBy,
-  selectView,
 } from "./blueprintsSelectors";
 import { useSelector } from "react-redux";
 import { uniq } from "lodash";
 import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
 import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/options/pages/blueprints/BlueprintsToolbar";
+import BlueprintsView from "@/options/pages/blueprints/BlueprintsView";
 
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
@@ -69,7 +67,7 @@ const columns: Array<Column<InstallableViewItem>> = [
     disableSortBy: true,
   },
   {
-    Header: "Sharing",
+    Header: "Source",
     // @ts-expect-error -- react-table allows nested accessors
     accessor: "sharing.source.label",
     disableGlobalFilter: true,
@@ -102,7 +100,6 @@ const BlueprintsCard: React.FunctionComponent<{
     [data]
   );
 
-  const view = useSelector(selectView);
   const groupBy = useSelector(selectGroupBy);
   const sortBy = useSelector(selectSortBy);
   const filters = useSelector(selectFilters);
@@ -122,7 +119,7 @@ const BlueprintsCard: React.FunctionComponent<{
             ...state,
             groupBy,
             sortBy,
-            filters: state.globalFilter ? [] : filters,
+            filters,
           }),
           // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
           [state, groupBy, sortBy, filters]
@@ -134,30 +131,20 @@ const BlueprintsCard: React.FunctionComponent<{
     useSortBy
   );
 
-  const { rows, setGlobalFilter } = tableInstance;
-
-  const BlueprintsView = view === "list" ? ListView : GridView;
-
   return (
     <BootstrapRow className={styles.root}>
-      <ListFilters
-        teamFilters={teamFilters}
-        setGlobalFilter={setGlobalFilter}
-      />
+      <ListFilters teamFilters={teamFilters} tableInstance={tableInstance} />
       <Col className={styles.mainContainer}>
         <BlueprintsToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
           <AutoSizer defaultHeight={500}>
             {({ height, width }) => (
-              <div>
-                <BlueprintsView
-                  tableInstance={tableInstance}
-                  rows={rows}
-                  width={width}
-                  height={height}
-                />
-              </div>
+              <BlueprintsView
+                tableInstance={tableInstance}
+                width={width}
+                height={height}
+              />
             )}
           </AutoSizer>
         </div>

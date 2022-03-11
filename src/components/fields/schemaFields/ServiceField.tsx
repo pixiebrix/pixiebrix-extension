@@ -33,7 +33,6 @@ import { AuthOption } from "@/auth/authTypes";
 import { produce } from "immer";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { freshIdentifier } from "@/utils";
-import browser from "webextension-polyfill";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import SelectWidget, {
