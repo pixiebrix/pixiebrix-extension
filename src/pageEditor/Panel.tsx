@@ -35,9 +35,12 @@ import Loader from "@/components/Loader";
 import ErrorBanner from "@/pageEditor/ErrorBanner";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
+// Register the built-in bricks
 registerEditors();
 registerContribBlocks();
 registerBuiltinBlocks();
+
+// Register Widgets
 registerDefaultWidgets();
 
 const Panel: React.VoidFunctionComponent = () => {
