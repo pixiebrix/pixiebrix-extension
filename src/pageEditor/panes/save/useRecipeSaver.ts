@@ -55,7 +55,7 @@ function useRecipeSaver(): [
 
       setIsSaving(true);
 
-      const newRecipe = produce(recipe, (draft) => {
+      const newRecipe = produce<RecipeDefinition>(recipe, (draft) => {
         if (isEmpty(newOptions.schema?.properties)) {
           draft.options = undefined;
         } else {
