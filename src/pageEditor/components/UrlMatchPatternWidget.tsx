@@ -29,6 +29,10 @@ import { LinkButton } from "@/components/LinkButton";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
+import {
+  Shortcut,
+  UrlMatchPatternWidgetProps,
+} from "./urlMatchPatternWidgetTypes";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;
@@ -38,11 +42,6 @@ const UrlMatchShortcut: React.FC<{
     {caption}
   </LinkButton>
 );
-
-export type Shortcut = {
-  caption: string;
-  getPattern: () => Promise<string>;
-};
 
 export const DEFAULT_SHORTCUTS: Shortcut[] = [
   {
@@ -63,15 +62,11 @@ export const DEFAULT_SHORTCUTS: Shortcut[] = [
   { caption: "All URLs", getPattern: async () => SITES_PATTERN },
 ];
 
-const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
-  const { name, disabled } = props;
+const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
+  props
+) => {
+  const { name, disabled, shortcuts = DEFAULT_SHORTCUTS } = props;
 
-  // XXX: the generic type CustomFieldWidget doesn't seem to support exposing custom props for the widget
-  const shortcuts =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ((props as any).shortcuts as Shortcut[]) ?? DEFAULT_SHORTCUTS;
-
-  // XXX: can we use props.onChange here? Maybe not unless we construct an event?
   const [{ value }, , { setValue }] = useField<string[]>(name);
 
   return (

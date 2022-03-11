@@ -28,11 +28,10 @@ import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldCont
 import { useField } from "formik";
 import { isEmpty } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import UnsupportedWidget from "@/components/fields/schemaFields/widgets/UnsupportedWidget";
-import TemplateToggleWidget from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
 import cx from "classnames";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { getToggleOptions } from "./getToggleOptions";
+import widgetsRegistry from "./widgets/widgetsRegistry";
 
 const BasicSchemaField: SchemaFieldComponent = (props) => {
   const {
@@ -125,7 +124,7 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
         description={fieldDescription}
         error={error}
         touched={touched}
-        as={UnsupportedWidget}
+        as={widgetsRegistry.UnsupportedWidget}
       />
     );
   }
@@ -138,7 +137,7 @@ const BasicSchemaField: SchemaFieldComponent = (props) => {
       error={error}
       touched={touched}
       className={cx({ "mb-0": hideLabel })} // Remove bottom margin if we're already hiding the label
-      as={TemplateToggleWidget}
+      as={widgetsRegistry.TemplateToggleWidget}
       inputModeOptions={inputModeOptions}
       setFieldDescription={updateFieldDescription}
       {...props}

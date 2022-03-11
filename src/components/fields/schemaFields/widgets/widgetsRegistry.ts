@@ -23,7 +23,6 @@ import { TemplateToggleWidgetProps } from "./templateToggleWidgetTypes";
 type Widgets = {
   ArrayWidget: React.VFC<SchemaFieldProps>;
   BooleanWidget: React.VFC<SchemaFieldProps>;
-  ExpressionWidget: React.VFC<SchemaFieldProps>;
   IntegerWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   NumberWidget: React.VFC<
     SchemaFieldProps &
@@ -37,14 +36,19 @@ type Widgets = {
   TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps>;
   TextWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   UnsupportedWidget: React.VFC<SchemaFieldProps>;
+  UrlMatchPatternWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>>;
 };
 const UnsetWidget: React.VFC = () => null;
 
+/**
+ * The container that holds references to all the widgets.
+ * This is used to avoid circular dependencies.
+ * When you add a new widget, add it here, register in the `registerDefaultWidgets` function.
+ */
 const widgetsRegistry: Widgets = {
   ArrayWidget: UnsetWidget,
   BooleanWidget: UnsetWidget,
-  ExpressionWidget: UnsetWidget,
   IntegerWidget: UnsetWidget,
   NumberWidget: UnsetWidget,
   ObjectWidget: UnsetWidget,
@@ -53,6 +57,7 @@ const widgetsRegistry: Widgets = {
   TemplateToggleWidget: UnsetWidget,
   TextWidget: UnsetWidget,
   UnsupportedWidget: UnsetWidget,
+  UrlMatchPatternWidget: UnsetWidget,
   WorkshopMessageWidget: UnsetWidget,
 };
 

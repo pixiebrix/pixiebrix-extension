@@ -15,21 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { useField } from "formik";
-import { Form } from "react-bootstrap";
+import { FormControlProps } from "react-bootstrap";
 
-const ExpressionWidget: React.VFC<SchemaFieldProps> = (props) => {
-  const [field, meta] = useField(props);
-  return (
-    <Form.Control
-      type="text"
-      {...props}
-      value={field.value ?? ""}
-      isInvalid={meta.error != null}
-    />
-  );
+export type Shortcut = {
+  caption: string;
+  getPattern: () => Promise<string>;
 };
 
-export default ExpressionWidget;
+export type UrlMatchPatternWidgetProps = SchemaFieldProps &
+  FormControlProps & {
+    shortcuts: Shortcut[];
+  };
