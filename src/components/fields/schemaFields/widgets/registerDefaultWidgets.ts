@@ -16,12 +16,35 @@
  */
 
 import ArrayWidget from "./ArrayWidget";
+import BooleanWidget from "./BooleanWidget";
+import ExpressionWidget from "./ExpressionWidget";
+import IntegerWidget from "./IntegerWidget";
+import NumberWidget from "./NumberWidget";
+import ObjectWidget from "./ObjectWidget";
+import OmitFieldWidget from "./OmitFieldWidget";
+import SchemaSelectWidget from "./SchemaSelectWidget";
+import TemplateToggleWidget from "./TemplateToggleWidget";
 import TextWidget from "./TextWidget";
+import UnsupportedWidget from "./UnsupportedWidget";
 import widgetsRegistry from "./widgetsRegistry";
+import WorkshopMessageWidget from "./WorkshopMessageWidget";
 
 function registerDefaultWidgets() {
   widgetsRegistry.ArrayWidget = ArrayWidget;
+  widgetsRegistry.BooleanWidget = BooleanWidget;
+  // not used
+  widgetsRegistry.ExpressionWidget = ExpressionWidget;
+  widgetsRegistry.IntegerWidget = IntegerWidget;
+  widgetsRegistry.NumberWidget = NumberWidget;
+  widgetsRegistry.ObjectWidget = ObjectWidget;
+  widgetsRegistry.OmitFieldWidget = OmitFieldWidget;
+  widgetsRegistry.SchemaSelectWidget = SchemaSelectWidget;
+  // not used
+  widgetsRegistry.TemplateToggleWidget = TemplateToggleWidget;
   widgetsRegistry.TextWidget = TextWidget;
+  // not used
+  widgetsRegistry.UnsupportedWidget = UnsupportedWidget;
+  widgetsRegistry.WorkshopMessageWidget = WorkshopMessageWidget;
 }
 
 export default registerDefaultWidgets;

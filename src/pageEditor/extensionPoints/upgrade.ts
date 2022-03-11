@@ -26,7 +26,7 @@ import {
   TemplateEngine,
 } from "@/core";
 import { cloneDeep } from "lodash";
-import { isSelectField } from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
+import { isSelectField } from "@/components/fields/schemaFields/getToggleOptions";
 
 const VARIABLE_REGEX = /^@\S+$/;
 

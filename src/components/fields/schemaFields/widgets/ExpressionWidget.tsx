@@ -20,7 +20,7 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import { Form } from "react-bootstrap";
 
-const ExpressionWidget: React.FunctionComponent<SchemaFieldProps> = (props) => {
+const ExpressionWidget: React.VFC<SchemaFieldProps> = (props) => {
   const [field, meta] = useField(props);
   return (
     <Form.Control

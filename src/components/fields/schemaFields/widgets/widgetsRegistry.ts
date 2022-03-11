@@ -18,17 +18,42 @@
 import { FormControlProps } from "react-bootstrap";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import React from "react";
+import { TemplateToggleWidgetProps } from "./templateToggleWidgetTypes";
 
 type Widgets = {
   ArrayWidget: React.VFC<SchemaFieldProps>;
+  BooleanWidget: React.VFC<SchemaFieldProps>;
+  ExpressionWidget: React.VFC<SchemaFieldProps>;
+  IntegerWidget: React.VFC<SchemaFieldProps & FormControlProps>;
+  NumberWidget: React.VFC<
+    SchemaFieldProps &
+      FormControlProps & {
+        step?: number;
+      }
+  >;
+  ObjectWidget: React.VFC<SchemaFieldProps>;
+  OmitFieldWidget: React.VFC<SchemaFieldProps & FormControlProps>;
+  SchemaSelectWidget: React.VFC<SchemaFieldProps>;
+  TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps>;
   TextWidget: React.VFC<SchemaFieldProps & FormControlProps>;
+  UnsupportedWidget: React.VFC<SchemaFieldProps>;
+  WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>>;
 };
-
 const UnsetWidget: React.VFC = () => null;
 
 const widgetsRegistry: Widgets = {
   ArrayWidget: UnsetWidget,
+  BooleanWidget: UnsetWidget,
+  ExpressionWidget: UnsetWidget,
+  IntegerWidget: UnsetWidget,
+  NumberWidget: UnsetWidget,
+  ObjectWidget: UnsetWidget,
+  OmitFieldWidget: UnsetWidget,
+  SchemaSelectWidget: UnsetWidget,
+  TemplateToggleWidget: UnsetWidget,
   TextWidget: UnsetWidget,
+  UnsupportedWidget: UnsetWidget,
+  WorkshopMessageWidget: UnsetWidget,
 };
 
 export default widgetsRegistry;

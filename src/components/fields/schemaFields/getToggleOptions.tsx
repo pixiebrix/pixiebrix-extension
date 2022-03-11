@@ -1,24 +1,15 @@
 import React from "react";
 import { isEmpty, sortBy } from "lodash";
+import { getOptionForInputMode } from "./widgets/TemplateToggleWidget";
 import {
-  getOptionForInputMode,
   InputModeOption,
   OmitOption,
   StringOption,
-} from "./widgets/TemplateToggleWidget";
+} from "./widgets/templateToggleWidgetTypes";
 import { ExpressionType, Schema } from "@/core";
-import WorkshopMessageWidget from "./widgets/WorkshopMessageWidget";
-import ObjectWidget from "./widgets/ObjectWidget";
-import IntegerWidget from "./widgets/IntegerWidget";
-import NumberWidget from "./widgets/NumberWidget";
-import SchemaSelectWidget, {
-  isSelectField,
-} from "./widgets/SchemaSelectWidget";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import OptionIcon from "./optionIcon/OptionIcon";
-import BooleanWidget from "./widgets/BooleanWidget";
-import OmitFieldWidget from "./widgets/OmitFieldWidget";
 import { CustomFieldToggleMode } from "./SchemaFieldContext";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 
@@ -59,20 +50,26 @@ const removeOption: OmitOption = {
   label: "Remove",
   value: "omit",
   symbol: <OptionIcon icon="exclude" />,
-  Widget: OmitFieldWidget,
+  Widget: widgetsRegistry.OmitFieldWidget,
 };
 
 const excludeOption: OmitOption = {
   label: "Exclude",
   value: "omit",
   symbol: <OptionIcon icon="exclude" />,
-  Widget: OmitFieldWidget,
+  Widget: widgetsRegistry.OmitFieldWidget,
 };
+
+export function isSelectField(schema: Schema): boolean {
+  const values = schema.examples ?? schema.enum;
+  return schema.type === "string" && Array.isArray(values) && !isEmpty(values);
+}
 
 export function isKeyStringField(schema: Schema): boolean {
   return schema.$ref === "https://app.pixiebrix.com/schemas/key#";
 }
 
+// eslint-disable-next-line complexity
 export function getToggleOptions({
   fieldSchema,
   isRequired,
@@ -171,7 +168,7 @@ export function getToggleOptions({
     // Don't allow editing array fields nested inside objects/arrays
     const Widget =
       isObjectProperty || isArrayItem
-        ? WorkshopMessageWidget
+        ? widgetsRegistry.WorkshopMessageWidget
         : widgetsRegistry.ArrayWidget;
     pushOptions({
       label: "Array items",
@@ -195,7 +192,9 @@ export function getToggleOptions({
     isEmpty(fieldSchema)
   ) {
     // Don't allow editing objects inside other objects
-    const Widget = isObjectProperty ? WorkshopMessageWidget : ObjectWidget;
+    const Widget = isObjectProperty
+      ? widgetsRegistry.WorkshopMessageWidget
+      : widgetsRegistry.ObjectWidget;
     pushOptions({
       label: "Object properties",
       value: "object",
@@ -216,7 +215,7 @@ export function getToggleOptions({
       label: "Toggle",
       value: "boolean",
       symbol: <OptionIcon icon="toggle" />,
-      Widget: BooleanWidget,
+      Widget: widgetsRegistry.BooleanWidget,
       interpretValue: () =>
         typeof fieldSchema.default === "boolean" ? fieldSchema.default : false,
     });
@@ -230,7 +229,7 @@ export function getToggleOptions({
       label: "Select...",
       value: "select",
       symbol: <OptionIcon icon="select" />,
-      Widget: SchemaSelectWidget,
+      Widget: widgetsRegistry.SchemaSelectWidget,
       interpretValue: () =>
         typeof fieldSchema.default === "string"
           ? String(fieldSchema.default)
@@ -251,7 +250,7 @@ export function getToggleOptions({
       label: "Whole number",
       value: "number",
       symbol: <OptionIcon icon="number" />,
-      Widget: IntegerWidget,
+      Widget: widgetsRegistry.IntegerWidget,
       interpretValue(oldValue: unknown) {
         let int = Number.NaN;
         if (typeof oldValue === "string") {
@@ -281,7 +280,7 @@ export function getToggleOptions({
       label: "Number",
       value: "number",
       symbol: <OptionIcon icon="number" />,
-      Widget: NumberWidget,
+      Widget: widgetsRegistry.NumberWidget,
       interpretValue(oldValue: unknown) {
         let float = Number.NaN;
         if (typeof oldValue === "string") {

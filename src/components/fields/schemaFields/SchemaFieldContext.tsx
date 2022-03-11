@@ -32,7 +32,7 @@ import {
 import BooleanField from "@/components/fields/schemaFields/BooleanField";
 import { isEmpty } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { InputModeOption } from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
+import { InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import AppServiceField, {
