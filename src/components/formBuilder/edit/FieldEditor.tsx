@@ -253,16 +253,29 @@ const FieldEditor: React.FC<{
         )}
 
       {propertySchema.enum && (
-        <SchemaField
-          label="Options"
-          name={getFullFieldName("enum")}
-          schema={{
-            type: "array",
-            items: {
-              type: "string",
-            },
-          }}
-        />
+        <>
+          <SchemaField
+            label="Options"
+            name={getFullFieldName("enum")}
+            schema={{
+              type: "array",
+              items: {
+                type: "string",
+              },
+            }}
+          />
+
+          <SchemaField
+            label="Option labels"
+            name={getFullFieldName("enumNames")}
+            schema={{
+              type: "array",
+              items: {
+                type: "string",
+              },
+            }}
+          />
+        </>
       )}
 
       <FieldTemplate

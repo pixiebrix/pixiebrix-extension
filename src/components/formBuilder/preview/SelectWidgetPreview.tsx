@@ -15,26 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { utils, WidgetProps } from "@rjsf/core";
+import { WidgetProps } from "@rjsf/core";
+import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
 import React from "react";
-import { FormGroup, FormLabel } from "react-bootstrap";
 
-const RjsfArrayField = utils.getDefaultRegistry().widgets.SelectWidget;
+const RjsfSelectWidget = RjsfTheme.widgets.SelectWidget;
 
 const SelectWidgetPreview: React.VFC<WidgetProps> = (props) => {
-  console.log("FormPreviewArrayField props:", props);
-  if (typeof props.schema.enum === "string") {
+  // If Select Options is a variable, then `props.schema.enum` holds the name of the variable (i.e. string).
+  const { enum: values } = props.schema;
+  if (typeof values === "string") {
+    // @ts-expect-error -- enumNames is a valid property of the RJSF schema.
+    const { enumNames: labels } = props.schema;
+    const enumOptions = [
+      {
+        value: values,
+        label: typeof labels === "string" ? labels : values,
+      },
+    ];
+
+    const schema = {
+      ...props.schema,
+      enum: [values],
+      enumNames: typeof labels === "string" ? labels : undefined,
+    };
+
     return (
-      <FormGroup>
-        <FormLabel>{props.schema.title}</FormLabel>
-        <div className="text-muted form-text">
-          Dropdown options defined by a variable are not displayed in preview.
-        </div>
-      </FormGroup>
+      <RjsfSelectWidget
+        {...props}
+        disabled
+        options={{ enumOptions }}
+        schema={schema}
+        value={values}
+      />
     );
   }
 
-  return <RjsfArrayField {...props} />;
+  return <RjsfSelectWidget {...props} />;
 };
 
 export default SelectWidgetPreview;
