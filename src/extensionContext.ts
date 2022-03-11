@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
+// It must be the very first thing or telemetry will fail
+// eslint-disable-next-line import/no-unassigned-import -- Import for side effects
+import "@/extensionPolyfill";
 
 // Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/reportUncaughtErrors";
 
 // https://webpack.js.org/guides/public-path/#on-the-fly
-__webpack_public_path__ = browser.runtime.getURL("/");
+__webpack_public_path__ = chrome.runtime.getURL("/");

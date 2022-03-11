@@ -1,20 +1,32 @@
 import styles from "./ListFilters.module.scss";
 
 import { Col, Form, Nav } from "react-bootstrap";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import { selectFilters } from "./blueprintsSelectors";
 import blueprintsSlice from "./blueprintsSlice";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAsterisk,
+  faCheck,
+  faExternalLinkAlt,
+  faGlobe,
+  faUser,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
+import { TableInstance } from "react-table";
+import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
+import useFlags from "@/hooks/useFlags";
 
 type ListFiltersProps = {
   teamFilters: string[];
-  setGlobalFilter: (filterValue: string) => void;
+  tableInstance: TableInstance<InstallableViewItem>;
 };
 
-function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
+function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
+  const { permit } = useFlags();
+  const { setGlobalFilter } = tableInstance;
   const [filters, setFilters] = useReduxState(
     selectFilters,
     blueprintsSlice.actions.setFilters
@@ -25,30 +37,21 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
     leading: false,
   });
 
-  // By default, react-table combines filters and globalFilters
-  // If searching via keyword, temporarily
-  // disable category filters
+  // By default, search everything with the option to re-select
+  // filtered category
   useEffect(() => {
     setGlobalFilter(debouncedQuery);
-  }, [debouncedQuery]);
+    setFilters([]);
+  }, [debouncedQuery, setFilters, setGlobalFilter]);
 
-  // Prevent nav-link highlighting when search query
-  // is present by setting an event key that doesn't exist
-  const activeKey = useMemo(() => {
-    if (query) {
-      // Key doesn't exist
-      return "Search results";
-    }
-
-    return filters[0]?.value ?? "All";
-  }, [filters, query]);
+  const activeKey = filters[0]?.value ?? "All";
 
   return (
     <Col sm={3} xl={2} className={styles.root}>
       <Form className="mb-4 mr-3">
         <Form.Control
           id="query"
-          placeholder="Search"
+          placeholder="Search all blueprints"
           size="sm"
           value={query}
           onChange={({ target }) => {
@@ -66,59 +69,59 @@ function ListFilters({ teamFilters, setGlobalFilter }: ListFiltersProps) {
         <Nav.Item>
           <Nav.Link
             eventKey="Active"
-            disabled={Boolean(query)}
             onClick={() => {
               setFilters([{ id: "status", value: "Active" }]);
             }}
           >
-            Active Blueprints
+            <FontAwesomeIcon icon={faCheck} /> Active
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link
             eventKey="All"
-            disabled={Boolean(query)}
             onClick={() => {
               setFilters([]);
             }}
           >
-            All Blueprints
+            <FontAwesomeIcon icon={faAsterisk} /> All Blueprints
           </Nav.Link>
         </Nav.Item>
-        <h5 className="mt-3">My Collections</h5>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="Personal"
-            disabled={Boolean(query)}
-            onClick={() => {
-              setFilters([{ id: "sharing.source.label", value: "Personal" }]);
-            }}
-          >
-            Personal Blueprints
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="Public"
-            disabled={Boolean(query)}
-            onClick={() => {
-              setFilters([{ id: "sharing.source.label", value: "Public" }]);
-            }}
-          >
-            Public Marketplace Blueprints
-          </Nav.Link>
-        </Nav.Item>
+        {permit("marketplace") && (
+          <>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="Personal"
+                onClick={() => {
+                  setFilters([
+                    { id: "sharing.source.label", value: "Personal" },
+                  ]);
+                }}
+              >
+                <FontAwesomeIcon icon={faUser} /> Personal
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="Public"
+                onClick={() => {
+                  setFilters([{ id: "sharing.source.label", value: "Public" }]);
+                }}
+              >
+                <FontAwesomeIcon icon={faGlobe} /> Public Marketplace
+              </Nav.Link>
+            </Nav.Item>
+          </>
+        )}
         {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
         {teamFilters.map((filter) => (
           <Nav.Item key={filter}>
             <Nav.Link
               eventKey={filter}
-              disabled={Boolean(query)}
               onClick={() => {
                 setFilters([{ id: "sharing.source.label", value: filter }]);
               }}
             >
-              {filter} Blueprints
+              <FontAwesomeIcon icon={faUsers} /> {filter}
             </Nav.Link>
           </Nav.Item>
         ))}

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import browser from "webextension-polyfill";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import {
   deploymentFactory,
@@ -26,6 +27,9 @@ import { PersistedExtension } from "@/core";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deployment";
+
+// @ts-expect-error No way to extend `globalThis` effectively
+globalThis.browser = browser;
 
 const axiosMock = new MockAdapter(axios);
 
@@ -114,7 +118,6 @@ jest.mock("@/background/installer", () => ({
   isUpdateAvailable: jest.fn().mockReturnValue(false),
 }));
 
-import browser from "webextension-polyfill";
 import { isLinked, readAuthData } from "@/auth/token";
 import { containsPermissions } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefresh";

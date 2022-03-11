@@ -19,8 +19,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@/vendors/overrides.scss";
 import "@/utils/layout.scss";
 
+import "@/extensionContext";
 import "@/development/darkMode";
-import "@/telemetry/reportUncaughtErrors";
+
 import registerMessenger from "@/pageEditor/messenger/registration";
 
 import ReactDOM from "react-dom";
