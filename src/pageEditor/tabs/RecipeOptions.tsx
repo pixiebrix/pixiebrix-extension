@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
@@ -56,15 +56,15 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
   const initialValues = { optionsDefinition: recipe.options };
 
   const dispatch = useDispatch();
-  let prev = initialValues.optionsDefinition;
+  const prevOptions = useRef(initialValues.optionsDefinition);
   const updateRedux = useDebouncedCallback(
-    async (options: OptionsDefinition) => {
-      if (!isEqual(prev, options)) {
+    (options: OptionsDefinition) => {
+      if (!isEqual(prevOptions.current, options)) {
         dispatch(actions.editRecipeOptions(options));
-        prev = options;
+        prevOptions.current = options;
       }
     },
-    500,
+    300,
     { trailing: true, leading: false }
   );
 
@@ -87,13 +87,14 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
       <ErrorBoundary>
         <Formik
           initialValues={initialValues}
-          onSubmit={(values) => {
-            // eslint-disable-next-line no-alert
-            window.alert(`Submitted! with values: ${JSON.stringify(values)}`);
+          onSubmit={() => {
+            console.error(
+              "Formik's submit should not be called to save recipe options. Use 'saveRecipe' from 'useRecipeSaver' instead."
+            );
           }}
         >
           {({ values }) => {
-            void updateRedux(values.optionsDefinition);
+            updateRedux(values.optionsDefinition);
             return (
               <>
                 <div className={styles.configPanel}>

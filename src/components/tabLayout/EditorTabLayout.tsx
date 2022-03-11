@@ -23,7 +23,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export interface TabItem {
-  itemName: string;
+  tabName: string;
   badgeCount?: number;
   badgeVariant?: Variant;
   TabContent: React.VoidFunctionComponent;
@@ -39,27 +39,36 @@ export interface ActionButton {
 }
 
 const EditorTabLayout: React.FC<{
-  items: TabItem[];
+  tabs: TabItem[];
   actionButtons: ActionButton[];
-  defaultItemName?: string;
-}> = ({ items, actionButtons, defaultItemName }) => {
-  const [activeItem, setActiveItem] = useState(
-    defaultItemName ?? items[0].itemName
+  defaultTabName?: string;
+  onChangeTab?: (tab: TabItem) => void;
+}> = ({ tabs, actionButtons, defaultTabName, onChangeTab }) => {
+  const [activeTabName, setActiveTabName] = useState(
+    defaultTabName ?? tabs[0].tabName
   );
 
   return (
     <div className={styles.root}>
-      <Tab.Container activeKey={activeItem}>
+      <Tab.Container
+        activeKey={activeTabName}
+        onSelect={(eventKey: string) => {
+          const tab = tabs.find((tab) => tab.tabName === eventKey);
+          if (onChangeTab) {
+            onChangeTab(tab);
+          }
+        }}
+      >
         <Nav
           variant="pills"
-          activeKey={activeItem}
-          onSelect={setActiveItem}
+          activeKey={activeTabName}
+          onSelect={setActiveTabName}
           className={styles.nav}
         >
-          {items.map(({ itemName, badgeCount, badgeVariant }) => (
-            <Nav.Item key={`nav-tab-${itemName}`} className={styles.navItem}>
-              <Nav.Link eventKey={itemName} className={styles.navLink}>
-                {itemName}
+          {tabs.map(({ tabName, badgeCount, badgeVariant }) => (
+            <Nav.Item key={`nav-tab-${tabName}`} className={styles.navItem}>
+              <Nav.Link eventKey={tabName} className={styles.navLink}>
+                {tabName}
                 {badgeCount && badgeVariant && (
                   <Badge className={styles.badge} variant={badgeVariant}>
                     {badgeCount}
@@ -99,14 +108,14 @@ const EditorTabLayout: React.FC<{
         </Nav>
 
         <Tab.Content className={styles.content}>
-          {items.map(({ itemName, TabContent, mountWhenActive }) => (
+          {tabs.map(({ tabName, TabContent, mountWhenActive }) => (
             <Tab.Pane
-              key={itemName}
-              eventKey={itemName}
+              key={tabName}
+              eventKey={tabName}
               mountOnEnter={mountWhenActive}
               unmountOnExit={mountWhenActive}
             >
-              <TabContent key={itemName} />
+              <TabContent key={tabName} />
             </Tab.Pane>
           ))}
         </Tab.Content>

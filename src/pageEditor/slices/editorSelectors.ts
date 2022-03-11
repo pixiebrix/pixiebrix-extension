@@ -33,12 +33,6 @@ export const selectActiveElement = (state: RootState) => {
 export const selectActiveRecipeId = ({ editor }: RootState) =>
   editor.activeRecipeId;
 
-export const selectActiveRecipe = (state: RootState) => {
-  const activeRecipeId = selectActiveRecipeId(state);
-  // eslint-disable-next-line security/detect-object-injection -- lookup key taken from state
-  return state.editor.installedRecipesById[activeRecipeId];
-};
-
 export const selectShowV3UpgradeMessageForActiveElement = (
   state: RootState
 ) => {
@@ -46,3 +40,6 @@ export const selectShowV3UpgradeMessageForActiveElement = (
   // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
   return state.editor.showV3UpgradeMessageByElement[activeElementId] ?? false;
 };
+
+export const selectDirtyRecipeOptions = (state: RootState) =>
+  state.editor.dirtyRecipeOptionsById;

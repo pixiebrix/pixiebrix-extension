@@ -16,9 +16,9 @@
  */
 
 import styles from "./RecipePane.module.scss";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveRecipe } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import Centered from "@/pageEditor/components/Centered";
@@ -34,7 +34,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AskQuestionModal from "@/pageEditor/askQuestion/AskQuestionModal";
 import useRecipeSaver from "@/pageEditor/panes/save/useRecipeSaver";
-import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import Logs from "@/pageEditor/tabs/Logs";
 import EditRecipe from "@/pageEditor/tabs/editRecipeTab/EditRecipe";
@@ -42,18 +41,45 @@ import { MessageContext } from "@/core";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
+import { useGetRecipesQuery } from "@/services/api";
+import { useModals } from "@/components/ConfirmationModal";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
-const EDIT_ITEM_NAME = "Edit";
+const EDIT_TAB_NAME = "Edit";
 
 const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
-  const recipe = useSelector(selectActiveRecipe);
+  const { data: recipes } = useGetRecipesQuery();
+  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const recipe = recipes.find(
+    (recipe) => recipe.metadata.id === activeRecipeId
+  );
 
   const [showQuestionModal, setShowQuestionModal] = useState(false);
-  const [saveRecipe, isSavingRecipe] = useRecipeSaver();
-  const resetRecipe = useResetRecipe(recipe);
-  const removeRecipe = useRemoveRecipe(recipe);
+  const [layoutKey, setLayoutKey] = useState(1);
+  const resetLayout = useCallback(() => {
+    setLayoutKey(layoutKey * -1);
+  }, [layoutKey]);
+  const [defaultTabName, setDefaultTabName] = useState(EDIT_TAB_NAME);
 
+  const [saveRecipe, isSavingRecipe] = useRecipeSaver();
+  const { showConfirmation } = useModals();
   const dispatch = useDispatch();
+  const resetRecipe = useCallback(async () => {
+    const confirmed = await showConfirmation({
+      title: "Reset Blueprint?",
+      message:
+        "Unsaved changes to extensions within this blueprint, or to blueprint options, will be lost",
+      submitCaption: "Reset",
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    dispatch(actions.resetRecipeOptions(recipe.metadata.id));
+    resetLayout();
+  }, [dispatch, recipe.metadata.id, resetLayout, showConfirmation]);
+  const removeRecipe = useRemoveRecipe();
+
   useEffect(() => {
     const messageContext: MessageContext = {
       blueprintId: recipe.metadata.id,
@@ -65,15 +91,15 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
 
   const tabItems: TabItem[] = [
     {
-      itemName: EDIT_ITEM_NAME,
+      tabName: EDIT_TAB_NAME,
       TabContent: EditRecipe,
     },
     {
-      itemName: "Blueprint Options",
+      tabName: "Blueprint Options",
       TabContent: RecipeOptions,
     },
     {
-      itemName: "Logs",
+      tabName: "Logs",
       badgeCount: unreadLogsCount,
       badgeVariant: logsBadgeVariant,
       TabContent: Logs,
@@ -97,7 +123,9 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
       {
         // Save
         variant: "primary",
-        onClick: saveRecipe,
+        onClick() {
+          void saveRecipe(recipe);
+        },
         caption: "Save",
         disabled: isSavingRecipe,
         icon: faSave,
@@ -113,14 +141,16 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
       {
         // Remove
         variant: "danger",
-        onClick: removeRecipe,
+        onClick() {
+          removeRecipe(recipe);
+        },
         caption: "Remove",
         icon: faTrash,
       }
     );
 
     return results;
-  }, [isSavingRecipe, removeRecipe, resetRecipe, saveRecipe]);
+  }, [isSavingRecipe, recipe, removeRecipe, resetRecipe, saveRecipe]);
 
   if (!recipe) {
     return (
@@ -133,9 +163,13 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   return (
     <div className={styles.root}>
       <EditorTabLayout
-        items={tabItems}
+        key={layoutKey}
+        tabs={tabItems}
         actionButtons={buttons}
-        defaultItemName={EDIT_ITEM_NAME}
+        defaultTabName={defaultTabName}
+        onChangeTab={({ tabName }) => {
+          setDefaultTabName(tabName);
+        }}
       />
       <AskQuestionModal
         showModal={showQuestionModal}

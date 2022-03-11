@@ -37,7 +37,6 @@ import { WritableDraft } from "immer/dist/types/types-external";
 import { BlockConfig } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import { OptionsDefinition, RecipeDefinition } from "@/types/definitions";
-import { isEqual } from "lodash";
 
 export type FormState =
   | ActionFormState
@@ -77,11 +76,6 @@ export interface EditorState {
    * Unsaved elements
    */
   readonly elements: FormState[];
-
-  /**
-   * Recipes (blueprints)
-   */
-  readonly installedRecipesById: Record<RegistryId, RecipeDefinition>;
 
   /**
    * Brick ids (not UUIDs) that are known to be editable by the current user
@@ -127,7 +121,6 @@ export const initialState: EditorState = {
   error: null,
   beta: false,
   elements: [],
-  installedRecipesById: {},
   knownEditable: [],
   dirty: {},
   inserting: null,
@@ -346,7 +339,6 @@ export const editorSlice = createSlice({
     },
     selectRecipe(state, action: PayloadAction<RecipeDefinition>) {
       const recipe = action.payload;
-      state.installedRecipesById[recipe.metadata.id] = recipe;
       state.error = null;
       state.beta = null;
       state.activeElement = null;
@@ -411,13 +403,11 @@ export const editorSlice = createSlice({
       }
 
       const { payload: options } = action;
-      const installed = state.installedRecipesById[recipeId].options;
-
-      if (isEqual(options, installed)) {
-        delete state.dirtyRecipeOptionsById[recipeId];
-      } else {
-        state.dirtyRecipeOptionsById[recipeId] = options;
-      }
+      state.dirtyRecipeOptionsById[recipeId] = options;
+    },
+    resetRecipeOptions(state, action: PayloadAction<RegistryId>) {
+      const { payload: recipeId } = action;
+      delete state.dirtyRecipeOptionsById[recipeId];
     },
   },
 });
