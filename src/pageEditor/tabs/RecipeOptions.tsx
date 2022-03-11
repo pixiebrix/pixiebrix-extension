@@ -38,6 +38,7 @@ import { Formik } from "formik";
 import { OptionsDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
+import { getErrorMessage } from "@/errors";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter(
   (type) => !["File", "Image crop"].includes(type.label)
@@ -51,7 +52,7 @@ const formRuntimeContext: RuntimeContext = {
 const RecipeOptions: React.VoidFunctionComponent = () => {
   const [activeField, setActiveField] = useState<string>();
   const recipeId = useSelector(selectActiveRecipeId);
-  const { data: recipes } = useGetRecipesQuery();
+  const { data: recipes, isLoading, error } = useGetRecipesQuery();
   const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
   const initialValues = { optionsDefinition: recipe?.options ?? {} };
 
@@ -67,12 +68,16 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
     [dispatch]
   );
 
-  if (recipe.options == null) {
+  if (isLoading || error) {
     return (
       <Container>
         <Row>
           <Col>
-            <Loader />
+            {isLoading ? (
+              <Loader />
+            ) : (
+              <div className="text-danger">{getErrorMessage(error)}</div>
+            )}
           </Col>
         </Row>
       </Container>
