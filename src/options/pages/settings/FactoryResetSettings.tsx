@@ -16,11 +16,9 @@
  */
 
 import { Button, Card } from "react-bootstrap";
-import browser from "webextension-polyfill";
 import React from "react";
 import { connect } from "react-redux";
 import notify from "@/utils/notify";
-import { getErrorMessage } from "@/errors";
 import extensionsSlice from "@/store/extensionsSlice";
 import servicesSlice from "@/store/servicesSlice";
 
@@ -46,9 +44,7 @@ const FactoryResetSettings: React.FunctionComponent<{
             notify.success("Reset all options and service configurations");
           } catch (error) {
             notify.error({
-              message: `Error resetting options and service configurations: ${getErrorMessage(
-                error
-              )}`,
+              message: "Error resetting options and service configurations",
               error,
             });
           }
@@ -61,7 +57,7 @@ const FactoryResetSettings: React.FunctionComponent<{
 );
 
 export default connect(null, (dispatch) => ({
-  resetOptions: () => {
+  resetOptions() {
     dispatch(resetOptions());
     dispatch(resetServices());
   },

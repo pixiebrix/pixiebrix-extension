@@ -31,7 +31,7 @@ import {
 } from "@/tests/factories";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/tests/testHelpers";
-import { anonAuth } from "@/hooks/auth";
+import { anonAuth } from "@/auth/authConstants";
 
 jest.mock("@/utils/notify");
 jest.mock("./useSavingWizard");

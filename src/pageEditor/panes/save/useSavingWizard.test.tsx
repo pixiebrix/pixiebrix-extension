@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/* eslint-disable promise/prefer-await-to-then */
 
 import { configureStore, Store } from "@reduxjs/toolkit";
 import { renderHook, act } from "@testing-library/react-hooks";

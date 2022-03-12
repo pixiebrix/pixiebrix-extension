@@ -76,7 +76,7 @@ export const logSlice = createSlice({
       state.entries = state.availableEntries;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers(builder) {
     builder.addCase(clear.fulfilled, (state) => {
       state.availableEntries = [];
       state.entries = [];

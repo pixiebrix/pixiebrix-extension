@@ -196,7 +196,6 @@ const useSavingWizard = () => {
     // because it will already be available via the blueprint
     const createExtensionError = await create({ element, pushToCloud: false });
     if (createExtensionError) {
-      notify.error(createExtensionError);
       closeWizard(createExtensionError);
       return;
     }
@@ -253,7 +252,6 @@ const useSavingWizard = () => {
 
     const error = await create({ element, pushToCloud: true });
     if (error) {
-      notify.error(error);
       closeWizard(error);
       return;
     }

@@ -23,10 +23,10 @@ import { Button } from "react-bootstrap";
 import Centered from "@/pageEditor/components/Centered";
 import { getErrorMessage } from "@/errors";
 import reportError from "@/telemetry/reportError";
-import browser, { Permissions } from "webextension-polyfill";
+import { Permissions } from "webextension-polyfill";
 import { selectOptionalPermissions } from "@/utils/permissions";
 
-const PermissionsPopup: React.FC = () => {
+const PermissionsPopupApp: React.FC = () => {
   const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string>();
 
@@ -95,4 +95,4 @@ const PermissionsPopup: React.FC = () => {
   );
 };
 
-export default PermissionsPopup;
+export default PermissionsPopupApp;

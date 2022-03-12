@@ -71,6 +71,7 @@ import sanitize from "@/utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import reportError from "@/telemetry/reportError";
+import pluralize from "@/utils/pluralize";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -626,6 +627,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         } else {
           const [elementPromise, cancel] = awaitElementOnce(dependency);
           cancellers.push(cancel);
+          // eslint-disable-next-line promise/prefer-await-to-then -- TODO: Maybe refactor
           void elementPromise.then(() => {
             rerun();
           });
@@ -725,18 +727,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
 
     if (errors.length > 0) {
-      // Report the error to the user. Don't report to to the telemetry service since we already reported
-      // above in the loop
-      console.warn(`An error occurred adding ${errors.length} menu item(s)`, {
-        errors,
+      const subject = pluralize(errors.length, "the button", "$$ buttons");
+      const message = `An error occurred adding ${subject}`;
+      console.warn(message, { errors });
+      this.notifyError({
+        message,
+        reportError: false, // We already reported it in the loop above
       });
-      if (errors.length === 1) {
-        this.notifyError("An error occurred adding the menu item/button");
-      } else {
-        this.notifyError(
-          `An error occurred adding ${errors.length} menu items`
-        );
-      }
     }
   }
 }

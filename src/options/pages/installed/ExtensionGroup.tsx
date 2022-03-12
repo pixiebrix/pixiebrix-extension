@@ -224,7 +224,7 @@ const ExtensionGroup: React.FunctionComponent<{
         // #1532: temporary approach to controlling whether or not deployments can be uninstalled. In
         // the future we'll want this to depend on the member's role within the deployment's organization
         hide: managed && restrict("uninstall"),
-        action: async () => {
+        async action() {
           await removeMany(extensions);
         },
         className: "text-danger",

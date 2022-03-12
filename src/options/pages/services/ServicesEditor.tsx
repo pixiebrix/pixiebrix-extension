@@ -38,6 +38,7 @@ import BrickModal from "@/components/brickModal/BrickModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
+import { reportEvent } from "@/telemetry/events";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -107,6 +108,10 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
   const handleCreate = useCallback(
     async (service: IService) => {
+      reportEvent("ServiceAdd", {
+        serviceId: service.id,
+      });
+
       const definition = (serviceDefinitions ?? []).find(
         (x) => x.id === service.id
       );

@@ -54,7 +54,7 @@ const devtoolFieldOverrides: CustomFieldDefinitions = {
         value: "string",
         symbol: <OptionIcon icon="querySelector" />,
         Widget: ClearableSelectorWidget,
-        interpretValue: (oldValue: unknown) => {
+        interpretValue(oldValue: unknown) {
           if (typeof oldValue === "string") {
             return oldValue;
           }

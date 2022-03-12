@@ -56,18 +56,18 @@ const slice = createSlice({
   name: "asyncSlice",
   initialState: defaultAsyncState,
   reducers: {
-    start: (state) => {
+    start(state) {
       // NOTE: do not set `state.data = undefined` because that would immediately reset the initialState passed into
       // useAsyncState below
       state.isLoading = true;
       state.error = undefined;
     },
-    success: (state, action: PayloadAction<{ data: unknown }>) => {
+    success(state, action: PayloadAction<{ data: unknown }>) {
       state.isLoading = false;
       state.data = action.payload.data;
       state.error = undefined;
     },
-    failure: (state, action: PayloadAction<{ error: unknown }>) => {
+    failure(state, action: PayloadAction<{ error: unknown }>) {
       state.isLoading = false;
       state.data = undefined;
       state.error = action.payload.error ?? "Error producing data";

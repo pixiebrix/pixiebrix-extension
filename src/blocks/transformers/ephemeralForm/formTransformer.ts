@@ -18,7 +18,6 @@
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import browser from "webextension-polyfill";
 import {
   cancelForm,
   registerForm,

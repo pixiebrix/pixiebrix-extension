@@ -52,6 +52,7 @@ import { PromiseCancelled, sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import pluralize from "@/utils/pluralize";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -266,6 +267,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       optionsArgs: extension.optionsArgs,
     };
 
+    // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2910
     try {
       await reducePipeline(actionConfig, initialValues, {
         logger: extensionLogger,
@@ -299,10 +301,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       );
     }
 
-    const promises = await Promise.allSettled([this.runTrigger(element)]);
-    TriggerExtensionPoint.notifyErrors(compact(promises));
+    await this.runTriggersAndNotify(element);
   };
 
+  /**
+   * Run all extensions for a given root (i.e., handle the trigger firing)
+   * @return array of errors from the extensions
+   * @throws Error on non-extension error, e.g., reader error for the default reader
+   */
   private async runTrigger(root: ReaderRoot): Promise<unknown[]> {
     const reader = await this.defaultReader();
     const readerContext = await reader.read(root);
@@ -324,14 +330,34 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     return compact(errors);
   }
 
-  static notifyErrors(results: Array<PromiseSettledResult<unknown[]>>): void {
-    const errors = compact(
-      results.flatMap((x) => (x.status === "fulfilled" ? x.value : [x.reason]))
+  private async runTriggersAndNotify(...roots: ReaderRoot[]): Promise<void> {
+    const promises = roots.map(async (root) => this.runTrigger(root));
+    const results = await Promise.allSettled(promises);
+    const errors = results.flatMap((x) =>
+      // `runTrigger` fulfills with list of extension error from extension, or rejects on other error, e.g., reader
+      // error from the extension point.
+      x.status === "fulfilled" ? x.value : x.reason
     );
-    if (errors.length > 0) {
-      console.debug("Trigger errors", errors);
-      notify.error(`An error occurred running ${errors.length} triggers(s)`);
+
+    TriggerExtensionPoint.notifyErrors(errors);
+  }
+
+  /**
+   * Show notification for errors to the user. Caller is responsible for sending error telemetry.
+   * @param errors
+   */
+  static notifyErrors(errors: unknown[]): void {
+    if (errors.length === 0) {
+      return;
     }
+
+    const subject = pluralize(errors.length, "a trigger", "$$ triggers");
+    const message = `An error occurred running ${subject}`;
+    console.debug(message, { errors });
+    notify.error({
+      message,
+      reportError: false,
+    });
   }
 
   private async getRoot(): Promise<JQuery<HTMLElement | Document>> {
@@ -372,9 +398,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
       const intervalEffect = async () => {
         const $root = await this.getRoot();
-        await Promise.allSettled(
-          $root.toArray().flatMap(async (root) => this.runTrigger(root))
-        );
+        await this.runTriggersAndNotify(...$root);
       };
 
       void interval({
@@ -401,24 +425,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     // The caller will have already waited for the element. So $element will contain at least one element
     if (this.attachMode === "once") {
-      for (const element of $element.get()) {
-        void this.runTrigger(element);
-      }
-
+      void this.runTriggersAndNotify(...$element);
       return;
     }
 
     const observer = initialize(
       this.triggerSelector,
-      (index, element) => {
-        void this.runTrigger(element as HTMLElement).then((errors) => {
-          if (errors.length > 0) {
-            console.error("An error occurred while running a trigger", {
-              errors,
-            });
-            notify.error("An error occurred while running a trigger");
-          }
-        });
+      (index, element: HTMLElement) => {
+        void this.runTriggersAndNotify(element);
       },
       // `target` is a required option
       { target: document }
@@ -435,16 +449,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
     const appearObserver = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries.filter((x) => x.isIntersecting)) {
-          void this.runTrigger(entry.target as HTMLElement).then((errors) => {
-            if (errors.length > 0) {
-              console.error("An error occurred while running a trigger", {
-                errors,
-              });
-              notify.error("An error occurred while running a trigger");
-            }
-          });
-        }
+        const roots = entries
+          .filter((x) => x.isIntersecting)
+          .map((x) => x.target as HTMLElement);
+        void this.runTriggersAndNotify(...roots);
       },
       {
         root: null,
@@ -545,10 +553,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     switch (this.trigger) {
       case "load": {
-        const promises = await Promise.allSettled(
-          $root.toArray().flatMap(async (root) => this.runTrigger(root))
-        );
-        TriggerExtensionPoint.notifyErrors(promises);
+        await this.runTriggersAndNotify(...$root);
         break;
       }
 

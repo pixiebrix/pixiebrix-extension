@@ -21,7 +21,6 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
-import browser from "webextension-polyfill";
 import { isBackground } from "webext-detect-page";
 import type { SanitizedServiceConfiguration } from "@/core";
 import type { AxiosRequestConfig } from "axios";
@@ -124,3 +123,5 @@ export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
 export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
 
 export const captureTab = getMethod("CAPTURE_TAB", bg);
+
+export const getUserData = getMethod("GET_USER_DATA", bg);

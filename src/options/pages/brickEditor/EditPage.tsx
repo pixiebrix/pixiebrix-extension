@@ -159,7 +159,7 @@ const EditPage: React.FunctionComponent = () => {
         {({ values, isValid, handleSubmit, isSubmitting }) => (
           <HotKeys
             handlers={{
-              SAVE: (keyEvent) => {
+              SAVE(keyEvent) {
                 keyEvent.preventDefault();
                 handleSubmit();
               },

@@ -29,7 +29,6 @@ import registry from "@/services/registry";
 import { Service } from "@/types";
 import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions } from "@/background/messenger/api";
-import { getErrorMessage } from "@/errors";
 import notify from "@/utils/notify";
 
 type Listener = () => void;
@@ -120,7 +119,7 @@ function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
     } catch (error) {
       setGrantedPermissions(false);
       notify.error({
-        message: `Error granting permissions: ${getErrorMessage(error)}`,
+        message: "Error granting permissions",
         error,
       });
     }

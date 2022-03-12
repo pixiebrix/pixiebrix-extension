@@ -27,6 +27,8 @@ import reportError from "@/telemetry/reportError";
 import { Except, RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors";
 
+const MINIMUM_NOTIFICATION_DURATION = 2000;
+
 type NotificationType = "info" | "success" | "error" | "warning" | "loading";
 type Notification = RequireAtLeastOne<
   {
@@ -37,6 +39,7 @@ type Notification = RequireAtLeastOne<
     error: unknown;
     dismissable?: boolean;
     reportError?: boolean;
+    includeErrorDetails?: boolean;
   },
   "message" | "error"
 >;
@@ -84,7 +87,10 @@ const Message: React.VoidFunctionComponent<{
 
 function getMessageDisplayTime(message: string): number {
   const wpm = 100; // 180 is the average words read per minute, make it slower
-  return (message.split(" ").length / wpm) * 60_000;
+  return Math.min(
+    MINIMUM_NOTIFICATION_DURATION,
+    (message.split(" ").length / wpm) * 60_000
+  );
 }
 
 export function initToaster(): void {
@@ -98,17 +104,27 @@ export function initToaster(): void {
 
 export function showNotification({
   error,
+  includeErrorDetails = true,
   message,
   type = error ? "error" : undefined,
   id = uuidv4(),
-  duration = getMessageDisplayTime(message),
+  duration,
   dismissable = true,
 
   /** Only errors are reported by default */
   reportError: willReport = type === "error",
 }: RequireAtLeastOne<Notification, "message" | "error">): string {
   const options = { id, duration };
-  message = message ?? getErrorMessage(error);
+
+  if (error) {
+    if (!message) {
+      message = getErrorMessage(error);
+    } else if (includeErrorDetails) {
+      message = message.replace(/[\s.:]$/, "") + ": " + getErrorMessage(error);
+    }
+  }
+
+  duration ??= getMessageDisplayTime(message);
 
   // TODO: Temporary style override until warnings are natively supported
   //  https://github.com/timolins/react-hot-toast/issues/29
@@ -169,7 +185,11 @@ export function notifyResult(
   extensionId: string,
   { message, config: { className } }: MessageConfig
 ): void {
-  showNotification({ message, type: className as NotificationType });
+  showNotification({
+    message,
+    type: className as NotificationType,
+    reportError: false,
+  });
 }
 
 // Private method to prevent adding logic to the `notify.*` helpers.

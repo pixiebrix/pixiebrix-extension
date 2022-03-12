@@ -20,7 +20,6 @@ import styles from "./SelectorSelectorWidget.module.scss";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import notify from "@/utils/notify";
 import { compact, isEmpty, sortBy, uniqBy } from "lodash";
-import { getErrorMessage } from "@/errors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
@@ -173,7 +172,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
       setValue(firstSelector);
     } catch (error) {
       notify.error({
-        message: `Error selecting element: ${getErrorMessage(error)}`,
+        message: "Error selecting element",
         error,
       });
     } finally {

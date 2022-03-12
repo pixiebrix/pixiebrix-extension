@@ -24,7 +24,6 @@ import { collectPermissions, ensureAllPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
 import { containsPermissions, services } from "@/background/messenger/api";
 import { useCallback } from "react";
-import { getErrorMessage } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
 
 function useEnsurePermissions(
@@ -59,7 +58,7 @@ function useEnsurePermissions(
       accepted = await ensureAllPermissions(permissions);
     } catch (error) {
       notify.error({
-        message: `Error granting permissions: ${getErrorMessage(error)}`,
+        message: "Error granting permissions",
         error,
       });
       return false;
@@ -76,7 +75,7 @@ function useEnsurePermissions(
 
   const activate = useCallback(() => {
     // Can't use async here because Firefox loses track of trusted UX event
-    // eslint-disable-next-line @typescript-eslint/promise-function-async
+    // eslint-disable-next-line @typescript-eslint/promise-function-async, promise/prefer-await-to-then
     void request().then((accepted: boolean) => {
       if (accepted) {
         reportEvent("MarketplaceActivate", {

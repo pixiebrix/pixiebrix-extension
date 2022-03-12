@@ -26,10 +26,8 @@ import { sheets } from "@/background/messenger/api";
 import { GOOGLE_SHEETS_SCOPES } from "@/contrib/google/sheets/handlers";
 import { ensureAuth } from "@/contrib/google/auth";
 import { isOptionsPage } from "webext-detect-page";
-import browser from "webextension-polyfill";
 import { Form, InputGroup } from "react-bootstrap";
 import notify from "@/utils/notify";
-import { getErrorMessage } from "@/errors";
 import AsyncButton from "@/components/AsyncButton";
 import { Expression } from "@/core";
 import { isExpression } from "@/runtime/mapArgs";
@@ -101,8 +99,8 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
 
       console.debug(`Using Google token: ${token}`);
 
-      await new Promise((callback) => {
-        gapi.load("picker", { callback });
+      await new Promise((resolve) => {
+        gapi.load("picker", { callback: resolve });
       });
 
       if (isNullOrBlank(APP_ID)) {
@@ -143,7 +141,7 @@ const FileWidget: React.FC<FileWidgetProps> = ({ doc, onSelect, ...props }) => {
       picker.setVisible(true);
     } catch (error) {
       notify.error({
-        message: `Error loading file picker: ${getErrorMessage(error)}`,
+        message: "Error loading file picker",
         error,
       });
     }

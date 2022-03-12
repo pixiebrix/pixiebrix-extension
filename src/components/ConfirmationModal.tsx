@@ -37,7 +37,7 @@ type ModalContextProps = {
 };
 
 const initialModalState: ModalContextProps = {
-  showConfirmation: () => {
+  showConfirmation() {
     throw new Error("showConfirmation not configured");
   },
 };

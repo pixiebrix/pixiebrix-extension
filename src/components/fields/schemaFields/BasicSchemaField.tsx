@@ -60,7 +60,7 @@ const varOption: StringOption = {
   value: "var",
   symbol: <OptionIcon icon="variable" />,
   Widget: TextWidget,
-  interpretValue: (oldValue: unknown) => {
+  interpretValue(oldValue: unknown) {
     let newValue = "";
     if (typeof oldValue === "string") {
       newValue = oldValue;
@@ -137,7 +137,7 @@ function getToggleOptions({
     value: "string",
     symbol: <OptionIcon icon="text" />,
     Widget: TextWidget,
-    interpretValue: (oldValue: unknown) => {
+    interpretValue(oldValue: unknown) {
       let newValue =
         typeof fieldSchema.default === "string" ? fieldSchema.default : "";
       if (typeof oldValue === "string" && oldValue.length > 0) {
@@ -279,7 +279,7 @@ function getToggleOptions({
       value: "number",
       symbol: <OptionIcon icon="number" />,
       Widget: IntegerWidget,
-      interpretValue: (oldValue: unknown) => {
+      interpretValue(oldValue: unknown) {
         let int = Number.NaN;
         if (typeof oldValue === "string") {
           int = Number.parseInt(oldValue, 10);
@@ -309,7 +309,7 @@ function getToggleOptions({
       value: "number",
       symbol: <OptionIcon icon="number" />,
       Widget: NumberWidget,
-      interpretValue: (oldValue: unknown) => {
+      interpretValue(oldValue: unknown) {
         let float = Number.NaN;
         if (typeof oldValue === "string") {
           float = Number.parseFloat(oldValue);

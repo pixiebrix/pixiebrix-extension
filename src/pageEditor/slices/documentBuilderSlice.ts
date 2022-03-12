@@ -32,7 +32,7 @@ export const documentBuilderSlice = createSlice({
   name: "documentBuilder",
   initialState,
   reducers: {
-    setActiveElement: (state, action: PayloadAction<string>) => {
+    setActiveElement(state, action: PayloadAction<string>) {
       state.activeElement = action.payload;
     },
   },

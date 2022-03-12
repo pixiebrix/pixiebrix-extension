@@ -15,28 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
+import "./options.scss";
+
+import "@/extensionContext";
+import "@/development/darkMode";
+
+import { render } from "react-dom";
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEyeSlash,
-  faGlobe,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
-import { SharingSource } from "@/options/pages/blueprints/installableUtils";
+import App from "@/options/App";
+import initGoogle from "@/contrib/google/initGoogle";
+import { initToaster } from "@/utils/notify";
 
-const sharingIcons = {
-  Personal: faEyeSlash,
-  Team: faUsers,
-  Public: faGlobe,
-  Deployment: faUsers,
-};
+initGoogle();
+initToaster();
 
-const SharingLabel: React.FunctionComponent<{
-  sharing: SharingSource;
-}> = ({ sharing }) => (
-  <div>
-    <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
-  </div>
-);
-
-export default SharingLabel;
+render(<App />, document.querySelector("#container"));

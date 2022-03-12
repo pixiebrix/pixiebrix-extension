@@ -19,7 +19,7 @@ import { Renderer, UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
 import { BlockArg, BlockOptions, RegistryId, SafeHTML, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import browser, { Permissions } from "webextension-polyfill";
+import { Permissions } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { waitForTargetByUrl } from "@/background/messenger/api";
 import { runBrick } from "@/contentScript/messenger/api";
@@ -138,9 +138,11 @@ export class UiPathAppRenderer extends Renderer {
         blockId: this.id,
         url: subframeUrl,
         inputs,
-      }).catch((error) => {
-        logger.error(error);
-      });
+      })
+        // eslint-disable-next-line promise/prefer-await-to-then -- It must run asynchronously
+        .catch((error) => {
+          logger.error(error);
+        });
     }
 
     return `<iframe src="${localFrame.href}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>` as SafeHTML;

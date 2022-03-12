@@ -174,9 +174,11 @@ export class ContextError extends Error {
   }
 }
 
+export const NO_TARGET_FOUND_CONNECTION_ERROR =
+  "Could not establish connection. Receiving end does not exist.";
 /** Browser Messenger API error message patterns */
 export const CONNECTION_ERROR_MESSAGES = [
-  "Could not establish connection. Receiving end does not exist.",
+  NO_TARGET_FOUND_CONNECTION_ERROR,
   "Extension context invalidated.",
 ];
 

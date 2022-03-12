@@ -37,7 +37,6 @@ import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { fetch } from "@/hooks/fetch";
 import { Brick } from "@/types/contract";
-import browser from "webextension-polyfill";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import notify from "@/utils/notify";
 import { ReferenceEntry } from "./brickEditorTypes";
@@ -80,7 +79,6 @@ function useOpenEditorTab() {
     if (brick) {
       console.debug("Open editor for brick: %s", id, { brick });
       const url = browser.runtime.getURL("options.html");
-      // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
       window.open(`${url}#/workshop/bricks/${brick.id}`);
     } else {
       notify.warning(`You cannot edit brick: ${id}`);

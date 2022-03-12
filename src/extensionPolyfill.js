@@ -15,14 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "react-image-crop/dist/ReactCrop.css";
-import "@/ephemeralForm.scss";
+// This file exists because imports are executed before the local code.
+// Importing another file next to `webextension-polyfill` means that the
+// `globalThis` line will be executed too late.
+// This file can be dropped after https://github.com/mozilla/webextension-polyfill/pull/351
 
-import "@/extensionContext";
+import browser from "webextension-polyfill";
 
-import React from "react";
-import { render } from "react-dom";
-import EphemeralForm from "@/blocks/transformers/ephemeralForm/EphemeralForm";
-
-render(<EphemeralForm />, document.querySelector("#container"));
+globalThis.browser = browser;

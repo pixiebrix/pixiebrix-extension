@@ -128,8 +128,7 @@ function useCreate(): CreateCallback {
       };
 
       try {
-        const adapter = ADAPTERS.get(element.type);
-
+        // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
         void ensurePermissions(element).catch((error) => {
           console.error("Error checking/enabling permissions", { error });
           notify.warning({
@@ -139,6 +138,8 @@ function useCreate(): CreateCallback {
             reportError: true,
           });
         });
+
+        const adapter = ADAPTERS.get(element.type);
 
         const extensionPointId = element.extensionPoint.metadata.id;
         const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
@@ -191,6 +192,7 @@ function useCreate(): CreateCallback {
             message: `Error fetching remote bricks: ${selectErrorMessage(
               error
             )}`,
+            includeErrorDetails: false, // Using `selectErrorMessage` locally
             error,
             reportError: true,
           });
@@ -225,7 +227,7 @@ function useCreate(): CreateCallback {
       } catch (error) {
         console.error("Error saving extension", { error });
         notify.error({
-          message: `Error saving extension: ${getErrorMessage(error)}`,
+          message: "Error saving extension",
           error,
         });
         return "Error saving extension";

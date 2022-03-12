@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.5.6-alpha.1",
+  "version": "1.5.7-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
@@ -149,7 +149,7 @@
     "webext-dynamic-content-scripts": "^8.0.1",
     "webext-messenger": "^0.17.1",
     "webext-patterns": "^1.1.1",
-    "webext-polyfill-kinda": "^0.1.0",
+    "webext-polyfill-kinda": "^0.10.0",
     "webext-tools": "^0.3.0",
     "webextension-polyfill": "^0.8.0",
     "whatwg-mimetype": "^3.0.0",
@@ -175,7 +175,6 @@
     "@types/data-urls": "^2.0.1",
     "@types/dompurify": "^2.2.3",
     "@types/file-saver": "^2.0.3",
-    "@types/firefox-webext-browser": "^94.0.0",
     "@types/gapi": "0.0.41",
     "@types/gapi.client.bigquery": "^2.0.2",
     "@types/gapi.client.oauth2": "^2.0.2",
@@ -230,7 +229,7 @@
     "data-urls": "^3.0.0",
     "dotenv": "^15.0.0",
     "eslint": "^8.0.0",
-    "eslint-config-pixiebrix": "^0.14.1",
+    "eslint-config-pixiebrix": "^0.15.2",
     "fake-indexeddb": "^3.1.3",
     "geckodriver": "^3.0.1",
     "identity-obj-proxy": "^3.0.0",

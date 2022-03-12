@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/extensionContext";
+import { AuthState } from "@/core";
 
-import PermissionsPopup from "@/popups/PermissionsPopup";
-
-import ReactDOM from "react-dom";
-import React from "react";
-
-import "bootstrap/dist/css/bootstrap.min.css";
-
-ReactDOM.render(<PermissionsPopup />, document.querySelector("#container"));
+export const anonAuth: AuthState = Object.freeze({
+  userId: undefined,
+  email: undefined,
+  isLoggedIn: false,
+  isOnboarded: false,
+  extension: true,
+  scope: null,
+  flags: [],
+  organizations: [],
+  groups: [],
+});

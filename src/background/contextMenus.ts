@@ -16,7 +16,7 @@
  */
 
 import pTimeout from "p-timeout";
-import browser, { Menus, Tabs } from "webextension-polyfill";
+import { Menus, Tabs } from "webextension-polyfill";
 import { getErrorMessage, hasCancelRootCause } from "@/errors";
 import reportError from "@/telemetry/reportError";
 import { noop } from "lodash";
@@ -97,14 +97,16 @@ async function dispatchMenu(
     if (hasCancelRootCause(error)) {
       notify.info(target, "The action was cancelled");
     } else {
-      const message = `Error handling context menu action: ${getErrorMessage(
-        error
-      )}`;
       // Report the original error here. The stack trace will point to this block anyway, but its origin will be
       // better defined. Here it's called explicitly because the messaging API does not automatically serialize errors,
       // especially deep inside other objects.
       reportError(error);
-      notify.error(target, { message, reportError: false });
+
+      notify.error(target, {
+        message: "Error handling context menu action",
+        error,
+        reportError: false,
+      });
     }
   }
 }

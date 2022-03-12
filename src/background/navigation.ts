@@ -17,7 +17,6 @@
 
 import { reactivateTab, handleNavigate } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/util";
-import browser from "webextension-polyfill";
 import { canAccessTab } from "webext-tools";
 import { Target } from "@/types";
 

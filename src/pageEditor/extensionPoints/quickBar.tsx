@@ -45,7 +45,7 @@ import {
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
-import browser, { Menus } from "webextension-polyfill";
+import { Menus } from "webextension-polyfill";
 import { NormalizedAvailability } from "@/blocks/types";
 import React, { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
@@ -259,7 +259,7 @@ const config: ElementConfig<undefined, QuickBarFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
-  InsertModeHelpText: () => {
+  InsertModeHelpText() {
     const [shortcut, setShortcut] = useState("");
 
     useEffect(() => {

@@ -20,7 +20,6 @@ import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
 import { stubTrue } from "lodash";
 import { useCallback, useState } from "react";
-import { getErrorMessage } from "@/errors";
 import notify from "@/utils/notify";
 import { clearServiceCache, services } from "@/background/messenger/api";
 
@@ -63,10 +62,7 @@ function useRefresh(options?: {
           return;
         }
 
-        const message = `Error refreshing bricks from server: ${getErrorMessage(
-          error
-        )}`;
-        notify.error({ message, error });
+        notify.error({ message: "Error refreshing bricks from server", error });
       } finally {
         if (isMounted()) {
           setLoaded(true);

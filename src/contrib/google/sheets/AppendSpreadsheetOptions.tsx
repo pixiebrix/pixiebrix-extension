@@ -98,7 +98,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
       <ConnectedFieldTemplate
         name={joinName(basePath, "spreadsheetId")}
         label="Google Sheet"
-        description="Select a Google Sheet"
+        description="Select a Google Sheet. The first row in your sheet MUST contain headings."
         as={FileWidget}
         doc={doc}
         onSelect={setDoc}

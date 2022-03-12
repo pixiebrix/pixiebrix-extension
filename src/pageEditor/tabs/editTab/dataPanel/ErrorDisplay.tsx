@@ -15,20 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import "@/options.scss";
-
-import "@/extensionContext";
-import "@/development/darkMode";
-
-import { render } from "react-dom";
 import React from "react";
-import App from "@/options/App";
-import initGoogle from "@/contrib/google/initGoogle";
-import { initToaster } from "@/utils/notify";
+import { ErrorObject } from "serialize-error";
+import { Col, Container, Row } from "react-bootstrap";
+import getErrorDetails from "@/components/errors/getErrorDetails";
 
-initGoogle();
-initToaster();
+type ErrorDisplayProps = {
+  error: ErrorObject;
+};
 
-render(<App />, document.querySelector("#container"));
+const ErrorDisplay: React.VoidFunctionComponent<ErrorDisplayProps> = ({
+  error,
+}) => {
+  const { title, detailsElement } = getErrorDetails(error);
+
+  return (
+    <Container>
+      <Row>
+        <Col>
+          <p>{title}</p>
+        </Col>
+      </Row>
+      {detailsElement}
+    </Container>
+  );
+};
+
+export default ErrorDisplay;
