@@ -70,28 +70,18 @@ function useRecipeSaver(): RecipeSaver {
         (x) => x.name === newRecipe.metadata.id
       )?.id;
 
-      let updateError: unknown;
       try {
-        const updateRecipeResponse = await updateRecipe({
+        await updateRecipe({
           packageId,
           recipe: newRecipe,
-        });
-
-        if ("error" in updateRecipeResponse) {
-          updateError = updateRecipeResponse.error;
-        }
+        }).unwrap();
       } catch (error: unknown) {
-        updateError = error;
+        notify.error({
+          message: "Failed to update the Blueprint",
+          error,
+        });
       } finally {
         setIsSaving(false);
-      }
-
-      if (updateError) {
-        const errorMessage = "Failed to update the Blueprint";
-        notify.error({
-          message: errorMessage,
-          error: updateError,
-        });
       }
 
       dispatch(actions.resetRecipeOptions(recipe.metadata.id));
