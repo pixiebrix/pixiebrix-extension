@@ -249,8 +249,10 @@ describe("produceSchemaOnUiTypeChange", () => {
       })
     );
 
-    expect(nextSchema.schema.properties.field1.enum).toBeUndefined();
-    expect(nextSchema.schema.properties.field1.oneOf).toEqual([
+    expect(
+      (nextSchema.schema.properties.field1 as Schema).enum
+    ).toBeUndefined();
+    expect((nextSchema.schema.properties.field1 as Schema).oneOf).toEqual([
       {
         const: "foo",
         title: "foo",
@@ -308,8 +310,10 @@ describe("produceSchemaOnUiTypeChange", () => {
       })
     );
 
-    expect(nextSchema.schema.properties.field1.oneOf).toBeUndefined();
-    expect(nextSchema.schema.properties.field1.enum).toEqual([
+    expect(
+      (nextSchema.schema.properties.field1 as Schema).oneOf
+    ).toBeUndefined();
+    expect((nextSchema.schema.properties.field1 as Schema).enum).toEqual([
       "foo",
       "bar",
       "baz",
