@@ -114,7 +114,7 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
           {({ values }) => (
             <>
               <Effect
-                values={values}
+                values={values.optionsDefinition}
                 onChange={updateRedux}
                 delayMillis={100}
               />
