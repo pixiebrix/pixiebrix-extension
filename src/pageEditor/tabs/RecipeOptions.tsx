@@ -39,6 +39,9 @@ import { OptionsDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
 import { getErrorMessage } from "@/errors";
+import { propertiesToSchema } from "@/validators/generic";
+import { Schema, SchemaProperties, UiSchema } from "@/core";
+import { sort } from "semver";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter(
   (type) => !["File", "Image crop"].includes(type.label)
@@ -54,7 +57,18 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes, isLoading, error } = useGetRecipesQuery();
   const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
-  const initialValues = { optionsDefinition: recipe?.options ?? {} };
+  const recipeSchema = recipe?.options?.schema ?? {};
+  const schema: Schema =
+    "type" in recipeSchema &&
+    recipeSchema.type === "object" &&
+    "properties" in recipeSchema
+      ? recipeSchema
+      : propertiesToSchema(recipeSchema as SchemaProperties);
+  const uiSchema: UiSchema = recipe?.options?.uiSchema ?? {
+    "ui:order": sort(Object.keys(schema.properties ?? {})),
+  };
+  const options: OptionsDefinition = { schema, uiSchema };
+  const initialValues = { optionsDefinition: options };
 
   const dispatch = useDispatch();
   const prevOptions = useRef(initialValues.optionsDefinition);
