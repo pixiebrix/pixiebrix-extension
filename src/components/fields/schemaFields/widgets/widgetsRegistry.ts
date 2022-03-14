@@ -39,7 +39,10 @@ type Widgets = {
   UrlMatchPatternWidget: React.VFC<SchemaFieldProps & FormControlProps>;
   WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>>;
 };
-const UnsetWidget: React.VFC = () => null;
+
+const UnsetWidget: React.VFC = () => {
+  throw new Error("Widget not set");
+};
 
 /**
  * The container that holds references to all the widgets.

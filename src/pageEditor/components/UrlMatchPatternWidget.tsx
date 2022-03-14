@@ -93,7 +93,7 @@ const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
       >
         <ArrayWidget
           schema={{ items: { type: "string" } }}
-          addButtonText="Add Site"
+          addButtonCaption="Add Site"
           {...props}
         />
       </FieldRuntimeContext.Provider>

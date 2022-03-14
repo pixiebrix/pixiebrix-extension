@@ -31,7 +31,7 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
 
 type ArrayWidgetProps = SchemaFieldProps & {
-  addButtonText?: string;
+  addButtonCaption?: string;
 };
 
 // Empty value for text fields for the Formik state
@@ -66,7 +66,7 @@ function getDefaultArrayItem(schema: Schema): unknown {
 const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
   schema,
   name,
-  addButtonText = "Add Item",
+  addButtonCaption = "Add Item",
 }) => {
   const [field] = useField<UnknownObject[]>(name);
 
@@ -106,7 +106,7 @@ const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
               push(getDefaultArrayItem(schemaItems));
             }}
           >
-            {addButtonText}
+            {addButtonCaption}
           </Button>
         </>
       )}
