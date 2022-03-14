@@ -36,10 +36,10 @@ import { ComponentReader } from "./component/ComponentReader";
 import { JQueryReader } from "./jquery/JQueryReader";
 import { ParseCsv } from "./parseCsv";
 import { ParseDataUrl } from "./parseDataUrl";
-import { ParseDate } from "./transformers/parseDate";
-import { ScreenshotTab } from "./transformers/screenshotTab";
+import { ParseDate } from "./parseDate";
+import { ScreenshotTab } from "./screenshotTab";
 import { TableReader, TablesReader } from "./component/TableReader";
-import ParseJson from "./transformers/ParseJson";
+import ParseJson from "./ParseJson";
 
 function registerTransformers() {
   registerBlock(new JQTransformer());
