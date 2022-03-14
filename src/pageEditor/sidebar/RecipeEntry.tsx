@@ -56,13 +56,11 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
     RootState,
     Record<RegistryId, OptionsDefinition>
   >((state) => state.editor.dirtyRecipeOptionsById);
-  const isDirty = useMemo(() => {
-    const hasDirtyElements = elements.some(
-      (element) => dirtyElements[getIdForElement(element)] ?? false
-    );
-    const hasDirtyOptions = recipeId in dirtyOptions;
-    return hasDirtyElements || hasDirtyOptions;
-  }, [dirtyElements, dirtyOptions, elements, recipeId]);
+  const hasDirtyElements = elements.some(
+    (element) => dirtyElements[getIdForElement(element)]
+  );
+  const hasDirtyOptions = recipeId in dirtyOptions;
+  const isDirty = hasDirtyElements || hasDirtyOptions;
 
   const caretIcon = expanded ? faCaretDown : faCaretRight;
 
