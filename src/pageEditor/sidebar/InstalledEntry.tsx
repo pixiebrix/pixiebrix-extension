@@ -19,7 +19,7 @@ import styles from "./Entry.module.scss";
 
 import React, { useCallback } from "react";
 import { IExtension, UUID } from "@/core";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
   extensionToFormState,
@@ -42,6 +42,8 @@ import {
 import { thisTab } from "@/pageEditor/utils";
 import { resolveDefinitions } from "@/registry/internal";
 import cx from "classnames";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { reportEvent } from "@/telemetry/events";
 
 /**
  * A sidebar menu entry corresponding to an installed/saved extension point
@@ -54,6 +56,7 @@ const InstalledEntry: React.FunctionComponent<{
   available: boolean;
   isNested?: boolean;
 }> = ({ extension, recipes, available, active, isNested = false }) => {
+  const sessionId = useSelector(selectSessionId);
   const dispatch = useDispatch();
   const [type] = useAsyncState(
     async () => selectType(extension),
@@ -63,6 +66,11 @@ const InstalledEntry: React.FunctionComponent<{
   const selectHandler = useCallback(
     async (extension: IExtension) => {
       try {
+        reportEvent("PageEditorOpen", {
+          sessionId,
+          extensionId: extension.id,
+        });
+
         // Remove the extension so that we don't get double-actions when editing a trigger.
         // At this point the extensionPointId can be a
         const resolved = await resolveDefinitions(extension);
@@ -79,7 +87,7 @@ const InstalledEntry: React.FunctionComponent<{
         dispatch(actions.adapterError({ uuid: extension.id, error }));
       }
     },
-    [dispatch, recipes]
+    [dispatch, sessionId, recipes]
   );
 
   const isButton = type === "menuItem";
