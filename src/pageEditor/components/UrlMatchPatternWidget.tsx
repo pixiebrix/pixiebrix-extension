@@ -23,7 +23,7 @@ import {
   HTTPS_PATTERN,
   SITES_PATTERN,
 } from "@/permissions/patterns";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { LinkButton } from "@/components/LinkButton";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
@@ -32,6 +32,7 @@ import {
   Shortcut,
   UrlMatchPatternWidgetProps,
 } from "./urlMatchPatternWidgetTypes";
+import { FormState } from "@/pageEditor/slices/editorSlice";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;
@@ -66,6 +67,7 @@ const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
 ) => {
   const { name, disabled, shortcuts = DEFAULT_SHORTCUTS } = props;
 
+  const { values: formState } = useFormikContext<FormState>();
   const [{ value }, , { setValue }] = useField<string[]>(name);
 
   return (
@@ -86,8 +88,8 @@ const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
       )}
       <FieldRuntimeContext.Provider
         value={{
-          // TODO use the brick's API version
-          apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+          apiVersion:
+            formState.apiVersion ?? PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
           allowExpressions: false,
         }}
       >
