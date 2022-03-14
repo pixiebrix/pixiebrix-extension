@@ -58,11 +58,9 @@ function useRecipeSaver(): RecipeSaver {
       setIsSaving(true);
 
       const newRecipe = produce<RecipeDefinition>(recipe, (draft) => {
-        if (isEmpty(newOptions.schema?.properties)) {
-          draft.options = undefined;
-        } else {
-          draft.options = newOptions;
-        }
+        draft.options = isEmpty(newOptions.schema?.properties)
+          ? undefined
+          : newOptions;
       });
 
       const packageId = editablePackages.find(
