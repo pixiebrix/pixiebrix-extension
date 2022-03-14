@@ -61,7 +61,7 @@ function useRemove(element: FormState): () => void {
     };
 
     reportEvent("PageEditorRemove", {
-      sessionId: sessionId,
+      sessionId,
       extensionId: values.uuid,
     });
 
