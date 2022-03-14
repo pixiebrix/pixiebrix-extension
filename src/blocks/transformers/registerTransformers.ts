@@ -36,12 +36,14 @@ import { ComponentReader } from "./component/ComponentReader";
 import { JQueryReader } from "./jquery/JQueryReader";
 import { ParseCsv } from "./parseCsv";
 import { ParseDataUrl } from "./parseDataUrl";
-import { ParseDate } from "@/blocks/transformers/parseDate";
-import { ScreenshotTab } from "@/blocks/transformers/screenshotTab";
+import { ParseDate } from "./transformers/parseDate";
+import { ScreenshotTab } from "./transformers/screenshotTab";
 import { TableReader, TablesReader } from "./component/TableReader";
+import ParseJson from "./transformers/ParseJson";
 
 function registerTransformers() {
   registerBlock(new JQTransformer());
+  registerBlock(new ParseJson());
   registerBlock(new JSONPathTransformer());
   registerBlock(new GetAPITransformer());
   registerBlock(new RemoteMethod());
