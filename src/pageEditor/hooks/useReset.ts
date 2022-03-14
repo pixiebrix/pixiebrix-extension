@@ -24,6 +24,8 @@ import { extensionToFormState } from "@/pageEditor/extensionPoints/adapter";
 import reportError from "@/telemetry/reportError";
 import { useGetRecipesQuery } from "@/services/api";
 import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { reportEvent } from "@/telemetry/events";
 
 type Config = {
   element: FormState;
@@ -31,6 +33,7 @@ type Config = {
 };
 function useReset(): (useResetConfig: Config) => void {
   const dispatch = useDispatch();
+  const sessionId = useSelector(selectSessionId);
   const installed = useSelector(selectExtensions);
   const { data: recipes } = useGetRecipesQuery();
   const { showConfirmation } = useModals();
@@ -49,6 +52,11 @@ function useReset(): (useResetConfig: Config) => void {
         }
       }
 
+      reportEvent("PageEditorReset", {
+        sessionId,
+        extensionId: element.uuid,
+      });
+
       try {
         const extension = installed.find((x) => x.id === element.uuid);
         const state = await extensionToFormState(extension);
@@ -59,7 +67,7 @@ function useReset(): (useResetConfig: Config) => void {
         dispatch(actions.adapterError({ uuid: element.uuid, error }));
       }
     },
-    [recipes, dispatch, installed, showConfirmation]
+    [dispatch, recipes, sessionId, installed, showConfirmation]
   );
 }
 
