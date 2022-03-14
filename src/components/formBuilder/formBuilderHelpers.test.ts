@@ -22,13 +22,15 @@ import {
   MINIMAL_UI_SCHEMA,
   normalizeUiOrder,
   produceSchemaOnPropertyNameChange,
+  produceSchemaOnUiTypeChange,
   replaceStringInArray,
+  stringifyUiType,
   updateRjsfSchemaWithDefaultsIfNeeded,
   validateNextPropertyName,
 } from "./formBuilderHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
 import { initRenamingCases } from "./formEditor.testCases";
-import { UI_ORDER } from "./schemaFieldNames";
+import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 
 describe("replaceStringInArray", () => {
   let array: string[];
@@ -183,7 +185,7 @@ describe("validateNextPropertyName", () => {
   });
 });
 
-describe("ormalizeUiOrder", () => {
+describe("normalizeUiOrder", () => {
   test("init uiOrder", () => {
     const actual = normalizeUiOrder(["propA", "propB"], []);
     expect(actual).toEqual(["propA", "propB", "*"]);
@@ -213,5 +215,104 @@ describe("ormalizeUiOrder", () => {
       ["propA", "propB", "propC", "*"]
     );
     expect(actual).toEqual(["propA", "propC", "*"]);
+  });
+});
+
+describe("produceSchemaOnUiTypeChange", () => {
+  test("converts Dropdown to Dropdown with labels", () => {
+    const schema: RJSFSchema = {
+      schema: {
+        ...MINIMAL_SCHEMA,
+        properties: {
+          field1: {
+            title: "Field 1",
+            type: "string",
+            enum: ["foo", "bar", "baz"],
+          },
+        },
+      },
+      uiSchema: {
+        ...MINIMAL_UI_SCHEMA,
+        field1: {
+          [UI_WIDGET]: "select",
+        },
+      },
+    };
+
+    const nextSchema = produceSchemaOnUiTypeChange(
+      schema,
+      "field1",
+      stringifyUiType({
+        propertyType: "string",
+        uiWidget: "select",
+        extra: "selectWithLabels",
+      })
+    );
+
+    expect(nextSchema.schema.properties.field1.enum).toBeUndefined();
+    expect(nextSchema.schema.properties.field1.oneOf).toEqual([
+      {
+        const: "foo",
+        title: "foo",
+      },
+      {
+        const: "bar",
+        title: "bar",
+      },
+      {
+        const: "baz",
+        title: "baz",
+      },
+    ]);
+  });
+
+  test("converts Dropdown with labels to Dropdown", () => {
+    const schema: RJSFSchema = {
+      schema: {
+        ...MINIMAL_SCHEMA,
+        properties: {
+          field1: {
+            title: "Field 1",
+            type: "string",
+            oneOf: [
+              {
+                const: "foo",
+                title: "Foo",
+              },
+              {
+                const: "bar",
+                title: "Bar",
+              },
+              {
+                const: "baz",
+                title: "Baz",
+              },
+            ],
+          },
+        },
+      },
+      uiSchema: {
+        ...MINIMAL_UI_SCHEMA,
+        field1: {
+          [UI_WIDGET]: "select",
+        },
+      },
+    };
+
+    const nextSchema = produceSchemaOnUiTypeChange(
+      schema,
+      "field1",
+      stringifyUiType({
+        propertyType: "string",
+        uiWidget: "select",
+      })
+    );
+
+    expect(nextSchema.schema.properties.field1.oneOf).toBeUndefined();
+    expect(nextSchema.schema.properties.field1.enum).toEqual([
+      "foo",
+      "bar",
+      "baz",
+    ]);
   });
 });

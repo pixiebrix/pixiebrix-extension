@@ -583,7 +583,7 @@ exports[`FormEditor renders simple schema 1`] = `
             <input
               name="rjsfSchema.schema.properties.firstName.uiType"
               type="hidden"
-              value="string::"
+              value="string:::"
             />
           </div>
         </div>
