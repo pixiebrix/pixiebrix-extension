@@ -17,7 +17,7 @@
 
 import React, { useMemo, useState } from "react";
 import { IExtension, RegistryId } from "@/core";
-import { OptionsDefinition, RecipeDefinition } from "@/types/definitions";
+import { RecipeDefinition } from "@/types/definitions";
 import styles from "./Entry.module.scss";
 import { UnsavedChangesIcon } from "@/pageEditor/sidebar/ExtensionIcons";
 import { ListGroup } from "react-bootstrap";
@@ -49,13 +49,10 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
     () => recipes.find((recipe) => recipe.metadata.id === recipeId),
     [recipeId, recipes]
   );
-  const dirtyElements = useSelector<RootState, Record<string, boolean>>(
-    (state) => state.editor.dirty
+  const dirtyElements = useSelector((state: RootState) => state.editor.dirty);
+  const dirtyOptions = useSelector(
+    (state: RootState) => state.editor.dirtyRecipeOptionsById
   );
-  const dirtyOptions = useSelector<
-    RootState,
-    Record<RegistryId, OptionsDefinition>
-  >((state) => state.editor.dirtyRecipeOptionsById);
   const hasDirtyElements = elements.some(
     (element) => dirtyElements[getIdForElement(element)]
   );
