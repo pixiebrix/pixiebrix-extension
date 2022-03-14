@@ -28,10 +28,12 @@ import notify from "@/utils/notify";
 import { RecipeDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
 
-function useRecipeSaver(): [
-  (recipe: RecipeDefinition) => Promise<void>,
-  boolean
-] {
+type RecipeSaver = {
+  save: (recipe: RecipeDefinition) => Promise<void>;
+  isSaving: boolean;
+};
+
+function useRecipeSaver(): RecipeSaver {
   const dispatch = useDispatch();
   const { data: editablePackages } = useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
@@ -87,7 +89,10 @@ function useRecipeSaver(): [
     [dirtyRecipeOptions, dispatch, editablePackages, updateRecipe]
   );
 
-  return [saveRecipeOptions, isSaving];
+  return {
+    save: saveRecipeOptions,
+    isSaving,
+  };
 }
 
 export default useRecipeSaver;

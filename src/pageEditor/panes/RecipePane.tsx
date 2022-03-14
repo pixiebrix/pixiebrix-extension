@@ -61,7 +61,7 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   }, [layoutKey]);
   const [defaultTabName, setDefaultTabName] = useState(EDIT_TAB_NAME);
 
-  const [saveRecipe, isSavingRecipe] = useRecipeSaver();
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
   const resetRecipe = useCallback(async () => {
