@@ -18,37 +18,49 @@
 import { WidgetProps } from "@rjsf/core";
 import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
 import React from "react";
+import { Schema } from "@/core";
 
 const RjsfSelectWidget = RjsfTheme.widgets.SelectWidget;
 
 const SelectWidgetPreview: React.VFC<WidgetProps> = (props) => {
   // If Select Options is a variable, then `props.schema.enum` holds the name of the variable (i.e. string).
-  const { enum: values } = props.schema;
-  if (typeof values === "string") {
-    // @ts-expect-error -- enumNames is a valid property of the RJSF schema.
-    const { enumNames: labels } = props.schema;
-    const enumOptions = [
+  const { enum: enumValues, oneOf } = props.schema;
+  if (typeof enumValues === "string" || typeof oneOf === "string") {
+    // @ts-expect-error enumValues || oneOf is always a string here
+    const varValue: string = enumValues || oneOf;
+    const options = [
       {
-        value: values,
-        label: typeof labels === "string" ? labels : values,
+        value: varValue,
+        label: varValue,
       },
     ];
 
-    const schema = {
+    const schema: Schema = {
       ...props.schema,
-      enum: [values],
-      enumNames: typeof labels === "string" ? labels : undefined,
+      enum: typeof enumValues === "string" ? [varValue] : undefined,
+      oneOf:
+        typeof oneOf === "string"
+          ? [
+              {
+                const: varValue,
+              },
+            ]
+          : undefined,
     };
 
     return (
       <RjsfSelectWidget
         {...props}
         disabled
-        options={{ enumOptions }}
+        options={{ options }}
         schema={schema}
-        value={values}
+        value={enumValues}
       />
     );
+  }
+
+  if (!Array.isArray(props.options.enumOptions)) {
+    return <div>Please fill the values for each option.</div>;
   }
 
   return <RjsfSelectWidget {...props} />;

@@ -219,6 +219,8 @@ const FieldEditor: React.FC<{
             type: uiType.propertyType,
           },
           label: "Default value",
+          // RJSF Form throws when Dropdown with labels selected, no options set and default is empty
+          isRequired: uiType.extra === "selectWithLabels",
         };
 
   return (
@@ -270,6 +272,7 @@ const FieldEditor: React.FC<{
                 type: "string",
               },
             }}
+            isRequired
           />
         </>
       )}
@@ -286,8 +289,10 @@ const FieldEditor: React.FC<{
                 const: { type: "string" },
                 title: { type: "string" },
               },
+              required: ["const"],
             },
           }}
+          isRequired
         />
       )}
 
