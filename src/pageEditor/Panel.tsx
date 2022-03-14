@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { PageEditorTabContext, useDevConnection } from "@/pageEditor/context";
 import Editor from "@/pageEditor/Editor";
 import store, { persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
-import { Provider, useSelector } from "react-redux";
+import { Provider } from "react-redux";
 import { useAsyncEffect } from "use-async-effect";
 import blockRegistry from "@/blocks/registry";
 import { ModalProvider } from "@/components/ConfirmationModal";
@@ -34,8 +34,6 @@ import registerEditors from "@/contrib/editors";
 import Loader from "@/components/Loader";
 import ErrorBanner from "@/pageEditor/ErrorBanner";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { reportEvent } from "@/telemetry/events";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
 // Register the built-in bricks
 registerEditors();
@@ -47,23 +45,10 @@ registerDefaultWidgets();
 
 const Panel: React.VoidFunctionComponent = () => {
   const context = useDevConnection();
-  const sessionId = useSelector(selectSessionId);
 
   useAsyncEffect(async () => {
     await blockRegistry.fetch();
   }, []);
-
-  useEffect(() => {
-    reportEvent("PageEditorSessionStart", {
-      sessionId,
-    });
-
-    return () => {
-      reportEvent("PageEditorSessionEnd", {
-        sessionId,
-      });
-    };
-  }, [sessionId]);
 
   return (
     <Provider store={store}>
