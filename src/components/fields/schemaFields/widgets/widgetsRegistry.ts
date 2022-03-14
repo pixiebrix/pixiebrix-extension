@@ -41,7 +41,9 @@ type Widgets = {
 };
 
 const UnsetWidget: React.VFC = () => {
-  throw new Error("Widget not set");
+  throw new Error(
+    "An input widget not set. Did you forget to register it in registerDefaultWidgets?"
+  );
 };
 
 /**
