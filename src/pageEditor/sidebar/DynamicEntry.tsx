@@ -31,6 +31,8 @@ import { UUID } from "@/core";
 import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
+import { reportEvent } from "@/telemetry/events";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
 /**
  * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
@@ -43,6 +45,7 @@ const DynamicEntry: React.FunctionComponent<{
   isNested?: boolean;
 }> = ({ item, available, active, isNested = false }) => {
   const dispatch = useDispatch();
+  const sessionId = useSelector(selectSessionId);
 
   const isDirty = useSelector<RootState>(
     (x) => x.editor.dirty[item.uuid] ?? false
@@ -66,7 +69,14 @@ const DynamicEntry: React.FunctionComponent<{
       key={`dynamic-${item.uuid}`}
       onMouseEnter={isButton ? async () => showOverlay(item.uuid) : undefined}
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
-      onClick={() => dispatch(actions.selectElement(item.uuid))}
+      onClick={() => {
+        reportEvent("PageEditorOpen", {
+          sessionId,
+          extensionId: item.uuid,
+        });
+
+        dispatch(actions.selectElement(item.uuid));
+      }}
     >
       <span
         className={cx(styles.icon, {
