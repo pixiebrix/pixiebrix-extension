@@ -27,7 +27,7 @@ import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/pageEditor/store";
 import cx from "classnames";
-import { getIdForElement } from "@/pageEditor/sidebar/Sidebar";
+import { selectRecipeIsDirty } from "@/pageEditor/slices/editorSelectors";
 
 type RecipeEntryProps = {
   recipeId: RegistryId;
@@ -49,15 +49,9 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
     () => recipes.find((recipe) => recipe.metadata.id === recipeId),
     [recipeId, recipes]
   );
-  const dirtyElements = useSelector((state: RootState) => state.editor.dirty);
-  const dirtyOptions = useSelector(
-    (state: RootState) => state.editor.dirtyRecipeOptionsById
+  const isDirty = useSelector((state: RootState) =>
+    selectRecipeIsDirty(state, recipeId, elements)
   );
-  const hasDirtyElements = elements.some(
-    (element) => dirtyElements[getIdForElement(element)]
-  );
-  const hasDirtyOptions = recipeId in dirtyOptions;
-  const isDirty = hasDirtyElements || hasDirtyOptions;
 
   const caretIcon = expanded ? faCaretDown : faCaretRight;
 

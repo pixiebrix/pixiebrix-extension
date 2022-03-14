@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EditorState } from "@/pageEditor/slices/editorSlice";
+import { EditorState, FormState } from "@/pageEditor/slices/editorSlice";
+import { getIdForElement } from "@/pageEditor/sidebar/Sidebar";
+import { IExtension, RegistryId } from "@/core";
+import { createSelector } from "reselect";
 
 type RootState = { editor: EditorState };
 
@@ -41,5 +44,26 @@ export const selectShowV3UpgradeMessageForActiveElement = (
   return state.editor.showV3UpgradeMessageByElement[activeElementId] ?? false;
 };
 
+const selectDirty = (state: RootState) => state.editor.dirty;
+
 export const selectDirtyRecipeOptions = (state: RootState) =>
   state.editor.dirtyRecipeOptionsById;
+
+export const selectRecipeIsDirty = createSelector(
+  [
+    selectDirty,
+    selectDirtyRecipeOptions,
+    (
+      state: RootState,
+      recipeId: RegistryId,
+      elements: Array<IExtension | FormState>
+    ) => ({ recipeId, elements }),
+  ],
+  (dirty, dirtyRecipeOptionsById, { recipeId, elements }) => {
+    const hasDirtyElements = elements.some(
+      (element) => dirty[getIdForElement(element)]
+    );
+    const hasDirtyOptions = recipeId in dirtyRecipeOptionsById;
+    return hasDirtyElements || hasDirtyOptions;
+  }
+);
