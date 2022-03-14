@@ -32,7 +32,7 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
  *
  * @see: IntegerWidget
  */
-const NumberWidget: React.FC<
+const NumberWidget: React.VFC<
   SchemaFieldProps &
     FormControlProps & {
       step?: number;

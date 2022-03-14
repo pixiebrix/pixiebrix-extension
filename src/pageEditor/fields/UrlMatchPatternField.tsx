@@ -16,10 +16,17 @@
  */
 
 import React from "react";
-import UrlMatchPatternWidget, {
-  Shortcut,
-} from "@/pageEditor/components/UrlMatchPatternWidget";
+import { Shortcut } from "@/pageEditor/components/urlMatchPatternWidgetTypes";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import widgetsRegistry from "@/components/fields/schemaFields/widgets/widgetsRegistry";
+
+export type UrlMatchPatternFieldProps = {
+  name: string;
+  disabled?: boolean;
+  label?: React.ReactNode;
+  description?: React.ReactNode;
+  shortcuts?: Shortcut[];
+};
 
 const defaultDescription = (
   <span>
@@ -35,13 +42,7 @@ const defaultDescription = (
   </span>
 );
 
-const UrlMatchPatternField: React.FC<{
-  name: string;
-  disabled?: boolean;
-  label?: React.ReactNode;
-  description?: React.ReactNode;
-  shortcuts?: Shortcut[];
-}> = ({
+const UrlMatchPatternField: React.VFC<UrlMatchPatternFieldProps> = ({
   name,
   disabled,
   label = "Sites",
@@ -50,7 +51,7 @@ const UrlMatchPatternField: React.FC<{
 }) => (
   <ConnectedFieldTemplate
     name={name}
-    as={UrlMatchPatternWidget}
+    as={widgetsRegistry.UrlMatchPatternWidget}
     disabled={disabled}
     label={label}
     description={description}

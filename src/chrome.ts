@@ -137,3 +137,16 @@ export async function setReduxStorage<T extends JsonValue = JsonValue>(
 ): Promise<void> {
   await browser.storage.local.set({ [storageKey]: JSON.stringify(value) });
 }
+
+export async function onTabClose(watchedTabId: number): Promise<void> {
+  await new Promise<void>((resolve) => {
+    const listener = (closedTabId: number) => {
+      if (closedTabId === watchedTabId) {
+        resolve();
+        browser.tabs.onRemoved.removeListener(listener);
+      }
+    };
+
+    browser.tabs.onRemoved.addListener(listener);
+  });
+}

@@ -23,10 +23,16 @@ import {
   HTTPS_PATTERN,
   SITES_PATTERN,
 } from "@/permissions/patterns";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
-import { Form } from "react-bootstrap";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { LinkButton } from "@/components/LinkButton";
+import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
+import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
+import {
+  Shortcut,
+  UrlMatchPatternWidgetProps,
+} from "./urlMatchPatternWidgetTypes";
+import { FormState } from "@/pageEditor/slices/editorSlice";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;
@@ -36,11 +42,6 @@ const UrlMatchShortcut: React.FC<{
     {caption}
   </LinkButton>
 );
-
-export type Shortcut = {
-  caption: string;
-  getPattern: () => Promise<string>;
-};
 
 export const DEFAULT_SHORTCUTS: Shortcut[] = [
   {
@@ -61,16 +62,13 @@ export const DEFAULT_SHORTCUTS: Shortcut[] = [
   { caption: "All URLs", getPattern: async () => SITES_PATTERN },
 ];
 
-const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
-  const { name, disabled } = props;
+const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
+  props
+) => {
+  const { name, disabled, shortcuts = DEFAULT_SHORTCUTS } = props;
 
-  // XXX: the generic type CustomFieldWidget doesn't seem to support exposing custom props for the widget
-  const shortcuts =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ((props as any).shortcuts as Shortcut[]) ?? DEFAULT_SHORTCUTS;
-
-  // XXX: can we use props.onChange here? Maybe not unless we construct an event?
-  const { setValue } = useField(name)[2];
+  const { values: formState } = useFormikContext<FormState>();
+  const [{ value }, , { setValue }] = useField<string[]>(name);
 
   return (
     <>
@@ -82,13 +80,25 @@ const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
               key={caption}
               caption={caption}
               onClick={async () => {
-                setValue(await getPattern());
+                setValue([...value, await getPattern()]);
               }}
             />
           ))}
         </div>
       )}
-      <Form.Control type="text" {...props} />
+      <FieldRuntimeContext.Provider
+        value={{
+          apiVersion:
+            formState.apiVersion ?? PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+          allowExpressions: false,
+        }}
+      >
+        <ArrayWidget
+          schema={{ items: { type: "string" } }}
+          addButtonCaption="Add Site"
+          {...props}
+        />
+      </FieldRuntimeContext.Provider>
     </>
   );
 };

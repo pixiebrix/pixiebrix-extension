@@ -19,7 +19,7 @@ import React from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Form } from "react-bootstrap";
 
-const WorkshopMessageWidget: React.FC<Partial<SchemaFieldProps>> = () => (
+const WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>> = () => (
   <Form.Control
     className="px-1"
     plaintext

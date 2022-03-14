@@ -56,11 +56,15 @@ import { SettingsState } from "@/store/settingsTypes";
 import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
 import { selectSettings } from "@/store/settingsSelectors";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 // Register the built-in bricks
 registerEditors();
 registerBuiltinBlocks();
 registerContribBlocks();
+
+// Register Widgets
+registerDefaultWidgets();
 
 const RequireInstall: React.FunctionComponent = ({ children }) => {
   const mode = useSelector<{ settings: SettingsState }, string>(

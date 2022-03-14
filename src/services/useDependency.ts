@@ -24,11 +24,10 @@ import {
   ServiceDependency,
 } from "@/core";
 import { castArray, head } from "lodash";
-import { locator } from "@/background/locator";
 import registry from "@/services/registry";
 import { Service } from "@/types";
 import { requestPermissions } from "@/utils/permissions";
-import { containsPermissions } from "@/background/messenger/api";
+import { containsPermissions, services } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 
 type Listener = () => void;
@@ -65,7 +64,7 @@ function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
 
   const [serviceResult] = useAsyncState(async () => {
     if (dependency?.config) {
-      const localConfig = await locator.locate(
+      const localConfig = await services.locate(
         dependency.id,
         dependency.config
       );
