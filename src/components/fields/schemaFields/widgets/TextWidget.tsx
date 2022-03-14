@@ -26,21 +26,35 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import { Form, FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
-import { TemplateEngine } from "@/core";
+import { Schema, TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
-import {
-  isKeyStringField,
-  schemaSupportsTemplates,
-} from "@/components/fields/schemaFields/BasicSchemaField";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
+import {
+  getToggleOptions,
+  isKeyStringField,
+} from "@/components/fields/schemaFields/getToggleOptions";
+
+function schemaSupportsTemplates(schema: Schema): boolean {
+  const options = getToggleOptions({
+    fieldSchema: schema,
+    isRequired: false,
+    customToggleModes: [],
+    isObjectProperty: false,
+    isArrayItem: false,
+    allowExpressions: true,
+  });
+  return options.some(
+    (option) => option.value === "string" && option.label === "Text"
+  );
+}
 
 function isVarValue(value: string): boolean {
   return value.startsWith("@") && !value.includes(" ");
 }
 
-const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
+const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   name,
   schema,
   isRequired,

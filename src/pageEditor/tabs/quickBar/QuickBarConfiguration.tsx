@@ -23,13 +23,7 @@ import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import { contextOptions } from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
-import { DEFAULT_SHORTCUTS } from "@/pageEditor/components/UrlMatchPatternWidget";
 import IconWidget from "@/components/fields/IconWidget";
-
-const matchPatternShortcuts = [
-  { caption: "None", getPattern: async () => "" },
-  ...DEFAULT_SHORTCUTS,
-];
 
 const QuickBarConfiguration: React.FC<{
   isLocked: boolean;
@@ -57,7 +51,7 @@ const QuickBarConfiguration: React.FC<{
       />
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.documentUrlPatterns[0]"
+        name="extensionPoint.definition.documentUrlPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
       />
     </FieldSection>
@@ -89,8 +83,7 @@ const QuickBarConfiguration: React.FC<{
       </ConnectedFieldTemplate>
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns[0]"
-        shortcuts={matchPatternShortcuts}
+        name="extensionPoint.definition.isAvailable.matchPatterns"
         description={
           <span>
             URL match patterns give PixieBrix access to a page without you first

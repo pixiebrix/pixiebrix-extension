@@ -64,9 +64,6 @@ jest.mock("@/contentScript/messenger/api", () => ({
 }));
 
 jest.mock("@/background/messenger/api", () => ({
-  // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
-  uninstallContextMenu: jest.fn().mockResolvedValue(undefined),
-  containsPermissions: jest.fn().mockResolvedValue(true),
   traces: {
     // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
     clear: jest.fn().mockResolvedValue(undefined),
@@ -104,6 +101,9 @@ jest.mock("webextension-polyfill", () => {
     default: {
       // Keep the existing local storage mock
       ...mock,
+      permissions: {
+        contains: jest.fn().mockResolvedValue(true),
+      },
       runtime: {
         openOptionsPage: jest.fn(),
         getManifest: jest.fn().mockReturnValue({
@@ -119,7 +119,6 @@ jest.mock("@/background/installer", () => ({
 }));
 
 import { isLinked, readAuthData } from "@/auth/token";
-import { containsPermissions } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { isUpdateAvailable } from "@/background/installer";
 import { getSettingsState } from "@/store/settingsStorage";
@@ -128,7 +127,7 @@ const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;
 const getManifestMock = browser.runtime.getManifest as jest.Mock;
 const openOptionsPageMock = browser.runtime.openOptionsPage as jest.Mock;
-const containsPermissionsMock = containsPermissions as jest.Mock;
+const containsPermissionsMock = browser.permissions.contains as jest.Mock;
 const refreshRegistriesMock = refreshRegistries as jest.Mock;
 const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
 const getSettingsStateMock = getSettingsState as jest.Mock;

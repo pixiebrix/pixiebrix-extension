@@ -35,8 +35,13 @@ import {
 } from "@/components/formBuilder/formEditor.testCases";
 import selectEvent from "react-select-event";
 import userEvent from "@testing-library/user-event";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
+
+beforeAll(() => {
+  registerDefaultWidgets();
+});
 
 describe("FormEditor", () => {
   const defaultProps: Except<FormEditorProps, "activeField"> = {
