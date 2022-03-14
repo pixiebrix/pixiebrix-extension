@@ -33,6 +33,7 @@ import {
   replaceStringInArray,
   stringifyUiType,
   UiType,
+  UiTypeExtra,
   validateNextPropertyName,
 } from "@/components/formBuilder/formBuilderHelpers";
 import { Schema, SchemaPropertyType } from "@/core";
@@ -134,11 +135,16 @@ const FieldEditor: React.FC<{
     // eslint-disable-next-line security/detect-object-injection
     const uiWidget = uiSchema?.[propertyName]?.[UI_WIDGET];
     const propertyFormat = propertySchema.format;
+    const extra: UiTypeExtra =
+      uiWidget === "select" && Array.isArray(propertySchema.oneOf)
+        ? "selectWithLabels"
+        : undefined;
 
     const uiType = stringifyUiType({
       propertyType,
       uiWidget,
       propertyFormat,
+      extra,
     });
 
     const selected = fieldTypes.find((option) => option.value === uiType);
@@ -200,6 +206,7 @@ const FieldEditor: React.FC<{
           propertyType: "null",
           uiWidget: undefined,
           propertyFormat: undefined,
+          extra: undefined,
         }
       : parseUiType(selectedUiTypeOption.value);
 
@@ -264,18 +271,24 @@ const FieldEditor: React.FC<{
               },
             }}
           />
-
-          <SchemaField
-            label="Option labels"
-            name={getFullFieldName("enumNames")}
-            schema={{
-              type: "array",
-              items: {
-                type: "string",
-              },
-            }}
-          />
         </>
+      )}
+
+      {propertySchema.oneOf && (
+        <SchemaField
+          label="Options"
+          name={getFullFieldName("oneOf")}
+          schema={{
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                const: { type: "string" },
+                title: { type: "string" },
+              },
+            },
+          }}
+        />
       )}
 
       <FieldTemplate
