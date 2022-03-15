@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,15 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RecipeDefinition } from "@/types/definitions";
-import { useCallback } from "react";
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function useResetRecipe(recipe: RecipeDefinition): () => void {
-  // Stub
-  const reset = useCallback(() => {}, []);
-
-  return reset;
+.paneContent {
+  height: 100%;
+  width: 100%;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: stretch;
+  padding-top: 10px;
 }
 
-export default useResetRecipe;
+.configPanel {
+  flex-grow: 2;
+  flex-basis: 0;
+  overflow-y: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.dataPanel {
+  flex-grow: 1;
+  flex-basis: 0;
+  overflow-y: auto;
+  max-width: 360px;
+  padding-left: 10px;
+  padding-right: 10px;
+}

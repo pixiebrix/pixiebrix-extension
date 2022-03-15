@@ -43,10 +43,7 @@ import {
 } from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import {
-  selectActiveElement,
-  selectActiveRecipe,
-} from "@/pageEditor/slices/editorSelectors";
+import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import Loader from "@/components/Loader";
 import RecipePane from "@/pageEditor/panes/RecipePane";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
@@ -88,7 +85,9 @@ const Editor: React.FunctionComponent = () => {
   } = useSelector(selectEditor);
 
   const selectedElement = useSelector(selectActiveElement);
-  const selectedRecipe = useSelector(selectActiveRecipe);
+  const selectedRecipe = recipes?.find(
+    (recipe) => recipe.metadata.id === activeRecipeId
+  );
 
   const cancelInsert = useCallback(async () => {
     dispatch(actions.toggleInsert(null));

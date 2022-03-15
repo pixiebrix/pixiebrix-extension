@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EditorState } from "@/pageEditor/slices/editorSlice";
+import { EditorState, FormState } from "@/pageEditor/slices/editorSlice";
+import { IExtension, RegistryId } from "@/core";
+import { createSelector } from "reselect";
+import { isExtension } from "@/pageEditor/sidebar/common";
 
 type RootState = { editor: EditorState };
 
@@ -33,12 +36,6 @@ export const selectActiveElement = (state: RootState) => {
 export const selectActiveRecipeId = ({ editor }: RootState) =>
   editor.activeRecipeId;
 
-export const selectActiveRecipe = (state: RootState) => {
-  const activeRecipeId = selectActiveRecipeId(state);
-  // eslint-disable-next-line security/detect-object-injection -- lookup key taken from state
-  return state.editor.recipesById[activeRecipeId];
-};
-
 export const selectShowV3UpgradeMessageForActiveElement = (
   state: RootState
 ) => {
@@ -46,3 +43,40 @@ export const selectShowV3UpgradeMessageForActiveElement = (
   // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
   return state.editor.showV3UpgradeMessageByElement[activeElementId] ?? false;
 };
+
+const selectDirty = (state: RootState) => state.editor.dirty;
+
+export const selectDirtyRecipeOptions = (state: RootState) =>
+  state.editor.dirtyRecipeOptionsById;
+
+export const selectDirtyOptionsForRecipe = createSelector(
+  [
+    selectDirtyRecipeOptions,
+    (state: RootState, recipeId: RegistryId) => recipeId,
+  ],
+  // eslint-disable-next-line security/detect-object-injection
+  (dirtyRecipeOptionsById, recipeId) => dirtyRecipeOptionsById[recipeId]
+);
+
+export function getIdForElement(element: IExtension | FormState): string {
+  return isExtension(element) ? element.id : element.uuid;
+}
+
+export const selectRecipeIsDirty = createSelector(
+  [
+    selectDirty,
+    selectDirtyRecipeOptions,
+    (
+      state: RootState,
+      recipeId: RegistryId,
+      elements: Array<IExtension | FormState>
+    ) => ({ recipeId, elements }),
+  ],
+  (dirty, dirtyRecipeOptionsById, { recipeId, elements }) => {
+    const hasDirtyElements = elements.some(
+      (element) => dirty[getIdForElement(element)]
+    );
+    const hasDirtyOptions = recipeId in dirtyRecipeOptionsById;
+    return hasDirtyElements || hasDirtyOptions;
+  }
+);
