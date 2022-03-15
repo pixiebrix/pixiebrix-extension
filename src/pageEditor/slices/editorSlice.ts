@@ -415,10 +415,6 @@ export const editorSlice = createSlice({
       const { payload: options } = action;
       state.dirtyRecipeOptionsById[recipeId] = options;
     },
-    resetRecipeOptions(state, action: PayloadAction<RegistryId>) {
-      const { payload: recipeId } = action;
-      delete state.dirtyRecipeOptionsById[recipeId];
-    },
     editRecipeMetadata(state, action: PayloadAction<RecipeMetadataFormState>) {
       const recipeId = state.activeRecipeId;
       if (recipeId == null) {
@@ -428,9 +424,10 @@ export const editorSlice = createSlice({
       const { payload: metadata } = action;
       state.dirtyRecipeMetadataById[recipeId] = metadata;
     },
-    resetRecipeMetadata(state, action: PayloadAction<RegistryId>) {
+    resetRecipeMetadataAndOptions(state, action: PayloadAction<RegistryId>) {
       const { payload: recipeId } = action;
       delete state.dirtyRecipeMetadataById[recipeId];
+      delete state.dirtyRecipeOptionsById[recipeId];
     },
   },
 });

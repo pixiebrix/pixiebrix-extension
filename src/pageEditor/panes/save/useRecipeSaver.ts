@@ -93,8 +93,7 @@ function useRecipeSaver(): RecipeSaver {
         setIsSaving(false);
       }
 
-      dispatch(actions.resetRecipeOptions(recipe.metadata.id));
-      dispatch(actions.resetRecipeMetadata(recipe.metadata.id));
+      dispatch(actions.resetRecipeMetadataAndOptions(recipe.metadata.id));
     },
     [
       dirtyRecipeMetadata,
