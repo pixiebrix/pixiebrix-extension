@@ -91,15 +91,15 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
 
   const tabItems: TabItem[] = [
     {
-      tabName: EDIT_TAB_NAME,
+      name: EDIT_TAB_NAME,
       TabContent: EditRecipe,
     },
     {
-      tabName: "Blueprint Options",
+      name: "Blueprint Options",
       TabContent: RecipeOptions,
     },
     {
-      tabName: "Logs",
+      name: "Logs",
       badgeCount: unreadLogsCount,
       badgeVariant: logsBadgeVariant,
       TabContent: Logs,
@@ -167,8 +167,8 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
         tabs={tabItems}
         actionButtons={buttons}
         defaultTabName={defaultTabName}
-        onChangeTab={({ tabName }) => {
-          setDefaultTabName(tabName);
+        onChangeTab={({ name }) => {
+          setDefaultTabName(name);
         }}
       />
       <AskQuestionModal

@@ -23,7 +23,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export interface TabItem {
-  tabName: string;
+  name: string;
   badgeCount?: number;
   badgeVariant?: Variant;
   TabContent: React.VoidFunctionComponent;
@@ -45,7 +45,7 @@ const EditorTabLayout: React.FC<{
   onChangeTab?: (tab: TabItem) => void;
 }> = ({ tabs, actionButtons, defaultTabName, onChangeTab }) => {
   const [activeTabName, setActiveTabName] = useState(
-    defaultTabName ?? tabs[0].tabName
+    defaultTabName ?? tabs[0].name
   );
 
   return (
@@ -53,7 +53,7 @@ const EditorTabLayout: React.FC<{
       <Tab.Container
         activeKey={activeTabName}
         onSelect={(eventKey: string) => {
-          const tab = tabs.find((tab) => tab.tabName === eventKey);
+          const tab = tabs.find((tab) => tab.name === eventKey);
           if (onChangeTab) {
             onChangeTab(tab);
           }
@@ -65,10 +65,10 @@ const EditorTabLayout: React.FC<{
           onSelect={setActiveTabName}
           className={styles.nav}
         >
-          {tabs.map(({ tabName, badgeCount, badgeVariant }) => (
-            <Nav.Item key={`nav-tab-${tabName}`} className={styles.navItem}>
-              <Nav.Link eventKey={tabName} className={styles.navLink}>
-                {tabName}
+          {tabs.map(({ name, badgeCount, badgeVariant }) => (
+            <Nav.Item key={`nav-tab-${name}`} className={styles.navItem}>
+              <Nav.Link eventKey={name} className={styles.navLink}>
+                {name}
                 {badgeCount && badgeVariant && (
                   <Badge className={styles.badge} variant={badgeVariant}>
                     {badgeCount}
@@ -108,14 +108,14 @@ const EditorTabLayout: React.FC<{
         </Nav>
 
         <Tab.Content className={styles.content}>
-          {tabs.map(({ tabName, TabContent, mountWhenActive }) => (
+          {tabs.map(({ name, TabContent, mountWhenActive }) => (
             <Tab.Pane
-              key={tabName}
-              eventKey={tabName}
+              key={name}
+              eventKey={name}
               mountOnEnter={mountWhenActive}
               unmountOnExit={mountWhenActive}
             >
-              <TabContent key={tabName} />
+              <TabContent key={name} />
             </Tab.Pane>
           ))}
         </Tab.Content>
