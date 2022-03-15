@@ -41,6 +41,7 @@ import settingsSlice from "@/store/settingsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 import extensionsSlice from "@/store/extensionsSlice";
+import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { SettingsState } from "@/store/settingsTypes";
 import { LogRootState } from "@/components/logViewer/logViewerTypes";
 import { logSlice, logActions } from "@/components/logViewer/logSlice";
@@ -83,6 +84,7 @@ const store = configureStore({
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     editor: editorSlice.reducer,
+    session: sessionSlice.reducer,
     savingExtension: savingExtensionSlice.reducer,
     runtime: runtimeSlice.reducer,
     formBuilder: formBuilderSlice.reducer,

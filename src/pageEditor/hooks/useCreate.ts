@@ -16,7 +16,7 @@
  */
 
 import { editorSlice, FormState } from "@/pageEditor/slices/editorSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { getErrorMessage, isAxiosError } from "@/errors";
@@ -35,6 +35,7 @@ import { useGetEditablePackagesQuery } from "@/services/api";
 import { UnknownObject } from "@/types";
 import extensionsSlice from "@/store/extensionsSlice";
 import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -114,6 +115,7 @@ function useCreate(): CreateCallback {
   //  fire-and-forget notification).
 
   const dispatch = useDispatch();
+  const sessionId = useSelector(selectSessionId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
 
   return useCallback(
@@ -178,6 +180,7 @@ function useCreate(): CreateCallback {
         }
 
         reportEvent("PageEditorCreate", {
+          sessionId,
           type: element.type,
         });
 
@@ -233,7 +236,7 @@ function useCreate(): CreateCallback {
         return "Error saving extension";
       }
     },
-    [dispatch, editablePackages]
+    [dispatch, sessionId, editablePackages]
   );
 }
 
