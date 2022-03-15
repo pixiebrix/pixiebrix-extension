@@ -107,7 +107,7 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
     );
   }
 
-  const noOptions = isEmpty(recipe.options?.schema?.properties);
+  const noOptions = isEmpty(initialValues.optionsDefinition.schema.properties);
 
   return (
     <div className={styles.paneContent}>
