@@ -49,6 +49,15 @@ const selectDirty = (state: RootState) => state.editor.dirty;
 export const selectDirtyRecipeOptions = (state: RootState) =>
   state.editor.dirtyRecipeOptionsById;
 
+export const selectDirtyOptionsForRecipe = createSelector(
+  [
+    selectDirtyRecipeOptions,
+    (state: RootState, recipeId: RegistryId) => recipeId,
+  ],
+  // eslint-disable-next-line security/detect-object-injection
+  (dirtyRecipeOptionsById, recipeId) => dirtyRecipeOptionsById[recipeId]
+);
+
 export function getIdForElement(element: IExtension | FormState): string {
   return isExtension(element) ? element.id : element.uuid;
 }

@@ -45,21 +45,23 @@ import { useGetRecipesQuery } from "@/services/api";
 import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
 
-const EDIT_TAB_NAME = "Edit";
-
 const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   const { data: recipes } = useGetRecipesQuery();
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const recipe = recipes.find(
     (recipe) => recipe.metadata.id === activeRecipeId
   );
-
   const [showQuestionModal, setShowQuestionModal] = useState(false);
-  const [layoutKey, setLayoutKey] = useState(1);
-  const resetLayout = useCallback(() => {
-    setLayoutKey(layoutKey * -1);
-  }, [layoutKey]);
-  const [defaultTabName, setDefaultTabName] = useState(EDIT_TAB_NAME);
+
+  // We need to force the component to re-render when the recipe is reset
+  // from the action button, or when a different recipe is selected, so
+  // we'll use a key prop on the tab layout that is composed of a useState()
+  // variable counter that we can increment manually, and the recipeId.
+  const [layoutCounter, setLayoutCounter] = useState(0);
+  const layoutKey = `${activeRecipeId}-${layoutCounter}`;
+  const forceRefreshLayout = useCallback(() => {
+    setLayoutCounter(layoutCounter + 1);
+  }, [layoutCounter]);
 
   const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
   const { showConfirmation } = useModals();
@@ -76,8 +78,8 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
     }
 
     dispatch(actions.resetRecipeOptions(recipe.metadata.id));
-    resetLayout();
-  }, [dispatch, recipe.metadata.id, resetLayout, showConfirmation]);
+    forceRefreshLayout();
+  }, [dispatch, forceRefreshLayout, recipe.metadata.id, showConfirmation]);
   const removeRecipe = useRemoveRecipe();
 
   useEffect(() => {
@@ -91,7 +93,7 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
 
   const tabItems: TabItem[] = [
     {
-      name: EDIT_TAB_NAME,
+      name: "Edit",
       TabContent: EditRecipe,
     },
     {
@@ -166,10 +168,6 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
         key={layoutKey}
         tabs={tabItems}
         actionButtons={buttons}
-        defaultTabName={defaultTabName}
-        onChangeTab={({ name }) => {
-          setDefaultTabName(name);
-        }}
       />
       <AskQuestionModal
         showModal={showQuestionModal}

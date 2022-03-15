@@ -42,23 +42,14 @@ const EditorTabLayout: React.FC<{
   tabs: TabItem[];
   actionButtons: ActionButton[];
   defaultTabName?: string;
-  onChangeTab?: (tab: TabItem) => void;
-}> = ({ tabs, actionButtons, defaultTabName, onChangeTab }) => {
+}> = ({ tabs, actionButtons, defaultTabName }) => {
   const [activeTabName, setActiveTabName] = useState(
     defaultTabName ?? tabs[0].name
   );
 
   return (
     <div className={styles.root}>
-      <Tab.Container
-        activeKey={activeTabName}
-        onSelect={(eventKey: string) => {
-          const tab = tabs.find((tab) => tab.name === eventKey);
-          if (onChangeTab) {
-            onChangeTab(tab);
-          }
-        }}
-      >
+      <Tab.Container activeKey={activeTabName}>
         <Nav
           variant="pills"
           activeKey={activeTabName}

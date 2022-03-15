@@ -31,7 +31,10 @@ import FormPreview from "@/components/formBuilder/FormPreview";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import { FIELD_TYPE_OPTIONS } from "@/components/formBuilder/formBuilderHelpers";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveRecipeId,
+  selectDirtyOptionsForRecipe,
+} from "@/pageEditor/slices/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
 import { useGetRecipesQuery } from "@/services/api";
 import { Formik } from "formik";
@@ -42,6 +45,7 @@ import { getErrorMessage } from "@/errors";
 import { propertiesToSchema } from "@/validators/generic";
 import { Schema, SchemaProperties, UiSchema } from "@/core";
 import { sort } from "semver";
+import { RootState } from "@/pageEditor/store";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter(
   (type) => !["File", "Image crop"].includes(type.label)
@@ -68,7 +72,12 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
     "ui:order": sort(Object.keys(schema.properties ?? {})),
   };
   const options: OptionsDefinition = { schema, uiSchema };
-  const initialValues = { optionsDefinition: options };
+
+  const dirtyOptions = useSelector((state: RootState) =>
+    selectDirtyOptionsForRecipe(state, recipeId)
+  );
+
+  const initialValues = { optionsDefinition: dirtyOptions ?? options };
 
   const dispatch = useDispatch();
   const prevOptions = useRef(initialValues.optionsDefinition);
