@@ -84,6 +84,15 @@ const appBaseQuery: BaseQueryFn<{
   }
 };
 
+type UnnormalizedOptionsDefinition = {
+  schema: Schema | SchemaProperties;
+  uiSchema?: UiSchema;
+};
+
+type UnnormalizedRecipeDefinition = Exclude<RecipeDefinition, "options"> & {
+  options?: UnnormalizedOptionsDefinition;
+};
+
 /**
  * Fix hand-crafted recipe options from the workshop
  */
@@ -247,11 +256,11 @@ export const appApi = createApi({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
-    getRecipes: builder.query<RecipeDefinition[], void>({
+    getRecipes: builder.query<UnnormalizedRecipeDefinition[], void>({
       query: () => ({ url: "/api/recipes/", method: "get" }),
       providesTags: ["Recipes"],
       transformResponse(
-        baseQueryReturnValue: RecipeDefinition[]
+        baseQueryReturnValue: UnnormalizedRecipeDefinition[]
       ): RecipeDefinition[] {
         return produce<RecipeDefinition[]>(baseQueryReturnValue, (draft) => {
           for (const recipe of draft) {
