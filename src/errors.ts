@@ -309,11 +309,14 @@ export function hasBusinessRootCause(
 export function isPromiseRejectionEvent(
   event: unknown
 ): event is PromiseRejectionEvent {
+  // https://caniuse.com/unhandledrejection
   return (
     event &&
     typeof event === "object" &&
-    "promise" in event &&
-    "reason" in event
+    "type" in event &&
+    ["unhandledrejection", "rejectionhandled"].includes(
+      (event as Partial<Event>).type
+    )
   );
 }
 
