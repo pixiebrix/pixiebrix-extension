@@ -17,7 +17,7 @@
 
 import styles from "./Editor.module.scss";
 
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import Sidebar from "@/pageEditor/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/pageEditor/store";
@@ -49,6 +49,8 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import Loader from "@/components/Loader";
 import RecipePane from "@/pageEditor/panes/RecipePane";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { reportEvent } from "@/telemetry/events";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -58,6 +60,19 @@ const Editor: React.FunctionComponent = () => {
   const { data: recipes, isLoading: loadingRecipes } = useGetRecipesQuery();
   const { isLoading: authLoading } = useGetAuthQuery();
   const dispatch = useDispatch();
+
+  const sessionId = useSelector(selectSessionId);
+  useEffect(() => {
+    reportEvent("PageEditorSessionStart", {
+      sessionId,
+    });
+
+    return () => {
+      reportEvent("PageEditorSessionEnd", {
+        sessionId,
+      });
+    };
+  }, [sessionId]);
 
   // Async fetch marketplace content to the Redux so it's pre-fetched for rendering in the Brick Selection modal
   useGetMarketplaceListingsQuery();

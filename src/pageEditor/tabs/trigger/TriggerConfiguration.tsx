@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { ChangeEvent } from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
@@ -23,9 +23,16 @@ import FieldSection from "@/pageEditor/fields/FieldSection";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
 import { TriggerFormState } from "@/pageEditor/extensionPoints/trigger";
-import { Trigger } from "@/extensionPoints/triggerExtension";
+import { DebounceOptions, Trigger } from "@/extensionPoints/triggerExtension";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
+import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import { isEmpty, partial } from "lodash";
+import { joinName } from "@/utils";
+import SwitchButtonWidget, {
+  CheckBoxLike,
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval"].includes(trigger);
@@ -39,39 +46,43 @@ function supportsTargetMode(trigger: Trigger) {
 const TriggerConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => {
-  const [{ value: trigger }] = useField<Trigger>(
-    "extensionPoint.definition.trigger"
+  const fieldName = partial(joinName, "extensionPoint.definition");
+
+  const [{ value: trigger }] = useField<Trigger>(fieldName("trigger"));
+
+  const [{ value: debounce }] = useField<DebounceOptions | null>(
+    fieldName("debounce")
   );
+
   const { setFieldValue } = useFormikContext<TriggerFormState>();
 
-  const onTriggerChange = useCallback(
-    ({ currentTarget }: React.FormEvent<HTMLSelectElement>) => {
-      const nextTrigger = currentTarget.value as Trigger;
+  const onTriggerChange = ({
+    currentTarget,
+  }: React.FormEvent<HTMLSelectElement>) => {
+    const nextTrigger = currentTarget.value as Trigger;
 
-      if (!supportsSelector(nextTrigger)) {
-        setFieldValue("extensionPoint.definition.rootSelector", null);
-        setFieldValue("extensionPoint.definition.attachMode", null);
-      }
+    if (!supportsSelector(nextTrigger)) {
+      setFieldValue(fieldName("rootSelector"), null);
+      setFieldValue(fieldName("attachMode"), null);
+    }
 
-      if (!supportsTargetMode(nextTrigger)) {
-        setFieldValue("extensionPoint.definition.targetMode", null);
-      }
+    if (!supportsTargetMode(nextTrigger)) {
+      setFieldValue(fieldName("targetMode"), null);
+    }
 
-      if (nextTrigger !== "interval") {
-        setFieldValue("extensionPoint.definition.intervalMillis", null);
-        setFieldValue("extensionPoint.definition.background", null);
-      }
+    if (nextTrigger !== "interval") {
+      setFieldValue(fieldName("intervalMillis"), null);
+      setFieldValue(fieldName("background"), null);
+    }
 
-      setFieldValue("extensionPoint.definition.trigger", currentTarget.value);
-    },
-    [setFieldValue]
-  );
+    setFieldValue(fieldName("trigger"), currentTarget.value);
+  };
 
   return (
     <Card>
       <FieldSection title="Configuration">
         <ConnectedFieldTemplate
-          name="extensionPoint.definition.trigger"
+          name={fieldName("trigger")}
           as="select"
           description="Trigger event"
           onChange={onTriggerChange}
@@ -85,19 +96,22 @@ const TriggerConfiguration: React.FC<{
           <option value="dblclick">Double Click</option>
           <option value="blur">Blur</option>
           <option value="mouseover">Mouseover</option>
+          <option value="keydown">Keydown</option>
+          <option value="keyup">Keyup</option>
+          <option value="change">Change</option>
         </ConnectedFieldTemplate>
 
         {trigger === "interval" && (
           <>
             <ConnectedFieldTemplate
-              name="extensionPoint.definition.intervalMillis"
+              name={fieldName("intervalMillis")}
               title="Interval (ms)"
               type="number"
               description="Interval to run the trigger in milliseconds"
               {...makeLockableFieldProps("Interval", isLocked)}
             />
             <ConnectedFieldTemplate
-              name="extensionPoint.definition.background"
+              name={fieldName("background")}
               title="Run in Background"
               as={BooleanWidget}
               description="Run the interval in inactive tabs"
@@ -109,7 +123,7 @@ const TriggerConfiguration: React.FC<{
         {supportsSelector(trigger) && (
           <>
             <ConnectedFieldTemplate
-              name="extensionPoint.definition.rootSelector"
+              name={fieldName("rootSelector")}
               as={LocationWidget}
               selectMode="element"
               description="An element to watch"
@@ -117,7 +131,7 @@ const TriggerConfiguration: React.FC<{
             />
 
             <ConnectedFieldTemplate
-              name="extensionPoint.definition.attachMode"
+              name={fieldName("attachMode")}
               as="select"
               title="Attach Mode"
               description={
@@ -138,7 +152,7 @@ const TriggerConfiguration: React.FC<{
 
         {supportsTargetMode(trigger) && (
           <ConnectedFieldTemplate
-            name="extensionPoint.definition.targetMode"
+            name={fieldName("targetMode")}
             as="select"
             title="Target Mode"
             description={
@@ -156,8 +170,50 @@ const TriggerConfiguration: React.FC<{
           </ConnectedFieldTemplate>
         )}
 
+        <FieldTemplate
+          as={SwitchButtonWidget}
+          description="Debounce the trigger"
+          name="debounce"
+          value={!isEmpty(debounce)}
+          onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+            if (target.value) {
+              setFieldValue(fieldName("debounce"), {
+                waitMillis: 250,
+                leading: false,
+                trailing: true,
+              });
+            } else {
+              setFieldValue(fieldName("debounce"), null);
+            }
+          }}
+          {...makeLockableFieldProps("Debounce", isLocked)}
+        />
+
+        {debounce && (
+          <>
+            <ConnectedFieldTemplate
+              name={fieldName("debounce", "waitMillis")}
+              as={NumberWidget}
+              description="The number of milliseconds to delay"
+              {...makeLockableFieldProps("Delay Millis", isLocked)}
+            />
+            <ConnectedFieldTemplate
+              name={fieldName("debounce", "leading")}
+              as={BooleanWidget}
+              description="Specify invoking on the leading edge of the debounced timeout."
+              {...makeLockableFieldProps("Leading", isLocked)}
+            />
+            <ConnectedFieldTemplate
+              name={fieldName("debounce", "trailing")}
+              as={BooleanWidget}
+              description="Specify invoking on the trailing edge of the debounced timeout."
+              {...makeLockableFieldProps("Trailing", isLocked)}
+            />
+          </>
+        )}
+
         <UrlMatchPatternField
-          name="extensionPoint.definition.isAvailable.matchPatterns"
+          name={fieldName("isAvailable", "matchPatterns")}
           {...makeLockableFieldProps("Sites", isLocked)}
         />
       </FieldSection>
