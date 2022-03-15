@@ -16,7 +16,7 @@
  */
 
 import styles from "./RecipePane.module.scss";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
@@ -59,14 +59,15 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   // variable counter that we can increment manually, and the recipeId.
   const [layoutCounter, setLayoutCounter] = useState(0);
   const layoutKey = `${activeRecipeId}-${layoutCounter}`;
-  const forceRefreshLayout = useCallback(() => {
+  const forceRefreshLayout = () => {
     setLayoutCounter(layoutCounter + 1);
-  }, [layoutCounter]);
+  };
 
   const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
-  const resetRecipe = useCallback(async () => {
+
+  async function resetRecipe() {
     const confirmed = await showConfirmation({
       title: "Reset Blueprint?",
       message:
@@ -79,7 +80,8 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
 
     dispatch(actions.resetRecipeOptions(recipe.metadata.id));
     forceRefreshLayout();
-  }, [dispatch, forceRefreshLayout, recipe.metadata.id, showConfirmation]);
+  }
+
   const removeRecipe = useRemoveRecipe();
 
   useEffect(() => {
@@ -109,50 +111,44 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
     },
   ];
 
-  const buttons = useMemo<ActionButton[]>(() => {
-    const results: ActionButton[] = [];
-
-    results.push(
-      {
-        // Ask a question
-        variant: "info",
-        onClick() {
-          setShowQuestionModal(true);
-        },
-        caption: "Ask a question",
-        icon: faQuestionCircle,
+  const buttons: ActionButton[] = [
+    {
+      // Ask a question
+      variant: "info",
+      onClick() {
+        setShowQuestionModal(true);
       },
-      {
-        // Save
-        variant: "primary",
-        onClick() {
-          void saveRecipe(recipe);
-        },
-        caption: "Save",
-        disabled: isSavingRecipe,
-        icon: faSave,
+      caption: "Ask a question",
+      icon: faQuestionCircle,
+    },
+    {
+      // Save
+      variant: "primary",
+      onClick() {
+        void saveRecipe(recipe);
       },
-      {
-        // Reset
-        variant: "warning",
-        onClick: resetRecipe,
-        caption: "Reset",
-        disabled: isSavingRecipe,
-        icon: faHistory,
+      caption: "Save",
+      disabled: isSavingRecipe,
+      icon: faSave,
+    },
+    {
+      // Reset
+      variant: "warning",
+      onClick: resetRecipe,
+      caption: "Reset",
+      disabled: isSavingRecipe,
+      icon: faHistory,
+    },
+    {
+      // Remove
+      variant: "danger",
+      onClick() {
+        removeRecipe(recipe);
       },
-      {
-        // Remove
-        variant: "danger",
-        onClick() {
-          removeRecipe(recipe);
-        },
-        caption: "Remove",
-        icon: faTrash,
-      }
-    );
-
-    return results;
-  }, [isSavingRecipe, recipe, removeRecipe, resetRecipe, saveRecipe]);
+      caption: "Remove",
+      icon: faTrash,
+    },
+  ];
 
   if (!recipe) {
     return (
