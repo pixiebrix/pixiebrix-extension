@@ -33,7 +33,7 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { Permissions } from "webextension-polyfill";
-import { castArray, cloneDeep, compact, noop } from "lodash";
+import { castArray, cloneDeep, compact, debounce, noop } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
 import { reportEvent } from "@/telemetry/events";
@@ -149,6 +149,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   abstract get targetMode(): TargetMode;
 
+  abstract get debounceOptions(): DebounceOptions;
+
   abstract get triggerSelector(): string | null;
 
   /**
@@ -171,6 +173,15 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    */
   private abortController = new AbortController();
 
+  /**
+   * Run all trigger extensions for all the provided roots.
+   * @private
+   */
+  // Can't set in constructor because the constructor doesn't have access to debounceOptions
+  private debouncedRunTriggersAndNotify?: (
+    ...roots: ReaderRoot[]
+  ) => Promise<void>;
+
   protected constructor(metadata: Metadata, logger: Logger) {
     super(metadata, logger);
 
@@ -183,6 +194,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   async install(): Promise<boolean> {
+    const boundRun = this.runTriggersAndNotify.bind(this);
+
+    this.debouncedRunTriggersAndNotify = this.debounceOptions
+      ? debounce(boundRun, this.debounceOptions.waitMillis ?? 0, {
+          ...this.debounceOptions,
+        })
+      : boundRun;
+
     return this.isAvailable();
   }
 
@@ -303,11 +322,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       );
     }
 
-    await this.runTriggersAndNotify(element);
+    await this.debouncedRunTriggersAndNotify(element);
   };
 
   /**
-   * Run all extensions for a given root (i.e., handle the trigger firing)
+   * Run all extensions for a given root (i.e., handle the trigger firing).
+   *
+   * DO NOT CALL DIRECTLY: should only be called from runTriggersAndNotify
+   *
    * @return array of errors from the extensions
    * @throws Error on non-extension error, e.g., reader error for the default reader
    */
@@ -332,6 +354,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     return compact(errors);
   }
 
+  /**
+   * DO NOT CALL DIRECTLY: should call debouncedRunTriggersAndNotify.
+   */
   private async runTriggersAndNotify(...roots: ReaderRoot[]): Promise<void> {
     const promises = roots.map(async (root) => this.runTrigger(root));
     const results = await Promise.allSettled(promises);
@@ -400,7 +425,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
       const intervalEffect = async () => {
         const $root = await this.getRoot();
-        await this.runTriggersAndNotify(...$root);
+        await this.debouncedRunTriggersAndNotify(...$root);
       };
 
       void interval({
@@ -427,14 +452,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     // The caller will have already waited for the element. So $element will contain at least one element
     if (this.attachMode === "once") {
-      void this.runTriggersAndNotify(...$element);
+      void this.debouncedRunTriggersAndNotify(...$element);
       return;
     }
 
     const observer = initialize(
       this.triggerSelector,
       (index, element: HTMLElement) => {
-        void this.runTriggersAndNotify(element);
+        void this.debouncedRunTriggersAndNotify(element);
       },
       // `target` is a required option
       { target: document }
@@ -454,7 +479,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         const roots = entries
           .filter((x) => x.isIntersecting)
           .map((x) => x.target as HTMLElement);
-        void this.runTriggersAndNotify(...roots);
+        void this.debouncedRunTriggersAndNotify(...roots);
       },
       {
         root: null,
@@ -555,7 +580,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     switch (this.trigger) {
       case "load": {
-        await this.runTriggersAndNotify(...$root);
+        await this.debouncedRunTriggersAndNotify(...$root);
         break;
       }
 
@@ -588,6 +613,26 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 }
 
 type TriggerDefinitionOptions = Record<string, string>;
+
+/**
+ * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce
+ */
+export type DebounceOptions = {
+  /**
+   * The number of milliseconds to delay.
+   */
+  waitMillis?: number;
+
+  /**
+   * Specify invoking on the leading edge of the timeout.
+   */
+  leading?: boolean;
+
+  /**
+   *  Specify invoking on the trailing edge of the timeout.
+   */
+  trailing?: boolean;
+};
 
 export interface TriggerDefinition extends ExtensionPointDefinition {
   defaultOptions?: TriggerDefinitionOptions;
@@ -626,6 +671,11 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
    * For `interval` trigger, the interval in milliseconds.
    */
   intervalMillis?: number;
+
+  /**
+   * Debounce the trigger for the extension point.
+   */
+  debounce?: DebounceOptions;
 }
 
 class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
@@ -650,6 +700,10 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
       permissions: ["tabs", "webNavigation"],
       origins: castArray(isAvailable.matchPatterns),
     };
+  }
+
+  get debounceOptions(): DebounceOptions | null {
+    return this._definition.debounce;
   }
 
   get trigger(): Trigger {

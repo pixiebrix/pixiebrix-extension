@@ -35,6 +35,7 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import {
   AttachMode,
+  DebounceOptions,
   TargetMode,
   Trigger,
   TriggerConfig,
@@ -69,6 +70,9 @@ export interface TriggerFormState extends BaseFormState {
 
       isAvailable: NormalizedAvailability;
 
+      // Debouncing props
+      debounce: DebounceOptions;
+
       // Interval props
       intervalMillis: number | null;
       background: boolean | null;
@@ -94,6 +98,7 @@ function fromNativeElement(
         targetMode: null,
         intervalMillis: null,
         background: null,
+        debounce: null,
         reader: getImplicitReader("trigger"),
         isAvailable: makeIsAvailable(url),
       },
@@ -114,6 +119,7 @@ function selectExtensionPoint(
       rootSelector,
       attachMode,
       targetMode,
+      debounce,
       intervalMillis,
       background,
       reader,
@@ -127,6 +133,7 @@ function selectExtensionPoint(
       reader,
       isAvailable: pickBy(isAvailable, identity),
       trigger,
+      debounce,
       intervalMillis,
       background,
       attachMode,
@@ -173,6 +180,7 @@ async function fromExtensionPoint(
     rootSelector,
     attachMode,
     targetMode,
+    debounce,
     reader,
     intervalMillis,
     trigger = "load",
@@ -200,6 +208,7 @@ async function fromExtensionPoint(
         rootSelector,
         attachMode,
         targetMode,
+        debounce,
         trigger,
         intervalMillis,
         reader: readerTypeHack(reader),
@@ -227,6 +236,7 @@ async function fromExtension(
     reader,
     background,
     intervalMillis,
+    debounce,
   } = extensionPoint.definition;
 
   const base = baseFromExtension(config, extensionPoint.definition.type);
@@ -244,6 +254,7 @@ async function fromExtension(
         trigger,
         attachMode,
         targetMode,
+        debounce,
         background,
         intervalMillis,
         reader: readerTypeHack(reader),
