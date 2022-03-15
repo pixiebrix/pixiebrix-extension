@@ -90,10 +90,19 @@ export type Trigger =
   | "change";
 
 type IntervalArgs = {
+  /**
+   * Interval in milliseconds.
+   */
   intervalMillis: number;
 
+  /**
+   * Effect to run on each interval.
+   */
   effectGenerator: () => Promise<void>;
 
+  /**
+   * AbortSignal to cancel the interval
+   */
   signal: AbortSignal;
 
   /**
@@ -109,6 +118,10 @@ async function interval({
   signal,
   requestAnimationFrame,
 }: IntervalArgs) {
+  // Don't run the effect immediately. Wait for the interval first. In the future we might consider adding a "leading"
+  // boolean argument to control whether the interval fires immediately
+  await sleep(intervalMillis);
+
   while (!signal.aborted) {
     const start = Date.now();
 
