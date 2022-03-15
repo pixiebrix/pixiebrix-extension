@@ -256,7 +256,7 @@ export const appApi = createApi({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
-    getRecipes: builder.query<UnnormalizedRecipeDefinition[], void>({
+    getRecipes: builder.query<RecipeDefinition[], void>({
       query: () => ({ url: "/api/recipes/", method: "get" }),
       providesTags: ["Recipes"],
       transformResponse(
