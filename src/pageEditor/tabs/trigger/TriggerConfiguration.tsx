@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { ChangeEvent } from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
@@ -30,26 +30,13 @@ import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget"
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { isEmpty, partial } from "lodash";
 import { joinName } from "@/utils";
-import BootstrapSwitchButton from "bootstrap-switch-button-react";
+import SwitchButtonWidget, {
+  CheckBoxLike,
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
 function supportsSelector(trigger: Trigger) {
   return !["load", "interval"].includes(trigger);
 }
-
-const Toggle = ({
-  value,
-  onChange,
-}: {
-  value: boolean;
-  onChange: (value: boolean) => void;
-}) => (
-  <BootstrapSwitchButton
-    onlabel=" "
-    offlabel=" "
-    checked={value}
-    onChange={onChange}
-  />
-);
 
 function supportsTargetMode(trigger: Trigger) {
   // XXX: why doesn't `appear` support target mode?
@@ -184,11 +171,12 @@ const TriggerConfiguration: React.FC<{
         )}
 
         <FieldTemplate
-          as={Toggle}
+          as={SwitchButtonWidget}
           description="Debounce the trigger"
+          name="debounce"
           value={!isEmpty(debounce)}
-          onChange={(value: boolean) => {
-            if (value) {
+          onChange={({ target }: ChangeEvent<CheckBoxLike>) => {
+            if (target.value) {
               setFieldValue(fieldName("debounce"), {
                 waitMillis: 250,
                 leading: false,
