@@ -22,15 +22,13 @@ import {
   MINIMAL_UI_SCHEMA,
   normalizeUiOrder,
   produceSchemaOnPropertyNameChange,
-  produceSchemaOnUiTypeChange,
   replaceStringInArray,
-  stringifyUiType,
   updateRjsfSchemaWithDefaultsIfNeeded,
   validateNextPropertyName,
 } from "./formBuilderHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
 import { initRenamingCases } from "./formEditor.testCases";
-import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
+import { UI_ORDER } from "./schemaFieldNames";
 
 describe("replaceStringInArray", () => {
   let array: string[];

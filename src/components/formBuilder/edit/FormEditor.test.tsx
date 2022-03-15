@@ -18,7 +18,7 @@
 import { Schema, UiSchema } from "@/core";
 import { waitForEffect } from "@/tests/testHelpers";
 import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { Except } from "type-fest";
 import {
@@ -35,7 +35,6 @@ import {
   initRenamingCases,
 } from "@/components/formBuilder/formEditor.testCases";
 import selectEvent from "react-select-event";
-import userEvent from "@testing-library/user-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
