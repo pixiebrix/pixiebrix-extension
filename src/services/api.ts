@@ -15,10 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthState, RegistryId, UUID } from "@/core";
+import {
+  AuthState,
+  RegistryId,
+  Schema,
+  SchemaProperties,
+  UiSchema,
+  UUID,
+} from "@/core";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
   EditablePackage,
+  OptionsDefinition,
   RecipeDefinition,
   ServiceDefinition,
   UnsavedRecipeDefinition,
@@ -46,6 +54,9 @@ import {
   selectExtensionAuthState,
   selectUserDataUpdate,
 } from "@/auth/authUtils";
+import { propertiesToSchema } from "@/validators/generic";
+import { produce } from "immer";
+import { sortBy } from "lodash";
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
 const appBaseQuery: BaseQueryFn<{
@@ -72,6 +83,34 @@ const appBaseQuery: BaseQueryFn<{
     throw error;
   }
 };
+
+/**
+ * Fix hand-crafted recipe options from the workshop
+ */
+function normalizeRecipeOptions(
+  options?: OptionsDefinition
+): OptionsDefinition {
+  if (options == null) {
+    return {
+      schema: {},
+      uiSchema: {},
+    };
+  }
+
+  const recipeSchema = options.schema ?? {};
+  const schema: Schema =
+    "type" in recipeSchema &&
+    recipeSchema.type === "object" &&
+    "properties" in recipeSchema
+      ? recipeSchema
+      : propertiesToSchema(recipeSchema as SchemaProperties);
+  const uiSchema: UiSchema = options.uiSchema ?? {};
+  uiSchema["ui:order"] = uiSchema["ui:order"] ?? [
+    ...sortBy(Object.keys(schema.properties ?? {})),
+    "*",
+  ];
+  return { schema, uiSchema };
+}
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -211,6 +250,15 @@ export const appApi = createApi({
     getRecipes: builder.query<RecipeDefinition[], void>({
       query: () => ({ url: "/api/recipes/", method: "get" }),
       providesTags: ["Recipes"],
+      transformResponse(
+        baseQueryReturnValue: RecipeDefinition[]
+      ): RecipeDefinition[] {
+        return produce<RecipeDefinition[]>(baseQueryReturnValue, (draft) => {
+          for (const recipe of draft) {
+            recipe.options = normalizeRecipeOptions(recipe.options);
+          }
+        });
+      },
     }),
     getCloudExtensions: builder.query<CloudExtension[], void>({
       query: () => ({ url: "/api/extensions/", method: "get" }),

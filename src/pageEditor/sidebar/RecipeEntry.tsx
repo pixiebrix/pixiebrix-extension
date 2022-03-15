@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { IExtension, RegistryId } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import styles from "./Entry.module.scss";
@@ -31,7 +31,7 @@ import { selectRecipeIsDirty } from "@/pageEditor/slices/editorSelectors";
 
 type RecipeEntryProps = {
   recipeId: RegistryId;
-  recipes: RecipeDefinition[];
+  recipes?: RecipeDefinition[];
   elements: Array<IExtension | FormState>;
   activeRecipeId: RegistryId | null;
 };
@@ -45,10 +45,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
-  const recipe = useMemo<RecipeDefinition>(
-    () => recipes.find((recipe) => recipe.metadata.id === recipeId),
-    [recipeId, recipes]
-  );
+  const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
   const isDirty = useSelector((state: RootState) =>
     selectRecipeIsDirty(state, recipeId, elements)
   );
@@ -73,7 +70,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
         >
           <FontAwesomeIcon icon={caretIcon} />
         </button>
-        <span className={styles.name}>{recipe.metadata.name}</span>
+        <span className={styles.name}>{recipe?.metadata?.name}</span>
         {isDirty && (
           <span className={cx(styles.icon, "text-danger")}>
             <UnsavedChangesIcon />

@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { Col, Container, Nav, Row, Tab } from "react-bootstrap";
 import Loader from "@/components/Loader";
-import { isEmpty, isEqual } from "lodash";
+import { isEmpty } from "lodash";
 import styles from "./RecipeOptions.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import FormEditor from "@/components/formBuilder/FormEditor";
@@ -42,9 +42,6 @@ import { OptionsDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
 import { getErrorMessage } from "@/errors";
-import { propertiesToSchema } from "@/validators/generic";
-import { Schema, SchemaProperties, UiSchema } from "@/core";
-import { sort } from "semver";
 import { RootState } from "@/pageEditor/store";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter(
@@ -61,17 +58,10 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
   const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes, isLoading, error } = useGetRecipesQuery();
   const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
-  const recipeSchema = recipe?.options?.schema ?? {};
-  const schema: Schema =
-    "type" in recipeSchema &&
-    recipeSchema.type === "object" &&
-    "properties" in recipeSchema
-      ? recipeSchema
-      : propertiesToSchema(recipeSchema as SchemaProperties);
-  const uiSchema: UiSchema = recipe?.options?.uiSchema ?? {
-    "ui:order": sort(Object.keys(schema.properties ?? {})),
+  const options = recipe?.options ?? {
+    schema: {},
+    uiSchema: {},
   };
-  const options: OptionsDefinition = { schema, uiSchema };
 
   const dirtyOptions = useSelector((state: RootState) =>
     selectDirtyOptionsForRecipe(state, recipeId)
@@ -80,13 +70,9 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
   const initialValues = { optionsDefinition: dirtyOptions ?? options };
 
   const dispatch = useDispatch();
-  const prevOptions = useRef(initialValues.optionsDefinition);
   const updateRedux = useCallback(
     (options: OptionsDefinition) => {
-      if (!isEqual(prevOptions.current, options)) {
-        dispatch(actions.editRecipeOptions(options));
-        prevOptions.current = options;
-      }
+      dispatch(actions.editRecipeOptions(options));
     },
     [dispatch]
   );
