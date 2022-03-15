@@ -85,6 +85,8 @@ export type Trigger =
   | "click"
   | "dblclick"
   | "mouseover"
+  | "keydown"
+  | "keyup"
   | "change";
 
 type IntervalArgs = {
