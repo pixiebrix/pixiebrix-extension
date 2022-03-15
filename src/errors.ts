@@ -309,7 +309,12 @@ export function hasBusinessRootCause(
 export function isPromiseRejectionEvent(
   event: unknown
 ): event is PromiseRejectionEvent {
-  return event && typeof event === "object" && "reason" in event;
+  return (
+    event &&
+    typeof event === "object" &&
+    "promise" in event &&
+    "reason" in event
+  );
 }
 
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
@@ -374,9 +379,10 @@ export function selectError(originalError: unknown): Error {
 
   // Extract error from event
   if (error instanceof ErrorEvent) {
-    error = error.error;
+    error = error.error ?? new Error("ErrorEvent with undefined error");
   } else if (isPromiseRejectionEvent(error)) {
-    error = error.reason;
+    error =
+      error.reason ?? new Error("PromiseRejectionEvent with undefined reason");
   }
 
   if (error instanceof Error) {
