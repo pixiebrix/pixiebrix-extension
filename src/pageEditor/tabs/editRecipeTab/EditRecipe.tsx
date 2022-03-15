@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useRef } from "react";
+import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
 import { useGetRecipesQuery } from "@/services/api";
@@ -23,7 +23,6 @@ import { RecipeMetadataFormState } from "@/types/definitions";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
-import { isEqual } from "lodash";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Formik } from "formik";
@@ -47,13 +46,9 @@ const EditRecipe: React.VoidFunctionComponent = () => {
   const initialValues = { metadata: formState };
 
   const dispatch = useDispatch();
-  const prevOptions = useRef(initialValues.metadata);
   const updateRedux = useCallback(
     (metadata: RecipeMetadataFormState) => {
-      if (!isEqual(prevOptions.current, metadata)) {
-        dispatch(actions.editRecipeMetadata(metadata));
-        prevOptions.current = metadata;
-      }
+      dispatch(actions.editRecipeMetadata(metadata));
     },
     [dispatch]
   );
