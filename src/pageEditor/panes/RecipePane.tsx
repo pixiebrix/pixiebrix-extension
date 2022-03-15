@@ -16,9 +16,9 @@
  */
 
 import styles from "./RecipePane.module.scss";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveRecipe } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import Centered from "@/pageEditor/components/Centered";
@@ -34,29 +34,56 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AskQuestionModal from "@/pageEditor/askQuestion/AskQuestionModal";
 import useRecipeSaver from "@/pageEditor/panes/save/useRecipeSaver";
-import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import Logs from "@/pageEditor/tabs/Logs";
 import EditRecipe from "@/pageEditor/tabs/editRecipeTab/EditRecipe";
 import { MessageContext } from "@/core";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
-
-const EDIT_ITEM_NAME = "Edit";
-
-const OptionsPlaceholder: React.VoidFunctionComponent = () => (
-  <div>Configure Blueprint Options</div>
-);
+import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
+import { useGetRecipesQuery } from "@/services/api";
+import { useModals } from "@/components/ConfirmationModal";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
 const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
-  const recipe = useSelector(selectActiveRecipe);
-
+  const { data: recipes } = useGetRecipesQuery();
+  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const recipe = recipes.find(
+    (recipe) => recipe.metadata.id === activeRecipeId
+  );
   const [showQuestionModal, setShowQuestionModal] = useState(false);
-  const [saveRecipe, isSavingRecipe] = useRecipeSaver();
-  const resetRecipe = useResetRecipe(recipe);
-  const removeRecipe = useRemoveRecipe(recipe);
 
+  // We need to force the component to re-render when the recipe is reset
+  // from the action button, or when a different recipe is selected, so
+  // we'll use a key prop on the tab layout that is composed of a useState()
+  // variable counter that we can increment manually, and the recipeId.
+  const [layoutCounter, setLayoutCounter] = useState(0);
+  const layoutKey = `${activeRecipeId}-${layoutCounter}`;
+  const forceRefreshLayout = () => {
+    setLayoutCounter(layoutCounter + 1);
+  };
+
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
+  const { showConfirmation } = useModals();
   const dispatch = useDispatch();
+
+  async function resetRecipe() {
+    const confirmed = await showConfirmation({
+      title: "Reset Blueprint?",
+      message:
+        "Unsaved changes to extensions within this blueprint, or to blueprint options, will be lost",
+      submitCaption: "Reset",
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    dispatch(actions.resetRecipeOptions(recipe.metadata.id));
+    forceRefreshLayout();
+  }
+
+  const removeRecipe = useRemoveRecipe();
+
   useEffect(() => {
     const messageContext: MessageContext = {
       blueprintId: recipe.metadata.id,
@@ -68,15 +95,15 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
 
   const tabItems: TabItem[] = [
     {
-      itemName: EDIT_ITEM_NAME,
+      name: "Edit",
       TabContent: EditRecipe,
     },
     {
-      itemName: "Options",
-      TabContent: OptionsPlaceholder,
+      name: "Blueprint Options",
+      TabContent: RecipeOptions,
     },
     {
-      itemName: "Logs",
+      name: "Logs",
       badgeCount: unreadLogsCount,
       badgeVariant: logsBadgeVariant,
       TabContent: Logs,
@@ -84,46 +111,44 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
     },
   ];
 
-  const buttons = useMemo<ActionButton[]>(() => {
-    const results: ActionButton[] = [];
-
-    results.push(
-      {
-        // Ask a question
-        variant: "info",
-        onClick() {
-          setShowQuestionModal(true);
-        },
-        caption: "Ask a question",
-        icon: faQuestionCircle,
+  const buttons: ActionButton[] = [
+    {
+      // Ask a question
+      variant: "info",
+      onClick() {
+        setShowQuestionModal(true);
       },
-      {
-        // Save
-        variant: "primary",
-        onClick: saveRecipe,
-        caption: "Save",
-        disabled: isSavingRecipe,
-        icon: faSave,
+      caption: "Ask a question",
+      icon: faQuestionCircle,
+    },
+    {
+      // Save
+      variant: "primary",
+      onClick() {
+        void saveRecipe(recipe);
       },
-      {
-        // Reset
-        variant: "warning",
-        onClick: resetRecipe,
-        caption: "Reset",
-        disabled: isSavingRecipe,
-        icon: faHistory,
+      caption: "Save",
+      disabled: isSavingRecipe,
+      icon: faSave,
+    },
+    {
+      // Reset
+      variant: "warning",
+      onClick: resetRecipe,
+      caption: "Reset",
+      disabled: isSavingRecipe,
+      icon: faHistory,
+    },
+    {
+      // Remove
+      variant: "danger",
+      onClick() {
+        removeRecipe(recipe);
       },
-      {
-        // Remove
-        variant: "danger",
-        onClick: removeRecipe,
-        caption: "Remove",
-        icon: faTrash,
-      }
-    );
-
-    return results;
-  }, [isSavingRecipe, removeRecipe, resetRecipe, saveRecipe]);
+      caption: "Remove",
+      icon: faTrash,
+    },
+  ];
 
   if (!recipe) {
     return (
@@ -136,9 +161,9 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   return (
     <div className={styles.root}>
       <EditorTabLayout
-        items={tabItems}
+        key={layoutKey}
+        tabs={tabItems}
         actionButtons={buttons}
-        defaultItemName={EDIT_ITEM_NAME}
       />
       <AskQuestionModal
         showModal={showQuestionModal}

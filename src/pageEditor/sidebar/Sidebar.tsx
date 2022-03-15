@@ -55,6 +55,7 @@ import Loader from "@/components/Loader";
 import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
+import { getIdForElement } from "@/pageEditor/slices/editorSelectors";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -103,10 +104,6 @@ const DropdownEntry: React.VoidFunctionComponent<{
 const Logo: React.VoidFunctionComponent = () => (
   <img src={logoUrl} alt="PixiBrix logo" className={styles.logo} />
 );
-
-export function getIdForElement(element: IExtension | FormState): string {
-  return isExtension(element) ? element.id : element.uuid;
-}
 
 type SidebarProps = {
   isInsertingElement: boolean;

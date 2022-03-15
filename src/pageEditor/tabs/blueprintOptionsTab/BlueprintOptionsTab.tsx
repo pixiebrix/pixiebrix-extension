@@ -41,6 +41,10 @@ const fieldTypes = FIELD_TYPE_OPTIONS.filter(
   (type) => !["File", "Image crop"].includes(type.label)
 );
 
+/**
+ * @deprecated in favor of RecipeOptions component de-coupled from tab layout
+ * @see RecipeOptions
+ */
 const BlueprintOptionsTab: React.VoidFunctionComponent<{
   eventKey: string;
 }> = ({ eventKey }) => {
