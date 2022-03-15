@@ -28,7 +28,7 @@ import { render, RenderResult, screen } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import selectEvent from "react-select-event";
-import registerDefaultWidgets from "../fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import FormBuilder from "./FormBuilder";
 import { RJSFSchema } from "./formBuilderTypes";
 
