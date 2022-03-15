@@ -17,7 +17,10 @@
 
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectDirtyRecipeOptions } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectDirtyRecipeMetadata,
+  selectDirtyRecipeOptions,
+} from "@/pageEditor/slices/editorSelectors";
 import {
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
@@ -38,29 +41,37 @@ function useRecipeSaver(): RecipeSaver {
   const { data: editablePackages } = useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
   const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
+  const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
 
   const [isSaving, setIsSaving] = useState(false);
 
   /**
-   * Save a recipe's options configuration
+   * Save a recipe's options and metadata
    */
-  const saveRecipeOptions = useCallback(
+  const save = useCallback(
     async (recipe: RecipeDefinition) => {
       if (recipe == null) {
         return;
       }
 
       const newOptions = dirtyRecipeOptions[recipe.metadata.id];
-      if (newOptions == null) {
+      const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
+      if (newOptions == null && newMetadata == null) {
         return;
       }
 
       setIsSaving(true);
 
       const newRecipe = produce<RecipeDefinition>(recipe, (draft) => {
-        draft.options = isEmpty(newOptions.schema?.properties)
-          ? undefined
-          : newOptions;
+        if (newOptions) {
+          draft.options = isEmpty(newOptions.schema?.properties)
+            ? undefined
+            : newOptions;
+        }
+
+        if (newMetadata) {
+          draft.metadata = newMetadata;
+        }
       });
 
       const packageId = editablePackages.find(
@@ -83,12 +94,19 @@ function useRecipeSaver(): RecipeSaver {
       }
 
       dispatch(actions.resetRecipeOptions(recipe.metadata.id));
+      dispatch(actions.resetRecipeMetadata(recipe.metadata.id));
     },
-    [dirtyRecipeOptions, dispatch, editablePackages, updateRecipe]
+    [
+      dirtyRecipeMetadata,
+      dirtyRecipeOptions,
+      dispatch,
+      editablePackages,
+      updateRecipe,
+    ]
   );
 
   return {
-    save: saveRecipeOptions,
+    save,
     isSaving,
   };
 }
