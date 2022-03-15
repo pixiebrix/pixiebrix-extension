@@ -15,11 +15,117 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useCallback, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
+import { useGetRecipesQuery } from "@/services/api";
+import { RecipeMetadataFormState } from "@/types/definitions";
+import { Card, Col, Container, Row } from "react-bootstrap";
+import Loader from "@/components/Loader";
+import { getErrorMessage } from "@/errors";
+import { isEqual } from "lodash";
+import { actions } from "@/pageEditor/slices/editorSlice";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { Formik } from "formik";
+import Effect from "@/pageEditor/components/Effect";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import styles from "./EditRecipe.module.scss";
 
-// eslint-disable-next-line arrow-body-style
 const EditRecipe: React.VoidFunctionComponent = () => {
-  return <div>Edit Recipe</div>;
+  const recipeId = useSelector(selectActiveRecipeId);
+  const { data: recipes, isLoading, error } = useGetRecipesQuery();
+  const metadata = recipes?.find(
+    (recipe) => recipe.metadata.id === recipeId
+  )?.metadata;
+  const formState: RecipeMetadataFormState = {
+    id: metadata?.id,
+    name: metadata?.name,
+    version: metadata?.version,
+    description: metadata?.description,
+  };
+
+  const initialValues = { metadata: formState };
+
+  const dispatch = useDispatch();
+  const prevOptions = useRef(initialValues.metadata);
+  const updateRedux = useCallback(
+    (metadata: RecipeMetadataFormState) => {
+      if (!isEqual(prevOptions.current, metadata)) {
+        dispatch(actions.editRecipeMetadata(metadata));
+        prevOptions.current = metadata;
+      }
+    },
+    [dispatch]
+  );
+
+  if (isLoading || error) {
+    return (
+      <Container>
+        <Row>
+          <Col>
+            {isLoading ? (
+              <Loader />
+            ) : (
+              <div className="text-danger">{getErrorMessage(error)}</div>
+            )}
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+
+  return (
+    <Container fluid className={styles.root}>
+      <Row className={styles.row}>
+        <Col sm={11} md={10} lg={9} xl={8}>
+          <ErrorBoundary>
+            <Formik
+              initialValues={initialValues}
+              onSubmit={() => {
+                console.error(
+                  "Formik's submit should not be called to save recipe metadata. Use 'saveRecipe' from 'useRecipeSaver' instead."
+                );
+              }}
+            >
+              {({ values }) => (
+                <>
+                  <Effect
+                    values={values.metadata}
+                    onChange={updateRedux}
+                    delayMillis={100}
+                  />
+
+                  <Card>
+                    <Card.Header>Blueprint Metadata</Card.Header>
+                    <Card.Body>
+                      <ConnectedFieldTemplate
+                        name="metadata.id"
+                        label="Blueprint ID"
+                        description="The registry ID of this blueprint"
+                        readOnly
+                      />
+                      <ConnectedFieldTemplate
+                        name="metadata.name"
+                        label="Name"
+                      />
+                      <ConnectedFieldTemplate
+                        name="metadata.version"
+                        label="Version"
+                      />
+                      <ConnectedFieldTemplate
+                        name="metadata.description"
+                        label="Description"
+                      />
+                    </Card.Body>
+                  </Card>
+                </>
+              )}
+            </Formik>
+          </ErrorBoundary>
+        </Col>
+      </Row>
+    </Container>
+  );
 };
 
 export default EditRecipe;
