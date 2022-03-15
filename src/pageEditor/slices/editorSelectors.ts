@@ -16,9 +16,9 @@
  */
 
 import { EditorState, FormState } from "@/pageEditor/slices/editorSlice";
-import { getIdForElement } from "@/pageEditor/sidebar/Sidebar";
 import { IExtension, RegistryId } from "@/core";
 import { createSelector } from "reselect";
+import { isExtension } from "@/pageEditor/sidebar/common";
 
 type RootState = { editor: EditorState };
 
@@ -48,6 +48,10 @@ const selectDirty = (state: RootState) => state.editor.dirty;
 
 export const selectDirtyRecipeOptions = (state: RootState) =>
   state.editor.dirtyRecipeOptionsById;
+
+export function getIdForElement(element: IExtension | FormState): string {
+  return isExtension(element) ? element.id : element.uuid;
+}
 
 export const selectRecipeIsDirty = createSelector(
   [
