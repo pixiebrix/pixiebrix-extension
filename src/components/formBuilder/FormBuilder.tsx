@@ -25,8 +25,9 @@ import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 
 const FormBuilder: React.FC<{
   name: string;
-}> = ({ name }) => {
-  const [activeField, setActiveField] = useState<string>();
+  initialActiveField?: string;
+}> = ({ name, initialActiveField }) => {
+  const [activeField, setActiveField] = useState<string>(initialActiveField);
   const [{ value: rjsfSchema }] = useField<RJSFSchema>(name);
 
   return (

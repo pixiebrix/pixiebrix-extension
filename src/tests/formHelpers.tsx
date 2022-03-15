@@ -46,7 +46,7 @@ export const fireFormSubmit = async () => {
   await waitForEffect();
 };
 
-export const fireTextInput = (input: HTMLElement, text: string) => {
+export const fireTextInput = (input: Element, text: string) => {
   fireEvent.focus(input);
   fireEvent.change(input, { target: { value: text } });
   fireEvent.blur(input);
