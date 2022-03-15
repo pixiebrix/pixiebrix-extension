@@ -172,7 +172,7 @@ export async function enrichRequestError(
   }
 
   const hasPermissions = await browser.permissions.contains({
-    origins: [maybeAxiosError.request.url],
+    origins: [url.href],
   });
 
   if (!hasPermissions) {

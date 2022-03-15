@@ -23,7 +23,7 @@ import {
 
 /**
  * Accepts 'This is my error' | new Error('This is my error') | Error;
- * The constructor would be used to create a custom error with the defalt message
+ * The constructor would be used to create a custom error with the default message
  */
 type ErrorBaseType = string | Error | (new (message?: string) => Error);
 function createError(

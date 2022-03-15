@@ -227,7 +227,10 @@ async function performConfiguredRequest(
       request: requestConfig,
     });
 
-    throw error;
+    throw (
+      error ??
+      new Error("Unknown error making request from the background page")
+    );
   }
 }
 
