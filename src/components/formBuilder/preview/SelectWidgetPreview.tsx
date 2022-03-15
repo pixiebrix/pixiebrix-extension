@@ -27,8 +27,9 @@ const SelectWidgetPreview: React.VFC<WidgetProps> = (props) => {
   const { enum: enumValues, oneOf } = props.schema;
   if (typeof enumValues === "string" || typeof oneOf === "string") {
     // @ts-expect-error enumValues || oneOf is always a string here
-    const varValue: string = enumValues || oneOf;
-    const options = [
+    const varValue: string =
+      typeof enumValues === "string" ? enumValues : oneOf;
+    const enumOptions = [
       {
         value: varValue,
         label: varValue,
@@ -52,7 +53,7 @@ const SelectWidgetPreview: React.VFC<WidgetProps> = (props) => {
       <RjsfSelectWidget
         {...props}
         disabled
-        options={{ options }}
+        options={{ enumOptions }}
         schema={schema}
         value={enumValues}
       />

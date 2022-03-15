@@ -19,6 +19,7 @@ import { Form, Formik, FormikValues } from "formik";
 import React, { PropsWithChildren } from "react";
 import { fireEvent, screen } from "@testing-library/react";
 import { waitForEffect } from "@/tests/testHelpers";
+import userEvent from "@testing-library/user-event";
 
 export const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
@@ -50,4 +51,19 @@ export const fireTextInput = (input: Element, text: string) => {
   fireEvent.focus(input);
   fireEvent.change(input, { target: { value: text } });
   fireEvent.blur(input);
+};
+
+export const selectSchemaFieldType = async (
+  fieldName: string,
+  typeToSelect: string
+) => {
+  const fieldToggleButton = screen
+    .getByTestId(`toggle-${fieldName}`)
+    .querySelector("button");
+  userEvent.click(fieldToggleButton);
+  await waitForEffect();
+
+  const textOption = screen.getByTestId(typeToSelect);
+  userEvent.click(textOption);
+  await waitForEffect();
 };

@@ -25,6 +25,7 @@ import {
   createFormikTemplate,
   fireTextInput,
   fireFormSubmit,
+  selectSchemaFieldType,
 } from "@/tests/formHelpers";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor, { FormEditorProps } from "./FormEditor";
@@ -347,20 +348,10 @@ describe("FormEditor", () => {
       </FormikTemplate>
     );
 
-    await waitForEffect();
-
-    const fieldToggleButton = screen
-      .getByTestId(
-        `toggle-${RJSF_SCHEMA_PROPERTY_NAME}.schema.properties.${fieldName}.default`
-      )
-      .querySelector("button");
-    expect(fieldToggleButton).not.toBeNull();
-    userEvent.click(fieldToggleButton);
-    const textOption = screen.getByTestId("string");
-    expect(textOption).not.toBeNull();
-    await waitFor(() => {
-      userEvent.click(textOption);
-    });
+    await selectSchemaFieldType(
+      `${RJSF_SCHEMA_PROPERTY_NAME}.schema.properties.${fieldName}.default`,
+      "string"
+    );
 
     const defaultValue = "Initial default value";
     const defaultValueInput = screen.getByLabelText("Default value");

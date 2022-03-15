@@ -33,6 +33,7 @@ import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWi
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import SelectWidgetPreview from "./SelectWidgetPreview";
+import FormPreviewSchemaField from "./FormPreviewSchemaField";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -96,6 +97,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   }
 
   const fields = {
+    SchemaField: FormPreviewSchemaField,
     StringField,
     BooleanField,
     DescriptionField,
