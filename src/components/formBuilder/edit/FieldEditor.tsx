@@ -22,8 +22,8 @@ import {
   RJSFSchema,
   SelectStringOption,
   SetActiveField,
-} from "./formBuilderTypes";
-import { UI_WIDGET } from "./schemaFieldNames";
+} from "@/components/formBuilder/formBuilderTypes";
+import { UI_WIDGET } from "@/components/formBuilder/schemaFieldNames";
 import {
   FIELD_TYPES_WITHOUT_DEFAULT,
   FIELD_TYPE_OPTIONS,
@@ -33,16 +33,15 @@ import {
   replaceStringInArray,
   stringifyUiType,
   UiType,
+  UiTypeExtra,
   validateNextPropertyName,
-} from "./formBuilderHelpers";
+} from "@/components/formBuilder/formBuilderHelpers";
 import { Schema, SchemaPropertyType } from "@/core";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget, {
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import OptionsWidget from "@/components/form/widgets/OptionsWidget";
 import SwitchButtonWidget, {
   CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
@@ -136,11 +135,16 @@ const FieldEditor: React.FC<{
     // eslint-disable-next-line security/detect-object-injection
     const uiWidget = uiSchema?.[propertyName]?.[UI_WIDGET];
     const propertyFormat = propertySchema.format;
+    const extra: UiTypeExtra =
+      uiWidget === "select" && typeof propertySchema.oneOf !== "undefined"
+        ? "selectWithLabels"
+        : undefined;
 
     const uiType = stringifyUiType({
       propertyType,
       uiWidget,
       propertyFormat,
+      extra,
     });
 
     const selected = fieldTypes.find((option) => option.value === uiType);
@@ -202,6 +206,7 @@ const FieldEditor: React.FC<{
           propertyType: "null",
           uiWidget: undefined,
           propertyFormat: undefined,
+          extra: undefined,
         }
       : parseUiType(selectedUiTypeOption.value);
 
@@ -214,6 +219,8 @@ const FieldEditor: React.FC<{
             type: uiType.propertyType,
           },
           label: "Default value",
+          // RJSF Form throws when Dropdown with labels selected, no options set and default is empty
+          isRequired: uiType.extra === "selectWithLabels",
         };
 
   return (
@@ -255,10 +262,37 @@ const FieldEditor: React.FC<{
         )}
 
       {propertySchema.enum && (
-        <ConnectedFieldTemplate
-          name={getFullFieldName("enum")}
+        <>
+          <SchemaField
+            label="Options"
+            name={getFullFieldName("enum")}
+            schema={{
+              type: "array",
+              items: {
+                type: "string",
+              },
+            }}
+            isRequired
+          />
+        </>
+      )}
+
+      {propertySchema.oneOf && (
+        <SchemaField
           label="Options"
-          as={OptionsWidget}
+          name={getFullFieldName("oneOf")}
+          schema={{
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                const: { type: "string" },
+                title: { type: "string" },
+              },
+              required: ["const"],
+            },
+          }}
+          isRequired
         />
       )}
 

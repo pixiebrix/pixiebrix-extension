@@ -88,7 +88,7 @@ const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
     <FieldArray name={name}>
       {({ push }) => (
         <>
-          <ul className="list-group">
+          <ul className="list-group mb-2">
             {(field.value ?? []).map((item: unknown, index: number) => (
               <li className="list-group-item py-1" key={index}>
                 <SchemaField

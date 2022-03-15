@@ -183,7 +183,7 @@ describe("validateNextPropertyName", () => {
   });
 });
 
-describe("ormalizeUiOrder", () => {
+describe("normalizeUiOrder", () => {
   test("init uiOrder", () => {
     const actual = normalizeUiOrder(["propA", "propB"], []);
     expect(actual).toEqual(["propA", "propB", "*"]);
