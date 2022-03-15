@@ -146,8 +146,6 @@ describe("Dropdown with labels field", () => {
     fireTextInput(firstOptionLabelInput, "Test option");
     await waitForEffect();
 
-    screen.debug(rendered.container.querySelector(".rjsf"));
-
     // Validate the rendered option
     const optionElement = screen.queryByRole("option", { name: "Test option" });
     expect(optionElement).not.toBeNull();
