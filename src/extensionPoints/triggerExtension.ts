@@ -194,7 +194,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   async install(): Promise<boolean> {
-    const boundRun = this.runTriggersAndNotify.bind(this);
+    const boundRun = this._runTriggersAndNotify.bind(this);
 
     this.debouncedRunTriggersAndNotify = this.debounceOptions
       ? debounce(boundRun, this.debounceOptions.waitMillis ?? 0, {
@@ -333,7 +333,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
    * @return array of errors from the extensions
    * @throws Error on non-extension error, e.g., reader error for the default reader
    */
-  private async runTrigger(root: ReaderRoot): Promise<unknown[]> {
+  private async _runTrigger(root: ReaderRoot): Promise<unknown[]> {
     const reader = await this.defaultReader();
     const readerContext = await reader.read(root);
     const errors = await Promise.all(
@@ -357,8 +357,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   /**
    * DO NOT CALL DIRECTLY: should call debouncedRunTriggersAndNotify.
    */
-  private async runTriggersAndNotify(...roots: ReaderRoot[]): Promise<void> {
-    const promises = roots.map(async (root) => this.runTrigger(root));
+  private async _runTriggersAndNotify(...roots: ReaderRoot[]): Promise<void> {
+    const promises = roots.map(async (root) => this._runTrigger(root));
     const results = await Promise.allSettled(promises);
     const errors = results.flatMap((x) =>
       // `runTrigger` fulfills with list of extension error from extension, or rejects on other error, e.g., reader
