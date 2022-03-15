@@ -36,7 +36,11 @@ import {
 import { WritableDraft } from "immer/dist/types/types-external";
 import { BlockConfig } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
-import { OptionsDefinition, RecipeDefinition } from "@/types/definitions";
+import {
+  OptionsDefinition,
+  RecipeDefinition,
+  RecipeMetadataFormState,
+} from "@/types/definitions";
 
 export type FormState =
   | ActionFormState
@@ -112,6 +116,11 @@ export interface EditorState {
    * Unsaved, changed recipe options
    */
   dirtyRecipeOptionsById: Record<RegistryId, OptionsDefinition>;
+
+  /**
+   * Unsaved, changed recipe metadata
+   */
+  dirtyRecipeMetadataById: Record<RegistryId, RecipeMetadataFormState>;
 }
 
 export const initialState: EditorState = {
@@ -128,6 +137,7 @@ export const initialState: EditorState = {
   elementUIStates: {},
   showV3UpgradeMessageByElement: {},
   dirtyRecipeOptionsById: {},
+  dirtyRecipeMetadataById: {},
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
@@ -405,8 +415,18 @@ export const editorSlice = createSlice({
       const { payload: options } = action;
       state.dirtyRecipeOptionsById[recipeId] = options;
     },
-    resetRecipeOptions(state, action: PayloadAction<RegistryId>) {
+    editRecipeMetadata(state, action: PayloadAction<RecipeMetadataFormState>) {
+      const recipeId = state.activeRecipeId;
+      if (recipeId == null) {
+        return;
+      }
+
+      const { payload: metadata } = action;
+      state.dirtyRecipeMetadataById[recipeId] = metadata;
+    },
+    resetRecipeMetadataAndOptions(state, action: PayloadAction<RegistryId>) {
       const { payload: recipeId } = action;
+      delete state.dirtyRecipeMetadataById[recipeId];
       delete state.dirtyRecipeOptionsById[recipeId];
     },
   },

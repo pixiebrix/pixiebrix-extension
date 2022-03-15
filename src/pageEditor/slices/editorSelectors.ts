@@ -58,6 +58,18 @@ export const selectDirtyOptionsForRecipe = createSelector(
   (dirtyRecipeOptionsById, recipeId) => dirtyRecipeOptionsById[recipeId]
 );
 
+export const selectDirtyRecipeMetadata = (state: RootState) =>
+  state.editor.dirtyRecipeMetadataById;
+
+export const selectDirtyMetadataForRecipe = createSelector(
+  [
+    selectDirtyRecipeMetadata,
+    (state: RootState, recipeId: RegistryId) => recipeId,
+  ],
+  // eslint-disable-next-line security/detect-object-injection
+  (dirtyRecipeMetadataById, recipeId) => dirtyRecipeMetadataById[recipeId]
+);
+
 export function getIdForElement(element: IExtension | FormState): string {
   return isExtension(element) ? element.id : element.uuid;
 }
@@ -65,18 +77,20 @@ export function getIdForElement(element: IExtension | FormState): string {
 export const selectRecipeIsDirty = createSelector(
   [
     selectDirty,
-    selectDirtyRecipeOptions,
+    (state: RootState, recipeId: RegistryId) =>
+      selectDirtyOptionsForRecipe(state, recipeId),
+    (state: RootState, recipeId: RegistryId) =>
+      selectDirtyMetadataForRecipe(state, recipeId),
     (
       state: RootState,
       recipeId: RegistryId,
       elements: Array<IExtension | FormState>
-    ) => ({ recipeId, elements }),
+    ) => elements,
   ],
-  (dirty, dirtyRecipeOptionsById, { recipeId, elements }) => {
+  (dirtyElements, dirtyOptions, dirtyMetadata, elements) => {
     const hasDirtyElements = elements.some(
-      (element) => dirty[getIdForElement(element)]
+      (element) => dirtyElements[getIdForElement(element)]
     );
-    const hasDirtyOptions = recipeId in dirtyRecipeOptionsById;
-    return hasDirtyElements || hasDirtyOptions;
+    return hasDirtyElements || Boolean(dirtyOptions) || Boolean(dirtyMetadata);
   }
 );
