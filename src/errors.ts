@@ -312,12 +312,16 @@ export function isPromiseRejectionEvent(
   // https://developer.mozilla.org/en-US/docs/Web/API/PromiseRejectionEvent/PromiseRejectionEvent
   // https://caniuse.com/unhandledrejection
   return (
-    event &&
-    typeof event === "object" &&
-    "type" in event &&
-    ["unhandledrejection", "rejectionhandled"].includes(
-      (event as Partial<Event>).type
-    )
+    event instanceof PromiseRejectionEvent ||
+    // Also handle PromiseRejectionEvents that have been serialized. In practice, events should never cross the
+    // messenger boundary because. Can't use "name" like we do for serialized errors because Events don't have a name
+    // property
+    (event &&
+      typeof event === "object" &&
+      "type" in event &&
+      ["unhandledrejection", "rejectionhandled"].includes(
+        (event as Partial<Event>).type
+      ))
   );
 }
 
