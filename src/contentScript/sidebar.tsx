@@ -187,7 +187,7 @@ export function isSidebarVisible(): boolean {
   return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
 }
 
-export function getSidebarStore(): SidebarEntries {
+export function getSidebarEntries(): SidebarEntries {
   // `forms` state is managed by the sidebar react component
   return { panels, forms: [] };
 }
