@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
-import { Provider, useDispatch, useSelector } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import Loader from "@/components/Loader";
 import { Container } from "react-bootstrap";
@@ -34,14 +34,13 @@ import Footer from "@/layout/Footer";
 import Sidebar from "@/options/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
-import { ApiError, useGetAuthQuery, useGetMeQuery } from "@/services/api";
 import { useAsyncState } from "@/hooks/common";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
 import useRefresh from "@/hooks/useRefresh";
-import { isLinked, updateUserData } from "@/auth/token";
+import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
 import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
@@ -56,15 +55,8 @@ import { SettingsState } from "@/store/settingsTypes";
 import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
 import { selectSettings } from "@/store/settingsSelectors";
-import {
-  selectExtensionAuthState,
-  selectUserDataUpdate,
-} from "@/auth/authUtils";
-import { authActions } from "@/auth/authSlice";
-import { anonAuth } from "@/auth/authConstants";
-import { selectIsLoggedIn } from "@/auth/authSelectors";
-import { Me } from "@/types/contract";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { RequireAuth } from "@/auth/RequireAuth";
 
 // Register the built-in bricks
 registerEditors();
@@ -91,56 +83,6 @@ const RequireInstall: React.FunctionComponent = ({ children }) => {
   return <>{children}</>;
 };
 
-const RequireAuth: React.FunctionComponent = ({ children }) => {
-  const dispatch = useDispatch();
-
-  const isLoggedIn = useSelector(selectIsLoggedIn);
-  const { isLoading, error, data: me } = useGetMeQuery();
-
-  // TODO: remove this when useGetAuthQuery is no longer used
-  const { isLoading: isAuthLoading } = useGetAuthQuery();
-
-  console.log("require auth", {
-    isLoggedIn,
-    isLoading,
-    me,
-    error,
-    isAuthLoading,
-  });
-
-  useEffect(() => {
-    if (isLoading) {
-      return;
-    }
-
-    const setAuth = async (me: Me) => {
-      if (me.id) {
-        const update = selectUserDataUpdate(me);
-        await updateUserData(update);
-        const auth = selectExtensionAuthState(me);
-        dispatch(authActions.setAuth(auth));
-      } else {
-        dispatch(authActions.setAuth(anonAuth));
-      }
-    };
-
-    void setAuth(me);
-  }, [isLoading, dispatch]);
-
-  // Show SetupPage if there auth error or we're not logged in
-  if ((error as ApiError)?.status === 401 || (!isLoading && !isLoggedIn)) {
-    return <SetupPage />;
-  }
-
-  // Optimistically skip waiting if we have cached auth data
-  // TODO remove isAuthLoading when useGetAuthQuery is no longer used
-  if ((isLoading && !isLoggedIn) || isAuthLoading) {
-    return <Loader />;
-  }
-
-  return <>{children}</>;
-};
-
 const Layout = () => {
   // Get the latest brick definitions. Put it here in Layout instead of App to ensure the Redux store has been hydrated
   // by the time refresh is called.
@@ -154,7 +96,7 @@ const Layout = () => {
       <Navbar />
       <Container fluid className="page-body-wrapper">
         <RequireInstall>
-          <RequireAuth>
+          <RequireAuth LoginPage={SetupPage}>
             <Sidebar />
             <div className="main-panel">
               <ErrorModal />

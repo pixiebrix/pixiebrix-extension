@@ -172,7 +172,7 @@ describe("OnboardingPage", () => {
     isLoggedIn: true,
     isOnboarded: true,
     extension: true,
-    organizations: [{ id: uuidv4(), name: "Foo" }],
+    organizations: [{ id: uuidv4(), name: "Foo", role: 1 }],
     groups: [],
   };
 

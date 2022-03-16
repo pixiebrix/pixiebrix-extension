@@ -15,14 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  AuthState,
-  RegistryId,
-  Schema,
-  SchemaProperties,
-  UiSchema,
-  UUID,
-} from "@/core";
+import { RegistryId, Schema, SchemaProperties, UiSchema, UUID } from "@/core";
 import { AuthState } from "@/auth/authTypes";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
