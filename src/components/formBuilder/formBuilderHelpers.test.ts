@@ -215,3 +215,106 @@ describe("normalizeUiOrder", () => {
     expect(actual).toEqual(["propA", "propC", "*"]);
   });
 });
+
+describe("produceSchemaOnUiTypeChange", () => {
+  test("converts Dropdown to Dropdown with labels", () => {
+    const schema: RJSFSchema = {
+      schema: {
+        ...MINIMAL_SCHEMA,
+        properties: {
+          field1: {
+            title: "Field 1",
+            type: "string",
+            enum: ["foo", "bar", "baz"],
+          },
+        },
+      },
+      uiSchema: {
+        ...MINIMAL_UI_SCHEMA,
+        field1: {
+          [UI_WIDGET]: "select",
+        },
+      },
+    };
+
+    const nextSchema = produceSchemaOnUiTypeChange(
+      schema,
+      "field1",
+      stringifyUiType({
+        propertyType: "string",
+        uiWidget: "select",
+        extra: "selectWithLabels",
+      })
+    );
+
+    expect(
+      (nextSchema.schema.properties.field1 as Schema).enum
+    ).toBeUndefined();
+    expect((nextSchema.schema.properties.field1 as Schema).oneOf).toEqual([
+      {
+        const: "foo",
+        title: "foo",
+      },
+      {
+        const: "bar",
+        title: "bar",
+      },
+      {
+        const: "baz",
+        title: "baz",
+      },
+    ]);
+  });
+
+  test("converts Dropdown with labels to Dropdown", () => {
+    const schema: RJSFSchema = {
+      schema: {
+        ...MINIMAL_SCHEMA,
+        properties: {
+          field1: {
+            title: "Field 1",
+            type: "string",
+            oneOf: [
+              {
+                const: "foo",
+                title: "Foo",
+              },
+              {
+                const: "bar",
+                title: "Bar",
+              },
+              {
+                const: "baz",
+                title: "Baz",
+              },
+            ],
+          },
+        },
+      },
+      uiSchema: {
+        ...MINIMAL_UI_SCHEMA,
+        field1: {
+          [UI_WIDGET]: "select",
+        },
+      },
+    };
+
+    const nextSchema = produceSchemaOnUiTypeChange(
+      schema,
+      "field1",
+      stringifyUiType({
+        propertyType: "string",
+        uiWidget: "select",
+      })
+    );
+
+    expect(
+      (nextSchema.schema.properties.field1 as Schema).oneOf
+    ).toBeUndefined();
+    expect((nextSchema.schema.properties.field1 as Schema).enum).toEqual([
+      "foo",
+      "bar",
+      "baz",
+    ]);
+  });
+});
