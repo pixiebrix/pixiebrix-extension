@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { SidebarStore, PanelEntry } from "@/sidebar/types";
+import { SidebarEntries, PanelEntry } from "@/sidebar/types";
 import { mapTabEventKey } from "@/sidebar/utils";
 import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { UUID } from "@/core";
@@ -29,7 +29,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "@/sidebar/PanelBody";
 import FormBody from "@/sidebar/FormBody";
 
-type SidebarTabsProps = SidebarStore & {
+type SidebarTabsProps = SidebarEntries & {
   activeKey: string;
   onSelectTab: (eventKey: string) => void;
 };

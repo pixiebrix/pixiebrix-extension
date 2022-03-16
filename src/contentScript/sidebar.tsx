@@ -22,7 +22,7 @@ import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef, UUID } from "@/core";
 import type {
-  SidebarStore,
+  SidebarEntries,
   FormEntry,
   PanelEntry,
   RendererError,
@@ -187,7 +187,7 @@ export function isSidebarVisible(): boolean {
   return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
 }
 
-export function getSidebarStore(): SidebarStore {
+export function getSidebarStore(): SidebarEntries {
   // `forms` state is managed by the sidebar react component
   return { panels, forms: [] };
 }

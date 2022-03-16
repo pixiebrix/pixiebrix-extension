@@ -18,21 +18,16 @@
 import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
-import { createHashHistory } from "history";
 import { boolean } from "@/utils";
 import { OptionsState } from "@/store/extensionsTypes";
-import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
-import { logActions } from "@/components/logViewer/logSlice";
-import { LogRootState } from "@/components/logViewer/logViewerTypes";
+import sidebarSlice from "@/sidebar/sidebarSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
-export const hashHistory = createHashHistory({ hashType: "slash" });
-
-export type RootState = LogRootState & {
+export type RootState = {
   options: OptionsState;
 };
 
@@ -40,12 +35,7 @@ const conditionalMiddleware: Middleware[] = [];
 if (typeof createLogger === "function") {
   // Allow tree shaking of logger in production
   // https://github.com/LogRocket/redux-logger/issues/6
-  conditionalMiddleware.push(
-    createLogger({
-      // Do not log polling actions (they happen too often)
-      predicate: (getState, action) => !action.type.includes("logs/polling"),
-    })
-  );
+  conditionalMiddleware.push(createLogger());
 }
 
 const store = configureStore({
@@ -54,6 +44,7 @@ const store = configureStore({
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
     ),
+    sidebar: sidebarSlice.reducer,
   },
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- use .concat for proper type inference */
@@ -62,9 +53,7 @@ const store = configureStore({
       serializableCheck: {
         ignoredActions: ["persist/PERSIST", "persist/FLUSH"],
       },
-    })
-      .concat(appApi.middleware)
-      .concat(conditionalMiddleware);
+    }).concat(conditionalMiddleware);
     /* eslint-enable unicorn/prefer-spread */
   },
   devTools: REDUX_DEV_TOOLS,
@@ -76,7 +65,5 @@ export const persistor = persistStore(store);
 // Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
-
-void store.dispatch(logActions.pollLogs());
 
 export default store;

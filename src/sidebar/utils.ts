@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SidebarStore, EntryType } from "@/sidebar/types";
+import { SidebarEntries, EntryType } from "@/sidebar/types";
 import { UUID } from "@/core";
 
 export function mapTabEventKey(
@@ -35,7 +35,7 @@ export function mapTabEventKey(
 export function defaultEventKey({
   forms = [],
   panels = [],
-}: SidebarStore): string | null {
+}: SidebarEntries): string | null {
   return forms.length > 0
     ? mapTabEventKey("form", forms[forms.length - 1])
     : mapTabEventKey("panel", panels[0]);

@@ -17,47 +17,52 @@
 
 import styles from "./SidebarApp.module.scss";
 
-import React, { Dispatch, useEffect, useMemo, useReducer } from "react";
+import React, { Dispatch, useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
-// eslint-disable-next-line import/no-restricted-paths -- TODO: This should be called in the content script, but it currently has to be sync
-import { getSidebarStore } from "@/contentScript/sidebar";
-import { addListener, removeListener, StoreListener } from "@/sidebar/protocol";
+import {
+  addListener,
+  removeListener,
+  SidebarListener,
+} from "@/sidebar/protocol";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import store, { persistor } from "@/sidebar/store";
-import { Provider } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
 import { PersistGate } from "redux-persist/integration/react";
-import { PanelEntry, FormEntry } from "@/sidebar/types";
+import { FormEntry, PanelEntry } from "@/sidebar/types";
 import Tabs from "@/sidebar/Tabs";
-import slice, { blankSidebarState } from "./slice";
+import sidebarSlice, { SidebarState } from "./sidebarSlice";
 import { AnyAction } from "redux";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 
-function getConnectedListener(dispatch: Dispatch<AnyAction>): StoreListener {
+/**
+ * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
+ */
+function getConnectedListener(dispatch: Dispatch<AnyAction>): SidebarListener {
   return {
     onRenderPanels(panels: PanelEntry[]) {
-      dispatch(slice.actions.setPanels({ panels }));
+      dispatch(sidebarSlice.actions.setPanels({ panels }));
     },
     onShowForm(form: FormEntry) {
-      dispatch(slice.actions.addForm({ form }));
+      dispatch(sidebarSlice.actions.addForm({ form }));
     },
     onHideForm({ nonce }: Partial<FormEntry>) {
-      dispatch(slice.actions.removeForm(nonce));
+      dispatch(sidebarSlice.actions.removeForm(nonce));
     },
   };
 }
 
-const SidebarApp: React.FunctionComponent = () => {
-  const [state, dispatch] = useReducer(slice.reducer, {
-    ...blankSidebarState,
-    ...getSidebarStore(),
-  });
+const selectState = ({ sidebar }: { sidebar: SidebarState }) => sidebar;
 
-  const listener: StoreListener = useMemo(
+const ConnectedSidebar: React.VFC = () => {
+  const dispatch = useDispatch();
+  const sidebarState = useSelector(selectState);
+
+  const listener: SidebarListener = useMemo(
     () => getConnectedListener(dispatch),
     [dispatch]
   );
@@ -73,58 +78,57 @@ const SidebarApp: React.FunctionComponent = () => {
   }, [listener]);
 
   return (
-    <Provider store={store}>
-      <PersistGate loading={<Loader />} persistor={persistor}>
-        <div className="full-height">
-          <div className="d-flex p-2 justify-content-between align-content-center">
-            <Button
-              className={styles.button}
-              onClick={async () => {
-                const sidebar = await whoAmI();
-                await hideSidebar({ tabId: sidebar.tab.id });
-              }}
-              size="sm"
-              variant="link"
-            >
-              <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
-            </Button>
-            <div className="align-self-center">
-              <img
-                src={logo}
-                alt="PixieBrix logo"
-                height={20}
-                className="px-4"
-              />
-            </div>
-            <Button
-              href="/options.html"
-              target="_blank"
-              size="sm"
-              variant="link"
-              className={styles.button}
-            >
-              <span>
-                Options <FontAwesomeIcon icon={faCog} />
-              </span>
-            </Button>
-          </div>
-
-          <div className="full-height">
-            {state.panels?.length || state.forms?.length ? (
-              <Tabs
-                {...state}
-                onSelectTab={(eventKey: string) => {
-                  dispatch(slice.actions.selectTab(eventKey));
-                }}
-              />
-            ) : (
-              <DefaultPanel />
-            )}
-          </div>
+    <div className="full-height">
+      <div className="d-flex p-2 justify-content-between align-content-center">
+        <Button
+          className={styles.button}
+          onClick={async () => {
+            const sidebar = await whoAmI();
+            await hideSidebar({ tabId: sidebar.tab.id });
+          }}
+          size="sm"
+          variant="link"
+        >
+          <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
+        </Button>
+        <div className="align-self-center">
+          <img src={logo} alt="PixieBrix logo" height={20} className="px-4" />
         </div>
-      </PersistGate>
-    </Provider>
+        <Button
+          href="/options.html"
+          target="_blank"
+          size="sm"
+          variant="link"
+          className={styles.button}
+        >
+          <span>
+            Options <FontAwesomeIcon icon={faCog} />
+          </span>
+        </Button>
+      </div>
+
+      <div className="full-height">
+        {sidebarState.panels?.length || sidebarState.forms?.length ? (
+          <Tabs
+            {...sidebarState}
+            onSelectTab={(eventKey: string) => {
+              dispatch(sidebarSlice.actions.selectTab(eventKey));
+            }}
+          />
+        ) : (
+          <DefaultPanel />
+        )}
+      </div>
+    </div>
   );
 };
+
+const SidebarApp: React.VFC = () => (
+  <Provider store={store}>
+    <PersistGate loading={<Loader />} persistor={persistor}>
+      <ConnectedSidebar />
+    </PersistGate>
+  </Provider>
+);
 
 export default SidebarApp;
