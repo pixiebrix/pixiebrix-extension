@@ -22,13 +22,15 @@ import {
   MINIMAL_UI_SCHEMA,
   normalizeUiOrder,
   produceSchemaOnPropertyNameChange,
+  produceSchemaOnUiTypeChange,
   replaceStringInArray,
+  stringifyUiType,
   updateRjsfSchemaWithDefaultsIfNeeded,
   validateNextPropertyName,
 } from "./formBuilderHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
 import { initRenamingCases } from "./formEditor.testCases";
-import { UI_ORDER } from "./schemaFieldNames";
+import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 
 describe("replaceStringInArray", () => {
   let array: string[];
@@ -253,15 +255,12 @@ describe("produceSchemaOnUiTypeChange", () => {
     expect((nextSchema.schema.properties.field1 as Schema).oneOf).toEqual([
       {
         const: "foo",
-        title: "foo",
       },
       {
         const: "bar",
-        title: "bar",
       },
       {
         const: "baz",
-        title: "baz",
       },
     ]);
   });

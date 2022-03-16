@@ -299,16 +299,18 @@ export const produceSchemaOnUiTypeChange = (
     if (uiWidget === "select") {
       if (extra === "selectWithLabels") {
         // If switching from Dropdown, convert the enum to options with labels
-        draftPropertySchema.oneOf = (draftPropertySchema.enum ?? []).map(
-          (item) => ({ const: item, title: item } as SchemaDefinition)
-        );
+        draftPropertySchema.oneOf = Array.isArray(draftPropertySchema.enum)
+          ? draftPropertySchema.enum.map(
+              (item) => ({ const: item } as SchemaDefinition)
+            )
+          : [];
         draftPropertySchema.default = "";
         delete draftPropertySchema.enum;
       } else {
         // If switching from Dropdown with labels, convert the values to enum
-        draftPropertySchema.enum = (draftPropertySchema.oneOf ?? []).map(
-          (item: Schema) => item.const
-        );
+        draftPropertySchema.enum = Array.isArray(draftPropertySchema.oneOf)
+          ? draftPropertySchema.oneOf.map((item: Schema) => item.const)
+          : [];
         delete draftPropertySchema.oneOf;
       }
     } else {
