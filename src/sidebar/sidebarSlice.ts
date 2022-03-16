@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SidebarStore, FormEntry, PanelEntry } from "@/sidebar/types";
+import { SidebarEntries, FormEntry, PanelEntry } from "@/sidebar/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { defaultEventKey, mapTabEventKey } from "@/sidebar/utils";
 import { UUID } from "@/core";
@@ -23,19 +23,19 @@ import { cancelForm } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { asyncForEach } from "@/utils";
 
-type AppState = SidebarStore & {
+export type SidebarState = SidebarEntries & {
   activeKey: string;
 };
 
-export const blankSidebarState: AppState = {
+export const emptySidebarState: SidebarState = {
   panels: [],
   forms: [],
   activeKey: null,
 };
 
-const slice = createSlice({
-  initialState: blankSidebarState,
-  name: "actionPanel",
+const sidebarSlice = createSlice({
+  initialState: emptySidebarState,
+  name: "sidebar",
   reducers: {
     selectTab(state, action: PayloadAction<string>) {
       state.activeKey = action.payload;
@@ -78,4 +78,4 @@ const slice = createSlice({
   },
 });
 
-export default slice;
+export default sidebarSlice;

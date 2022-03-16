@@ -20,7 +20,7 @@ import { FormEntry, PanelEntry } from "@/sidebar/types";
 import { FormDefinition } from "@/blocks/transformers/ephemeralForm/formTypes";
 import { UUID } from "@/core";
 
-export const MESSAGE_PREFIX = "@@pixiebrix/browserAction/";
+export const MESSAGE_PREFIX = "@@pixiebrix/sidebar/";
 
 export const RENDER_PANELS_MESSAGE = `${MESSAGE_PREFIX}RENDER_PANELS`;
 export const SHOW_FORM_MESSAGE = `${MESSAGE_PREFIX}SHOW_FORM`;
@@ -28,15 +28,15 @@ export const HIDE_FORM_MESSAGE = `${MESSAGE_PREFIX}HIDE_FORM`;
 
 let lastMessageSeen = -1;
 
-export type StoreListener = {
+export type SidebarListener = {
   onRenderPanels: (panels: PanelEntry[]) => void;
   onShowForm: (form: { nonce: UUID; form: FormDefinition }) => void;
   onHideForm: (form: { nonce: UUID }) => void;
 };
 
-const listeners: StoreListener[] = [];
+const listeners: SidebarListener[] = [];
 
-export function addListener(fn: StoreListener): void {
+export function addListener(fn: SidebarListener): void {
   if (listeners.includes(fn)) {
     console.warn("Listener already registered for sidebar");
   } else {
@@ -44,14 +44,14 @@ export function addListener(fn: StoreListener): void {
   }
 }
 
-export function removeListener(fn: StoreListener): void {
+export function removeListener(fn: SidebarListener): void {
   listeners.splice(0, listeners.length, ...listeners.filter((x) => x !== fn));
 }
 
-function runListeners<Method extends keyof StoreListener>(
+function runListeners<Method extends keyof SidebarListener>(
   method: Method,
   sequence: number,
-  data: Parameters<StoreListener[Method]>[0]
+  data: Parameters<SidebarListener[Method]>[0]
 ): void {
   if (sequence < lastMessageSeen) {
     console.debug(

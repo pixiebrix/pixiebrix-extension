@@ -89,9 +89,9 @@ export type FormEntry = {
 };
 
 /**
- * The store/state of entries currently added to the sidebar
+ * The entries currently added to the sidebar
  */
-export type SidebarStore = {
+export type SidebarEntries = {
   panels: PanelEntry[];
   forms: FormEntry[];
 };
