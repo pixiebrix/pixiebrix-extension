@@ -26,8 +26,7 @@ import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import { getSidebarStore } from "@/contentScript/sidebar";
 import { addListener, removeListener, StoreListener } from "@/sidebar/protocol";
 import DefaultPanel from "@/sidebar/DefaultPanel";
-// eslint-disable-next-line import/no-restricted-paths -- TODO: move out of @/options or use Messenger
-import store, { persistor } from "@/options/store";
+import store, { persistor } from "@/sidebar/store";
 import { Provider } from "react-redux";
 import Loader from "@/components/Loader";
 import { PersistGate } from "redux-persist/integration/react";
