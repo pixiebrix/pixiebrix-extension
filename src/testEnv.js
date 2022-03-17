@@ -23,3 +23,6 @@ process.env.SERVICE_URL = "https://app.pixiebrix.com";
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
+global.PromiseRejectionEvent = function () {
+  throw new Error("PromiseRejectionEvent should not be instantiated in Node");
+};
