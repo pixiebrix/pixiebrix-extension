@@ -34,10 +34,11 @@ export function guessUsefulness(string: string) {
   const meaningfulCharacters = string.replaceAll(nonLetters, "").length;
   const lettersFactor = round(1 - meaningfulCharacters / string.length, 2);
 
-  const isSus = suspiciousRegex.test(string);
+  const isSuspicious = suspiciousRegex.test(string);
 
-  const isRandom = isSus || lettersFactor >= 0.5 || detectorFactor >= 0.5;
-  return { string, detectorFactor, isSus, lettersFactor, isRandom };
+  const isRandom =
+    isSuspicious || lettersFactor >= 0.5 || detectorFactor >= 0.5;
+  return { string, detectorFactor, isSuspicious, lettersFactor, isRandom };
 }
 
 export function isRandomString(string: string): boolean {
