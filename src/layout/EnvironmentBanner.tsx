@@ -17,7 +17,6 @@
 
 import React from "react";
 import { getExtensionAuth } from "@/auth/token";
-import { useGetAuthQuery } from "@/services/api";
 import { isExtensionContext } from "webext-detect-page";
 import { connectPage } from "@/messaging/external";
 import { useAsyncState } from "@/hooks/common";
@@ -34,22 +33,24 @@ const variantMap = new Map<string, BannerVariant>([
   ["staging", "info"],
 ]);
 
-const EnvironmentBannerMessage: React.FunctionComponent = () => {
-  const {
-    data: { extension },
-  } = useGetAuthQuery();
+type EnvironmentBannerMessageProps = {
+  isExtension?: boolean;
+};
 
+const EnvironmentBannerMessage: React.VFC<EnvironmentBannerMessageProps> = ({
+  isExtension = false,
+}) => {
   const [hostname] = useAsyncState(async () => {
     const { hostname } = await getExtensionAuth();
     return hostname;
-  }, [extension]);
+  }, [isExtension]);
 
   const [versionName] = useAsyncState(async () => {
     const manifest = isExtensionContext()
       ? chrome.runtime.getManifest()
       : await connectPage();
     return manifest.version_name;
-  }, [extension]);
+  }, [isExtension]);
 
   const syncText = hostname
     ? `synced with ${hostname}`
@@ -57,21 +58,23 @@ const EnvironmentBannerMessage: React.FunctionComponent = () => {
 
   return (
     <>
-      You are using {extension ? "extension" : "server"}{" "}
+      You are using {isExtension ? "extension" : "server"}{" "}
       {environment ?? "unknown"} build {versionName ?? "unknown version"}{" "}
-      {extension && syncText}
+      {isExtension && syncText}
     </>
   );
 };
 
-const EnvironmentBanner: React.FunctionComponent = () => {
+const EnvironmentBanner: React.VFC<EnvironmentBannerMessageProps> = ({
+  isExtension,
+}) => {
   if (environment === "production") {
     return null;
   }
 
   return (
     <Banner variant={variantMap.get(environment)}>
-      <EnvironmentBannerMessage />
+      <EnvironmentBannerMessage isExtension={isExtension} />
     </Banner>
   );
 };
