@@ -30,12 +30,12 @@ import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
 
 type RequireAuthProps = {
-  LoginPage: React.VFC;
+  LoginPage?: React.VFC;
 };
 
-export const RequireAuth: React.FunctionComponent<RequireAuthProps> = ({
+const RequireAuth: React.FunctionComponent<RequireAuthProps> = ({
   children,
-  LoginPage,
+  LoginPage = () => null,
 }) => {
   const dispatch = useDispatch();
 
@@ -72,7 +72,7 @@ export const RequireAuth: React.FunctionComponent<RequireAuthProps> = ({
     void setAuth(me);
   }, [isLoading, dispatch]);
 
-  // Show SetupPage if there auth error or we're not logged in
+  // Show SetupPage if there is auth error or user not logged in
   if ((error as ApiError)?.status === 401 || (!isLoading && !isLoggedIn)) {
     return <LoginPage />;
   }
@@ -85,3 +85,5 @@ export const RequireAuth: React.FunctionComponent<RequireAuthProps> = ({
 
   return <>{children}</>;
 };
+
+export default RequireAuth;

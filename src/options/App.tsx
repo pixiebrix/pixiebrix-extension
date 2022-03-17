@@ -56,7 +56,7 @@ import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
 import { selectSettings } from "@/store/settingsSelectors";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { RequireAuth } from "@/auth/RequireAuth";
+import RequireAuth from "@/auth/RequireAuth";
 
 // Register the built-in bricks
 registerEditors();
@@ -126,7 +126,6 @@ const Layout = () => {
                     )}
 
                     {/* Switch does not support consolidating Routes using a React fragment */}
-                    {/* TODO: refactor routes */}
                     {permit("workshop") && (
                       <Route exact path="/workshop" component={WorkshopPage} />
                     )}

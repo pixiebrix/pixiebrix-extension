@@ -17,13 +17,13 @@
 
 import React, { useContext } from "react";
 import { PageEditorTabContext } from "@/pageEditor/context";
-import { useGetAuthQuery } from "@/services/api";
 import { getErrorMessage } from "@/errors";
 import { Button } from "react-bootstrap";
+import { useGetMeQuery } from "@/services/api";
 
 const ErrorBanner: React.VFC = () => {
   const context = useContext(PageEditorTabContext);
-  const { error: accountError } = useGetAuthQuery();
+  const { error: accountError } = useGetMeQuery();
 
   const error = accountError
     ? "Authentication error: " + getErrorMessage(accountError)

@@ -54,8 +54,8 @@ const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
 export const hashHistory = createHashHistory({ hashType: "slash" });
 
-export type RootState = LogRootState &
-  AuthRootState & {
+export type RootState = AuthRootState &
+  LogRootState & {
     options: OptionsState;
     blueprints: BlueprintsState;
     services: ServicesState;

@@ -45,6 +45,8 @@ import sessionSlice from "@/pageEditor/slices/sessionSlice";
 import { SettingsState } from "@/store/settingsTypes";
 import { LogRootState } from "@/components/logViewer/logViewerTypes";
 import { logSlice, logActions } from "@/components/logViewer/logSlice";
+import { authSlice, persistAuthConfig } from "@/auth/authSlice";
+import { AuthRootState } from "@/auth/authTypes";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -53,15 +55,16 @@ const persistSettingsConfig = {
   storage: localStorage,
 };
 
-export type RootState = LogRootState & {
-  options: OptionsState;
-  editor: EditorState;
-  savingExtension: SavingExtensionState;
-  formBuilder: FormBuilderState;
-  documentBuilder: DocumentBuilderState;
-  settings: SettingsState;
-  runtime: RuntimeState;
-};
+export type RootState = AuthRootState &
+  LogRootState & {
+    options: OptionsState;
+    editor: EditorState;
+    savingExtension: SavingExtensionState;
+    formBuilder: FormBuilderState;
+    documentBuilder: DocumentBuilderState;
+    settings: SettingsState;
+    runtime: RuntimeState;
+  };
 
 const conditionalMiddleware: Middleware[] = [];
 if (typeof createLogger === "function") {
@@ -77,6 +80,7 @@ if (typeof createLogger === "function") {
 
 const store = configureStore({
   reducer: {
+    auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
       persistExtensionOptionsConfig,
       extensionsSlice.reducer
