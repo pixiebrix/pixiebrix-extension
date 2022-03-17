@@ -316,12 +316,9 @@ export function isPromiseRejectionEvent(
     // Also handle PromiseRejectionEvents that have been serialized. In practice, events should never cross the
     // messenger boundary because. Can't use "name" like we do for serialized errors because Events don't have a name
     // property
-    (event &&
-      typeof event === "object" &&
-      "type" in event &&
-      ["unhandledrejection", "rejectionhandled"].includes(
-        (event as Partial<Event>).type
-      ))
+    (isObject(event) &&
+      (event.type === "unhandledrejection" ||
+        event.type === "rejectionhandled"))
   );
 }
 
