@@ -23,9 +23,8 @@ import { PageEditorTabContext } from "@/pageEditor/context";
 import BeatLoader from "react-spinners/BeatLoader";
 
 const Footer: React.FunctionComponent = () => {
-  const {
-    data: { scope },
-  } = useGetAuthQuery();
+  // Default data to empty object to avoid race condition with useGetAuthQuery resolution
+  const { data: { scope } = {} } = useGetAuthQuery();
   const { connecting } = useContext(PageEditorTabContext);
 
   return (
