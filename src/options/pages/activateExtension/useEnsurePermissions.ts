@@ -17,7 +17,7 @@
 
 import { ResolvedExtensionPointConfig } from "@/types/definitions";
 import { ServiceDependency } from "@/core";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { useFormikContext } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { collectPermissions, ensureAllPermissions } from "@/permissions";
@@ -27,7 +27,6 @@ import {
   services as locator,
 } from "@/background/messenger/api";
 import { useCallback } from "react";
-import { getErrorMessage } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
 import { CloudExtension } from "@/types/contract";
 
@@ -35,7 +34,6 @@ function useEnsurePermissions(
   extension: CloudExtension,
   services: ServiceDependency[]
 ) {
-  const notify = useNotifications();
   const { submitForm } = useFormikContext();
 
   const [permissionState, isPending, error] = useAsyncState(async () => {
@@ -76,7 +74,8 @@ function useEnsurePermissions(
     try {
       accepted = await ensureAllPermissions(permissions);
     } catch (error) {
-      notify.error(`Error granting permissions: ${getErrorMessage(error)}`, {
+      notify.error({
+        message: "Error granting permissions",
         error,
       });
       return false;
@@ -89,11 +88,11 @@ function useEnsurePermissions(
     }
 
     return true;
-  }, [permissions, notify]);
+  }, [permissions]);
 
   const activate = useCallback(() => {
     // Can't use async here because Firefox loses track of trusted UX event
-    // eslint-disable-next-line @typescript-eslint/promise-function-async
+    // eslint-disable-next-line @typescript-eslint/promise-function-async, promise/prefer-await-to-then
     void request().then((accepted: boolean) => {
       if (accepted) {
         // The event gets reported in the reducer

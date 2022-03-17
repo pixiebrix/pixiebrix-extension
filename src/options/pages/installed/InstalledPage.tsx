@@ -35,7 +35,7 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { CloudExtension } from "@/types/contract";
 import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { exportBlueprint } from "./exportBlueprint";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import ExtensionLogsModal from "./ExtensionLogsModal";
@@ -93,8 +93,6 @@ export const _InstalledPage: React.FunctionComponent<{
     selectShowShareContext
   );
 
-  const notify = useNotifications();
-
   const onExportBlueprint = useCallback(
     (extensionIdToExport: UUID) => {
       const extension = allExtensions.find(
@@ -110,7 +108,7 @@ export const _InstalledPage: React.FunctionComponent<{
 
       exportBlueprint(extension);
     },
-    [notify, allExtensions]
+    [allExtensions]
   );
 
   // Guard race condition with load when visiting the URL directly
@@ -200,7 +198,7 @@ const mapStateToProps = (state: { options: OptionsState }) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  onRemove: ({ extensionId }: { extensionId: UUID }) => {
+  onRemove({ extensionId }: { extensionId: UUID }) {
     reportEvent("ExtensionRemove", {
       extensionId,
     });

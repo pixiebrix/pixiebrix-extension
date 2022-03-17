@@ -96,7 +96,6 @@ describe("updateRjsfSchemaWithDefaultsIfNeeded", () => {
     };
 
     const nextRjsfSchema = updateRjsfSchemaWithDefaultsIfNeeded(rjsfSchema);
-    // eslint-disable-next-line security/detect-object-injection
     expect(nextRjsfSchema.uiSchema[UI_ORDER]).toEqual(["*"]);
   });
 
@@ -184,7 +183,7 @@ describe("validateNextPropertyName", () => {
   });
 });
 
-describe("ormalizeUiOrder", () => {
+describe("normalizeUiOrder", () => {
   test("init uiOrder", () => {
     const actual = normalizeUiOrder(["propA", "propB"], []);
     expect(actual).toEqual(["propA", "propB", "*"]);

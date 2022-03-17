@@ -17,10 +17,10 @@
 
 // eslint-disable-next-line import/no-restricted-paths -- Type only
 import type { RunBlock } from "@/contentScript/executor";
-import browser, { Runtime, Tabs } from "webextension-polyfill";
+import { Runtime, Tabs } from "webextension-polyfill";
 import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
-import { asyncLoop } from "@/utils";
+import { asyncForEach } from "@/utils";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
 import { MessengerMeta } from "webext-messenger";
@@ -28,12 +28,35 @@ import { runBrick } from "@/contentScript/messenger/api";
 import { Target } from "@/types";
 import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
+import { canAccessTab } from "webext-tools";
+import { onTabClose } from "@/chrome";
 
 type TabId = number;
+
+// Used to determine which promise was resolved in a race
+const TYPE_WAS_CLOSED = Symbol("Tab was closed");
 
 const tabToOpener = new Map<TabId, TabId>();
 const tabToTarget = new Map<TabId, TabId>();
 // TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
+
+async function safelyRunBrick({ tabId }: { tabId: number }, request: RunBlock) {
+  if (!(await canAccessTab(tabId))) {
+    throw new BusinessError("PixieBrix doesn't have access to the tab");
+  }
+
+  const result = await Promise.race([
+    // If https://github.com/pixiebrix/webext-messenger/issues/67 is resolved, we don't need the listener
+    onTabClose(tabId).then(() => TYPE_WAS_CLOSED),
+    runBrick({ tabId }, request),
+  ]);
+
+  if (result === TYPE_WAS_CLOSED) {
+    throw new BusinessError("The tab was closed");
+  }
+
+  return result;
+}
 
 export async function waitForTargetByUrl(url: string): Promise<Target> {
   const { promise, resolve } = pDefer<Target>();
@@ -65,7 +88,7 @@ export async function requestRunInOpener(
     tabId: tabToOpener.get(sourceTabId),
   };
   const subRequest = { ...request, sourceTabId };
-  return runBrick(opener, subRequest);
+  return safelyRunBrick(opener, subRequest);
 }
 
 export async function requestRunInBroadcast(
@@ -81,13 +104,13 @@ export async function requestRunInBroadcast(
   const { origins } = await browser.permissions.getAll();
   const tabs = await browser.tabs.query({ url: origins });
 
-  await asyncLoop(tabs, async (tab) => {
+  await asyncForEach(tabs, async (tab) => {
     if (tab.id === sourceTabId) {
       return;
     }
 
     try {
-      const response = runBrick({ tabId: tab.id }, subRequest);
+      const response = safelyRunBrick({ tabId: tab.id }, subRequest);
       fulfilled.set(tab.id, await response);
     } catch (error) {
       rejected.set(tab.id, error);
@@ -113,7 +136,7 @@ export async function requestRunInTarget(
   }
 
   const subRequest = { ...request, sourceTabId };
-  return runBrick({ tabId: target }, subRequest);
+  return safelyRunBrick({ tabId: target }, subRequest);
 }
 
 export async function openTab(

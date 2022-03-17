@@ -16,7 +16,7 @@
  */
 
 import { RegistryId, ResolvedExtension } from "@/core";
-import { Row, TableInstance } from "react-table";
+import { TableInstance } from "react-table";
 import { RecipeDefinition } from "@/types/definitions";
 import { ReactNode } from "react";
 import { SharingSource } from "@/options/pages/blueprints/installableUtils";
@@ -33,7 +33,7 @@ export type InstallableViewItem = {
     source: SharingSource;
   };
   updatedAt: string;
-  status: "Active" | "Uninstalled";
+  status: "Active" | "Inactive";
   hasUpdate: boolean;
   icon: ReactNode;
   // Used to get Installable actions from useInstallableActions
@@ -41,8 +41,7 @@ export type InstallableViewItem = {
 };
 
 export type BlueprintListViewProps = {
-  tableInstance: TableInstance;
-  rows: Array<Row<InstallableViewItem>>;
+  tableInstance: TableInstance<InstallableViewItem>;
   width: number;
   height: number;
 };

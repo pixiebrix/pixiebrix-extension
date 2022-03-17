@@ -22,10 +22,8 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
-import useDeployments from "@/hooks/useDeployments";
 import Loader from "@/components/Loader";
-import useFlags from "@/hooks/useFlags";
+import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
 
 const ActivateFromMarketplaceColumn: React.FunctionComponent = () => (
   <Col xs={6}>
@@ -98,51 +96,30 @@ const CreateBrickColumn: React.FunctionComponent = () => (
 );
 
 const OnboardingPage: React.FunctionComponent = () => {
-  const { restrict } = useFlags();
-
-  const { data: rawRecipes, isLoading: isRecipesLoading } =
-    useGetRecipesQuery();
-  const { data: organizations, isLoading: isOrganizationsLoading } =
-    useGetOrganizationsQuery();
-  const { hasUpdate: hasDeployments, isLoading: isDeploymentsLoading } =
-    useDeployments();
-
-  const teamRecipes = (rawRecipes ?? []).filter(
-    (recipe) => recipe.sharing.organizations.length > 0
-  );
-
-  const hasTeamBlueprints = teamRecipes?.length > 0;
-  const hasOrganization = organizations?.length > 0;
-  const isLoading =
-    isRecipesLoading || isOrganizationsLoading || isDeploymentsLoading;
+  const { onboardingType, isLoading } = useOnboarding();
 
   const onBoardingInformation = useMemo(() => {
-    if (hasOrganization) {
-      if (hasDeployments) {
+    switch (onboardingType) {
+      case "hasDeployments":
         return <ActivateFromDeploymentBannerColumn />;
-      }
-
-      if (restrict("marketplace")) {
+      case "restricted":
         return <ContactTeamAdminColumn />;
-      }
-
-      if (hasTeamBlueprints) {
+      case "hasTeamBlueprints":
         return (
           <>
             <ActivateTeamBlueprintsColumn />
             <CreateBrickColumn />
           </>
         );
-      }
+      default:
+        return (
+          <>
+            <ActivateFromMarketplaceColumn />
+            <CreateBrickColumn />
+          </>
+        );
     }
-
-    return (
-      <>
-        <ActivateFromMarketplaceColumn />
-        <CreateBrickColumn />
-      </>
-    );
-  }, [restrict, hasOrganization, hasDeployments, hasTeamBlueprints]);
+  }, [onboardingType]);
 
   return (
     <>

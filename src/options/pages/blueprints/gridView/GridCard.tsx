@@ -20,10 +20,10 @@ import styles from "./GridCard.module.scss";
 import React from "react";
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import { Card } from "react-bootstrap";
-import SharingLabel from "@/options/pages/blueprints/SharingLabel";
-import { timeSince } from "@/utils/timeUtils";
+import SharingLabel from "@/options/pages/blueprints/labels/SharingLabel";
 import Status from "@/options/pages/blueprints/Status";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
+import LastUpdatedLabel from "@/options/pages/blueprints/labels/LastUpdatedLabel";
 
 type GridCardProps = {
   installableItem: InstallableViewItem;
@@ -32,25 +32,40 @@ type GridCardProps = {
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   installableItem,
 }) => {
-  const { name, updatedAt, sharing, icon } = installableItem;
+  const { name, updatedAt, sharing, icon, description } = installableItem;
 
   return (
     <div className={styles.root}>
       <Card className={styles.card}>
-        <div className="d-flex">
-          {icon}
-          <h5 className="ml-2">{name}</h5>
-        </div>
-        <div>
-          <SharingLabel sharing={sharing.source} />
-          <Card.Text className="small">
-            Updated: {timeSince(updatedAt)}
-          </Card.Text>
-          <div className={styles.actions}>
-            <Status installableViewItem={installableItem} />
-            <BlueprintActions installableViewItem={installableItem} />
+        <Card.Body className={styles.cardBody}>
+          <div className={styles.primaryInfo}>
+            <div className="d-flex justify-content-between">
+              <div>
+                <h5 className={styles.name}>{name}</h5>
+                <span className={styles.description}>{description}</span>
+              </div>
+              <span className="mb-2">{icon}</span>
+            </div>
           </div>
-        </div>
+          <div>
+            <div className={styles.actions}>
+              <Status installableViewItem={installableItem} />
+              <BlueprintActions installableViewItem={installableItem} />
+            </div>
+          </div>
+        </Card.Body>
+        <Card.Footer className={styles.cardFooter}>
+          <span className={styles.sharing}>
+            <SharingLabel
+              sharing={sharing.source}
+              className={styles.sharingLabel}
+            />
+          </span>
+          <LastUpdatedLabel
+            timestamp={updatedAt}
+            className={styles.updatedAt}
+          />
+        </Card.Footer>
       </Card>
     </div>
   );

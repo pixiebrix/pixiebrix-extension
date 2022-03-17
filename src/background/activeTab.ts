@@ -2,7 +2,6 @@
 
 import { updatePageEditor } from "@/pageEditor/messenger/api";
 import { canReceiveContentScript } from "@/utils/permissions";
-import browser from "webextension-polyfill";
 
 type TabId = number;
 type Origin = string;

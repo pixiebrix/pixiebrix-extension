@@ -19,56 +19,15 @@ import styles from "./TemplateToggleWidget.module.scss";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import { Expression } from "@/core";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { UnknownObject } from "@/types";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { JSONSchema7Array } from "json-schema";
 import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
 import useToggleFormField from "@/pageEditor/hooks/useToggleFormField";
 import { useField } from "formik";
-
-interface InputModeOptionBase<
-  TValue extends FieldInputMode,
-  As extends React.ElementType = React.ElementType
-> {
-  label: string;
-  value: TValue;
-  symbol: React.ReactNode;
-  Widget: As;
-  description?: React.ReactNode;
-  interpretValue?: (oldValue: unknown) => unknown;
-}
-
-export type StringOption = InputModeOptionBase<"string" | "select" | "var"> & {
-  interpretValue: (oldValue: unknown) => string | Expression;
-};
-export type NumberOption = InputModeOptionBase<"number"> & {
-  interpretValue: (oldValue: unknown) => number;
-};
-export type BooleanOption = InputModeOptionBase<"boolean"> & {
-  interpretValue: (oldValue: unknown) => boolean;
-};
-export type ArrayOption = InputModeOptionBase<"array"> & {
-  interpretValue: (oldValue: unknown) => JSONSchema7Array;
-};
-export type ObjectOption = InputModeOptionBase<"object"> & {
-  interpretValue: (oldValue: unknown) => UnknownObject;
-};
-export type OmitOption = InputModeOptionBase<"omit">;
-
-export type InputModeOption =
-  | StringOption
-  | NumberOption
-  | BooleanOption
-  | ArrayOption
-  | ObjectOption
-  | OmitOption;
-
-type TemplateToggleWidgetProps = SchemaFieldProps & {
-  inputModeOptions: InputModeOption[];
-  setFieldDescription: (description: React.ReactNode) => void;
-};
+import {
+  InputModeOption,
+  TemplateToggleWidgetProps,
+} from "./templateToggleWidgetTypes";
 
 export function getOptionForInputMode(
   options: InputModeOption[],
@@ -84,7 +43,7 @@ export function getOptionForInputMode(
  * @param setFieldDescription Setter to handle changing the field description based on which option is toggled
  * @param props SchemaFieldProps
  */
-const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
+const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   inputModeOptions,
   setFieldDescription,
   ...schemaFieldProps
@@ -134,7 +93,7 @@ const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
     return inputMode === "omit"
       ? {
           ...schemaFieldProps,
-          onClick: () => {
+          onClick() {
             if (inputModeOptions.some((option) => option.value === "var")) {
               onModeChange("var");
             }

@@ -15,10 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthState, RegistryId, UUID } from "@/core";
+import {
+  AuthState,
+  RegistryId,
+  Schema,
+  SchemaProperties,
+  UiSchema,
+  UUID,
+} from "@/core";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
   EditablePackage,
+  OptionsDefinition,
   RecipeDefinition,
   ServiceDefinition,
   UnsavedRecipeDefinition,
@@ -31,6 +39,7 @@ import {
   Database,
   Group,
   MarketplaceListing,
+  Me,
   Organization,
   PackageUpsertResponse,
   PendingInvitation,
@@ -39,8 +48,15 @@ import {
 } from "@/types/contract";
 import { components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
-import { anonAuth, ProfileResponse } from "@/hooks/auth";
+import { anonAuth } from "@/auth/authConstants";
 import { updateUserData } from "@/auth/token";
+import {
+  selectExtensionAuthState,
+  selectUserDataUpdate,
+} from "@/auth/authUtils";
+import { propertiesToSchema } from "@/validators/generic";
+import { produce } from "immer";
+import { sortBy } from "lodash";
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
 const appBaseQuery: BaseQueryFn<{
@@ -68,6 +84,43 @@ const appBaseQuery: BaseQueryFn<{
   }
 };
 
+type UnnormalizedOptionsDefinition = {
+  schema: Schema | SchemaProperties;
+  uiSchema?: UiSchema;
+};
+
+type UnnormalizedRecipeDefinition = Exclude<RecipeDefinition, "options"> & {
+  options?: UnnormalizedOptionsDefinition;
+};
+
+/**
+ * Fix hand-crafted recipe options from the workshop
+ */
+function normalizeRecipeOptions(
+  options?: OptionsDefinition
+): OptionsDefinition {
+  if (options == null) {
+    return {
+      schema: {},
+      uiSchema: {},
+    };
+  }
+
+  const recipeSchema = options.schema ?? {};
+  const schema: Schema =
+    "type" in recipeSchema &&
+    recipeSchema.type === "object" &&
+    "properties" in recipeSchema
+      ? recipeSchema
+      : propertiesToSchema(recipeSchema as SchemaProperties);
+  const uiSchema: UiSchema = options.uiSchema ?? {};
+  uiSchema["ui:order"] = uiSchema["ui:order"] ?? [
+    ...sortBy(Object.keys(schema.properties ?? {})),
+    "*",
+  ];
+  return { schema, uiSchema };
+}
+
 export const appApi = createApi({
   reducerPath: "appApi",
   baseQuery: appBaseQuery,
@@ -88,33 +141,11 @@ export const appApi = createApi({
     getAuth: builder.query<AuthState, void>({
       query: () => ({ url: "/api/me/", method: "get" }),
       providesTags: ["Auth"],
-      transformResponse: async ({
-        id,
-        email,
-        scope,
-        organization,
-        telemetry_organization: telemetryOrganization,
-        is_onboarded: isOnboarded,
-        flags = [],
-      }: ProfileResponse) => {
-        if (id) {
-          void updateUserData({
-            email,
-            organizationId: organization?.id,
-            telemetryOrganizationId: telemetryOrganization?.id,
-            flags,
-          });
-
-          return {
-            userId: id,
-            email,
-            scope,
-            organization,
-            isOnboarded,
-            isLoggedIn: true,
-            extension: true,
-            flags,
-          };
+      async transformResponse(me: Me) {
+        if (me.id) {
+          const update = selectUserDataUpdate(me);
+          void updateUserData(update);
+          return selectExtensionAuthState(me);
         }
 
         return anonAuth;
@@ -228,6 +259,15 @@ export const appApi = createApi({
     getRecipes: builder.query<RecipeDefinition[], void>({
       query: () => ({ url: "/api/recipes/", method: "get" }),
       providesTags: ["Recipes"],
+      transformResponse(
+        baseQueryReturnValue: UnnormalizedRecipeDefinition[]
+      ): RecipeDefinition[] {
+        return produce<RecipeDefinition[]>(baseQueryReturnValue, (draft) => {
+          for (const recipe of draft) {
+            recipe.options = normalizeRecipeOptions(recipe.options);
+          }
+        });
+      },
     }),
     getCloudExtensions: builder.query<CloudExtension[], void>({
       query: () => ({ url: "/api/extensions/", method: "get" }),
@@ -251,7 +291,7 @@ export const appApi = createApi({
         public: boolean;
       }
     >({
-      query: ({ recipe, organizations, public: isPublic }) => {
+      query({ recipe, organizations, public: isPublic }) {
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {
@@ -271,7 +311,7 @@ export const appApi = createApi({
       PackageUpsertResponse,
       { packageId: UUID; recipe: UnsavedRecipeDefinition }
     >({
-      query: ({ packageId, recipe }) => {
+      query({ packageId, recipe }) {
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {

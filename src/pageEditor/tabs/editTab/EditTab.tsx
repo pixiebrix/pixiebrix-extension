@@ -74,8 +74,6 @@ const EditTab: React.FC<{
     [extensionPointType]
   );
 
-  const FoundationNode = isApiAtLeastV2 ? EditorNode : UnsupportedApiV1;
-
   const [allBlocks] = useAsyncState<TypedBlockMap>(
     async () => blockRegistry.allTyped(),
     [],
@@ -178,7 +176,7 @@ const EditTab: React.FC<{
             Boolean(blockPipelineErrors?.[index]),
           hasWarning:
             errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
-          onClick: () => {
+          onClick() {
             setActiveNodeId(blockConfig.instanceId);
           },
         };
@@ -196,7 +194,7 @@ const EditTab: React.FC<{
       outputKey: "input",
       title: label,
       icon,
-      onClick: () => {
+      onClick() {
         setActiveNodeId(FOUNDATION_NODE_ID);
       },
     };
@@ -292,22 +290,24 @@ const EditTab: React.FC<{
               activeNodeId
             }
           >
-            {activeNodeId === FOUNDATION_NODE_ID ? (
-              <Col>
-                <ConnectedFieldTemplate name="label" label="Extension Name" />
-                {showVersionField && <ApiVersionField />}
-                <UpgradedToApiV3 />
-                <FoundationNode isLocked={isLocked} />
-              </Col>
-            ) : isApiAtLeastV2 ? (
-              <EditorNodeConfigPanel
-                key={activeNodeId}
-                blockFieldName={blockFieldName}
-                blockId={
-                  blockPipeline.find((x) => x.instanceId === activeNodeId)?.id
-                }
-                blockError={blockError}
-              />
+            {isApiAtLeastV2 ? (
+              activeNodeId === FOUNDATION_NODE_ID ? (
+                <Col>
+                  <ConnectedFieldTemplate name="label" label="Extension Name" />
+                  {showVersionField && <ApiVersionField />}
+                  <UpgradedToApiV3 />
+                  <EditorNode isLocked={isLocked} />
+                </Col>
+              ) : (
+                <EditorNodeConfigPanel
+                  key={activeNodeId}
+                  blockFieldName={blockFieldName}
+                  blockId={
+                    blockPipeline.find((x) => x.instanceId === activeNodeId)?.id
+                  }
+                  blockError={blockError}
+                />
+              )
             ) : (
               <UnsupportedApiV1 />
             )}

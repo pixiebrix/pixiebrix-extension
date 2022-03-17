@@ -31,7 +31,9 @@ import {
 import { actions, FormState } from "@/pageEditor/slices/editorSlice";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
 import { useDispatch, useSelector } from "react-redux";
+import { reportEvent } from "@/telemetry/events";
 import { RootState } from "@/pageEditor/store";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
 type BlockPipelineActions = {
   addBlock: (block: IBlock, pipelineIndex: number) => void;
@@ -52,6 +54,7 @@ function useBlockPipelineActions(
   setActiveNodeId: (nodeId: NodeId) => void
 ): BlockPipelineActions {
   const dispatch = useDispatch();
+  const sessionId = useSelector(selectSessionId);
 
   const addBlock = useCallback(
     async (block: IBlock, pipelineIndex: number) => {
@@ -77,8 +80,15 @@ function useBlockPipelineActions(
       });
       setFormValues(nextState, true);
       setActiveNodeId(newBlock.instanceId);
+
+      reportEvent("BrickAdd", {
+        brickId: block.id,
+        sessionId,
+        extensionId: values.uuid,
+        source: "PageEditor-BrickSearchModal",
+      });
     },
-    [blockPipeline, values, setFormValues, setActiveNodeId]
+    [blockPipeline, values, setFormValues, setActiveNodeId, sessionId]
   );
 
   const removeBlock = (nodeIdToRemove: NodeId) => {

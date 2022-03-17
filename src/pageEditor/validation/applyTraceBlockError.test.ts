@@ -43,6 +43,5 @@ test("doesn't override nested error", () => {
 
   applyTraceBlockError(pipelineErrors, errorTraceEntry, blockIndex);
 
-  // eslint-disable-next-line security/detect-object-injection
   expect(pipelineErrors[blockIndex]).toBe(nestedBlockError);
 });

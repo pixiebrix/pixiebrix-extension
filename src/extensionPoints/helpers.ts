@@ -177,6 +177,7 @@ export function awaitElementOnce(
     );
     let innerCancel = noop;
     return [
+      // eslint-disable-next-line promise/prefer-await-to-then -- We can return it before it resolves
       nextElementPromise.then(async ($nextElement) => {
         const [innerPromise, inner] = awaitElementOnce(rest, $nextElement);
         innerCancel = inner;

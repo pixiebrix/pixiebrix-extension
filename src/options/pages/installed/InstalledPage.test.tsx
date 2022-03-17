@@ -28,7 +28,8 @@ import {
 } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
 import { AuthState } from "@/core";
-import { anonAuth } from "@/hooks/auth";
+import { anonAuth } from "@/auth/authConstants";
+import { uuidv4 } from "@/types/helpers";
 
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: jest.fn(),
@@ -37,18 +38,7 @@ jest.mock("@/services/api", () => ({
 }));
 
 jest.mock("@/hooks/useDeployments", () => jest.fn());
-
-// eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
-jest.mock("@/hooks/useNotifications", () => {
-  // We're not asserting any specific calls yet, so just pass generic mocks
-  return () => ({
-    success: jest.fn(),
-    info: jest.fn(),
-    warning: jest.fn(),
-    error: jest.fn(),
-    userError: jest.fn(),
-  });
-});
+jest.mock("@/utils/notify");
 
 describe("InstalledPage", () => {
   beforeAll(() => {
@@ -86,15 +76,14 @@ const mockOnboarding = ({
   hasTeamBlueprints?: boolean;
 } = {}) => {
   (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
-    data: hasOrganization ? [{} as Organization] : [],
+    data: hasOrganization ? ([{}] as [Organization]) : [],
   }));
 
   // eslint-disable-next-line arrow-body-style -- better readability b/c it's returning a method
   (useDeployments as jest.Mock).mockImplementation(() => {
     return {
       hasUpdate: hasDeployments,
-      update: () => {},
+      update() {},
       extensionUpdateRequired: false,
       isLoading: false,
       error: undefined as unknown,
@@ -106,8 +95,7 @@ const mockOnboarding = ({
       ? [
           {
             sharing: {
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
-              organizations: [{} as Organization],
+              organizations: [{}] as [Organization],
             },
           },
         ]
@@ -125,8 +113,7 @@ const mockOnboardingLoadingState = ({
   isTeamBlueprintsLoading?: boolean;
 } = {}) => {
   (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
-    data: [{} as Organization],
+    data: [{}] as [Organization],
     isLoading: isOrganizationsLoading,
   }));
 
@@ -134,7 +121,7 @@ const mockOnboardingLoadingState = ({
   (useDeployments as jest.Mock).mockImplementation(() => {
     return {
       hasUpdate: true,
-      update: () => {},
+      update() {},
       extensionUpdateRequired: false,
       isLoading: isDeploymentsLoading,
       error: undefined as unknown,
@@ -145,8 +132,7 @@ const mockOnboardingLoadingState = ({
     data: [
       {
         sharing: {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
-          organizations: [{} as Organization],
+          organizations: [{}] as [Organization],
         },
       },
     ],
@@ -186,6 +172,8 @@ describe("OnboardingPage", () => {
     isLoggedIn: true,
     isOnboarded: true,
     extension: true,
+    organizations: [{ id: uuidv4(), name: "Foo" }],
+    groups: [],
   };
 
   beforeEach(() => {

@@ -19,7 +19,7 @@ import React, { useMemo, useState } from "react";
 import { Split } from "type-fest";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube, faScroll } from "@fortawesome/free-solid-svg-icons";
+import { faCube, faCubes } from "@fortawesome/free-solid-svg-icons";
 import { useAsyncEffect } from "use-async-effect";
 import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
 import { MarketplaceListing } from "@/types/contract";
@@ -27,14 +27,15 @@ import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 import { isBlueprint } from "@/options/pages/blueprints/installableUtils";
 
 function getDefaultInstallableIcon(installable: Installable) {
-  if (isBlueprint(installable)) {
-    return faScroll;
+  if (isBlueprint(installable) && installable.extensionPoints.length > 1) {
+    return faCubes;
   }
 
   return faCube;
 }
 
 const SIZE_REGEX = /^(?<size>\d)x$/i;
+const DARK_LAVENDER = "rgb(101, 98, 170)";
 
 const InstallableIcon: React.FunctionComponent<{
   listing: MarketplaceListing;
@@ -94,7 +95,7 @@ const InstallableIcon: React.FunctionComponent<{
   const cssSize = `${sizeMultiplier}em`;
 
   if (isLoading) {
-    return <FontAwesomeIcon icon={faCube} color="darkGrey" size={size} />;
+    return <FontAwesomeIcon icon={faCube} color={DARK_LAVENDER} size={size} />;
   }
 
   return listing?.image ? (
@@ -107,7 +108,7 @@ const InstallableIcon: React.FunctionComponent<{
   ) : (
     <FontAwesomeIcon
       icon={iconToUse}
-      color={listing?.icon_color ?? "darkGrey"}
+      color={listing?.icon_color ?? DARK_LAVENDER}
       className={faIconClass}
       size={size}
       fixedWidth

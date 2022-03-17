@@ -18,31 +18,37 @@
 import styles from "./ListItem.module.scss";
 
 import React from "react";
-import SharingLabel from "@/options/pages/blueprints/SharingLabel";
+import SharingLabel from "@/options/pages/blueprints/labels/SharingLabel";
 import BlueprintActions from "@/options/pages/blueprints/BlueprintActions";
-import { timeSince } from "@/utils/timeUtils";
+
 import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
 import Status from "@/options/pages/blueprints/Status";
 import { ListGroup } from "react-bootstrap";
+import cx from "classnames";
+import LastUpdatedLabel from "@/options/pages/blueprints/labels/LastUpdatedLabel";
 
 const ListItem: React.VoidFunctionComponent<{
   installableItem: InstallableViewItem;
   style: React.CSSProperties;
 }> = ({ installableItem, style }) => {
-  const { name, sharing, updatedAt, icon } = installableItem;
+  const { name, sharing, updatedAt, icon, description } = installableItem;
 
   return (
     <ListGroup.Item className={styles.root} style={style}>
       <div className={styles.icon}>{icon}</div>
-      <div className={styles.name}>
-        <h5>{name}</h5>
+      <div className={styles.primaryInfo}>
+        <h5 className={styles.name}>{name}</h5>
+        <p className={cx("small", styles.name)}>{description}</p>
       </div>
       <div className="flex-shrink-0">
         <div className={styles.sharing}>
-          <span className={styles.updatedAt}>
-            Updated: {timeSince(updatedAt)}
+          <SharingLabel
+            sharing={sharing.source}
+            className={styles.sharingLabel}
+          />
+          <span>
+            <LastUpdatedLabel timestamp={updatedAt} />
           </span>
-          <SharingLabel sharing={sharing.source} />
         </div>
       </div>
       <div className={styles.status}>

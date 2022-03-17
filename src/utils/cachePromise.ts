@@ -40,17 +40,17 @@ async function cachePromise<T = unknown>(
   const promise = defaultFactory();
   promises.push({ dependencies, promise });
 
-  // Remove failed promises so they can be retried
-  promise.catch(() => {
+  try {
+    return await promise;
+  } catch {
+    // Remove failed promises so they can be retried
     const index = promises.findIndex(
       (x) => !isEqual(x.dependencies, dependencies)
     );
     if (index >= 0) {
       promises.splice(index, 1);
     }
-  });
-
-  return promise;
+  }
 }
 
 type PromiseFactory<T = unknown> = (...args: unknown[]) => Promise<T>;

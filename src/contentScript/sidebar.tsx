@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
 import reportError from "@/telemetry/reportError";
 import { uuidv4 } from "@/types/helpers";
 import { IS_BROWSER } from "@/helpers";
@@ -23,7 +22,7 @@ import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef, UUID } from "@/core";
 import type {
-  SidebarStore,
+  SidebarEntries,
   FormEntry,
   PanelEntry,
   RendererError,
@@ -188,7 +187,7 @@ export function isSidebarVisible(): boolean {
   return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
 }
 
-export function getSidebarStore(): SidebarStore {
+export function getSidebarEntries(): SidebarEntries {
   // `forms` state is managed by the sidebar react component
   return { panels, forms: [] };
 }

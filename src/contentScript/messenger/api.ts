@@ -32,7 +32,7 @@ export const toggleSidebar = getMethod("TOGGLE_SIDEBAR");
 export const showSidebar = getMethod("SHOW_SIDEBAR");
 export const hideSidebar = getMethod("HIDE_SIDEBAR");
 export const removeSidebar = getMethod("REMOVE_SIDEBAR");
-export const getSidebarStore = getMethod("GET_SIDEBAR_STORE");
+export const getSidebarEntries = getMethod("GET_SIDEBAR_ENTRIES");
 export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");
 
@@ -54,7 +54,6 @@ export const disableOverlay = getMethod("DISABLE_OVERLAY");
 export const getInstalledExtensionPointIds = getMethod("INSTALLED_EXTENSIONS");
 export const checkAvailable = getMethod("CHECK_AVAILABLE");
 export const handleNavigate = getNotifier("HANDLE_NAVIGATE");
-export const showNotification = getMethod("SHOW_NOTIFICATION");
 export const runBrick = getMethod("RUN_BRICK");
 export const cancelSelect = getMethod("CANCEL_SELECT_ELEMENT");
 export const selectElement = getMethod("SELECT_ELEMENT");
@@ -62,3 +61,9 @@ export const selectElement = getMethod("SELECT_ELEMENT");
 export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runEffectPipeline = getMethod("RUN_EFFECT_PIPELINE");
 export const runMapArgs = getMethod("RUN_MAP_ARGS");
+
+export const notify = {
+  info: getNotifier("NOTIFY_INFO"),
+  error: getNotifier("NOTIFY_ERROR"),
+  success: getNotifier("NOTIFY_SUCCESS"),
+};

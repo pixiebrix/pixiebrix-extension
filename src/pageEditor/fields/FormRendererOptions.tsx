@@ -19,7 +19,7 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Schema } from "@/core";
 import React, { useEffect } from "react";
 import { validateRegistryId } from "@/types/helpers";
-import FormEditor from "@/components/formBuilder/FormEditor";
+import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import { actions as elementWizardActions } from "@/pageEditor/slices/formBuilderSlice";
 import formBuilderSelectors from "@/pageEditor/slices/formBuilderSelectors";
 import useReduxState from "@/hooks/useReduxState";

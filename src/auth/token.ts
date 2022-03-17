@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
 import Cookies from "js-cookie";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
@@ -25,6 +24,8 @@ import {
   UserDataUpdate,
 } from "./authTypes";
 import { isExtensionContext } from "webext-detect-page";
+import { expectContext } from "@/utils/expectContext";
+import { omit } from "lodash";
 
 const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
@@ -61,7 +62,23 @@ export async function isLinked(): Promise<boolean> {
   return (await getExtensionToken()) != null;
 }
 
-export async function getExtensionAuth(): Promise<UserData> {
+/**
+ * Return non-sensitive user profile data.
+ * @see getExtensionAuth
+ */
+export async function getUserData(): Promise<Partial<UserData>> {
+  expectContext("extension");
+  const data = await readAuthData();
+  return omit(data, "token");
+}
+
+/**
+ * Return information about the principal and tenant
+ */
+export async function getExtensionAuth(): Promise<
+  Pick<UserData, "user" | "email" | "hostname">
+> {
+  expectContext("extension");
   const { user, email, hostname } = await readAuthData();
   return { user, email, hostname };
 }

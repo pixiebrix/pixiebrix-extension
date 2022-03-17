@@ -36,26 +36,30 @@
   padding-right: 1rem;
 }
 
-.name {
-  text-wrap: normal;
+.primaryInfo {
+  min-width: 0;
   flex-grow: 1;
+  padding-right: 1rem;
+}
 
-  h5 {
-    text-overflow: ellipsis;
-    margin: 0;
-  }
+.name {
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .sharing {
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   text-align: right;
+  color: darkgray;
+  font-size: 0.7rem;
 }
 
-.updatedAt {
-  color: grey;
-  text-wrap: normal;
-  font-size: 80%;
-  font-weight: 400;
+.sharingLabel {
+  align-self: end;
 }
 
 .status {

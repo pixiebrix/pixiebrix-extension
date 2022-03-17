@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import browser from "webextension-polyfill";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import {
   deploymentFactory,
@@ -26,6 +27,9 @@ import { PersistedExtension } from "@/core";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deployment";
+
+// @ts-expect-error No way to extend `globalThis` effectively
+globalThis.browser = browser;
 
 const axiosMock = new MockAdapter(axios);
 
@@ -60,9 +64,6 @@ jest.mock("@/contentScript/messenger/api", () => ({
 }));
 
 jest.mock("@/background/messenger/api", () => ({
-  // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
-  uninstallContextMenu: jest.fn().mockResolvedValue(undefined),
-  containsPermissions: jest.fn().mockResolvedValue(true),
   traces: {
     // eslint-disable-next-line unicorn/no-useless-undefined -- argument is required
     clear: jest.fn().mockResolvedValue(undefined),
@@ -82,7 +83,7 @@ jest.mock("@/auth/token", () => ({
     organizationId: "00000000-00000000-00000000-00000000",
   }),
   isLinked: jest.fn().mockResolvedValue(true),
-  updateUserData: async () => {},
+  async updateUserData() {},
 }));
 
 jest.mock("webext-detect-page", () => ({
@@ -100,6 +101,9 @@ jest.mock("webextension-polyfill", () => {
     default: {
       // Keep the existing local storage mock
       ...mock,
+      permissions: {
+        contains: jest.fn().mockResolvedValue(true),
+      },
       runtime: {
         openOptionsPage: jest.fn(),
         getManifest: jest.fn().mockReturnValue({
@@ -114,9 +118,7 @@ jest.mock("@/background/installer", () => ({
   isUpdateAvailable: jest.fn().mockReturnValue(false),
 }));
 
-import browser from "webextension-polyfill";
 import { isLinked, readAuthData } from "@/auth/token";
-import { containsPermissions } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { isUpdateAvailable } from "@/background/installer";
 import { getSettingsState } from "@/store/settingsStorage";
@@ -125,7 +127,7 @@ const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;
 const getManifestMock = browser.runtime.getManifest as jest.Mock;
 const openOptionsPageMock = browser.runtime.openOptionsPage as jest.Mock;
-const containsPermissionsMock = containsPermissions as jest.Mock;
+const containsPermissionsMock = browser.permissions.contains as jest.Mock;
 const refreshRegistriesMock = refreshRegistries as jest.Mock;
 const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
 const getSettingsStateMock = getSettingsState as jest.Mock;

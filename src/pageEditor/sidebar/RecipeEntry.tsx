@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { IExtension, RegistryId } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import styles from "./Entry.module.scss";
@@ -27,11 +27,11 @@ import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/pageEditor/store";
 import cx from "classnames";
-import { getIdForElement } from "@/pageEditor/sidebar/Sidebar";
+import { selectRecipeIsDirty } from "@/pageEditor/slices/editorSelectors";
 
 type RecipeEntryProps = {
   recipeId: RegistryId;
-  recipes: RecipeDefinition[];
+  recipes?: RecipeDefinition[];
   elements: Array<IExtension | FormState>;
   activeRecipeId: RegistryId | null;
 };
@@ -45,16 +45,9 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
-  const recipe = useMemo<RecipeDefinition>(
-    () => recipes.find((recipe) => recipe.metadata.id === recipeId),
-    [recipeId, recipes]
-  );
-  const dirty = useSelector<RootState, Record<string, boolean>>(
-    (state) => state.editor.dirty
-  );
-  const isDirty = useMemo(
-    () => elements.some((element) => dirty[getIdForElement(element)] ?? false),
-    [dirty, elements]
+  const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
+  const isDirty = useSelector((state: RootState) =>
+    selectRecipeIsDirty(state, recipeId, elements)
   );
 
   const caretIcon = expanded ? faCaretDown : faCaretRight;
@@ -70,13 +63,14 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
       >
         <button
           className={styles.icon}
-          onClick={() => {
+          onClick={(event) => {
             setExpanded(!expanded);
+            event.stopPropagation();
           }}
         >
           <FontAwesomeIcon icon={caretIcon} />
         </button>
-        <span className={styles.name}>{recipe.metadata.name}</span>
+        <span className={styles.name}>{recipe?.metadata?.name}</span>
         {isDirty && (
           <span className={cx(styles.icon, "text-danger")}>
             <UnsavedChangesIcon />

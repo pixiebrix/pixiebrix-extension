@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { InstallableViewItem } from "./blueprintsTypes";
 import useInstallableActions from "./useInstallableActions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faSync } from "@fortawesome/free-solid-svg-icons";
 
 type StatusProps = {
   installableViewItem: InstallableViewItem;
@@ -30,21 +32,29 @@ const Status: React.VoidFunctionComponent<StatusProps> = ({
   const { status, installable, hasUpdate } = installableViewItem;
   const { activate, reinstall } = useInstallableActions(installable);
 
-  return status === "Active" ? (
-    <>
-      {hasUpdate ? (
-        <Button size="sm" variant="warning" onClick={reinstall}>
-          Update
+  const ActiveStatus = useMemo(() => {
+    if (hasUpdate) {
+      return (
+        <Button size="sm" variant="info" onClick={reinstall}>
+          <FontAwesomeIcon icon={faSync} /> Update
         </Button>
-      ) : (
-        <div className="text-info py-2">Active</div>
-      )}
-    </>
-  ) : (
-    <Button size="sm" variant="info" onClick={activate}>
+      );
+    }
+
+    return (
+      <div className="text-success py-2">
+        <FontAwesomeIcon icon={faCheck} /> Active
+      </div>
+    );
+  }, [hasUpdate, reinstall]);
+
+  const InactiveStatus = (
+    <Button size="sm" variant="outline-info" onClick={activate}>
       Activate
     </Button>
   );
+
+  return status === "Active" ? ActiveStatus : InactiveStatus;
 };
 
 export default Status;

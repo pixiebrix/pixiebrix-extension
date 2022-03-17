@@ -19,7 +19,6 @@ import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/blocks/renderers/table";
-import { ToastProvider } from "react-toast-notifications";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import amazonSearch from "@contrib/blocks/amazon-search.yaml";
 import { brickToYaml } from "@/utils/objToYaml";
@@ -43,9 +42,7 @@ function optionsStore(initialState?: any) {
 
 const Template: ComponentStory<typeof BrickDetail> = (args) => (
   <Provider store={optionsStore()}>
-    <ToastProvider>
-      <BrickDetail {...args} />
-    </ToastProvider>
+    <BrickDetail {...args} />
   </Provider>
 );
 

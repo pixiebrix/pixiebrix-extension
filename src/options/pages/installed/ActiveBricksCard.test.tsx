@@ -21,7 +21,7 @@ import { ResolvedExtension, UUID } from "@/core";
 import { useGetRecipesQuery } from "@/services/api";
 import { Organization } from "@/types/contract";
 import { RecipeDefinition } from "@/types/definitions";
-import { anonAuth } from "@/hooks/auth";
+import { anonAuth } from "@/auth/authConstants";
 
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),

@@ -17,7 +17,6 @@
 
 import styles from "./Sidebar.module.scss";
 
-import browser from "webextension-polyfill";
 import React, { FormEvent, useContext, useMemo, useState } from "react";
 import { FormState } from "@/pageEditor/slices/editorSlice";
 import { PageEditorTabContext } from "@/pageEditor/context";
@@ -56,6 +55,7 @@ import Loader from "@/components/Loader";
 import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
+import { getIdForElement } from "@/pageEditor/slices/editorSelectors";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -104,10 +104,6 @@ const DropdownEntry: React.VoidFunctionComponent<{
 const Logo: React.VoidFunctionComponent = () => (
   <img src={logoUrl} alt="PixiBrix logo" className={styles.logo} />
 );
-
-export function getIdForElement(element: IExtension | FormState): string {
-  return isExtension(element) ? element.id : element.uuid;
-}
 
 type SidebarProps = {
   isInsertingElement: boolean;

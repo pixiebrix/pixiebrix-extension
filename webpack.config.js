@@ -52,6 +52,7 @@ function parseEnv(value) {
 const defaults = {
   DEV_NOTIFY: "true",
   DEV_SLIM: "false",
+  DEV_REDUX_LOGGER: "true",
   CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
 
   // PixieBrix URL to enable connection to for credential exchange
@@ -194,19 +195,6 @@ function mockHeavyDependencies() {
   }
 }
 
-/**
- * Ensure that a dependency is never included in a production build.
- * May cause runtime errors if this isn't *also* handled in the code,
- * for example by checking ENV === 'production'
- */
-function devDependenciesOnly(options, ...dependencyName) {
-  if (isProd(options)) {
-    return Object.fromEntries(dependencyName.map((dep) => [dep, false]));
-  }
-
-  return {};
-}
-
 module.exports = (env, options) =>
   mergeWithShared({
     node: {
@@ -224,19 +212,20 @@ module.exports = (env, options) =>
         dynamicImport: true,
       },
     },
+
     entry: {
       // All of these entries require the `vendors.js` file to be included first
       ...Object.fromEntries(
         [
-          "background",
-          "contentScript",
-          "pageEditor",
-          "ephemeralForm",
-          "options",
-          "sidebar",
-          "permissionsPopup",
+          "background/background",
+          "contentScript/contentScript",
+          "pageEditor/pageEditor",
+          "options/options",
+          "sidebar/sidebar",
+          "tinyPages/ephemeralForm",
+          "tinyPages/permissionsPopup",
         ].map((name) => [
-          name,
+          path.basename(name),
           { import: `./src/${name}`, dependOn: "vendors" },
         ])
       ),
@@ -255,17 +244,20 @@ module.exports = (env, options) =>
       ],
 
       // Tiny files without imports, no vendors needed
-      frame: "./src/frame",
-      devtools: "./src/devtools",
+      frame: "./src/tinyPages/frame",
+      devtools: "./src/tinyPages/devtools",
 
       // The script that gets injected into the host page should not have a vendor chunk
-      pageScript: "./src/pageScript",
+      pageScript: "./src/pageScript/pageScript",
     },
 
     resolve: {
       alias: {
         ...mockHeavyDependencies(),
-        ...devDependenciesOnly(options, "redux-logger"),
+
+        ...(isProd(options) || process.env.DEV_REDUX_LOGGER === "false"
+          ? { "redux-logger": false }
+          : {}),
 
         // Enables static analysis and removal of dead code
         "webext-detect-page": path.resolve(
@@ -363,8 +355,8 @@ module.exports = (env, options) =>
             },
           },
           {
-            from: "*.{css,html}",
-            context: "src",
+            from: "src/*/*.html", // Only one level deep
+            to: "[name][ext]", // Flat output, no subfolders
           },
           "static",
         ],

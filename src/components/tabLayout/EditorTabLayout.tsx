@@ -23,7 +23,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export interface TabItem {
-  itemName: string;
+  name: string;
   badgeCount?: number;
   badgeVariant?: Variant;
   TabContent: React.VoidFunctionComponent;
@@ -39,27 +39,27 @@ export interface ActionButton {
 }
 
 const EditorTabLayout: React.FC<{
-  items: TabItem[];
+  tabs: TabItem[];
   actionButtons: ActionButton[];
-  defaultItemName?: string;
-}> = ({ items, actionButtons, defaultItemName }) => {
-  const [activeItem, setActiveItem] = useState(
-    defaultItemName ?? items[0].itemName
+  defaultTabName?: string;
+}> = ({ tabs, actionButtons, defaultTabName }) => {
+  const [activeTabName, setActiveTabName] = useState(
+    defaultTabName ?? tabs[0].name
   );
 
   return (
     <div className={styles.root}>
-      <Tab.Container activeKey={activeItem}>
+      <Tab.Container activeKey={activeTabName}>
         <Nav
           variant="pills"
-          activeKey={activeItem}
-          onSelect={setActiveItem}
+          activeKey={activeTabName}
+          onSelect={setActiveTabName}
           className={styles.nav}
         >
-          {items.map(({ itemName, badgeCount, badgeVariant }) => (
-            <Nav.Item key={`nav-tab-${itemName}`} className={styles.navItem}>
-              <Nav.Link eventKey={itemName} className={styles.navLink}>
-                {itemName}
+          {tabs.map(({ name, badgeCount, badgeVariant }) => (
+            <Nav.Item key={`nav-tab-${name}`} className={styles.navItem}>
+              <Nav.Link eventKey={name} className={styles.navLink}>
+                {name}
                 {badgeCount && badgeVariant && (
                   <Badge className={styles.badge} variant={badgeVariant}>
                     {badgeCount}
@@ -99,14 +99,14 @@ const EditorTabLayout: React.FC<{
         </Nav>
 
         <Tab.Content className={styles.content}>
-          {items.map(({ itemName, TabContent, mountWhenActive }) => (
+          {tabs.map(({ name, TabContent, mountWhenActive }) => (
             <Tab.Pane
-              key={itemName}
-              eventKey={itemName}
+              key={name}
+              eventKey={name}
               mountOnEnter={mountWhenActive}
               unmountOnExit={mountWhenActive}
             >
-              <TabContent key={itemName} />
+              <TabContent key={name} />
             </Tab.Pane>
           ))}
         </Tab.Content>

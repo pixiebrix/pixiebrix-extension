@@ -356,7 +356,7 @@ export async function rejectOnCancelled<T>(
       throw new PromiseCancelled("Promise was cancelled");
     }
 
-    throw error;
+    throw error ?? new Error("Undefined error awaiting promise");
   }
 
   if (isCancelled()) {
@@ -507,7 +507,7 @@ export async function runInMillis<TResult>(
 }
 
 /** Loop an iterable with the ability to place `await` in the loop itself */
-export async function asyncLoop<Item>(
+export async function asyncForEach<Item>(
   iterable: Iterable<Item>,
   iteratee: (item: Item) => Promise<void>
 ): Promise<void> {

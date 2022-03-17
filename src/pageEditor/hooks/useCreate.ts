@@ -16,11 +16,10 @@
  */
 
 import { editorSlice, FormState } from "@/pageEditor/slices/editorSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
-import { AddToast, useToasts } from "react-toast-notifications";
+import notify from "@/utils/notify";
 import { getErrorMessage, isAxiosError } from "@/errors";
-import reportError from "@/telemetry/reportError";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
@@ -36,6 +35,7 @@ import { useGetEditablePackagesQuery } from "@/services/api";
 import { UnknownObject } from "@/types";
 import extensionsSlice from "@/store/extensionsSlice";
 import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -69,7 +69,7 @@ function selectErrorMessage(error: unknown): string {
   return getErrorMessage(error);
 }
 
-async function ensurePermissions(element: FormState, addToast: AddToast) {
+async function ensurePermissions(element: FormState) {
   const adapter = ADAPTERS.get(element.type);
 
   const { extension, extensionPoint: extensionPointConfig } =
@@ -92,12 +92,8 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
   const hasPermissions = await requestPermissions(permissions);
 
   if (!hasPermissions) {
-    addToast(
-      "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions",
-      {
-        appearance: "warning",
-        autoDismiss: true,
-      }
+    notify.warning(
+      "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions"
     );
   }
 }
@@ -119,38 +115,33 @@ function useCreate(): CreateCallback {
   //  fire-and-forget notification).
 
   const dispatch = useDispatch();
-  const { addToast } = useToasts();
+  const sessionId = useSelector(selectSessionId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
 
   return useCallback(
     async ({ element, pushToCloud }): Promise<string | null> => {
       const onStepError = (error: unknown, step: string): string => {
-        reportError(error);
         const message = selectErrorMessage(error);
         console.warn("Error %s: %s", step, message, { error });
         const errorMessage = `Error ${step}: ${message}`;
-        addToast(errorMessage, {
-          appearance: "error",
-          autoDismiss: true,
-        });
+        notify.error({ message: errorMessage, error });
 
         return errorMessage;
       };
 
       try {
-        const adapter = ADAPTERS.get(element.type);
-
-        void ensurePermissions(element, addToast).catch((error) => {
-          reportError(error);
+        // eslint-disable-next-line promise/prefer-await-to-then -- It specifically does not need to be awaited #2775
+        void ensurePermissions(element).catch((error) => {
           console.error("Error checking/enabling permissions", { error });
-          addToast(
-            "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
-            {
-              appearance: "warning",
-              autoDismiss: true,
-            }
-          );
+          notify.warning({
+            message:
+              "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
+            error,
+            reportError: true,
+          });
         });
+
+        const adapter = ADAPTERS.get(element.type);
 
         const extensionPointId = element.extensionPoint.metadata.id;
         const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
@@ -189,6 +180,7 @@ function useCreate(): CreateCallback {
         }
 
         reportEvent("PageEditorCreate", {
+          sessionId,
           type: element.type,
         });
 
@@ -199,14 +191,14 @@ function useCreate(): CreateCallback {
             extensionPointRegistry.fetch(),
           ]);
         } catch (error) {
-          reportError(error);
-          addToast(
-            `Error fetching remote bricks: ${selectErrorMessage(error)}`,
-            {
-              appearance: "warning",
-              autoDismiss: true,
-            }
-          );
+          notify.warning({
+            message: `Error fetching remote bricks: ${selectErrorMessage(
+              error
+            )}`,
+            includeErrorDetails: false, // Using `selectErrorMessage` locally
+            error,
+            reportError: true,
+          });
         }
 
         try {
@@ -233,22 +225,18 @@ function useCreate(): CreateCallback {
 
         reactivateEveryTab();
 
-        addToast("Saved extension", {
-          appearance: "success",
-          autoDismiss: true,
-        });
+        notify.success("Saved extension");
         return null;
       } catch (error) {
         console.error("Error saving extension", { error });
-        reportError(error);
-        addToast(`Error saving extension: ${getErrorMessage(error)}`, {
-          appearance: "error",
-          autoDismiss: true,
+        notify.error({
+          message: "Error saving extension",
+          error,
         });
         return "Error saving extension";
       }
     },
-    [dispatch, addToast, editablePackages]
+    [dispatch, sessionId, editablePackages]
   );
 }
 

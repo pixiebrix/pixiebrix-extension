@@ -17,7 +17,6 @@
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
-import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import * as sheets from "@/contrib/google/sheets/handlers";
 import {
@@ -66,6 +65,7 @@ import {
   sendDeploymentAlert,
 } from "@/background/telemetry";
 import { captureTab } from "@/background/capture";
+import { getUserData } from "@/auth/token";
 
 expectContext("background");
 
@@ -131,6 +131,8 @@ declare global {
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
 
     CAPTURE_TAB: typeof captureTab;
+
+    GET_USER_DATA: typeof getUserData;
   }
 }
 
@@ -197,5 +199,7 @@ export default function registerMessenger(): void {
     SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
 
     CAPTURE_TAB: captureTab,
+
+    GET_USER_DATA: getUserData,
   });
 }

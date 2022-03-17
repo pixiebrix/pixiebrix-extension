@@ -28,7 +28,7 @@ import {
 } from "@/services/api";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import DatabaseGroupSelect from "./DatabaseGroupSelect";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { Organization, UserRole } from "@/types/contract";
 import { UUID } from "@/core";
 import { validateUUID } from "@/types/helpers";
@@ -94,8 +94,6 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
 
   const [addDatabaseToGroup] = useAddDatabaseToGroupMutation();
 
-  const notify = useNotifications();
-
   const onSave = async ({ name, organizationId, groupId }: DatabaseConfig) => {
     const createDatabaseResult = await createDatabase({
       name,
@@ -103,7 +101,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
     });
 
     if ("error" in createDatabaseResult) {
-      notify.error(createDatabaseResult.error);
+      notify.error({ error: createDatabaseResult.error });
       onClose();
       return;
     }
@@ -117,7 +115,7 @@ const DatabaseCreateModal: React.FC<DatabaseCreateModalProps> = ({
       });
 
       if ("error" in addToGroupResult) {
-        notify.error(addToGroupResult.error);
+        notify.error({ error: addToGroupResult.error });
         onClose();
         return;
       }

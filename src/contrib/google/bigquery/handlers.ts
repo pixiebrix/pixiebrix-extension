@@ -53,14 +53,14 @@ export async function readQuery(
   console.debug("Read query", { projectId, resource });
   const token = await ensureAuth(GOOGLE_BIGQUERY_SCOPES);
   await ensureBigQuery();
-  return gapi.client.bigquery.jobs
-    .query({
+  try {
+    return await gapi.client.bigquery.jobs.query({
       projectId,
       prettyPrint: true,
       alt: "json",
       resource,
-    })
-    .catch(async (error) => {
-      throw await handleRejection(token, error);
     });
+  } catch (error) {
+    throw await handleRejection(token, error);
+  }
 }

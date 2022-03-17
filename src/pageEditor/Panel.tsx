@@ -23,7 +23,6 @@ import Editor from "@/pageEditor/Editor";
 import store, { persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
-import { ToastProvider } from "react-toast-notifications";
 import { useAsyncEffect } from "use-async-effect";
 import blockRegistry from "@/blocks/registry";
 import { ModalProvider } from "@/components/ConfirmationModal";
@@ -34,10 +33,15 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 import registerEditors from "@/contrib/editors";
 import Loader from "@/components/Loader";
 import ErrorBanner from "@/pageEditor/ErrorBanner";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
+// Register the built-in bricks
 registerEditors();
 registerContribBlocks();
 registerBuiltinBlocks();
+
+// Register Widgets
+registerDefaultWidgets();
 
 const Panel: React.VoidFunctionComponent = () => {
   const context = useDevConnection();
@@ -50,16 +54,14 @@ const Panel: React.VoidFunctionComponent = () => {
     <Provider store={store}>
       <PersistGate loading={<Loader />} persistor={persistor}>
         <PageEditorTabContext.Provider value={context}>
-          <ToastProvider>
-            <ModalProvider>
-              <ErrorBoundary>
-                <Router>
-                  <ErrorBanner />
-                  <Editor />
-                </Router>
-              </ErrorBoundary>
-            </ModalProvider>
-          </ToastProvider>
+          <ModalProvider>
+            <ErrorBoundary>
+              <Router>
+                <ErrorBanner />
+                <Editor />
+              </Router>
+            </ErrorBoundary>
+          </ModalProvider>
         </PageEditorTabContext.Provider>
       </PersistGate>
     </Provider>

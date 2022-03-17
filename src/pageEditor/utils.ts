@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
 import { Primitive } from "type-fest";
 import { compact, includes, isEmpty, mapValues, pickBy } from "lodash";
 import { Target } from "@/types";

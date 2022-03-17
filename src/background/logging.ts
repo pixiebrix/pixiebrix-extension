@@ -37,7 +37,6 @@ import { expectContext, forbidContext } from "@/utils/expectContext";
 import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
 import { readAuthData } from "@/auth/token";
 import { UnknownObject } from "@/types";
-import browser from "webextension-polyfill";
 import { isObject, matchesAnyPattern } from "@/utils";
 
 const STORAGE_KEY = "LOG";

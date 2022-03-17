@@ -28,7 +28,6 @@ import {
   RemoteServiceError,
   SerializableAxiosError,
 } from "@/services/errors";
-import browser from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
@@ -173,7 +172,7 @@ export async function enrichRequestError(
   }
 
   const hasPermissions = await browser.permissions.contains({
-    origins: [maybeAxiosError.request.url],
+    origins: [url.href],
   });
 
   if (!hasPermissions) {

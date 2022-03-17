@@ -17,13 +17,13 @@
 
 import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
-import reportError from "@/telemetry/reportError";
-import { useDispatch } from "react-redux";
-import { useToasts } from "react-toast-notifications";
+import { useDispatch, useSelector } from "react-redux";
+import notify from "@/utils/notify";
 import { editorSlice, FormState } from "@/pageEditor/slices/editorSlice";
 import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { getCurrentURL } from "@/pageEditor/utils";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
 const { addElement } = editorSlice.actions;
 
@@ -32,7 +32,7 @@ function useAddExisting<T extends { rawConfig: ExtensionPointConfig }>(
   cancel: () => void
 ): (extensionPoint: { rawConfig: ExtensionPointConfig }) => Promise<void> {
   const dispatch = useDispatch();
-  const { addToast } = useToasts();
+  const sessionId = useSelector(selectSessionId);
 
   return useCallback(
     async (extensionPoint: T) => {
@@ -48,19 +48,16 @@ function useAddExisting<T extends { rawConfig: ExtensionPointConfig }>(
 
         // TODO: report if created new, or using existing foundation
         reportEvent("PageEditorStart", {
+          sessionId,
           type: config.elementType,
         });
 
         dispatch(addElement(state as FormState));
       } catch (error) {
-        reportError(error);
-        addToast(`Error adding ${config.label}`, {
-          autoDismiss: true,
-          appearance: "error",
-        });
+        notify.error({ message: `Error adding ${config.label}`, error });
       }
     },
-    [config, dispatch, cancel, addToast]
+    [dispatch, sessionId, config, cancel]
   );
 }
 

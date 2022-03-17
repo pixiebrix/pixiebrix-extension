@@ -18,8 +18,12 @@
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
-import parseDomTable, { getAllTables } from "@/utils/parseDomTable";
-import { $safeFind } from "@/helpers";
+import { parseDomTable, getAllTables } from "@/utils/parseDomTable";
+import {
+  parseDefinitionList,
+  getAllDefinitionLists,
+} from "@/utils/parseDefinitionList";
+import { requireSingleElement } from "@/utils/requireSingleElement";
 
 export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
 export const TABLE_READER_ALL_ID = validateRegistryId(
@@ -81,8 +85,15 @@ export class TableReader extends Transformer {
   }
 
   async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
-    const $table = $safeFind<HTMLTableElement>(args.selector, root);
-    return parseDomTable($table.get(0), { orientation: args.orientation });
+    const table = requireSingleElement<HTMLTableElement | HTMLDListElement>(
+      args.selector,
+      root
+    );
+    if (table instanceof HTMLDListElement) {
+      return parseDefinitionList(table);
+    }
+
+    return parseDomTable(table, { orientation: args.orientation });
   }
 }
 
@@ -129,6 +140,9 @@ export class TablesReader extends Transformer {
   }
 
   async transform(_: BlockArg, { root }: BlockOptions): Promise<unknown> {
-    return Object.fromEntries(getAllTables(root).entries());
+    return Object.fromEntries([
+      ...getAllTables(root).entries(),
+      ...getAllDefinitionLists(root).entries(),
+    ]);
   }
 }

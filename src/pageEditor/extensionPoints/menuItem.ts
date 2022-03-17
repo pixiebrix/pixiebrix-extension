@@ -196,7 +196,7 @@ async function fromExtensionPoint(
   };
 }
 
-export async function fromExtension(
+async function fromExtension(
   config: IExtension<MenuItemExtensionConfig>
 ): Promise<ActionFormState> {
   const extensionPoint = await lookupExtensionPoint<

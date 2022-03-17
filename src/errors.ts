@@ -174,9 +174,11 @@ export class ContextError extends Error {
   }
 }
 
+export const NO_TARGET_FOUND_CONNECTION_ERROR =
+  "Could not establish connection. Receiving end does not exist.";
 /** Browser Messenger API error message patterns */
 export const CONNECTION_ERROR_MESSAGES = [
-  "Could not establish connection. Receiving end does not exist.",
+  NO_TARGET_FOUND_CONNECTION_ERROR,
   "Extension context invalidated.",
 ];
 
@@ -307,7 +309,16 @@ export function hasBusinessRootCause(
 export function isPromiseRejectionEvent(
   event: unknown
 ): event is PromiseRejectionEvent {
-  return event && typeof event === "object" && "reason" in event;
+  // https://developer.mozilla.org/en-US/docs/Web/API/PromiseRejectionEvent/PromiseRejectionEvent
+  // https://caniuse.com/unhandledrejection
+  return (
+    event &&
+    typeof event === "object" &&
+    "type" in event &&
+    ["unhandledrejection", "rejectionhandled"].includes(
+      (event as Partial<Event>).type
+    )
+  );
 }
 
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
@@ -370,11 +381,18 @@ export function getErrorMessage(
 export function selectError(originalError: unknown): Error {
   let error: unknown = originalError;
 
-  // Extract error from event
+  // Extract error from event.
   if (error instanceof ErrorEvent) {
-    error = error.error;
+    if (error.error) {
+      error = error.error;
+    } else if (error.message) {
+      error = new Error(error.message);
+    } else {
+      error = new Error("ErrorEvent with undefined error/message");
+    }
   } else if (isPromiseRejectionEvent(error)) {
-    error = error.reason;
+    error =
+      error.reason ?? new Error("PromiseRejectionEvent with undefined reason");
   }
 
   if (error instanceof Error) {

@@ -18,12 +18,9 @@
 import { RecipeDefinition } from "@/types/definitions";
 import { useCallback } from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function useRemoveRecipe(recipe: RecipeDefinition): () => void {
-  // Stub
-  const remove = useCallback(() => {}, []);
-
-  return remove;
+function useRemoveRecipe(): (recipe: RecipeDefinition) => void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Stub
+  return useCallback(async (recipe: RecipeDefinition) => {}, []);
 }
 
 export default useRemoveRecipe;

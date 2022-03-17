@@ -23,7 +23,6 @@ import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import TemplateWidget, { Snippet } from "@/pageEditor/fields/TemplateWidget";
 import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
-import { DEFAULT_SHORTCUTS } from "@/pageEditor/components/UrlMatchPatternWidget";
 
 const menuSnippets: Snippet[] = [{ label: "selected text", value: "%s" }];
 
@@ -41,11 +40,6 @@ export const contextOptions = [
   value,
   label: value,
 }));
-
-const matchPatternShortcuts = [
-  { caption: "None", getPattern: async () => "" },
-  ...DEFAULT_SHORTCUTS,
-];
 
 const ContextMenuConfiguration: React.FC<{
   isLocked: boolean;
@@ -82,7 +76,7 @@ const ContextMenuConfiguration: React.FC<{
       />
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.documentUrlPatterns[0]"
+        name="extensionPoint.definition.documentUrlPatterns"
         {...makeLockableFieldProps("Sites", isLocked)}
       />
     </FieldSection>
@@ -108,8 +102,7 @@ const ContextMenuConfiguration: React.FC<{
       </ConnectedFieldTemplate>
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns[0]"
-        shortcuts={matchPatternShortcuts}
+        name="extensionPoint.definition.isAvailable.matchPatterns"
         description={
           <span>
             URL match patterns give PixieBrix access to a page without you first

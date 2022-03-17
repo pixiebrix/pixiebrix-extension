@@ -28,7 +28,7 @@ import { StatusCodes } from "http-status-codes";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
 import reportError from "@/telemetry/reportError";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useGetAuthQuery } from "@/services/api";
 
@@ -56,7 +56,6 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
   title,
   description,
 }) => {
-  const notify = useNotifications();
   const { refetch: refetchAuth } = useGetAuthQuery();
 
   const submit = useCallback(
@@ -68,15 +67,14 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
         await (await getLinkedApiClient()).patch("/api/settings/", values);
       } catch (error) {
         if (!isAxiosError(error)) {
-          notify.error("Error updating account alias", {
-            error,
-          });
+          notify.error({ message: "Error updating account alias", error });
           return;
         }
 
         switch (error.response.status) {
           case StatusCodes.UNAUTHORIZED: {
-            notify.error("Could not authenticate with PixieBrix", {
+            notify.error({
+              message: "Could not authenticate with PixieBrix",
               error,
             });
             return;
@@ -89,9 +87,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
 
           default: {
             reportError(error);
-            notify.error("Error updating account alias", {
-              error,
-            });
+            notify.error({ message: "Error updating account alias", error });
             return;
           }
         }
@@ -99,7 +95,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
 
       refetchAuth();
     },
-    [notify]
+    []
   );
 
   return (

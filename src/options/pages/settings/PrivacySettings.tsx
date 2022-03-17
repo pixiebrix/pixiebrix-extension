@@ -30,14 +30,12 @@ const PrivacySettings: React.FunctionComponent = () => {
       <Card.Header>Privacy</Card.Header>
       <Card.Body>
         <Card.Text className="text-info">
-          <FontAwesomeIcon icon={faInfoCircle} /> PixieBrix collects{" "}
-          <i>anonymous</i> error telemetry and usage metrics to help us improve
-          the product.
+          <FontAwesomeIcon icon={faInfoCircle} /> PixieBrix collects error
+          telemetry and usage metrics to help us improve the product.
         </Card.Text>
 
         <Card.Text>
-          We do not collect any browser content or history. The information we
-          collect is not linked to your PixieBrix account. See our{" "}
+          We never collect any browser content or history. See our{" "}
           <a href="https://www.pixiebrix.com/privacy/">Privacy Policy</a> for a
           detailed list of what information we track and why.
         </Card.Text>
@@ -46,7 +44,7 @@ const PrivacySettings: React.FunctionComponent = () => {
           <Form.Group controlId="telemetry">
             <div>
               <Form.Label>
-                Anonymous Telemetry: <i>{dnt ? "Disabled" : "Enabled"}</i>
+                Telemetry: <i>{dnt ? "Disabled" : "Enabled"}</i>
               </Form.Label>
             </div>
             <BootstrapSwitchButton

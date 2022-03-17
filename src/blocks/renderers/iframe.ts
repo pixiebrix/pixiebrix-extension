@@ -17,7 +17,6 @@
 
 import { Renderer } from "@/types";
 import { BlockArg, SafeHTML, Schema } from "@/core";
-import browser from "webextension-polyfill";
 import { assumeSafe } from "@/utils/sanitize";
 
 export class IFrameRenderer extends Renderer {

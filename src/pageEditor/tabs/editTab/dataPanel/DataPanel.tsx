@@ -25,7 +25,7 @@ import { actions } from "@/pageEditor/slices/formBuilderSlice";
 import { Alert, Button, Nav, Tab } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
-import FormPreview from "@/components/formBuilder/FormPreview";
+import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockPreview, {
   usePreviewInfo,
@@ -49,6 +49,7 @@ import documentBuilderSelectors from "@/pageEditor/slices/documentBuilderSelecto
 import { actions as documentBuilderActions } from "@/pageEditor/slices/documentBuilderSlice";
 import copy from "copy-to-clipboard";
 import useFlags from "@/hooks/useFlags";
+import ErrorDisplay from "./ErrorDisplay";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -285,7 +286,7 @@ const DataPanel: React.FC<{
               </>
             )}
             {record && "error" in record && (
-              <JsonTree data={record.error} label="Error" />
+              <ErrorDisplay error={record.error} />
             )}
           </DataTab>
           <DataTab

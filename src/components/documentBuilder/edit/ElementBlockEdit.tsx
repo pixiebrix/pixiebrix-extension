@@ -25,6 +25,10 @@ import blockRegistry from "@/blocks/registry";
 import { BlockType, defaultBlockConfig } from "@/blocks/util";
 import { IBlock } from "@/core";
 import { uuidv4 } from "@/types/helpers";
+import { reportEvent } from "@/telemetry/events";
+import { useSelector } from "react-redux";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectActiveExtensionId } from "@/pageEditor/slices/editorSelectors";
 
 type ElementBlockEditProps = {
   blockTypes: BlockType[];
@@ -39,6 +43,9 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
   blockConfig,
   onBlockSelected,
 }) => {
+  const sessionId = useSelector(selectSessionId);
+  const extensionId = useSelector(selectActiveExtensionId);
+
   const [renderBlocks] = useAsyncState<IBlock[]>(
     async () => {
       const allBlocks = await blockRegistry.allTyped();
@@ -60,6 +67,12 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
       config: defaultBlockConfig(block.inputSchema),
     };
 
+    reportEvent("BrickAdd", {
+      brickId: block.id,
+      sessionId,
+      extensionId,
+      source: "PageEditor-DocumentBuilder",
+    });
     onBlockSelected(blockConfig);
   };
 

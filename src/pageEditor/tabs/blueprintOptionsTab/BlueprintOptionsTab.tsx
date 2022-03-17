@@ -23,8 +23,8 @@ import React, { useMemo, useState } from "react";
 import { Alert, Col, Container, Nav, Row, Tab } from "react-bootstrap";
 import { FormState } from "@/pageEditor/slices/editorSlice";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
-import FormEditor from "@/components/formBuilder/FormEditor";
-import FormPreview from "@/components/formBuilder/FormPreview";
+import FormEditor from "@/components/formBuilder/edit/FormEditor";
+import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import Loader from "@/components/Loader";
 import FieldRuntimeContext, {
   RuntimeContext,
@@ -41,6 +41,10 @@ const fieldTypes = FIELD_TYPE_OPTIONS.filter(
   (type) => !["File", "Image crop"].includes(type.label)
 );
 
+/**
+ * @deprecated in favor of RecipeOptions component de-coupled from tab layout
+ * @see RecipeOptions
+ */
 const BlueprintOptionsTab: React.VoidFunctionComponent<{
   eventKey: string;
 }> = ({ eventKey }) => {

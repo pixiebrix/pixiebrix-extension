@@ -16,12 +16,18 @@
  */
 
 import LazyLocatorFactory from "@/services/locator";
+import { forbidContext } from "@/utils/expectContext";
 
 export const locator = new LazyLocatorFactory();
 
 export default async function initLocator() {
+  // Service locator cannot run in contentScript due to CSP and wanting to isolate local secrets
+  forbidContext(
+    "contentScript",
+    "The service locator cannot run in the contentScript"
+  );
+  console.debug("Eagerly initializing service locator");
   await locator.refresh();
-  console.debug("Eagerly initialized service locator");
 }
 
 type RefreshOptions = {
@@ -30,6 +36,12 @@ type RefreshOptions = {
 };
 
 export async function refreshServices(options?: RefreshOptions): Promise<void> {
+  // Service locator cannot run in contentScript due to CSP and wanting to isolate local secrets
+  forbidContext(
+    "contentScript",
+    "The service locator cannot run in the contentScript"
+  );
+
   const { local, remote } = {
     local: true,
     remote: true,
