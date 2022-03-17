@@ -69,6 +69,26 @@ async function selectUiType(uiType: string) {
 }
 
 describe("Dropdown field", () => {
+  async function addOption() {
+    // Add a text option
+    screen.getByText("Add Item").click();
+    const firstOption = rendered.container.querySelector(
+      `[name="form.schema.properties.${defaultFieldName}.enum.0"]`
+    );
+    fireTextInput(firstOption, "Test option");
+    await waitForEffect();
+  }
+
+  async function setVarValue() {
+    // Switch to @var and insert "@data"
+    await selectSchemaFieldType(
+      `form.schema.properties.${defaultFieldName}.enum`,
+      "var"
+    );
+    fireTextInput(screen.getByLabelText("Options"), "@data");
+    await waitForEffect();
+  }
+
   let rendered: RenderResult;
   beforeEach(async () => {
     rendered = renderFormBuilder();
@@ -85,13 +105,7 @@ describe("Dropdown field", () => {
   });
 
   test("can add an option", async () => {
-    // Add a text option
-    screen.getByText("Add Item").click();
-    const firstOption = rendered.container.querySelector(
-      `[name="form.schema.properties.${defaultFieldName}.enum.0"]`
-    );
-    fireTextInput(firstOption, "Test option");
-    await waitForEffect();
+    await addOption();
 
     // Expect the dropdown option rendered in the preview
     expect(
@@ -100,35 +114,70 @@ describe("Dropdown field", () => {
   });
 
   test("can use @var", async () => {
-    // Switch to @var and inset "@data"
-    await selectSchemaFieldType(
-      `form.schema.properties.${defaultFieldName}.enum`,
-      "var"
-    );
-    fireTextInput(screen.getByLabelText("Options"), "@data");
-    await waitForEffect();
+    await setVarValue();
 
     // Expect the dropdown option rendered in the preview
     expect(screen.queryByRole("option", { name: "@data" })).not.toBeNull();
   });
+
+  describe("can be switched to Dropdown with labels", () => {
+    test("with items", async () => {
+      await addOption();
+
+      // Switch to Dropdown widget
+      await selectUiType("Dropdown with labels");
+
+      // Expect the ui type has changed
+      expect(
+        screen.queryByLabelText("Input Type")?.parentElement?.parentElement
+      ).toHaveTextContent("Dropdown with labels");
+
+      // Expect the dropdown option added in the Editor
+      const firstOptionValueInput = rendered.container.querySelector(
+        `[name="form.schema.properties.${defaultFieldName}.oneOf.0.const"]`
+      );
+      // Option value mapped from Dropdown
+      expect(firstOptionValueInput).toHaveValue("Test option");
+
+      const firstOptionTitleInput = rendered.container.querySelector(
+        `[name="form.schema.properties.${defaultFieldName}.oneOf.0.title"]`
+      );
+      // Option title is empty
+      expect(firstOptionTitleInput).toHaveValue("");
+
+      // Expect the dropdown option rendered in the preview
+      expect(
+        screen.queryByRole("option", { name: "Test option" })
+      ).not.toBeNull();
+    });
+
+    test("with @var", async () => {
+      await setVarValue();
+
+      // Switch to Dropdown widget
+      await selectUiType("Dropdown with labels");
+
+      // Expect the ui type has changed
+      expect(
+        screen.queryByLabelText("Input Type")?.parentElement?.parentElement
+      ).toHaveTextContent("Dropdown with labels");
+
+      // Expect the dropdown options is empty
+      const firstOptionValueInput = rendered.container.querySelector(
+        `[name="form.schema.properties.${defaultFieldName}.oneOf.0.const"]`
+      );
+      expect(firstOptionValueInput).toBeNull();
+
+      const firstOptionTitleInput = rendered.container.querySelector(
+        `[name="form.schema.properties.${defaultFieldName}.oneOf.0.title"]`
+      );
+      expect(firstOptionTitleInput).toBeNull();
+    });
+  });
 });
 
 describe("Dropdown with labels field", () => {
-  let rendered: RenderResult;
-  beforeEach(async () => {
-    rendered = renderFormBuilder();
-
-    // Switch to Dropdown widget
-    await selectUiType("Dropdown with labels");
-  });
-  test("doesn't fail when field type changed to Dropdown with labels", async () => {
-    // Expect the dropdown rendered in the preview
-    expect(
-      rendered.container.querySelector(`select#root_${defaultFieldName}`)
-    ).not.toBeNull();
-  });
-
-  test("can add an option", async () => {
+  async function addOption() {
     // Add a text option
     screen.getByText("Add Item").click();
 
@@ -145,6 +194,34 @@ describe("Dropdown with labels field", () => {
     );
     fireTextInput(firstOptionLabelInput, "Test option");
     await waitForEffect();
+  }
+
+  async function setVarValue() {
+    // Switch to @var and inset "@data"
+    await selectSchemaFieldType(
+      `form.schema.properties.${defaultFieldName}.oneOf`,
+      "var"
+    );
+    fireTextInput(screen.getByLabelText("Options"), "@data");
+    await waitForEffect();
+  }
+
+  let rendered: RenderResult;
+  beforeEach(async () => {
+    rendered = renderFormBuilder();
+
+    // Switch to Dropdown widget
+    await selectUiType("Dropdown with labels");
+  });
+  test("doesn't fail when field type changed to Dropdown with labels", async () => {
+    // Expect the dropdown rendered in the preview
+    expect(
+      rendered.container.querySelector(`select#root_${defaultFieldName}`)
+    ).not.toBeNull();
+  });
+
+  test("can add an option", async () => {
+    await addOption();
 
     // Validate the rendered option
     const optionElement = screen.queryByRole("option", { name: "Test option" });
@@ -153,15 +230,50 @@ describe("Dropdown with labels field", () => {
   });
 
   test("can use @var in Dropdown", async () => {
-    // Switch to @var and inset "@data"
-    await selectSchemaFieldType(
-      `form.schema.properties.${defaultFieldName}.oneOf`,
-      "var"
-    );
-    fireTextInput(screen.getByLabelText("Options"), "@data");
-    await waitForEffect();
+    await setVarValue();
 
     // Expect the dropdown option rendered in the preview
     expect(screen.queryByRole("option", { name: "@data" })).not.toBeNull();
+  });
+
+  describe("can be switched to regular Dropdown", () => {
+    test("with items", async () => {
+      await addOption();
+
+      // Switch to Dropdown widget
+      await selectUiType("Dropdown");
+
+      // Expect the ui type has changed
+      expect(
+        screen.queryByLabelText("Input Type")?.parentElement?.parentElement
+      ).toHaveTextContent("Dropdown");
+
+      // Expect the dropdown option added in the Editor
+      const firstOptionInput = rendered.container.querySelector(
+        `[name="form.schema.properties.${defaultFieldName}.enum.0"]`
+      );
+      expect(firstOptionInput).toHaveValue("1");
+
+      // Expect the dropdown option rendered in the preview
+      expect(screen.queryByRole("option", { name: "1" })).not.toBeNull();
+    });
+
+    test("with @var", async () => {
+      await setVarValue();
+
+      // Switch to Dropdown widget
+      await selectUiType("Dropdown");
+
+      // Expect the ui type has changed
+      expect(
+        screen.queryByLabelText("Input Type")?.parentElement?.parentElement
+      ).toHaveTextContent("Dropdown");
+
+      // Expect the dropdown options is empty
+      const firstOptionInput = rendered.container.querySelector(
+        `[name="form.schema.properties.${defaultFieldName}.enum.0"]`
+      );
+      expect(firstOptionInput).toBeNull();
+    });
   });
 });
