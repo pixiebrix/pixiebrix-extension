@@ -30,12 +30,12 @@ import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
 
 type RequireAuthProps = {
-  LoginPage?: React.VFC;
+  LoginPage: React.VFC;
 };
 
 const RequireAuth: React.FunctionComponent<RequireAuthProps> = ({
   children,
-  LoginPage = () => null,
+  LoginPage,
 }) => {
   const dispatch = useDispatch();
 
@@ -44,14 +44,6 @@ const RequireAuth: React.FunctionComponent<RequireAuthProps> = ({
 
   // TODO: remove this when useGetAuthQuery is no longer used
   const { isLoading: isAuthLoading } = useGetAuthQuery();
-
-  console.log("require auth", {
-    isLoggedIn,
-    isLoading,
-    me,
-    error,
-    isAuthLoading,
-  });
 
   useEffect(() => {
     if (isLoading) {

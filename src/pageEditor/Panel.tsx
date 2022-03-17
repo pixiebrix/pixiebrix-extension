@@ -57,7 +57,8 @@ const Panel: React.VoidFunctionComponent = () => {
             <ErrorBoundary>
               <Router>
                 <ErrorBanner />
-                <RequireAuth>
+                {/* The auth error is handled by the ErrorBanner */}
+                <RequireAuth LoginPage={() => null}>
                   <Editor />
                 </RequireAuth>
               </Router>
