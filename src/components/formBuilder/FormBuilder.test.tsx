@@ -80,7 +80,7 @@ describe("Dropdown field", () => {
   }
 
   async function setVarValue() {
-    // Switch to @var and inset "@data"
+    // Switch to @var and insert "@data"
     await selectSchemaFieldType(
       `form.schema.properties.${defaultFieldName}.enum`,
       "var"
