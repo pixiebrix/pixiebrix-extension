@@ -32,7 +32,7 @@ export const toggleSidebar = getMethod("TOGGLE_SIDEBAR");
 export const showSidebar = getMethod("SHOW_SIDEBAR");
 export const hideSidebar = getMethod("HIDE_SIDEBAR");
 export const removeSidebar = getMethod("REMOVE_SIDEBAR");
-export const getSidebarStore = getMethod("GET_SIDEBAR_STORE");
+export const getSidebarEntries = getMethod("GET_SIDEBAR_ENTRIES");
 export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");
 

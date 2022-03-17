@@ -36,7 +36,7 @@ import {
   showSidebar,
   toggleSidebar,
   removeExtension as removeSidebar,
-  getSidebarStore,
+  getSidebarEntries,
 } from "@/contentScript/sidebar";
 import { insertPanel } from "@/contentScript/nativeEditor/insertPanel";
 import { insertButton } from "@/contentScript/nativeEditor/insertButton";
@@ -89,7 +89,7 @@ declare global {
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
     REMOVE_SIDEBAR: typeof removeSidebar;
-    GET_SIDEBAR_STORE: typeof getSidebarStore;
+    GET_SIDEBAR_ENTRIES: typeof getSidebarEntries;
 
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
@@ -143,7 +143,7 @@ export default function registerMessenger(): void {
     SHOW_SIDEBAR: showSidebar,
     HIDE_SIDEBAR: hideSidebar,
     REMOVE_SIDEBAR: removeSidebar,
-    GET_SIDEBAR_STORE: getSidebarStore,
+    GET_SIDEBAR_ENTRIES: getSidebarEntries,
 
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,
