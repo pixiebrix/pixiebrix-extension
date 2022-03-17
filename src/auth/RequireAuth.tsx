@@ -51,7 +51,7 @@ const RequireAuth: React.FunctionComponent<RequireAuthProps> = ({
     }
 
     const setAuth = async (me: Me) => {
-      if (me.id) {
+      if (me?.id) {
         const update = selectUserDataUpdate(me);
         await updateUserData(update);
         const auth = selectExtensionAuthState(me);
@@ -65,7 +65,7 @@ const RequireAuth: React.FunctionComponent<RequireAuthProps> = ({
   }, [isLoading, dispatch]);
 
   // Show SetupPage if there is auth error or user not logged in
-  if ((error as ApiError)?.status === 401 || (!isLoading && !isLoggedIn)) {
+  if ((error as ApiError)?.status === 401 || (!isLoggedIn && !isLoading)) {
     return <LoginPage />;
   }
 
