@@ -25,6 +25,7 @@ import Banner, { BannerVariant } from "@/components/banner/Banner";
 // TODO: don't use process.env here so that we can use the same JS app bundle for all environments
 //  see https://github.com/pixiebrix/pixiebrix-app/issues/259
 const environment = process.env.ENVIRONMENT;
+const isExtension = isExtensionContext();
 
 const variantMap = new Map<string, BannerVariant>([
   [null, "warning"],
@@ -34,19 +35,17 @@ const variantMap = new Map<string, BannerVariant>([
 ]);
 
 const EnvironmentBannerMessage: React.VFC = () => {
-  const isExtension = isExtensionContext();
-
   const [hostname] = useAsyncState(async () => {
     const { hostname } = await getExtensionAuth();
     return hostname;
-  }, [isExtension]);
+  }, []);
 
   const [versionName] = useAsyncState(async () => {
     const manifest = isExtension
       ? chrome.runtime.getManifest()
       : await connectPage();
     return manifest.version_name;
-  }, [isExtension]);
+  }, []);
 
   const syncText = hostname
     ? `synced with ${hostname}`
