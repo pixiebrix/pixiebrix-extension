@@ -33,6 +33,7 @@ import Loader from "@/components/Loader";
 import ErrorBanner from "@/pageEditor/ErrorBanner";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
+import LoginCard from "./components/LoginCard";
 
 // Register the built-in bricks
 registerEditors();
@@ -57,8 +58,7 @@ const Panel: React.VoidFunctionComponent = () => {
             <ErrorBoundary>
               <Router>
                 <ErrorBanner />
-                {/* The auth error is handled by the ErrorBanner */}
-                <RequireAuth LoginPage={() => null}>
+                <RequireAuth LoginPage={LoginCard}>
                   <Editor />
                 </RequireAuth>
               </Router>

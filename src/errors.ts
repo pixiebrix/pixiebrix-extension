@@ -354,6 +354,15 @@ export function isPrivatePageError(error: unknown): boolean {
   );
 }
 
+export function isRtkQueryError(error: unknown): boolean {
+  return (
+    isObject(error) &&
+    "data" in error &&
+    "detail" in (error as any).data &&
+    "status" in error
+  );
+}
+
 /**
  * Return an error message corresponding to an error.
  */
@@ -404,6 +413,11 @@ export function selectError(originalError: unknown): Error {
     // This shouldn't be necessary, but there's some nested calls to selectError
     // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2696
     return deserializeError(error);
+  }
+
+  if (isRtkQueryError(error)) {
+    // @ts-expect-error `data.detail` is defined for an RtkQuery error
+    return new Error(error.data.detail);
   }
 
   console.warn("A non-Error was thrown", {
