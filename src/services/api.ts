@@ -25,7 +25,7 @@ import {
   ServiceDefinition,
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
-import { AxiosRequestConfig } from "axios";
+import { AxiosError, AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
 import {
@@ -52,10 +52,25 @@ import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
 
-export type ApiError = {
-  status: number | undefined;
-  data: unknown | undefined;
+type ApiErrorData = {
+  detail?: string;
+  [index: string]: unknown;
 };
+
+export class ApiError extends Error {
+  status: number;
+  data: ApiErrorData;
+  error: AxiosError;
+
+  constructor(error: AxiosError) {
+    const data = error.response?.data;
+    super(data?.detail || error.message);
+
+    this.status = error.response?.status;
+    this.data = data;
+    this.error = error;
+  }
+}
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
 const appBaseQuery: BaseQueryFn<
@@ -79,7 +94,7 @@ const appBaseQuery: BaseQueryFn<
   } catch (error) {
     if (isAxiosError(error)) {
       return {
-        error: { status: error.response?.status, data: error.response?.data },
+        error: new ApiError(error),
       };
     }
 
