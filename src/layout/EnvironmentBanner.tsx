@@ -33,20 +33,16 @@ const variantMap = new Map<string, BannerVariant>([
   ["staging", "info"],
 ]);
 
-type EnvironmentBannerMessageProps = {
-  isExtension?: boolean;
-};
+const EnvironmentBannerMessage: React.VFC = () => {
+  const isExtension = isExtensionContext();
 
-const EnvironmentBannerMessage: React.VFC<EnvironmentBannerMessageProps> = ({
-  isExtension = false,
-}) => {
   const [hostname] = useAsyncState(async () => {
     const { hostname } = await getExtensionAuth();
     return hostname;
   }, [isExtension]);
 
   const [versionName] = useAsyncState(async () => {
-    const manifest = isExtensionContext()
+    const manifest = isExtension
       ? chrome.runtime.getManifest()
       : await connectPage();
     return manifest.version_name;
@@ -65,16 +61,14 @@ const EnvironmentBannerMessage: React.VFC<EnvironmentBannerMessageProps> = ({
   );
 };
 
-const EnvironmentBanner: React.VFC<EnvironmentBannerMessageProps> = ({
-  isExtension,
-}) => {
+const EnvironmentBanner: React.VFC = () => {
   if (environment === "production") {
     return null;
   }
 
   return (
     <Banner variant={variantMap.get(environment)}>
-      <EnvironmentBannerMessage isExtension={isExtension} />
+      <EnvironmentBannerMessage />
     </Banner>
   );
 };

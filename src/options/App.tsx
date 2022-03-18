@@ -106,7 +106,7 @@ const Layout = () => {
           <div className="main-panel">
             <ErrorModal />
             <BrowserBanner />
-            <EnvironmentBanner isExtension />
+            <EnvironmentBanner />
             <UpdateBanner />
             <DeploymentBanner />
             <InvitationBanner />
