@@ -34,13 +34,11 @@ import Footer from "@/layout/Footer";
 import Sidebar from "@/options/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
-import { useAsyncState } from "@/hooks/common";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
 import useRefresh from "@/hooks/useRefresh";
-import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
 import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
@@ -51,7 +49,6 @@ import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import WorkshopPage from "./pages/workshop/WorkshopPage";
 import InvitationBanner from "@/options/pages/InvitationBanner";
-import { SettingsState } from "@/store/settingsTypes";
 import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
 import { selectSettings } from "@/store/settingsSelectors";
@@ -66,23 +63,6 @@ registerContribBlocks();
 // Register Widgets
 registerDefaultWidgets();
 
-const RequireInstall: React.FunctionComponent = ({ children }) => {
-  const mode = useSelector<{ settings: SettingsState }, string>(
-    ({ settings }) => settings.mode
-  );
-  const [linked, isPending] = useAsyncState(isLinked);
-
-  if (isPending && mode === "remote") {
-    return <Loader />;
-  }
-
-  if (mode === "remote" && !linked) {
-    return <SetupPage />;
-  }
-
-  return <>{children}</>;
-};
-
 const Layout = () => {
   // Get the latest brick definitions. Put it here in Layout instead of App to ensure the Redux store has been hydrated
   // by the time refresh is called.
@@ -95,77 +75,75 @@ const Layout = () => {
     <div>
       <Navbar />
       <Container fluid className="page-body-wrapper">
-        <RequireInstall>
-          <RequireAuth LoginPage={SetupPage}>
-            <Sidebar />
-            <div className="main-panel">
-              <ErrorModal />
-              <BrowserBanner />
-              <EnvironmentBanner />
-              <UpdateBanner />
-              <DeploymentBanner />
-              <InvitationBanner />
-              <div className="content-wrapper">
-                <ErrorBoundary>
-                  <Switch>
+        <RequireAuth LoginPage={SetupPage}>
+          <Sidebar />
+          <div className="main-panel">
+            <ErrorModal />
+            <BrowserBanner />
+            <EnvironmentBanner />
+            <UpdateBanner />
+            <DeploymentBanner />
+            <InvitationBanner />
+            <div className="content-wrapper">
+              <ErrorBoundary>
+                <Switch>
+                  <Route
+                    exact
+                    path="/extensions/install/:extensionId"
+                    component={ActivateExtensionPage}
+                  />
+                  <Route
+                    exact
+                    path="/:sourcePage/activate/:blueprintId"
+                    component={ActivateBlueprintPage}
+                  />
+
+                  <Route exact path="/settings" component={SettingsPage} />
+
+                  {permit("services") && (
+                    <Route path="/services/:id?" component={ServicesEditor} />
+                  )}
+
+                  {/* Switch does not support consolidating Routes using a React fragment */}
+                  {permit("workshop") && (
+                    <Route exact path="/workshop" component={WorkshopPage} />
+                  )}
+
+                  {permit("workshop") && (
                     <Route
                       exact
-                      path="/extensions/install/:extensionId"
-                      component={ActivateExtensionPage}
+                      path="/workshop/create/"
+                      component={BrickCreatePage}
                     />
+                  )}
+
+                  {permit("workshop") && (
                     <Route
                       exact
-                      path="/:sourcePage/activate/:blueprintId"
-                      component={ActivateBlueprintPage}
+                      path="/workshop/bricks/:id/"
+                      component={BrickEditPage}
                     />
+                  )}
 
-                    <Route exact path="/settings" component={SettingsPage} />
+                  {!isBlueprintsPageEnabled && (
+                    <Route
+                      exact
+                      path="/blueprints"
+                      component={MarketplacePage}
+                    />
+                  )}
 
-                    {permit("services") && (
-                      <Route path="/services/:id?" component={ServicesEditor} />
-                    )}
-
-                    {/* Switch does not support consolidating Routes using a React fragment */}
-                    {permit("workshop") && (
-                      <Route exact path="/workshop" component={WorkshopPage} />
-                    )}
-
-                    {permit("workshop") && (
-                      <Route
-                        exact
-                        path="/workshop/create/"
-                        component={BrickCreatePage}
-                      />
-                    )}
-
-                    {permit("workshop") && (
-                      <Route
-                        exact
-                        path="/workshop/bricks/:id/"
-                        component={BrickEditPage}
-                      />
-                    )}
-
-                    {!isBlueprintsPageEnabled && (
-                      <Route
-                        exact
-                        path="/blueprints"
-                        component={MarketplacePage}
-                      />
-                    )}
-
-                    {isBlueprintsPageEnabled ? (
-                      <Route component={BlueprintsPage} />
-                    ) : (
-                      <Route component={InstalledPage} />
-                    )}
-                  </Switch>
-                </ErrorBoundary>
-              </div>
-              <Footer />
+                  {isBlueprintsPageEnabled ? (
+                    <Route component={BlueprintsPage} />
+                  ) : (
+                    <Route component={InstalledPage} />
+                  )}
+                </Switch>
+              </ErrorBoundary>
             </div>
-          </RequireAuth>
-        </RequireInstall>
+            <Footer />
+          </div>
+        </RequireAuth>
       </Container>
     </div>
   );
