@@ -341,9 +341,12 @@ export const appApi = createApi({
   }),
 });
 
+// This const is defined separately to be able to mark it deprecated
+/** @deprecated Use authSlice and authSelectors instead */
+export const { useGetAuthQuery } = appApi;
+
 export const {
   useGetMeQuery,
-  useGetAuthQuery,
   useGetDatabasesQuery,
   useCreateDatabaseMutation,
   useAddDatabaseToGroupMutation,

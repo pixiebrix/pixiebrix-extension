@@ -33,17 +33,16 @@ type RequireAuthProps = {
   LoginPage: React.VFC;
 };
 
-const RequireAuth: React.FunctionComponent<RequireAuthProps> = ({
-  children,
-  LoginPage,
-}) => {
+// React FunctionComponent returns ReactElement whereas RequireAuth returns children (ReactNode - more loose, but correct typing).
+// Hence can't use React.FunctionComponent<RequireAuthProps>
+const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
   const dispatch = useDispatch();
 
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const { isLoading, error, data: me } = useGetMeQuery();
 
   // TODO: remove this when useGetAuthQuery is no longer used
-  const { isLoading: isAuthLoading } = useGetAuthQuery();
+  const { isLoading: isDeprecatedAuthLoading } = useGetAuthQuery();
 
   useEffect(() => {
     if (isLoading) {
@@ -62,7 +61,7 @@ const RequireAuth: React.FunctionComponent<RequireAuthProps> = ({
     };
 
     void setAuth(me);
-  }, [isLoading, dispatch]);
+  }, [isLoading, me, dispatch]);
 
   // Show SetupPage if there is auth error or user not logged in
   if ((error as ApiError)?.status === 401 || (!isLoggedIn && !isLoading)) {
@@ -70,8 +69,8 @@ const RequireAuth: React.FunctionComponent<RequireAuthProps> = ({
   }
 
   // Optimistically skip waiting if we have cached auth data
-  // TODO remove isAuthLoading when useGetAuthQuery is no longer used
-  if ((isLoading && !isLoggedIn) || isAuthLoading) {
+  // TODO remove isDeprecatedAuthLoading when useGetAuthQuery is no longer used
+  if ((isLoading && !isLoggedIn) || isDeprecatedAuthLoading) {
     return <Loader />;
   }
 

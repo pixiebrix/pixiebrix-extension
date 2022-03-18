@@ -108,7 +108,7 @@ export type AuthState = {
   readonly organizations: Array<{
     id: UUID;
     name: string;
-    role: Me["organization_memberships"][0]["role"];
+    role: Me["organization_memberships"][number]["role"];
   }>;
 
   readonly groups: Array<{
