@@ -25,10 +25,8 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import JsonTree from "@/components/jsonTree/JsonTree";
-import {
-  safeGuessStatusText,
-  selectAbsoluteUrl,
-} from "@/services/requestErrorUtils";
+import { safeGuessStatusText } from "@/types/errorContract";
+import { selectAbsoluteUrl } from "@/services/requestErrorUtils";
 
 function tryParse(value: unknown): unknown {
   if (typeof value === "string") {

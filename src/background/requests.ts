@@ -46,9 +46,9 @@ import {
 } from "@/background/proxyUtils";
 import {
   enrichRequestError,
-  safeGuessStatusText,
   selectAxiosError,
 } from "@/services/requestErrorUtils";
+import { safeGuessStatusText } from "@/types/errorContract";
 
 // eslint-disable-next-line prefer-destructuring -- process.env variable
 const DEBUG = process.env.DEBUG;
