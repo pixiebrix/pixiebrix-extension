@@ -36,7 +36,11 @@ import {
 import { WritableDraft } from "immer/dist/types/types-external";
 import { BlockConfig } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
-import { RecipeDefinition } from "@/types/definitions";
+import {
+  OptionsDefinition,
+  RecipeDefinition,
+  RecipeMetadataFormState,
+} from "@/types/definitions";
 
 export type FormState =
   | ActionFormState
@@ -78,11 +82,6 @@ export interface EditorState {
   readonly elements: FormState[];
 
   /**
-   * Recipes (blueprints)
-   */
-  readonly recipesById: Record<RegistryId, RecipeDefinition>;
-
-  /**
    * Brick ids (not UUIDs) that are known to be editable by the current user
    */
   knownEditable: RegistryId[];
@@ -112,6 +111,16 @@ export interface EditorState {
    * the runtime api for this extension?
    */
   showV3UpgradeMessageByElement: Record<UUID, boolean>;
+
+  /**
+   * Unsaved, changed recipe options
+   */
+  dirtyRecipeOptionsById: Record<RegistryId, OptionsDefinition>;
+
+  /**
+   * Unsaved, changed recipe metadata
+   */
+  dirtyRecipeMetadataById: Record<RegistryId, RecipeMetadataFormState>;
 }
 
 export const initialState: EditorState = {
@@ -121,13 +130,14 @@ export const initialState: EditorState = {
   error: null,
   beta: false,
   elements: [],
-  recipesById: {},
   knownEditable: [],
   dirty: {},
   inserting: null,
   isBetaUI: false,
   elementUIStates: {},
   showV3UpgradeMessageByElement: {},
+  dirtyRecipeOptionsById: {},
+  dirtyRecipeMetadataById: {},
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
@@ -339,7 +349,6 @@ export const editorSlice = createSlice({
     },
     selectRecipe(state, action: PayloadAction<RecipeDefinition>) {
       const recipe = action.payload;
-      state.recipesById[recipe.metadata.id] = recipe;
       state.error = null;
       state.beta = null;
       state.activeElement = null;
@@ -396,6 +405,29 @@ export const editorSlice = createSlice({
     },
     hideV3UpgradeMessage(state) {
       state.showV3UpgradeMessageByElement[state.activeElement] = false;
+    },
+    editRecipeOptions(state, action: PayloadAction<OptionsDefinition>) {
+      const recipeId = state.activeRecipeId;
+      if (recipeId == null) {
+        return;
+      }
+
+      const { payload: options } = action;
+      state.dirtyRecipeOptionsById[recipeId] = options;
+    },
+    editRecipeMetadata(state, action: PayloadAction<RecipeMetadataFormState>) {
+      const recipeId = state.activeRecipeId;
+      if (recipeId == null) {
+        return;
+      }
+
+      const { payload: metadata } = action;
+      state.dirtyRecipeMetadataById[recipeId] = metadata;
+    },
+    resetRecipeMetadataAndOptions(state, action: PayloadAction<RegistryId>) {
+      const { payload: recipeId } = action;
+      delete state.dirtyRecipeMetadataById[recipeId];
+      delete state.dirtyRecipeOptionsById[recipeId];
     },
   },
 });

@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,14 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-body {
-  margin: 0;
-}
-iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+.paneContent {
   height: 100%;
-  border: 0;
+  width: 100%;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: stretch;
+  padding-top: 10px;
+}
+
+.configPanel {
+  flex-grow: 2;
+  flex-basis: 0;
+  overflow-y: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.dataPanel {
+  flex-grow: 1;
+  flex-basis: 0;
+  overflow-y: auto;
+  max-width: 360px;
+  padding-left: 10px;
+  padding-right: 10px;
 }

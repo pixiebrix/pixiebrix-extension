@@ -117,7 +117,7 @@ export class WaitElementEffect extends Effect {
           );
         }
 
-        throw error;
+        throw error ?? new Error("Unknown error waiting for element");
       }
     } else {
       const [promise] = awaitElementOnce(selector);

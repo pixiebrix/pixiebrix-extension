@@ -15,21 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { utils } from "@rjsf/core";
-import React from "react";
-import FormPreviewFieldTemplate, {
-  FormPreviewFieldProps,
-} from "./FormPreviewFieldTemplate";
-import styles from "./FormPreviewBooleanField.module.scss";
+import { SessionState } from "@/pageEditor/slices/sessionSlice";
 
-const RjsfStringField = utils.getDefaultRegistry().fields.StringField;
-
-const FormPreviewStringField: React.FC<FormPreviewFieldProps> = (props) => (
-  <FormPreviewFieldTemplate
-    as={RjsfStringField}
-    className={styles.root}
-    {...props}
-  />
-);
-
-export default FormPreviewStringField;
+export const selectSessionId = ({ session }: { session: SessionState }) =>
+  session.sessionId;

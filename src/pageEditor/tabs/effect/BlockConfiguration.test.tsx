@@ -28,8 +28,10 @@ import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { render, screen } from "@testing-library/react";
 import { waitForEffect } from "@/tests/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 beforeAll(() => {
+  registerDefaultWidgets();
   // Precaution
   blockRegistry.clear();
 });

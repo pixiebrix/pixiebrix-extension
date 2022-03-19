@@ -15,21 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { utils } from "@rjsf/core";
-import React from "react";
-import FormPreviewFieldTemplate, {
-  FormPreviewFieldProps,
-} from "./FormPreviewFieldTemplate";
-import styles from "./FormPreviewBooleanField.module.scss";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { FormControlProps } from "react-bootstrap";
 
-const RjsfBooleanField = utils.getDefaultRegistry().fields.BooleanField;
+export type Shortcut = {
+  caption: string;
+  getPattern: () => Promise<string>;
+};
 
-const FormPreviewBooleanField: React.FC<FormPreviewFieldProps> = (props) => (
-  <FormPreviewFieldTemplate
-    as={RjsfBooleanField}
-    className={styles.root}
-    {...props}
-  />
-);
-
-export default FormPreviewBooleanField;
+export type UrlMatchPatternWidgetProps = SchemaFieldProps &
+  FormControlProps & {
+    shortcuts: Shortcut[];
+  };

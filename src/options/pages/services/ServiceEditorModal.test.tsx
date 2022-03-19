@@ -24,6 +24,11 @@ import { waitForEffect } from "@/tests/testHelpers";
 // FIXME: this is coming through as a module with default being a JSON object. (yaml-jest-transform is being applied)
 import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";
 import { RawServiceConfiguration } from "@/core";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+
+beforeAll(() => {
+  registerDefaultWidgets();
+});
 
 describe("ServiceEditorModal", () => {
   test("Can render Pipedrive configuration modal without existing configuration", async () => {

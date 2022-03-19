@@ -18,25 +18,30 @@
 import { Schema, UiSchema } from "@/core";
 import { waitForEffect } from "@/tests/testHelpers";
 import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { Except } from "type-fest";
 import {
   createFormikTemplate,
   fireTextInput,
   fireFormSubmit,
+  selectSchemaFieldType,
 } from "@/tests/formHelpers";
-import { RJSFSchema } from "./formBuilderTypes";
+import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor, { FormEditorProps } from "./FormEditor";
 import {
   initAddingFieldCases,
   initOneFieldSchemaCase,
   initRenamingCases,
-} from "./formEditor.testCases";
+} from "@/components/formBuilder/formEditor.testCases";
 import selectEvent from "react-select-event";
-import userEvent from "@testing-library/user-event";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
+
+beforeAll(() => {
+  registerDefaultWidgets();
+});
 
 describe("FormEditor", () => {
   const defaultProps: Except<FormEditorProps, "activeField"> = {
@@ -342,20 +347,10 @@ describe("FormEditor", () => {
       </FormikTemplate>
     );
 
-    await waitForEffect();
-
-    const fieldToggleButton = screen
-      .getByTestId(
-        `toggle-${RJSF_SCHEMA_PROPERTY_NAME}.schema.properties.${fieldName}.default`
-      )
-      .querySelector("button");
-    expect(fieldToggleButton).not.toBeNull();
-    userEvent.click(fieldToggleButton);
-    const textOption = screen.getByTestId("string");
-    expect(textOption).not.toBeNull();
-    await waitFor(() => {
-      userEvent.click(textOption);
-    });
+    await selectSchemaFieldType(
+      `${RJSF_SCHEMA_PROPERTY_NAME}.schema.properties.${fieldName}.default`,
+      "string"
+    );
 
     const defaultValue = "Initial default value";
     const defaultValueInput = screen.getByLabelText("Default value");

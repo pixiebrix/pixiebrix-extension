@@ -23,7 +23,7 @@ import {
   RJSFSchema,
   SelectStringOption,
   SetActiveField,
-} from "./formBuilderTypes";
+} from "@/components/formBuilder/formBuilderTypes";
 import { Button, Col, Row } from "react-bootstrap";
 import FieldEditor from "./FieldEditor";
 import {
@@ -33,8 +33,8 @@ import {
   normalizeUiOrder,
   replaceStringInArray,
   updateRjsfSchemaWithDefaultsIfNeeded,
-} from "./formBuilderHelpers";
-import { UI_ORDER } from "./schemaFieldNames";
+} from "@/components/formBuilder/formBuilderHelpers";
+import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Schema } from "@/core";

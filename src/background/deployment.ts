@@ -24,10 +24,6 @@ import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import {
-  uninstallContextMenu,
-  containsPermissions,
-} from "@/background/messenger/api";
 import { deploymentPermissions } from "@/permissions";
 import { IExtension, UUID, RegistryId } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
@@ -41,6 +37,7 @@ import { expectContext } from "@/utils/expectContext";
 import { getSettingsState } from "@/store/settingsStorage";
 import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
+import { uninstallContextMenu } from "@/background/contextMenus";
 
 const { reducer, actions } = extensionsSlice;
 
@@ -386,7 +383,7 @@ export async function updateDeployments(): Promise<void> {
   const deploymentRequirements = await Promise.all(
     updatedDeployments.map(async (deployment) => ({
       deployment,
-      hasPermissions: await containsPermissions(
+      hasPermissions: await browser.permissions.contains(
         await deploymentPermissions(deployment)
       ),
     }))

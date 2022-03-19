@@ -15,15 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RecipeDefinition } from "@/types/definitions";
-import { useCallback } from "react";
+import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
+import React from "react";
+import FormPreviewFieldTemplate, {
+  FormPreviewFieldProps,
+} from "./FormPreviewFieldTemplate";
+import styles from "./FormPreviewBooleanField.module.scss";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function useResetRecipe(recipe: RecipeDefinition): () => void {
-  // Stub
-  const reset = useCallback(() => {}, []);
+const RjsfBooleanField = RjsfTheme.fields.BooleanField;
 
-  return reset;
-}
+const FormPreviewBooleanField: React.FC<FormPreviewFieldProps> = (props) => (
+  <FormPreviewFieldTemplate
+    as={RjsfBooleanField}
+    className={styles.root}
+    {...props}
+  />
+);
 
-export default useResetRecipe;
+export default FormPreviewBooleanField;

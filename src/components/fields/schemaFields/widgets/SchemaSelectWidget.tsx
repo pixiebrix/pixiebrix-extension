@@ -21,19 +21,13 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty, sortBy, uniq } from "lodash";
 import { useField } from "formik";
 import Creatable from "react-select/creatable";
-import { Schema } from "@/core";
-
-export function isSelectField(schema: Schema): boolean {
-  const values = schema.examples ?? schema.enum;
-  return schema.type === "string" && Array.isArray(values) && !isEmpty(values);
-}
 
 type StringOption = {
   value: string;
 };
 type StringOptionsType = Options<StringOption>;
 
-const SchemaSelectWidget: React.FC<SchemaFieldProps> = ({ name, schema }) => {
+const SchemaSelectWidget: React.VFC<SchemaFieldProps> = ({ name, schema }) => {
   const [created, setCreated] = useState([]);
   const [{ value }, , { setValue }] = useField(name);
 

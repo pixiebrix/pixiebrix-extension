@@ -19,16 +19,21 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { FieldProps, IChangeEvent } from "@rjsf/core";
-import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
+import {
+  RJSFSchema,
+  SetActiveField,
+} from "@/components/formBuilder/formBuilderTypes";
 import FormPreviewStringField from "./FormPreviewStringField";
-import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
+import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
 import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
-import ImageCropWidgetPreview from "@/components/formBuilder/ImageCropWidgetPreview";
+import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWidgetPreview";
 // eslint-disable-next-line import/no-named-as-default -- need default export here
-import DescriptionField from "./DescriptionField";
-import FieldTemplate from "./FieldTemplate";
+import DescriptionField from "@/components/formBuilder/DescriptionField";
+import FieldTemplate from "@/components/formBuilder/FieldTemplate";
+import SelectWidgetPreview from "./SelectWidgetPreview";
+import FormPreviewSchemaField from "./FormPreviewSchemaField";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -92,6 +97,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   }
 
   const fields = {
+    SchemaField: FormPreviewSchemaField,
     StringField,
     BooleanField,
     DescriptionField,
@@ -99,6 +105,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
 
   const widgets = {
     imageCrop: ImageCropWidgetPreview,
+    SelectWidget: SelectWidgetPreview,
   };
 
   return (
