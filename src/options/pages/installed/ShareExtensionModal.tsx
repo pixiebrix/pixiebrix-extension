@@ -43,7 +43,6 @@ import {
 } from "@/types/definitions";
 import notify from "@/utils/notify";
 import { push } from "connected-react-router";
-import { getHumanDetail } from "@/hooks/useUserAction";
 import { isAxiosError } from "@/errors";
 import { faGlobe, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Form, {
@@ -174,8 +173,7 @@ const ShareExtensionModal: React.FC<{
         }
 
         notify.error({
-          message: `Error converting/sharing brick: ${getHumanDetail(error)}`,
-          includeErrorDetails: false, // Using `getHumanDetail`
+          message: `Error converting/sharing brick`,
           error,
         });
       } finally {

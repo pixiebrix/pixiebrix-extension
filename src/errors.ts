@@ -337,6 +337,29 @@ export function isPrivatePageError(error: unknown): boolean {
   );
 }
 
+/** @deprecated Already part of getErrorMessage, do not use directly */
+function extractServerErrorMessage({ response }: AxiosError): string | void {
+  if (response.status !== 400) {
+    return response.statusText;
+  }
+
+  // Do some basic parsing of Django/DRF 400 messages
+  if (typeof response.data === "string") {
+    return response.data;
+  }
+
+  if (
+    typeof response.data === "object" &&
+    Array.isArray(response.data.__all__)
+  ) {
+    return response.data.__all__[0];
+  }
+
+  if (Array.isArray(response.data) && typeof response.data[0] === "string") {
+    return response.data[0];
+  }
+}
+
 /**
  * Return an error message corresponding to an error.
  */
@@ -353,10 +376,14 @@ export function getErrorMessage(
     return error;
   }
 
-  const { message } = isAxiosError(error)
-    ? error.response.data // Looks like `{ message: string }`
-    : selectError(error);
-  return String(message ?? defaultMessage);
+  if (isAxiosError(error)) {
+    const serverMessage = extractServerErrorMessage(error);
+    if (serverMessage) {
+      return String(serverMessage);
+    }
+  }
+
+  return String(selectError(error).message);
 }
 
 /**
