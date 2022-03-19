@@ -198,10 +198,10 @@ describe("selectError", () => {
 
     const selectedError = selectError(errorEvent);
     expect(selectedError).toMatchInlineSnapshot(
-      '[Error: Synchronous error: "It’s a non-error"]'
+      "[Error: Synchronous error: It’s a non-error]"
     );
     expect(selectedError.stack).toMatchInlineSnapshot(`
-      "Error: Synchronous error: \\"It’s a non-error\\"
+      "Error: Synchronous error: It’s a non-error
           at unknown (yoshi://mushroom-kingdom/bowser.js:2:10)"
     `);
   });
@@ -223,7 +223,7 @@ describe("selectError", () => {
     );
 
     expect(selectError(errorEvent)).toMatchInlineSnapshot(
-      '[Error: Asynchronous error: "It’s a non-error"]'
+      "[Error: Asynchronous error: It’s a non-error]"
     );
   });
 });

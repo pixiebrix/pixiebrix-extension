@@ -414,24 +414,27 @@ export function selectError(originalError: unknown): Error {
     return deserializeError(error);
   }
 
+  // Wrap error if an unknown primitive or object
+  // e.g. `throw 'Error string message'`, which should never be written
+  const errorMessage = isObject(error)
+    ? safeJsonStringify(error)
+    : String(error);
+
   // Refactor beware: Keep the "primitive error event wrapper" logic separate from the
   // "extract error from event" logic to avoid duplicating or missing the rest of the selectError’s logic
   if (originalError instanceof ErrorEvent) {
-    const errorMessage = `Synchronous error: ${safeJsonStringify(error)}`;
-    const errorError = new Error(errorMessage);
+    const syncErrorMessage = `Synchronous error: ${errorMessage}`;
+    const errorError = new Error(syncErrorMessage);
 
     // ErrorEvents have some information about the location of the error, so we use it as a single-level stack.
     // The format follows Chrome’s. `unknown` is the function name
-    errorError.stack = `Error: ${errorMessage}\n    at unknown (${originalError.filename}:${originalError.lineno}:${originalError.colno})`;
+    errorError.stack = `Error: ${syncErrorMessage}\n    at unknown (${originalError.filename}:${originalError.lineno}:${originalError.colno})`;
     return errorError;
   }
 
   if (originalError instanceof PromiseRejectionEvent) {
-    return new Error(`Asynchronous error: ${safeJsonStringify(error)}`);
+    return new Error(`Asynchronous error: ${errorMessage}`);
   }
 
-  // Wrap error if an unknown primitive or object
-  // e.g. `throw 'Error string message'`, which should never be written
-  const message = isObject(error) ? safeJsonStringify(error) : String(error);
-  return new Error(message);
+  return new Error(errorMessage);
 }
