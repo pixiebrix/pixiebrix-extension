@@ -383,7 +383,7 @@ export function getErrorMessage(
     }
   }
 
-  return String(selectError(error).message);
+  return String(selectError(error).message ?? defaultMessage);
 }
 
 /**

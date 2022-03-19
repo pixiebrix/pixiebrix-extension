@@ -173,7 +173,7 @@ const ShareExtensionModal: React.FC<{
         }
 
         notify.error({
-          message: `Error converting/sharing brick`,
+          message: "Error converting/sharing brick",
           error,
         });
       } finally {
