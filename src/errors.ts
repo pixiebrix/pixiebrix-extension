@@ -20,6 +20,12 @@ import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError } from "axios";
 import { isObject, matchesAnyPattern } from "@/utils";
 import safeJsonStringify from "json-stringify-safe";
+import { isEmpty } from "lodash";
+import {
+  isBadRequestResponse,
+  isClientErrorResponse,
+  safeGuessStatusText,
+} from "@/types/errorContract";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
@@ -337,27 +343,75 @@ export function isPrivatePageError(error: unknown): boolean {
   );
 }
 
-/** @deprecated Already part of getErrorMessage, do not use directly */
-function extractServerErrorMessage({ response }: AxiosError): string | void {
-  if (response.status !== 400) {
-    return response.statusText;
+/**
+ * Heuristically select the most user-friendly error message for an Axios response.
+ *
+ * Tries to handle:
+ * - Errors produced by our backed (Django Rest Framework style)
+ * - Common response body patterns of other APIs
+ * - HTTP standards in statusText/status
+ *
+ * enrichRequestError is a related method which wraps an AxiosError in an Error subclass that encodes information
+ * about why the request failed.
+ *
+ * @deprecated DO NOT CALL DIRECTLY. Call getErrorMessage
+ * @see getErrorMessage
+ * @see enrichRequestError
+ */
+function selectServerErrorMessage({ response }: AxiosError): string | null {
+  // For examples of DRF errors, see the pixiebrix-app repository:
+  // http://github.com/pixiebrix/pixiebrix-app/blob/5ef1e4e414be6485fae999440b69f2b6da993668/api/tests/test_errors.py#L15-L15
+
+  // Handle 400 responses created by DRF serializers
+  if (isBadRequestResponse(response)) {
+    const data = Array.isArray(response.data)
+      ? response.data.find((x) => isEmpty(x))
+      : response.data;
+
+    // Prefer object-level errors
+    if (data?.non_field_errors) {
+      return data.non_field_errors[0];
+    }
+
+    // Take an arbitrary field
+    const fieldMessages = Object.values(data)[0];
+
+    // Take an arbitrary message
+    return fieldMessages[0];
   }
 
-  // Do some basic parsing of Django/DRF 400 messages
-  if (typeof response.data === "string") {
+  // Handle 4XX responses created by DRF
+  if (isClientErrorResponse(response)) {
+    return response.data.detail;
+  }
+
+  // Handle other likely API JSON body response formats
+  // Some servers produce an HTML document for server responses even if you requested JSON. Check the response headers
+  // to avoid dumping JSON to the user
+  if (
+    typeof response.data === "string" &&
+    ["text/plain", "application/json"].includes(
+      response.headers["content-type"]
+    )
+  ) {
     return response.data;
   }
 
-  if (
-    typeof response.data === "object" &&
-    Array.isArray(response.data.__all__)
-  ) {
-    return response.data.__all__[0];
+  // Handle common keys from other APIs
+  for (const messageKey of ["message", "reason"]) {
+    // eslint-disable-next-line security/detect-object-injection -- constant defined above
+    const message = response.data?.[messageKey];
+    if (typeof message === "string" && !isEmpty(message)) {
+      return message;
+    }
   }
 
-  if (Array.isArray(response.data) && typeof response.data[0] === "string") {
-    return response.data[0];
+  // Otherwise, rely on HTTP REST statusText/status
+  if (!isEmpty(response.statusText)) {
+    return response.statusText;
   }
+
+  return safeGuessStatusText(response.status);
 }
 
 /**
@@ -377,7 +431,7 @@ export function getErrorMessage(
   }
 
   if (isAxiosError(error)) {
-    const serverMessage = extractServerErrorMessage(error);
+    const serverMessage = selectServerErrorMessage(error);
     if (serverMessage) {
       return String(serverMessage);
     }
@@ -417,7 +471,8 @@ export function selectError(originalError: unknown): Error {
   // Wrap error if an unknown primitive or object
   // e.g. `throw 'Error string message'`, which should never be written
   const errorMessage = isObject(error)
-    ? safeJsonStringify(error)
+    ? // Use safeJsonStringify vs. JSON.stringify because it handles circular references
+      safeJsonStringify(error)
     : String(error);
 
   // Refactor beware: Keep the "primitive error event wrapper" logic separate from the
