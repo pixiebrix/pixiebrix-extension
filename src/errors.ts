@@ -19,8 +19,7 @@ import { MessageContext, SerializedError } from "@/core";
 import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError } from "axios";
 import { isObject, matchesAnyPattern } from "@/utils";
-
-// FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2672
+import safeJsonStringify from "json-stringify-safe";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
@@ -306,22 +305,6 @@ export function hasBusinessRootCause(
   return false;
 }
 
-export function isPromiseRejectionEvent(
-  event: unknown
-): event is PromiseRejectionEvent {
-  // https://developer.mozilla.org/en-US/docs/Web/API/PromiseRejectionEvent/PromiseRejectionEvent
-  // https://caniuse.com/unhandledrejection
-  return (
-    event instanceof PromiseRejectionEvent ||
-    // Also handle PromiseRejectionEvents that have been serialized. In practice, events should never cross the
-    // messenger boundary because. Can't use "name" like we do for serialized errors because Events don't have a name
-    // property
-    (isObject(event) &&
-      (event.type === "unhandledrejection" ||
-        event.type === "rejectionhandled"))
-  );
-}
-
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
 export function isAxiosError(error: unknown): error is AxiosError {
   return isObject(error) && Boolean(error.isAxiosError);
@@ -379,24 +362,16 @@ export function getErrorMessage(
 /**
  * Finds or creates an Error starting from strings, error event, or real Errors.
  *
- * The result is suitable for passing to Rollbar. (Which treats Errors and objects differently.)
+ * The result is suitable for passing to Rollbar (which treats Errors and objects differently.)
  */
 export function selectError(originalError: unknown): Error {
-  let error: unknown = originalError;
-
-  // Extract error from event.
-  if (error instanceof ErrorEvent) {
-    if (error.error) {
-      error = error.error;
-    } else if (error.message) {
-      error = new Error(error.message);
-    } else {
-      error = new Error("ErrorEvent with undefined error/message");
-    }
-  } else if (isPromiseRejectionEvent(error)) {
-    error =
-      error.reason ?? new Error("PromiseRejectionEvent with undefined reason");
-  }
+  // Extract thrown error from event
+  const error: unknown =
+    originalError instanceof ErrorEvent
+      ? originalError.error
+      : originalError instanceof PromiseRejectionEvent
+      ? originalError.reason
+      : originalError; // Or use the received object/error as is
 
   if (error instanceof Error) {
     return error;
@@ -404,7 +379,6 @@ export function selectError(originalError: unknown): Error {
 
   console.warn("A non-Error was thrown", {
     originalError,
-    error,
   });
 
   if (isErrorObject(error)) {
@@ -413,7 +387,24 @@ export function selectError(originalError: unknown): Error {
     return deserializeError(error);
   }
 
+  // Refactor beware: Keep the "primitive error event wrapper" logic separate from the
+  // "extract error from event" logic to avoid duplicating or missing the rest of the selectError’s logic
+  if (originalError instanceof ErrorEvent) {
+    const errorMessage = `Synchronous error: ${safeJsonStringify(error)}`;
+    const errorError = new Error(errorMessage);
+
+    // ErrorEvents have some information about the location of the error, so we use it as a single-level stack.
+    // The format follows Chrome’s. `unknown` is the function name
+    errorError.stack = `Error: ${errorMessage}\n    at unknown (${originalError.filename}:${originalError.lineno}:${originalError.colno})`;
+    return errorError;
+  }
+
+  if (originalError instanceof PromiseRejectionEvent) {
+    return new Error(`Asynchronous error: ${safeJsonStringify(error)}`);
+  }
+
   // Wrap error if an unknown primitive or object
-  // e.g. `throw 'Error message'`, which should never be written
-  return new Error(String(error));
+  // e.g. `throw 'Error string message'`, which should never be written
+  const message = isObject(error) ? safeJsonStringify(error) : String(error);
+  return new Error(message);
 }
