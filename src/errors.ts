@@ -431,6 +431,8 @@ export function getErrorMessage(
   }
 
   if (isAxiosError(error)) {
+    // This will miss any errors wrapped with enrichRequestError. Including any calls using src/hooks/fetch.ts:fetch
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2972
     const serverMessage = selectServerErrorMessage(error);
     if (serverMessage) {
       return String(serverMessage);

@@ -21,7 +21,7 @@ import { isPlainObject } from "lodash";
 import { isObject } from "@/utils";
 
 /**
- * Version of getReasonPhrase that returns null for unknown status codes
+ * Version of getReasonPhrase that returns null for unknown status codes (i.e., instead of throwing an error)
  * @param code the HTML status code
  * @see getReasonPhrase statusText from the HTML standard
  */
@@ -34,17 +34,22 @@ export function safeGuessStatusText(code: string | number): string | null {
 }
 
 /**
- * DRF error shape for bad request for single object.
+ * Django Rest Framework (DRF) response payload for 400 validation error response for single object.
  */
 type BadRequestObjectData = {
   // XXX: is it also still possible for __all__ to be returned if the Django (not DRF) throws an error when cleaning
-  // the model? https://github.com/encode/django-rest-framework/issues/1450
+  // the model? See: https://github.com/encode/django-rest-framework/issues/1450
+  // If __all__ the  only key, it will still end up getting reported as the error message in getErrorMessage
   non_field_errors?: string[];
   [field: string]: string[];
 };
 
+// If an array of objects is passed to an endpoint, DRF will return an array of BadRequestObjectData
 type BadRequestData = BadRequestObjectData | BadRequestObjectData[];
 
+/**
+ * Django Rest Framework (DRF) response payload for 4XX error that's not associated with a serializer.
+ */
 type ClientErrorData = {
   detail: string;
 };
@@ -66,6 +71,10 @@ function isClientErrorData(data: unknown): data is ClientErrorData {
   return isObject(data) && typeof data.detail === "string";
 }
 
+/**
+ * Return true if response is a 400 Bad Request from the PixieBrix API.
+ * @param response the API response
+ */
 export function isBadRequestResponse(
   response: AxiosResponse
 ): response is AxiosResponse<BadRequestData> {
@@ -80,6 +89,14 @@ export function isBadRequestResponse(
   return isBadRequestObjectData(response.data);
 }
 
+/**
+ * Return true if response is a 4XX request error from the PixieBrix API.
+ *
+ * Use isBadRequestResponse for 400 request errors.
+ *
+ * @param response the API response
+ * @see isBadRequestResponse
+ */
 export function isClientErrorResponse(
   response: AxiosResponse
 ): response is AxiosResponse<ClientErrorData> {
