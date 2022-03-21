@@ -20,13 +20,17 @@ import { PageEditorTabContext } from "@/pageEditor/context";
 import { getErrorMessage } from "@/errors";
 import { Button } from "react-bootstrap";
 import { useGetMeQuery } from "@/services/api";
+import { isClientErrorData } from "@/types/errorContract";
 
 const ErrorBanner: React.VFC = () => {
   const context = useContext(PageEditorTabContext);
   const { error: accountError } = useGetMeQuery();
+  const data: unknown = (accountError as any)?.data;
 
   const error = accountError
-    ? "Authentication error: " + getErrorMessage(accountError)
+    ? `Authentication error: ${
+        isClientErrorData(data) ? data.detail : getErrorMessage(accountError)
+      }`
     : context.tabState.error;
 
   if (!error) {

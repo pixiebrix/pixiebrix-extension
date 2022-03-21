@@ -66,7 +66,7 @@ function isBadRequestObjectData(data: unknown): data is BadRequestObjectData {
   );
 }
 
-function isClientErrorData(data: unknown): data is ClientErrorData {
+export function isClientErrorData(data: unknown): data is ClientErrorData {
   // We could check for status > 400 and < 500 here, but might as well just go with duck typing on the body
   return isObject(data) && typeof data.detail === "string";
 }

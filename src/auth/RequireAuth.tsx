@@ -68,7 +68,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     return <LoginPage />;
   }
 
-  // Optimistically skip waiting if we have cached auth data
+  // In the future optimistically skip waiting if we have cached auth data
   // TODO remove isDeprecatedAuthLoading when useGetAuthQuery is no longer used
   if ((isLoading && !isLoggedIn) || isDeprecatedAuthLoading) {
     return <Loader />;
