@@ -17,7 +17,7 @@
 
 import { AxiosResponse } from "axios";
 import { ProxyResponseData, ProxyResponseErrorData } from "@/types/contract";
-import { safeGuessStatusText } from "@/services/requestErrorUtils";
+import { safeGuessStatusText } from "@/types/errorContract";
 
 export function proxyResponseToAxiosResponse(
   data: ProxyResponseData
