@@ -34,35 +34,35 @@ import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settingsSlice";
-import workshopSlice, { WorkshopState } from "@/store/workshopSlice";
+import workshopSlice, {
+  persistWorkshopConfig,
+  WorkshopState,
+} from "@/store/workshopSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import { persistSettingsConfig } from "@/store/settingsStorage";
 import { SettingsState } from "@/store/settingsTypes";
-import { localStorage } from "redux-persist-webextension-storage";
 import blueprintsSlice, {
   BlueprintsState,
   persistBlueprintsConfig,
 } from "./pages/blueprints/blueprintsSlice";
 import { logActions, logSlice } from "@/components/logViewer/logSlice";
 import { LogRootState } from "@/components/logViewer/logViewerTypes";
+import { AuthRootState } from "@/auth/authTypes";
+import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
 export const hashHistory = createHashHistory({ hashType: "slash" });
 
-export type RootState = LogRootState & {
-  options: OptionsState;
-  blueprints: BlueprintsState;
-  services: ServicesState;
-  settings: SettingsState;
-  workshop: WorkshopState;
-  installedPage: InstalledPageState;
-};
-
-export const persistWorkshopConfig = {
-  key: "workshop",
-  storage: localStorage,
-};
+export type RootState = AuthRootState &
+  LogRootState & {
+    options: OptionsState;
+    blueprints: BlueprintsState;
+    services: ServicesState;
+    settings: SettingsState;
+    workshop: WorkshopState;
+    installedPage: InstalledPageState;
+  };
 
 const conditionalMiddleware: Middleware[] = [];
 if (typeof createLogger === "function") {
@@ -79,6 +79,7 @@ if (typeof createLogger === "function") {
 const store = configureStore({
   reducer: {
     router: connectRouter(hashHistory),
+    auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
       persistExtensionOptionsConfig,
       extensionsSlice.reducer

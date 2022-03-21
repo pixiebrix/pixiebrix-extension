@@ -15,16 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthState } from "./authTypes";
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+import LoginCard from "@/pageEditor/components/LoginCard";
 
-export const anonAuth: AuthState = Object.freeze({
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: true,
-  scope: null,
-  flags: [],
-  organizations: [],
-  groups: [],
-});
+export default {
+  title: "PageEditor/LoginCard",
+  component: LoginCard,
+  argTypes: {},
+} as ComponentMeta<typeof LoginCard>;
+
+const Template: ComponentStory<typeof LoginCard> = (args) => (
+  <LoginCard {...args} />
+);
+
+export const Default = Template.bind({});
+Default.args = {};

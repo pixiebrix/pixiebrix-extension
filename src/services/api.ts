@@ -15,14 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  AuthState,
-  RegistryId,
-  Schema,
-  SchemaProperties,
-  UiSchema,
-  UUID,
-} from "@/core";
+import { RegistryId, Schema, SchemaProperties, UiSchema, UUID } from "@/core";
+import { AuthState } from "@/auth/authTypes";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
   EditablePackage,
@@ -58,14 +52,27 @@ import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
 
+// Temporary type for RTK query errors. Matches the example from
+// https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery.
+// A future PR will have appBaseQuery return the AxiosError or enriched request error
+// See errorContract
+export type ApiError = {
+  status: number;
+  data: unknown | undefined;
+};
+
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery: BaseQueryFn<{
-  url: string;
-  method: AxiosRequestConfig["method"];
-  data?: AxiosRequestConfig["data"];
-  requireLinked?: boolean;
-  meta?: unknown;
-}> = async ({ url, method, data, requireLinked = false, meta }) => {
+const appBaseQuery: BaseQueryFn<
+  {
+    url: string;
+    method: AxiosRequestConfig["method"];
+    data?: AxiosRequestConfig["data"];
+    requireLinked?: boolean;
+    meta?: unknown;
+  },
+  unknown,
+  ApiError
+> = async ({ url, method, data, requireLinked = false, meta }) => {
   try {
     const client = await (requireLinked
       ? getLinkedApiClient()
@@ -125,6 +132,7 @@ export const appApi = createApi({
   reducerPath: "appApi",
   baseQuery: appBaseQuery,
   tagTypes: [
+    "Me",
     "Auth",
     "Databases",
     "Services",
@@ -138,6 +146,12 @@ export const appApi = createApi({
     "CloudExtensions",
   ],
   endpoints: (builder) => ({
+    getMe: builder.query<Me, void>({
+      query: () => ({ url: "/api/me/", method: "get" }),
+      providesTags: ["Me"],
+    }),
+
+    /** @deprecated Use authSlice and authSelectors or getMe instead */
     getAuth: builder.query<AuthState, void>({
       query: () => ({ url: "/api/me/", method: "get" }),
       providesTags: ["Auth"],
@@ -332,8 +346,12 @@ export const appApi = createApi({
   }),
 });
 
+// This const is defined separately to be able to mark it deprecated
+/** @deprecated Use authSlice and authSelectors instead */
+export const { useGetAuthQuery } = appApi;
+
 export const {
-  useGetAuthQuery,
+  useGetMeQuery,
   useGetDatabasesQuery,
   useCreateDatabaseMutation,
   useAddDatabaseToGroupMutation,

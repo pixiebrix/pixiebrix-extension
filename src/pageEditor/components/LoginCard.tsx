@@ -15,16 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthState } from "./authTypes";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import { Card, Button } from "react-bootstrap";
 
-export const anonAuth: AuthState = Object.freeze({
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: true,
-  scope: null,
-  flags: [],
-  organizations: [],
-  groups: [],
-});
+const LoginCard: React.VoidFunctionComponent = () => (
+  <Card>
+    <Card.Body>
+      <p>Complete PixieBrix Extension setup to use the Page Editor</p>
+      <Button
+        variant="primary"
+        className="mt-2"
+        target="_blank"
+        href="/options.html"
+      >
+        <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
+      </Button>
+    </Card.Body>
+  </Card>
+);
+
+export default LoginCard;

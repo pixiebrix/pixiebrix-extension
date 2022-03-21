@@ -27,7 +27,7 @@ import {
   useGetAuthQuery,
 } from "@/services/api";
 import useDeployments from "@/hooks/useDeployments";
-import { AuthState } from "@/core";
+import { AuthState } from "@/auth/authTypes";
 import { anonAuth } from "@/auth/authConstants";
 import { uuidv4 } from "@/types/helpers";
 
@@ -172,7 +172,7 @@ describe("OnboardingPage", () => {
     isLoggedIn: true,
     isOnboarded: true,
     extension: true,
-    organizations: [{ id: uuidv4(), name: "Foo" }],
+    organizations: [{ id: uuidv4(), name: "Foo", role: 1 }],
     groups: [],
   };
 

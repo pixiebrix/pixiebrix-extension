@@ -15,16 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthState } from "./authTypes";
+import { AuthRootState } from "./authTypes";
 
-export const anonAuth: AuthState = Object.freeze({
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: true,
-  scope: null,
-  flags: [],
-  organizations: [],
-  groups: [],
-});
+export const selectAuth = (state: AuthRootState) => state.auth;
+export const selectIsLoggedIn = (state: AuthRootState) => state.auth.isLoggedIn;

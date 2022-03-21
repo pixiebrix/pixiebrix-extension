@@ -28,12 +28,12 @@ import blockRegistry from "@/blocks/registry";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
-
-// Import custom options widgets/forms for the built-in bricks
 import registerEditors from "@/contrib/editors";
 import Loader from "@/components/Loader";
 import ErrorBanner from "@/pageEditor/ErrorBanner";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import RequireAuth from "@/auth/RequireAuth";
+import LoginCard from "./components/LoginCard";
 
 // Register the built-in bricks
 registerEditors();
@@ -58,7 +58,9 @@ const Panel: React.VoidFunctionComponent = () => {
             <ErrorBoundary>
               <Router>
                 <ErrorBanner />
-                <Editor />
+                <RequireAuth LoginPage={LoginCard}>
+                  <Editor />
+                </RequireAuth>
               </Router>
             </ErrorBoundary>
           </ModalProvider>
