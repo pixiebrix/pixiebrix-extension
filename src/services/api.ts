@@ -52,8 +52,12 @@ import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
 
+// Temporary type for RTK query errors. Matches the example from
+// https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery.
+// A future PR will have appBaseQuery return the AxiosError or enriched request error
+// See errorContract
 export type ApiError = {
-  status: number | undefined;
+  status: number;
   data: unknown | undefined;
 };
 

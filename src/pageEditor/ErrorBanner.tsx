@@ -25,8 +25,10 @@ import { isClientErrorData } from "@/types/errorContract";
 const ErrorBanner: React.VFC = () => {
   const context = useContext(PageEditorTabContext);
   const { error: accountError } = useGetMeQuery();
-  const data: unknown = (accountError as any)?.data;
 
+  // HACK: this logic is necessary because our RTK API base query currently returns an object with data/status instead
+  // of an error-like object that getErrorMessage can extract an error message from
+  const data: unknown = (accountError as any)?.data;
   const error = accountError
     ? `Authentication error: ${
         isClientErrorData(data) ? data.detail : getErrorMessage(accountError)
