@@ -18,7 +18,6 @@
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectActiveRecipeId,
   selectDirtyRecipeMetadata,
   selectDirtyRecipeOptions,
   selectElements,
@@ -38,20 +37,19 @@ import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import { PackageUpsertResponse } from "@/types/contract";
 import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
+import { RegistryId } from "@/core";
 
 const { actions: optionsActions } = extensionsSlice;
 
 type RecipeSaver = {
-  save: () => Promise<void>;
+  save: (recipeId: RegistryId) => Promise<void>;
   isSaving: boolean;
 };
 
 function useRecipeSaver(): RecipeSaver {
   const dispatch = useDispatch();
   const create = useCreate();
-  const recipeId = useSelector(selectActiveRecipeId);
   const { data: recipes } = useGetRecipesQuery();
-  const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
   const dirtyElements = useSelector(selectElements);
@@ -64,110 +62,119 @@ function useRecipeSaver(): RecipeSaver {
   /**
    * Save a recipe's extensions, options, and metadata
    */
-  const save = useCallback(async () => {
-    if (recipe == null) {
-      return;
-    }
-
-    if (!recipes.includes(recipe)) {
-      notify.error(
-        "You no longer have edit permissions for the blueprint. Please reload the Editor."
-      );
-      return;
-    }
-
-    const newOptions = dirtyRecipeOptions[recipe.metadata.id];
-    const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
-    if (newOptions == null && newMetadata == null && isEmpty(dirtyElements)) {
-      return;
-    }
-
-    const confirm = await showConfirmation({
-      title: "Save Blueprint?",
-      message: "All changes to the blueprint and its extensions will be saved",
-      submitCaption: "Save",
-    });
-
-    if (!confirm) {
-      return;
-    }
-
-    setIsSaving(true);
-
-    const newRecipe = replaceRecipeContent({
-      sourceRecipe: recipe,
-      installedExtensions,
-      dirtyElements,
-      options: newOptions,
-      metadata: newMetadata,
-    });
-
-    const packageId = editablePackages.find(
-      // Bricks endpoint uses "name" instead of id
-      (x) => x.name === newRecipe.metadata.id
-    )?.id;
-
-    let updateRecipeResponse: PackageUpsertResponse;
-    try {
-      updateRecipeResponse = await updateRecipe({
-        packageId,
-        recipe: newRecipe,
-      }).unwrap();
-    } catch (error: unknown) {
-      notify.error({
-        message: "Failed to update the Blueprint",
-        error,
-      });
-      setIsSaving(false);
-      return;
-    }
-
-    const newRecipeMetadata = selectRecipeMetadata(
-      newRecipe,
-      updateRecipeResponse
-    );
-
-    try {
-      for (const element of dirtyElements) {
-        // Don't push to cloud since we're saving it with the recipe
-        // eslint-disable-next-line no-await-in-loop
-        await create({ element, pushToCloud: false });
+  const save = useCallback(
+    async (recipeId: RegistryId) => {
+      const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
+      if (recipe == null) {
+        return;
       }
-    } catch (error: unknown) {
-      notify.error({
-        message: "Failed saving extension",
-        error,
+
+      if (!recipes.includes(recipe)) {
+        notify.error(
+          "You no longer have edit permissions for the blueprint. Please reload the Editor."
+        );
+        return;
+      }
+
+      const newOptions = dirtyRecipeOptions[recipe.metadata.id];
+      const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
+      if (newOptions == null && newMetadata == null && isEmpty(dirtyElements)) {
+        return;
+      }
+
+      const confirm = await showConfirmation({
+        title: "Save Blueprint?",
+        message:
+          "All changes to the blueprint and its extensions will be saved",
+        submitCaption: "Save",
       });
-      return;
-    } finally {
+
+      if (!confirm) {
+        return;
+      }
+
+      setIsSaving(true);
+
+      const newRecipe = replaceRecipeContent({
+        sourceRecipe: recipe,
+        installedExtensions,
+        dirtyElements,
+        options: newOptions,
+        metadata: newMetadata,
+      });
+
+      const packageId = editablePackages.find(
+        // Bricks endpoint uses "name" instead of id
+        (x) => x.name === newRecipe.metadata.id
+      )?.id;
+
+      let updateRecipeResponse: PackageUpsertResponse;
+      try {
+        updateRecipeResponse = await updateRecipe({
+          packageId,
+          recipe: newRecipe,
+        }).unwrap();
+      } catch (error: unknown) {
+        notify.error({
+          message: "Failed to update the Blueprint",
+          error,
+        });
+        setIsSaving(false);
+        return;
+      }
+
+      const newRecipeMetadata = selectRecipeMetadata(
+        newRecipe,
+        updateRecipeResponse
+      );
+
+      try {
+        for (const element of dirtyElements) {
+          // Don't push to cloud since we're saving it with the recipe
+          // eslint-disable-next-line no-await-in-loop
+          await create({ element, pushToCloud: false });
+        }
+      } catch (error: unknown) {
+        notify.error({
+          message: "Failed saving extension",
+          error,
+        });
+        setIsSaving(false);
+        return;
+      }
+
+      // Update the recipe metadata on extensions in the options slice
+      dispatch(
+        optionsActions.updateRecipeMetadataForExtensions(newRecipeMetadata)
+      );
+
+      // Update the recipe metadata on elements in the page editor slice
+      dispatch(
+        editorActions.updateRecipeMetadataForElements(newRecipeMetadata)
+      );
+
+      // Clear the dirty state
+      dispatch(
+        editorActions.resetRecipeMetadataAndOptions(newRecipeMetadata.id)
+      );
+
+      // Finish up successfully
+      notify.success("Saved blueprint");
       setIsSaving(false);
-    }
-
-    // Update the recipe metadata on extensions in the options slice
-    dispatch(
-      optionsActions.updateRecipeMetadataForExtensions(newRecipeMetadata)
-    );
-
-    // Update the recipe metadata on elements in the page editor slice
-    dispatch(editorActions.updateRecipeMetadataForElements(newRecipeMetadata));
-
-    // Clear the dirty state
-    dispatch(editorActions.resetRecipeMetadataAndOptions(newRecipeMetadata.id));
-
-    notify.success("Saved blueprint");
-  }, [
-    create,
-    dirtyElements,
-    dirtyRecipeMetadata,
-    dirtyRecipeOptions,
-    dispatch,
-    editablePackages,
-    installedExtensions,
-    recipe,
-    recipes,
-    showConfirmation,
-    updateRecipe,
-  ]);
+    },
+    [
+      create,
+      dirtyElements,
+      dirtyRecipeMetadata,
+      dirtyRecipeOptions,
+      dispatch,
+      editablePackages,
+      installedExtensions,
+      recipes,
+      showConfirmation,
+      updateRecipe,
+    ]
+  );
 
   return {
     save,

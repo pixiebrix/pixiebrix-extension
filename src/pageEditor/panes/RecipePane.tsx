@@ -124,7 +124,9 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
     {
       // Save
       variant: "primary",
-      onClick: saveRecipe,
+      async onClick() {
+        await saveRecipe(activeRecipeId);
+      },
       caption: "Save",
       disabled: isSavingRecipe,
       icon: faSave,
