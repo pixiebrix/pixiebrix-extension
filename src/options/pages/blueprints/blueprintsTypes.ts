@@ -35,6 +35,7 @@ export type InstallableViewItem = {
   updatedAt: string;
   status: "Active" | "Inactive";
   hasUpdate: boolean;
+  installedVersionNumber: string;
   icon: ReactNode;
   // Used to get Installable actions from useInstallableActions
   installable: Installable;

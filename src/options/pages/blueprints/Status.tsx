@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Status.module.scss";
+
 import React, { useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { InstallableViewItem } from "./blueprintsTypes";
@@ -29,7 +31,8 @@ type StatusProps = {
 const Status: React.VoidFunctionComponent<StatusProps> = ({
   installableViewItem,
 }) => {
-  const { status, installable, hasUpdate } = installableViewItem;
+  const { status, installable, hasUpdate, installedVersionNumber } =
+    installableViewItem;
   const { activate, reinstall } = useInstallableActions(installable);
 
   const ActiveStatus = useMemo(() => {
@@ -42,8 +45,18 @@ const Status: React.VoidFunctionComponent<StatusProps> = ({
     }
 
     return (
-      <div className="text-success py-2">
-        <FontAwesomeIcon icon={faCheck} /> Active
+      <div className="text-success w-100">
+        <div className={styles.root}>
+          <FontAwesomeIcon icon={faCheck} />
+          <span className={styles.activeStatus}>
+            Active
+            {installedVersionNumber && (
+              <span className={styles.versionNumber}>
+                version {installedVersionNumber}
+              </span>
+            )}
+          </span>
+        </div>
       </div>
     );
   }, [hasUpdate, reinstall]);

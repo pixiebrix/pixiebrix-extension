@@ -26,6 +26,7 @@ import { UUID } from "@/core";
 
 import {
   getDescription,
+  getInstalledVersionNumber,
   getLabel,
   getPackageId,
   getSharingType,
@@ -107,6 +108,10 @@ function useInstallableViewItems(
         status: isActive(installable) ? "Active" : "Inactive",
         hasUpdate: updateAvailable(
           recipes.data,
+          installedExtensions,
+          installable
+        ),
+        installedVersionNumber: getInstalledVersionNumber(
           installedExtensions,
           installable
         ),

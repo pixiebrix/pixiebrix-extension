@@ -14,58 +14,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 .root {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  border: none;
-  border-bottom: #f2edf3 1px solid;
+  justify-content: start;
 }
 
-.listHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: bolder;
-  color: #bba8bff5;
-  background: transparent;
-  border: none;
-}
-
-.icon {
-  padding-right: 1rem;
-}
-
-.primaryInfo {
-  min-width: 0;
-  flex-grow: 1;
-  padding-right: 1rem;
-}
-
-.name {
-  margin: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.sharing {
+.activeStatus {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  text-align: right;
-  color: darkgray;
+  justify-content: start;
+  margin-left: 0.5rem;
+}
+
+.versionNumber {
   font-size: 0.7rem;
-}
-
-.sharingLabel {
-  align-self: end;
-}
-
-.status {
-  padding: 0 20px;
-  display: flex;
-  justify-content: center;
-  flex-basis: 150px;
-  flex-shrink: 0;
 }

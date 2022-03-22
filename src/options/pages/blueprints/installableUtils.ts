@@ -146,6 +146,22 @@ export const isPersonal = (installable: Installable, userScope: string) => {
 export const isDeployment = (installable: Installable) =>
   isExtension(installable) && Boolean(installable._deployment);
 
+export const getInstalledVersionNumber = (
+  installedExtensions: UnresolvedExtension[],
+  installable: Installable
+): string | null => {
+  if (isExtension(installable)) {
+    return installable._recipe?.version;
+  }
+
+  const installedExtension = installedExtensions.find(
+    (extension: UnresolvedExtension) =>
+      extension._recipe?.id === installable.metadata.id
+  );
+
+  return installedExtension?._recipe?.version;
+};
+
 export function updateAvailable(
   availableRecipes: RecipeDefinition[],
   installedExtensions: UnresolvedExtension[],
