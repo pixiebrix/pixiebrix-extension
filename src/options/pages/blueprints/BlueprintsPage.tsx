@@ -24,11 +24,11 @@ import { RootState } from "@/options/store";
 import {
   LogsContext,
   ShareContext,
-} from "@/options/pages/installed/installedPageSlice";
+} from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import {
   selectShowLogsContext,
   selectShowShareContext,
-} from "@/options/pages/installed/installedPageSelectors";
+} from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
 import ShareExtensionModal from "@/options/pages/blueprints/modals/ShareExtensionModal";
 import ShareLinkModal from "@/options/pages/blueprints/modals/ShareLinkModal";
 import { useTitle } from "@/hooks/title";

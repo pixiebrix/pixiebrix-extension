@@ -31,7 +31,7 @@ import {
   reactivateEveryTab,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
+import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import notify from "@/utils/notify";
 import { push } from "connected-react-router";
@@ -99,7 +99,7 @@ function useInstallableActions(installable: Installable) {
       };
     }
 
-    dispatch(installedPageSlice.actions.setShareContext(shareContext));
+    dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
   };
 
   const deleteExtension = useUserAction(
@@ -162,7 +162,7 @@ function useInstallableActions(installable: Installable) {
 
   const viewLogs = () => {
     dispatch(
-      installedPageSlice.actions.setLogsContext({
+      blueprintModalsSlice.actions.setLogsContext({
         title: getLabel(installable),
         messageContext: isBlueprint(installable)
           ? {

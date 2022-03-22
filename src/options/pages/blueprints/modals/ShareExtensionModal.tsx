@@ -56,7 +56,7 @@ import { PackageUpsertResponse } from "@/types/contract";
 import extensionsSlice from "@/store/extensionsSlice";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
+import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { RequireScope } from "@/auth/RequireScope";
 
@@ -125,7 +125,7 @@ const ShareExtensionModal: React.FC<{
   }, [extensions, extensionId]);
 
   const onCancel = () => {
-    dispatch(installedPageSlice.actions.setShareContext(null));
+    dispatch(blueprintModalsSlice.actions.setShareContext(null));
   };
 
   // If loading the URL directly, there's a race condition if scope will be populated when the modal is mounted.
@@ -161,7 +161,7 @@ const ShareExtensionModal: React.FC<{
         notify.success("Converted/shared brick");
 
         // Hide the share modal
-        dispatch(installedPageSlice.actions.setShareContext(null));
+        dispatch(blueprintModalsSlice.actions.setShareContext(null));
 
         dispatch(
           push(`/installed/link/${encodeURIComponent(recipe.metadata.id)}`)
