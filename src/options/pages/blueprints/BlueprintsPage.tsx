@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import useInstallables from "@/options/pages/blueprints/useInstallables";
-import ExtensionLogsModal from "@/options/pages/installed/ExtensionLogsModal";
+import ExtensionLogsModal from "@/options/pages/blueprints/modals/ExtensionLogsModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/options/store";
 import {
@@ -29,7 +29,7 @@ import {
   selectShowLogsContext,
   selectShowShareContext,
 } from "@/options/pages/installed/installedPageSelectors";
-import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
+import ShareExtensionModal from "@/options/pages/blueprints/modals/ShareExtensionModal";
 import ShareLinkModal from "@/options/pages/installed/ShareLinkModal";
 import { useTitle } from "@/hooks/title";
 import Loader from "@/components/Loader";

@@ -21,9 +21,9 @@ import { MessageContext } from "@/core";
 import React, { useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { installedPageSlice } from "./installedPageSlice";
 import LogCard from "@/components/logViewer/LogCard";
 import { logActions } from "@/components/logViewer/logSlice";
+import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
 
 const ExtensionLogsModal: React.FC<{
   title: string;

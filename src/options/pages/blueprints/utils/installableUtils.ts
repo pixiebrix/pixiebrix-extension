@@ -25,7 +25,7 @@ import {
 } from "@/core";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
-import { Installable } from "../blueprintsTypes";
+import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
 
 export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
 
