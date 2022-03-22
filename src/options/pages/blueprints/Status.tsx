@@ -29,7 +29,8 @@ type StatusProps = {
 const Status: React.VoidFunctionComponent<StatusProps> = ({
   installableViewItem,
 }) => {
-  const { status, installable, hasUpdate } = installableViewItem;
+  const { status, installable, hasUpdate, installedVersionNumber } =
+    installableViewItem;
   const { activate, reinstall } = useInstallableActions(installable);
 
   const ActiveStatus = useMemo(() => {
@@ -42,8 +43,16 @@ const Status: React.VoidFunctionComponent<StatusProps> = ({
     }
 
     return (
-      <div className="text-success py-2">
-        <FontAwesomeIcon icon={faCheck} /> Active
+      <div className="text-success py-2 w-100">
+        <div className="d-flex align-items-center justify-content-start">
+          <FontAwesomeIcon icon={faCheck} />
+          <span className="d-flex flex-column ml-2 text-left">
+            Active
+            {installedVersionNumber && (
+              <span className="small">version {installedVersionNumber}</span>
+            )}
+          </span>
+        </div>
       </div>
     );
   }, [hasUpdate, reinstall]);
