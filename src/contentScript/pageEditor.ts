@@ -61,6 +61,7 @@ type RunBlockArgs = {
    * @see makeServiceContext
    */
   context: BlockArgContext;
+  extensionPoint: any; // BaseExtensionPointState
 };
 
 /**
@@ -71,6 +72,7 @@ export async function runBlock({
   blockConfig,
   context,
   apiVersion,
+  extensionPoint,
 }: RunBlockArgs) {
   const versionOptions = apiVersionOptions(apiVersion);
 
@@ -93,6 +95,20 @@ export async function runBlock({
     // We're forcing apiVersion: 2 or higher above values must come from the context
     previousOutput: {},
   };
+
+  const blockRootMode = blockConfig.rootMode ?? "inherit";
+  if (
+    blockRootMode === "inherit" &&
+    extensionPoint.targetMode === "root" &&
+    extensionPoint.definition.rootSelector
+  ) {
+    // Not 100% accurate, since we're looking for an element in the document,
+    // rather than trying to find the closest element to the event target (in case of trigger)
+    const rootElement = $safeFind(extensionPoint.definition.rootSelector);
+    if (rootElement.length > 0) {
+      state.root = rootElement.get(0);
+    }
+  }
 
   const options: ReduceOptions = {
     ...versionOptions,

@@ -467,6 +467,14 @@ export async function blockReducer(
   };
 
   const output = await runBlock(resolvedConfig, props, blockOptions);
+  console.log("blockReducer", {
+    output,
+    blockConfig,
+    resolvedConfig,
+    props,
+    blockOptions,
+    state,
+  });
 
   if (logValues) {
     console.info(`Output for block #${index + 1}: ${blockConfig.id}`, {
@@ -597,6 +605,11 @@ export async function reducePipeline(
   let output: unknown = explicitDataFlow ? {} : input;
 
   const pipelineArray = castArray(pipeline);
+
+  console.log("reducePipeline", {
+    options,
+    initialValues,
+  });
 
   for (const [index, blockConfig] of pipelineArray.entries()) {
     const state: IntermediateState = {

@@ -44,10 +44,11 @@ import {
 } from "@/core";
 import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import { makeServiceContext } from "@/services/serviceUtils";
+import { FormState } from "@/pageEditor/slices/editorSlice";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -137,6 +138,7 @@ const BlockPreview: React.FunctionComponent<{
   traceRecord: TraceRecord;
   blockConfig: BlockConfig;
   previewRefreshMillis?: 250;
+  // eslint-disable-next-line complexity
 }> = ({ blockConfig, traceRecord, previewRefreshMillis }) => {
   const [{ isRunning, output, outputKey }, dispatch] = useReducer(
     previewSlice.reducer,
@@ -146,6 +148,9 @@ const BlockPreview: React.FunctionComponent<{
     }
   );
 
+  const {
+    values: { extensionPoint },
+  } = useFormikContext<FormState>();
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
   const [{ value: services }] = useField<ServiceDependency[]>("services");
 
@@ -160,6 +165,7 @@ const BlockPreview: React.FunctionComponent<{
           apiVersion,
           blockConfig: removeEmptyValues(blockConfig),
           context: { ...context, ...(await makeServiceContext(services)) },
+          extensionPoint,
         });
         dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
       } catch (error) {
@@ -187,6 +193,17 @@ const BlockPreview: React.FunctionComponent<{
     return (
       <div className="text-muted">
         Output previews are not currently supported for renderers
+      </div>
+    );
+  }
+
+  // TODO debug and fix this
+  const blockRootMode = blockConfig.rootMode ?? "inherit";
+  if (blockRootMode === "inherit" && extensionPoint.targetMode !== "root") {
+    return (
+      <div className="text-muted">
+        Output previews are currently supported only for extension points with
+        targetMode set to &quot;root&quot;
       </div>
     );
   }
