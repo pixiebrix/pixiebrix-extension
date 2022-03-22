@@ -149,7 +149,7 @@ export const isDeployment = (installable: Installable) =>
 export const getInstalledVersionNumber = (
   installedExtensions: UnresolvedExtension[],
   installable: Installable
-): string => {
+): string | null => {
   if (isExtension(installable)) {
     return installable._recipe?.version;
   }
