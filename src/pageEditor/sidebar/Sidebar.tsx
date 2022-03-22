@@ -45,7 +45,9 @@ import Footer from "@/pageEditor/sidebar/Footer";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
+  faFileImport,
   faSync,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
@@ -78,6 +80,36 @@ const ReloadButton: React.VoidFunctionComponent = () => (
     }}
   >
     <FontAwesomeIcon icon={faSync} />
+  </Button>
+);
+
+const AddToRecipeButton: React.VFC<{
+  onClick: () => void;
+  disabled: boolean;
+}> = ({ onClick, disabled }) => (
+  <Button
+    type="button"
+    size="sm"
+    variant="light"
+    title="Add extension to a blueprint"
+    onClick={onClick}
+    disabled={disabled}
+  >
+    <FontAwesomeIcon icon={faFileImport} />
+  </Button>
+);
+
+const CancelButton: React.VFC<{
+  onClick: () => void;
+}> = ({ onClick }) => (
+  <Button
+    type="button"
+    size="sm"
+    variant="light"
+    title="Cancel"
+    onClick={onClick}
+  >
+    <FontAwesomeIcon icon={faTimes} />
   </Button>
 );
 
@@ -145,6 +177,17 @@ const SidebarExpanded: React.VoidFunctionComponent<
 
   const { availableInstalledIds, availableDynamicIds, unavailableCount } =
     useInstallState(installed, elements);
+
+  const activeElement = elements.find(
+    (element) => element.uuid === activeElementId
+  );
+
+  const showAddToRecipeButton =
+    flagOn("page-editor-blueprints") &&
+    !isEmpty(recipes) &&
+    activeElement &&
+    activeElement.recipe == null;
+  const [isAddingToRecipe, setIsAddingToRecipe] = useState(false);
 
   const elementHash = hash(
     sortBy(elements.map((formState) => `${formState.uuid}-${formState.label}`))
@@ -242,15 +285,32 @@ const SidebarExpanded: React.VoidFunctionComponent<
             </DropdownButton>
 
             {showDeveloperUI && <ReloadButton />}
+
+            {showAddToRecipeButton && (
+              <AddToRecipeButton
+                onClick={() => {
+                  setIsAddingToRecipe(true);
+                }}
+                disabled={isAddingToRecipe}
+              />
+            )}
           </div>
-          <Button
-            variant="light"
-            className={cx(styles.toggle)}
-            type="button"
-            onClick={collapseSidebar}
-          >
-            <FontAwesomeIcon icon={faAngleDoubleLeft} />
-          </Button>
+          {isAddingToRecipe ? (
+            <CancelButton
+              onClick={() => {
+                setIsAddingToRecipe(false);
+              }}
+            />
+          ) : (
+            <Button
+              variant="light"
+              className={styles.toggle}
+              type="button"
+              onClick={collapseSidebar}
+            >
+              <FontAwesomeIcon icon={faAngleDoubleLeft} />
+            </Button>
+          )}
         </div>
 
         {unavailableCount ? (
