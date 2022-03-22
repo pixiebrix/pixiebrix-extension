@@ -40,8 +40,10 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   // By default, search everything with the option to re-select
   // filtered category
   useEffect(() => {
-    setGlobalFilter(debouncedQuery);
-    setFilters([]);
+    if (debouncedQuery) {
+      setGlobalFilter(debouncedQuery);
+      setFilters([]);
+    }
   }, [debouncedQuery, setFilters, setGlobalFilter]);
 
   const activeKey = filters[0]?.value ?? "All";

@@ -16,7 +16,13 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import { IExtension, RegistryId, ResolvedExtension, UUID } from "@/core";
+import {
+  IExtension,
+  RegistryId,
+  ResolvedExtension,
+  UnresolvedExtension,
+  UUID,
+} from "@/core";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
 import { Installable } from "./blueprintsTypes";
@@ -142,33 +148,54 @@ export const isDeployment = (installable: Installable) =>
 
 export function updateAvailable(
   availableRecipes: RecipeDefinition[],
-  extension: ResolvedExtension
+  installedExtensions: UnresolvedExtension[],
+  installable: Installable
 ): boolean {
-  if (!extension._recipe) {
+  let installedExtension: ResolvedExtension | UnresolvedExtension = null;
+
+  if (isBlueprint(installable)) {
+    installedExtension = installedExtensions?.find(
+      (extension) => extension._recipe?.id === installable.metadata.id
+    );
+  } else {
+    installedExtension = installable;
+  }
+
+  if (!installedExtension || !installedExtension._recipe) {
     return false;
   }
 
   const availableRecipe = availableRecipes?.find(
-    (recipe) => recipe.metadata.id === extension._recipe.id
+    (recipe) => recipe.metadata.id === installedExtension._recipe.id
   );
 
   if (!availableRecipe) {
     return false;
   }
 
-  if (semver.gt(availableRecipe.metadata.version, extension._recipe.version)) {
+  if (
+    semver.gt(
+      availableRecipe.metadata.version,
+      installedExtension._recipe.version
+    )
+  ) {
     return true;
   }
 
-  if (semver.eq(availableRecipe.metadata.version, extension._recipe.version)) {
+  if (
+    semver.eq(
+      availableRecipe.metadata.version,
+      installedExtension._recipe.version
+    )
+  ) {
     // Check the updated_at timestamp
-    if (extension._recipe?.updated_at == null) {
+    if (installedExtension._recipe?.updated_at == null) {
       // Extension was installed prior to us adding updated_at to RecipeMetadata
       return false;
     }
 
     const availableDate = new Date(availableRecipe.updated_at);
-    const installedDate = new Date(extension._recipe.updated_at);
+    const installedDate = new Date(installedExtension._recipe.updated_at);
 
     return availableDate > installedDate;
   }
