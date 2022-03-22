@@ -20,7 +20,7 @@ import {
   recipeDefinitionFactory,
   sharingDefinitionFactory,
 } from "@/tests/factories";
-import { Installable } from "./blueprintsTypes";
+import { Installable } from "../blueprintsTypes";
 import { getSharingType } from "./installableUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";

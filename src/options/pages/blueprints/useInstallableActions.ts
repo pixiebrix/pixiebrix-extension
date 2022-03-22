@@ -23,7 +23,7 @@ import {
   isExtensionFromRecipe,
   isPersonal,
   isShared,
-} from "@/options/pages/blueprints/installableUtils";
+} from "@/options/pages/blueprints/utils/installableUtils";
 import { Installable } from "./blueprintsTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";

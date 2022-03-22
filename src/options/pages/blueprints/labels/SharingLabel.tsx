@@ -23,7 +23,7 @@ import {
   faGlobe,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { SharingSource } from "@/options/pages/blueprints/installableUtils";
+import { SharingSource } from "@/options/pages/blueprints/utils/installableUtils";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import cx from "classnames";
 
