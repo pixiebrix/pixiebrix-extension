@@ -35,7 +35,7 @@ import { installedPageSlice } from "@/options/pages/installed/installedPageSlice
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import notify from "@/utils/notify";
 import { push } from "connected-react-router";
-import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/installed/exportBlueprint";
+import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/blueprints/utils/exportBlueprint";
 import { appApi, useDeleteCloudExtensionMutation } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";

@@ -30,7 +30,7 @@ import {
   selectShowShareContext,
 } from "@/options/pages/installed/installedPageSelectors";
 import ShareExtensionModal from "@/options/pages/blueprints/modals/ShareExtensionModal";
-import ShareLinkModal from "@/options/pages/installed/ShareLinkModal";
+import ShareLinkModal from "@/options/pages/blueprints/modals/ShareLinkModal";
 import { useTitle } from "@/hooks/title";
 import Loader from "@/components/Loader";
 import { ErrorDisplay } from "@/layout/Page";

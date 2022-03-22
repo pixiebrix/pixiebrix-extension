@@ -35,7 +35,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import slugify from "slugify";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
-import { makeBlueprint } from "@/options/pages/installed/exportBlueprint";
+import { makeBlueprint } from "@/options/pages/blueprints/utils/exportBlueprint";
 import { useDispatch, useSelector } from "react-redux";
 import {
   RecipeDefinition,
