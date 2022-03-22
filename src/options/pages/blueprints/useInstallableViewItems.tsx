@@ -105,9 +105,11 @@ function useInstallableViewItems(
         },
         updatedAt: getUpdatedAt(installable),
         status: isActive(installable) ? "Active" : "Inactive",
-        hasUpdate: isExtension(installable)
-          ? updateAvailable(recipes.data, installable)
-          : false,
+        hasUpdate: updateAvailable(
+          recipes.data,
+          installedExtensions,
+          installable
+        ),
         icon: installableIcon(installable),
         installable,
       })),
