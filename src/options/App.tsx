@@ -34,14 +34,11 @@ import Footer from "@/layout/Footer";
 import Sidebar from "@/options/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
-import { useGetAuthQuery } from "@/services/api";
-import { useAsyncState } from "@/hooks/common";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
 import useRefresh from "@/hooks/useRefresh";
-import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
 import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
@@ -52,11 +49,11 @@ import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import WorkshopPage from "./pages/workshop/WorkshopPage";
 import InvitationBanner from "@/options/pages/InvitationBanner";
-import { SettingsState } from "@/store/settingsTypes";
 import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
 import { selectSettings } from "@/store/settingsSelectors";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import RequireAuth from "@/auth/RequireAuth";
 
 // Register the built-in bricks
 registerEditors();
@@ -66,23 +63,6 @@ registerContribBlocks();
 // Register Widgets
 registerDefaultWidgets();
 
-const RequireInstall: React.FunctionComponent = ({ children }) => {
-  const mode = useSelector<{ settings: SettingsState }, string>(
-    ({ settings }) => settings.mode
-  );
-  const [linked, isPending] = useAsyncState(isLinked);
-
-  if (isPending && mode === "remote") {
-    return null;
-  }
-
-  if (mode === "remote" && !linked) {
-    return <SetupPage />;
-  }
-
-  return <>{children}</>;
-};
-
 const Layout = () => {
   // Get the latest brick definitions. Put it here in Layout instead of App to ensure the Redux store has been hydrated
   // by the time refresh is called.
@@ -91,17 +71,11 @@ const Layout = () => {
   const { permit } = useFlags();
   const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
-  const { isLoading } = useGetAuthQuery();
-
-  if (isLoading) {
-    return <Loader />;
-  }
-
   return (
     <div>
       <Navbar />
       <Container fluid className="page-body-wrapper">
-        <RequireInstall>
+        <RequireAuth LoginPage={SetupPage}>
           <Sidebar />
           <div className="main-panel">
             <ErrorModal />
@@ -131,7 +105,6 @@ const Layout = () => {
                   )}
 
                   {/* Switch does not support consolidating Routes using a React fragment */}
-
                   {permit("workshop") && (
                     <Route exact path="/workshop" component={WorkshopPage} />
                   )}
@@ -170,7 +143,7 @@ const Layout = () => {
             </div>
             <Footer />
           </div>
-        </RequireInstall>
+        </RequireAuth>
       </Container>
     </div>
   );

@@ -15,14 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-body {
-  margin: 0;
-}
-iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { anonAuth } from "./authConstants";
+import { AuthState } from "./authTypes";
+import { localStorage } from "redux-persist-webextension-storage";
+
+export const authSlice = createSlice({
+  name: "auth",
+  initialState: anonAuth,
+  reducers: {
+    setAuth: (state, { payload }: PayloadAction<AuthState>) => payload,
+  },
+});
+
+// TODO refactor to use token.ts/updateUserData
+// Current approach is not ideal, AuthState is cached along with UserDate (which is used by background script).
+export const persistAuthConfig = {
+  key: "authOptions",
+  storage: localStorage,
+};
+
+export const authActions = authSlice.actions;

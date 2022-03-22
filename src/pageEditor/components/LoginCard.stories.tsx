@@ -15,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Jest fails without these
-// eslint-disable-next-line node/prefer-global/text-decoder, node/prefer-global/text-encoder
-import { TextEncoder, TextDecoder } from "util";
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+import LoginCard from "@/pageEditor/components/LoginCard";
 
-process.env.SERVICE_URL = "https://app.pixiebrix.com";
+export default {
+  title: "PageEditor/LoginCard",
+  component: LoginCard,
+  argTypes: {},
+} as ComponentMeta<typeof LoginCard>;
 
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
-global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
-  constructor(type, init) {
-    super(type);
-    this.promise = init.promise;
-    this.reason = init.reason;
-  }
-};
+const Template: ComponentStory<typeof LoginCard> = (args) => (
+  <LoginCard {...args} />
+);
+
+export const Default = Template.bind({});
+Default.args = {};

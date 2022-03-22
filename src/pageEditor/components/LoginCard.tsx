@@ -15,18 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Jest fails without these
-// eslint-disable-next-line node/prefer-global/text-decoder, node/prefer-global/text-encoder
-import { TextEncoder, TextDecoder } from "util";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import { Card, Button } from "react-bootstrap";
 
-process.env.SERVICE_URL = "https://app.pixiebrix.com";
+const LoginCard: React.VoidFunctionComponent = () => (
+  <Card>
+    <Card.Body>
+      <p>Complete PixieBrix Extension setup to use the Page Editor</p>
+      <Button
+        variant="primary"
+        className="mt-2"
+        target="_blank"
+        href="/options.html"
+      >
+        <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
+      </Button>
+    </Card.Body>
+  </Card>
+);
 
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
-global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
-  constructor(type, init) {
-    super(type);
-    this.promise = init.promise;
-    this.reason = init.reason;
-  }
-};
+export default LoginCard;

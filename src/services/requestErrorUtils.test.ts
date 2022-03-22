@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  safeGuessStatusText,
-  selectAbsoluteUrl,
-} from "@/services/requestErrorUtils";
+import { safeGuessStatusText } from "@/types/errorContract";
+
+import { selectAbsoluteUrl } from "@/services/requestErrorUtils";
 
 describe("safeGuessStatusText", () => {
   it("returns http statusText", () => {

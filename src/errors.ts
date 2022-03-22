@@ -19,8 +19,13 @@ import { MessageContext, SerializedError } from "@/core";
 import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError } from "axios";
 import { isObject, matchesAnyPattern } from "@/utils";
-
-// FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/2672
+import safeJsonStringify from "json-stringify-safe";
+import { isEmpty } from "lodash";
+import {
+  isBadRequestResponse,
+  isClientErrorResponse,
+  safeGuessStatusText,
+} from "@/types/errorContract";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
@@ -306,21 +311,6 @@ export function hasBusinessRootCause(
   return false;
 }
 
-export function isPromiseRejectionEvent(
-  event: unknown
-): event is PromiseRejectionEvent {
-  // https://developer.mozilla.org/en-US/docs/Web/API/PromiseRejectionEvent/PromiseRejectionEvent
-  // https://caniuse.com/unhandledrejection
-  return (
-    event &&
-    typeof event === "object" &&
-    "type" in event &&
-    ["unhandledrejection", "rejectionhandled"].includes(
-      (event as Partial<Event>).type
-    )
-  );
-}
-
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
 export function isAxiosError(error: unknown): error is AxiosError {
   return isObject(error) && Boolean(error.isAxiosError);
@@ -354,6 +344,77 @@ export function isPrivatePageError(error: unknown): boolean {
 }
 
 /**
+ * Heuristically select the most user-friendly error message for an Axios response.
+ *
+ * Tries to handle:
+ * - Errors produced by our backed (Django Rest Framework style)
+ * - Common response body patterns of other APIs
+ * - HTTP standards in statusText/status
+ *
+ * enrichRequestError is a related method which wraps an AxiosError in an Error subclass that encodes information
+ * about why the request failed.
+ *
+ * @deprecated DO NOT CALL DIRECTLY. Call getErrorMessage
+ * @see getErrorMessage
+ * @see enrichRequestError
+ */
+function selectServerErrorMessage({ response }: AxiosError): string | null {
+  // For examples of DRF errors, see the pixiebrix-app repository:
+  // http://github.com/pixiebrix/pixiebrix-app/blob/5ef1e4e414be6485fae999440b69f2b6da993668/api/tests/test_errors.py#L15-L15
+
+  // Handle 400 responses created by DRF serializers
+  if (isBadRequestResponse(response)) {
+    const data = Array.isArray(response.data)
+      ? response.data.find((x) => isEmpty(x))
+      : response.data;
+
+    // Prefer object-level errors
+    if (data?.non_field_errors) {
+      return data.non_field_errors[0];
+    }
+
+    // Take an arbitrary field
+    const fieldMessages = Object.values(data)[0];
+
+    // Take an arbitrary message
+    return fieldMessages[0];
+  }
+
+  // Handle 4XX responses created by DRF
+  if (isClientErrorResponse(response)) {
+    return response.data.detail;
+  }
+
+  // Handle other likely API JSON body response formats
+  // Some servers produce an HTML document for server responses even if you requested JSON. Check the response headers
+  // to avoid dumping JSON to the user
+  if (
+    typeof response.data === "string" &&
+    ["text/plain", "application/json"].includes(
+      response.headers["content-type"]
+    )
+  ) {
+    return response.data;
+  }
+
+  // Handle common keys from other APIs
+  for (const messageKey of ["message", "reason"]) {
+    // eslint-disable-next-line security/detect-object-injection -- constant defined above
+    const message = response.data?.[messageKey];
+    if (typeof message === "string" && !isEmpty(message)) {
+      return message;
+    }
+  }
+
+  // Otherwise, rely on HTTP REST statusText/status
+  if (!isEmpty(response.statusText)) {
+    return response.statusText;
+  }
+
+  return safeGuessStatusText(response.status);
+}
+
+/**
  * Return an error message corresponding to an error.
  */
 export function getErrorMessage(
@@ -369,35 +430,39 @@ export function getErrorMessage(
     return error;
   }
 
-  const { message = defaultMessage } = selectError(error);
-  return String(message);
+  if (isAxiosError(error)) {
+    // This will miss any errors wrapped with enrichRequestError. Including any calls using src/hooks/fetch.ts:fetch
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2972
+    const serverMessage = selectServerErrorMessage(error);
+    if (serverMessage) {
+      return String(serverMessage);
+    }
+  }
+
+  return String(selectError(error).message ?? defaultMessage);
 }
 
 /**
  * Finds or creates an Error starting from strings, error event, or real Errors.
  *
- * The result is suitable for passing to Rollbar. (Which treats Errors and objects differently.)
+ * The result is suitable for passing to Rollbar (which treats Errors and objects differently.)
  */
 export function selectError(originalError: unknown): Error {
-  let error: unknown = originalError;
-
-  // Extract error from event.
-  if (error instanceof ErrorEvent) {
-    if (error.error) {
-      error = error.error;
-    } else if (error.message) {
-      error = new Error(error.message);
-    } else {
-      error = new Error("ErrorEvent with undefined error/message");
-    }
-  } else if (isPromiseRejectionEvent(error)) {
-    error =
-      error.reason ?? new Error("PromiseRejectionEvent with undefined reason");
-  }
+  // Extract thrown error from event
+  const error: unknown =
+    originalError instanceof ErrorEvent
+      ? originalError.error
+      : originalError instanceof PromiseRejectionEvent
+      ? originalError.reason
+      : originalError; // Or use the received object/error as is
 
   if (error instanceof Error) {
     return error;
   }
+
+  console.warn("A non-Error was thrown", {
+    originalError,
+  });
 
   if (isErrorObject(error)) {
     // This shouldn't be necessary, but there's some nested calls to selectError
@@ -405,12 +470,28 @@ export function selectError(originalError: unknown): Error {
     return deserializeError(error);
   }
 
-  console.warn("A non-Error was thrown", {
-    originalError,
-    error,
-  });
-
   // Wrap error if an unknown primitive or object
-  // e.g. `throw 'Error message'`, which should never be written
-  return new Error(String(error));
+  // e.g. `throw 'Error string message'`, which should never be written
+  const errorMessage = isObject(error)
+    ? // Use safeJsonStringify vs. JSON.stringify because it handles circular references
+      safeJsonStringify(error)
+    : String(error);
+
+  // Refactor beware: Keep the "primitive error event wrapper" logic separate from the
+  // "extract error from event" logic to avoid duplicating or missing the rest of the selectError’s logic
+  if (originalError instanceof ErrorEvent) {
+    const syncErrorMessage = `Synchronous error: ${errorMessage}`;
+    const errorError = new Error(syncErrorMessage);
+
+    // ErrorEvents have some information about the location of the error, so we use it as a single-level stack.
+    // The format follows Chrome’s. `unknown` is the function name
+    errorError.stack = `Error: ${syncErrorMessage}\n    at unknown (${originalError.filename}:${originalError.lineno}:${originalError.colno})`;
+    return errorError;
+  }
+
+  if (originalError instanceof PromiseRejectionEvent) {
+    return new Error(`Asynchronous error: ${errorMessage}`);
+  }
+
+  return new Error(errorMessage);
 }

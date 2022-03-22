@@ -29,9 +29,7 @@ function ignoreConnectionErrors(
   }
 }
 
-function defaultErrorHandler(
-  errorEvent: ErrorEvent | PromiseRejectionEvent
-): void {
+function errorListener(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
   for (const handler of uncaughtErrorHandlers) {
     handler(errorEvent);
     if (errorEvent.defaultPrevented) {
@@ -53,5 +51,5 @@ export const uncaughtErrorHandlers = [ignoreConnectionErrors];
 // When imported, the file will be executed immediately, whereas if it exports
 // an `init` function will be called after every top-level imports (and their deps)
 // has been executed.
-window.addEventListener("error", defaultErrorHandler);
-window.addEventListener("unhandledrejection", defaultErrorHandler);
+window.addEventListener("error", errorListener);
+window.addEventListener("unhandledrejection", errorListener);

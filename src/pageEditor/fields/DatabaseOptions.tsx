@@ -44,7 +44,7 @@ const mergeStrategySchema: Schema = {
   title: "Merge Strategy",
   description:
     "Strategy to update the record if it already exists (default: replace)",
-  enum: ["replace", "shallow", "deep"],
+  enum: ["replace", "shallow", "deep", "deep_append"],
   default: "replace",
 };
 

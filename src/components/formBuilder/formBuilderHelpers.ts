@@ -19,6 +19,7 @@ import {
   KEYS_OF_UI_SCHEMA,
   SafeString,
   Schema,
+  SchemaDefinition,
   SchemaPropertyType,
   UiSchema,
 } from "@/core";
@@ -297,11 +298,19 @@ export const produceSchemaOnUiTypeChange = (
 
     if (uiWidget === "select") {
       if (extra === "selectWithLabels") {
-        draftPropertySchema.oneOf = [];
+        // If switching from Dropdown, convert the enum to options with labels
+        draftPropertySchema.oneOf = Array.isArray(draftPropertySchema.enum)
+          ? draftPropertySchema.enum.map(
+              (item) => ({ const: item } as SchemaDefinition)
+            )
+          : [];
         draftPropertySchema.default = "";
         delete draftPropertySchema.enum;
       } else {
-        draftPropertySchema.enum = [];
+        // If switching from Dropdown with labels, convert the values to enum
+        draftPropertySchema.enum = Array.isArray(draftPropertySchema.oneOf)
+          ? draftPropertySchema.oneOf.map((item: Schema) => item.const)
+          : [];
         delete draftPropertySchema.oneOf;
       }
     } else {
