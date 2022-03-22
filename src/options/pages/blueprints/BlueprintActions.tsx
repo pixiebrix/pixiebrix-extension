@@ -89,7 +89,7 @@ const BlueprintActions: React.FunctionComponent<{
         action: actions.reinstall,
         // Managed extensions are updated via the deployment banner
         hide:
-          actions.reinstall === null ||
+          actions.reinstall == null ||
           sharing.source.type === "Deployment" ||
           status === "Inactive",
       },
