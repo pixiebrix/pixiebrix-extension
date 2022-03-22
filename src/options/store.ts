@@ -92,7 +92,7 @@ const store = configureStore({
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
-    installedPage: blueprintModalsSlice.reducer,
+    blueprintModals: blueprintModalsSlice.reducer,
     logs: logSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
