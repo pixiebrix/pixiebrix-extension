@@ -155,9 +155,8 @@ export const getInstalledVersionNumber = (
   }
 
   const installedExtension = installedExtensions.find(
-    (extension: UnresolvedExtension) => {
-      return extension._recipe?.id === installable.metadata.id;
-    }
+    (extension: UnresolvedExtension) =>
+      extension._recipe?.id === installable.metadata.id
   );
 
   return installedExtension?._recipe?.version;
