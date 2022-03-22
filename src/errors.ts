@@ -29,6 +29,34 @@ import {
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
+// TODO: When Rollbar supports Error#cause, drop ErrorWithCause and use something
+//  like `messageWithCauses` inside `getErrorMessage`:
+//  https://github.com/voxpelli/pony-cause#messagewithcauses-getting-an-error-message-which-includes-all-causes
+
+/**
+ * Temporary `cause` implementation that fully concatenates errors into one.
+ * Difference from native `cause`:
+ * - here: `message` and `stack` are immediately concatenated into one Error
+ * - native: the error and its cause are two independent, regular errors. The stack
+ *     is concatenated by the error displayer (the dev tools or Rollbar)
+ */
+export class ErrorWithCause extends Error {
+  public readonly cause?: unknown;
+  constructor(message: string, { cause }: { cause?: unknown } = {}) {
+    if (!cause) {
+      super(message);
+      return;
+    }
+
+    super(`${message}: ${getErrorMessage(cause)}`);
+    this.cause = cause;
+
+    if (isObject(cause) && "stack" in cause) {
+      this.stack += `\ncaused by: ${cause.stack}`;
+    }
+  }
+}
+
 /**
  * Base class for Errors arising from business logic in the brick, not the PixieBrix application/extension itself.
  *
