@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./Status.module.scss";
+
 import React, { useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { InstallableViewItem } from "./blueprintsTypes";
@@ -43,13 +45,15 @@ const Status: React.VoidFunctionComponent<StatusProps> = ({
     }
 
     return (
-      <div className="text-success py-2 w-100">
-        <div className="d-flex align-items-center justify-content-start">
+      <div className="text-success w-100">
+        <div className={styles.root}>
           <FontAwesomeIcon icon={faCheck} />
-          <span className="d-flex flex-column ml-2 text-left">
+          <span className={styles.activeStatus}>
             Active
             {installedVersionNumber && (
-              <span className="small">version {installedVersionNumber}</span>
+              <span className={styles.versionNumber}>
+                version {installedVersionNumber}
+              </span>
             )}
           </span>
         </div>
