@@ -29,7 +29,6 @@ import {
   InnerDefinitionRef,
   Logger,
   ReaderRoot,
-  RegistryId,
   RenderedArgs,
 } from "@/core";
 import { isEmpty } from "lodash";
@@ -190,9 +189,7 @@ export async function resolveBlockConfig(
   };
 }
 
-export function isInnerExtensionPoint(
-  id: RegistryId | InnerDefinitionRef
-): boolean {
+export function isInnerExtensionPoint(id: string): id is InnerDefinitionRef {
   return id.startsWith(INNER_SCOPE + "/");
 }
 

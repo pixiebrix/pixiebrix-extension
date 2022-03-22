@@ -76,7 +76,7 @@ export const PAGE_EDITOR_DEFAULT_BRICK_API_VERSION: ApiVersion = "v3";
 /**
  * Default definition entry for the inner definition of the extensionPoint for the extension
  */
-const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
+export const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
 
 export function makeIsAvailable(url: string): NormalizedAvailability {
   return {
