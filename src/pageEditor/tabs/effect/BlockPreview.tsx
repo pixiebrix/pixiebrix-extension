@@ -44,11 +44,11 @@ import {
 } from "@/core";
 import { runBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { useField, useFormikContext } from "formik";
+import { useField } from "formik";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import { makeServiceContext } from "@/services/serviceUtils";
-import { FormState } from "@/pageEditor/slices/editorSlice";
+import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -135,11 +135,12 @@ const previewSlice = createSlice({
 });
 
 const BlockPreview: React.FunctionComponent<{
-  traceRecord: TraceRecord;
   blockConfig: BlockConfig;
+  extensionPoint: BaseExtensionPointState;
+  traceRecord: TraceRecord;
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity
-}> = ({ blockConfig, traceRecord, previewRefreshMillis }) => {
+}> = ({ blockConfig, extensionPoint, traceRecord, previewRefreshMillis }) => {
   const [{ isRunning, output, outputKey }, dispatch] = useReducer(
     previewSlice.reducer,
     {
@@ -148,24 +149,33 @@ const BlockPreview: React.FunctionComponent<{
     }
   );
 
-  const {
-    values: { extensionPoint },
-  } = useFormikContext<FormState>();
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
   const [{ value: services }] = useField<ServiceDependency[]>("services");
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 
+  const blockRootMode = blockConfig.rootMode ?? "inherit";
+  const extensionPointDefinition: any = extensionPoint.definition;
+
   const debouncedRun = useDebouncedCallback(
     async (blockConfig: BlockConfig, context: BlockArgContext) => {
       dispatch(previewSlice.actions.startRun());
       const { outputKey } = blockConfig;
+
+      // If the block is configured to inherit the root element,
+      // try to get the root element from the extension point.
+      // Note: not possible when extensionPoint's targetMode equals "targetElement"
+      const rootSelector =
+        blockRootMode === "inherit" &&
+        extensionPointDefinition.targetMode === "root"
+          ? extensionPointDefinition.rootSelector
+          : undefined;
       try {
         const output = await runBlock(thisTab, {
           apiVersion,
           blockConfig: removeEmptyValues(blockConfig),
           context: { ...context, ...(await makeServiceContext(services)) },
-          extensionPoint,
+          rootSelector,
         });
         dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
       } catch (error) {
@@ -204,15 +214,14 @@ const BlockPreview: React.FunctionComponent<{
     extensionPoint,
   });
 
-  const blockRootMode = blockConfig.rootMode ?? "inherit";
   if (
     blockRootMode === "inherit" &&
-    extensionPoint.definition.targetMode !== "root"
+    extensionPointDefinition.targetMode !== "root"
   ) {
     return (
       <div className="text-muted">
-        Output previews are currently supported only for extension points with
-        targetMode set to &quot;root&quot;
+        Output previews are not supported for blocks with inherited rootMode and
+        root targetMode set to &quot;eventTarget&quot;
       </div>
     );
   }

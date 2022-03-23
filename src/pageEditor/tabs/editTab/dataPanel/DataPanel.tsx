@@ -317,7 +317,11 @@ const DataPanel: React.FC<{
               </ErrorBoundary>
             ) : showBlockPreview ? (
               <ErrorBoundary>
-                <BlockPreview traceRecord={record} blockConfig={block} />
+                <BlockPreview
+                  traceRecord={record}
+                  blockConfig={block}
+                  extensionPoint={formState.extensionPoint}
+                />
               </ErrorBoundary>
             ) : (
               <div className="text-muted">
