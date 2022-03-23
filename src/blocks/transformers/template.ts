@@ -27,7 +27,7 @@ import { BusinessError } from "@/errors";
 export class TemplateTransformer extends Transformer {
   defaultOutputKey = "filled";
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 

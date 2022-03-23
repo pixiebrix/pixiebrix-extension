@@ -16,6 +16,8 @@
  */
 
 import { RegistryId, UUID } from "@/core";
+import { Me } from "@/types/contract";
+import { Except } from "type-fest";
 
 export interface AuthOption {
   label: string;
@@ -24,3 +26,102 @@ export interface AuthOption {
   serviceId: RegistryId;
   local: boolean;
 }
+
+export type UserData = Partial<{
+  /**
+   * The email of the user
+   */
+  email: string;
+  /**
+   * The id of the user
+   */
+  user: UUID;
+  /**
+   * The hostname of the PixieBrix instance.
+   */
+  hostname: string;
+  /**
+   * The user's primary organization.
+   */
+  organizationId: string;
+  /**
+   * The user's organization for engagement and error attribution
+   */
+  telemetryOrganizationId: string;
+  /**
+   * Feature flags
+   */
+  flags: string[];
+  /**
+   * Organizations the user is a member of
+   */
+  organizations: Array<{
+    id: UUID;
+    name: string;
+  }>;
+  /**
+   * Groups the user is a member of
+   */
+  groups: Array<{
+    id: UUID;
+    name: string;
+  }>;
+}>;
+
+// Exclude tenant information in updates (these are only updated on linking)
+export type UserDataUpdate = Required<Except<UserData, "hostname" | "user">>;
+
+export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
+  "email",
+  "organizationId",
+  "telemetryOrganizationId",
+  "organizations",
+  "groups",
+  "flags",
+];
+
+export interface TokenAuthData extends UserData {
+  token: string;
+}
+
+type OrganizationAuthState = {
+  readonly id: string;
+  readonly name: string;
+  readonly scope?: string;
+};
+
+export type AuthState = {
+  readonly userId?: string | null;
+
+  readonly email?: string | null;
+
+  readonly scope?: string | null;
+
+  readonly isLoggedIn: boolean;
+
+  readonly isOnboarded: boolean;
+
+  readonly extension: boolean;
+
+  readonly organization?: OrganizationAuthState | null;
+
+  readonly organizations: Array<{
+    id: UUID;
+    name: string;
+    role: Me["organization_memberships"][number]["role"];
+  }>;
+
+  readonly groups: Array<{
+    id: UUID;
+    name: string;
+  }>;
+
+  /**
+   * List of feature flags for the user.
+   */
+  readonly flags: string[];
+};
+
+export type AuthRootState = {
+  auth: AuthState;
+};

@@ -59,7 +59,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
     const removalObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         // https://stackoverflow.com/questions/51723962/typescript-nodelistofelement-is-not-an-array-type-or-a-string-type
-        for (const removedNode of (mutation.removedNodes as any) as Iterable<Node>) {
+        for (const removedNode of mutation.removedNodes as any as Iterable<Node>) {
           if (!nodes.has(removedNode)) {
             continue;
           }
@@ -177,6 +177,7 @@ export function awaitElementOnce(
     );
     let innerCancel = noop;
     return [
+      // eslint-disable-next-line promise/prefer-await-to-then -- We can return it before it resolves
       nextElementPromise.then(async ($nextElement) => {
         const [innerPromise, inner] = awaitElementOnce(rest, $nextElement);
         innerCancel = inner;

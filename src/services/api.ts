@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, UUID } from "@/core";
+import { RegistryId, Schema, SchemaProperties, UiSchema, UUID } from "@/core";
+import { AuthState } from "@/auth/authTypes";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
   EditablePackage,
+  OptionsDefinition,
   RecipeDefinition,
   ServiceDefinition,
   UnsavedRecipeDefinition,
@@ -31,6 +33,7 @@ import {
   Database,
   Group,
   MarketplaceListing,
+  Me,
   Organization,
   PackageUpsertResponse,
   PendingInvitation,
@@ -39,15 +42,37 @@ import {
 } from "@/types/contract";
 import { components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
+import { anonAuth } from "@/auth/authConstants";
+import { updateUserData } from "@/auth/token";
+import {
+  selectExtensionAuthState,
+  selectUserDataUpdate,
+} from "@/auth/authUtils";
+import { propertiesToSchema } from "@/validators/generic";
+import { produce } from "immer";
+import { sortBy } from "lodash";
+
+// Temporary type for RTK query errors. Matches the example from
+// https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery.
+// A future PR will have appBaseQuery return the AxiosError or enriched request error
+// See errorContract
+export type ApiError = {
+  status: number;
+  data: unknown | undefined;
+};
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery: BaseQueryFn<{
-  url: string;
-  method: AxiosRequestConfig["method"];
-  data?: AxiosRequestConfig["data"];
-  requireLinked?: boolean;
-  meta?: unknown;
-}> = async ({ url, method, data, requireLinked = false, meta }) => {
+const appBaseQuery: BaseQueryFn<
+  {
+    url: string;
+    method: AxiosRequestConfig["method"];
+    data?: AxiosRequestConfig["data"];
+    requireLinked?: boolean;
+    meta?: unknown;
+  },
+  unknown,
+  ApiError
+> = async ({ url, method, data, requireLinked = false, meta }) => {
   try {
     const client = await (requireLinked
       ? getLinkedApiClient()
@@ -66,10 +91,49 @@ const appBaseQuery: BaseQueryFn<{
   }
 };
 
+type UnnormalizedOptionsDefinition = {
+  schema: Schema | SchemaProperties;
+  uiSchema?: UiSchema;
+};
+
+type UnnormalizedRecipeDefinition = Exclude<RecipeDefinition, "options"> & {
+  options?: UnnormalizedOptionsDefinition;
+};
+
+/**
+ * Fix hand-crafted recipe options from the workshop
+ */
+function normalizeRecipeOptions(
+  options?: OptionsDefinition
+): OptionsDefinition {
+  if (options == null) {
+    return {
+      schema: {},
+      uiSchema: {},
+    };
+  }
+
+  const recipeSchema = options.schema ?? {};
+  const schema: Schema =
+    "type" in recipeSchema &&
+    recipeSchema.type === "object" &&
+    "properties" in recipeSchema
+      ? recipeSchema
+      : propertiesToSchema(recipeSchema as SchemaProperties);
+  const uiSchema: UiSchema = options.uiSchema ?? {};
+  uiSchema["ui:order"] = uiSchema["ui:order"] ?? [
+    ...sortBy(Object.keys(schema.properties ?? {})),
+    "*",
+  ];
+  return { schema, uiSchema };
+}
+
 export const appApi = createApi({
   reducerPath: "appApi",
   baseQuery: appBaseQuery,
   tagTypes: [
+    "Me",
+    "Auth",
     "Databases",
     "Services",
     "ServiceAuths",
@@ -82,6 +146,26 @@ export const appApi = createApi({
     "CloudExtensions",
   ],
   endpoints: (builder) => ({
+    getMe: builder.query<Me, void>({
+      query: () => ({ url: "/api/me/", method: "get" }),
+      providesTags: ["Me"],
+    }),
+
+    /** @deprecated Use authSlice and authSelectors or getMe instead */
+    getAuth: builder.query<AuthState, void>({
+      query: () => ({ url: "/api/me/", method: "get" }),
+      providesTags: ["Auth"],
+      async transformResponse(me: Me) {
+        if (me.id) {
+          const update = selectUserDataUpdate(me);
+          void updateUserData(update);
+          return selectExtensionAuthState(me);
+        }
+
+        return anonAuth;
+      },
+    }),
+
     getDatabases: builder.query<Database[], void>({
       query: () => ({ url: "/api/databases/", method: "get" }),
       providesTags: ["Databases"],
@@ -189,10 +273,29 @@ export const appApi = createApi({
     getRecipes: builder.query<RecipeDefinition[], void>({
       query: () => ({ url: "/api/recipes/", method: "get" }),
       providesTags: ["Recipes"],
+      transformResponse(
+        baseQueryReturnValue: UnnormalizedRecipeDefinition[]
+      ): RecipeDefinition[] {
+        return produce<RecipeDefinition[]>(baseQueryReturnValue, (draft) => {
+          for (const recipe of draft) {
+            recipe.options = normalizeRecipeOptions(recipe.options);
+          }
+        });
+      },
     }),
     getCloudExtensions: builder.query<CloudExtension[], void>({
       query: () => ({ url: "/api/extensions/", method: "get" }),
       providesTags: ["CloudExtensions"],
+    }),
+    deleteCloudExtension: builder.mutation<
+      CloudExtension,
+      { extensionId: UUID }
+    >({
+      query: ({ extensionId }) => ({
+        url: `/api/extensions/${extensionId}/`,
+        method: "delete",
+      }),
+      invalidatesTags: ["CloudExtensions"],
     }),
     createRecipe: builder.mutation<
       PackageUpsertResponse,
@@ -202,7 +305,7 @@ export const appApi = createApi({
         public: boolean;
       }
     >({
-      query: ({ recipe, organizations, public: isPublic }) => {
+      query({ recipe, organizations, public: isPublic }) {
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {
@@ -222,7 +325,7 @@ export const appApi = createApi({
       PackageUpsertResponse,
       { packageId: UUID; recipe: UnsavedRecipeDefinition }
     >({
-      query: ({ packageId, recipe }) => {
+      query({ packageId, recipe }) {
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {
@@ -243,7 +346,12 @@ export const appApi = createApi({
   }),
 });
 
+// This const is defined separately to be able to mark it deprecated
+/** @deprecated Use authSlice and authSelectors instead */
+export const { useGetAuthQuery } = appApi;
+
 export const {
+  useGetMeQuery,
   useGetDatabasesQuery,
   useCreateDatabaseMutation,
   useAddDatabaseToGroupMutation,
@@ -254,6 +362,7 @@ export const {
   useGetGroupsQuery,
   useGetRecipesQuery,
   useGetCloudExtensionsQuery,
+  useDeleteCloudExtensionMutation,
   useGetEditablePackagesQuery,
   useCreateRecipeMutation,
   useUpdateRecipeMutation,

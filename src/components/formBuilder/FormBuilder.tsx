@@ -15,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
-import FormEditor from "./FormEditor";
-import FormPreview from "./FormPreview";
 import styles from "./FormBuilder.module.scss";
+
+import React, { useState } from "react";
+import FormEditor from "./edit/FormEditor";
+import FormPreview from "./preview/FormPreview";
 import { useField } from "formik";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 
 const FormBuilder: React.FC<{
   name: string;
-}> = ({ name }) => {
-  const [activeField, setActiveField] = useState<string>();
+  initialActiveField?: string;
+}> = ({ name, initialActiveField }) => {
+  const [activeField, setActiveField] = useState<string>(initialActiveField);
   const [{ value: rjsfSchema }] = useField<RJSFSchema>(name);
 
   return (

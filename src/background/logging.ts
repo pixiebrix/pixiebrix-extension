@@ -16,23 +16,28 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { rollbar } from "@/telemetry/rollbar";
-import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
+import { getRollbar } from "@/telemetry/rollbar";
+import { MessageContext, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
-import { deserializeError, serializeError } from "serialize-error";
+import { deserializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
-import { sortBy, isEmpty } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
-import { isContentScript } from "webext-detect-page";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
+  getErrorMessage,
+  getRootCause,
   hasBusinessRootCause,
   hasCancelRootCause,
-  isConnectionError,
-  getErrorMessage,
+  IGNORED_ERROR_PATTERNS,
+  isAxiosError,
+  isContextError,
 } from "@/errors";
-import { showConnectionLost } from "@/contentScript/connection";
-import { expectContext } from "@/utils/expectContext";
+import { expectContext, forbidContext } from "@/utils/expectContext";
+import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
+import { readAuthData } from "@/auth/token";
+import { UnknownObject } from "@/types";
+import { isObject, matchesAnyPattern } from "@/utils";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -73,7 +78,10 @@ interface LogDB extends DBSchema {
   };
 }
 
-type IndexKey = keyof Except<MessageContext, "deploymentId" | "label">;
+type IndexKey = keyof Except<
+  MessageContext,
+  "deploymentId" | "label" | "pageName"
+>;
 const indexKeys: IndexKey[] = [
   "extensionId",
   "blueprintId",
@@ -192,29 +200,92 @@ export async function getLog(
  * Unroll/flatten the context of nested `ContextErrors`
  * @see SerializedError
  */
-function buildContext(
+function flattenContext(
   error: SerializedError,
   context: MessageContext
 ): MessageContext {
-  if (typeof error === "object" && error && error.name === "ContextError") {
+  if (isContextError(error)) {
     const currentContext =
       typeof error.context === "object" ? error.context : {};
-    const innerContext = buildContext(error.cause as SerializedError, context);
-    // Prefer the inner context
+    const innerContext = flattenContext(
+      error.cause as SerializedError,
+      context
+    );
+    // Prefer the outer context which should have the most accurate detail about which brick the error occurred in
     return { ...context, ...innerContext, ...currentContext };
   }
 
   return context;
 }
 
+/**
+ * Select extra error context for:
+ * - Extension version, so we don't have to maintain a separate mapping of commit SHAs to versions for reporting
+ * - Requests to PixieBrix API to detect network problems client side
+ * - Any service request if enterprise has enabled `enterprise-telemetry`
+ */
+async function selectExtraContext(
+  error: SerializedError
+): Promise<UnknownObject> {
+  const { version: extensionVersion } = browser.runtime.getManifest();
+
+  if (!isObject(error)) {
+    return { extensionVersion };
+  }
+
+  const cause = getRootCause(error);
+
+  // Handle base classes of ClientRequestError
+  if ("error" in cause && isAxiosError(cause.error)) {
+    const { flags = [] } = await readAuthData();
+    if (
+      (await isAppRequest(cause.error)) ||
+      flags.includes("enterprise-telemetry")
+    ) {
+      return {
+        extensionVersion,
+        url: selectAbsoluteUrl(cause.error.config),
+      };
+    }
+  }
+
+  return { extensionVersion };
+}
+
+/**
+ * True if recordError already logged a warning that DNT mode is on
+ */
+let loggedDNT = false;
+
 export async function recordError(
   error: SerializedError,
   context: MessageContext,
-  data: JsonObject | undefined
+  data?: JsonObject
 ): Promise<void> {
+  forbidContext(
+    "contentScript",
+    "contentScript does not have CSP access to Rollbar"
+  );
+
   try {
     const message = getErrorMessage(error);
-    const flatContext = buildContext(error, context);
+
+    // For noisy errors, don't record/submit telemetry unless the error prevented an extension point
+    // from being installed or an extension to fail. (In that case, we'd have some context about the error).
+    const { pageName, ...extensionContext } = context ?? {};
+    if (
+      isEmpty(extensionContext) &&
+      matchesAnyPattern(message, IGNORED_ERROR_PATTERNS)
+    ) {
+      console.debug("Ignoring error matching IGNORED_ERROR_PATTERNS", {
+        error,
+        context,
+      });
+
+      return;
+    }
+
+    const flatContext = flattenContext(error, context);
 
     if (await allowsTrack()) {
       // Deserialize the error into an Error object before passing it to Rollbar so rollbar treats it as the error.
@@ -229,10 +300,18 @@ export async function recordError(
       if (hasCancelRootCause(error)) {
         // NOP - no reason to send to Rollbar
       } else if (hasBusinessRootCause(error)) {
-        rollbar.debug(message, errorObj, flatContext);
+        // Send at debug level so it doesn't trigger devops notifications
+        const rollbar = await getRollbar();
+        const details = await selectExtraContext(error);
+        rollbar.debug(message, errorObj, { ...flatContext, ...details });
       } else {
-        rollbar.error(message, errorObj, flatContext);
+        const rollbar = await getRollbar();
+        const details = await selectExtraContext(error);
+        rollbar.error(message, errorObj, { ...flatContext, ...details });
       }
+    } else if (!loggedDNT) {
+      console.warn("Rollbar telemetry is disabled because DNT is turned on");
+      loggedDNT = true;
     }
 
     await appendEntry({
@@ -244,9 +323,10 @@ export async function recordError(
       error,
       data,
     });
-  } catch {
+  } catch (recordError) {
     console.error("An error occurred while recording another error", {
-      error,
+      error: recordError,
+      originalError: error,
       context,
     });
   }
@@ -266,57 +346,6 @@ export async function recordLog(
     data,
     context: context ?? {},
   });
-}
-
-export class BackgroundLogger implements ILogger {
-  readonly context: MessageContext;
-
-  constructor(context: MessageContext) {
-    this.context = context;
-  }
-
-  childLogger(context: MessageContext): ILogger {
-    return new BackgroundLogger({ ...this.context, ...context });
-  }
-
-  async trace(message: string, data: JsonObject): Promise<void> {
-    console.trace(message, { data, context: this.context });
-    await recordLog(this.context, "trace", message, data);
-  }
-
-  async debug(message: string, data: JsonObject): Promise<void> {
-    console.debug(message, { data, context: this.context });
-    await recordLog(this.context, "debug", message, data);
-  }
-
-  async log(message: string, data: JsonObject): Promise<void> {
-    console.log(message, { data, context: this.context });
-    await recordLog(this.context, "info", message, data);
-  }
-
-  async info(message: string, data: JsonObject): Promise<void> {
-    console.info(message, { data, context: this.context });
-    await recordLog(this.context, "info", message, data);
-  }
-
-  async warn(message: string, data: JsonObject): Promise<void> {
-    console.warn(message, { data, context: this.context });
-    await recordLog(this.context, "warn", message, data);
-  }
-
-  async error(error: unknown, data: JsonObject): Promise<void> {
-    console.error("An error occurred: %s", getErrorMessage(error), {
-      error,
-      context: this.context,
-      data,
-    });
-
-    if (isConnectionError(error) && isContentScript()) {
-      showConnectionLost();
-    }
-
-    await recordError(serializeError(error), this.context, data);
-  }
 }
 
 export type LoggingConfig = {

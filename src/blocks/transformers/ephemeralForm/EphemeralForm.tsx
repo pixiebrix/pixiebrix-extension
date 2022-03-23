@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -23,7 +23,7 @@ import {
   resolveForm,
   cancelForm,
 } from "@/contentScript/messenger/api";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
 import { Target } from "@/types";
 import { validateUUID } from "@/types/helpers";
@@ -31,6 +31,8 @@ import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 // eslint-disable-next-line import/no-named-as-default -- need default export here
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
+import reportError from "@/telemetry/reportError";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const fields = {
   DescriptionField,
@@ -46,7 +48,9 @@ const ModalLayout: React.FC = ({ children }) => (
   </div>
 );
 
-const PanelLayout: React.FC = ({ children }) => <div>{children}</div>;
+const PanelLayout: React.FC = ({ children }) => (
+  <div className="p-3">{children}</div>
+);
 
 /**
  * @see FormTransformer
@@ -57,21 +61,30 @@ const EphemeralForm: React.FC = () => {
   const opener = JSON.parse(params.get("opener")) as Target;
   const mode = params.get("mode") ?? "modal";
 
+  const isModal = mode === "modal";
+
   // The opener for a sidebar panel will be the sidebar frame, not the host panel frame. The sidebar only opens in the
   // top-level frame, so hard-code the top-level frameId
-  const target =
-    mode === "modal" ? opener : { tabId: opener.tabId, frameId: 0 };
-  const FormContainer = mode === "modal" ? ModalLayout : PanelLayout;
+  const target = isModal ? opener : { tabId: opener.tabId, frameId: 0 };
+  const FormContainer = isModal ? ModalLayout : PanelLayout;
 
   const [definition, isLoading, error] = useAsyncState(
     async () => getFormDefinition(target, nonce),
     [nonce]
   );
 
+  // Report error once
+  useEffect(() => {
+    if (error) {
+      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2769
+      reportError(error);
+    }
+  }, [error]);
+
   if (isLoading) {
     return (
       <FormContainer>
-        <GridLoader />
+        <Loader />
       </FormContainer>
     );
   }
@@ -79,40 +92,56 @@ const EphemeralForm: React.FC = () => {
   if (error) {
     return (
       <FormContainer>
-        <div className="text-danger">{getErrorMessage(error)}</div>
+        <div>Form Error</div>
+
+        <div className="text-danger my-3">{getErrorMessage(error)}</div>
+
+        <div>
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={() => {
+              void cancelForm(target, nonce);
+            }}
+          >
+            Close
+          </button>
+        </div>
       </FormContainer>
     );
   }
 
   return (
     <FormContainer>
-      <JsonSchemaForm
-        schema={definition.schema}
-        uiSchema={definition.uiSchema}
-        fields={fields}
-        widgets={uiWidgets}
-        FieldTemplate={FieldTemplate}
-        onSubmit={({ formData: values }) => {
-          void resolveForm(target, nonce, values);
-        }}
-      >
-        <div>
-          <button className="btn btn-primary" type="submit">
-            {definition.submitCaption}
-          </button>
-          {definition.cancelable && (
-            <button
-              className="btn btn-link"
-              type="button"
-              onClick={() => {
-                void cancelForm(target, nonce);
-              }}
-            >
-              Cancel
+      <ErrorBoundary>
+        <JsonSchemaForm
+          schema={definition.schema}
+          uiSchema={definition.uiSchema}
+          fields={fields}
+          widgets={uiWidgets}
+          FieldTemplate={FieldTemplate}
+          onSubmit={({ formData: values }) => {
+            void resolveForm(target, nonce, values);
+          }}
+        >
+          <div>
+            <button className="btn btn-primary" type="submit">
+              {definition.submitCaption}
             </button>
-          )}
-        </div>
-      </JsonSchemaForm>
+            {definition.cancelable && (
+              <button
+                className="btn btn-link"
+                type="button"
+                onClick={() => {
+                  void cancelForm(target, nonce);
+                }}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </JsonSchemaForm>
+      </ErrorBoundary>
     </FormContainer>
   );
 };

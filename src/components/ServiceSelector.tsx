@@ -31,9 +31,8 @@ const ServiceSelector: React.FunctionComponent<{
   onSelect: (service: ServiceDefinition) => void;
   placeholder?: string;
 }> = ({ onSelect, placeholder = "Configure a new service" }) => {
-  const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
-    "/api/services/"
-  );
+  const { data: serviceConfigs } =
+    useFetch<ServiceDefinition[]>("/api/services/");
   const serviceOptions = useMemo(
     () =>
       (serviceConfigs ?? [])

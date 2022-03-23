@@ -18,12 +18,18 @@
 /**
  * @file This file must be imported as early as possible in each entrypoint, once
  */
+import { isConnectionError } from "@/errors";
+import reportError from "@/telemetry/reportError";
 
-import { reportError } from "@/telemetry/logging";
-
-function defaultErrorHandler(
+function ignoreConnectionErrors(
   errorEvent: ErrorEvent | PromiseRejectionEvent
 ): void {
+  if (isConnectionError(errorEvent)) {
+    errorEvent.preventDefault();
+  }
+}
+
+function errorListener(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
   for (const handler of uncaughtErrorHandlers) {
     handler(errorEvent);
     if (errorEvent.defaultPrevented) {
@@ -31,30 +37,19 @@ function defaultErrorHandler(
     }
   }
 
-  reportError(errorEvent);
-  errorEvent.preventDefault();
-}
-
-const seen = new WeakSet<ErrorEvent | PromiseRejectionEvent>();
-function avoidLoops(errorEvent: ErrorEvent | PromiseRejectionEvent): void {
-  if (seen.has(errorEvent)) {
-    errorEvent.preventDefault();
-  } else {
-    seen.add(errorEvent);
-  }
+  // The browser already shows uncaught errors in the console
+  reportError(errorEvent, undefined, { logToConsole: false });
 }
 
 /**
- * Set of error event handlers to run before the default one.
+ * Array of handlers to run in order before the default one.
  * They can call `event.preventDefault()` to avoid reporting the error.
  */
-export const uncaughtErrorHandlers = new Set([avoidLoops]);
+export const uncaughtErrorHandlers = [ignoreConnectionErrors];
 
-/*
-Refactor beware: Do not add an `init` function or it will run too late.
-When imported, the file will be executed immediately, whereas if it exports
-an `init` function will be called after every top-level imports (and their deps)
-has been executed.
-*/
-window.addEventListener("error", defaultErrorHandler);
-window.addEventListener("unhandledrejection", defaultErrorHandler);
+// Refactor beware: Do not add an `init` function or it will run too late.
+// When imported, the file will be executed immediately, whereas if it exports
+// an `init` function will be called after every top-level imports (and their deps)
+// has been executed.
+window.addEventListener("error", errorListener);
+window.addEventListener("unhandledrejection", errorListener);

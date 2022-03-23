@@ -26,18 +26,19 @@ import {
 } from "@/tests/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/tests/testHelpers";
-import { DevToolsContext } from "@/devTools/context";
+import { PageEditorTabContext } from "@/pageEditor/context";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { OutputKey, SanitizedServiceConfiguration } from "@/core";
 import * as auth from "@/hooks/auth";
 import * as dependencyHooks from "@/services/useDependency";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { FormState } from "@/pageEditor/slices/editorSlice";
 import { Service } from "@/types";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,
+  isExtensionContext: () => true,
   isBackground: () => false,
-  isExtensionContext: () => false,
+  isContentScript: () => false,
 }));
 
 jest.mock("@/services/useDependency", () =>
@@ -49,9 +50,11 @@ jest.mock("@/services/useDependency", () =>
     requestPermissions: jest.fn(),
   })
 );
+jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
+jest.mock("@/background/messenger/api");
 jest.mock("@/contrib/uipath/uipathHooks", () => {
   const mock = jest.requireActual("@/contrib/uipath/uipathHooks");
   return {
@@ -96,25 +99,29 @@ function makeBaseState() {
 
 function renderOptions(formState: FormState = makeBaseState()) {
   return render(
-    <DevToolsContext.Provider value={activeDevToolContextFactory()}>
+    <PageEditorTabContext.Provider value={activeDevToolContextFactory()}>
       <Formik onSubmit={jest.fn()} initialValues={formState}>
         <LocalProcessOptions
           name="extension.blockPipeline.0"
           configKey="config"
         />
       </Formik>
-    </DevToolsContext.Provider>
+    </PageEditorTabContext.Provider>
   );
 }
 
 describe("UiPath LocalProcess Options", () => {
   test("Can render options", async () => {
-    (contentScriptApi.getProcesses as jest.MockedFunction<
-      typeof contentScriptApi.getProcesses
-    >).mockResolvedValue([]);
-    (contentScriptApi.initRobot as jest.MockedFunction<
-      typeof contentScriptApi.initRobot
-    >).mockResolvedValue({
+    (
+      contentScriptApi.getProcesses as jest.MockedFunction<
+        typeof contentScriptApi.getProcesses
+      >
+    ).mockResolvedValue([]);
+    (
+      contentScriptApi.initRobot as jest.MockedFunction<
+        typeof contentScriptApi.initRobot
+      >
+    ).mockResolvedValue({
       available: false,
       consentCode: null,
       missingComponents: false,
@@ -129,15 +136,19 @@ describe("UiPath LocalProcess Options", () => {
   });
 
   test("Can render consent code and service selector", async () => {
-    (auth.useAuthOptions as jest.MockedFunction<
-      typeof auth.useAuthOptions
-    >).mockReturnValue([[], jest.fn()]);
-    (contentScriptApi.getProcesses as jest.MockedFunction<
-      typeof contentScriptApi.getProcesses
-    >).mockResolvedValue([]);
-    (contentScriptApi.initRobot as jest.MockedFunction<
-      typeof contentScriptApi.initRobot
-    >).mockResolvedValue({
+    (
+      auth.useAuthOptions as jest.MockedFunction<typeof auth.useAuthOptions>
+    ).mockReturnValue([[], jest.fn()]);
+    (
+      contentScriptApi.getProcesses as jest.MockedFunction<
+        typeof contentScriptApi.getProcesses
+      >
+    ).mockResolvedValue([]);
+    (
+      contentScriptApi.initRobot as jest.MockedFunction<
+        typeof contentScriptApi.initRobot
+      >
+    ).mockResolvedValue({
       available: true,
       consentCode: "abc123",
       missingComponents: false,
@@ -156,30 +167,36 @@ describe("UiPath LocalProcess Options", () => {
   test("Can render arguments", async () => {
     const config = uuidv4();
 
-    (dependencyHooks.default as jest.MockedFunction<
-      typeof dependencyHooks.default
-    >).mockReturnValue({
+    (
+      dependencyHooks.default as jest.MockedFunction<
+        typeof dependencyHooks.default
+      >
+    ).mockReturnValue({
       // Pass minimal arguments
-      config: ({
+      config: {
         id: config,
         serviceId,
-      } as unknown) as SanitizedServiceConfiguration,
-      service: ({ id: serviceId } as unknown) as Service,
+      } as unknown as SanitizedServiceConfiguration,
+      service: { id: serviceId } as unknown as Service,
       hasPermissions: true,
       requestPermissions: jest.fn(),
     });
-    (auth.useAuthOptions as jest.MockedFunction<
-      typeof auth.useAuthOptions
-    >).mockReturnValue([
+    (
+      auth.useAuthOptions as jest.MockedFunction<typeof auth.useAuthOptions>
+    ).mockReturnValue([
       [{ label: "Test Auth", value: config, serviceId, local: true }],
       jest.fn(),
     ]);
-    (contentScriptApi.getProcesses as jest.MockedFunction<
-      typeof contentScriptApi.getProcesses
-    >).mockResolvedValue([]);
-    (contentScriptApi.initRobot as jest.MockedFunction<
-      typeof contentScriptApi.initRobot
-    >).mockResolvedValue({
+    (
+      contentScriptApi.getProcesses as jest.MockedFunction<
+        typeof contentScriptApi.getProcesses
+      >
+    ).mockResolvedValue([]);
+    (
+      contentScriptApi.initRobot as jest.MockedFunction<
+        typeof contentScriptApi.initRobot
+      >
+    ).mockResolvedValue({
       available: true,
       consentCode: null,
       missingComponents: false,

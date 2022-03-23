@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./BrickModal.module.scss";
+
 import React, {
   CSSProperties,
   useCallback,
@@ -45,7 +47,6 @@ import BrickDetail from "./BrickDetail";
 import QuickAdd from "@/components/brickModal/QuickAdd";
 import { Except } from "type-fest";
 import cx from "classnames";
-import styles from "./BrickModal.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 

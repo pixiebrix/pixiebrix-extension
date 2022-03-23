@@ -15,26 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import Page from "@/layout/Page";
-import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useMemo } from "react";
 import BlueprintsCard from "@/options/pages/blueprints/BlueprintsCard";
 import useInstallables from "@/options/pages/blueprints/useInstallables";
-import ExtensionLogsModal from "@/options/pages/installed/ExtensionLogsModal";
+import ExtensionLogsModal from "@/options/pages/blueprints/modals/ExtensionLogsModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/options/store";
 import {
   LogsContext,
   ShareContext,
-} from "@/options/pages/installed/installedPageSlice";
+} from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import {
   selectShowLogsContext,
   selectShowShareContext,
-} from "@/options/pages/installed/installedPageSelectors";
-import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
+} from "@/options/pages/blueprints/modals/blueprintModalsSelectors";
+import ShareExtensionModal from "@/options/pages/blueprints/modals/ShareExtensionModal";
+import ShareLinkModal from "@/options/pages/blueprints/modals/ShareLinkModal";
+import { useTitle } from "@/hooks/title";
+import Loader from "@/components/Loader";
+import { ErrorDisplay } from "@/layout/Page";
 
 const BlueprintsPage: React.FunctionComponent = () => {
+  useTitle("Blueprints");
   const { installables, isLoading, error } = useInstallables();
   const showLogsContext = useSelector<RootState, LogsContext>(
     selectShowLogsContext
@@ -43,37 +45,36 @@ const BlueprintsPage: React.FunctionComponent = () => {
     selectShowShareContext
   );
 
+  const body = useMemo(() => {
+    if (isLoading) {
+      return <Loader />;
+    }
+
+    if (error) {
+      return <ErrorDisplay error={error} />;
+    }
+
+    return <BlueprintsCard installables={installables} />;
+  }, [installables, isLoading, error]);
+
   return (
-    <Page
-      icon={faScroll}
-      title="Blueprints"
-      description="Here you can find personal blueprints and blueprints shared with you to activate."
-      toolbar={
-        <a
-          href="https://www.pixiebrix.com/marketplace"
-          className="btn btn-info"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Public Marketplace
-        </a>
-      }
-      isPending={isLoading}
-      error={error}
-    >
+    <div className="h-100">
       {showLogsContext && (
         <ExtensionLogsModal
           title={showLogsContext.title}
           context={showLogsContext.messageContext}
         />
       )}
-      {showShareContext && (
+      {showShareContext?.extensionId && (
         <ShareExtensionModal extensionId={showShareContext.extensionId} />
       )}
-      {installables.length > 0 && (
-        <BlueprintsCard installables={installables} />
+
+      {showShareContext?.blueprintId && (
+        <ShareLinkModal blueprintId={showShareContext.blueprintId} />
       )}
-    </Page>
+
+      {body}
+    </div>
   );
 };
 

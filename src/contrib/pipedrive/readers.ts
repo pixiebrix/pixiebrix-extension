@@ -19,7 +19,6 @@ import { Reader } from "@/types";
 import { startCase, mapValues } from "lodash";
 import { withReadWindow } from "@/common";
 import { PathSpec } from "@/blocks/readers/window";
-import { Schema } from "@/core";
 
 export async function checkRoute(expectedRoute: string): Promise<boolean> {
   const { route } = await withReadWindow({
@@ -32,8 +31,6 @@ export class PipedriveReader extends Reader {
   private get ROOT_PATH() {
     return "app.router.currentView.model.attributes";
   }
-
-  public readonly outputSchema: Schema;
 
   resourceType: string;
 

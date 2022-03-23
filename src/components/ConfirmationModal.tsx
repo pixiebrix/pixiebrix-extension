@@ -22,10 +22,12 @@ import React, {
   createContext,
 } from "react";
 import { Modal, Button } from "react-bootstrap";
+import { ButtonVariant } from "react-bootstrap/types";
 
 type ModalProps = {
   title?: string;
   message: string;
+  submitVariant?: ButtonVariant;
   submitCaption?: string;
   cancelCaption?: string;
 };
@@ -35,7 +37,7 @@ type ModalContextProps = {
 };
 
 const initialModalState: ModalContextProps = {
-  showConfirmation: () => {
+  showConfirmation() {
     throw new Error("showConfirmation not configured");
   },
 };
@@ -44,7 +46,15 @@ export const ModalContext = createContext<ModalContextProps>(initialModalState);
 
 const ConfirmationModal: React.FunctionComponent<
   ModalProps & { onCancel: () => void; onSubmit: () => void }
-> = ({ title, message, submitCaption, cancelCaption, onCancel, onSubmit }) => (
+> = ({
+  title,
+  message,
+  submitCaption,
+  submitVariant = "danger",
+  cancelCaption,
+  onCancel,
+  onSubmit,
+}) => (
   <Modal show onHide={onCancel} backdrop="static" keyboard={false}>
     <Modal.Header closeButton>
       <Modal.Title>{title ?? "Confirm?"}</Modal.Title>
@@ -54,7 +64,7 @@ const ConfirmationModal: React.FunctionComponent<
       <Button variant="info" onClick={onCancel}>
         {cancelCaption ?? "Cancel"}
       </Button>
-      <Button variant="danger" onClick={onSubmit}>
+      <Button variant={submitVariant} onClick={onSubmit}>
         {submitCaption ?? "Continue"}
       </Button>
     </Modal.Footer>

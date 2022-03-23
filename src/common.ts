@@ -23,8 +23,8 @@ import {
   SEARCH_WINDOW,
 } from "@/messaging/constants";
 
-export const NOFICATIONS_Z_INDEX = 2_147_483_647;
-export const MAX_Z_INDEX = NOFICATIONS_Z_INDEX - 1; // Let notifications always be higher
+export const NOTIFICATIONS_Z_INDEX = 2_147_483_647;
+export const MAX_Z_INDEX = NOTIFICATIONS_Z_INDEX - 1; // Let notifications always be higher
 export const PANEL_FRAME_ID = "pixiebrix-extension";
 export const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
 export const PIXIEBRIX_READY_ATTRIBUTE = "data-pb-ready";
@@ -42,13 +42,12 @@ type ReadSpec = <T extends Record<string, string>>(arg: {
   waitMillis?: number;
 }) => Promise<Record<keyof T, unknown>>;
 
-export const withReadWindow = (createSendScriptMessage(
+export const withReadWindow = createSendScriptMessage(
   READ_WINDOW
-) as unknown) as ReadSpec;
+) as unknown as ReadSpec;
 
-export const withSearchWindow = createSendScriptMessage<{ results: unknown[] }>(
-  SEARCH_WINDOW
-);
+export const withSearchWindow =
+  createSendScriptMessage<{ results: unknown[] }>(SEARCH_WINDOW);
 
 export const withDetectFrameworkVersions = createSendScriptMessage<
   FrameworkMeta[]

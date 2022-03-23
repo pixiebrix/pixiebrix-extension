@@ -6,7 +6,10 @@ import {
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import React, { useMemo } from "react";
-import { selectAuths, selectOptions } from "@/pages/marketplace/useReinstall";
+import {
+  selectAuths,
+  selectOptions,
+} from "@/options/pages/blueprints/utils/useReinstall";
 import { isEmpty, mapValues, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { Schema } from "@/core";
@@ -22,7 +25,7 @@ const STEPS: WizardStep[] = [
   // to realize it's OK to pass in a whole RecipeDefinition for something that just needs the options prop
   {
     key: "options",
-    label: "Personalize",
+    label: "Personalize Blueprint",
     Component: OptionsBody as React.FunctionComponent<{
       blueprint: RecipeDefinition;
     }>,

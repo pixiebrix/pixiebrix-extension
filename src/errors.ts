@@ -16,18 +16,40 @@
  */
 
 import { MessageContext, SerializedError } from "@/core";
-import { ErrorObject } from "serialize-error";
+import { deserializeError, ErrorObject } from "serialize-error";
 import { AxiosError } from "axios";
-import { isObject } from "@/utils";
+import { isObject, matchesAnyPattern } from "@/utils";
+import safeJsonStringify from "json-stringify-safe";
+import { isEmpty } from "lodash";
+import {
+  isBadRequestResponse,
+  isClientErrorResponse,
+  safeGuessStatusText,
+} from "@/types/errorContract";
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
-export class ValidationError extends Error {
+/**
+ * Base class for Errors arising from business logic in the brick, not the PixieBrix application/extension itself.
+ *
+ * Used for blame analysis for reporting and alerting.
+ */
+export class BusinessError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "BusinessError";
+  }
+}
+
+/**
+ * Error that a registry definition is invalid
+ */
+export class InvalidDefinitionError extends BusinessError {
   errors: unknown;
 
   constructor(message: string, errors: unknown) {
     super(message);
-    this.name = "ValidationError";
+    this.name = "InvalidDefinitionError";
     this.errors = errors;
   }
 }
@@ -73,7 +95,7 @@ export class SuspiciousOperationError extends Error {
 }
 
 /**
- * Error indicating the extension is not properly linked to the PixieBrix API.
+ * Error indicating the extension is not linked to the PixieBrix API
  */
 export class ExtensionNotLinkedError extends Error {
   constructor() {
@@ -85,20 +107,10 @@ export class ExtensionNotLinkedError extends Error {
 /**
  * Base class for "Error" of cancelling out of a flow that's in progress
  */
-export class CancelError extends Error {
+export class CancelError extends BusinessError {
   constructor(message?: string) {
     super(message ?? "User cancelled the operation");
     this.name = "CancelError";
-  }
-}
-
-/**
- * Base class for Errors arising from business logic in the brick, not the PixieBrix application itself.
- */
-export class BusinessError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "BusinessError";
   }
 }
 
@@ -125,7 +137,13 @@ export class MultipleElementsFoundError extends BusinessError {
   }
 }
 
-export class PropError extends Error {
+/**
+ * An error indicating an invalid input was provided to a brick. Used for checks that cannot be performed as part
+ * of JSONSchema input validation
+ *
+ * @see InputValidationError
+ */
+export class PropError extends BusinessError {
   public readonly blockId: string;
 
   public readonly prop: string;
@@ -161,9 +179,45 @@ export class ContextError extends Error {
   }
 }
 
+export const NO_TARGET_FOUND_CONNECTION_ERROR =
+  "Could not establish connection. Receiving end does not exist.";
+/** Browser Messenger API error message patterns */
+export const CONNECTION_ERROR_MESSAGES = [
+  NO_TARGET_FOUND_CONNECTION_ERROR,
+  "Extension context invalidated.",
+];
+
+/**
+ * Errors to ignore unless they've caused extension point install or brick execution to fail.
+ *
+ * Can be provided as an exact string, or regex.
+ *
+ * Similar to Rollbar: https://docs.rollbar.com/docs/javascript/#section-ignoring-specific-exception-messages, but
+ * more strict on string matching.
+ *
+ * @see matchesAnyPattern
+ */
+export const IGNORED_ERROR_PATTERNS = [
+  "ResizeObserver loop limit exceeded",
+  "Promise was cancelled",
+  "Uncaught Error: PixieBrix contentScript already installed",
+  "The frame was removed.",
+  /No frame with id \d+ in tab \d+/,
+  /^No tab with id/,
+  "The tab was closed.",
+  ...CONNECTION_ERROR_MESSAGES,
+];
+
 export function isErrorObject(error: unknown): error is ErrorObject {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
   return typeof (error as any)?.message === "string";
+}
+
+export function isContextError(error: unknown): error is ContextError {
+  return (
+    error instanceof ContextError ||
+    (isErrorObject(error) && error.name === "ContextError")
+  );
 }
 
 /**
@@ -183,11 +237,19 @@ export function hasCancelRootCause(error: unknown): boolean {
     return true;
   }
 
-  if (error instanceof ContextError || error.name === "ContextError") {
+  if (isContextError(error)) {
     return hasCancelRootCause(error.cause);
   }
 
   return false;
+}
+
+export function getRootCause(error: ErrorObject): ErrorObject {
+  if (error.name === "ContextError" && (error as ContextError).cause != null) {
+    return getRootCause(error.cause as ErrorObject);
+  }
+
+  return error;
 }
 
 // Manually list subclasses because the prototype chain is lost in serialization/deserialization
@@ -196,16 +258,23 @@ const BUSINESS_ERROR_CLASSES = [
   BusinessError,
   NoElementsFoundError,
   MultipleElementsFoundError,
+  PropError,
 ];
 // Name classes from other modules separately, because otherwise we'll get a circular dependency with this module
 const BUSINESS_ERROR_NAMES = new Set([
-  ...BUSINESS_ERROR_CLASSES.map((x) => x.name),
+  "PropError",
+  "BusinessError",
+  "NoElementsFoundError",
+  "MultipleElementsFoundError",
   "InputValidationError",
   "OutputValidationError",
   "PipelineConfigurationError",
   "MissingConfigurationError",
   "NotConfiguredError",
   "RemoteServiceError",
+  "ClientNetworkPermissionError",
+  "ClientNetworkError",
+  "ProxiedRemoteServiceError",
   "RemoteExecutionError",
 ]);
 
@@ -242,30 +311,21 @@ export function hasBusinessRootCause(
   return false;
 }
 
-const CONNECTION_ERROR_PATTERNS = [
-  "Could not establish connection. Receiving end does not exist.",
-  "Extension context invalidated",
-];
-
-export function isPromiseRejectionEvent(
-  event: unknown
-): event is PromiseRejectionEvent {
-  return event && typeof event === "object" && "reason" in event;
-}
-
 // Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
 export function isAxiosError(error: unknown): error is AxiosError {
   return isObject(error) && Boolean(error.isAxiosError);
 }
 
 /**
- * Return true if the proximate cause of event is an messaging error.
+ * Return true if the proximate cause of event is a messaging error.
  *
  * NOTE: does not recursively identify the root cause of the error.
  */
 export function isConnectionError(possibleError: unknown): boolean {
-  const message = getErrorMessage(possibleError);
-  return CONNECTION_ERROR_PATTERNS.some((pattern) => message.includes(pattern));
+  return matchesAnyPattern(
+    getErrorMessage(possibleError),
+    CONNECTION_ERROR_MESSAGES
+  );
 }
 
 /**
@@ -284,6 +344,77 @@ export function isPrivatePageError(error: unknown): boolean {
 }
 
 /**
+ * Heuristically select the most user-friendly error message for an Axios response.
+ *
+ * Tries to handle:
+ * - Errors produced by our backed (Django Rest Framework style)
+ * - Common response body patterns of other APIs
+ * - HTTP standards in statusText/status
+ *
+ * enrichRequestError is a related method which wraps an AxiosError in an Error subclass that encodes information
+ * about why the request failed.
+ *
+ * @deprecated DO NOT CALL DIRECTLY. Call getErrorMessage
+ * @see getErrorMessage
+ * @see enrichRequestError
+ */
+function selectServerErrorMessage({ response }: AxiosError): string | null {
+  // For examples of DRF errors, see the pixiebrix-app repository:
+  // http://github.com/pixiebrix/pixiebrix-app/blob/5ef1e4e414be6485fae999440b69f2b6da993668/api/tests/test_errors.py#L15-L15
+
+  // Handle 400 responses created by DRF serializers
+  if (isBadRequestResponse(response)) {
+    const data = Array.isArray(response.data)
+      ? response.data.find((x) => isEmpty(x))
+      : response.data;
+
+    // Prefer object-level errors
+    if (data?.non_field_errors) {
+      return data.non_field_errors[0];
+    }
+
+    // Take an arbitrary field
+    const fieldMessages = Object.values(data)[0];
+
+    // Take an arbitrary message
+    return fieldMessages[0];
+  }
+
+  // Handle 4XX responses created by DRF
+  if (isClientErrorResponse(response)) {
+    return response.data.detail;
+  }
+
+  // Handle other likely API JSON body response formats
+  // Some servers produce an HTML document for server responses even if you requested JSON. Check the response headers
+  // to avoid dumping JSON to the user
+  if (
+    typeof response.data === "string" &&
+    ["text/plain", "application/json"].includes(
+      response.headers["content-type"]
+    )
+  ) {
+    return response.data;
+  }
+
+  // Handle common keys from other APIs
+  for (const messageKey of ["message", "reason"]) {
+    // eslint-disable-next-line security/detect-object-injection -- constant defined above
+    const message = response.data?.[messageKey];
+    if (typeof message === "string" && !isEmpty(message)) {
+      return message;
+    }
+  }
+
+  // Otherwise, rely on HTTP REST statusText/status
+  if (!isEmpty(response.statusText)) {
+    return response.statusText;
+  }
+
+  return safeGuessStatusText(response.status);
+}
+
+/**
  * Return an error message corresponding to an error.
  */
 export function getErrorMessage(
@@ -299,28 +430,68 @@ export function getErrorMessage(
     return error;
   }
 
-  const { message = defaultMessage } = selectError(error);
-  return String(message);
+  if (isAxiosError(error)) {
+    // This will miss any errors wrapped with enrichRequestError. Including any calls using src/hooks/fetch.ts:fetch
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2972
+    const serverMessage = selectServerErrorMessage(error);
+    if (serverMessage) {
+      return String(serverMessage);
+    }
+  }
+
+  return String(selectError(error).message ?? defaultMessage);
 }
 
 /**
- * Finds or creates an Error object starting from strings, error event, or real Errors
+ * Finds or creates an Error starting from strings, error event, or real Errors.
+ *
+ * The result is suitable for passing to Rollbar (which treats Errors and objects differently.)
  */
-export function selectError(error: unknown): ErrorObject | Error {
-  // Extract error from event
-  if (error instanceof ErrorEvent) {
-    error = error.error;
-  } else if (isPromiseRejectionEvent(error)) {
-    error = error.reason;
-  }
+export function selectError(originalError: unknown): Error {
+  // Extract thrown error from event
+  const error: unknown =
+    originalError instanceof ErrorEvent
+      ? originalError.error
+      : originalError instanceof PromiseRejectionEvent
+      ? originalError.reason
+      : originalError; // Or use the received object/error as is
 
-  if (isErrorObject(error)) {
+  if (error instanceof Error) {
     return error;
   }
 
-  console.warn("A non-Error was thrown", { error });
+  console.warn("A non-Error was thrown", {
+    originalError,
+  });
+
+  if (isErrorObject(error)) {
+    // This shouldn't be necessary, but there's some nested calls to selectError
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2696
+    return deserializeError(error);
+  }
 
   // Wrap error if an unknown primitive or object
-  // e.g. `throw 'Error message'`, which should never be written
-  return new Error(String(error));
+  // e.g. `throw 'Error string message'`, which should never be written
+  const errorMessage = isObject(error)
+    ? // Use safeJsonStringify vs. JSON.stringify because it handles circular references
+      safeJsonStringify(error)
+    : String(error);
+
+  // Refactor beware: Keep the "primitive error event wrapper" logic separate from the
+  // "extract error from event" logic to avoid duplicating or missing the rest of the selectError’s logic
+  if (originalError instanceof ErrorEvent) {
+    const syncErrorMessage = `Synchronous error: ${errorMessage}`;
+    const errorError = new Error(syncErrorMessage);
+
+    // ErrorEvents have some information about the location of the error, so we use it as a single-level stack.
+    // The format follows Chrome’s. `unknown` is the function name
+    errorError.stack = `Error: ${syncErrorMessage}\n    at unknown (${originalError.filename}:${originalError.lineno}:${originalError.colno})`;
+    return errorError;
+  }
+
+  if (originalError instanceof PromiseRejectionEvent) {
+    return new Error(`Asynchronous error: ${errorMessage}`);
+  }
+
+  return new Error(errorMessage);
 }

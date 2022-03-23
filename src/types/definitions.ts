@@ -228,3 +228,8 @@ export interface ServiceDefinition<
   };
   authentication: TAuth;
 }
+
+export type RecipeMetadataFormState = Pick<
+  Metadata,
+  "id" | "name" | "version" | "description"
+>;

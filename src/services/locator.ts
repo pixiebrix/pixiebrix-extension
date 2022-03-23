@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -39,6 +38,7 @@ import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { ExtensionNotLinkedError } from "@/errors";
+import { forbidContext } from "@/utils/expectContext";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -112,6 +112,11 @@ class LazyLocatorFactory {
   private updateTimestamp: number = undefined;
 
   constructor() {
+    forbidContext(
+      "contentScript",
+      "LazyLocatorFactory cannot run in the contentScript"
+    );
+
     if (wasInitialized) {
       throw new Error("LazyLocatorFactory is a singleton class");
     }
@@ -132,7 +137,7 @@ class LazyLocatorFactory {
         "/api/services/shared/?meta=1",
         { requireLinked: true }
       );
-      console.debug(`Fetched ${this.remote.length} remote service auths`);
+      console.debug(`Fetched ${this.remote.length} remote service auth(s)`);
     } catch (error) {
       if (error instanceof ExtensionNotLinkedError) {
         this.remote = [];
@@ -141,25 +146,29 @@ class LazyLocatorFactory {
       }
     }
 
-    this.makeOptions();
+    this.initializeOptions();
   }
 
   async refreshLocal(): Promise<void> {
     this.local = await readRawConfigurations();
-    this.makeOptions();
+    this.initializeOptions();
   }
 
-  // TODO: Replace with proper debouncer when one exists https://github.com/sindresorhus/promise-fun/issues/15
   async refresh(): Promise<void> {
+    // Avoid multiple concurrent requests. Could potentially replace with debouncer with both leading/trailing: true
+    // For example: https://github.com/sindresorhus/promise-fun/issues/15
     this._refreshPromise = this._refreshPromise ?? this._refresh();
-    await this._refreshPromise;
-    this._refreshPromise = undefined;
+    try {
+      await this._refreshPromise;
+    } finally {
+      this._refreshPromise = undefined;
+    }
   }
 
   private async _refresh(): Promise<void> {
     const timestamp = Date.now();
     await Promise.all([this.refreshLocal(), this.refreshRemote()]);
-    this.makeOptions();
+    this.initializeOptions();
     this._initialized = true;
     this.updateTimestamp = timestamp;
     console.debug("Refreshed service configuration locator", {
@@ -167,7 +176,7 @@ class LazyLocatorFactory {
     });
   }
 
-  private makeOptions() {
+  private initializeOptions() {
     this.options = sortBy(
       [
         ...this.local.map((x) => ({

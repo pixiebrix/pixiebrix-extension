@@ -27,10 +27,9 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";
-import SharingTable from "./Sharing";
+import SharingTable from "./SharingTable";
 import { sortBy } from "lodash";
-import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
-import { MessageContext, UUID } from "@/core";
+import { UUID } from "@/core";
 import BrickReference from "@/options/pages/brickEditor/referenceTab/BrickReference";
 import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/services/registry";
@@ -38,12 +37,13 @@ import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { fetch } from "@/hooks/fetch";
 import { Brick } from "@/types/contract";
-import browser from "webextension-polyfill";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { ReferenceEntry } from "./brickEditorTypes";
 import BrickHistory from "@/options/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
+import { isMac } from "@/utils";
+import LogCard from "@/components/logViewer/LogCard";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -70,38 +70,23 @@ export interface EditorValues {
 interface OwnProps {
   showTemplates?: boolean;
   showLogs?: boolean;
-  logContext: MessageContext | null;
-}
-
-function isMac(): boolean {
-  // https://stackoverflow.com/a/27862868/402560
-  return navigator.platform.includes("Mac");
 }
 
 function useOpenEditorTab() {
-  const notify = useNotifications();
-  return useCallback(
-    async (id: string) => {
-      const available = await fetch<Brick[]>("/api/bricks/");
-      const brick = available.find((x) => x.name === id);
-      if (brick) {
-        console.debug("Open editor for brick: %s", id, { brick });
-        const url = browser.runtime.getURL("options.html");
-        // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
-        window.open(`${url}#/workshop/bricks/${brick.id}`);
-      } else {
-        notify.warning(`You cannot edit brick: ${id}`);
-      }
-    },
-    [notify]
-  );
+  return useCallback(async (id: string) => {
+    const available = await fetch<Brick[]>("/api/bricks/");
+    const brick = available.find((x) => x.name === id);
+    if (brick) {
+      console.debug("Open editor for brick: %s", id, { brick });
+      const url = browser.runtime.getURL("options.html");
+      window.open(`${url}#/workshop/bricks/${brick.id}`);
+    } else {
+      notify.warning(`You cannot edit brick: ${id}`);
+    }
+  }, []);
 }
 
-const Editor: React.FunctionComponent<OwnProps> = ({
-  showLogs = true,
-  logContext,
-}) => {
-  const notify = useNotifications();
+const Editor: React.FunctionComponent<OwnProps> = ({ showLogs = true }) => {
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState();
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
@@ -131,7 +116,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
         notify.warning(`Cannot find brick: ${id}`);
       }
     },
-    [setTab, bricks, setSelectedReference, notify]
+    [setTab, bricks, setSelectedReference]
   );
 
   const openEditorTab = useOpenEditorTab();
@@ -213,13 +198,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
 
             {showLogs && (
               <Tab.Pane eventKey="logs" className="p-0">
-                {logContext ? (
-                  <BrickLogs context={logContext} />
-                ) : (
-                  <div className="p-4">
-                    Cannot determine log context for brick
-                  </div>
-                )}
+                <LogCard />
               </Tab.Pane>
             )}
 

@@ -20,7 +20,7 @@ import { getBaseURL } from "@/services/baseService";
 import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { fetch } from "@/hooks/fetch";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 
 type FetchState<TData = unknown> = {
   data: TData | undefined;
@@ -33,7 +33,6 @@ function useFetch<TData = unknown>(
   relativeOrAbsoluteUrl: string
 ): FetchState<TData> {
   const [host] = useAsyncState(getBaseURL);
-  const notify = useNotifications();
   const [data, setData] = useState<TData | undefined>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<unknown>();
@@ -46,7 +45,7 @@ function useFetch<TData = unknown>(
       setError(error);
       notify.error("An error occurred fetching data from the server");
     }
-  }, [relativeOrAbsoluteUrl, setData, notify]);
+  }, [relativeOrAbsoluteUrl, setData]);
 
   useAsyncEffect(
     async (isMounted) => {
@@ -69,7 +68,7 @@ function useFetch<TData = unknown>(
         }
       }
     },
-    [host, relativeOrAbsoluteUrl, setData, setIsLoading, setError, notify]
+    [host, relativeOrAbsoluteUrl, setData, setIsLoading, setError]
   );
 
   return {

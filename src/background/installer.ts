@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -16,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser, { Runtime } from "webextension-polyfill";
+import { Runtime } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
 import { getUID, initTelemetry } from "@/background/telemetry";
 import { DNT_STORAGE_KEY, allowsTrack } from "@/telemetry/dnt";

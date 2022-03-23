@@ -21,8 +21,8 @@ import { BlockArg, BlockOptions, ComponentRef, Schema, UiSchema } from "@/core";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
 import { dataStore } from "@/background/messenger/api";
-import { reportError } from "@/telemetry/logging";
-import { notifyResult } from "@/contentScript/notify";
+import reportError from "@/telemetry/reportError";
+import { notifyResult } from "@/utils/notify";
 
 import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 import BootstrapStylesheet from "./BootstrapStylesheet";
@@ -31,6 +31,7 @@ import ImageCropStylesheet from "@/blocks/renderers/ImageCropStylesheet";
 // eslint-disable-next-line import/no-named-as-default -- need default export here
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const fields = {
   DescriptionField,
@@ -46,26 +47,28 @@ const CustomFormComponent: React.FunctionComponent<{
   onSubmit: (values: JsonObject) => Promise<void>;
 }> = ({ schema, uiSchema, formData, onSubmit }) => (
   <div className="CustomForm p-3">
-    <BootstrapStylesheet />
-    <ImageCropStylesheet />
-    <link rel="stylesheet" href={custom} />
-    <JsonSchemaForm
-      schema={schema}
-      uiSchema={uiSchema}
-      formData={formData}
-      fields={fields}
-      widgets={uiWidgets}
-      FieldTemplate={FieldTemplate}
-      onSubmit={async ({ formData }) => {
-        await onSubmit(formData);
-      }}
-    >
-      <div>
-        <button className="btn btn-primary" type="submit">
-          Save
-        </button>
-      </div>
-    </JsonSchemaForm>
+    <ErrorBoundary>
+      <BootstrapStylesheet />
+      <ImageCropStylesheet />
+      <link rel="stylesheet" href={custom} />
+      <JsonSchemaForm
+        schema={schema}
+        uiSchema={uiSchema}
+        formData={formData}
+        fields={fields}
+        widgets={uiWidgets}
+        FieldTemplate={FieldTemplate}
+        onSubmit={async ({ formData }) => {
+          await onSubmit(formData);
+        }}
+      >
+        <div>
+          <button className="btn btn-primary" type="submit">
+            Save
+          </button>
+        </div>
+      </JsonSchemaForm>
+    </ErrorBoundary>
   </div>
 );
 
@@ -111,7 +114,7 @@ export class CustomFormRenderer extends Renderer {
         formData,
         schema,
         uiSchema,
-        onSubmit: async (values: JsonObject) => {
+        async onSubmit(values: JsonObject) {
           try {
             await dataStore.set(recordId, values);
             notifyResult(logger.context.extensionId, {

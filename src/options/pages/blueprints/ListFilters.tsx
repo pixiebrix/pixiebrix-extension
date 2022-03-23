@@ -1,78 +1,145 @@
-import { Col, Nav } from "react-bootstrap";
-import React from "react";
 import styles from "./ListFilters.module.scss";
-import { UseFiltersInstanceProps } from "react-table";
-import { UnknownObject } from "@/types";
 
-type ListFiltersProps<D extends UnknownObject> = {
-  setAllFilters: UseFiltersInstanceProps<D>["setAllFilters"];
+import { Col, Form, Nav } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import useReduxState from "@/hooks/useReduxState";
+import { selectFilters } from "./blueprintsSelectors";
+import blueprintsSlice from "./blueprintsSlice";
+import { useDebounce } from "use-debounce";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAsterisk,
+  faCheck,
+  faExternalLinkAlt,
+  faGlobe,
+  faUser,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
+import { TableInstance } from "react-table";
+import { InstallableViewItem } from "@/options/pages/blueprints/blueprintsTypes";
+import useFlags from "@/hooks/useFlags";
+
+type ListFiltersProps = {
   teamFilters: string[];
+  tableInstance: TableInstance<InstallableViewItem>;
 };
 
-function ListFilters<D extends UnknownObject>({
-  setAllFilters,
-  teamFilters,
-}: ListFiltersProps<D>) {
+function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
+  const { permit } = useFlags();
+  const { setGlobalFilter } = tableInstance;
+  const [filters, setFilters] = useReduxState(
+    selectFilters,
+    blueprintsSlice.actions.setFilters
+  );
+  const [query, setQuery] = useState("");
+  const [debouncedQuery] = useDebounce(query, 300, {
+    trailing: true,
+    leading: false,
+  });
+
+  // By default, search everything with the option to re-select
+  // filtered category
+  useEffect(() => {
+    setGlobalFilter(debouncedQuery);
+
+    if (debouncedQuery) {
+      setFilters([]);
+    }
+  }, [debouncedQuery, setFilters, setGlobalFilter]);
+
+  const activeKey = filters[0]?.value ?? "All";
+
   return (
-    <Col xs={3} className={styles.filtersCol}>
-      <h5>Category Filters</h5>
-      <Nav className="flex-column" variant="pills" defaultActiveKey="active">
+    <Col sm={3} xl={2} className={styles.root}>
+      <Form className="mb-4 mr-3">
+        <Form.Control
+          id="query"
+          placeholder="Search all blueprints"
+          size="sm"
+          value={query}
+          onChange={({ target }) => {
+            setQuery(target.value);
+          }}
+        />
+      </Form>
+      <Nav
+        className="flex-column"
+        variant="pills"
+        defaultActiveKey={activeKey}
+        activeKey={activeKey}
+      >
+        <h5>Category Filters</h5>
         <Nav.Item>
           <Nav.Link
-            eventKey="active"
+            eventKey="Active"
             onClick={() => {
-              setAllFilters([{ id: "status", value: "Active" }]);
+              setFilters([{ id: "status", value: "Active" }]);
             }}
           >
-            Active Blueprints
+            <FontAwesomeIcon icon={faCheck} /> Active
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link
-            eventKey="all"
+            eventKey="All"
             onClick={() => {
-              setAllFilters([]);
+              setFilters([]);
             }}
           >
-            All Blueprints
+            <FontAwesomeIcon icon={faAsterisk} /> All Blueprints
           </Nav.Link>
         </Nav.Item>
-        <h5 className="mt-3">My Collections</h5>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="personal"
-            onClick={() => {
-              setAllFilters([
-                { id: "sharing.source.label", value: "Personal" },
-              ]);
-            }}
-          >
-            Personal Blueprints
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="public"
-            onClick={() => {
-              setAllFilters([{ id: "sharing.source.label", value: "Public" }]);
-            }}
-          >
-            Public Marketplace Blueprints
-          </Nav.Link>
-        </Nav.Item>
+        {permit("marketplace") && (
+          <>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="Personal"
+                onClick={() => {
+                  setFilters([
+                    { id: "sharing.source.label", value: "Personal" },
+                  ]);
+                }}
+              >
+                <FontAwesomeIcon icon={faUser} /> Personal
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="Public"
+                onClick={() => {
+                  setFilters([{ id: "sharing.source.label", value: "Public" }]);
+                }}
+              >
+                <FontAwesomeIcon icon={faGlobe} /> Public Marketplace
+              </Nav.Link>
+            </Nav.Item>
+          </>
+        )}
         {teamFilters.length > 0 && <h5 className="mt-3">Shared with Me</h5>}
         {teamFilters.map((filter) => (
           <Nav.Item key={filter}>
             <Nav.Link
               eventKey={filter}
               onClick={() => {
-                setAllFilters([{ id: "sharing.source.label", value: filter }]);
+                setFilters([{ id: "sharing.source.label", value: filter }]);
               }}
             >
-              {filter} Blueprints
+              <FontAwesomeIcon icon={faUsers} /> {filter}
             </Nav.Link>
           </Nav.Item>
         ))}
+      </Nav>
+      <Nav>
+        <h5>Explore</h5>
+        <Nav.Item>
+          <Nav.Link
+            href="https://www.pixiebrix.com/marketplace"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Public Marketplace
+          </Nav.Link>
+        </Nav.Item>
       </Nav>
     </Col>
   );

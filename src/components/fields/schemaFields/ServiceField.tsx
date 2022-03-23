@@ -33,7 +33,6 @@ import { AuthOption } from "@/auth/authTypes";
 import { produce } from "immer";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { freshIdentifier } from "@/utils";
-import browser from "webextension-polyfill";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import SelectWidget, {
@@ -47,7 +46,7 @@ import {
   SERVICE_BASE_SCHEMA,
   SERVICE_FIELD_REFS,
 } from "@/services/serviceUtils";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { FormState } from "@/pageEditor/slices/editorSlice";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { isExpression } from "@/runtime/mapArgs";
 
@@ -78,7 +77,7 @@ function defaultOutputKey(
 
   // OK to cast to SafeString since defaultOutputKey checks it's a valid PACKAGE_REGEX
   return freshIdentifier(
-    (rawKey as unknown) as SafeString,
+    rawKey as unknown as SafeString,
     otherOutputKeys
   ) as OutputKey;
 }
@@ -222,13 +221,10 @@ const ServiceField: React.FunctionComponent<
 > = ({ detectDefault = true, ...props }) => {
   const { schema } = props;
   const [authOptions] = useAuthOptions();
-  const {
-    values: root,
-    setValues: setRootValues,
-  } = useFormikContext<ServiceSlice>();
-  const [{ value, ...field }, meta, helpers] = useField<
-    Expression<ServiceKeyVar>
-  >(props);
+  const { values: root, setValues: setRootValues } =
+    useFormikContext<ServiceSlice>();
+  const [{ value, ...field }, meta, helpers] =
+    useField<Expression<ServiceKeyVar>>(props);
 
   const { serviceIds, options } = useMemo(() => {
     const serviceIds = extractServiceIds(schema);
@@ -268,6 +264,8 @@ const ServiceField: React.FunctionComponent<
           );
           helpers.setValue(keyToFieldValue(match.outputKey));
         } else if (options.length === 1) {
+          // This condition is only true when the auth services have been filtered by the schema
+
           console.debug("Defaulting to only integration option", {
             option: options[0],
             options,

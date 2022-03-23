@@ -20,7 +20,7 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Card } from "react-bootstrap";
 import { inputProperties } from "@/helpers";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import { Schema } from "@/core";
@@ -67,7 +67,7 @@ const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProps> = ({
   if (schemaLoading) {
     return (
       <ChildContainer heading={heading}>
-        <GridLoader />
+        <Loader />
       </ChildContainer>
     );
   }
@@ -100,7 +100,7 @@ const ChildObjectWidget: React.FC<SchemaFieldProps & OwnProps> = ({
             <SchemaField
               key={prop}
               name={joinName(name, prop)}
-              schema={schema}
+              schema={fieldSchema}
             />
           );
         })}

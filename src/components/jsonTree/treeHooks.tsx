@@ -19,14 +19,12 @@ import React, { useCallback } from "react";
 import copy from "copy-to-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
-import { useToasts } from "react-toast-notifications";
+import notify from "@/utils/notify";
 import styles from "./JsonTree.module.scss";
 import { Button } from "react-bootstrap";
 import cx from "classnames";
 
 export function useLabelRenderer() {
-  const { addToast } = useToasts();
-
   // https://github.com/reduxjs/redux-devtools/blob/85b4b0fb04b1d6d95054d5073fa17fa61efc0df3/packages/redux-devtools-inspector-monitor/src/ActionPreview.tsx
   return useCallback(
     (
@@ -37,23 +35,25 @@ export function useLabelRenderer() {
       <div>
         <span>{key}</span>
         {!expanded && ": "}
+        {/* The button must not be a form element,
+        otherwise the wrapping label from JSONTree is associated with the element's contents (the button).
+        See https://www.w3.org/TR/html401/interact/forms.html#h-17.9.1 */}
         <Button
           variant="text"
           className={cx(styles.copyPath, "p-0")}
           aria-label="copy path"
+          href="#"
           onClick={(event) => {
             copy([key, ...rest].reverse().join("."));
+            event.preventDefault();
             event.stopPropagation();
-            addToast("Copied property path to the clipboard", {
-              appearance: "info",
-              autoDismiss: true,
-            });
+            notify.info("Copied property path to the clipboard");
           }}
         >
           <FontAwesomeIcon icon={faCopy} aria-hidden />
         </Button>
       </div>
     ),
-    [addToast]
+    []
   );
 }

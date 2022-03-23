@@ -3,15 +3,6 @@
 exports[`Marketplace Activate Wizard OptionsBody renders text field 1`] = `
 <DocumentFragment>
   <div
-    class="px-3 py-3 card-body"
-  >
-    <div
-      class="card-title h5"
-    >
-      Personalize Blueprint
-    </div>
-  </div>
-  <div
     class="OptionsBody p-3 card-body"
   >
     <div

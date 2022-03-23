@@ -18,7 +18,6 @@
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import browser from "webextension-polyfill";
 
 export class SoundEffect extends Effect {
   constructor() {

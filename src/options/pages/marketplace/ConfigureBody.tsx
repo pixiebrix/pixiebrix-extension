@@ -52,10 +52,10 @@ export function useSelectedExtensions(
   extensions: ExtensionPointConfig[]
 ): ExtensionPointConfig[] {
   const { values } = useFormikContext<WizardValues>();
-  return useMemo(() => selectedExtensions(values, extensions), [
-    extensions,
-    values,
-  ]);
+  return useMemo(
+    () => selectedExtensions(values, extensions),
+    [extensions, values]
+  );
 }
 
 const ConfigureRow: React.FunctionComponent<{
@@ -136,10 +136,9 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({
           <FontAwesomeIcon icon={faInfoCircle} /> Don&apos;t know which bricks
           to select? Don&apos;t worry! &mdash; you can de-activate bricks at any
           time on the{" "}
-          <Link to="/installed">
-            <u>
-              <FontAwesomeIcon icon={faCubes} />
-              {"  "}Active Bricks page
+          <Link to="/blueprints">
+            <u className="text-nowrap">
+              <FontAwesomeIcon icon={faCubes} /> Blueprints page
             </u>
           </Link>
         </p>

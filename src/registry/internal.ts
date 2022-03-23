@@ -17,13 +17,13 @@
 
 import {
   Config,
-  ResolvedExtension,
+  EmptyConfig,
   IBlock,
   IExtension,
   IExtensionPoint,
   InnerDefinitions,
   RegistryId,
-  EmptyConfig,
+  ResolvedExtension,
 } from "@/core";
 import { produce } from "immer";
 import objectHash from "object-hash";
@@ -41,6 +41,7 @@ import {
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { ReaderConfig } from "@/blocks/types";
 import { UnknownObject } from "@/types";
+import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 
@@ -61,7 +62,6 @@ async function ensureBlock(
   const obj = pick(config, ["inputSchema", "kind", "pipeline", "definition"]);
   const registryId = makeInternalId(obj);
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (await blockRegistry.exists(registryId)) {
     console.debug(
       `Internal ${obj.kind} already exists: ${registryId}; using existing block`
@@ -147,7 +147,6 @@ async function ensureExtensionPoint(
   const obj = pick(config, ["kind", "definition"]);
   const registryId = makeInternalId(obj);
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (await extensionPointRegistry.exists(registryId)) {
     console.debug(
       `Internal ${obj.kind} already exists: ${registryId}; using existing block`
@@ -247,4 +246,18 @@ export async function resolveRecipe(
         ? { ...config, id: definitions.get(config.id).id }
         : config) as ResolvedExtensionPointConfig
   );
+}
+
+export function hasInnerExtensionPoint(extension: IExtension): boolean {
+  const hasInner = extension.extensionPointId in (extension.definitions ?? {});
+
+  if (!hasInner && isInnerExtensionPoint(extension.extensionPointId)) {
+    console.warn(
+      "Extension is missing inner definition for %s",
+      extension.extensionPointId,
+      { extension }
+    );
+  }
+
+  return hasInner;
 }

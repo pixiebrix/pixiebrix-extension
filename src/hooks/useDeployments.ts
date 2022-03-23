@@ -22,15 +22,14 @@ import { blueprintPermissions, ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { getErrorMessage } from "@/errors";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import { getUID } from "@/background/telemetry";
 import { getExtensionVersion } from "@/chrome";
 import { selectInstalledDeployments } from "@/background/deployment";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
-import browser, { Permissions } from "webextension-polyfill";
+import { Permissions } from "webextension-polyfill";
 import { IExtension, UUID, RegistryId } from "@/core";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import { satisfies } from "semver";
@@ -76,17 +75,16 @@ async function fetchDeployments(
   return deployments;
 }
 
-const makeUpdatedFilter = (installed: IExtension[]) => (
-  deployment: Deployment
-) => {
-  const match = installed.find(
-    (extension) => extension._deployment?.id === deployment.id
-  );
-  return (
-    !match ||
-    new Date(match._deployment.timestamp) < new Date(deployment.updated_at)
-  );
-};
+const makeUpdatedFilter =
+  (installed: IExtension[]) => (deployment: Deployment) => {
+    const match = installed.find(
+      (extension) => extension._deployment?.id === deployment.id
+    );
+    return (
+      !match ||
+      new Date(match._deployment.timestamp) < new Date(deployment.updated_at)
+    );
+  };
 
 function activateDeployments(
   dispatch: Dispatch,
@@ -183,7 +181,6 @@ function checkExtensionUpdateRequired(deployments: Deployment[]): boolean {
 }
 
 function useDeployments(): DeploymentState {
-  const notify = useNotifications();
   const dispatch = useDispatch();
   const installedExtensions = useSelector(selectExtensions);
 
@@ -214,20 +211,19 @@ function useDeployments(): DeploymentState {
       await refreshRegistries();
     } catch (error) {
       // Try to proceed if we can't refresh the brick definitions
-      notify.warning(
-        `Error fetching latest bricks from server: ${getErrorMessage(error)}`,
-        { error, report: true }
-      );
+      notify.warning({
+        message: "Unable to fetch latest bricks",
+        error,
+        reportError: true,
+      });
     }
 
     if (checkExtensionUpdateRequired(deployments)) {
       await chromeP.runtime.requestUpdateCheck();
       notify.warning(
-        "You must update the PixieBrix browser extension to activate the deployment",
-        {
-          event: "DeploymentRejectVersion",
-        }
+        "You must update the PixieBrix browser extension to activate the deployment"
       );
+      reportEvent("DeploymentRejectVersion");
       return;
     }
 
@@ -237,16 +233,16 @@ function useDeployments(): DeploymentState {
     try {
       accepted = await ensureAllPermissions(permissions);
     } catch (error) {
-      notify.error(`Error granting permissions: ${getErrorMessage(error)}`, {
+      notify.error({
+        message: "Error granting permissions",
         error,
       });
       return;
     }
 
     if (!accepted) {
-      notify.warning("You declined the permissions", {
-        event: "DeploymentRejectPermissions",
-      });
+      notify.warning("You declined the permissions");
+      reportEvent("DeploymentRejectPermissions");
       return;
     }
 
@@ -254,11 +250,9 @@ function useDeployments(): DeploymentState {
       activateDeployments(dispatch, deployments, installedExtensions);
       notify.success("Activated team deployments");
     } catch (error) {
-      notify.error("Error activating team deployments", {
-        error,
-      });
+      notify.error({ message: "Error activating team deployments", error });
     }
-  }, [deployments, dispatch, notify, installedExtensions]);
+  }, [deployments, dispatch, installedExtensions]);
 
   const updateExtension = useCallback(async () => {
     await chromeP.runtime.requestUpdateCheck();

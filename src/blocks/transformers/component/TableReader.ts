@@ -18,8 +18,12 @@
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { validateRegistryId } from "@/types/helpers";
-import parseDomTable, { getAllTables } from "@/utils/parseDomTable";
-import { $safeFind } from "@/helpers";
+import { parseDomTable, getAllTables } from "@/utils/parseDomTable";
+import {
+  parseDefinitionList,
+  getAllDefinitionLists,
+} from "@/utils/parseDefinitionList";
+import { requireSingleElement } from "@/utils/requireSingleElement";
 
 export const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
 export const TABLE_READER_ALL_ID = validateRegistryId(
@@ -52,7 +56,7 @@ export class TableReader extends Transformer {
     },
   };
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
@@ -72,17 +76,24 @@ export class TableReader extends Transformer {
     additionalProperties: false,
   };
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return true;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
   async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
-    const $table = $safeFind<HTMLTableElement>(args.selector, root);
-    return parseDomTable($table.get(0), { orientation: args.orientation });
+    const table = requireSingleElement<HTMLTableElement | HTMLDListElement>(
+      args.selector,
+      root
+    );
+    if (table instanceof HTMLDListElement) {
+      return parseDefinitionList(table);
+    }
+
+    return parseDomTable(table, { orientation: args.orientation });
   }
 }
 
@@ -102,7 +113,7 @@ export class TablesReader extends Transformer {
     properties: {},
   };
 
-  outputSchema: Schema = {
+  override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
@@ -120,15 +131,18 @@ export class TablesReader extends Transformer {
     },
   };
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     return true;
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     return true;
   }
 
   async transform(_: BlockArg, { root }: BlockOptions): Promise<unknown> {
-    return Object.fromEntries(getAllTables(root).entries());
+    return Object.fromEntries([
+      ...getAllTables(root).entries(),
+      ...getAllDefinitionLists(root).entries(),
+    ]);
   }
 }

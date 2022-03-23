@@ -1,3 +1,29 @@
+const contexts = [
+  "background",
+  "contentScript",
+  "pageEditor",
+  "options",
+  "sidebar",
+  // "pageScript", // TODO: After Messenger migration
+];
+
+const restrictedZones = [];
+for (const exporter of contexts) {
+  for (const importer of contexts) {
+    if (exporter !== importer) {
+      restrictedZones.push({
+        target: `./src/${importer}/**/*`,
+        from: `./src/${exporter}`,
+        except: [
+          `../${exporter}/messenger/api.ts`,
+          `../${exporter}/types.ts`,
+          `../${exporter}/nativeEditor/types.ts`,
+        ],
+      });
+    }
+  }
+}
+
 module.exports = {
   root: true,
   extends: [
@@ -5,18 +31,34 @@ module.exports = {
     "pixiebrix",
   ],
   rules: {
+    "import/no-restricted-paths": [
+      "error",
+      {
+        zones: restrictedZones,
+      },
+    ],
+
+    // Avoid imports with side effects
+    "import/no-unassigned-import": [
+      "error",
+      {
+        allow: [
+          "**/*.css",
+          "**/*.scss",
+          "@/development/*",
+          "@/messaging/external",
+          "@/extensionContext", // Must be run before other code
+          "@/background/axiosFetch", // Must be run before other code
+          "@/telemetry/reportUncaughtErrors",
+          "@testing-library/jest-dom",
+          "webext-dynamic-content-scripts", // Automatic registration
+          "regenerator-runtime/runtime", // Automatic registration
+        ],
+      },
+    ],
+
     // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
     "import/no-named-as-default-member": "off",
-
-    // TODO: The rule is currently broken, it should accept `throw unknown` but doesn't
-    "@typescript-eslint/no-throw-literal": "off",
-
-    // TODO: Import extended config from app, after improving it
-    "@typescript-eslint/naming-convention": "off",
-
-    // The rule is unreasonably slow (90 sec lint -> 5 minutes)
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/1080
-    "import/no-cycle": "off",
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/no-explicit-any": "warn",
@@ -29,24 +71,7 @@ module.exports = {
     "unicorn/no-await-expression-member": "warn", // Annoying sometimes, let's try it
     "@typescript-eslint/consistent-type-assertions": "warn",
   },
-  ignorePatterns: [
-    "node_modules",
-    ".idea",
-    "dist",
-    "artifacts",
-    "scripts/bin",
-    "src/vendors",
-    "src/types/swagger.ts",
-    "src/nativeEditor/Overlay.tsx",
-    "selenium",
-  ],
   overrides: [
-    {
-      files: ["*.stories.tsx"],
-      rules: {
-        "filenames/match-exported": "off",
-      },
-    },
     {
       files: [
         "webpack.*.js",
@@ -59,10 +84,10 @@ module.exports = {
         node: true,
         jest: true,
       },
+      // Overridden rules: https://github.com/fregante/eslint-config-pixiebrix/blob/main/server.js
       extends: ["pixiebrix/server"],
       rules: {
-        // TODO: Import extended config from app, after improving it
-        "@typescript-eslint/naming-convention": "off",
+        "@typescript-eslint/consistent-type-assertions": "off",
       },
     },
   ],

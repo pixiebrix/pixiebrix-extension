@@ -1,0 +1,80 @@
+/*
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { Primitive } from "type-fest";
+import { compact, includes, isEmpty, mapValues, pickBy } from "lodash";
+import { Target } from "@/types";
+
+export async function getCurrentURL(): Promise<string> {
+  if (!browser.devtools) {
+    throw new Error("getCurrentURL can only run in the developer tools");
+  }
+
+  const tab = await browser.tabs.get(chrome.devtools.inspectedWindow.tabId);
+  return tab.url;
+}
+
+function normalize(value: Primitive): string {
+  return value.toString().toLowerCase();
+}
+
+/**
+ * Search data for query, matching both keys and values.
+ * @see normalize
+ */
+export function searchData(query: string, data: unknown): unknown {
+  const normalizedQuery = normalize(query);
+  if (data == null) {
+    return null;
+  }
+
+  if (typeof data === "object") {
+    const values = mapValues(data, (value, key) =>
+      includes(normalize(key), normalizedQuery)
+        ? value
+        : searchData(query, value)
+    );
+    return pickBy(values, (value, key) => {
+      const keyMatch = includes(normalize(key), normalizedQuery);
+      const valueMatch =
+        typeof value === "object" || Array.isArray(value)
+          ? !isEmpty(value)
+          : value != null;
+      return keyMatch || valueMatch;
+    });
+  }
+
+  if (Array.isArray(data)) {
+    return compact(data.map((d) => searchData(query, d)));
+  }
+
+  return includes(normalize(data as Primitive), normalizedQuery)
+    ? data
+    : undefined;
+}
+
+/**
+ * Message target for the tab being inspected by the devtools.
+ *
+ * The Page Editor only supports editing the top-level frame.
+ */
+export const thisTab: Target = {
+  // This code might end up (unused) in non-dev bundles, so use `?.` to avoid errors from undefined values
+  tabId: globalThis.chrome?.devtools?.inspectedWindow?.tabId ?? 0,
+  // The top-level frame
+  frameId: 0,
+};

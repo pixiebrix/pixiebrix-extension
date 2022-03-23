@@ -15,25 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Page from "@/layout/Page";
 import { faHammer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import AuthContext from "@/auth/AuthContext";
+import { useGetAuthQuery } from "@/services/api";
 import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
 import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
 import workshopSlice, { WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
-import "./WorkshopPage.scss";
 import { Brick } from "@/types/contract";
 import useFetch from "@/hooks/useFetch";
 import { push } from "connected-react-router";
 import CustomBricksCard from "./CustomBricksCard";
 import { EnrichedBrick, NavigateProps } from "./workshopTypes";
+import { RequireScope } from "@/auth/RequireScope";
+import useFlags from "@/hooks/useFlags";
 
 const { actions } = workshopSlice;
 
@@ -109,13 +110,14 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
   const { data: remoteBricks } = useFetch<Brick[]>("/api/bricks/");
-  const { scopes = [], collections = [], kinds = [] } = useSelector(
-    selectFilters
-  );
+  const {
+    scopes = [],
+    collections = [],
+    kinds = [],
+  } = useSelector(selectFilters);
   const bricks = useEnrichBricks(remoteBricks);
-  const { scopeOptions, kindOptions, collectionOptions } = useSearchOptions(
-    bricks
-  );
+  const { scopeOptions, kindOptions, collectionOptions } =
+    useSearchOptions(bricks);
 
   const filtered = !isEmpty(scopes) || !isEmpty(collections) || !isEmpty(kinds);
 
@@ -221,7 +223,7 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
         </Col>
       </Row>
       <Row>
-        <Col className="mt-4" md="12" lg="8">
+        <Col className="mt-4" md="12" xl="8">
           <CustomBricksCard navigate={navigate} bricks={sortedBricks} />
         </Col>
       </Row>
@@ -230,38 +232,50 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 };
 
 const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
-  const { isLoggedIn, flags } = useContext(AuthContext);
+  const {
+    data: { isLoggedIn },
+    error: authError,
+  } = useGetAuthQuery();
+
+  const { flagOn } = useFlags();
 
   return (
-    <Page
-      title="Workshop"
-      icon={faHammer}
-      description={
-        <p>
-          Build and attach bricks.{" "}
-          {flags.includes("marketplace") && (
-            <>
-              To activate pre-made blueprints, visit the{" "}
-              <Link to={"/marketplace"}>Marketplace</Link>
-            </>
-          )}
-        </p>
-      }
-      toolbar={
-        isLoggedIn && (
-          <Button
-            variant="info"
-            onClick={() => {
-              navigate("/workshop/create/");
-            }}
-          >
-            <FontAwesomeIcon icon={faPlus} /> Create New Brick
-          </Button>
-        )
-      }
+    <RequireScope
+      scopeSettingsTitle="Welcome to the PixieBrix Workshop!"
+      scopeSettingsDescription="To use the Workshop, you must first set an account alias for your PixieBrix account"
     >
-      <CustomBricksSection navigate={navigate} />
-    </Page>
+      <Page
+        title="Workshop"
+        icon={faHammer}
+        error={authError}
+        description={
+          <p>
+            Build and attach bricks.{" "}
+            {flagOn("marketplace") && (
+              <>
+                To activate pre-made blueprints, visit the{" "}
+                <Link to={"/marketplace"}>Marketplace</Link>
+              </>
+            )}
+          </p>
+        }
+        toolbar={
+          isLoggedIn &&
+          !authError && (
+            <Button
+              variant="info"
+              onClick={() => {
+                navigate("/workshop/create/");
+              }}
+            >
+              <FontAwesomeIcon icon={faPlus} /> Create New Brick
+            </Button>
+          )
+        }
+      >
+        <CustomBricksSection navigate={navigate} />
+      </Page>
+    </RequireScope>
   );
 };
 

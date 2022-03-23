@@ -17,7 +17,7 @@
 
 import { ActionType, Message, SerializedError, Meta } from "@/core";
 import { serializeError } from "serialize-error";
-import browser, { Runtime } from "webextension-polyfill";
+import { Runtime } from "webextension-polyfill";
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- Line can be dropped once we migrate to `webext-messenger`
 export type SerializableResponse = boolean | string | number | object | void;

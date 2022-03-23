@@ -25,15 +25,15 @@ import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { Card, Table } from "react-bootstrap";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import AuthWidget from "@/options/pages/marketplace/AuthWidget";
+import { joinName } from "@/utils";
 
 const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
   authOptions,
 }) => {
   const [field] = useField<ServiceDependency[]>("services");
 
-  const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
-    "/api/services/"
-  );
+  const { data: serviceConfigs } =
+    useFetch<ServiceDefinition[]>("/api/services/");
 
   const values = field.value.map((dependency, index) => ({
     dependency,
@@ -71,7 +71,7 @@ const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
                 <AuthWidget
                   authOptions={authOptions}
                   serviceId={dependency.id}
-                  name={[field.name, valueIndex, "config"].join(".")}
+                  name={joinName(field.name, String(valueIndex), "config")}
                 />
               </td>
             </tr>

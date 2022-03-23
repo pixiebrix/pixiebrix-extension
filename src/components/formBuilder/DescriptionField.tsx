@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import sanitize from "@/utils/sanitize";
-import { marked } from "marked";
 import { Field } from "@rjsf/core";
 import cx from "classnames";
+import { useAsyncState } from "@/hooks/common";
+import safeMarkdown from "@/utils/safeMarkdown";
 
 type FormPreviewDescriptionFieldProps = {
   id: string;
@@ -28,29 +28,38 @@ type FormPreviewDescriptionFieldProps = {
 };
 
 // RJSF implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/master/packages/core/src/components/fields/DescriptionField.js
-export const DescriptionField: React.VoidFunctionComponent<FormPreviewDescriptionFieldProps> = ({
-  id,
-  description,
-  className: classNameProp,
-}) => {
+export const DescriptionField: React.VoidFunctionComponent<
+  FormPreviewDescriptionFieldProps
+> = ({ id, description, className: classNameProp }) => {
+  const [content] = useAsyncState(
+    async () => {
+      if (typeof description === "string") {
+        const markdown = await safeMarkdown(description);
+        return (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: markdown,
+            }}
+          />
+        );
+      }
+
+      return description;
+    },
+    [description],
+    ""
+  );
+
   if (!description) {
     return null;
   }
 
-  const className = cx("field-description", classNameProp);
-
-  return typeof description === "string" ? (
-    <div
-      id={id}
-      className={className}
-      dangerouslySetInnerHTML={{ __html: sanitize(marked(description)) }}
-    />
-  ) : (
-    <div id={id} className={className}>
-      {description}
+  return (
+    <div id={id} className={cx("field-description", classNameProp)}>
+      {content}
     </div>
   );
 };
 
 // Adjusting field type to match RJSF expectations
-export default (DescriptionField as unknown) as Field;
+export default DescriptionField as unknown as Field;

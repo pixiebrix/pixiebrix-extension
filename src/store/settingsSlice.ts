@@ -22,6 +22,7 @@ const initialSettingsState: SettingsState = {
   mode: "remote",
   nextUpdate: null as number,
   suggestElements: false,
+  browserWarningDismissed: false,
 };
 
 const settingsSlice = createSlice({
@@ -33,7 +34,10 @@ const settingsSlice = createSlice({
     },
     setFlag(
       state,
-      action: PayloadAction<{ flag: "suggestElements"; value: boolean }>
+      action: PayloadAction<{
+        flag: "suggestElements";
+        value: boolean;
+      }>
     ) {
       const { flag, value } = action.payload;
       // eslint-disable-next-line security/detect-object-injection -- type checked
@@ -42,6 +46,9 @@ const settingsSlice = createSlice({
     snoozeUpdates(state, action: PayloadAction<{ durationMillis: number }>) {
       const { durationMillis } = action.payload;
       state.nextUpdate = Date.now() + durationMillis;
+    },
+    dismissBrowserWarning(state) {
+      state.browserWarningDismissed = true;
     },
   },
 });

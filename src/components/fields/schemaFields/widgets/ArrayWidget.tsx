@@ -30,6 +30,10 @@ import { defaultBlockConfig } from "@/blocks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "@/utils";
 
+type ArrayWidgetProps = SchemaFieldProps & {
+  addButtonCaption?: string;
+};
+
 // Empty value for text fields for the Formik state
 const EMPTY_TEXT_VALUE = "";
 
@@ -59,7 +63,11 @@ function getDefaultArrayItem(schema: Schema): unknown {
   return null;
 }
 
-const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
+const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
+  schema,
+  name,
+  addButtonCaption = "Add Item",
+}) => {
   const [field] = useField<UnknownObject[]>(name);
 
   if (Array.isArray(schema.items)) {
@@ -80,7 +88,7 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
     <FieldArray name={name}>
       {({ push }) => (
         <>
-          <ul className="list-group">
+          <ul className="list-group mb-2">
             {(field.value ?? []).map((item: unknown, index: number) => (
               <li className="list-group-item py-1" key={index}>
                 <SchemaField
@@ -98,7 +106,7 @@ const ArrayWidget: React.FC<SchemaFieldProps> = ({ schema, name }) => {
               push(getDefaultArrayItem(schemaItems));
             }}
           >
-            Add Item
+            {addButtonCaption}
           </Button>
         </>
       )}

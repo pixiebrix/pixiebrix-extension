@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser, { Tabs, Windows } from "webextension-polyfill";
+import { Tabs, Windows } from "webextension-polyfill";
 import { isFirefox } from "webext-detect-page";
 
 const POPUP_WIDTH_PX = 400; // Makes the native prompt appear centered

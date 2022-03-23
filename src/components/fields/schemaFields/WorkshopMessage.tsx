@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import styles from "@/devTools/editor/tabs/editTab/UpgradedToApiV3.module.scss";
+import styles from "@/pageEditor/tabs/editTab/UpgradedToApiV3.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { Alert } from "react-bootstrap";

@@ -21,7 +21,7 @@ import { CloudExtension } from "@/types/contract";
 import { Form, Formik, FormikProps } from "formik";
 import { useDispatch } from "react-redux";
 import { push } from "connected-react-router";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import ServicesCard from "@/options/pages/activateExtension/ServicesCard";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
 import ActivateCard from "@/options/pages/activateExtension/ActivateCard";
@@ -33,7 +33,6 @@ const ActivateForm: React.FunctionComponent<{
   extension: CloudExtension;
   authOptions: AuthOption[];
 }> = ({ extension, authOptions }) => {
-  const notify = useNotifications();
   const dispatch = useDispatch();
 
   const initialValues: FormState = useMemo(() => {
@@ -55,16 +54,14 @@ const ActivateForm: React.FunctionComponent<{
           })
         );
         notify.success("Activated brick");
-        dispatch(push("/installed"));
+        dispatch(push("/blueprints"));
       } catch (error) {
-        notify.error("Error activating brick", {
-          error,
-        });
+        notify.error({ message: "Error activating brick", error });
       } finally {
         helpers.setSubmitting(false);
       }
     },
-    [notify, extension, dispatch]
+    [extension, dispatch]
   );
 
   return (

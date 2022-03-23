@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2022 PixieBrix, Inc.
  *
@@ -17,7 +16,7 @@
  */
 
 import { isFirefox } from "webext-detect-page";
-import browser, { Menus } from "webextension-polyfill";
+import { Menus } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 
 const FIREFOX_OPTIONS_MENU_ID = "PIXIEBRIX_FIREFOX_OPTIONS";
@@ -28,7 +27,7 @@ function onContextMenuClick({ menuItemId }: Menus.OnClickData) {
   }
 }
 
-export default async function initFirefoxCompat(): Promise<void> {
+export default function initFirefoxCompat(): void {
   expectContext("background");
   if (!isFirefox()) {
     return;

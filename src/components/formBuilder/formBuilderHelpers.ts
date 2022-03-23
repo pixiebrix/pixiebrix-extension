@@ -19,6 +19,7 @@ import {
   KEYS_OF_UI_SCHEMA,
   SafeString,
   Schema,
+  SchemaDefinition,
   SchemaPropertyType,
   UiSchema,
 } from "@/core";
@@ -37,18 +38,23 @@ export const MINIMAL_UI_SCHEMA: UiSchema = {
 
 export const DEFAULT_FIELD_TYPE = "string";
 
+export type UiTypeExtra = "selectWithLabels" | undefined;
+
 export type UiType = {
   propertyType: SchemaPropertyType;
   uiWidget: string | undefined;
   propertyFormat: string | undefined;
+  /** Holds extra config. For instance, indicates whether a dropdown with labels should be used */
+  extra: UiTypeExtra;
 };
 
 export const parseUiType = (value: string): UiType => {
-  const [propertyType, uiWidget, propertyFormat] = value.split(":");
+  const [propertyType, uiWidget, propertyFormat, extra] = value.split(":");
   return {
     propertyType: propertyType as SchemaPropertyType,
     uiWidget: uiWidget === "" ? undefined : uiWidget,
     propertyFormat: propertyFormat === "" ? undefined : propertyFormat,
+    extra: extra === "" ? undefined : (extra as UiTypeExtra),
   };
 };
 
@@ -56,11 +62,9 @@ export const stringifyUiType = ({
   propertyType,
   uiWidget,
   propertyFormat,
-}: {
-  propertyType: SchemaPropertyType;
-  uiWidget?: string;
-  propertyFormat?: string;
-}) => `${propertyType}:${uiWidget ?? ""}:${propertyFormat ?? ""}`;
+  extra,
+}: Partial<UiType>) =>
+  `${propertyType}:${uiWidget ?? ""}:${propertyFormat ?? ""}:${extra ?? ""}`;
 
 export const FIELD_TYPE_OPTIONS: SelectStringOption[] = [
   {
@@ -104,6 +108,14 @@ export const FIELD_TYPE_OPTIONS: SelectStringOption[] = [
   {
     label: "Dropdown",
     value: stringifyUiType({ propertyType: "string", uiWidget: "select" }),
+  },
+  {
+    label: "Dropdown with labels",
+    value: stringifyUiType({
+      propertyType: "string",
+      uiWidget: "select",
+      extra: "selectWithLabels",
+    }),
   },
   {
     label: "Checkbox",
@@ -251,7 +263,8 @@ export const produceSchemaOnUiTypeChange = (
   propertyName: string,
   nextUiType: string
 ) => {
-  const { propertyType, uiWidget, propertyFormat } = parseUiType(nextUiType);
+  const { propertyType, uiWidget, propertyFormat, extra } =
+    parseUiType(nextUiType);
 
   return produce(rjsfSchema, (draft) => {
     // Relying on Immer to protect against object injections
@@ -284,9 +297,25 @@ export const produceSchemaOnUiTypeChange = (
     }
 
     if (uiWidget === "select") {
-      draftPropertySchema.enum = [];
+      if (extra === "selectWithLabels") {
+        // If switching from Dropdown, convert the enum to options with labels
+        draftPropertySchema.oneOf = Array.isArray(draftPropertySchema.enum)
+          ? draftPropertySchema.enum.map(
+              (item) => ({ const: item } as SchemaDefinition)
+            )
+          : [];
+        draftPropertySchema.default = "";
+        delete draftPropertySchema.enum;
+      } else {
+        // If switching from Dropdown with labels, convert the values to enum
+        draftPropertySchema.enum = Array.isArray(draftPropertySchema.oneOf)
+          ? draftPropertySchema.oneOf.map((item: Schema) => item.const)
+          : [];
+        delete draftPropertySchema.oneOf;
+      }
     } else {
       delete draftPropertySchema.enum;
+      delete draftPropertySchema.oneOf;
     }
     /* eslint-enable @typescript-eslint/no-dynamic-delete, security/detect-object-injection */
   });

@@ -16,12 +16,10 @@
  */
 
 import { Reader } from "@/types";
-import { IReader, ReaderOutput, Schema } from "@/core";
+import { IReader, ReaderOutput } from "@/core";
 import { zip } from "lodash";
 
 class ArrayCompositeReader extends Reader {
-  public readonly outputSchema: Schema;
-
   private readonly _readers: IReader[];
 
   constructor(readers: IReader[]) {
@@ -60,14 +58,14 @@ class ArrayCompositeReader extends Reader {
     return availability.every((x) => x);
   }
 
-  async isPure(): Promise<boolean> {
+  override async isPure(): Promise<boolean> {
     const availability = await Promise.all(
       this._readers.map(async (x) => x.isPure())
     );
     return availability.every((x) => x);
   }
 
-  async isRootAware(): Promise<boolean> {
+  override async isRootAware(): Promise<boolean> {
     const awareness = await Promise.all(
       this._readers.map(async (x) => x.isRootAware())
     );

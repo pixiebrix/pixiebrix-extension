@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fetch } from "@/hooks/fetch";
-import { AuthState, RawServiceConfiguration } from "@/core";
-import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
-import { getUID } from "@/background/telemetry";
+import { RawServiceConfiguration } from "@/core";
 import { AuthOption } from "@/auth/authTypes";
 import { useAsyncState } from "./common";
 import { readRawConfigurations } from "@/services/registry";
@@ -26,64 +23,6 @@ import { useMemo, useCallback } from "react";
 import { useGetServiceAuthsQuery } from "@/services/api";
 import { sortBy } from "lodash";
 import { SanitizedAuth } from "@/types/contract";
-
-interface OrganizationResponse {
-  readonly id: string;
-  readonly name: string;
-  readonly scope: string;
-}
-
-interface ProfileResponse {
-  readonly id: string;
-  readonly email: string;
-  readonly scope: string | null;
-  readonly is_onboarded: boolean;
-  readonly organization: OrganizationResponse | null;
-  readonly telemetry_organization: OrganizationResponse | null;
-  readonly flags: string[];
-}
-
-export const anonAuth: AuthState = {
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  isOnboarded: false,
-  extension: true,
-  scope: null,
-  flags: [],
-};
-
-export async function getAuth(): Promise<AuthState> {
-  const {
-    id,
-    email,
-    scope,
-    organization,
-    telemetry_organization: telemetryOrganization,
-    is_onboarded: isOnboarded,
-    flags = [],
-  } = await fetch<ProfileResponse>("/api/me/");
-  if (id) {
-    await updateRollbarAuth({
-      userId: id,
-      email,
-      organizationId: telemetryOrganization?.id ?? organization?.id,
-      browserId: await getUID(),
-    });
-    return {
-      userId: id,
-      email,
-      scope,
-      organization,
-      isOnboarded,
-      isLoggedIn: true,
-      extension: true,
-      flags,
-    };
-  }
-
-  return anonAuth;
-}
 
 function defaultLabel(label: string): string {
   const normalized = (label ?? "").trim();
@@ -110,8 +49,7 @@ export function useAuthOptions(): [AuthOption[], () => void] {
   // store to reload if it's changed on another tab
   const [
     configuredServices,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
-    _localLoading,
+    isLocalLoading,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
     _localError,
     refreshLocal,
@@ -119,10 +57,17 @@ export function useAuthOptions(): [AuthOption[], () => void] {
 
   const {
     data: remoteAuths,
+    isFetching: isRemoteLoading,
     refetch: refreshRemote,
   } = useGetServiceAuthsQuery();
 
   const authOptions = useMemo(() => {
+    if (isLocalLoading || isRemoteLoading) {
+      // Return no options to avoid unwanted default behavior when the local options are loaded but the remote options
+      // are still pending
+      return [];
+    }
+
     const localOptions = sortBy(
       (configuredServices ?? []).map((x) => ({
         value: x.id,
@@ -146,7 +91,7 @@ export function useAuthOptions(): [AuthOption[], () => void] {
     );
 
     return [...localOptions, ...sharedOptions];
-  }, [remoteAuths, configuredServices]);
+  }, [isLocalLoading, isRemoteLoading, remoteAuths, configuredServices]);
 
   const refresh = useCallback(() => {
     refreshRemote();

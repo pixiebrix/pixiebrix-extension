@@ -17,6 +17,7 @@
 
 import { Schema } from "@/core";
 import * as Yup from "yup";
+import Lazy from "yup/lib/Lazy";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
 import { services } from "@/background/messenger/api";
@@ -47,10 +48,9 @@ type Options = {
   required: boolean;
 };
 
-function blockSchemaFactory(): Yup.Schema<Record<string, unknown>> {
+function blockSchemaFactory(): Yup.AnyObjectSchema {
   return Yup.object().shape({
     id: Yup.string().test("is-block", "Block not found", async (id: string) =>
-      // eslint-disable-next-line security/detect-non-literal-fs-filename -- false positive
       blockRegistry.exists(validateRegistryId(id))
     ),
     templateEngine: Yup.string()
@@ -84,16 +84,16 @@ function isBrickSchema(schema: Schema): boolean {
 export function configSchemaFactory(
   schema: Schema,
   { required = false }: Options = {} as Options
-): Yup.Schema<unknown> {
+): Lazy<Yup.BaseSchema> | Yup.BaseSchema {
   const wrapRequired = (x: any) => (required ? x.required() : x);
 
   if (isBrickSchema(schema)) {
     return Yup.lazy((value) => {
       if (isPlainObject(value)) {
-        return Yup.lazy(blockSchemaFactory);
+        return blockSchemaFactory();
       }
 
-      return Yup.array().of(Yup.lazy(blockSchemaFactory)).min(1);
+      return Yup.array().of(blockSchemaFactory()).min(1);
     });
   }
 
@@ -138,7 +138,8 @@ export function configSchemaFactory(
       const items = schema.items as Schema;
       return Yup.lazy((x) =>
         Array.isArray(x)
-          ? wrapRequired(Yup.array().of(configSchemaFactory(items)))
+          ? // TODO: Drop `any` after https://github.com/jquense/yup/issues/1190
+            wrapRequired(Yup.array().of(configSchemaFactory(items) as any))
           : wrapRequired(Yup.string())
       );
     }
@@ -153,7 +154,7 @@ export function configSchemaFactory(
   }
 }
 
-function serviceSchemaFactory(): Yup.Schema<unknown> {
+function serviceSchemaFactory(): Yup.ArraySchema<Yup.AnySchema> {
   return Yup.array()
     .of(
       Yup.object().shape({
@@ -230,7 +231,7 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
     );
 }
 
-export function extensionValidatorFactory(schema: Schema): Yup.Schema<unknown> {
+export function extensionValidatorFactory(schema: Schema): Yup.AnyObjectSchema {
   return Yup.object().shape({
     label: Yup.string(),
     services: serviceSchemaFactory(),

@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./BrickDetail.module.scss";
+
 import React, { Suspense } from "react";
 import { Button } from "react-bootstrap";
 import { isEmpty } from "lodash";
@@ -30,7 +32,6 @@ import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import { Schema } from "@/core";
-import styles from "./BrickDetail.module.scss";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BrickIcon from "@/components/BrickIcon";
 

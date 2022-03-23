@@ -24,7 +24,6 @@ import {
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import {
-  ServiceConfig,
   SanitizedConfig,
   Metadata,
   UUID,
@@ -37,10 +36,39 @@ import {
 import { components } from "@/types/swagger";
 import { Except } from "type-fest";
 import { FortAwesomeLibrary } from "@/components/AsyncIcon";
+import { AxiosResponse } from "axios";
 
 export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 
 export type Invitation = components["schemas"]["Invitation"];
+
+type MeGroup = components["schemas"]["Me"]["group_memberships"][number] & {
+  id: UUID;
+};
+
+type MeOrganization =
+  components["schemas"]["Me"]["organization_memberships"][number] & {
+    organization: UUID;
+  };
+
+export type Me = Except<
+  components["schemas"]["Me"],
+  | "flags"
+  | "is_onboarded"
+  | "organization"
+  | "organization_memberships"
+  | "group_memberships"
+> & {
+  // Serializer method fields
+  flags: string[];
+  is_onboarded: boolean;
+  // Swagger type lists id as optional
+  organization: Required<components["schemas"]["Me"]["organization"]> | null;
+
+  // Fix UUID types
+  organization_memberships: MeOrganization[];
+  group_memberships: MeGroup[];
+};
 
 export enum UserRole {
   member = 1,
@@ -63,6 +91,7 @@ export type Database = components["schemas"]["Database"];
 export type PackageVersion = components["schemas"]["PackageVersion"];
 
 export type Package = components["schemas"]["Package"];
+
 export type PendingInvitation = components["schemas"]["PendingInvitation"];
 
 export type PackageUpsertResponse = Except<
@@ -83,11 +112,6 @@ export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
   // XXX: update serializer to include proper metadata child serializer
   service: { config: { metadata: Metadata } };
   user?: UUID;
-};
-
-export type ConfigurableAuth = components["schemas"]["EditableAuth"] & {
-  // Specialized to `ServiceConfig` to get nominal typing
-  config: ServiceConfig;
 };
 
 export type Deployment = components["schemas"]["DeploymentDetail"] & {
@@ -124,7 +148,7 @@ export type CloudExtension<T extends Config = EmptyConfig> = Except<
  * `/api/recipes/${blueprintId}`
  */
 export type BlueprintResponse = {
-  // On this endpoint, the sharing and updated_at are in the envelop of the response
+  // On this endpoint, the sharing and updated_at are in the envelope of the response
   config: UnsavedRecipeDefinition;
   sharing: SharingDefinition;
   updated_at: Timestamp;
@@ -143,4 +167,28 @@ export type MarketplaceListing = {
     url: string;
     alt_text: string;
   };
+};
+
+export type ProxyResponseSuccessData = {
+  json: unknown;
+  status_code: number;
+};
+
+export type ProxyResponseErrorData = {
+  json: unknown;
+  status_code: number;
+  message?: string;
+  reason?: string;
+};
+
+export type ProxyResponseData =
+  | ProxyResponseSuccessData
+  | ProxyResponseErrorData;
+
+// Partial view of an AxiosResponse for providing common interface local and requests made via proxy
+export type RemoteResponse<T = unknown> = Pick<
+  AxiosResponse<T>,
+  "data" | "status" | "statusText"
+> & {
+  $$proxied?: boolean;
 };

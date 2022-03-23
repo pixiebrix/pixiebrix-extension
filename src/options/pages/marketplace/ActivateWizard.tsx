@@ -23,7 +23,7 @@ import "./ActivateWizard.scss";
 import { Formik } from "formik";
 import { useSelectedAuths, useSelectedExtensions } from "./ConfigureBody";
 import { useTitle } from "@/hooks/title";
-import useInstall from "@/pages/marketplace/useInstall";
+import useInstall from "@/options/pages/blueprints/utils/useInstall";
 import AsyncButton from "@/components/AsyncButton";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -32,8 +32,7 @@ import { useLocation } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { uninstallContextMenu } from "@/background/messenger/api";
-import { getErrorMessage } from "@/errors";
-import useNotifications from "@/hooks/useNotifications";
+import notify from "@/utils/notify";
 import useWizard from "@/options/pages/marketplace/useWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 
@@ -65,7 +64,6 @@ const ActivateButton: React.FunctionComponent<{
       ),
     [blueprint, localExtensions]
   );
-  const notify = useNotifications();
 
   const uninstallExtensions = async () => {
     for (const extension of installedExtensions) {
@@ -76,22 +74,20 @@ const ActivateButton: React.FunctionComponent<{
     }
   };
 
-  const activateOrReinstall = () => {
-    if (reinstall) {
-      uninstallExtensions()
-        .then(() => {
-          activate();
-        })
-        .catch((error) => {
-          notify.error(
-            `Error re-installing bricks: ${getErrorMessage(error)}`,
-            {
-              error,
-            }
-          );
-        });
-    } else {
+  const activateOrReinstall = async () => {
+    if (!reinstall) {
       activate();
+      return;
+    }
+
+    try {
+      await uninstallExtensions();
+      activate();
+    } catch (error) {
+      notify.error({
+        message: "Error re-installing bricks",
+        error,
+      });
     }
   };
 

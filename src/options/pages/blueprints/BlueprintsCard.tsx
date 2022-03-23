@@ -15,73 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, {
-  Fragment,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  getDescription,
-  getLabel,
-  getPackageId,
-  getSharingType,
-  getUpdatedAt,
-} from "./installableUtils";
-import AuthContext from "@/auth/AuthContext";
+import styles from "./BlueprintsCard.module.scss";
+
+import { Col, Row as BootstrapRow } from "react-bootstrap";
+import React, { useMemo } from "react";
 import {
   Column,
-  ColumnInstance,
   useFilters,
+  useGlobalFilter,
   useGroupBy,
   useSortBy,
   useTable,
 } from "react-table";
-import Select from "react-select";
-import {
-  faList,
-  faSortAmountDownAlt,
-  faSortAmountUpAlt,
-  faThLarge,
-} from "@fortawesome/free-solid-svg-icons";
-import TableView from "./tableView/TableView";
 import ListFilters from "./ListFilters";
 import { Installable, InstallableViewItem } from "./blueprintsTypes";
-import GridView from "./gridView/GridView";
-
-const getFilterOptions = (column: ColumnInstance) => {
-  const options = new Set();
-  for (const row of column.preFilteredRows) {
-    options.add(row.values[column.id]);
-  }
-
-  return [...options.values()];
-};
-
-const getInstallableRows = (
-  installables: Installable[],
-  scope: string
-): InstallableViewItem[] =>
-  installables.map(
-    (installable): InstallableViewItem => ({
-      name: getLabel(installable),
-      description: getDescription(installable),
-      sharing: {
-        packageId: getPackageId(installable),
-        source: getSharingType(installable, scope),
-      },
-      updatedAt: getUpdatedAt(installable),
-      status: installable.active ? "Active" : "Uninstalled",
-      installable,
-    })
-  );
+import {
+  selectFilters,
+  selectGroupBy,
+  selectSortBy,
+} from "./blueprintsSelectors";
+import { useSelector } from "react-redux";
+import { uniq } from "lodash";
+import useInstallableViewItems from "@/options/pages/blueprints/useInstallableViewItems";
+import AutoSizer from "react-virtualized-auto-sizer";
+import BlueprintsToolbar from "@/options/pages/blueprints/BlueprintsToolbar";
+import BlueprintsView from "@/options/pages/blueprints/BlueprintsView";
 
 // These react-table columns aren't rendered as column headings,
-// but used to expose grouping, sorting, and filtering utilities
-// (and eventually pagination & global searching) on InstallableRows
+// but used to expose grouping, sorting, filtering, and global
+// searching utilities on InstallableRows
 const columns: Array<Column<InstallableViewItem>> = [
   {
     Header: "Name",
@@ -90,180 +52,102 @@ const columns: Array<Column<InstallableViewItem>> = [
     disableFilters: true,
   },
   {
-    Header: "Sharing",
-    // @ts-expect-error -- react-table allows nested accessors
-    accessor: "sharing.source.label",
+    Header: "Description",
+    accessor: "description",
+    disableGroupBy: true,
+    disableFilters: true,
+    disableSortBy: true,
   },
   {
-    Header: "Last modified",
+    Header: "Package ID",
+    // @ts-expect-error -- react-table allows nested accessors
+    accessor: "sharing.packageId",
+    disableGroupBy: true,
+    disableFilters: true,
+    disableSortBy: true,
+  },
+  {
+    Header: "Source",
+    // @ts-expect-error -- react-table allows nested accessors
+    accessor: "sharing.source.label",
+    disableGlobalFilter: true,
+  },
+  {
+    Header: "Last updated",
     accessor: "updatedAt",
     disableGroupBy: true,
     disableFilters: true,
+    disableGlobalFilter: true,
   },
   {
     Header: "Status",
     accessor: "status",
+    disableGlobalFilter: true,
+    filter: "exactText",
   },
 ];
 
 const BlueprintsCard: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
-  const { scope } = useContext(AuthContext);
-  const data: InstallableViewItem[] = useMemo(
-    () => getInstallableRows(installables, scope),
-    [installables, scope]
+  const data = useInstallableViewItems(installables);
+
+  const teamFilters = useMemo(
+    () =>
+      uniq(data.map((installable) => installable.sharing.source.label)).filter(
+        (label) => label !== "Public" && label !== "Personal"
+      ),
+    [data]
   );
 
-  useEffect(() => {
-    setAllFilters([{ id: "status", value: "Active" }]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on first mount
-  }, []);
+  const groupBy = useSelector(selectGroupBy);
+  const sortBy = useSelector(selectSortBy);
+  const filters = useSelector(selectFilters);
 
   const tableInstance = useTable<InstallableViewItem>(
-    { columns, data },
+    {
+      columns,
+      data,
+      initialState: {
+        groupBy,
+        sortBy,
+        filters,
+      },
+      useControlledState: (state) =>
+        useMemo(
+          () => ({
+            ...state,
+            groupBy,
+            sortBy,
+            filters,
+          }),
+          // eslint-disable-next-line react-hooks/exhaustive-deps -- table props are required dependencies
+          [state, groupBy, sortBy, filters]
+        ),
+    },
     useFilters,
+    useGlobalFilter,
     useGroupBy,
     useSortBy
   );
 
-  const [view, setView] = useState<"list" | "grid">("list");
-
-  const {
-    rows,
-    flatHeaders,
-    // @ts-expect-error -- for some reason, react-table index.d.ts UseGroupByInstanceProps
-    // doesn't have setGroupBy?
-    setGroupBy,
-    setAllFilters,
-    setSortBy,
-    state: { groupBy, sortBy, filters },
-  } = tableInstance;
-
-  const isGrouped = groupBy.length > 0;
-  const isSorted = sortBy.length > 0;
-
-  const groupByOptions = flatHeaders
-    .filter((column) => column.canGroupBy)
-    .map((column) => ({
-      label: column.Header,
-      value: column.id,
-    }));
-
-  const sortByOptions = flatHeaders
-    .filter((column) => column.canSort)
-    .map((column) => ({
-      label: column.Header,
-      value: column.id,
-    }));
-
-  const teamFilters = useMemo(() => {
-    const sharingColumn = flatHeaders.find(
-      (header) => header.id === "sharing.source.label"
-    );
-    return getFilterOptions(sharingColumn).filter(
-      (option) => !["Personal", "Public"].includes(option as string)
-    ) as string[];
-  }, [flatHeaders]);
-
-  const BlueprintsView = view === "list" ? TableView : GridView;
-
   return (
-    <BootstrapRow>
-      <ListFilters setAllFilters={setAllFilters} teamFilters={teamFilters} />
-      <Col xs={9}>
-        <div className="d-flex justify-content-between align-items-center">
-          <h3 className="my-3">
-            {filters.length > 0 ? filters[0].value : "All"} Blueprints
-          </h3>
-          <span className="d-flex align-items-center">
-            <span className="ml-3 mr-2">Group by:</span>
-            <Select
-              isClearable
-              placeholder="Group by"
-              options={groupByOptions}
-              onChange={(option, { action }) => {
-                if (action === "clear") {
-                  setGroupBy([]);
-                  return;
-                }
-
-                setGroupBy([option.value]);
-              }}
-            />
-
-            <span className="ml-3 mr-2">Sort by:</span>
-            <Select
-              isClearable
-              placeholder="Sort by"
-              options={sortByOptions}
-              onChange={(option, { action }) => {
-                if (action === "clear") {
-                  setSortBy([]);
-                  return;
-                }
-
-                setSortBy([{ id: option.value, desc: false }]);
-              }}
-            />
-
-            {isSorted && (
-              <Button
-                variant="link"
-                size="sm"
-                onClick={() => {
-                  setSortBy(
-                    sortBy.map((sort) => {
-                      sort.desc = !sort.desc;
-                      return sort;
-                    })
-                  );
-                }}
-              >
-                <FontAwesomeIcon
-                  icon={
-                    sortBy[0].desc ? faSortAmountUpAlt : faSortAmountDownAlt
-                  }
-                  size="lg"
-                />
-              </Button>
+    <BootstrapRow className={styles.root}>
+      <ListFilters teamFilters={teamFilters} tableInstance={tableInstance} />
+      <Col className={styles.mainContainer}>
+        <BlueprintsToolbar tableInstance={tableInstance} />
+        {/* This wrapper prevents AutoSizer overflow in a flex box container */}
+        <div style={{ flex: "1 1 auto" }}>
+          <AutoSizer defaultHeight={500}>
+            {({ height, width }) => (
+              <BlueprintsView
+                tableInstance={tableInstance}
+                width={width}
+                height={height}
+              />
             )}
-            <Button
-              variant={view === "list" ? "link" : "outline-link"}
-              size="sm"
-              className="ml-3"
-              onClick={() => {
-                setView("list");
-              }}
-            >
-              <FontAwesomeIcon icon={faList} size="lg" />
-            </Button>
-            <Button
-              variant={view === "grid" ? "link" : "outline-link"}
-              size="sm"
-              onClick={() => {
-                setView("grid");
-              }}
-            >
-              <FontAwesomeIcon icon={faThLarge} size="lg" />
-            </Button>
-          </span>
+          </AutoSizer>
         </div>
-        {isGrouped ? (
-          <>
-            {rows.map((row) => (
-              <Fragment key={row.groupByVal}>
-                <h5 className="text-muted mt-3">{row.groupByVal}</h5>
-                <BlueprintsView
-                  tableInstance={tableInstance}
-                  rows={row.subRows}
-                />
-              </Fragment>
-            ))}
-          </>
-        ) : (
-          <BlueprintsView tableInstance={tableInstance} rows={rows} />
-        )}
       </Col>
     </BootstrapRow>
   );

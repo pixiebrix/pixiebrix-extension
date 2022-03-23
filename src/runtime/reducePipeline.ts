@@ -33,7 +33,7 @@ import {
   sendDeploymentAlert,
   traces,
 } from "@/background/messenger/api";
-import { hideNotification, showNotification } from "@/contentScript/notify";
+import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
@@ -72,7 +72,7 @@ type CommonOptions = ApiVersionOptions & {
   logger: Logger;
   /**
    * `true` to throw an error if a renderer is encountered. Used to abort execution in the contentScript to pass
-   * data over to be rendered in a PixieBrix sidebar actionPanel.
+   * data over to be rendered in a PixieBrix sidebar sidebar.
    */
   headless: boolean;
 };
@@ -279,7 +279,7 @@ async function renderBlockArg(
         `Passed root to reader ${config.id} (window=${config.window ?? "self"})`
       );
 
-      return ({ root: state.root } as unknown) as RenderedArgs;
+      return { root: state.root } as unknown as RenderedArgs;
     }
 
     // TODO: allow non-document roots in other tabs
@@ -384,7 +384,7 @@ export async function runBlock(
 
   try {
     // Inputs validated in throwIfInvalidInput
-    const validatedProps = (props as unknown) as BlockProps<BlockArg>;
+    const validatedProps = props as unknown as BlockProps<BlockArg>;
     return await execute(resolvedConfig, validatedProps, options);
   } finally {
     if (stage.notifyProgress) {
@@ -527,7 +527,7 @@ export async function blockReducer(
   return { output, context };
 }
 
-async function throwBlockError(
+function throwBlockError(
   blockConfig: BlockConfig,
   state: IntermediateState,
   error: unknown,
@@ -586,12 +586,12 @@ export async function reducePipeline(
 
   const { explicitDataFlow, logger: pipelineLogger } = options;
 
-  let context: BlockArgContext = ({
+  let context: BlockArgContext = {
     // Put serviceContext first so they can't override the input/options
     ...serviceContext,
     "@input": input,
     "@options": optionsArgs ?? {},
-  } as unknown) as BlockArgContext;
+  } as unknown as BlockArgContext;
 
   // When using explicit data flow, the first block (and other blocks) use `@input` in the context to get the inputs
   let output: unknown = explicitDataFlow ? {} : input;
@@ -621,9 +621,7 @@ export async function reducePipeline(
         logger: stageLogger,
       });
     } catch (error) {
-      // Must await because it will throw a wrapped error
-      // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
-      await throwBlockError(blockConfig, state, error, options);
+      throwBlockError(blockConfig, state, error, options);
     }
 
     output = nextValues.output;

@@ -25,25 +25,32 @@ import blockRegistry from "@/blocks/registry";
 import { BlockType, defaultBlockConfig } from "@/blocks/util";
 import { IBlock } from "@/core";
 import { uuidv4 } from "@/types/helpers";
+import { reportEvent } from "@/telemetry/events";
+import { useSelector } from "react-redux";
+import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectActiveExtensionId } from "@/pageEditor/slices/editorSelectors";
 
 type ElementBlockEditProps = {
-  blocksType: BlockType;
+  blockTypes: BlockType[];
   blockConfigName: string;
   blockConfig: BlockConfig;
   onBlockSelected: (blockConfig: BlockConfig) => void;
 };
 
 const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
-  blocksType,
+  blockTypes,
   blockConfigName,
   blockConfig,
   onBlockSelected,
 }) => {
+  const sessionId = useSelector(selectSessionId);
+  const extensionId = useSelector(selectActiveExtensionId);
+
   const [renderBlocks] = useAsyncState<IBlock[]>(
     async () => {
       const allBlocks = await blockRegistry.allTyped();
       return [...allBlocks.values()]
-        .filter((x) => x.type === blocksType)
+        .filter((x) => blockTypes.includes(x.type))
         .map((x) => x.block);
     },
     [],
@@ -60,6 +67,12 @@ const ElementBlockEdit: React.FC<ElementBlockEditProps> = ({
       config: defaultBlockConfig(block.inputSchema),
     };
 
+    reportEvent("BrickAdd", {
+      brickId: block.id,
+      sessionId,
+      extensionId,
+      source: "PageEditor-DocumentBuilder",
+    });
     onBlockSelected(blockConfig);
   };
 

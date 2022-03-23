@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { identity } from "lodash";
+import { identity, toPath } from "lodash";
 import { getErrorMessage } from "@/errors";
-import { cleanValue, InvalidPathError, isObject } from "@/utils";
+import { cleanValue, InvalidPathError, isObject, joinName } from "@/utils";
 import { UnknownObject } from "@/types";
 
 // First part of the path can be global context with a @
@@ -45,7 +45,7 @@ export interface ReadProxy {
 
 export const noopProxy: ReadProxy = {
   toJS: identity,
-  get: (value, prop) => {
+  get(value, prop) {
     if (isObject(value) && Object.prototype.hasOwnProperty.call(value, prop)) {
       // Checking visibility of the property above
       // eslint-disable-next-line security/detect-object-injection
@@ -85,7 +85,7 @@ export function getPropByPath(
   const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
 
   let value: unknown = obj;
-  const rawParts = path.trim().split(".");
+  const rawParts = toPath(path.trim());
 
   for (const [index, rawPart] of rawParts.entries()) {
     const previous = value;
@@ -136,11 +136,8 @@ export function getPropByPath(
 export function getFieldNamesFromPathString(
   name: string
 ): [parentFieldName: string | undefined, fieldName: string] {
-  const fieldName = name.includes(".")
-    ? name.slice(name.lastIndexOf(".") + 1)
-    : name;
-  const parentFieldName = name.includes(".")
-    ? name.slice(0, name.lastIndexOf("."))
-    : undefined;
+  const path = toPath(name);
+  const fieldName = path.pop();
+  const parentFieldName = path.length > 0 ? joinName(null, ...path) : undefined;
   return [parentFieldName, fieldName];
 }

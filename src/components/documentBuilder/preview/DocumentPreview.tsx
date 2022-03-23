@@ -15,6 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import previewStyles from "./ElementPreview.module.scss";
+import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
+import styles from "./DocumentPreview.module.scss";
+
 import { useField } from "formik";
 import React, { MouseEventHandler, useMemo, useState } from "react";
 import { DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
@@ -22,9 +26,6 @@ import AddElementAction from "./AddElementAction";
 import ElementPreview from "./ElementPreview";
 import { ROOT_ELEMENT_TYPES } from "@/components/documentBuilder/allowedElementTypes";
 import cx from "classnames";
-import previewStyles from "./ElementPreview.module.scss";
-import documentTreeStyles from "@/components/documentBuilder/preview/documentTree.module.scss";
-import styles from "./DocumentPreview.module.scss";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
 
 type DocumentPreviewProps = {

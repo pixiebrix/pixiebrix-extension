@@ -18,7 +18,6 @@
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import browser from "webextension-polyfill";
 import {
   cancelForm,
   registerForm,
@@ -26,13 +25,12 @@ import {
 import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";
 import {
-  ensureActionPanel,
-  hideActionPanelForm,
+  ensureSidebar,
+  hideSidebarForm,
   PANEL_HIDING_EVENT,
-  showActionPanelForm,
-} from "@/actionPanel/native";
+  showSidebarForm,
+} from "@/contentScript/sidebar";
 import { showModal } from "@/blocks/transformers/ephemeralForm/modalUtils";
-import { reportError } from "@/telemetry/logging";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
@@ -130,9 +128,9 @@ export class FormTransformer extends Transformer {
     if (location === "sidebar") {
       // Show sidebar (which may also be showing native panels)
 
-      await ensureActionPanel();
+      await ensureSidebar();
 
-      showActionPanelForm({
+      showSidebarForm({
         extensionId: logger.context.extensionId,
         nonce: frameNonce,
         form: formDefinition,
@@ -155,11 +153,11 @@ export class FormTransformer extends Transformer {
         // NOTE: we're not hiding the side panel here to avoid closing the sidebar if the user already had it open.
         // In the future we might creating/sending a closeIfEmpty message to the sidebar, so that it would close
         // if this form was the only entry in the panel
-        hideActionPanelForm(frameNonce);
-        void cancelForm(frameNonce).catch(reportError);
+        hideSidebarForm(frameNonce);
+        void cancelForm(frameNonce);
       });
     } else {
-      showModal(frameSource, controller.signal);
+      showModal(frameSource, controller);
     }
 
     try {

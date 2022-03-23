@@ -294,9 +294,10 @@ export default {
     test: function (win) {
       var jq = win.jQuery || win.$ || win.$jq || win.$j;
       if (jq && jq.fn && jq.fn.jquery && jq.ui) {
-        var plugins = "accordion,datepicker,dialog,draggable,droppable,progressbar,resizable,selectable,slider,menu,grid,tabs".split(
-            ","
-          ),
+        var plugins =
+            "accordion,datepicker,dialog,draggable,droppable,progressbar,resizable,selectable,slider,menu,grid,tabs".split(
+              ","
+            ),
           concat = [];
         for (var i = 0; i < plugins.length; i++) {
           if (jq.ui[plugins[i]])
@@ -1694,7 +1695,8 @@ export default {
     npm: null,
     test: function (win) {
       // Same detecton used in Magento 2 DevTools: https://github.com/magento/m2-devtools
-      const reRequireScript = /\/static(?:\/version\d+)?\/frontend\/.+\/.+\/requirejs\/require(?:\.min)?\.js/;
+      const reRequireScript =
+        /\/static(?:\/version\d+)?\/frontend\/.+\/.+\/requirejs\/require(?:\.min)?\.js/;
       const scripts = Array.from(
         document.querySelectorAll("script[src]") || []
       );
@@ -1769,11 +1771,13 @@ export default {
               return response.text();
             })
             .then(function (scriptContent) {
-              var workboxRegExp = /new Workbox|new workbox|workbox\.precaching\.|workbox\.strategies/gm;
+              var workboxRegExp =
+                /new Workbox|new workbox|workbox\.precaching\.|workbox\.strategies/gm;
               if (workboxRegExp.test(scriptContent)) {
                 // Adapted from
                 // https://github.com/semver/semver/issues/232#issue-48635632
-                var semVerRegExp = /workbox.*?\b((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?)\b/gim;
+                var semVerRegExp =
+                  /workbox.*?\b((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?)\b/gim;
                 var matches = semVerRegExp.exec(scriptContent);
                 var version = UNKNOWN_VERSION;
                 if (
@@ -1957,7 +1961,8 @@ export default {
       );
 
       // October CMS resource patterns / paths - search in link, style or script tags
-      const resourcesOctober = /\/modules\/system\/assets\/(css|js)\/framework(\.extras|\.combined)?(-min)?/;
+      const resourcesOctober =
+        /\/modules\/system\/assets\/(css|js)\/framework(\.extras|\.combined)?(-min)?/;
       const res = Array.from(
         document.querySelectorAll("link,style,script") || []
       );

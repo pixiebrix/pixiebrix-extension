@@ -18,7 +18,7 @@
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import React from "react";
 
-const UnsupportedWidget: React.FC<SchemaFieldProps> = ({ schema }) => (
+const UnsupportedWidget: React.VFC<SchemaFieldProps> = ({ schema }) => (
   <div>Unsupported field type: {schema?.type ?? "No type found"}</div>
 );
 

@@ -15,84 +15,67 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
-import { Provider, useSelector } from "react-redux";
+import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import GridLoader from "react-spinners/GridLoader";
+import Loader from "@/components/Loader";
 import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import InstalledPage from "@/options/pages/installed/InstalledPage";
 import ServicesEditor from "@/options/pages/services/ServicesEditor";
 import BrickCreatePage from "@/options/pages/brickEditor/CreatePage";
 import BrickEditPage from "@/options/pages/brickEditor/EditPage";
-import MarketplacePage from "@/options/pages/MarketplacePage";
 import BlueprintsPage from "@/options/pages/blueprints/BlueprintsPage";
 import SettingsPage from "@/options/pages/settings/SettingsPage";
-import Navbar from "@/layout/Navbar";
+import Navbar from "@/options/Navbar";
 import Footer from "@/layout/Footer";
-import Sidebar from "@/layout/Sidebar";
+import Sidebar from "@/options/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
-import { ToastProvider } from "react-toast-notifications";
-import AuthContext from "@/auth/AuthContext";
-import { useAsyncState } from "@/hooks/common";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ErrorModal from "@/layout/ErrorModal";
 import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
 import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
-import { getAuth } from "@/hooks/auth";
 import useRefresh from "@/hooks/useRefresh";
-import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
-import { AuthState } from "@/core";
 import { initTelemetry } from "@/background/messenger/api";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
-import "@/contrib/editors";
+import registerEditors from "@/contrib/editors";
 import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import WorkshopPage from "./pages/workshop/WorkshopPage";
 import InvitationBanner from "@/options/pages/InvitationBanner";
-import { SettingsState } from "@/store/settingsTypes";
+import BrowserBanner from "./pages/BrowserBanner";
+import useFlags from "@/hooks/useFlags";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import RequireAuth from "@/auth/RequireAuth";
 
 // Register the built-in bricks
+registerEditors();
 registerBuiltinBlocks();
 registerContribBlocks();
 
-const RequireInstall: React.FunctionComponent = ({ children }) => {
-  const mode = useSelector<{ settings: SettingsState }, string>(
-    ({ settings }) => settings.mode
-  );
-  const [linked, isPending] = useAsyncState(isLinked);
-
-  if (isPending && mode === "remote") {
-    return null;
-  }
-
-  if (mode === "remote" && !linked) {
-    return <SetupPage />;
-  }
-
-  return <>{children}</>;
-};
+// Register Widgets
+registerDefaultWidgets();
 
 const Layout = () => {
-  // Get the latest brick definitions. Currently in Layout to ensure the Redux store has been hydrated by the time
-  // refresh is called.
+  // Get the latest brick definitions. Put it here in Layout instead of App to ensure the Redux store has been hydrated
+  // by the time refresh is called.
   useRefresh();
 
-  const { flags } = useContext(AuthContext);
+  const { permit } = useFlags();
 
   return (
-    <div className="w-100">
+    <div>
       <Navbar />
       <Container fluid className="page-body-wrapper">
-        <RequireInstall>
+        <RequireAuth LoginPage={SetupPage}>
           <Sidebar />
           <div className="main-panel">
             <ErrorModal />
+            <BrowserBanner />
             <EnvironmentBanner />
             <UpdateBanner />
             <DeploymentBanner />
@@ -100,14 +83,6 @@ const Layout = () => {
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
-                  {flags.includes("blueprints-page") && (
-                    <Route
-                      exact
-                      path="/blueprints-page"
-                      component={BlueprintsPage}
-                    />
-                  )}
-                  <Route exact path="/blueprints" component={MarketplacePage} />
                   <Route
                     exact
                     path="/extensions/install/:extensionId"
@@ -121,15 +96,16 @@ const Layout = () => {
 
                   <Route exact path="/settings" component={SettingsPage} />
 
-                  {!flags.includes("restricted-services") && (
+                  {permit("services") && (
                     <Route path="/services/:id?" component={ServicesEditor} />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {/* Switch does not support consolidating Routes using a React fragment */}
+                  {permit("workshop") && (
                     <Route exact path="/workshop" component={WorkshopPage} />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {permit("workshop") && (
                     <Route
                       exact
                       path="/workshop/create/"
@@ -137,7 +113,7 @@ const Layout = () => {
                     />
                   )}
 
-                  {!flags.includes("restricted-workshop") && (
+                  {permit("workshop") && (
                     <Route
                       exact
                       path="/workshop/bricks/:id/"
@@ -145,44 +121,31 @@ const Layout = () => {
                     />
                   )}
 
-                  <Route component={InstalledPage} />
+                  <Route component={BlueprintsPage} />
                 </Switch>
               </ErrorBoundary>
             </div>
             <Footer />
           </div>
-        </RequireInstall>
+        </RequireAuth>
       </Container>
     </div>
   );
 };
 
-const defaultState: AuthState = {
-  isLoggedIn: false,
-  extension: true,
-  isOnboarded: undefined,
-  flags: [],
-};
-
 const App: React.FunctionComponent = () => {
-  const [authState] = useAsyncState(getAuth);
-
   useEffect(() => {
     initTelemetry();
   }, []);
 
   return (
     <Provider store={store}>
-      <PersistGate loading={<GridLoader />} persistor={persistor}>
-        <AuthContext.Provider value={authState ?? defaultState}>
-          <ConnectedRouter history={hashHistory}>
-            <ModalProvider>
-              <ToastProvider>
-                <Layout />
-              </ToastProvider>
-            </ModalProvider>
-          </ConnectedRouter>
-        </AuthContext.Provider>
+      <PersistGate loading={<Loader />} persistor={persistor}>
+        <ConnectedRouter history={hashHistory}>
+          <ModalProvider>
+            <Layout />
+          </ModalProvider>
+        </ConnectedRouter>
       </PersistGate>
     </Provider>
   );

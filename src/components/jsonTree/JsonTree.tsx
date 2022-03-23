@@ -15,14 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./JsonTree.module.scss";
+
 import { JSONTree } from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import styles from "./JsonTree.module.scss";
-import GridLoader from "react-spinners/GridLoader";
-import { searchData } from "@/devTools/utils";
+import Loader from "@/components/Loader";
+import { searchData } from "@/pageEditor/utils";
 import { useLabelRenderer } from "./treeHooks";
 
 const SEARCH_DEBOUNCE_MS = 100;
@@ -103,7 +104,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
       )}
       {labelText && <span>{labelText}</span>}
       {searchResults === undefined ? (
-        <GridLoader />
+        <Loader />
       ) : (
         <JSONTree
           data={searchResults}

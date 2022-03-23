@@ -18,12 +18,16 @@
 import { uuidv4 } from "@/types/helpers";
 import { ExtensionPoint } from "@/types";
 import { checkAvailable } from "@/blocks/available";
-import { castArray, once, debounce, cloneDeep, merge } from "lodash";
+import { castArray, cloneDeep, debounce, merge, once } from "lodash";
 import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
-import { reportError } from "@/telemetry/logging";
 import {
-  awaitElementOnce,
+  hasCancelRootCause,
+  MultipleElementsFoundError,
+  NoElementsFoundError,
+} from "@/errors";
+import {
   acquireElement,
+  awaitElementOnce,
   onNodeRemoved,
   selectExtensionContext,
 } from "@/extensionPoints/helpers";
@@ -33,28 +37,24 @@ import {
 } from "@/extensionPoints/types";
 import {
   IBlock,
-  ResolvedExtension,
-  IExtensionPoint,
-  ReaderOutput,
-  Schema,
   IconConfig,
+  IExtensionPoint,
+  Logger,
+  Metadata,
+  ReaderOutput,
+  ResolvedExtension,
+  Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill";
 import { reportEvent } from "@/telemetry/events";
-import {
-  hasCancelRootCause,
-  MultipleElementsFoundError,
-  NoElementsFoundError,
-} from "@/errors";
-import {
+import notify, {
   DEFAULT_ACTION_RESULTS,
   MessageConfig,
-  notifyError,
   notifyResult,
-} from "@/contentScript/notify";
+} from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
-import { rejectOnCancelled, PromiseCancelled } from "@/utils";
+import { PromiseCancelled, rejectOnCancelled } from "@/utils";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
@@ -69,6 +69,9 @@ import { mergeReaders } from "@/blocks/readers/readerUtils";
 import { $safeFind } from "@/helpers";
 import sanitize from "@/utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/common";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import reportError from "@/telemetry/reportError";
+import pluralize from "@/utils/pluralize";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -161,25 +164,24 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   private uninstalled = false;
 
   private readonly notifyError = debounce(
-    notifyError,
+    notify.error,
     MENU_INSTALL_ERROR_DEBOUNCE_MS,
     {
       leading: true,
       trailing: false,
     }
-  );
+  ) as typeof notify.error; // `debounce` loses the overloads
 
-  public get defaultOptions(): { caption: string } {
+  public get kind(): "menuItem" {
+    return "menuItem";
+  }
+
+  public override get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
   }
 
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon = "faMousePointer"
-  ) {
-    super(id, name, description, icon);
+  protected constructor(metadata: Metadata, logger: Logger) {
+    super(metadata, logger);
     this.instanceId = uuidv4();
     this.menus = new Map<string, HTMLElement>();
     this.removed = new Set<string>();
@@ -265,7 +267,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
-  public uninstall(): void {
+  public override uninstall(): void {
     this.uninstalled = true;
 
     const menus = [...this.menus.values()];
@@ -625,6 +627,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         } else {
           const [elementPromise, cancel] = awaitElementOnce(dependency);
           cancellers.push(cancel);
+          // eslint-disable-next-line promise/prefer-await-to-then -- TODO: Maybe refactor
           void elementPromise.then(() => {
             rerun();
           });
@@ -724,18 +727,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
 
     if (errors.length > 0) {
-      // Report the error to the user. Don't report to to the telemetry service since we already reported
-      // above in the loop
-      console.warn(`An error occurred adding ${errors.length} menu item(s)`, {
-        errors,
+      const subject = pluralize(errors.length, "the button", "$$ buttons");
+      const message = `An error occurred adding ${subject}`;
+      console.warn(message, { errors });
+      this.notifyError({
+        message,
+        reportError: false, // We already reported it in the loop above
       });
-      if (errors.length === 1) {
-        this.notifyError("An error occurred adding the menu item/button");
-      } else {
-        this.notifyError(
-          `An error occurred adding ${errors.length} menu items`
-        );
-      }
     }
   }
 }
@@ -770,7 +768,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   public readonly rawConfig: ExtensionPointConfig<MenuDefinition>;
 
-  public get defaultOptions(): {
+  public override get defaultOptions(): {
     caption: string;
     [key: string]: string;
   } {
@@ -784,8 +782,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    const { id, name, description, icon } = cloned.metadata;
-    super(id, name, description, icon);
+    super(cloned.metadata, new BackgroundLogger());
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;
@@ -795,7 +792,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     };
   }
 
-  addMenuItem($menu: JQuery, $menuItem: JQuery): void {
+  override addMenuItem($menu: JQuery, $menuItem: JQuery): void {
     const { position = "append" } = this._definition;
 
     if (typeof position === "object") {
@@ -834,7 +831,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     }
   }
 
-  getReaderRoot($containerElement: JQuery): HTMLElement | Document {
+  override getReaderRoot($containerElement: JQuery): HTMLElement | Document {
     const selector = this._definition.readerSelector;
     if (selector) {
       if ($containerElement.length > 1) {
@@ -862,15 +859,15 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     return document;
   }
 
-  async defaultReader() {
+  override async defaultReader() {
     return mergeReaders(this._definition.reader);
   }
 
-  getContainerSelector() {
+  override getContainerSelector() {
     return this._definition.containerSelector;
   }
 
-  getTemplate(): string {
+  override getTemplate(): string {
     return this._definition.template;
   }
 

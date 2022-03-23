@@ -16,7 +16,6 @@
  */
 
 import { MessengerMeta } from "webext-messenger";
-import browser from "webextension-polyfill";
 
 export async function captureTab(this: MessengerMeta): Promise<string> {
   return browser.tabs.captureVisibleTab(this.trace[0].tab.windowId, {

@@ -17,12 +17,9 @@
 
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
-import UiPathRobot from "@/contrib/uipath/UiPathRobot";
-import { JobResult } from "@uipath/robot/dist/models";
+import type { JobResult } from "@uipath/robot/dist/models";
 import { BusinessError } from "@/errors";
 import { validateRegistryId } from "@/types/helpers";
-
-UiPathRobot.settings.disableTelemetry = true;
 
 export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/local-process");
 
@@ -57,9 +54,13 @@ export class RunLocalProcess extends Transformer {
     { releaseKey, inputArguments = {} }: BlockArg,
     { logger }: BlockOptions
   ): Promise<JobResult> {
+    const { UiPathRobot } = await import(
+      /* webpackChunkName: "uipath-robot" */ "@/contrib/uipath/UiPathRobot"
+    );
+
     return Promise.race([
       // Throw error if Assistant is missing
-      new Promise((_, reject) => {
+      new Promise((resolve, reject) => {
         UiPathRobot.on("missing-components", () => {
           reject(new Error("UiPath Assistant not found. Is it installed?"));
         });

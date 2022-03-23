@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./ServiceEditorModal.module.scss";
+
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
@@ -27,14 +29,13 @@ import { useAsyncState } from "@/hooks/common";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
-import { reportError } from "@/telemetry/logging";
+import reportError from "@/telemetry/reportError";
 import { useTitle } from "@/hooks/title";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import FieldRuntimeContext, {
   RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import styles from "./ServiceEditorModal.module.scss";
 import { OPTIONS_DEFAULT_RUNTIME_API_VERSION } from "@/options/constants";
 
 export type OwnProps = {
@@ -107,7 +108,8 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
     }
 
     try {
-      return buildYup(schema, {});
+      // The dereferenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
+      return buildYup(cloneDeep(schema), {});
     } catch (error) {
       console.error("Error building Yup validator from JSON Schema");
       reportError(error);
@@ -122,8 +124,6 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   return (
     <Modal
       show
-      backdropClassName={styles.backdrop}
-      className={styles.modal}
       dialogClassName={styles.dialog}
       onHide={onClose}
       backdrop="static"

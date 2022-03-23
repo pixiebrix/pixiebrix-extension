@@ -23,7 +23,7 @@ import DocumentContext from "@/components/documentBuilder/render/DocumentContext
 import { runRendererPipeline } from "@/contentScript/messenger/api";
 import { whoAmI } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import PanelBody from "@/actionPanel/PanelBody";
+import PanelBody from "@/sidebar/PanelBody";
 import { RendererPayload } from "@/runtime/runtimeTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 
@@ -37,24 +37,21 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline }) => {
     options: { ctxt },
   } = useContext(DocumentContext);
 
-  const [
-    payload,
-    isLoading,
-    error,
-  ] = useAsyncState<RendererPayload>(async () => {
-    const me = await whoAmI();
+  const [payload, isLoading, error] =
+    useAsyncState<RendererPayload>(async () => {
+      const me = await whoAmI();
 
-    // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
-    const target = { tabId: me.tab.id, frameId: 0 };
+      // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
+      const target = { tabId: me.tab.id, frameId: 0 };
 
-    return runRendererPipeline(target, {
-      nonce: uuidv4(),
-      context: ctxt,
-      pipeline,
-      // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
-      options: apiVersionOptions("v3"),
-    });
-  }, [pipeline]);
+      return runRendererPipeline(target, {
+        nonce: uuidv4(),
+        context: ctxt,
+        pipeline,
+        // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
+        options: apiVersionOptions("v3"),
+      });
+    }, [pipeline]);
 
   if (isLoading) {
     return <PanelBody payload={null} />;

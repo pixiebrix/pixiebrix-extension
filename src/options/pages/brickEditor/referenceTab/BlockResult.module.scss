@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
 .root {
   width: 100%;
   cursor: pointer;
@@ -64,7 +67,7 @@
 
 .sharing {
   max-width: 40%;
-  color: #343a40;
+  color: $body-color;
 }
 
 .id {

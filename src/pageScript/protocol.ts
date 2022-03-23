@@ -23,8 +23,8 @@ import {
   SET_COMPONENT_DATA,
 } from "@/messaging/constants";
 import { ReaderOutput } from "@/core";
-import { ElementInfo } from "@/nativeEditor/frameworks";
 import { cleanValue } from "@/utils";
+import { ElementInfo } from "@/contentScript/nativeEditor/types";
 
 export type PathSpec =
   | string

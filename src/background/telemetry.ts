@@ -19,7 +19,6 @@ import { liftBackground } from "@/background/protocol";
 import { JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import { compact, debounce, throttle, uniq } from "lodash";
-import browser from "webextension-polyfill";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
 import { Data, UUID } from "@/core";
@@ -54,8 +53,6 @@ async function uid(): Promise<UUID> {
   }
 
   let uuid = await readStorage<UUID>(UUID_STORAGE_KEY);
-
-  console.debug("Current browser UID", { uuid });
 
   if (!uuid || typeof uuid !== "string") {
     uuid = uuidv4();
@@ -96,10 +93,12 @@ async function userSummary() {
   try {
     const { extensions } = await loadOptions();
     numActiveExtensions = extensions.length;
-    numActiveBlueprints = uniq(compact(extensions.map((x) => x._recipe?.id)))
-      .length;
-    numActiveExtensionPoints = uniq(extensions.map((x) => x.extensionPointId))
-      .length;
+    numActiveBlueprints = uniq(
+      compact(extensions.map((x) => x._recipe?.id))
+    ).length;
+    numActiveExtensionPoints = uniq(
+      extensions.map((x) => x.extensionPointId)
+    ).length;
   } catch (error) {
     console.warn("Cannot get number of extensions", { error });
   }

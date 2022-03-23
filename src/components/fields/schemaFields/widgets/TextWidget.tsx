@@ -26,22 +26,35 @@ import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import { Form, FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
-import { TemplateEngine } from "@/core";
+import { Schema, TemplateEngine } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { trim } from "lodash";
-import {
-  isKeyStringField,
-  schemaSupportsTemplates,
-} from "@/components/fields/schemaFields/BasicSchemaField";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
+import {
+  getToggleOptions,
+  isKeyStringField,
+} from "@/components/fields/schemaFields/getToggleOptions";
+
+function schemaSupportsTemplates(schema: Schema): boolean {
+  const options = getToggleOptions({
+    fieldSchema: schema,
+    isRequired: false,
+    customToggleModes: [],
+    isObjectProperty: false,
+    isArrayItem: false,
+    allowExpressions: true,
+  });
+  return options.some(
+    (option) => option.value === "string" && option.label === "Text"
+  );
+}
 
 function isVarValue(value: string): boolean {
   return value.startsWith("@") && !value.includes(" ");
 }
 
-const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
+const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   name,
   schema,
   isRequired,
@@ -55,19 +68,15 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   focusInput,
   ...formControlProps
 }) => {
-  const [{ value, ...restInputProps }, { error }, { setValue }] = useField(
-    name
-  );
-  const { allowExpressions: allowExpressionsContext } = useContext(
-    FieldRuntimeContext
-  );
+  const [{ value, ...restInputProps }, , { setValue }] = useField(name);
+  const { allowExpressions: allowExpressionsContext } =
+    useContext(FieldRuntimeContext);
   const allowExpressions = allowExpressionsContext && !isKeyStringField(schema);
 
   const textAreaRef = useRef<HTMLTextAreaElement>();
 
   useEffect(() => {
     if (textAreaRef.current) {
-      // eslint-disable-next-line security/detect-non-literal-fs-filename -- not using fs.watch, false positive
       fitTextarea.watch(textAreaRef.current);
     }
   }, []);
@@ -95,9 +104,10 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     }
   }, [focusInput]);
 
-  const supportsTemplates = useMemo(() => schemaSupportsTemplates(schema), [
-    schema,
-  ]);
+  const supportsTemplates = useMemo(
+    () => schemaSupportsTemplates(schema),
+    [schema]
+  );
 
   const onChangeForTemplate = useCallback(
     (templateEngine: TemplateEngine) => {
@@ -152,18 +162,15 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
     }
 
     const fieldValue = typeof value === "string" ? value : "";
-    const onChange: React.ChangeEventHandler<HTMLInputElement> = allowExpressions
-      ? onChangeForTemplate("nunjucks")
-      : (event) => {
-          setValue(event.target.value);
-        };
+    const onChange: React.ChangeEventHandler<HTMLInputElement> =
+      allowExpressions
+        ? onChangeForTemplate("nunjucks")
+        : (event) => {
+            setValue(event.target.value);
+          };
 
     return [fieldValue, onChange];
   }, [allowExpressions, onChangeForTemplate, setValue, value]);
-
-  if (isTemplateExpression(value) && isMustacheOnly(value.__value__)) {
-    return <WorkshopMessageWidget />;
-  }
 
   if (
     value !== null &&
@@ -182,7 +189,6 @@ const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
       {...formControlProps}
       value={fieldInputValue}
       onChange={fieldOnChange}
-      isInvalid={Boolean(error)}
       ref={textAreaRef}
     />
   );

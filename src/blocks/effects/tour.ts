@@ -23,6 +23,7 @@ import { attachStylesheet } from "@/blocks/util";
 // Can't get introjs.scss directly with loadAsUrl because the browser doesn't understand sass/scss
 import stylesheetUrl from "@/vendors/intro.js/introjs.css?loadAsUrl";
 import { $safeFind } from "@/helpers";
+import pDefer from "p-defer";
 
 type Step = {
   title: string;
@@ -122,7 +123,9 @@ export class TourEffect extends Effect {
       /* webpackChunkName: "intro.js" */ "intro.js"
     );
 
-    return new Promise<void>((resolve, reject) => {
+    const { resolve, reject, promise: tourPromise } = pDefer();
+
+    try {
       if (tourInProgress) {
         throw new BusinessError("A tour is already in progress");
       }
@@ -157,8 +160,10 @@ export class TourEffect extends Effect {
           reject(new CancelError("User cancelled the tour"));
         })
         .start();
-    }).finally(() => {
+
+      await tourPromise;
+    } finally {
       tourInProgress = false;
-    });
+    }
   }
 }

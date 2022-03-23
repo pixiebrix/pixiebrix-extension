@@ -116,7 +116,7 @@ export class GoogleSheetsAppend extends Effect {
     super(
       GOOGLE_SHEETS_APPEND_ID,
       "Add Google sheet row",
-      "Add a row of data to a Google sheet",
+      "Add a row of data to a Google sheet with headings",
       "faTable"
     );
   }
@@ -135,13 +135,12 @@ export class GoogleSheetsAppend extends Effect {
     }>,
     { logger }: BlockOptions
   ): Promise<void> {
-    const rowValues =
-      typeof rawValues === "object"
-        ? Object.entries(rawValues).map(([header, value]) => ({
-            header,
-            value,
-          }))
-        : rawValues;
+    const rowValues = Array.isArray(rawValues)
+      ? rawValues
+      : Object.entries(rawValues).map(([header, value]) => ({
+          header,
+          value,
+        }));
 
     const valueHeaders = rowValues.map((x: RowValue) => x.header);
     let currentHeaders: string[];

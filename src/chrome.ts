@@ -16,7 +16,6 @@
  */
 
 import { isExtensionContext } from "webext-detect-page";
-import browser from "webextension-polyfill";
 import { forbidContext } from "@/utils/expectContext";
 import { JsonValue } from "type-fest";
 
@@ -50,8 +49,8 @@ export class RequestError extends Error {
   }
 }
 
-export function isBrowserActionPanel(): boolean {
-  return isExtensionContext() && location.pathname === "/action.html";
+export function isBrowserSidebar(): boolean {
+  return isExtensionContext() && location.pathname === "/sidebar.html";
 }
 
 export function setChromeExtensionId(extensionId = ""): void {
@@ -137,4 +136,17 @@ export async function setReduxStorage<T extends JsonValue = JsonValue>(
   value: T
 ): Promise<void> {
   await browser.storage.local.set({ [storageKey]: JSON.stringify(value) });
+}
+
+export async function onTabClose(watchedTabId: number): Promise<void> {
+  await new Promise<void>((resolve) => {
+    const listener = (closedTabId: number) => {
+      if (closedTabId === watchedTabId) {
+        resolve();
+        browser.tabs.onRemoved.removeListener(listener);
+      }
+    };
+
+    browser.tabs.onRemoved.addListener(listener);
+  });
 }

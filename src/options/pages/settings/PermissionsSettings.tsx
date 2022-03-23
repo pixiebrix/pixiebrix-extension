@@ -16,9 +16,12 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
-import { useToasts } from "react-toast-notifications";
-import { getAdditionalPermissions } from "webext-additional-permissions";
-import browser, { Manifest } from "webextension-polyfill";
+import notify from "@/utils/notify";
+import {
+  getAdditionalPermissions,
+  dropOverlappingPermissions,
+} from "webext-additional-permissions";
+import { Manifest } from "webextension-polyfill";
 import { sortBy } from "lodash";
 import { useAsyncEffect } from "use-async-effect";
 import { Button, Card, ListGroup } from "react-bootstrap";
@@ -51,23 +54,21 @@ const PermissionRow: React.FunctionComponent<{
 const HIDE_EXTRA_PERMISSIONS = ["devtools"];
 
 const PermissionsSettings: React.FunctionComponent = () => {
-  const { addToast } = useToasts();
   const [permissions, setPermissions] = useState<Permissions>();
 
   const refresh = useCallback(async () => {
-    setPermissions(await getAdditionalPermissions());
+    setPermissions(
+      dropOverlappingPermissions(await getAdditionalPermissions())
+    );
   }, [setPermissions]);
 
   const removeOrigin = useCallback(
     async (origin: string) => {
       await browser.permissions.remove({ origins: [origin] });
-      addToast(`Removed permission for ${origin}`, {
-        appearance: "success",
-        autoDismiss: true,
-      });
+      notify.success(`Removed permission for ${origin}`);
       await refresh();
     },
-    [refresh, addToast]
+    [refresh]
   );
 
   const removePermission = useCallback(
@@ -75,18 +76,16 @@ const PermissionsSettings: React.FunctionComponent = () => {
       await browser.permissions.remove({
         permissions: [permission as OptionalPermission],
       });
-      addToast(`Removed ${permission}`, {
-        appearance: "success",
-        autoDismiss: true,
-      });
+      notify.success(`Removed ${permission}`);
       await refresh();
     },
-    [refresh, addToast]
+    [refresh]
   );
 
-  const origins = useMemo(() => sortBy(permissions?.origins ?? []), [
-    permissions,
-  ]);
+  const origins = useMemo(
+    () => sortBy(permissions?.origins ?? []),
+    [permissions]
+  );
 
   const extraPermissions = useMemo(
     () =>

@@ -16,11 +16,17 @@
  */
 
 import LazyLocatorFactory from "@/services/locator";
-import { isBackground } from "webext-detect-page";
+import { forbidContext } from "@/utils/expectContext";
 
 export const locator = new LazyLocatorFactory();
 
-async function initLocator() {
+export default async function initLocator() {
+  // Service locator cannot run in contentScript due to CSP and wanting to isolate local secrets
+  forbidContext(
+    "contentScript",
+    "The service locator cannot run in the contentScript"
+  );
+  console.debug("Eagerly initializing service locator");
   await locator.refresh();
 }
 
@@ -30,6 +36,12 @@ type RefreshOptions = {
 };
 
 export async function refreshServices(options?: RefreshOptions): Promise<void> {
+  // Service locator cannot run in contentScript due to CSP and wanting to isolate local secrets
+  forbidContext(
+    "contentScript",
+    "The service locator cannot run in the contentScript"
+  );
+
   const { local, remote } = {
     local: true,
     remote: true,
@@ -46,10 +58,4 @@ export async function refreshServices(options?: RefreshOptions): Promise<void> {
     // Prevent buggy call sites from silently causing issues
     throw new Error("Either local or remote must be set to true");
   }
-}
-
-if (isBackground()) {
-  void initLocator().then(() => {
-    console.debug("Eagerly initialized service locator");
-  });
 }

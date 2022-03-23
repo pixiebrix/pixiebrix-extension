@@ -24,7 +24,6 @@ import {
   UUID,
   OAuth2Context,
 } from "@/core";
-import browser from "webextension-polyfill";
 import {
   computeChallenge,
   generateVerifier,
@@ -114,10 +113,11 @@ export async function getToken(
 
   const { url, data: tokenData } = service.getTokenContext(auth.config);
 
-  const { status, statusText, data: responseData } = await axios.post<AuthData>(
-    url,
-    tokenData
-  );
+  const {
+    status,
+    statusText,
+    data: responseData,
+  } = await axios.post<AuthData>(url, tokenData);
 
   if (status >= 400) {
     throw new Error(statusText);
@@ -199,7 +199,7 @@ async function implicitGrantFlow(
     throw new Error("Error performing implicit grant flow");
   }
 
-  const data: AuthData = ({ access_token, ...rest } as unknown) as AuthData;
+  const data: AuthData = { access_token, ...rest } as unknown as AuthData;
   await setCachedAuthData(auth.id, data);
   return data;
 }

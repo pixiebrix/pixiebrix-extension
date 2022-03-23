@@ -11,7 +11,7 @@
     "^.+\\.txt$": "jest-raw-loader"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!@cfworker|idb|webext-|p-timeout|p-retry|p-defer|serialize-error|urlpattern-polyfill)"
+    "node_modules/(?!@cfworker|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|mimic-fn|urlpattern-polyfill)"
   ],
   "setupFiles": [
     "<rootDir>/src/testEnv.js",
@@ -28,12 +28,9 @@
   ],
   "moduleNameMapper": {
     "\\.module.(css|scss)$": "identity-obj-proxy",
-    "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",
-    "^@/telemetry/logging$": "<rootDir>/src/__mocks__/logging.ts",
-    "^@/(.*)$": "<rootDir>/src/$1",
-    "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
+    "^@/(.*)$": ["<rootDir>/src/__mocks__/@/$1", "<rootDir>/src/$1"],
     "^@contrib/(.*?)(\\?loadAsText)?$": "<rootDir>/contrib/$1",
-    "^@schemas/(.*)$": "<rootDir>/schemas/$1",
+    "^@schemas/(.*)": "<rootDir>/schemas/$1",
     "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
     "\\.(gif|ttf|eot|svg)$|\\?loadAsUrl$": "<rootDir>/src/__mocks__/fileMock.js",
     "\\.svg\\?loadAsComponent$": "<rootDir>/src/__mocks__/svgAsComponentMock.js"

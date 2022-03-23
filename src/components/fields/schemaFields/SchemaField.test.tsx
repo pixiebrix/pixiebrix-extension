@@ -24,17 +24,8 @@ import { createFormikTemplate } from "@/tests/formHelpers";
 import { waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { uniq } from "lodash";
-
-async function expectToggleOptions(container: HTMLElement, expected: string[]) {
-  // React Bootstrap dropdown does not render children items unless toggled
-  userEvent.click(container.querySelector("button"));
-  const actual = new Set(
-    [...container.querySelectorAll("a")].map((x) => x.dataset.testid)
-  );
-  await waitFor(() => {
-    expect(actual).toEqual(new Set(expected));
-  });
-}
+import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
+import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 
 interface SchemaTestCase {
   name: string;
@@ -172,9 +163,8 @@ const sampleSchemas: SchemaTestCase[] = [
   },
 ];
 
-const schemaTestCases: ReadonlyArray<
-  [name: string, schema: Schema]
-> = sampleSchemas.map(({ name, schema }) => [name, schema]);
+const schemaTestCases: ReadonlyArray<[name: string, schema: Schema]> =
+  sampleSchemas.map(({ name, schema }) => [name, schema]);
 
 function expressionValue<T extends TemplateEngine>(
   type: T,
@@ -185,6 +175,10 @@ function expressionValue<T extends TemplateEngine>(
     __value__: value,
   };
 }
+
+beforeAll(() => {
+  registerDefaultWidgets();
+});
 
 describe("SchemaField", () => {
   test.each([["v1"], ["v2"]])(

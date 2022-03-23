@@ -20,6 +20,11 @@ import { render, screen } from "@testing-library/react";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import { MemoryRouter } from "react-router";
 import { Formik } from "formik";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+
+beforeAll(() => {
+  registerDefaultWidgets();
+});
 
 describe("Marketplace Activate Wizard OptionsBody", () => {
   test("renders text field", async () => {
