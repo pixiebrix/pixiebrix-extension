@@ -16,27 +16,25 @@
  */
 
 import { IExtension } from "@/core";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
-import { castArray } from "lodash";
 import { ensureAllPermissions, extensionPermissions } from "@/permissions";
 import { mergePermissions } from "@/utils/permissions";
 import { containsPermissions } from "@/background/messenger/api";
 
 /**
- * WARNING: This hook swallows errors (to simplify the behavior for the `InstalledPage` extension table.
- * Outside of the `InstalledPage` you probably want to use useAsyncState with `containsPermissions`
+ * WARNING: This hook swallows errors (to simplify the behavior for the blueprints page.
+ * Outside of the `BlueprintsPage` you probably want to use useAsyncState with `containsPermissions`
  * @see containsPermissions
  * @see extensionPermissions
  */
-function useExtensionPermissions(
-  extension: IExtension | IExtension[]
-): [boolean | undefined, () => Promise<boolean>] {
+function useInstallablePermissions(extensions: IExtension[]): {
+  hasPermissions: boolean;
+  requestPermissions: () => Promise<boolean>;
+} {
   // By default, assume the extensions have permissions so that the UI can optimistically render the state as if
   // the permissions had extensions
-  const [enabled, setEnabled] = useState<boolean>(true);
-
-  const extensions = useMemo(() => castArray(extension), [extension]);
+  const [hasPermissions, setHasPermissions] = useState<boolean>(true);
 
   useAsyncEffect(
     async (isMounted) => {
@@ -48,22 +46,22 @@ function useExtensionPermissions(
         );
         const hasPermissions = await containsPermissions(permissions);
         if (!isMounted()) return;
-        setEnabled(hasPermissions);
+        setHasPermissions(hasPermissions);
       } catch {
         // If there's an error checking permissions, just assume they're OK. The user will need to fix the configuration
         // before we can check permissions.
-        setEnabled(true);
+        setHasPermissions(true);
       }
     },
     [extensions]
   );
 
-  const request = useCallback(async () => {
+  const requestPermissions = useCallback(async () => {
     const permissions = mergePermissions(
       await Promise.all(extensions.map(async (x) => extensionPermissions(x)))
     );
     const accepted = await ensureAllPermissions(permissions);
-    setEnabled(accepted);
+    setHasPermissions(accepted);
     if (accepted) {
       // TODO: in the future, listen for a permissions event in this hook so the status can update without redirecting the page
       // Reload the page so all the Grant Permissions buttons are in sync.
@@ -73,7 +71,10 @@ function useExtensionPermissions(
     return accepted;
   }, [extensions]);
 
-  return [enabled, request];
+  return {
+    hasPermissions,
+    requestPermissions,
+  };
 }
 
-export default useExtensionPermissions;
+export default useInstallablePermissions;

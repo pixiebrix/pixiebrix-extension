@@ -43,6 +43,8 @@ import { CancelError } from "@/errors";
 import { useModals } from "@/components/ConfirmationModal";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { IExtension } from "@/core";
+import { useMemo } from "react";
+import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -57,24 +59,36 @@ function useInstallableActions(installable: Installable) {
     data: { scope },
   } = useSelector(appApi.endpoints.getAuth.select());
 
-  const reinstall = () => {
-    if (!isExtensionFromRecipe(installable) && !isBlueprint(installable)) {
-      return;
-    }
+  // The extensions associated with the installable
+  const extensions: IExtension[] = useMemo(
+    () =>
+      isBlueprint(installable)
+        ? unresolvedExtensions.filter(
+            (extension) => extension._recipe?.id === installable.metadata.id
+          )
+        : [installable],
+    [unresolvedExtensions, installable]
+  );
 
-    dispatch(
-      push(
-        `marketplace/activate/${encodeURIComponent(
-          isExtension(installable)
-            ? installable._recipe.id
-            : installable.metadata.id
-        )}?reinstall=1`
-      )
-    );
+  const { hasPermissions, requestPermissions } =
+    useInstallablePermissions(extensions);
+
+  const reinstall = () => {
+    if (isExtensionFromRecipe(installable) || isBlueprint(installable)) {
+      dispatch(
+        push(
+          `marketplace/activate/${encodeURIComponent(
+            isBlueprint(installable)
+              ? installable.metadata.id
+              : installable._recipe.id
+          )}?reinstall=1`
+        )
+      );
+    }
   };
 
   const activate = () => {
-    if (!isExtension(installable)) {
+    if (isBlueprint(installable)) {
       dispatch(
         push(
           `/marketplace/activate/${encodeURIComponent(installable.metadata.id)}`
@@ -134,18 +148,7 @@ function useInstallableActions(installable: Installable) {
   );
 
   const uninstall = () => {
-    const extensionsToUninstall: IExtension[] = [];
-    if (isBlueprint(installable)) {
-      extensionsToUninstall.push(
-        ...unresolvedExtensions.filter(
-          (extension) => extension._recipe?.id === installable.metadata.id
-        )
-      );
-    } else {
-      extensionsToUninstall.push(installable);
-    }
-
-    for (const extension of extensionsToUninstall) {
+    for (const extension of extensions) {
       // Remove from storage first so it doesn't get re-added in reactivate step below
       dispatch(removeExtension({ extensionId: extension.id }));
       // XXX: also remove remove side panel panels that are already open?
@@ -192,6 +195,7 @@ function useInstallableActions(installable: Installable) {
     exportBlueprint,
     activate,
     deleteExtension: isExtension(installable) ? deleteExtension : null,
+    requestPermissions: hasPermissions ? null : requestPermissions,
     reinstall:
       isExtensionFromRecipe(installable) || isBlueprint(installable)
         ? reinstall
