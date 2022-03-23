@@ -30,7 +30,7 @@ if (
     // Removing the key ensures that it does not go into a reloading loop
     // by making the above condition false after the reload
     localStorage.removeItem("dev:last-version");
-    // chrome.runtime.reload();
+    chrome.runtime.reload();
   }
 
   // Chrome only calls this function if the extension is reloaded

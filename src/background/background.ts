@@ -18,7 +18,6 @@
 // extensionContext needs to be imported before webpack-target-webextension to
 // ensure the webpack path is correct
 import "@/extensionContext";
-import "@/development/autoreload";
 import "@/development/errorsBadge";
 
 // Required for MV3; Service Workers don't have XMLHttpRequest
