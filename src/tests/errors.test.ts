@@ -12,9 +12,12 @@ import {
   selectError,
 } from "@/errors";
 import { range } from "lodash";
-import path from "path";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
+import regexJoin from "regex-join";
+
+// eslint-disable-next-line security/detect-unsafe-regex -- Tests only
+const stackTraceRegex = /(\n\s+at [^\n]+)+\n?/;
 
 const TEST_MESSAGE = "Test message";
 
@@ -23,12 +26,6 @@ function createUncaughtRejection(reason: string | Error) {
   // eslint-disable-next-line promise/prefer-await-to-then -- Test only
   promise.catch(() => {}); // Or else it will crash Node
   return { promise, reason };
-}
-
-/** Make the stack’s path relative */
-function cleanStack(stack: string): string {
-  // eslint-disable-next-line unicorn/prefer-module -- Not available
-  return stack.replaceAll(path.join(__filename, "../../..") + "/", "");
 }
 
 function nest(error: Error, level = 1): Error {
@@ -167,40 +164,14 @@ describe("ErrorWithCause", () => {
     const error = new ErrorWithCause("Error while connecting", {
       cause: new Error("Not connected to internet"),
     });
-    expect(cleanStack(error.stack)).toMatchInlineSnapshot(`
-      "Error: Error while connecting: Not connected to internet
-          at Object.<anonymous> (src/tests/errors.test.ts:167:19)
-          at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
-          at new Promise (<anonymous>)
-          at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
-          at _callCircusTest (node_modules/jest-circus/build/run.js:218:40)
-          at processTicksAndRejections (node:internal/process/task_queues:96:5)
-          at _runTest (node_modules/jest-circus/build/run.js:155:3)
-          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:66:9)
-          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:60:9)
-          at run (node_modules/jest-circus/build/run.js:25:3)
-          at runAndTransformResultsToJestFormat (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
-          at jestAdapter (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
-          at runTestInternal (node_modules/jest-runner/build/runTest.js:389:16)
-          at runTest (node_modules/jest-runner/build/runTest.js:475:34)
-          at Object.worker (node_modules/jest-runner/build/testWorker.js:133:12)
-      caused by: Error: Not connected to internet
-          at Object.<anonymous> (src/tests/errors.test.ts:168:14)
-          at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
-          at new Promise (<anonymous>)
-          at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
-          at _callCircusTest (node_modules/jest-circus/build/run.js:218:40)
-          at processTicksAndRejections (node:internal/process/task_queues:96:5)
-          at _runTest (node_modules/jest-circus/build/run.js:155:3)
-          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:66:9)
-          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:60:9)
-          at run (node_modules/jest-circus/build/run.js:25:3)
-          at runAndTransformResultsToJestFormat (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
-          at jestAdapter (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
-          at runTestInternal (node_modules/jest-runner/build/runTest.js:389:16)
-          at runTest (node_modules/jest-runner/build/runTest.js:475:34)
-          at Object.worker (node_modules/jest-runner/build/testWorker.js:133:12)"
-    `);
+    expect(error.stack).toMatch(
+      regexJoin(
+        "Error: Error while connecting: Not connected to internet",
+        stackTraceRegex,
+        "caused by: Error: Not connected to internet",
+        stackTraceRegex
+      )
+    );
   });
   test("supports non-Error causes without throwing", () => {
     expect(new ErrorWithCause("Error while connecting")).toMatchInlineSnapshot(
@@ -242,40 +213,14 @@ describe("ContextError", () => {
     const error = new ContextError("Error while connecting", {
       cause: new Error("Not connected to internet"),
     });
-    expect(cleanStack(error.stack)).toMatchInlineSnapshot(`
-      "Error: Error while connecting: Not connected to internet
-          at Object.<anonymous> (src/tests/errors.test.ts:242:19)
-          at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
-          at new Promise (<anonymous>)
-          at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
-          at _callCircusTest (node_modules/jest-circus/build/run.js:218:40)
-          at processTicksAndRejections (node:internal/process/task_queues:96:5)
-          at _runTest (node_modules/jest-circus/build/run.js:155:3)
-          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:66:9)
-          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:60:9)
-          at run (node_modules/jest-circus/build/run.js:25:3)
-          at runAndTransformResultsToJestFormat (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
-          at jestAdapter (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
-          at runTestInternal (node_modules/jest-runner/build/runTest.js:389:16)
-          at runTest (node_modules/jest-runner/build/runTest.js:475:34)
-          at Object.worker (node_modules/jest-runner/build/testWorker.js:133:12)
-      caused by: Error: Not connected to internet
-          at Object.<anonymous> (src/tests/errors.test.ts:243:14)
-          at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
-          at new Promise (<anonymous>)
-          at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
-          at _callCircusTest (node_modules/jest-circus/build/run.js:218:40)
-          at processTicksAndRejections (node:internal/process/task_queues:96:5)
-          at _runTest (node_modules/jest-circus/build/run.js:155:3)
-          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:66:9)
-          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:60:9)
-          at run (node_modules/jest-circus/build/run.js:25:3)
-          at runAndTransformResultsToJestFormat (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
-          at jestAdapter (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
-          at runTestInternal (node_modules/jest-runner/build/runTest.js:389:16)
-          at runTest (node_modules/jest-runner/build/runTest.js:475:34)
-          at Object.worker (node_modules/jest-runner/build/testWorker.js:133:12)"
-    `);
+    expect(error.stack).toMatch(
+      regexJoin(
+        "Error: Error while connecting: Not connected to internet",
+        stackTraceRegex,
+        "caused by: Error: Not connected to internet",
+        stackTraceRegex
+      )
+    );
   });
   test("supports non-Error causes without throwing", () => {
     expect(
