@@ -160,11 +160,11 @@ const ShareExtensionModal: React.FC<{
         );
         notify.success("Converted/shared brick");
 
-        // Hide the share modal
-        dispatch(blueprintModalsSlice.actions.setShareContext(null));
-
+        // Hide the share modal and show the share link modal
         dispatch(
-          push(`/installed/link/${encodeURIComponent(recipe.metadata.id)}`)
+          blueprintModalsSlice.actions.setShareContext({
+            blueprintId: recipe.metadata.id,
+          })
         );
       } catch (error) {
         if (isAxiosError(error) && error.response.data.config) {
