@@ -68,35 +68,6 @@ const ExperimentalSettings: React.FunctionComponent = () => {
               }}
             />
           </Form.Group>
-          <Form.Group controlId="toggleBlueprintsPage">
-            <Form.Label>
-              Use the new Blueprints page:{" "}
-              <i>{isBlueprintsPageEnabled ? "Enabled" : "Disabled"}</i>
-            </Form.Label>
-            <Form.Text muted className="mb-2">
-              Toggle on to replace the Active Bricks and My Blueprints pages
-              with the new Blueprints page experience.
-            </Form.Text>
-            <BootstrapSwitchButton
-              size="sm"
-              onstyle="info"
-              offstyle="light"
-              onlabel=" "
-              offlabel=" "
-              checked={isBlueprintsPageEnabled}
-              onChange={async (value) => {
-                dispatch(
-                  settingsSlice.actions.setFlag({
-                    flag: "isBlueprintsPageEnabled",
-                    value,
-                  })
-                );
-                notify.success(
-                  `Toggled Blueprints page: ${value ? "on" : "off"}`
-                );
-              }}
-            />
-          </Form.Group>
         </Form>
       </Card.Body>
     </Card>
