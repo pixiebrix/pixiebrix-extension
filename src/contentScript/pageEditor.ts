@@ -96,10 +96,13 @@ export async function runBlock({
     previousOutput: {},
   };
 
+  // If the block is configured to inherit the root element,
+  // try to get the root element from the extension point.
+  // Note: not possible when extensionPoint's targetMode equals "targetElement"
   const blockRootMode = blockConfig.rootMode ?? "inherit";
   if (
     blockRootMode === "inherit" &&
-    extensionPoint.targetMode === "root" &&
+    extensionPoint.definition.targetMode === "root" &&
     extensionPoint.definition.rootSelector
   ) {
     // Not 100% accurate, since we're looking for an element in the document,

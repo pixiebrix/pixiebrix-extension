@@ -197,9 +197,18 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
-  // TODO debug and fix this
+  console.log("BlockPreview", {
+    blockInfo,
+    blockLoading,
+    blockError,
+    extensionPoint,
+  });
+
   const blockRootMode = blockConfig.rootMode ?? "inherit";
-  if (blockRootMode === "inherit" && extensionPoint.targetMode !== "root") {
+  if (
+    blockRootMode === "inherit" &&
+    extensionPoint.definition.targetMode !== "root"
+  ) {
     return (
       <div className="text-muted">
         Output previews are currently supported only for extension points with
