@@ -31,6 +31,7 @@ import * as token from "@/auth/token";
 import * as locator from "@/services/locator";
 import { RemoteServiceError } from "@/services/errors";
 import { validateRegistryId } from "@/types/helpers";
+import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 
 const axiosMock = new MockAdapter(axios);
 const mockIsBackground = isBackground as jest.MockedFunction<
@@ -46,6 +47,8 @@ jest.mock("@/background/protocol");
 jest.mock("@/auth/token");
 jest.mock("webext-detect-page");
 jest.mock("@/services/locator");
+
+enrichAxiosErrors();
 
 const Locator = locator.default;
 

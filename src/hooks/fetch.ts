@@ -17,12 +17,9 @@
 
 import axios from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
-import { EndpointAuthError, isAxiosError } from "@/errors";
 import { isAbsoluteUrl } from "@/utils";
-import { enrichRequestError, isAppUrl } from "@/services/requestErrorUtils";
+import { isAppUrl } from "@/services/requestErrorUtils";
 import { expectContext, forbidContext } from "@/utils/expectContext";
-
-const HTTP_401_UNAUTHENTICATED = 401;
 
 type FetchOptions = {
   requireLinked?: true;
@@ -47,12 +44,8 @@ export async function fetch<TData = unknown>(
 
   if (absolute) {
     if (!(await isAppUrl(relativeOrAbsoluteUrl))) {
-      try {
-        const { data } = await axios.get<TData>(relativeOrAbsoluteUrl);
-        return data;
-      } catch (error) {
-        throw await enrichRequestError(error);
-      }
+      const { data } = await axios.get<TData>(relativeOrAbsoluteUrl);
+      return data;
     }
 
     console.warn(
@@ -65,19 +58,6 @@ export async function fetch<TData = unknown>(
 
   const client = await (requireLinked ? getLinkedApiClient() : getApiClient());
 
-  try {
-    const { data } = await client.get(relativeOrAbsoluteUrl);
-    return data;
-  } catch (error) {
-    if (
-      isAxiosError(error) &&
-      // There are some cases where `response` is undefined (because the browser blocked the request, e.g., b/c CORS)
-      // https://rollbar.com/pixiebrix/pixiebrix/items/832/
-      error.response?.status === HTTP_401_UNAUTHENTICATED
-    ) {
-      throw new EndpointAuthError(relativeOrAbsoluteUrl);
-    }
-
-    throw await enrichRequestError(error);
-  }
+  const { data } = await client.get(relativeOrAbsoluteUrl);
+  return data;
 }

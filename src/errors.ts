@@ -74,6 +74,7 @@ export class ConnectionError extends Error {
  * unauthenticated users, or
  * - The client should not make the call if the extensions is not linked
  */
+// TODO: Update comment or drop `EndpointAuthError` from `enrichRequestError`
 export class EndpointAuthError extends Error {
   readonly url: string;
 
@@ -430,9 +431,8 @@ export function getErrorMessage(
     return error;
   }
 
+  // HTTP errors should be wrapped in more specific errors as early as possible so they do not reach here unhandled
   if (isAxiosError(error)) {
-    // This will miss any errors wrapped with enrichRequestError. Including any calls using src/hooks/fetch.ts:fetch
-    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2972
     const serverMessage = selectServerErrorMessage(error);
     if (serverMessage) {
       return String(serverMessage);
