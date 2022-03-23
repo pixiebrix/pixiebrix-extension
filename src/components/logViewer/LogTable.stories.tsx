@@ -111,8 +111,7 @@ const CONTEXT_ERROR_MESSAGE: LogEntry = {
     blockId,
   },
   error: serializeError(
-    new ContextError({
-      message: "Invalid inputs for block",
+    new ContextError("Invalid inputs for block", {
       cause: validationError,
       context: {
         blockId,

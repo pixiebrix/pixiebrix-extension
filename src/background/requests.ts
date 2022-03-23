@@ -261,8 +261,7 @@ export async function proxyService<TData>(
       requestConfig
     )) as RemoteResponse<TData>;
   } catch (error) {
-    throw new ContextError({
-      message: "Error while performing request",
+    throw new ContextError("Error while performing request", {
       cause: error,
       context: {
         serviceId: serviceConfig.serviceId,

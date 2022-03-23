@@ -37,7 +37,7 @@ function nest(error: Error, level = 1): Error {
   }
 
   return nest(
-    new ContextError({ message: "Something happened", cause: error }),
+    new ContextError("Something happened", { cause: error }),
     level - 1
   );
 }
@@ -203,6 +203,9 @@ describe("ErrorWithCause", () => {
     `);
   });
   test("supports non-Error causes without throwing", () => {
+    expect(new ErrorWithCause("Error while connecting")).toMatchInlineSnapshot(
+      "[Error: Error while connecting]"
+    );
     expect(
       new ErrorWithCause("Error while connecting", {
         cause: null,
@@ -227,8 +230,7 @@ describe("ErrorWithCause", () => {
 
 describe("ContextError", () => {
   test("concats error messages", () => {
-    const error = new ContextError({
-      message: "Error while connecting",
+    const error = new ContextError("Error while connecting", {
       cause: new Error("Not connected to internet"),
     });
     expect(error.message).toBe(
@@ -237,13 +239,12 @@ describe("ContextError", () => {
   });
 
   test("concats error stacks", () => {
-    const error = new ContextError({
-      message: "Error while connecting",
+    const error = new ContextError("Error while connecting", {
       cause: new Error("Not connected to internet"),
     });
     expect(cleanStack(error.stack)).toMatchInlineSnapshot(`
       "Error: Error while connecting: Not connected to internet
-          at Object.<anonymous> (src/tests/errors.test.ts:240:19)
+          at Object.<anonymous> (src/tests/errors.test.ts:242:19)
           at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
           at new Promise (<anonymous>)
           at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
@@ -259,7 +260,7 @@ describe("ContextError", () => {
           at runTest (node_modules/jest-runner/build/runTest.js:475:34)
           at Object.worker (node_modules/jest-runner/build/testWorker.js:133:12)
       caused by: Error: Not connected to internet
-          at Object.<anonymous> (src/tests/errors.test.ts:242:14)
+          at Object.<anonymous> (src/tests/errors.test.ts:243:14)
           at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
           at new Promise (<anonymous>)
           at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
@@ -278,11 +279,10 @@ describe("ContextError", () => {
   });
   test("supports non-Error causes without throwing", () => {
     expect(
-      new ContextError({ message: "Error while connecting", cause: null })
+      new ContextError("Error while connecting", { cause: null })
     ).toMatchInlineSnapshot("[ContextError: Error while connecting]");
     expect(
-      new ContextError({
-        message: "Error while connecting",
+      new ContextError("Error while connecting", {
         cause: "No internet connection",
       })
     ).toMatchInlineSnapshot(
@@ -291,11 +291,10 @@ describe("ContextError", () => {
   });
   test("supports undefined messages without throwing", () => {
     expect(
-      new ContextError({ message: "Failed connection", cause: null })
+      new ContextError("Failed connection", { cause: null })
     ).toMatchInlineSnapshot("[ContextError: Failed connection]");
     expect(
-      new ContextError({
-        message: "Failed connection",
+      new ContextError("Failed connection", {
         cause: "No internet connection",
       })
     ).toMatchInlineSnapshot(
