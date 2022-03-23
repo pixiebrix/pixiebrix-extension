@@ -49,9 +49,10 @@ export class ErrorWithCause extends Error {
     }
 
     super(`${message}: ${getErrorMessage(cause)}`);
+
     this.cause = cause;
 
-    if (isObject(cause) && "stack" in cause) {
+    if (isObject(cause) && typeof cause.stack === "string") {
       this.stack += `\ncaused by: ${cause.stack}`;
     }
   }
@@ -187,22 +188,21 @@ export class PropError extends BusinessError {
   }
 }
 
+interface ContextErrorDetails {
+  cause: unknown;
+  context?: MessageContext;
+  message: string;
+}
+
 /**
  * Wrap an error with some additional context about where the error originated.
  */
-export class ContextError extends Error {
-  public readonly cause?: Error | ErrorObject;
+export class ContextError extends ErrorWithCause {
+  override name = "ContextError";
 
   public readonly context?: MessageContext;
-
-  constructor(
-    cause: Error | ErrorObject,
-    context?: MessageContext,
-    message?: string
-  ) {
-    super(getErrorMessage(cause, message));
-    this.name = "ContextError";
-    this.cause = cause;
+  constructor({ cause, context, message }: ContextErrorDetails) {
+    super(message, { cause });
     this.context = context;
   }
 }

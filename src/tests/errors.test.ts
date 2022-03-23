@@ -36,7 +36,10 @@ function nest(error: Error, level = 1): Error {
     return error;
   }
 
-  return nest(new ContextError({ cause: error }), level - 1);
+  return nest(
+    new ContextError({ message: "Something happened", cause: error }),
+    level - 1
+  );
 }
 
 describe("hasCancelRootCause", () => {
@@ -180,9 +183,7 @@ describe("ErrorWithCause", () => {
           at jestAdapter (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
           at runTestInternal (node_modules/jest-runner/build/runTest.js:389:16)
           at runTest (node_modules/jest-runner/build/runTest.js:475:34)
-          at TestRunner.runTests (node_modules/jest-runner/build/index.js:101:12)
-          at TestScheduler.scheduleTests (node_modules/@jest/core/build/TestScheduler.js:333:13)
-          at runJest (node_modules/@jest/core/build/runJest.js:404:19)
+          at Object.worker (node_modules/jest-runner/build/testWorker.js:133:12)
       caused by: Error: Not connected to internet
           at Object.<anonymous> (src/tests/errors.test.ts:165:14)
           at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
@@ -198,9 +199,7 @@ describe("ErrorWithCause", () => {
           at jestAdapter (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
           at runTestInternal (node_modules/jest-runner/build/runTest.js:389:16)
           at runTest (node_modules/jest-runner/build/runTest.js:475:34)
-          at TestRunner.runTests (node_modules/jest-runner/build/index.js:101:12)
-          at TestScheduler.scheduleTests (node_modules/@jest/core/build/TestScheduler.js:333:13)
-          at runJest (node_modules/@jest/core/build/runJest.js:404:19)"
+          at Object.worker (node_modules/jest-runner/build/testWorker.js:133:12)"
     `);
   });
   test("supports non-Error causes without throwing", () => {
@@ -222,6 +221,85 @@ describe("ErrorWithCause", () => {
       })
     ).toMatchInlineSnapshot(
       '[Error: Error while connecting: {"response":"No internet connection"}]'
+    );
+  });
+});
+
+describe("ContextError", () => {
+  test("concats error messages", () => {
+    const error = new ContextError({
+      message: "Error while connecting",
+      cause: new Error("Not connected to internet"),
+    });
+    expect(error.message).toBe(
+      "Error while connecting: Not connected to internet"
+    );
+  });
+
+  test("concats error stacks", () => {
+    const error = new ContextError({
+      message: "Error while connecting",
+      cause: new Error("Not connected to internet"),
+    });
+    expect(cleanStack(error.stack)).toMatchInlineSnapshot(`
+      "Error: Error while connecting: Not connected to internet
+          at Object.<anonymous> (src/tests/errors.test.ts:241:19)
+          at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
+          at _callCircusTest (node_modules/jest-circus/build/run.js:218:40)
+          at processTicksAndRejections (node:internal/process/task_queues:96:5)
+          at _runTest (node_modules/jest-circus/build/run.js:155:3)
+          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:66:9)
+          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:60:9)
+          at run (node_modules/jest-circus/build/run.js:25:3)
+          at runAndTransformResultsToJestFormat (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+          at jestAdapter (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+          at runTestInternal (node_modules/jest-runner/build/runTest.js:389:16)
+          at runTest (node_modules/jest-runner/build/runTest.js:475:34)
+          at Object.worker (node_modules/jest-runner/build/testWorker.js:133:12)
+      caused by: Error: Not connected to internet
+          at Object.<anonymous> (src/tests/errors.test.ts:243:14)
+          at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
+          at _callCircusTest (node_modules/jest-circus/build/run.js:218:40)
+          at processTicksAndRejections (node:internal/process/task_queues:96:5)
+          at _runTest (node_modules/jest-circus/build/run.js:155:3)
+          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:66:9)
+          at _runTestsForDescribeBlock (node_modules/jest-circus/build/run.js:60:9)
+          at run (node_modules/jest-circus/build/run.js:25:3)
+          at runAndTransformResultsToJestFormat (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+          at jestAdapter (node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+          at runTestInternal (node_modules/jest-runner/build/runTest.js:389:16)
+          at runTest (node_modules/jest-runner/build/runTest.js:475:34)
+          at Object.worker (node_modules/jest-runner/build/testWorker.js:133:12)"
+    `);
+  });
+  test("supports non-Error causes without throwing", () => {
+    expect(
+      new ContextError({ message: "Error while connecting", cause: null })
+    ).toMatchInlineSnapshot("[ContextError: Error while connecting]");
+    expect(
+      new ContextError({
+        message: "Error while connecting",
+        cause: "No internet connection",
+      })
+    ).toMatchInlineSnapshot(
+      "[ContextError: Error while connecting: No internet connection]"
+    );
+  });
+  test("supports undefined messages without throwing", () => {
+    expect(
+      new ContextError({ message: "Failed connection", cause: null })
+    ).toMatchInlineSnapshot("[ContextError: Failed connection]");
+    expect(
+      new ContextError({
+        message: "Failed connection",
+        cause: "No internet connection",
+      })
+    ).toMatchInlineSnapshot(
+      "[ContextError: Failed connection: No internet connection]"
     );
   });
 });
