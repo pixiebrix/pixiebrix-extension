@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2022 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.table {
-  th {
-    font-weight: 400;
-  }
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
 
-  th,
-  td {
-    height: 44px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+.activeStatus {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  margin-left: 0.5rem;
+}
 
-    &:first-child {
-      width: 15px;
-    }
-  }
+.versionNumber {
+  font-size: 0.7rem;
 }

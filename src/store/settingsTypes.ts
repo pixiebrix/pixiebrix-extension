@@ -41,9 +41,4 @@ export type SettingsState = {
    * Whether the non-Chrome browser warning has been dismissed.
    */
   browserWarningDismissed: boolean;
-
-  /**
-   * Whether to use the Blueprints page instead of the Active Bricks & My Blueprints pages.
-   */
-  isBlueprintsPageEnabled: boolean;
 };
