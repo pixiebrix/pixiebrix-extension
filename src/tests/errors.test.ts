@@ -169,7 +169,7 @@ describe("ErrorWithCause", () => {
     });
     expect(cleanStack(error.stack)).toMatchInlineSnapshot(`
       "Error: Error while connecting: Not connected to internet
-          at Object.<anonymous> (src/tests/errors.test.ts:164:19)
+          at Object.<anonymous> (src/tests/errors.test.ts:167:19)
           at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
           at new Promise (<anonymous>)
           at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
@@ -185,7 +185,7 @@ describe("ErrorWithCause", () => {
           at runTest (node_modules/jest-runner/build/runTest.js:475:34)
           at Object.worker (node_modules/jest-runner/build/testWorker.js:133:12)
       caused by: Error: Not connected to internet
-          at Object.<anonymous> (src/tests/errors.test.ts:165:14)
+          at Object.<anonymous> (src/tests/errors.test.ts:168:14)
           at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
           at new Promise (<anonymous>)
           at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
@@ -243,7 +243,7 @@ describe("ContextError", () => {
     });
     expect(cleanStack(error.stack)).toMatchInlineSnapshot(`
       "Error: Error while connecting: Not connected to internet
-          at Object.<anonymous> (src/tests/errors.test.ts:241:19)
+          at Object.<anonymous> (src/tests/errors.test.ts:240:19)
           at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
           at new Promise (<anonymous>)
           at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
@@ -259,7 +259,7 @@ describe("ContextError", () => {
           at runTest (node_modules/jest-runner/build/runTest.js:475:34)
           at Object.worker (node_modules/jest-runner/build/testWorker.js:133:12)
       caused by: Error: Not connected to internet
-          at Object.<anonymous> (src/tests/errors.test.ts:243:14)
+          at Object.<anonymous> (src/tests/errors.test.ts:242:14)
           at Promise.then.completed (node_modules/jest-circus/build/utils.js:391:28)
           at new Promise (<anonymous>)
           at callAsyncCircusFn (node_modules/jest-circus/build/utils.js:316:10)
