@@ -21,9 +21,9 @@ import { MessageContext } from "@/core";
 import React, { useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { installedPageSlice } from "./installedPageSlice";
 import LogCard from "@/components/logViewer/LogCard";
 import { logActions } from "@/components/logViewer/logSlice";
+import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 
 const ExtensionLogsModal: React.FC<{
   title: string;
@@ -35,7 +35,7 @@ const ExtensionLogsModal: React.FC<{
   }, [context, dispatch]);
 
   const onClose = () => {
-    dispatch(installedPageSlice.actions.setLogsContext(null));
+    dispatch(blueprintModalsSlice.actions.setLogsContext(null));
     dispatch(logActions.setContext(null));
   };
 

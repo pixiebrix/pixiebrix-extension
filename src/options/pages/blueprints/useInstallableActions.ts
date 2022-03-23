@@ -23,7 +23,7 @@ import {
   isExtensionFromRecipe,
   isPersonal,
   isShared,
-} from "@/options/pages/blueprints/installableUtils";
+} from "@/options/pages/blueprints/utils/installableUtils";
 import { Installable } from "./blueprintsTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
@@ -31,11 +31,11 @@ import {
   reactivateEveryTab,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
+import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import notify from "@/utils/notify";
 import { push } from "connected-react-router";
-import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/installed/exportBlueprint";
+import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/blueprints/utils/exportBlueprint";
 import { appApi, useDeleteCloudExtensionMutation } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
@@ -113,7 +113,7 @@ function useInstallableActions(installable: Installable) {
       };
     }
 
-    dispatch(installedPageSlice.actions.setShareContext(shareContext));
+    dispatch(blueprintModalsSlice.actions.setShareContext(shareContext));
   };
 
   const deleteExtension = useUserAction(
@@ -165,7 +165,7 @@ function useInstallableActions(installable: Installable) {
 
   const viewLogs = () => {
     dispatch(
-      installedPageSlice.actions.setLogsContext({
+      blueprintModalsSlice.actions.setLogsContext({
         title: getLabel(installable),
         messageContext: isBlueprint(installable)
           ? {

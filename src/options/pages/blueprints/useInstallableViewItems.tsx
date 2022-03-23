@@ -33,7 +33,7 @@ import {
   getUpdatedAt,
   isExtension,
   updateAvailable,
-} from "@/options/pages/blueprints/installableUtils";
+} from "@/options/pages/blueprints/utils/installableUtils";
 import {
   useGetAuthQuery,
   useGetMarketplaceListingsQuery,
