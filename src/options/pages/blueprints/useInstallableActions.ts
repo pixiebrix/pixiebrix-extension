@@ -133,13 +133,13 @@ function useInstallableActions(installable: Installable) {
         throw new CancelError();
       }
 
-      await deleteCloudExtension({ extensionId: installable.id });
+      await deleteCloudExtension({ extensionId: installable.id }).unwrap();
     },
     {
-      successMessage: `Deleted brick ${getLabel(
+      successMessage: `Deleted extension ${getLabel(
         installable
       )} from your account`,
-      errorMessage: `Error deleting brick ${getLabel(
+      errorMessage: `Error deleting extension ${getLabel(
         installable
       )} from your account`,
       event: "ExtensionCloudDelete",
