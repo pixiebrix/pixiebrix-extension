@@ -24,7 +24,6 @@ import {
   faCubes,
   faHammer,
   faInfoCircle,
-  faScroll,
   faSeedling,
   faStoreAlt,
 } from "@fortawesome/free-solid-svg-icons";
@@ -32,50 +31,24 @@ import cx from "classnames";
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
 import useFlags from "@/hooks/useFlags";
-import { useSelector } from "react-redux";
-import { SettingsState } from "@/store/settingsTypes";
 
 const Sidebar: React.FunctionComponent = () => {
   const { permit } = useFlags();
-  const isBlueprintsPageEnabled = useSelector<
-    { settings: SettingsState },
-    boolean
-  >((x) => x.settings.isBlueprintsPageEnabled);
 
   return (
     <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
       <nav className="sidebar sidebar-offcanvas" id={SIDEBAR_ID}>
         <ul className="nav">
-          {isBlueprintsPageEnabled ? (
-            <SidebarLink
-              route="/blueprints"
-              title="Blueprints"
-              icon={faCubes}
-              isActive={(match, location) =>
-                match ||
-                location.pathname === "/" ||
-                location.pathname.startsWith("/extensions/")
-              }
-            />
-          ) : (
-            <>
-              <SidebarLink
-                route="/installed"
-                title="Active Bricks"
-                icon={faCubes}
-                isActive={(match, location) =>
-                  match ||
-                  location.pathname === "/" ||
-                  location.pathname.startsWith("/extensions/")
-                }
-              />
-              <SidebarLink
-                route="/blueprints"
-                title="My Blueprints"
-                icon={faScroll}
-              />
-            </>
-          )}
+          <SidebarLink
+            route="/blueprints"
+            title="Blueprints"
+            icon={faCubes}
+            isActive={(match, location) =>
+              match ||
+              location.pathname === "/" ||
+              location.pathname.startsWith("/extensions/")
+            }
+          />
 
           {permit("workshop") && (
             <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />

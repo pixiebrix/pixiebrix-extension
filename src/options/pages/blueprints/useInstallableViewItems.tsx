@@ -26,13 +26,14 @@ import { UUID } from "@/core";
 
 import {
   getDescription,
+  getInstalledVersionNumber,
   getLabel,
   getPackageId,
   getSharingType,
   getUpdatedAt,
   isExtension,
   updateAvailable,
-} from "@/options/pages/blueprints/installableUtils";
+} from "@/options/pages/blueprints/utils/installableUtils";
 import {
   useGetAuthQuery,
   useGetMarketplaceListingsQuery,
@@ -105,9 +106,15 @@ function useInstallableViewItems(
         },
         updatedAt: getUpdatedAt(installable),
         status: isActive(installable) ? "Active" : "Inactive",
-        hasUpdate: isExtension(installable)
-          ? updateAvailable(recipes.data, installable)
-          : false,
+        hasUpdate: updateAvailable(
+          recipes.data,
+          installedExtensions,
+          installable
+        ),
+        installedVersionNumber: getInstalledVersionNumber(
+          installedExtensions,
+          installable
+        ),
         icon: installableIcon(installable),
         installable,
       })),

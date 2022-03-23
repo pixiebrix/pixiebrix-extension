@@ -18,7 +18,7 @@
 import { reportEvent } from "@/telemetry/events";
 import { RecipeDefinition } from "@/types/definitions";
 import notify from "@/utils/notify";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useCallback } from "react";
 import { FormikHelpers } from "formik";
 import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
@@ -34,7 +34,6 @@ import { resolveRecipe } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import extensionsSlice from "@/store/extensionsSlice";
 import useFlags from "@/hooks/useFlags";
-import { selectSettings } from "@/store/settingsSelectors";
 
 const { installRecipe } = extensionsSlice.actions;
 
@@ -46,7 +45,6 @@ type InstallRecipe = (
 function useInstall(recipe: RecipeDefinition): InstallRecipe {
   const dispatch = useDispatch();
   const { flagOn } = useFlags();
-  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
   return useCallback(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
@@ -121,11 +119,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
 
         reactivateEveryTab();
 
-        if (isBlueprintsPageEnabled) {
-          dispatch(push("/blueprints"));
-        } else {
-          dispatch(push("/installed"));
-        }
+        dispatch(push("/blueprints"));
       } catch (error) {
         notify.error({
           message: `Error installing ${recipe.metadata.name}`,

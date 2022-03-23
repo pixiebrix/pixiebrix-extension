@@ -23,14 +23,14 @@ import { useDispatch } from "react-redux";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RegistryId } from "@/core";
-import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
+import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 
 const ShareLinkModal: React.FunctionComponent<{
   blueprintId: RegistryId;
 }> = ({ blueprintId }) => {
   const dispatch = useDispatch();
   const hideModal = () => {
-    dispatch(installedPageSlice.actions.setShareContext(null));
+    dispatch(blueprintModalsSlice.actions.setShareContext(null));
   };
 
   const installationLink = `https://app.pixiebrix.com/activate?id=${blueprintId}`;
