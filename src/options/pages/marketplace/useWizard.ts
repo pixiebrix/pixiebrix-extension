@@ -6,7 +6,10 @@ import {
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import React, { useMemo } from "react";
-import { selectAuths, selectOptions } from "@/pages/marketplace/useReinstall";
+import {
+  selectAuths,
+  selectOptions,
+} from "@/options/pages/blueprints/utils/useReinstall";
 import { isEmpty, mapValues, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import { Schema } from "@/core";

@@ -27,7 +27,7 @@ import GridCard from "./GridCard";
 import { Row } from "react-table";
 import ListGroupHeader from "@/options/pages/blueprints/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
-import { getUniqueId } from "@/options/pages/blueprints/installableUtils";
+import { getUniqueId } from "@/options/pages/blueprints/utils/installableUtils";
 
 /**
  *  Expands `react-table` rows recursively in chunks of

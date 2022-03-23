@@ -17,16 +17,14 @@
 
 import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
-import { Provider, useSelector } from "react-redux";
+import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import Loader from "@/components/Loader";
 import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import InstalledPage from "@/options/pages/installed/InstalledPage";
 import ServicesEditor from "@/options/pages/services/ServicesEditor";
 import BrickCreatePage from "@/options/pages/brickEditor/CreatePage";
 import BrickEditPage from "@/options/pages/brickEditor/EditPage";
-import MarketplacePage from "@/options/pages/MarketplacePage";
 import BlueprintsPage from "@/options/pages/blueprints/BlueprintsPage";
 import SettingsPage from "@/options/pages/settings/SettingsPage";
 import Navbar from "@/options/Navbar";
@@ -51,7 +49,6 @@ import WorkshopPage from "./pages/workshop/WorkshopPage";
 import InvitationBanner from "@/options/pages/InvitationBanner";
 import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
-import { selectSettings } from "@/store/settingsSelectors";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
 
@@ -69,7 +66,6 @@ const Layout = () => {
   useRefresh();
 
   const { permit } = useFlags();
-  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
   return (
     <div>
@@ -125,19 +121,7 @@ const Layout = () => {
                     />
                   )}
 
-                  {!isBlueprintsPageEnabled && (
-                    <Route
-                      exact
-                      path="/blueprints"
-                      component={MarketplacePage}
-                    />
-                  )}
-
-                  {isBlueprintsPageEnabled ? (
-                    <Route component={BlueprintsPage} />
-                  ) : (
-                    <Route component={InstalledPage} />
-                  )}
+                  <Route component={BlueprintsPage} />
                 </Switch>
               </ErrorBoundary>
             </div>

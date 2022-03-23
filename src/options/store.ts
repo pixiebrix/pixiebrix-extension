@@ -27,9 +27,9 @@ import servicesSlice, {
   ServicesState,
 } from "@/store/servicesSlice";
 import {
-  installedPageSlice,
-  InstalledPageState,
-} from "./pages/installed/installedPageSlice";
+  blueprintModalsSlice,
+  BlueprintModalsState,
+} from "./pages/blueprints/modals/blueprintModalsSlice";
 import { appApi } from "@/services/api";
 import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -61,7 +61,7 @@ export type RootState = AuthRootState &
     services: ServicesState;
     settings: SettingsState;
     workshop: WorkshopState;
-    installedPage: InstalledPageState;
+    blueprintModals: BlueprintModalsState;
   };
 
 const conditionalMiddleware: Middleware[] = [];
@@ -92,7 +92,7 @@ const store = configureStore({
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistWorkshopConfig, workshopSlice.reducer),
-    installedPage: installedPageSlice.reducer,
+    blueprintModals: blueprintModalsSlice.reducer,
     logs: logSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },

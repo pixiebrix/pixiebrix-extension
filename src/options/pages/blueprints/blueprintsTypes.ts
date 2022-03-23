@@ -19,7 +19,7 @@ import { RegistryId, ResolvedExtension } from "@/core";
 import { TableInstance } from "react-table";
 import { RecipeDefinition } from "@/types/definitions";
 import { ReactNode } from "react";
-import { SharingSource } from "@/options/pages/blueprints/installableUtils";
+import { SharingSource } from "@/options/pages/blueprints/utils/installableUtils";
 
 // XXX: should this be UnresolvedExtension instead of ResolvedExtension? The old screens used ResolvedExtension
 export type Installable = RecipeDefinition | ResolvedExtension;

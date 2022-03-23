@@ -26,7 +26,7 @@ import { EditorValues } from "./Editor";
 import { BrickValidationResult, validateSchema } from "./validate";
 import useRefresh from "@/hooks/useRefresh";
 import { Definition, UnsavedRecipeDefinition } from "@/types/definitions";
-import useReinstall from "@/pages/marketplace/useReinstall";
+import useReinstall from "@/options/pages/blueprints/utils/useReinstall";
 import notify from "@/utils/notify";
 import { reportEvent } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
