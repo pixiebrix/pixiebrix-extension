@@ -30,7 +30,11 @@ import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
 import * as Yup from "yup";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import { useGetAuthQuery, useGetOrganizationsQuery } from "@/services/api";
+import {
+  appApi,
+  useGetAuthQuery,
+  useGetOrganizationsQuery,
+} from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import slugify from "slugify";
 import { getLinkedApiClient } from "@/services/apiClient";
@@ -166,6 +170,8 @@ const ShareExtensionModal: React.FC<{
             blueprintId: recipe.metadata.id,
           })
         );
+
+        dispatch(appApi.util.invalidateTags(["Recipes"]));
       } catch (error) {
         if (isAxiosError(error) && error.response.data.config) {
           helpers.setStatus(error.response.data.config);
