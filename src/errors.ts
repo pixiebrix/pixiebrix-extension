@@ -189,7 +189,7 @@ export class PropError extends BusinessError {
 }
 
 interface ContextErrorDetails {
-  cause?: unknown;
+  cause: unknown;
   context?: MessageContext;
 }
 
@@ -200,7 +200,7 @@ export class ContextError extends ErrorWithCause {
   override name = "ContextError";
 
   public readonly context?: MessageContext;
-  constructor(message: string, { cause, context }: ContextErrorDetails = {}) {
+  constructor(message: string, { cause, context }: ContextErrorDetails) {
     super(message, { cause });
     this.context = context;
   }

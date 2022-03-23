@@ -279,26 +279,11 @@ describe("ContextError", () => {
   });
   test("supports non-Error causes without throwing", () => {
     expect(
-      new ContextError("Error while connecting", { cause: null })
-    ).toMatchInlineSnapshot("[ContextError: Error while connecting]");
-    expect(
       new ContextError("Error while connecting", {
         cause: "No internet connection",
       })
     ).toMatchInlineSnapshot(
       "[ContextError: Error while connecting: No internet connection]"
-    );
-  });
-  test("supports undefined messages without throwing", () => {
-    expect(
-      new ContextError("Failed connection", { cause: null })
-    ).toMatchInlineSnapshot("[ContextError: Failed connection]");
-    expect(
-      new ContextError("Failed connection", {
-        cause: "No internet connection",
-      })
-    ).toMatchInlineSnapshot(
-      "[ContextError: Failed connection: No internet connection]"
     );
   });
 });
