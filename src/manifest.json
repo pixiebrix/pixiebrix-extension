@@ -42,6 +42,8 @@
     "matches": ["https://app.pixiebrix.com/*"]
   },
   "web_accessible_resources": [
+    "*.json",
+    "*.hot-update.js",
     "css/*",
     "bundles/*",
     "frame.html",

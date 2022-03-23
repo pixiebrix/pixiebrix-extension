@@ -63,9 +63,11 @@ const shared = {
         exclude: /node_modules/,
         options: {
           transpileOnly: true,
-          getCustomTransformers: () => ({
-            before: [reactRefreshTypeScript()].filter(Boolean),
-          }),
+          getCustomTransformers: process.argv.includes("development") // --mode development
+            ? () => ({
+                before: [reactRefreshTypeScript()],
+              })
+            : undefined,
         },
       },
       {

@@ -316,9 +316,12 @@ module.exports = (env, options) =>
         }),
 
       new NodePolyfillPlugin(),
-      new WebExtensionTarget(),
+      new WebExtensionTarget({
+        background: { entry: "background" },
+        weakRuntimeCheck: true,
+      }),
 
-      options.watch && new ReactRefreshPlugin(),
+      new ReactRefreshPlugin(),
 
       new webpack.ProvidePlugin({
         $: "jquery",
