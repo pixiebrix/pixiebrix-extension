@@ -30,7 +30,11 @@ import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
 import * as Yup from "yup";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import { useGetAuthQuery, useGetOrganizationsQuery } from "@/services/api";
+import {
+  appApi,
+  useGetAuthQuery,
+  useGetOrganizationsQuery,
+} from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import slugify from "slugify";
 import { getLinkedApiClient } from "@/services/apiClient";
@@ -42,7 +46,6 @@ import {
   selectSourceRecipeMetadata,
 } from "@/types/definitions";
 import notify from "@/utils/notify";
-import { push } from "connected-react-router";
 import { isAxiosError } from "@/errors";
 import { faGlobe, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Form, {
@@ -160,12 +163,14 @@ const ShareExtensionModal: React.FC<{
         );
         notify.success("Converted/shared brick");
 
-        // Hide the share modal
-        dispatch(blueprintModalsSlice.actions.setShareContext(null));
-
+        // Hide the share modal and show the share link modal
         dispatch(
-          push(`/installed/link/${encodeURIComponent(recipe.metadata.id)}`)
+          blueprintModalsSlice.actions.setShareContext({
+            blueprintId: recipe.metadata.id,
+          })
         );
+
+        dispatch(appApi.util.invalidateTags(["Recipes"]));
       } catch (error) {
         if (isAxiosError(error) && error.response.data.config) {
           helpers.setStatus(error.response.data.config);
