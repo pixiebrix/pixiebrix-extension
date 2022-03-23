@@ -45,8 +45,6 @@ import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
 } from "@/types/definitions";
-import notify from "@/utils/notify";
-import { push } from "connected-react-router";
 import { isAxiosError } from "@/errors";
 import { faGlobe, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Form, {
