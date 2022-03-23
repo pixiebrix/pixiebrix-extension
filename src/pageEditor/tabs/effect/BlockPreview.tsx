@@ -207,13 +207,6 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
-  console.log("BlockPreview", {
-    blockInfo,
-    blockLoading,
-    blockError,
-    extensionPoint,
-  });
-
   if (
     blockRootMode === "inherit" &&
     extensionPointDefinition.targetMode !== "root"
