@@ -45,6 +45,7 @@ import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
 } from "@/types/definitions";
+import notify from "@/utils/notify";
 import { isAxiosError } from "@/errors";
 import { faGlobe, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Form, {
