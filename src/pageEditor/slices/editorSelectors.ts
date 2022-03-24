@@ -19,6 +19,7 @@ import { IExtension, RegistryId } from "@/core";
 import { createSelector } from "reselect";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
+import { selectExtensions } from "@/store/extensionsSelectors";
 
 type RootState = { editor: EditorState };
 
@@ -92,5 +93,24 @@ export const selectRecipeIsDirty = createSelector(
       (element) => dirtyElements[getIdForElement(element)]
     );
     return hasDirtyElements || Boolean(dirtyOptions) || Boolean(dirtyMetadata);
+  }
+);
+
+export const selectIsShowingAddToRecipeModal = (state: RootState) =>
+  state.editor.isAddToRecipeModalVisible;
+
+export const selectInstalledRecipeMetadatas = createSelector(
+  [selectElements, selectExtensions],
+  (elements, extensions) => {
+    const recipes = elements
+      .filter((element) => Boolean(element.recipe))
+      .map((element) => element.recipe);
+    for (const _recipe of extensions.map((extension) => extension._recipe)) {
+      if (_recipe && !recipes.some((recipe) => recipe.id === _recipe.id)) {
+        recipes.push(_recipe);
+      }
+    }
+
+    return recipes;
   }
 );

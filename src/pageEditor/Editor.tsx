@@ -48,6 +48,7 @@ import RecipePane from "@/pageEditor/panes/RecipePane";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import { RootState } from "@/pageEditor/pageEditorTypes";
+import AddToRecipeModal from "@/pageEditor/sidebar/AddToRecipeModal";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -175,18 +176,22 @@ const Editor: React.FunctionComponent = () => {
   }
 
   return (
-    <div className={styles.root}>
-      <Sidebar
-        installed={installed}
-        elements={elements}
-        recipes={recipes}
-        activeElementId={activeElementId}
-        activeRecipeId={activeRecipeId}
-        isInsertingElement={Boolean(inserting)}
-        isLoadingItems={loadingRecipes}
-      />
-      {body}
-    </div>
+    <>
+      <div className={styles.root}>
+        <Sidebar
+          installed={installed}
+          elements={elements}
+          recipes={recipes}
+          activeElementId={activeElementId}
+          activeRecipeId={activeRecipeId}
+          isInsertingElement={Boolean(inserting)}
+          isLoadingItems={loadingRecipes}
+        />
+        {body}
+      </div>
+
+      <AddToRecipeModal />
+    </>
   );
 };
 

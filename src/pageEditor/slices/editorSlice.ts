@@ -35,6 +35,7 @@ import {
 import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
+import { uuidv4 } from "@/types/helpers";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -51,6 +52,7 @@ export const initialState: EditorState = {
   showV3UpgradeMessageByElement: {},
   dirtyRecipeOptionsById: {},
   dirtyRecipeMetadataById: {},
+  isAddToRecipeModalVisible: false,
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
@@ -352,6 +354,47 @@ export const editorSlice = createSlice({
       );
       for (const element of recipeElements) {
         element.recipe = metadata;
+      }
+    },
+    showAddToRecipeModal(state) {
+      console.log("show action");
+      state.isAddToRecipeModalVisible = true;
+    },
+    hideAddToRecipeModal(state) {
+      state.isAddToRecipeModalVisible = false;
+    },
+    addElementToRecipe(
+      state,
+      action: PayloadAction<{
+        elementId: UUID;
+        recipeMetadata: RecipeMetadata;
+        keepLocalCopy: boolean;
+      }>
+    ) {
+      const {
+        payload: { elementId, recipeMetadata, keepLocalCopy },
+      } = action;
+      const element = state.elements.find(
+        (element) => element.uuid === elementId
+      );
+      if (!element) {
+        return;
+      }
+
+      let copy: FormState;
+      if (keepLocalCopy) {
+        copy = {
+          ...element,
+          uuid: uuidv4(),
+        };
+      }
+
+      element.recipe = recipeMetadata;
+      state.dirty[element.uuid] = true;
+
+      if (copy) {
+        state.elements.push(copy);
+        state.dirty[copy.uuid] = true;
       }
     },
   },
