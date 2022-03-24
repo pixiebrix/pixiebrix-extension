@@ -18,7 +18,7 @@
 import styles from "./Sidebar.module.scss";
 
 import React, { FormEvent, useContext, useMemo, useState } from "react";
-import { FormState } from "@/pageEditor/slices/editorSlice";
+import { actions, FormState } from "@/pageEditor/slices/editorSlice";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import { isEmpty, sortBy } from "lodash";
 import { sleep } from "@/utils";
@@ -47,7 +47,6 @@ import {
   faAngleDoubleRight,
   faFileImport,
   faSync,
-  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
@@ -57,7 +56,11 @@ import Loader from "@/components/Loader";
 import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
-import { getIdForElement } from "@/pageEditor/slices/editorSelectors";
+import {
+  getIdForElement,
+  selectIsShowingAddToRecipeModal,
+} from "@/pageEditor/slices/editorSelectors";
+import { useDispatch, useSelector } from "react-redux";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -83,35 +86,28 @@ const ReloadButton: React.VoidFunctionComponent = () => (
   </Button>
 );
 
-const AddToRecipeButton: React.VFC<{
-  onClick: () => void;
-  disabled: boolean;
-}> = ({ onClick, disabled }) => (
-  <Button
-    type="button"
-    size="sm"
-    variant="light"
-    title="Add extension to a blueprint"
-    onClick={onClick}
-    disabled={disabled}
-  >
-    <FontAwesomeIcon icon={faFileImport} />
-  </Button>
-);
+const AddToRecipeButton: React.VFC = () => {
+  const dispatch = useDispatch();
+  const isShowingAddToRecipeModal = useSelector(
+    selectIsShowingAddToRecipeModal
+  );
 
-const CancelButton: React.VFC<{
-  onClick: () => void;
-}> = ({ onClick }) => (
-  <Button
-    type="button"
-    size="sm"
-    variant="light"
-    title="Cancel"
-    onClick={onClick}
-  >
-    <FontAwesomeIcon icon={faTimes} />
-  </Button>
-);
+  return (
+    <Button
+      type="button"
+      size="sm"
+      variant="light"
+      title="Add extension to a blueprint"
+      onClick={() => {
+        console.log("click button");
+        dispatch(actions.showAddToRecipeModal());
+      }}
+      disabled={isShowingAddToRecipeModal}
+    >
+      <FontAwesomeIcon icon={faFileImport} />
+    </Button>
+  );
+};
 
 const DropdownEntry: React.VoidFunctionComponent<{
   caption: string;
@@ -187,10 +183,14 @@ const SidebarExpanded: React.VoidFunctionComponent<
     !isEmpty(recipes) &&
     activeElement &&
     activeElement.recipe == null;
-  const [isAddingToRecipe, setIsAddingToRecipe] = useState(false);
 
   const elementHash = hash(
-    sortBy(elements.map((formState) => `${formState.uuid}-${formState.label}`))
+    sortBy(
+      elements.map(
+        (formState) =>
+          `${formState.uuid}-${formState.label}-${formState.recipe?.id ?? ""}`
+      )
+    )
   );
   const recipeHash = hash(
     recipes
@@ -286,31 +286,16 @@ const SidebarExpanded: React.VoidFunctionComponent<
 
             {showDeveloperUI && <ReloadButton />}
 
-            {showAddToRecipeButton && (
-              <AddToRecipeButton
-                onClick={() => {
-                  setIsAddingToRecipe(true);
-                }}
-                disabled={isAddingToRecipe}
-              />
-            )}
+            {showAddToRecipeButton && <AddToRecipeButton />}
           </div>
-          {isAddingToRecipe ? (
-            <CancelButton
-              onClick={() => {
-                setIsAddingToRecipe(false);
-              }}
-            />
-          ) : (
-            <Button
-              variant="light"
-              className={styles.toggle}
-              type="button"
-              onClick={collapseSidebar}
-            >
-              <FontAwesomeIcon icon={faAngleDoubleLeft} />
-            </Button>
-          )}
+          <Button
+            variant="light"
+            className={styles.toggle}
+            type="button"
+            onClick={collapseSidebar}
+          >
+            <FontAwesomeIcon icon={faAngleDoubleLeft} />
+          </Button>
         </div>
 
         {unavailableCount ? (
