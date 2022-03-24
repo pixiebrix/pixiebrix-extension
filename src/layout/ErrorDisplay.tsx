@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthRootState } from "./authTypes";
+import React from "react";
+import { getErrorMessage } from "@/errors";
 
-export const selectAuth = (state: AuthRootState) => state.auth;
-export const selectIsLoggedIn = (state: AuthRootState) =>
-  selectAuth(state).isLoggedIn;
-export const selectScope = (state: AuthRootState) => selectAuth(state).scope;
-export const selectFlags = (state: AuthRootState) => selectAuth(state).flags;
-export const selectOrganization = (state: AuthRootState) =>
-  selectAuth(state).organization;
+export const ErrorDisplay: React.VFC<{ error: unknown }> = ({ error }) => (
+  <div>
+    <h2 className="text-danger">An error occurred</h2>
+    <p>{getErrorMessage(error)}</p>
+  </div>
+);

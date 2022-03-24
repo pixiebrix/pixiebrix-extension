@@ -18,7 +18,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
-import { ApiError, useGetAuthQuery, useGetMeQuery } from "@/services/api";
+import { ApiError, useGetMeQuery } from "@/services/api";
 import { updateUserData } from "@/auth/token";
 import {
   selectExtensionAuthState,
@@ -30,19 +30,22 @@ import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
 
 type RequireAuthProps = {
+  /** Rendered in case of 401 response */
   LoginPage: React.VFC;
+
+  /** Rendered request to `/me` fails */
+  ErrorPage?: React.VFC<{ error: unknown }>;
 };
 
-// React FunctionComponent returns ReactElement whereas RequireAuth returns children (ReactNode - more loose, but correct typing).
-// Hence can't use React.FunctionComponent<RequireAuthProps>
-const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
+const RequireAuth: React.FC<RequireAuthProps> = ({
+  children,
+  LoginPage,
+  ErrorPage,
+}) => {
   const dispatch = useDispatch();
 
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const { isLoading, error, data: me } = useGetMeQuery();
-
-  // TODO: remove this when useGetAuthQuery is no longer used
-  const { isLoading: isDeprecatedAuthLoading } = useGetAuthQuery();
 
   useEffect(() => {
     if (isLoading) {
@@ -68,9 +71,12 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     return <LoginPage />;
   }
 
-  // In the future optimistically skip waiting if we have cached auth data
-  // TODO remove isDeprecatedAuthLoading when useGetAuthQuery is no longer used
-  if ((isLoading && !isLoggedIn) || isDeprecatedAuthLoading) {
+  if (error && ErrorPage) {
+    return <ErrorPage error={error} />;
+  }
+
+  // Optimistically skip waiting if we have cached auth data
+  if (!isLoggedIn && isLoading) {
     return <Loader />;
   }
 

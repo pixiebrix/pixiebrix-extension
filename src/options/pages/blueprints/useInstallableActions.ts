@@ -36,7 +36,7 @@ import { selectExtensionContext } from "@/extensionPoints/helpers";
 import notify from "@/utils/notify";
 import { push } from "connected-react-router";
 import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/blueprints/utils/exportBlueprint";
-import { appApi, useDeleteCloudExtensionMutation } from "@/services/api";
+import { useDeleteCloudExtensionMutation } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
@@ -45,6 +45,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { IExtension } from "@/core";
 import { useMemo } from "react";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
+import { selectScope } from "@/auth/authSelectors";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -53,11 +54,7 @@ function useInstallableActions(installable: Installable) {
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
   const unresolvedExtensions = useSelector(selectExtensions);
-
-  // Select cached auth data for performance reasons
-  const {
-    data: { scope },
-  } = useSelector(appApi.endpoints.getAuth.select());
+  const scope = useSelector(selectScope);
 
   // The extensions associated with the installable
   const extensions: IExtension[] = useMemo(

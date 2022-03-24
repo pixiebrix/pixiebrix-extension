@@ -18,13 +18,13 @@
 import styles from "./Footer.module.scss";
 
 import React, { useContext } from "react";
-import { useGetAuthQuery } from "@/services/api";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import BeatLoader from "react-spinners/BeatLoader";
+import { selectScope } from "@/auth/authSelectors";
+import { useSelector } from "react-redux";
 
 const Footer: React.FunctionComponent = () => {
-  // Default data to empty object to avoid race condition with useGetAuthQuery resolution
-  const { data: { scope } = {} } = useGetAuthQuery();
+  const scope = useSelector(selectScope);
   const { connecting } = useContext(PageEditorTabContext);
 
   return (
