@@ -41,7 +41,6 @@ const SharingLabel: React.VoidFunctionComponent<{
   className?: string;
 }> = ({ sharing, className }) => (
   <OverlayTrigger
-    trigger="hover"
     key="updateAt"
     placement="top"
     delay={600}
