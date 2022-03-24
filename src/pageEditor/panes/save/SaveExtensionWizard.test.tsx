@@ -49,7 +49,7 @@ jest.mock("@/services/api", () => ({
   useGetEditablePackagesQuery: jest.fn(),
 }));
 
-const TestWrapper: React.FC<{ scope?: string }> = ({ scope, children }) => {
+const renderSaveExtensionWizard = (scope?: string) => {
   const store = configureStore({
     reducer: {
       auth: authSlice.reducer,
@@ -63,15 +63,12 @@ const TestWrapper: React.FC<{ scope?: string }> = ({ scope, children }) => {
     },
   });
 
-  return <Provider store={store}>{children}</Provider>;
-};
-
-const renderSaveExtensionWizard = (scope?: string) =>
-  render(
-    <TestWrapper scope={scope}>
+  return render(
+    <Provider store={store}>
       <SaveExtensionWizard />
-    </TestWrapper>
+    </Provider>
   );
+};
 
 beforeEach(() => {
   (useGetRecipesQueryMock as jest.Mock).mockReturnValue({

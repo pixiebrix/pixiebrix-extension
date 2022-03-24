@@ -17,7 +17,6 @@
 
 import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
-import { useGetAuthQuery } from "@/services/api";
 import { recipeMetadataFactory } from "@/tests/factories";
 import { render, screen } from "@testing-library/react";
 import React from "react";

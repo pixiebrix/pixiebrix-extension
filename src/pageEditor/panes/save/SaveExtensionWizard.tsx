@@ -19,7 +19,6 @@ import React, { useRef, useState } from "react";
 import {
   useGetRecipesQuery,
   useGetEditablePackagesQuery,
-  useGetAuthQuery,
 } from "@/services/api";
 import { validateRegistryId } from "@/types/helpers";
 import SavingInProgressModal from "./SavingInProgressModal";

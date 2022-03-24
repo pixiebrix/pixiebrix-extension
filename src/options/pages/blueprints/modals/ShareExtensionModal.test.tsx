@@ -31,6 +31,7 @@ import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
 
 jest.unmock("react-redux");
+
 jest.mock("@/utils/notify");
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
@@ -41,43 +42,42 @@ const extension = extensionFactory({
   label: "testExtension",
 });
 
-const configureStoreForTests = (scope = "@test") =>
-  configureStore({
+const renderShareExtensionModal = (state?: any) => {
+  const store = configureStore({
     reducer: {
       auth: authSlice.reducer,
       options: extensionsSlice.reducer,
       settings: settingsSlice.reducer,
     },
     preloadedState: {
-      auth: {
-        ...anonAuth,
-        scope,
-      },
+      auth: anonAuth,
       options: { extensions: [extension as PersistedExtension] },
+      ...state,
     },
   });
 
-const TestWrapper: React.FC<{ scope?: string }> = ({ scope, children }) => (
-  <Provider store={configureStoreForTests(scope)}>{children}</Provider>
-);
+  return render(
+    <Provider store={store}>
+      <ShareExtensionModal extensionId={extension.id} />
+    </Provider>
+  );
+};
 
 test("renders modal", async () => {
-  render(
-    <TestWrapper>
-      <ShareExtensionModal extensionId={extension.id} />
-    </TestWrapper>
-  );
+  renderShareExtensionModal({
+    auth: {
+      ...anonAuth,
+      scope: "@test",
+    },
+  });
   await waitForEffect();
+
   const dialogRoot = screen.getByRole("dialog");
   expect(dialogRoot).toMatchSnapshot();
 });
 
 test("requires user scope", async () => {
-  render(
-    <TestWrapper scope="">
-      <ShareExtensionModal extensionId={extension.id} />
-    </TestWrapper>
-  );
+  renderShareExtensionModal();
   await waitForEffect();
 
   // Scope input field is on the screen
@@ -90,12 +90,14 @@ test("requires user scope", async () => {
 });
 
 test("prints 'Convert' when not Public (default)", async () => {
-  render(
-    <TestWrapper>
-      <ShareExtensionModal extensionId={extension.id} />
-    </TestWrapper>
-  );
+  renderShareExtensionModal({
+    auth: {
+      ...anonAuth,
+      scope: "@test",
+    },
+  });
   await waitForEffect();
+
   const dialogRoot = screen.getByRole("dialog");
   const publicSwitch = dialogRoot.querySelector(
     ".form-group:nth-child(5) .switch.btn"
@@ -106,12 +108,14 @@ test("prints 'Convert' when not Public (default)", async () => {
 });
 
 test("prints 'Share' when Public", async () => {
-  render(
-    <TestWrapper>
-      <ShareExtensionModal extensionId={extension.id} />
-    </TestWrapper>
-  );
+  renderShareExtensionModal({
+    auth: {
+      ...anonAuth,
+      scope: "@test",
+    },
+  });
   await waitForEffect();
+
   const dialogRoot = screen.getByRole("dialog");
   const publicSwitch = dialogRoot.querySelector(
     ".form-group:nth-child(5) .switch.btn"
