@@ -29,7 +29,7 @@
       // Silently improve tree-shakeability and AMD-related errors like #943
       "lodash": ["node_modules/lodash-es"],
 
-      // Help madge resolve this dependency
+      // Help Madge resolve this dependency
       "marked": ["node_modules/marked/lib/marked.esm.js"]
     },
     "lib": ["ES2021", "DOM", "DOM.Iterable"],
