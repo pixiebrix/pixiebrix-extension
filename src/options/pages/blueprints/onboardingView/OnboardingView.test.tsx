@@ -15,11 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  useGetAuthQuery,
-  useGetOrganizationsQuery,
-  useGetRecipesQuery,
-} from "@/services/api";
+import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
+import useFlags from "@/hooks/useFlags";
 import { Organization } from "@/types/contract";
 import useDeployments from "@/hooks/useDeployments";
 import useOnboarding from "@/options/pages/blueprints/onboardingView/useOnboarding";
@@ -28,9 +25,9 @@ import { renderHook } from "@testing-library/react-hooks";
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: jest.fn(),
   useGetRecipesQuery: jest.fn(),
-  useGetAuthQuery: jest.fn(),
 }));
 
+jest.mock("@/hooks/useFlags", () => jest.fn());
 jest.mock("@/hooks/useDeployments", () => jest.fn());
 
 const mockOnboarding = ({
@@ -73,14 +70,9 @@ const mockOnboarding = ({
       : [],
   }));
 
-  (useGetAuthQuery as jest.Mock).mockReturnValue({
-    data: {
-      flags: hasRestrictedFlag ? ["restricted-marketplace"] : [],
-      isLoggedIn: true,
-      isOnboarded: true,
-      extension: true,
-    },
-  });
+  (useFlags as jest.Mock).mockImplementation(() => ({
+    restrict: () => hasRestrictedFlag,
+  }));
 };
 
 describe("useOnboarding", () => {

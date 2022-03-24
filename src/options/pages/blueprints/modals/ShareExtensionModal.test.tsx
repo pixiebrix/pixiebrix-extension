@@ -26,7 +26,6 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import { PersistedExtension } from "@/core";
-import { useGetAuthQuery } from "@/services/api";
 import settingsSlice from "@/store/settingsSlice";
 import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
@@ -35,6 +34,7 @@ jest.unmock("react-redux");
 jest.mock("@/utils/notify");
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
+  useGetMeQuery: () => ({ refetch: jest.fn() }),
 }));
 
 const extension = extensionFactory({
