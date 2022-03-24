@@ -192,14 +192,14 @@ describe("proxy service requests", () => {
         const request = proxyService(proxiedServiceConfig, requestConfig);
 
         await expect(request).rejects.toThrow(ContextError);
-        await expect(request).rejects.toHaveProperty(
-          "cause.response.status",
-          statusCode
-        );
-        await expect(request).rejects.toHaveProperty(
-          "cause.response.statusText",
-          reason
-        );
+        await expect(request).rejects.toMatchObject({
+          cause: {
+            response: {
+              status: statusCode,
+              statusText: reason,
+            },
+          },
+        });
       });
     }
   );
@@ -210,19 +210,18 @@ describe("proxy service requests", () => {
     const request = proxyService(proxiedServiceConfig, requestConfig);
 
     await expect(request).rejects.toThrow(ContextError);
-
-    await expect(request).rejects.toMatchObject(
-      expect.objectContaining({
-        cause: expect.any(RemoteServiceError),
-      })
-    );
-    await expect(request).rejects.toHaveProperty(
-      "cause.error.response.status",
-      500
-    );
-    await expect(request).rejects.toHaveProperty(
-      "cause.message",
-      "Internal Server Error"
-    );
+    await expect(request).rejects.toMatchObject({
+      cause: expect.any(RemoteServiceError),
+    });
+    await expect(request).rejects.toMatchObject({
+      cause: {
+        message: "Internal Server Error",
+        error: {
+          response: {
+            status: 500,
+          },
+        },
+      },
+    });
   });
 });
