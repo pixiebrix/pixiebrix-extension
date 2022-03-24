@@ -15,15 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension } from "@/core";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { BlockArg, MessageContext, RegistryId } from "@/core";
+import { Availability } from "@/blocks/types";
 
-export type SidebarItem = IExtension | FormState;
-
-export function getLabel(extension: FormState): string {
-  return extension.label ?? extension.extensionPoint.metadata.name;
+export interface RemoteBlockOptions {
+  ctxt: unknown;
+  messageContext: MessageContext;
+  maxRetries?: number;
+  isAvailable?: Availability;
 }
 
-export function isExtension(value: SidebarItem): value is IExtension {
-  return "extensionPointId" in value;
+export interface RunBlock {
+  sourceTabId?: number;
+  nonce?: string;
+  blockId: RegistryId;
+  blockArgs: BlockArg;
+  options: RemoteBlockOptions;
 }

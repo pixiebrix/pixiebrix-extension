@@ -17,18 +17,14 @@
 
 import React, { useCallback, useMemo } from "react";
 import { Col, Tab } from "react-bootstrap";
-import EditorNodeLayout, {
-  FOUNDATION_NODE_ID,
-  NodeId,
-} from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
+import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useFormikContext } from "formik";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { BlockType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry, { TypedBlockMap } from "@/blocks/registry";
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
-import { actions, FormState } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/slices/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BrickIcon from "@/components/BrickIcon";
 import { isNullOrBlank } from "@/utils";
@@ -39,19 +35,27 @@ import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationD
 import usePipelineField, {
   PIPELINE_BLOCKS_FIELD_NAME,
 } from "@/pageEditor/hooks/usePipelineField";
-import { EditorNodeProps } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import {
+  EditorNodeProps,
+  NodeId,
+} from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveNodeId } from "@/pageEditor/uiState/uiState";
+import {
+  FOUNDATION_NODE_ID,
+  selectActiveNodeId,
+} from "@/pageEditor/uiState/uiState";
 import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import useBlockPipelineActions from "@/pageEditor/tabs/editTab/useBlockPipelineActions";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import UnsupportedApiV1 from "@/pageEditor/tabs/editTab/UnsupportedApiV1";
 import UpgradedToApiV3 from "@/pageEditor/tabs/editTab/UpgradedToApiV3";
-import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import { faCopy, faTrash } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
+import { BlockType } from "@/runtime/runtimeTypes";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import { isInnerExtensionPoint } from "@/registry/internal";
 
 const EditTab: React.FC<{
   eventKey: string;

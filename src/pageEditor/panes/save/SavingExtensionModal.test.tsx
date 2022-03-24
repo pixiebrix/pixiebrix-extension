@@ -18,7 +18,6 @@
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import SavingExtensionModal from "./SavingExtensionModal";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { define } from "cooky-cutter";
 import {
   extensionPointConfigFactory,
@@ -26,6 +25,7 @@ import {
   recipeFactory,
   recipeMetadataFactory,
 } from "@/utils/testUtils/factories";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const simpleElementFactory = define<FormState>({
   apiVersion: "v2",

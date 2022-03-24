@@ -29,11 +29,11 @@ import {
 } from "@/types/definitions";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
 import { compact, isEmpty, isEqual, pick } from "lodash";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
-import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import { isInnerExtensionPoint } from "@/registry/internal";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.

@@ -24,16 +24,14 @@ import { uuidv4 } from "@/types/helpers";
 import { getExampleBlockConfig } from "@/pageEditor/tabs/editTab/exampleBlockConfigs";
 import { defaultBlockConfig } from "@/blocks/util";
 import { produce } from "immer";
-import {
-  FOUNDATION_NODE_ID,
-  NodeId,
-} from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
-import { actions, FormState } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/slices/editorSlice";
+import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
 import { useDispatch, useSelector } from "react-redux";
 import { reportEvent } from "@/telemetry/events";
-import { RootState } from "@/pageEditor/store";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 
 type BlockPipelineActions = {
   addBlock: (block: IBlock, pipelineIndex: number) => void;

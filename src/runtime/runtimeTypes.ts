@@ -17,8 +17,8 @@
 
 import { BlockConfig } from "@/blocks/types";
 import { BlockArg, IBlock, OutputKey, RegistryId } from "@/core";
-import { BlockType } from "@/blocks/util";
 
+export type BlockType = "reader" | "effect" | "transform" | "renderer";
 /**
  * A block configuration with the corresponding resolved IBlock and BlockType.
  * @see BlockConfig

@@ -31,8 +31,8 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { OutputKey, SanitizedServiceConfiguration } from "@/core";
 import * as auth from "@/hooks/auth";
 import * as dependencyHooks from "@/services/useDependency";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { Service } from "@/types";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => true,

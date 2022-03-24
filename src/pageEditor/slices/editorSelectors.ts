@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EditorState, FormState } from "@/pageEditor/slices/editorSlice";
 import { IExtension, RegistryId } from "@/core";
 import { createSelector } from "reselect";
 import { isExtension } from "@/pageEditor/sidebar/common";
+import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 
 type RootState = { editor: EditorState };
 

@@ -17,12 +17,12 @@
 
 import React from "react";
 import SelectorSelectorField from "@/components/fields/schemaFields/SelectorSelectorField";
-import { CustomFieldDefinitions } from "@/components/fields/schemaFields/SchemaFieldContext";
 import SelectorSelectorWidget from "@/pageEditor/fields/SelectorSelectorWidget";
 import { createTypePredicate } from "@/components/fields/fieldUtils";
 import { Schema } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
+import { CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";
 
 export const ClearableSelectorWidget: React.FunctionComponent<{
   name: string;
