@@ -99,7 +99,6 @@ const AddToRecipeButton: React.VFC = () => {
       variant="light"
       title="Add extension to a blueprint"
       onClick={() => {
-        console.log("click button");
         dispatch(actions.showAddToRecipeModal());
       }}
       disabled={isShowingAddToRecipeModal}
