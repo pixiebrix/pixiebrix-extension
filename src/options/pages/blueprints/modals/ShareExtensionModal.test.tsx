@@ -29,40 +29,37 @@ import { PersistedExtension } from "@/core";
 import { useGetAuthQuery } from "@/services/api";
 import settingsSlice from "@/store/settingsSlice";
 import { anonAuth } from "@/auth/authConstants";
+import { authSlice } from "@/auth/authSlice";
 
 jest.unmock("react-redux");
 jest.mock("@/utils/notify");
 jest.mock("@/services/api", () => ({
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
-  useGetAuthQuery: jest.fn(),
 }));
 
 const extension = extensionFactory({
   label: "testExtension",
 });
 
-const storeForTests = configureStore({
-  reducer: {
-    options: extensionsSlice.reducer,
-    settings: settingsSlice.reducer,
-  },
-  preloadedState: {
-    options: { extensions: [extension as PersistedExtension] },
-  },
-});
-
-const TestWrapper: React.FC<{ scope?: string }> = ({
-  scope = "@test",
-  children,
-}) => {
-  (useGetAuthQuery as jest.Mock).mockReturnValue({
-    data: {
-      ...anonAuth,
-      scope,
+const configureStoreForTests = (scope = "@test") =>
+  configureStore({
+    reducer: {
+      auth: authSlice.reducer,
+      options: extensionsSlice.reducer,
+      settings: settingsSlice.reducer,
+    },
+    preloadedState: {
+      auth: {
+        ...anonAuth,
+        scope,
+      },
+      options: { extensions: [extension as PersistedExtension] },
     },
   });
-  return <Provider store={storeForTests}>{children}</Provider>;
-};
+
+const TestWrapper: React.FC<{ scope?: string }> = ({ scope, children }) => (
+  <Provider store={configureStoreForTests(scope)}>{children}</Provider>
+);
 
 test("renders modal", async () => {
   render(

@@ -35,20 +35,18 @@ import {
   updateAvailable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import {
-  useGetAuthQuery,
   useGetMarketplaceListingsQuery,
   useGetOrganizationsQuery,
   useGetRecipesQuery,
 } from "@/services/api";
 import { MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
+import { selectScope } from "@/auth/authSelectors";
 
 function useInstallableViewItems(
   installables: Installable[]
 ): InstallableViewItem[] {
-  const {
-    data: { scope },
-  } = useGetAuthQuery();
+  const scope = useSelector(selectScope);
   const installedExtensions = useSelector(selectExtensions);
   const { data: organizations } = useGetOrganizationsQuery();
   const listings = useGetMarketplaceListingsQuery();
