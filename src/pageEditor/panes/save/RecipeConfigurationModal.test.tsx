@@ -27,6 +27,7 @@ import settingsSlice from "@/store/settingsSlice";
 
 jest.unmock("react-redux");
 
+// TODO Review the usage of Redux in test
 const renderRecipeConfigurationModal = (isNewRecipe: boolean, state?: any) => {
   const store = configureStore({
     reducer: {

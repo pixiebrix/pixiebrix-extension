@@ -49,17 +49,16 @@ jest.mock("@/services/api", () => ({
   useGetEditablePackagesQuery: jest.fn(),
 }));
 
-const renderSaveExtensionWizard = (scope?: string) => {
+// TODO Review the usage of Redux in test
+const renderSaveExtensionWizard = (state?: any) => {
   const store = configureStore({
     reducer: {
       auth: authSlice.reducer,
       settings: settingsSlice.reducer,
     },
     preloadedState: {
-      auth: {
-        ...anonAuth,
-        scope,
-      },
+      auth: anonAuth,
+      ...state,
     },
   });
 
@@ -171,7 +170,12 @@ test("calls Save as New Blueprint", async () => {
     isLoading: false,
   });
 
-  renderSaveExtensionWizard("@test");
+  renderSaveExtensionWizard({
+    auth: {
+      ...anonAuth,
+      scope: "@test",
+    },
+  });
 
   // Clicking Save as New Blueprint on the first modal
   fireEvent.click(

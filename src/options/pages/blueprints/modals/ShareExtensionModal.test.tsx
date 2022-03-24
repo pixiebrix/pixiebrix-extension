@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import ShareExtensionModal from "./ShareExtensionModal";
 import { extensionFactory } from "@/tests/factories";
-import { waitForEffect } from "@/tests/testHelpers";
+import { createRenderFunction, waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { Organization } from "@/types/contract";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import { PersistedExtension } from "@/core";
 import settingsSlice from "@/store/settingsSlice";
@@ -42,32 +39,27 @@ const extension = extensionFactory({
   label: "testExtension",
 });
 
-const renderShareExtensionModal = (state?: any) => {
-  const store = configureStore({
-    reducer: {
-      auth: authSlice.reducer,
-      options: extensionsSlice.reducer,
-      settings: settingsSlice.reducer,
-    },
-    preloadedState: {
-      auth: anonAuth,
-      options: { extensions: [extension as PersistedExtension] },
-      ...state,
-    },
-  });
-
-  return render(
-    <Provider store={store}>
-      <ShareExtensionModal extensionId={extension.id} />
-    </Provider>
-  );
-};
+const renderShareExtensionModal = createRenderFunction({
+  reducer: {
+    auth: authSlice.reducer,
+    options: extensionsSlice.reducer,
+    settings: settingsSlice.reducer,
+  },
+  preloadedState: {
+    auth: anonAuth,
+    options: { extensions: [extension as PersistedExtension] },
+  },
+  ComponentUnderTest: ShareExtensionModal,
+  defaultProps: { extensionId: extension.id },
+});
 
 test("renders modal", async () => {
   renderShareExtensionModal({
-    auth: {
-      ...anonAuth,
-      scope: "@test",
+    stateOverride: {
+      auth: {
+        ...anonAuth,
+        scope: "@test",
+      },
     },
   });
   await waitForEffect();
@@ -91,9 +83,11 @@ test("requires user scope", async () => {
 
 test("prints 'Convert' when not Public (default)", async () => {
   renderShareExtensionModal({
-    auth: {
-      ...anonAuth,
-      scope: "@test",
+    stateOverride: {
+      auth: {
+        ...anonAuth,
+        scope: "@test",
+      },
     },
   });
   await waitForEffect();
@@ -109,9 +103,11 @@ test("prints 'Convert' when not Public (default)", async () => {
 
 test("prints 'Share' when Public", async () => {
   renderShareExtensionModal({
-    auth: {
-      ...anonAuth,
-      scope: "@test",
+    stateOverride: {
+      auth: {
+        ...anonAuth,
+        scope: "@test",
+      },
     },
   });
   await waitForEffect();
@@ -121,6 +117,8 @@ test("prints 'Share' when Public", async () => {
     ".form-group:nth-child(5) .switch.btn"
   );
   userEvent.click(publicSwitch);
+  await waitForEffect();
+
   expect(publicSwitch).toHaveClass("on");
   const submitButton = dialogRoot.querySelector('.btn[type="submit"]');
   expect(submitButton.textContent).toBe("Share");
