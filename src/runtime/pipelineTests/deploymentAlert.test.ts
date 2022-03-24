@@ -91,9 +91,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
       await expect(pipeline).rejects.toThrow(ContextError);
 
-      const contextError = (await pipeline.catch(
-        (error) => error
-      )) as ContextError;
+      const contextError = await pipeline.catch((error) => error);
 
       expect(sendDeploymentAlert).toHaveBeenCalledTimes(1);
       expect(sendDeploymentAlert).toBeCalledWith({
@@ -106,7 +104,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
             },
             "@options": {},
           },
-          error: serializeError(contextError.cause),
+          error: serializeError((contextError as ContextError).cause),
         },
       });
     });
