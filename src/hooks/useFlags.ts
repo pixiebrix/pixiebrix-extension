@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetAuthQuery } from "@/services/api";
 import { useMemo } from "react";
-import { readAuthData } from "@/auth/token";
-import { useAsyncState } from "@/hooks/common";
-import pMemoize from "p-memoize";
+import { selectFlags } from "@/auth/authSelectors";
+import { useSelector } from "react-redux";
 
 const RESTRICTED_PREFIX = "restricted";
 
@@ -41,43 +39,26 @@ type Restrict = {
   flagOff: (flag: string) => boolean;
 };
 
-// Memoize the auth data since we're using useAsyncState.
-// We don't want to have to read from localStorage every time a flag is used
-const memoizedAuthData = pMemoize(readAuthData);
-
 /**
  * Hook for feature flags and organization restrictions.
  *
  * For permit/restrict, features will be restricted in the fetching/loading state
  */
 function useFlags(): Restrict {
-  // Future improvements:
-  // - Let caller of each method decide what to do during pending state, (i.e., add default argument)
-  // - Standardize use of environment="development" and DEBUG in React app
-
-  const { data, isFetching, error } = useGetAuthQuery();
-
-  // Use previous
-  const [cachedFlags] = useAsyncState(async () => {
-    const { flags } = await memoizedAuthData();
-    return flags;
-  }, []);
+  const flags = useSelector(selectFlags);
 
   return useMemo(() => {
-    const { flags } = data ?? {};
-    const pending = Boolean(error) || isFetching;
-
-    const flagSet = new Set(flags ?? cachedFlags ?? []);
+    const flagSet = new Set(flags ?? []);
 
     return {
       permit: (area: RestrictedFeature) =>
-        !pending && !flagSet.has(`${RESTRICTED_PREFIX}-${area}`),
+        !flagSet.has(`${RESTRICTED_PREFIX}-${area}`),
       restrict: (area: RestrictedFeature) =>
-        pending || flagSet.has(`${RESTRICTED_PREFIX}-${area}`),
-      flagOn: (flag: string) => !pending && flagSet.has(flag),
-      flagOff: (flag: string) => pending || !flagSet.has(flag),
+        flagSet.has(`${RESTRICTED_PREFIX}-${area}`),
+      flagOn: (flag: string) => flagSet.has(flag),
+      flagOff: (flag: string) => !flagSet.has(flag),
     };
-  }, [data, isFetching, error, cachedFlags]);
+  }, [flags]);
 }
 
 export default useFlags;
