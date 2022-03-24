@@ -99,7 +99,7 @@ const AddToRecipeModal: React.VFC = () => {
         />
         <FieldTemplate
           name="keepLocal"
-          label="Keep local copy of the extension?"
+          label="Keep a local copy of the extension?"
           fitLabelWidth
           as={SwitchButtonWidget}
           value={keepLocalCopy}
