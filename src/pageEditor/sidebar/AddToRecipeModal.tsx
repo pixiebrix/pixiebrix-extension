@@ -51,11 +51,10 @@ const AddToRecipeModal: React.VFC = () => {
     dispatch(actions.hideAddToRecipeModal());
   };
 
-  const selectOptions =
-    recipeMetadatas.map((metadata) => ({
-      label: metadata.name,
-      value: metadata,
-    })) ?? [];
+  const selectOptions = recipeMetadatas.map((metadata) => ({
+    label: metadata.name,
+    value: metadata,
+  }));
 
   const onChangeRecipe: SelectWidgetOnChange<Option<RecipeMetadata>> = (
     event
