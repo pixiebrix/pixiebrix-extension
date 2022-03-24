@@ -16,10 +16,11 @@
  */
 
 import { EditorState, FormState } from "@/pageEditor/slices/editorSlice";
-import { IExtension, RegistryId } from "@/core";
+import { IExtension, RecipeMetadata, RegistryId } from "@/core";
 import { createSelector } from "reselect";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { selectExtensions } from "@/store/extensionsSelectors";
+import { uniqBy } from "lodash";
 
 type RootState = { editor: EditorState };
 
@@ -102,15 +103,16 @@ export const selectIsShowingAddToRecipeModal = (state: RootState) =>
 export const selectInstalledRecipeMetadatas = createSelector(
   [selectElements, selectExtensions],
   (elements, extensions) => {
-    const recipes = elements
+    const elementRecipes: RecipeMetadata[] = elements
       .filter((element) => Boolean(element.recipe))
       .map((element) => element.recipe);
-    for (const _recipe of extensions.map((extension) => extension._recipe)) {
-      if (_recipe && !recipes.some((recipe) => recipe.id === _recipe.id)) {
-        recipes.push(_recipe);
-      }
-    }
+    const extensionRecipes: RecipeMetadata[] = extensions
+      .filter((extension) => Boolean(extension._recipe))
+      .map((extension) => extension._recipe);
 
-    return recipes;
+    return uniqBy(
+      [...elementRecipes, ...extensionRecipes],
+      (recipe) => recipe.id
+    );
   }
 );
