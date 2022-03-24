@@ -17,16 +17,16 @@
 
 import React from "react";
 import BlockConfiguration from "./BlockConfiguration";
-import { createFormikTemplate } from "@/tests/formHelpers";
+import { createFormikTemplate } from "@/utils/testUtils/formHelpers";
 import {
   blockFactory,
   formStateFactory,
   triggerFormStateFactory,
-} from "@/tests/factories";
+} from "@/utils/testUtils/factories";
 import blockRegistry from "@/blocks/registry";
 import { echoBlock } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { render, screen } from "@testing-library/react";
-import { waitForEffect } from "@/tests/testHelpers";
+import { waitForEffect } from "@/utils/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 

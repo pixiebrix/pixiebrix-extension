@@ -33,7 +33,7 @@
  */
 
 import { render } from "@testing-library/react";
-import { waitForEffect } from "@/tests/testHelpers";
+import { waitForEffect } from "@/utils/testUtils/testHelpers";
 import getErrorDetails from "./getErrorDetails";
 
 test("Template render error", () => {

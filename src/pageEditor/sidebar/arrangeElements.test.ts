@@ -21,7 +21,7 @@ import {
   menuItemFormStateFactory,
   recipeDefinitionFactory,
   recipeMetadataFactory,
-} from "@/tests/factories";
+} from "@/utils/testUtils/factories";
 import { RecipeDefinition } from "@/types/definitions";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { ActionFormState } from "@/pageEditor/extensionPoints/menuItem";

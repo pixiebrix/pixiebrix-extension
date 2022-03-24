@@ -16,7 +16,9 @@
  */
 
 import { Schema, UiSchema } from "@/core";
-import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
+import testItRenders, {
+  ItRendersOptions,
+} from "@/utils/testUtils/testItRenders";
 import { Except } from "type-fest";
 import FormPreview, { FormPreviewProps } from "./FormPreview";
 

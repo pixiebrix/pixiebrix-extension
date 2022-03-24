@@ -17,7 +17,7 @@
 
 import { anonAuth } from "@/auth/authConstants";
 import { useGetAuthQuery } from "@/services/api";
-import { recipeMetadataFactory } from "@/tests/factories";
+import { recipeMetadataFactory } from "@/utils/testUtils/factories";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import RecipeConfigurationModal from "./RecipeConfigurationModal";

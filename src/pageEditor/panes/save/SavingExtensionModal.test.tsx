@@ -25,7 +25,7 @@ import {
   installedRecipeMetadataFactory,
   recipeFactory,
   recipeMetadataFactory,
-} from "@/tests/factories";
+} from "@/utils/testUtils/factories";
 
 const simpleElementFactory = define<FormState>({
   apiVersion: "v2",

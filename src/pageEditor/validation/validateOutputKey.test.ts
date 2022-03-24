@@ -17,7 +17,7 @@
 
 import { BlockType } from "@/blocks/util";
 import { OutputKey } from "@/core";
-import { blocksMapFactory, pipelineFactory } from "@/tests/factories";
+import { blocksMapFactory, pipelineFactory } from "@/utils/testUtils/factories";
 import validateOutputKey from "./validateOutputKey";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 

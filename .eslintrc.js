@@ -79,15 +79,21 @@ module.exports = {
         "test-env.js",
         "**/__mocks__/**",
         "*.test.js",
+        "*.test.ts",
+        "*.test.tsx",
       ],
       env: {
         node: true,
         jest: true,
       },
       // Overridden rules: https://github.com/fregante/eslint-config-pixiebrix/blob/main/server.js
-      extends: ["pixiebrix/server"],
+      extends: ["pixiebrix/server", "plugin:jest/recommended"],
       rules: {
         "@typescript-eslint/consistent-type-assertions": "off",
+        "jest/no-conditional-expect": "off",
+        "unicorn/consistent-function-scoping": "off",
+        // Incorrectly suggests to use `runtime.sendMessage` instead of `browser.runtime.sendMessage`
+        "import/no-named-as-default-member": "off",
       },
     },
   ],

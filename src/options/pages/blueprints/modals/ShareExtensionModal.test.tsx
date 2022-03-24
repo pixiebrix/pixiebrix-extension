@@ -18,8 +18,8 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import ShareExtensionModal from "./ShareExtensionModal";
-import { extensionFactory } from "@/tests/factories";
-import { waitForEffect } from "@/tests/testHelpers";
+import { extensionFactory } from "@/utils/testUtils/factories";
+import { waitForEffect } from "@/utils/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { Organization } from "@/types/contract";
 import { Provider } from "react-redux";

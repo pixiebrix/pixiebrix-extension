@@ -31,7 +31,7 @@ import * as logging from "@/background/messenger/api";
 import { sendDeploymentAlert } from "@/background/messenger/api";
 import { ApiVersion } from "@/core";
 import { uuidv4 } from "@/types/helpers";
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import { serializeError } from "serialize-error";
 import { ContextError } from "@/errors";
 
@@ -75,26 +75,25 @@ describe.each([["v1"], ["v2"], ["v3"]])(
 
       const logger = new ConsoleLogger({ deploymentId });
 
-      let serializedError;
-
-      try {
-        await reducePipeline(
-          {
-            id: throwBlock.id,
-            config: {
-              message: "Example input",
-            },
-            onError: {
-              alert: true,
-            },
+      const pipeline = reducePipeline(
+        {
+          id: throwBlock.id,
+          config: {
+            message: "Example input",
           },
-          simpleInput({ inputArg: "hello" }),
-          { ...testOptions(apiVersion), logger }
-        );
-        fail("Expected reducePipeline to throw");
-      } catch (error) {
-        serializedError = serializeError((error as ContextError).cause);
-      }
+          onError: {
+            alert: true,
+          },
+        },
+        simpleInput({ inputArg: "hello" }),
+        { ...testOptions(apiVersion), logger }
+      );
+
+      await expect(pipeline).rejects.toThrow(ContextError);
+
+      const contextError = (await pipeline.catch(
+        (error) => error
+      )) as ContextError;
 
       expect(sendDeploymentAlert).toHaveBeenCalledTimes(1);
       expect(sendDeploymentAlert).toBeCalledWith({
@@ -107,7 +106,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
             },
             "@options": {},
           },
-          error: serializedError,
+          error: serializeError(contextError.cause),
         },
       });
     });

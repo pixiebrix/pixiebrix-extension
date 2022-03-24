@@ -21,7 +21,7 @@ import {
   ServiceConfig,
 } from "@/core";
 import serviceRegistry from "@/services/registry";
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { isBackground, isExtensionContext } from "webext-detect-page";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
@@ -116,14 +116,9 @@ describe("unauthenticated direct requests", () => {
   it("handles remote internal server error", async () => {
     axiosMock.onAny().reply(500);
 
-    try {
-      await proxyService(null, requestConfig);
-      fail("Expected proxyService to throw a RemoteServiceError error");
-    } catch (error) {
-      expect(error).toBeInstanceOf(RemoteServiceError);
-      const { status } = (error as RemoteServiceError).error.response;
-      expect(status).toEqual(500);
-    }
+    const request = proxyService(null, requestConfig);
+    await expect(request).rejects.toThrow(RemoteServiceError);
+    await expect(request).rejects.toHaveProperty("error.response.status", 500);
   });
 });
 
@@ -148,19 +143,18 @@ describe("authenticated direct requests", () => {
   it("throws error on bad request", async () => {
     axiosMock.onAny().reply(403, {});
 
-    try {
-      await proxyService(directServiceConfig, requestConfig);
-      fail("Expected proxyService to throw an error");
-    } catch (error) {
-      expect(error).toBeInstanceOf(ContextError);
+    const request = proxyService(directServiceConfig, requestConfig);
 
-      const { cause } = error as ContextError;
-
-      expect(cause).toBeInstanceOf(RemoteServiceError);
-
-      const { status } = (cause as RemoteServiceError).error.response;
-      expect(status).toEqual(403);
-    }
+    await expect(request).rejects.toThrow(ContextError);
+    await expect(request).rejects.toMatchObject(
+      expect.objectContaining({
+        cause: expect.any(RemoteServiceError),
+      })
+    );
+    await expect(request).rejects.toHaveProperty(
+      "cause.error.response.status",
+      403
+    );
   });
 });
 
@@ -195,17 +189,17 @@ describe("proxy service requests", () => {
           status_code: statusCode,
         });
 
-        try {
-          await proxyService(proxiedServiceConfig, requestConfig);
-          fail("Expected proxyService to throw an error");
-        } catch (error) {
-          expect(error).toBeInstanceOf(ContextError);
-          const { status, statusText } = (
-            (error as ContextError).cause as AxiosError
-          ).response;
-          expect(status).toEqual(statusCode);
-          expect(statusText).toEqual(reason);
-        }
+        const request = proxyService(proxiedServiceConfig, requestConfig);
+
+        await expect(request).rejects.toThrow(ContextError);
+        await expect(request).rejects.toHaveProperty(
+          "cause.response.status",
+          statusCode
+        );
+        await expect(request).rejects.toHaveProperty(
+          "cause.response.statusText",
+          reason
+        );
       });
     }
   );
@@ -213,20 +207,22 @@ describe("proxy service requests", () => {
   it("handle proxy error", async () => {
     axiosMock.onAny().reply(500);
 
-    try {
-      await proxyService(proxiedServiceConfig, requestConfig);
-      fail("Expected proxyService to throw an error");
-    } catch (error) {
-      expect(error).toBeInstanceOf(ContextError);
+    const request = proxyService(proxiedServiceConfig, requestConfig);
 
-      const { cause } = error as ContextError;
+    await expect(request).rejects.toThrow(ContextError);
 
-      expect(cause).toBeInstanceOf(RemoteServiceError);
-
-      expect((cause as RemoteServiceError).error.response.status).toEqual(500);
-      expect((cause as RemoteServiceError).message).toEqual(
-        "Internal Server Error"
-      );
-    }
+    await expect(request).rejects.toMatchObject(
+      expect.objectContaining({
+        cause: expect.any(RemoteServiceError),
+      })
+    );
+    await expect(request).rejects.toHaveProperty(
+      "cause.error.response.status",
+      500
+    );
+    await expect(request).rejects.toHaveProperty(
+      "cause.message",
+      "Internal Server Error"
+    );
   });
 });

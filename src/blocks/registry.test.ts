@@ -16,7 +16,7 @@
  */
 
 import { BlocksRegistry } from "@/blocks/registry";
-import { blockFactory } from "@/tests/factories";
+import { blockFactory } from "@/utils/testUtils/factories";
 
 describe("blocksMap", () => {
   let registry: BlocksRegistry;

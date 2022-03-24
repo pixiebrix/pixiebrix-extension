@@ -18,7 +18,7 @@
 import { Form, Formik, FormikValues } from "formik";
 import React, { PropsWithChildren } from "react";
 import { fireEvent, screen } from "@testing-library/react";
-import { waitForEffect } from "@/tests/testHelpers";
+import { waitForEffect } from "@/utils/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 
 export const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";

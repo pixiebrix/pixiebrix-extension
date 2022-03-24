@@ -17,7 +17,7 @@
 
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import validateStringTemplates from "@/pageEditor/validation/validateStringTemplates";
-import { pipelineFactory } from "@/tests/factories";
+import { pipelineFactory } from "@/utils/testUtils/factories";
 
 describe("validateStringTemplates()", () => {
   test("no error for empty string mustache", () => {

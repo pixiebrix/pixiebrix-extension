@@ -29,7 +29,7 @@ import {
   recipeMetadataFactory,
   recipeFactory,
   installedRecipeMetadataFactory,
-} from "@/tests/factories";
+} from "@/utils/testUtils/factories";
 import useCreateMock from "@/pageEditor/hooks/useCreate";
 import useResetMock from "@/pageEditor/hooks/useReset";
 import {

@@ -16,8 +16,10 @@
  */
 
 import { Schema, UiSchema } from "@/core";
-import { waitForEffect } from "@/tests/testHelpers";
-import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
+import { waitForEffect } from "@/utils/testUtils/testHelpers";
+import testItRenders, {
+  ItRendersOptions,
+} from "@/utils/testUtils/testItRenders";
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { Except } from "type-fest";
@@ -26,7 +28,7 @@ import {
   fireTextInput,
   fireFormSubmit,
   selectSchemaFieldType,
-} from "@/tests/formHelpers";
+} from "@/utils/testUtils/formHelpers";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor, { FormEditorProps } from "./FormEditor";
 import {
@@ -275,14 +277,12 @@ describe("FormEditor", () => {
       </FormikTemplate>
     );
 
-    /* eslint-disable security/detect-object-injection */
     const getRequiredFieldFromMock = (callNumber: number) =>
       (
         onSubmitMock.mock.calls[callNumber][0][
           RJSF_SCHEMA_PROPERTY_NAME
         ] as RJSFSchema
       ).schema.required;
-    /* eslint-enable security/detect-object-injection */
 
     // Check the field is not required
     await fireFormSubmit();
@@ -378,13 +378,11 @@ describe("FormEditor", () => {
 
     await fireFormSubmit();
 
-    /* eslint-disable security/detect-object-injection */
     expect(
       (
         (onSubmitMock.mock.calls[1][0][RJSF_SCHEMA_PROPERTY_NAME] as RJSFSchema)
           .schema.properties[fieldName] as Schema
       ).default
     ).toBeUndefined();
-    /* eslint-enable security/detect-object-injection */
   });
 });

@@ -19,7 +19,7 @@ import React from "react";
 import { fromJS } from "@/services/factory";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
 import { render, screen } from "@testing-library/react";
-import { waitForEffect } from "@/tests/testHelpers";
+import { waitForEffect } from "@/utils/testUtils/testHelpers";
 
 // FIXME: this is coming through as a module with default being a JSON object. (yaml-jest-transform is being applied)
 import pipedriveYaml from "@contrib/services/pipedrive.yaml?loadAsText";

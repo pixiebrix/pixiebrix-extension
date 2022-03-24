@@ -32,7 +32,7 @@ import { selectedElement } from "@/pageEditor/getSelectedElement";
 import { isNullOrBlank, resolveObj } from "@/utils";
 import { BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import { SerializableResponse } from "@/messaging/protocol";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors";

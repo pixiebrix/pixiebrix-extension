@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { traceErrorFactory } from "@/tests/factories";
+import { traceErrorFactory } from "@/utils/testUtils/factories";
 import applyTraceBlockError from "./applyTraceBlockError";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 

@@ -28,9 +28,9 @@ import {
   formStateFactory,
   installedRecipeMetadataFactory,
   recipeFactory,
-} from "@/tests/factories";
+} from "@/utils/testUtils/factories";
 import { uuidv4 } from "@/types/helpers";
-import { waitForEffect } from "@/tests/testHelpers";
+import { waitForEffect } from "@/utils/testUtils/testHelpers";
 import { anonAuth } from "@/auth/authConstants";
 
 jest.mock("@/utils/notify");

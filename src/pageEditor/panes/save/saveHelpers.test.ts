@@ -27,7 +27,7 @@ import {
   versionedExtensionPointRecipeFactory,
   extensionPointConfigFactory,
   recipeFactory,
-} from "@/tests/factories";
+} from "@/utils/testUtils/factories";
 import menuItemExtensionAdapter from "@/pageEditor/extensionPoints/menuItem";
 import { UnknownObject } from "@/types";
 import { lookupExtensionPoint } from "@/pageEditor/extensionPoints/base";
