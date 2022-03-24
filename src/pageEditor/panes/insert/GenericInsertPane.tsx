@@ -24,7 +24,7 @@ import useAvailableExtensionPoints from "@/pageEditor/hooks/useAvailableExtensio
 import Centered from "@/pageEditor/components/Centered";
 import { Button, Row } from "react-bootstrap";
 import BlockModal from "@/components/brickModal/BrickModal";
-import { editorSlice, FormState } from "@/pageEditor/slices/editorSlice";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
@@ -36,6 +36,7 @@ import {
   showSidebar,
   updateDynamicElement,
 } from "@/contentScript/messenger/api";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const { addElement } = editorSlice.actions;
 

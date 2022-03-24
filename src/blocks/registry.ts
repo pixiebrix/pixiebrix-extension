@@ -18,7 +18,9 @@
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import { IBlock, RegistryId } from "@/core";
-import type { BlockType } from "@/blocks/util";
+import { BlockType, ResolvedBlockConfig } from "@/runtime/runtimeTypes";
+import getType from "@/runtime/getType";
+import { BlockConfig } from "@/blocks/types";
 
 /**
  * A block along with inferred/calculated information
@@ -39,10 +41,6 @@ export class BlocksRegistry extends BaseRegistry<RegistryId, IBlock> {
   private typeCachePromise: Promise<TypedBlockMap> = null;
 
   private async inferAllTypes(): Promise<TypedBlockMap> {
-    // Import here to avoid circular dependency between getType and the block registry
-    const { getType } = await import(
-      /* webpackChunkName: "blocks/util" */ "@/blocks/util"
-    );
     const typeCache: TypedBlockMap = new Map();
     const items = await this.all();
 
@@ -95,3 +93,14 @@ export function registerBlock(block: IBlock): void {
 }
 
 export default registry;
+
+export async function resolveBlockConfig(
+  config: BlockConfig
+): Promise<ResolvedBlockConfig> {
+  const block = await registry.lookup(config.id);
+  return {
+    config,
+    block,
+    type: await getType(block),
+  };
+}

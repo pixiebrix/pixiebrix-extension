@@ -25,9 +25,9 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/pageEditor/store";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectShowV3UpgradeMessageForActiveElement } from "@/pageEditor/slices/editorSelectors";
+import { RootState } from "@/pageEditor/pageEditorTypes";
 
 const UpgradedToApiV3: React.FC = () => {
   const showMessage = useSelector<RootState, boolean>(

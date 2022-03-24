@@ -16,10 +16,11 @@
  */
 
 import { IBlock, OutputKey, RegistryId, SafeString } from "@/core";
-import { BlockType, getType } from "@/blocks/util";
 import { freshIdentifier } from "@/utils";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { selectReaderIds } from "@/blocks/readers/readerUtils";
+import getType from "@/runtime/getType";
+import { BlockType } from "@/runtime/runtimeTypes";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 export function collectRegistryIds(form: FormState): RegistryId[] {
   return [

@@ -18,7 +18,6 @@
 import styles from "./Sidebar.module.scss";
 
 import React, { FormEvent, useContext, useMemo, useState } from "react";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import { isEmpty, sortBy } from "lodash";
 import { sleep } from "@/utils";
@@ -56,6 +55,7 @@ import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import { getIdForElement } from "@/pageEditor/slices/editorSelectors";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button

@@ -20,7 +20,6 @@ import styles from "./Editor.module.scss";
 import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import Sidebar from "@/pageEditor/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/pageEditor/store";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import PermissionsPane from "@/pageEditor/panes/PermissionsPane";
@@ -48,6 +47,7 @@ import Loader from "@/components/Loader";
 import RecipePane from "@/pageEditor/panes/RecipePane";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
+import { RootState } from "@/pageEditor/pageEditorTypes";
 
 const selectEditor = ({ editor }: RootState) => editor;
 

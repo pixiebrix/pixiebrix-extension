@@ -23,10 +23,7 @@ import {
   selectElements,
 } from "@/pageEditor/slices/editorSelectors";
 import useCreate from "@/pageEditor/hooks/useCreate";
-import {
-  actions as editorActions,
-  FormState,
-} from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import useReset from "@/pageEditor/hooks/useReset";
 import {
@@ -50,6 +47,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import pDefer, { DeferredPromise } from "p-defer";
 import { PackageUpsertResponse } from "@/types/contract";
 import { pick } from "lodash";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 

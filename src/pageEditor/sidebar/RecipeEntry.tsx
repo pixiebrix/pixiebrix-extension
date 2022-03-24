@@ -21,11 +21,11 @@ import { RecipeDefinition } from "@/types/definitions";
 import styles from "./Entry.module.scss";
 import { UnsavedChangesIcon } from "@/pageEditor/sidebar/ExtensionIcons";
 import { ListGroup } from "react-bootstrap";
-import { actions, FormState } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/slices/editorSlice";
+import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/pageEditor/store";
 import cx from "classnames";
 import { selectRecipeIsDirty } from "@/pageEditor/slices/editorSelectors";
 

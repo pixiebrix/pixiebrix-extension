@@ -24,13 +24,13 @@ import { UnknownObject } from "@/types";
 import { runExtensionPointReader } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
-import { TriggerFormState } from "@/pageEditor/extensionPoints/trigger";
+import { TriggerFormState } from "@/pageEditor/extensionPoints/TriggerFormState";
 import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 type PreviewState = {
   isRunning: boolean;

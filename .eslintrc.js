@@ -70,6 +70,9 @@ module.exports = {
     "unicorn/consistent-function-scoping": "warn", // Complains about some of the lifted functions
     "unicorn/no-await-expression-member": "warn", // Annoying sometimes, let's try it
     "@typescript-eslint/consistent-type-assertions": "warn",
+
+    // Enabled for the IDE, but it's disabled in the `lint` script
+    "import/no-cycle": "warn",
   },
   overrides: [
     {

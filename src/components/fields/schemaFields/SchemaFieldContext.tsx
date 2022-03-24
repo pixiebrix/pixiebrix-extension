@@ -15,30 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema } from "@/core";
 import React, { createContext } from "react";
 import {
   SchemaFieldComponent,
   SchemaFieldProps,
 } from "@/components/fields/schemaFields/propTypes";
-import ServiceField, {
-  isServiceField,
-} from "@/components/fields/schemaFields/ServiceField";
-import {
-  booleanPredicate,
-  findOneOf,
-  textPredicate,
-} from "@/components/fields/schemaFields/schemaUtils";
-import BooleanField from "@/components/fields/schemaFields/BooleanField";
-import { isEmpty } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
-import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
-import AppServiceField, {
-  isAppServiceField,
-} from "@/components/fields/schemaFields/AppServiceField";
-import widgetsRegistry from "./widgets/widgetsRegistry";
+import { CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";
 
 export function defaultFieldFactory(
   Widget: React.FC<SchemaFieldProps>
@@ -64,90 +48,6 @@ export function defaultFieldFactory(
   Field.displayName = `SchemaField(${Widget.displayName})`;
   return Field;
 }
-
-const TextField = defaultFieldFactory(widgetsRegistry.TextWidget);
-
-const ArrayField = defaultFieldFactory(widgetsRegistry.ArrayWidget);
-
-function makeOneOfField(oneOf: Schema): SchemaFieldComponent {
-  const Field = getDefaultField(oneOf);
-  const Component = (props: SchemaFieldProps) => (
-    <Field {...props} schema={oneOf} />
-  );
-  Component.displayName = Field.displayName;
-  return Component;
-}
-
-export function getDefaultField(fieldSchema: Schema): SchemaFieldComponent {
-  if (isAppServiceField(fieldSchema)) {
-    return AppServiceField;
-  }
-
-  if (isServiceField(fieldSchema)) {
-    return ServiceField;
-  }
-
-  if (fieldSchema.type === "array") {
-    return ArrayField;
-  }
-
-  if (fieldSchema.type === "object") {
-    return defaultFieldFactory(ObjectWidget);
-  }
-
-  if (booleanPredicate(fieldSchema)) {
-    return BooleanField;
-  }
-
-  if (textPredicate(fieldSchema)) {
-    return TextField;
-  }
-
-  if (findOneOf(fieldSchema, textPredicate)) {
-    return makeOneOfField(findOneOf(fieldSchema, textPredicate));
-  }
-
-  if (findOneOf(fieldSchema, booleanPredicate)) {
-    return makeOneOfField(findOneOf(fieldSchema, booleanPredicate));
-  }
-
-  if (isEmpty(fieldSchema)) {
-    // An empty field schema supports any value. For now, provide an object field since this just shows up
-    // in the @pixiebrix/http brick.
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/709
-    return defaultFieldFactory(ObjectWidget);
-  }
-
-  // Number, string, other primitives, etc.
-  return TextField;
-}
-
-/**
- * A form field, including label, error message, etc.
- */
-type CustomField = {
-  match: (fieldSchema: Schema) => boolean;
-  Component: SchemaFieldComponent;
-};
-
-/**
- * An individual form control (excluding label, error message, etc.)
- */
-type CustomWidget = {
-  match: (fieldSchema: Schema) => boolean;
-  Component: SchemaFieldComponent;
-};
-
-export type CustomFieldToggleMode = {
-  match: (fieldSchema: Schema) => boolean;
-  option: InputModeOption;
-};
-
-export type CustomFieldDefinitions = {
-  customFields: CustomField[];
-  customWidgets: CustomWidget[];
-  customToggleModes: CustomFieldToggleMode[];
-};
 
 /**
  * Context defining custom fields and widgets for schema-based fields.
