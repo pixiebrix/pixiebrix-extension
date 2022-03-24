@@ -15,44 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RootState } from "@/pageEditor/store";
-import {
-  FOUNDATION_NODE_ID,
-  NodeId,
-} from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
+import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { UUID } from "@/core";
+import { RootState } from "@/pageEditor/pageEditorTypes";
+import { ElementUIState, NodeUIState } from "@/pageEditor/uiState/uiStateTypes";
 
-export interface ElementUIState {
-  /**
-   * The instanceId of the active node in the editor,
-   *  or:
-   *  @see FOUNDATION_NODE_ID
-   */
-  activeNodeId: NodeId;
-
-  /**
-   * UI state of foundation and blocks in the extension pipeline
-   */
-  nodeUIStates: Record<NodeId, NodeUIState>;
-}
-
-export interface NodeUIState {
-  /**
-   * Identifier for the node in the editor, either the foundation or a block uuid
-   */
-  nodeId: NodeId;
-
-  dataPanel: {
-    /**
-     * Which tab is active in the data panel of the editor UI
-     */
-    activeTabKey: string | null;
-
-    /**
-     * Data tab search filter query, indexed by tabKey
-     */
-    tabQueries: Record<string, string>;
-  };
-}
+export const FOUNDATION_NODE_ID = "foundation" as UUID;
 
 export function makeInitialNodeUIState(nodeId: NodeId): NodeUIState {
   return {

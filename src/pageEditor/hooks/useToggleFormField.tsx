@@ -24,8 +24,8 @@ import {
 } from "@/components/fields/schemaFields/fieldInputMode";
 import { isObject } from "@/utils";
 import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { Schema } from "@/core";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 export function removeField(parent: unknown, fieldName: string): void {
   if (Array.isArray(parent)) {

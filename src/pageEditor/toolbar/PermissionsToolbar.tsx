@@ -16,7 +16,6 @@
  */
 
 import React, { useCallback, useState } from "react";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
@@ -28,6 +27,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { useDebounce } from "use-debounce";
 import notify from "@/utils/notify";
 import { containsPermissions } from "@/background/messenger/api";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 type PermissionsState = {
   hasPermissions: boolean;

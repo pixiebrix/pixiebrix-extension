@@ -34,9 +34,10 @@ import {
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
-import { BlockType, getType } from "@/blocks/util";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import getType from "@/runtime/getType";
+import { BlockType } from "@/runtime/runtimeTypes";
 
 type ComponentConfig = {
   apiVersion?: ApiVersion;

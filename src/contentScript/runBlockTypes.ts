@@ -14,3 +14,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import { BlockArg, MessageContext, RegistryId } from "@/core";
+import { Availability } from "@/blocks/types";
+
+export interface RemoteBlockOptions {
+  ctxt: unknown;
+  messageContext: MessageContext;
+  maxRetries?: number;
+  isAvailable?: Availability;
+}
+
+export interface RunBlock {
+  sourceTabId?: number;
+  nonce?: string;
+  blockId: RegistryId;
+  blockArgs: BlockArg;
+  options: RemoteBlockOptions;
+}

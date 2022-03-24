@@ -21,6 +21,7 @@ import {
   IBlock,
   IExtension,
   IExtensionPoint,
+  InnerDefinitionRef,
   InnerDefinitions,
   RegistryId,
   ResolvedExtension,
@@ -41,7 +42,6 @@ import {
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { ReaderConfig } from "@/blocks/types";
 import { UnknownObject } from "@/types";
-import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 
@@ -246,6 +246,17 @@ export async function resolveRecipe(
         ? { ...config, id: definitions.get(config.id).id }
         : config) as ResolvedExtensionPointConfig
   );
+}
+
+/**
+ * Scope for inner definitions
+ */
+export const INNER_SCOPE = "@internal";
+
+export function isInnerExtensionPoint(
+  id: RegistryId | InnerDefinitionRef
+): boolean {
+  return id.startsWith(INNER_SCOPE + "/");
 }
 
 export function hasInnerExtensionPoint(extension: IExtension): boolean {

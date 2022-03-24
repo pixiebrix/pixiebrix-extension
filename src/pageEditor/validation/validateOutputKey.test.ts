@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BlockType } from "@/blocks/util";
 import { OutputKey } from "@/core";
 import { blocksMapFactory, pipelineFactory } from "@/tests/factories";
 import validateOutputKey from "./validateOutputKey";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { BlockType } from "@/runtime/runtimeTypes";
 
 test("returns when no blocks given", async () => {
   const pipelineErrors: FormikErrorTree = {};

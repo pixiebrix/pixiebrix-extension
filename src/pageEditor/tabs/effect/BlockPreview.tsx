@@ -33,7 +33,6 @@ import objectHash from "object-hash";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
-import { BlockType, getType } from "@/blocks/util";
 import { removeEmptyValues } from "@/pageEditor/extensionPoints/base";
 import {
   ApiVersion,
@@ -48,6 +47,8 @@ import { useField } from "formik";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import { makeServiceContext } from "@/services/serviceUtils";
+import getType from "@/runtime/getType";
+import { BlockType } from "@/runtime/runtimeTypes";
 
 /**
  * Bricks to preview even if there's no trace.
