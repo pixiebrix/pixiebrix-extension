@@ -35,6 +35,7 @@ export const waitForEffect = async () =>
   });
 
 // NoInfer is internal type of @reduxjs/toolkit tsHelpers
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from @reduxjs/toolkit typings
 declare type NoInfer<T> = [T][T extends any ? 0 : never];
 export type CreateRenderFunctionOptions<
   TState,
@@ -48,10 +49,11 @@ export type CreateRenderFunctionOptions<
   defaultProps: TProps;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types -- the type copied from Redux typings
 export function createRenderFunction<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the type copied from Redux typings
   S = any,
   A extends Action = AnyAction,
+  // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
   P = {}
 >({
   reducer,
