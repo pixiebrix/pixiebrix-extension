@@ -48,7 +48,6 @@ import {
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
   logIfInvalidOutput,
-  resolveBlockConfig,
   selectBlockRootElement,
   shouldRunBlock,
   throwIfInvalidInput,
@@ -56,7 +55,8 @@ import {
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { UnknownObject } from "@/types";
-import { RunBlock } from "@/contentScript/executor";
+import { RunBlock } from "@/contentScript/runBlockTypes";
+import { resolveBlockConfig } from "@/blocks/registry";
 
 type CommonOptions = ApiVersionOptions & {
   /**

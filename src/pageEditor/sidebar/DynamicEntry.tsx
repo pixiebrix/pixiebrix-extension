@@ -17,9 +17,8 @@
 
 import styles from "./Entry.module.scss";
 import React, { useCallback } from "react";
-import { actions, FormState } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/pageEditor/store";
 import { ListGroup } from "react-bootstrap";
 import { getLabel } from "@/pageEditor/sidebar/common";
 import {
@@ -33,6 +32,7 @@ import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
 
 /**
  * A sidebar menu entry corresponding to an extension that is new or is currently being edited.

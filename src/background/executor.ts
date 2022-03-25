@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line import/no-restricted-paths -- Type only
-import type { RunBlock } from "@/contentScript/executor";
 import { Runtime, Tabs } from "webextension-polyfill";
 import { BusinessError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
@@ -30,6 +28,8 @@ import { RemoteExecutionError } from "@/blocks/errors";
 import pDefer from "p-defer";
 import { canAccessTab } from "webext-tools";
 import { onTabClose } from "@/chrome";
+// eslint-disable-next-line import/no-restricted-paths -- Type only
+import type { RunBlock } from "@/contentScript/runBlockTypes";
 
 type TabId = number;
 

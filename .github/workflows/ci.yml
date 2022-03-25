@@ -124,6 +124,20 @@ jobs:
       - run: npm ci
       - run: npm run lint -- --quiet
 
+  circular-deps:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      # Fixed version to avoid random breaks. Not in package.json due to #1084
+      - run: npm install --global madge@5.0.1
+      - run: npm run madge:circular
+        name: Detect circular dependencies
+
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:
     runs-on: ubuntu-latest

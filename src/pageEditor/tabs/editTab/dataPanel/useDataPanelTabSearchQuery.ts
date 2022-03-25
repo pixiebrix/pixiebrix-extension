@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectNodeDataPanelTabSearchQuery } from "@/pageEditor/uiState/uiState";
-import { RootState } from "@/pageEditor/store";
+import { RootState } from "@/pageEditor/pageEditorTypes";
 
 export default function useDataPanelTabSearchQuery(
   tabKey: string

@@ -34,10 +34,6 @@ import {
 } from "@/pageEditor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
 import {
-  AttachMode,
-  DebounceOptions,
-  TargetMode,
-  Trigger,
   TriggerConfig,
   TriggerDefinition,
   TriggerExtensionPoint,
@@ -46,39 +42,11 @@ import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
-import {
-  BaseFormState,
-  ElementConfig,
-  SingleLayerReaderConfig,
-} from "@/pageEditor/extensionPoints/elementConfig";
-import { NormalizedAvailability } from "@/blocks/types";
+import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
-
-export interface TriggerFormState extends BaseFormState {
-  type: "trigger";
-
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      rootSelector: string | null;
-      trigger: Trigger;
-      reader: SingleLayerReaderConfig;
-      attachMode: AttachMode;
-      targetMode: TargetMode;
-
-      isAvailable: NormalizedAvailability;
-
-      // Debouncing props
-      debounce: DebounceOptions;
-
-      // Interval props
-      intervalMillis: number | null;
-      background: boolean | null;
-    };
-  };
-}
+import { TriggerFormState } from "./TriggerFormState";
 
 function fromNativeElement(
   url: string,

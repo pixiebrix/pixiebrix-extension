@@ -18,7 +18,8 @@
 import React from "react";
 import styles from "./EditorNodeLayout.module.scss";
 import EditorNode, {
-  EditorNodeProps,
+  type EditorNodeProps,
+  NodeId,
 } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -33,16 +34,13 @@ import cx from "classnames";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { ListGroup } from "react-bootstrap";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
 
 const addBrickCaption = (
   <span>
     <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add brick
   </span>
 );
-
-export type NodeId = UUID;
-
-export const FOUNDATION_NODE_ID = "foundation" as UUID;
 
 const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];

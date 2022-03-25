@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { actions, FormState } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/slices/editorSlice";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { useFormikContext } from "formik";
@@ -30,6 +30,7 @@ import {
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 /**
  * Remove the current element from the page and installed extensions
