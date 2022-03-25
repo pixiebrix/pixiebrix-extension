@@ -28,7 +28,6 @@ import { Link } from "react-router-dom";
 import { ServiceAuthPair } from "@/core";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { selectSettings } from "@/store/settingsSelectors";
 
 function selectedAuths(values: WizardValues): ServiceAuthPair[] {
   return values.services.filter((x) => x.config);
@@ -107,7 +106,6 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({
   reinstall,
 }) => {
   const extensions = useSelector(selectExtensions);
-  const { isBlueprintsPageEnabled } = useSelector(selectSettings);
 
   const installedExtensions = useMemo(
     () =>
@@ -138,12 +136,9 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({
           <FontAwesomeIcon icon={faInfoCircle} /> Don&apos;t know which bricks
           to select? Don&apos;t worry! &mdash; you can de-activate bricks at any
           time on the{" "}
-          <Link to={isBlueprintsPageEnabled ? "/blueprints" : "/installed"}>
+          <Link to="/blueprints">
             <u className="text-nowrap">
-              <FontAwesomeIcon icon={faCubes} />{" "}
-              {isBlueprintsPageEnabled
-                ? "Blueprints page"
-                : "Active Bricks page"}
+              <FontAwesomeIcon icon={faCubes} /> Blueprints page
             </u>
           </Link>
         </p>

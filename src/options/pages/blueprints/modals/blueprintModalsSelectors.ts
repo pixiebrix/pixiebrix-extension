@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UUID } from "@/core";
+import { RootState } from "@/options/store";
 
-export type RemoveAction = (identifier: { extensionId: UUID }) => void;
-export type ExportBlueprintAction = (extensionIdToExport: UUID) => void;
-export type ShareAction = (extensionId: UUID) => void;
+export const selectShowLogsContext = ({ blueprintModals }: RootState) =>
+  blueprintModals.showLogsContext;
+
+export const selectShowShareContext = ({ blueprintModals }: RootState) =>
+  blueprintModals.showShareContext;

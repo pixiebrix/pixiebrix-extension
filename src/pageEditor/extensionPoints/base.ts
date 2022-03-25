@@ -50,13 +50,16 @@ import {
 import { deepPickBy, freshIdentifier, isNullOrBlank } from "@/utils";
 import { UnknownObject } from "@/types";
 import { isExpression } from "@/runtime/mapArgs";
-import { INNER_SCOPE, isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 import { RecipeDefinition } from "@/types/definitions";
 import {
   MINIMAL_SCHEMA,
   MINIMAL_UI_SCHEMA,
 } from "@/components/formBuilder/formBuilderHelpers";
-import { hasInnerExtensionPoint } from "@/registry/internal";
+import {
+  hasInnerExtensionPoint,
+  INNER_SCOPE,
+  isInnerExtensionPoint,
+} from "@/registry/internal";
 
 export interface WizardStep {
   step: string;

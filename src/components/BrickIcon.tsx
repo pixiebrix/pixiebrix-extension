@@ -18,7 +18,6 @@
 import React, { useState } from "react";
 import { IBrick } from "@/core";
 import { Split } from "type-fest";
-import { BlockType, getType } from "@/blocks/util";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -43,6 +42,8 @@ import { useAsyncState } from "@/hooks/common";
 import { useAsyncEffect } from "use-async-effect";
 import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
 import { MarketplaceListing } from "@/types/contract";
+import getType from "@/runtime/getType";
+import { BlockType } from "@/runtime/runtimeTypes";
 
 export function getDefaultBrickIcon(
   brick: IBrick,

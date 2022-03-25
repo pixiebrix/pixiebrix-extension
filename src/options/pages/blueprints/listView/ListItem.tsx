@@ -52,7 +52,7 @@ const ListItem: React.VoidFunctionComponent<{
         </div>
       </div>
       <div className={styles.status}>
-        <Status installableViewItem={installableItem} />
+        <Status {...installableItem} />
       </div>
       <div className="flex-shrink-0">
         <BlueprintActions installableViewItem={installableItem} />

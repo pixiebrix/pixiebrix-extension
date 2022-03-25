@@ -63,7 +63,9 @@
 }
 
 .status {
-  text-align: center;
+  padding: 0 20px;
+  display: flex;
+  justify-content: center;
   flex-basis: 150px;
   flex-shrink: 0;
 }

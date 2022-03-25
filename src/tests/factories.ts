@@ -17,7 +17,6 @@
 
 import { define, array, FactoryConfig } from "cooky-cutter";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
-import { getType } from "@/blocks/util";
 import {
   ApiVersion,
   IBlock,
@@ -36,13 +35,11 @@ import { TraceError } from "@/telemetry/trace";
 import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
 import { Permissions } from "webextension-polyfill";
 import { BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
-import trigger, {
-  TriggerFormState,
-} from "@/pageEditor/extensionPoints/trigger";
+import trigger from "@/pageEditor/extensionPoints/trigger";
+import { TriggerFormState } from "@/pageEditor/extensionPoints/TriggerFormState";
 import menuItem, {
   ActionFormState,
 } from "@/pageEditor/extensionPoints/menuItem";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import {
   RecipeDefinition,
   ExtensionPointConfig,
@@ -59,6 +56,8 @@ import {
 import { TypedBlock, TypedBlockMap } from "@/blocks/registry";
 import { Deployment } from "@/types/contract";
 import { ButtonSelectionResult } from "@/contentScript/nativeEditor/types";
+import getType from "@/runtime/getType";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 export const recipeMetadataFactory = define<Metadata>({
   id: (n: number) => validateRegistryId(`test/recipe-${n}`),

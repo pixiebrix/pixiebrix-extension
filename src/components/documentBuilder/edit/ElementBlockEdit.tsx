@@ -22,13 +22,14 @@ import { Col, Row } from "react-bootstrap";
 import BrickModal from "@/components/brickModal/BrickModal";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { BlockType, defaultBlockConfig } from "@/blocks/util";
+import { defaultBlockConfig } from "@/blocks/util";
 import { IBlock } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { selectActiveExtensionId } from "@/pageEditor/slices/editorSelectors";
+import { BlockType } from "@/runtime/runtimeTypes";
 
 type ElementBlockEditProps = {
   blockTypes: BlockType[];

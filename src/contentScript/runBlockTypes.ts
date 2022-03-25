@@ -15,19 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.table {
-  th {
-    font-weight: 400;
-  }
+import { BlockArg, MessageContext, RegistryId } from "@/core";
+import { Availability } from "@/blocks/types";
 
-  th,
-  td {
-    height: 44px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+export interface RemoteBlockOptions {
+  ctxt: unknown;
+  messageContext: MessageContext;
+  maxRetries?: number;
+  isAvailable?: Availability;
+}
 
-    &:first-child {
-      width: 15px;
-    }
-  }
+export interface RunBlock {
+  sourceTabId?: number;
+  nonce?: string;
+  blockId: RegistryId;
+  blockArgs: BlockArg;
+  options: RemoteBlockOptions;
 }

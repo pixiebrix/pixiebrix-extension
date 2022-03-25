@@ -24,7 +24,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
 import { MarketplaceListing } from "@/types/contract";
 import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
-import { isBlueprint } from "@/options/pages/blueprints/installableUtils";
+import { isBlueprint } from "@/options/pages/blueprints/utils/installableUtils";
 
 function getDefaultInstallableIcon(installable: Installable) {
   if (isBlueprint(installable) && installable.extensionPoints.length > 1) {

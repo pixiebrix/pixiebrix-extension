@@ -17,8 +17,8 @@
 
 import { UUID } from "@/core";
 import { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
-import { EditorState } from "@/pageEditor/slices/editorSlice";
 import { TraceError, TraceRecord } from "@/telemetry/trace";
+import { EditorState } from "@/pageEditor/pageEditorTypes";
 
 type RootState = { runtime: RuntimeState; editor: EditorState };
 

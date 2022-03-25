@@ -16,7 +16,6 @@
  */
 
 import { IExtension, UUID } from "@/core";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { useContext } from "react";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import { useAsyncState } from "@/hooks/common";
@@ -28,6 +27,7 @@ import {
   checkAvailable,
   getInstalledExtensionPointIds,
 } from "@/contentScript/messenger/api";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 export interface InstallState {
   availableInstalledIds: Set<UUID> | undefined;

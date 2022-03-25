@@ -1,13 +1,13 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.5.8-alpha.1",
+  "version": "1.5.9-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watchAll",
     "test:selenium": "jest --config selenium/jest.config.js",
     "test:selenium:local": "BROWSERSTACK_USERNAME= jest --config selenium/jest.config.js",
-    "lint": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
+    "lint": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives --rule '{\"import/no-cycle\": \"off\"}'",
     "fix": "npm run lint -- --fix",
     "watch": "concurrently 'npm:watch:*' -r",
     "watch:webpack": "ENV_FILE='.env.development' webpack --mode development --watch",
@@ -191,7 +191,6 @@
     "@types/json-schema": "^7.0.8",
     "@types/json-stringify-safe": "^5.0.0",
     "@types/lodash": "^4.14.171",
-    "@types/marked": "^4.0.0",
     "@types/mustache": "^4.1.2",
     "@types/notifyjs-browser": "0.0.0",
     "@types/nunjucks": "^3.1.5",

@@ -19,11 +19,12 @@ import { useCallback } from "react";
 import { reportEvent } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
 import notify from "@/utils/notify";
-import { editorSlice, FormState } from "@/pageEditor/slices/editorSlice";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { getCurrentURL } from "@/pageEditor/utils";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const { addElement } = editorSlice.actions;
 

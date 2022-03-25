@@ -16,23 +16,14 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ActionFormState } from "@/pageEditor/extensionPoints/menuItem";
-import { SidebarFormState } from "@/pageEditor/extensionPoints/sidebar";
-import { TriggerFormState } from "@/pageEditor/extensionPoints/trigger";
-import { PanelFormState } from "@/pageEditor/extensionPoints/panel";
-import { ContextMenuFormState } from "@/pageEditor/extensionPoints/contextMenu";
 import { getErrorMessage } from "@/errors";
 import { clearExtensionTraces } from "@/telemetry/trace";
 import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import {
-  ElementUIState,
+  FOUNDATION_NODE_ID,
   makeInitialElementUIState,
   makeInitialNodeUIState,
 } from "@/pageEditor/uiState/uiState";
-import {
-  FOUNDATION_NODE_ID,
-  NodeId,
-} from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { WritableDraft } from "immer/dist/types/types-external";
 import { BlockConfig } from "@/blocks/types";
 import { ExtensionPointType } from "@/extensionPoints/types";
@@ -41,87 +32,9 @@ import {
   RecipeDefinition,
   RecipeMetadataFormState,
 } from "@/types/definitions";
-
-export type FormState =
-  | ActionFormState
-  | SidebarFormState
-  | TriggerFormState
-  | PanelFormState
-  | ContextMenuFormState;
-
-export interface EditorState {
-  /**
-   * A sequence number that changes whenever a new element is selected.
-   *
-   * Can use as a React component key to trigger a re-render
-   */
-  selectionSeq: number;
-
-  /**
-   * The element type, if the page editor is in "insertion-mode"
-   */
-  inserting: ExtensionPointType | null;
-
-  /**
-   * The uuid of the active element, if an extension is selected
-   */
-  activeElement: UUID | null;
-
-  /**
-   * The registry id of the active recipe, if a recipe is selected
-   */
-  activeRecipeId: RegistryId | null;
-
-  error: string | null;
-
-  dirty: Record<string, boolean>;
-
-  /**
-   * Unsaved elements
-   */
-  readonly elements: FormState[];
-
-  /**
-   * Brick ids (not UUIDs) that are known to be editable by the current user
-   */
-  knownEditable: RegistryId[];
-
-  /**
-   * True if error is because user does not have access to beta features
-   */
-  beta?: boolean;
-
-  /**
-   * Is the user using the new page editor beta UI?
-   */
-  isBetaUI: boolean;
-
-  /**
-   * The current UI state of each element, indexed by element Id
-   */
-  elementUIStates: Record<UUID, ElementUIState>;
-
-  /**
-   * A clipboard-style-copy of a block ready to paste into an extension
-   */
-  copiedBlock?: BlockConfig;
-
-  /**
-   * Are we currently showing the info message to users about upgrading from v2 to v3 of
-   * the runtime api for this extension?
-   */
-  showV3UpgradeMessageByElement: Record<UUID, boolean>;
-
-  /**
-   * Unsaved, changed recipe options
-   */
-  dirtyRecipeOptionsById: Record<RegistryId, OptionsDefinition>;
-
-  /**
-   * Unsaved, changed recipe metadata
-   */
-  dirtyRecipeMetadataById: Record<RegistryId, RecipeMetadataFormState>;
-}
+import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
+import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
+import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,

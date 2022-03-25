@@ -23,9 +23,9 @@ import {
   faGlobe,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { SharingSource } from "@/options/pages/blueprints/installableUtils";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import cx from "classnames";
+import { SharingSource } from "@/options/pages/blueprints/blueprintsTypes";
 
 const sharingIcons = {
   Personal: faEyeSlash,
@@ -41,7 +41,6 @@ const SharingLabel: React.VoidFunctionComponent<{
   className?: string;
 }> = ({ sharing, className }) => (
   <OverlayTrigger
-    trigger="hover"
     key="updateAt"
     placement="top"
     delay={600}

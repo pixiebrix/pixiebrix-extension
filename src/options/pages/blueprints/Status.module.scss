@@ -15,13 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-
-.searchLabel {
-  color: $body-color;
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: start;
 }
 
-.activateButton {
-  min-width: 93px;
+.activeStatus {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  margin-left: 0.5rem;
+}
+
+.versionNumber {
+  font-size: 0.7rem;
 }

@@ -20,7 +20,7 @@ import styles from "./ElementWizard.module.scss";
 import React, { useState } from "react";
 import { useFormikContext } from "formik";
 import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
-import { actions, FormState } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
 import ReloadToolbar from "@/pageEditor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/pageEditor/toolbar/ActionToolbar";
@@ -42,6 +42,7 @@ import useFlags from "@/hooks/useFlags";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
 import useRecipeSaver from "@/pageEditor/panes/save/useRecipeSaver";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";

@@ -15,30 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export type InstallMode = "local" | "remote";
+import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 
-export type SettingsState = {
+export interface NodeUIState {
   /**
-   * Whether the extension is synced to the app for provisioning.*
-   *
-   * NOTE: `local` is broken in many places. The only current valid value is remote.
+   * Identifier for the node in the editor, either the foundation or a block uuid
    */
-  mode: InstallMode;
+  nodeId: NodeId;
+
+  dataPanel: {
+    /**
+     * Which tab is active in the data panel of the editor UI
+     */
+    activeTabKey: string | null;
+
+    /**
+     * Data tab search filter query, indexed by tabKey
+     */
+    tabQueries: Record<string, string>;
+  };
+}
+
+export interface ElementUIState {
+  /**
+   * The instanceId of the active node in the editor,
+   *  or:
+   *  @see FOUNDATION_NODE_ID
+   */
+  activeNodeId: NodeId;
 
   /**
-   * Time to snooze updates until (in milliseconds from the epoch), or null.
-   *
-   * The banners still show, however no modals will be shown for the browser extension or team deployments.
+   * UI state of foundation and blocks in the extension pipeline
    */
-  nextUpdate: number | null;
-
-  /**
-   * Experimental feature to suggest HTML elements to select in the Page Editor
-   */
-  suggestElements?: boolean;
-
-  /**
-   * Whether the non-Chrome browser warning has been dismissed.
-   */
-  browserWarningDismissed: boolean;
-};
+  nodeUIStates: Record<NodeId, NodeUIState>;
+}

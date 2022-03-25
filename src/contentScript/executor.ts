@@ -17,23 +17,7 @@
 
 import blockRegistry from "@/blocks/registry";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { BlockArg, MessageContext, RegistryId } from "@/core";
-import { Availability } from "@/blocks/types";
-
-export interface RemoteBlockOptions {
-  ctxt: unknown;
-  messageContext: MessageContext;
-  maxRetries?: number;
-  isAvailable?: Availability;
-}
-
-export interface RunBlock {
-  sourceTabId?: number;
-  nonce?: string;
-  blockId: RegistryId;
-  blockArgs: BlockArg;
-  options: RemoteBlockOptions;
-}
+import { RunBlock } from "@/contentScript/runBlockTypes";
 
 export async function runBrick(request: RunBlock): Promise<unknown> {
   // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
