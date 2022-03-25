@@ -16,7 +16,6 @@
  */
 
 import { RegistryId, Schema, SchemaProperties, UiSchema, UUID } from "@/core";
-import { AuthState } from "@/auth/authTypes";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import {
   EditablePackage,
@@ -42,12 +41,6 @@ import {
 } from "@/types/contract";
 import { components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
-import { anonAuth } from "@/auth/authConstants";
-import { updateUserData } from "@/auth/token";
-import {
-  selectExtensionAuthState,
-  selectUserDataUpdate,
-} from "@/auth/authUtils";
 import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
@@ -149,21 +142,6 @@ export const appApi = createApi({
     getMe: builder.query<Me, void>({
       query: () => ({ url: "/api/me/", method: "get" }),
       providesTags: ["Me"],
-    }),
-
-    /** @deprecated Use authSlice and authSelectors or getMe instead */
-    getAuth: builder.query<AuthState, void>({
-      query: () => ({ url: "/api/me/", method: "get" }),
-      providesTags: ["Auth"],
-      async transformResponse(me: Me) {
-        if (me.id) {
-          const update = selectUserDataUpdate(me);
-          void updateUserData(update);
-          return selectExtensionAuthState(me);
-        }
-
-        return anonAuth;
-      },
     }),
 
     getDatabases: builder.query<Database[], void>({
@@ -345,10 +323,6 @@ export const appApi = createApi({
     }),
   }),
 });
-
-// This const is defined separately to be able to mark it deprecated
-/** @deprecated Use authSlice and authSelectors instead */
-export const { useGetAuthQuery } = appApi;
 
 export const {
   useGetMeQuery,
