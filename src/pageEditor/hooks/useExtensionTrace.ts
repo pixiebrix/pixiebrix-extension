@@ -24,7 +24,7 @@ import {
 import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import { selectActiveExtensionId } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveElementId } from "@/pageEditor/slices/editorSelectors";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { isEqual } from "lodash";
 import { useRef } from "react";
@@ -52,7 +52,7 @@ function selectTraceMetadata(record: TraceRecord) {
 function useExtensionTrace() {
   const dispatch = useDispatch();
   // XXX: should this use the Formik state to get the extension id instead? In practice they should always be in sync
-  const extensionId = useSelector(selectActiveExtensionId);
+  const extensionId = useSelector(selectActiveElementId);
   const extensionTrace = useSelector(selectExtensionTrace);
 
   const checkingNewEntriesRef = useRef(false);

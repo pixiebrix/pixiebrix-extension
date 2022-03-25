@@ -45,6 +45,7 @@ import Footer from "@/pageEditor/sidebar/Footer";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
+  faFileExport,
   faFileImport,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
@@ -58,6 +59,7 @@ import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
   getIdForElement,
+  selectActiveElementId,
   selectIsAddToRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
@@ -105,6 +107,25 @@ const AddToRecipeButton: React.VFC = () => {
       disabled={isAddToRecipeModalVisible}
     >
       <FontAwesomeIcon icon={faFileImport} />
+    </Button>
+  );
+};
+
+const RemoveFromRecipeButton: React.VFC = () => {
+  const dispatch = useDispatch();
+  const elementId = useSelector(selectActiveElementId);
+
+  return (
+    <Button
+      type="button"
+      size="sm"
+      variant="light"
+      title="Remove extension from its blueprint"
+      onClick={() => {
+        dispatch(actions.removeElementFromRecipe(elementId));
+      }}
+    >
+      <FontAwesomeIcon icon={faFileExport} />
     </Button>
   );
 };
@@ -183,6 +204,11 @@ const SidebarExpanded: React.VoidFunctionComponent<
     !isEmpty(recipes) &&
     activeElement &&
     activeElement.recipe == null;
+
+  const showRemoveFromRecipeButton =
+    flagOn("page-editor-blueprints") &&
+    activeElement &&
+    activeElement.recipe != null;
 
   const elementHash = hash(
     sortBy(
@@ -287,6 +313,8 @@ const SidebarExpanded: React.VoidFunctionComponent<
             {showDeveloperUI && <ReloadButton />}
 
             {showAddToRecipeButton && <AddToRecipeButton />}
+
+            {showRemoveFromRecipeButton && <RemoveFromRecipeButton />}
           </div>
           <Button
             variant="light"

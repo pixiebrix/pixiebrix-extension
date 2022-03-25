@@ -24,13 +24,13 @@ import { uniqBy } from "lodash";
 
 type RootState = { editor: EditorState };
 
-export const selectActiveExtensionId = ({ editor }: RootState) =>
+export const selectActiveElementId = ({ editor }: RootState) =>
   editor.activeElement;
 
 export const selectElements = ({ editor }: RootState) => editor.elements;
 
 export const selectActiveElement = (state: RootState) => {
-  const activeElementId = selectActiveExtensionId(state);
+  const activeElementId = selectActiveElementId(state);
   const elements = selectElements(state);
   return elements.find((x) => x.uuid === activeElementId);
 };
@@ -41,7 +41,7 @@ export const selectActiveRecipeId = ({ editor }: RootState) =>
 export const selectShowV3UpgradeMessageForActiveElement = (
   state: RootState
 ) => {
-  const activeElementId = selectActiveExtensionId(state);
+  const activeElementId = selectActiveElementId(state);
   // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
   return state.editor.showV3UpgradeMessageByElement[activeElementId] ?? false;
 };

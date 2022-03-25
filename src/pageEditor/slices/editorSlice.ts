@@ -357,7 +357,6 @@ export const editorSlice = createSlice({
       }
     },
     showAddToRecipeModal(state) {
-      console.log("show action");
       state.isAddToRecipeModalVisible = true;
     },
     hideAddToRecipeModal(state) {
@@ -398,6 +397,25 @@ export const editorSlice = createSlice({
         state.elements.push(copy);
         state.dirty[copy.uuid] = true;
       }
+    },
+    removeElementFromRecipe(state, action: PayloadAction<UUID>) {
+      const elementId = action.payload;
+      const elementIndex = state.elements.findIndex(
+        (element) => element.uuid === elementId
+      );
+      if (elementIndex < 0) {
+        throw new Error(
+          "Unable to remove extension from blueprint, extension form state not found"
+        );
+      }
+
+      const element = state.elements[elementIndex];
+      element.recipe = undefined;
+      state.dirty[elementId] = true;
+
+      // How do we mark the recipe dirty?
+
+      // How do we 'reset' from this state?
     },
   },
 });
