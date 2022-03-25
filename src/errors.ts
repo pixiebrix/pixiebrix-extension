@@ -169,10 +169,17 @@ type ContextErrorDetails = ErrorOptions & {
 export class ContextError extends Error {
   override name = "ContextError";
 
+  // Super important until https://github.com/sindresorhus/serialize-error/issues/50
+  // This overrides the native property making it enumerable and thus serializable
+  override cause: unknown = undefined;
+
   public readonly context?: MessageContext;
   constructor(message: string, { cause, context }: ContextErrorDetails) {
     super(message, { cause });
     this.context = context;
+
+    // Required until https://github.com/sindresorhus/serialize-error/issues/50
+    this.cause = cause;
   }
 }
 
