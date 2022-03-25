@@ -378,7 +378,9 @@ export const editorSlice = createSlice({
         (element) => element.uuid === elementId
       );
       if (!element) {
-        return;
+        throw new Error(
+          "Unable to add extension to blueprint, extension form state not found"
+        );
       }
 
       let copy: FormState;
