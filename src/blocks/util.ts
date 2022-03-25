@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, IService, RegistryId, Schema } from "@/core";
+import { IBlock, RegistryId, Schema } from "@/core";
 import { UnknownObject } from "@/types";
 import { castArray, mapValues, pickBy } from "lodash";
 import { removeUndefined } from "@/utils";
@@ -23,38 +23,6 @@ import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import { PipelineConfigurationError } from "@/blocks/errors";
 import blockRegistry from "@/blocks/registry";
 import pDefer from "p-defer";
-
-export type BlockType = "reader" | "effect" | "transform" | "renderer";
-
-export async function getType(
-  // HACK: including IService here is a hack to fix some call-sites. This method can only return block types
-  block: IBlock | IService
-): Promise<BlockType | null> {
-  if ("inferType" in block) {
-    // For YAML-based blocks, can't use the method to determine the type because only the "run" method is available.
-    // The inferType method is provided ExternalBlock, which is the class used for YAML-based blocks (which have
-    // kind: component) in their YAML
-    return (block as any).inferType();
-  }
-
-  if ("read" in block) {
-    return "reader";
-  }
-
-  if ("effect" in block) {
-    return "effect";
-  }
-
-  if ("transform" in block) {
-    return "transform";
-  }
-
-  if ("render" in block) {
-    return "renderer";
-  }
-
-  return null;
-}
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");

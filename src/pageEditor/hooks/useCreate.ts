@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { editorSlice, FormState } from "@/pageEditor/slices/editorSlice";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
@@ -34,8 +34,9 @@ import { extensionWithInnerDefinitions } from "@/pageEditor/extensionPoints/base
 import { useGetEditablePackagesQuery } from "@/services/api";
 import { UnknownObject } from "@/types";
 import extensionsSlice from "@/store/extensionsSlice";
-import { isInnerExtensionPoint } from "@/runtime/runtimeUtils";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import { isInnerExtensionPoint } from "@/registry/internal";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;

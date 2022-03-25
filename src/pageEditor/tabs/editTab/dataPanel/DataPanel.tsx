@@ -36,7 +36,6 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { useSelector } from "react-redux";
 import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 import { JsonObject } from "type-fest";
@@ -50,6 +49,7 @@ import { actions as documentBuilderActions } from "@/pageEditor/slices/documentB
 import copy from "copy-to-clipboard";
 import useFlags from "@/hooks/useFlags";
 import ErrorDisplay from "./ErrorDisplay";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 /**
  * Exclude irrelevant top-level keys.

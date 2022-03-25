@@ -25,15 +25,11 @@ import {
 } from "@/core";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
-import { Installable } from "@/options/pages/blueprints/blueprintsTypes";
-
-export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
-
-export type SharingSource = {
-  type: SharingType;
-  label: string;
-  organization: Organization;
-};
+import {
+  Installable,
+  SharingSource,
+  SharingType,
+} from "@/options/pages/blueprints/blueprintsTypes";
 
 export const getSharingType = (
   installable: Installable,

@@ -42,7 +42,7 @@ import { OptionsDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
 import { getErrorMessage } from "@/errors";
-import { RootState } from "@/pageEditor/store";
+import { RootState } from "@/pageEditor/pageEditorTypes";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter(
   (type) => !["File", "Image crop"].includes(type.label)

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { actions, FormState } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useModals } from "@/components/ConfirmationModal";
@@ -26,6 +26,7 @@ import { useGetRecipesQuery } from "@/services/api";
 import { initRecipeOptionsIfNeeded } from "@/pageEditor/extensionPoints/base";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 type Config = {
   element: FormState;

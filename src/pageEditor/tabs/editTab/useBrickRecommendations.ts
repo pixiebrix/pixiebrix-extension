@@ -17,15 +17,15 @@
 
 import { RegistryId } from "@/core";
 import blockRegistry from "@/blocks/registry";
-import { getType } from "@/blocks/util";
 import { isEqual, uniq } from "lodash";
 import { allSettledValues } from "@/utils";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { useFormikContext } from "formik";
 import { useDebounce } from "use-debounce";
 import { useAsyncState } from "@/hooks/common";
 import { collectRegistryIds } from "@/pageEditor/tabs/editTab/editHelpers";
 import { ExtensionPointType } from "@/extensionPoints/types";
+import getType from "@/runtime/getType";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const READER_COUNT_THRESHOLD = 2;
 
