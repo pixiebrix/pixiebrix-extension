@@ -66,10 +66,6 @@ function useRecipeSaver(): RecipeSaver {
     async (recipeId: RegistryId) => {
       const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
       if (recipe == null) {
-        return;
-      }
-
-      if (!recipes.includes(recipe)) {
         notify.error(
           "You no longer have edit permissions for the blueprint. Please reload the Editor."
         );
