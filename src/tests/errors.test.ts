@@ -2,7 +2,6 @@ import {
   BusinessError,
   CancelError,
   ContextError,
-  ErrorWithCause,
   getErrorMessage,
   hasBusinessRootCause,
   hasCancelRootCause,
@@ -14,10 +13,6 @@ import {
 import { range } from "lodash";
 import { deserializeError, serializeError } from "serialize-error";
 import { InputValidationError, OutputValidationError } from "@/blocks/errors";
-import regexJoin from "regex-join";
-
-// eslint-disable-next-line security/detect-unsafe-regex -- Tests only
-const stackTraceRegex = /(\n\s+at [^\n]+)+\n?/;
 
 const TEST_MESSAGE = "Test message";
 
@@ -147,89 +142,6 @@ describe("getErrorMessage", () => {
     expect(getErrorMessage(null)).toBe("Unknown error");
     // eslint-disable-next-line unicorn/no-useless-undefined -- testing value since it comes from variable/expression in the wild
     expect(getErrorMessage(undefined)).toBe("Unknown error");
-  });
-});
-
-describe("ErrorWithCause", () => {
-  test("concats error messages", () => {
-    const error = new ErrorWithCause("Error while connecting", {
-      cause: new Error("Not connected to internet"),
-    });
-    expect(error.message).toBe(
-      "Error while connecting: Not connected to internet"
-    );
-  });
-
-  test("concats error stacks", () => {
-    const error = new ErrorWithCause("Error while connecting", {
-      cause: new Error("Not connected to internet"),
-    });
-    expect(error.stack).toMatch(
-      regexJoin(
-        "Error: Error while connecting: Not connected to internet",
-        stackTraceRegex,
-        "caused by: Error: Not connected to internet",
-        stackTraceRegex
-      )
-    );
-  });
-  test("supports non-Error causes without throwing", () => {
-    expect(new ErrorWithCause("Error while connecting")).toMatchInlineSnapshot(
-      "[Error: Error while connecting]"
-    );
-    expect(
-      new ErrorWithCause("Error while connecting", {
-        cause: null,
-      })
-    ).toMatchInlineSnapshot("[Error: Error while connecting]");
-    expect(
-      new ErrorWithCause("Error while connecting", {
-        cause: "No internet connection",
-      })
-    ).toMatchInlineSnapshot(
-      "[Error: Error while connecting: No internet connection]"
-    );
-    expect(
-      new ErrorWithCause("Error while connecting", {
-        cause: { response: "No internet connection" },
-      })
-    ).toMatchInlineSnapshot(
-      '[Error: Error while connecting: {"response":"No internet connection"}]'
-    );
-  });
-});
-
-describe("ContextError", () => {
-  test("concats error messages", () => {
-    const error = new ContextError("Error while connecting", {
-      cause: new Error("Not connected to internet"),
-    });
-    expect(error.message).toBe(
-      "Error while connecting: Not connected to internet"
-    );
-  });
-
-  test("concats error stacks", () => {
-    const error = new ContextError("Error while connecting", {
-      cause: new Error("Not connected to internet"),
-    });
-    expect(error.stack).toMatch(
-      regexJoin(
-        "Error: Error while connecting: Not connected to internet",
-        stackTraceRegex,
-        "caused by: Error: Not connected to internet",
-        stackTraceRegex
-      )
-    );
-  });
-  test("supports non-Error causes without throwing", () => {
-    expect(
-      new ContextError("Error while connecting", {
-        cause: "No internet connection",
-      })
-    ).toMatchInlineSnapshot(
-      "[ContextError: Error while connecting: No internet connection]"
-    );
   });
 });
 
