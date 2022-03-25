@@ -116,6 +116,11 @@ export interface EditorState {
    * Unsaved, changed recipe metadata
    */
   dirtyRecipeMetadataById: Record<RegistryId, RecipeMetadataFormState>;
+
+  /**
+   * Are we showing the "add extension to blueprint" modal?
+   */
+  isAddToRecipeModalVisible: boolean;
 }
 
 export type RootState = AuthRootState &
