@@ -259,7 +259,7 @@ export function replaceRecipeExtension(
 type RecipeParts = {
   sourceRecipe: RecipeDefinition;
   installedExtensions: UnresolvedExtension[];
-  dirtyElements: FormState[];
+  dirtyRecipeElements: FormState[];
   options?: OptionsDefinition;
   metadata?: RecipeMetadataFormState;
 };
@@ -273,26 +273,22 @@ type RecipeParts = {
  * @param sourceRecipe the original recipe
  * @param installedExtensions the user's locally installed extensions (i.e., from optionsSlice). Used to locate the
  * element's position in sourceRecipe
- * @param dirtyElements the recipe's extension form states (i.e., submitted via Formik)
+ * @param dirtyRecipeElements the recipe's extension form states (i.e., submitted via Formik)
  * @param options the recipe's options form state
  * @param metadata the recipe's metadata form state
  */
 export function replaceRecipeContent({
   sourceRecipe,
   installedExtensions,
-  dirtyElements,
+  dirtyRecipeElements,
   options,
   metadata,
 }: RecipeParts): UnsavedRecipeDefinition {
   const cleanRecipeExtensions = installedExtensions.filter(
     (extension) =>
       extension._recipe?.id === sourceRecipe.metadata.id &&
-      !dirtyElements.some((element) => element.uuid === extension.id)
+      !dirtyRecipeElements.some((element) => element.uuid === extension.id)
   );
-  const dirtyRecipeElements = dirtyElements.filter(
-    (element) => element.recipe.id === sourceRecipe.metadata.id
-  );
-  const allRecipeElements = [...cleanRecipeExtensions, ...dirtyRecipeElements];
 
   return produce(sourceRecipe, (draft) => {
     if (options) {
@@ -303,20 +299,23 @@ export function replaceRecipeContent({
       draft.metadata = metadata;
     }
 
-    let elementApiVersion: ApiVersion;
-    for (const element of allRecipeElements) {
-      if (!elementApiVersion) {
-        elementApiVersion = element.apiVersion;
-      } else if (element.apiVersion !== elementApiVersion) {
+    let itemsApiVersion: ApiVersion;
+    for (const versionedItem of [
+      ...cleanRecipeExtensions,
+      ...dirtyRecipeElements,
+    ]) {
+      if (!itemsApiVersion) {
+        itemsApiVersion = versionedItem.apiVersion;
+      } else if (versionedItem.apiVersion !== itemsApiVersion) {
         throw new Error(
-          `Blueprint extensions have inconsistent API Versions (${element.apiVersion}/${elementApiVersion}). All extensions in a blueprint must have the same API Version.`
+          `Blueprint extensions have inconsistent API Versions (${versionedItem.apiVersion}/${itemsApiVersion}). All extensions in a blueprint must have the same API Version.`
         );
       }
     }
 
-    if (elementApiVersion !== sourceRecipe.apiVersion) {
+    if (itemsApiVersion !== sourceRecipe.apiVersion) {
       throw new Error(
-        `Blueprint has API Version ${sourceRecipe.apiVersion}, but it's elements have version ${elementApiVersion}. Please use the Workshop to edit this blueprint.`
+        `Blueprint has API Version ${sourceRecipe.apiVersion}, but it's extensions have version ${itemsApiVersion}. Please use the Workshop to edit this blueprint.`
       );
     }
 

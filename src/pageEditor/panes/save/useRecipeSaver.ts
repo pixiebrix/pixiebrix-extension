@@ -18,6 +18,7 @@
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  selectDirty,
   selectDirtyRecipeMetadata,
   selectDirtyRecipeOptions,
   selectElements,
@@ -52,7 +53,8 @@ function useRecipeSaver(): RecipeSaver {
   const { data: recipes } = useGetRecipesQuery();
   const { data: editablePackages } = useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
-  const dirtyElements = useSelector(selectElements);
+  const editorFormElements = useSelector(selectElements);
+  const isDirtyByElementId = useSelector(selectDirty);
   const installedExtensions = useSelector(selectExtensions);
   const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
   const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
@@ -72,9 +74,18 @@ function useRecipeSaver(): RecipeSaver {
         return;
       }
 
+      const dirtyRecipeElements = editorFormElements.filter(
+        (element) =>
+          element.recipe?.id === recipe.metadata.id &&
+          isDirtyByElementId[element.uuid]
+      );
       const newOptions = dirtyRecipeOptions[recipe.metadata.id];
       const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
-      if (newOptions == null && newMetadata == null && isEmpty(dirtyElements)) {
+      if (
+        newOptions == null &&
+        newMetadata == null &&
+        isEmpty(dirtyRecipeElements)
+      ) {
         return;
       }
 
@@ -94,7 +105,7 @@ function useRecipeSaver(): RecipeSaver {
       const newRecipe = replaceRecipeContent({
         sourceRecipe: recipe,
         installedExtensions,
-        dirtyElements,
+        dirtyRecipeElements,
         options: newOptions,
         metadata: newMetadata,
       });
@@ -125,7 +136,7 @@ function useRecipeSaver(): RecipeSaver {
       );
 
       try {
-        for (const element of dirtyElements) {
+        for (const element of dirtyRecipeElements) {
           // Don't push to cloud since we're saving it with the recipe
           // eslint-disable-next-line no-await-in-loop
           await create({ element, pushToCloud: false });
@@ -159,16 +170,17 @@ function useRecipeSaver(): RecipeSaver {
       setIsSaving(false);
     },
     [
-      create,
-      dirtyElements,
-      dirtyRecipeMetadata,
-      dirtyRecipeOptions,
-      dispatch,
-      editablePackages,
-      installedExtensions,
       recipes,
+      editorFormElements,
+      dirtyRecipeOptions,
+      dirtyRecipeMetadata,
       showConfirmation,
+      installedExtensions,
+      editablePackages,
+      dispatch,
+      isDirtyByElementId,
       updateRecipe,
+      create,
     ]
   );
 
