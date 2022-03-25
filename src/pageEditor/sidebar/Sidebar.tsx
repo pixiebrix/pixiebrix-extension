@@ -58,7 +58,7 @@ import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
   getIdForElement,
-  selectIsShowingAddToRecipeModal,
+  selectIsAddToRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import { FormState } from "@/pageEditor/pageEditorTypes";
@@ -89,8 +89,8 @@ const ReloadButton: React.VoidFunctionComponent = () => (
 
 const AddToRecipeButton: React.VFC = () => {
   const dispatch = useDispatch();
-  const isShowingAddToRecipeModal = useSelector(
-    selectIsShowingAddToRecipeModal
+  const isAddToRecipeModalVisible = useSelector(
+    selectIsAddToRecipeModalVisible
   );
 
   return (
@@ -102,7 +102,7 @@ const AddToRecipeButton: React.VFC = () => {
       onClick={() => {
         dispatch(actions.showAddToRecipeModal());
       }}
-      disabled={isShowingAddToRecipeModal}
+      disabled={isAddToRecipeModalVisible}
     >
       <FontAwesomeIcon icon={faFileImport} />
     </Button>

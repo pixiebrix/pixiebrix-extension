@@ -42,7 +42,10 @@ import {
 } from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectIsAddToRecipeModalVisible,
+} from "@/pageEditor/slices/editorSelectors";
 import Loader from "@/components/Loader";
 import RecipePane from "@/pageEditor/panes/RecipePane";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
@@ -100,6 +103,10 @@ const Editor: React.FunctionComponent = () => {
   const { availableDynamicIds, unavailableCount } = useInstallState(
     installed,
     elements
+  );
+
+  const isAddToRecipeModalVisible = useSelector(
+    selectIsAddToRecipeModalVisible
   );
 
   const body = useMemo(() => {
@@ -191,7 +198,7 @@ const Editor: React.FunctionComponent = () => {
         {body}
       </div>
 
-      <AddToRecipeModal />
+      {isAddToRecipeModalVisible && <AddToRecipeModal />}
     </>
   );
 };

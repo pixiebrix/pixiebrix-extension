@@ -15,39 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { Button, Modal } from "react-bootstrap";
-import FieldTemplate from "@/components/form/FieldTemplate";
-import SelectWidget, {
-  Option,
-  SelectWidgetOnChange,
-} from "@/components/form/widgets/SelectWidget";
-import SwitchButtonWidget, {
-  CheckBoxLike,
-} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
   selectActiveElement,
   selectInstalledRecipeMetadatas,
-  selectIsShowingAddToRecipeModal,
 } from "@/pageEditor/slices/editorSelectors";
 import { RecipeMetadata } from "@/core";
+import { Form, Formik } from "formik";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+
+type FormState = {
+  recipeMetadata: RecipeMetadata;
+  keepLocalCopy: boolean;
+};
 
 const AddToRecipeModal: React.VFC = () => {
   const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
   const activeElement = useSelector(selectActiveElement);
 
-  const [recipeMetadata, setRecipeMetadata] = useState<RecipeMetadata>(null);
-  const [keepLocalCopy, setKeepLocalCopy] = useState(false);
+  const initialFormState: FormState = {
+    recipeMetadata: null,
+    keepLocalCopy: false,
+  };
 
-  const isModalShown = useSelector(selectIsShowingAddToRecipeModal);
   const dispatch = useDispatch();
   const hideModal = () => {
-    // Reset to defaults
-    setRecipeMetadata(null);
-    setKeepLocalCopy(false);
-    // Hide the modal
     dispatch(actions.hideAddToRecipeModal());
   };
 
@@ -56,20 +53,10 @@ const AddToRecipeModal: React.VFC = () => {
     value: metadata,
   }));
 
-  const onChangeRecipe: SelectWidgetOnChange<Option<RecipeMetadata>> = (
-    event
+  const onConfirmAddToRecipe = (
+    recipeMetadata: RecipeMetadata,
+    keepLocalCopy: boolean
   ) => {
-    const metadata = event.target.value;
-    if (metadata) {
-      setRecipeMetadata(metadata);
-    }
-  };
-
-  const onChangeKeepLocal: React.ChangeEventHandler<CheckBoxLike> = (event) => {
-    setKeepLocalCopy(event.target.value);
-  };
-
-  const onConfirmAddToRecipe = () => {
     dispatch(
       actions.addElementToRecipe({
         elementId: activeElement.uuid,
@@ -81,39 +68,46 @@ const AddToRecipeModal: React.VFC = () => {
   };
 
   return (
-    <Modal show={isModalShown}>
+    <Modal show onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
           Add <strong>{activeElement?.label}</strong> to a blueprint
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <FieldTemplate
-          name="recipe"
-          hideLabel
-          description="Choose a blueprint"
-          as={SelectWidget}
-          options={selectOptions}
-          value={recipeMetadata}
-          onChange={onChangeRecipe}
-        />
-        <FieldTemplate
-          name="keepLocal"
-          label="Keep a local copy of the extension?"
-          fitLabelWidth
-          as={SwitchButtonWidget}
-          value={keepLocalCopy}
-          onChange={onChangeKeepLocal}
-        />
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="info" onClick={hideModal}>
-          Cancel
-        </Button>
-        <Button variant="primary" onClick={onConfirmAddToRecipe}>
-          Add
-        </Button>
-      </Modal.Footer>
+      <Formik
+        initialValues={initialFormState}
+        onSubmit={({ recipeMetadata, keepLocalCopy }) => {
+          onConfirmAddToRecipe(recipeMetadata, keepLocalCopy);
+        }}
+      >
+        {({ handleSubmit }) => (
+          <Form onSubmit={handleSubmit}>
+            <Modal.Body>
+              <ConnectedFieldTemplate
+                name="recipeMetadata"
+                hideLabel
+                description="Choose a blueprint"
+                as={SelectWidget}
+                options={selectOptions}
+              />
+              <ConnectedFieldTemplate
+                name="keepLocalCopy"
+                label="Keep a local copy of the extension?"
+                fitLabelWidth
+                as={SwitchButtonWidget}
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="info" onClick={hideModal}>
+                Cancel
+              </Button>
+              <Button variant="primary" type="submit">
+                Add
+              </Button>
+            </Modal.Footer>
+          </Form>
+        )}
+      </Formik>
     </Modal>
   );
 };

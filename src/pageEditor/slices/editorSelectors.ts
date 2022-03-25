@@ -97,7 +97,7 @@ export const selectRecipeIsDirty = createSelector(
   }
 );
 
-export const selectIsShowingAddToRecipeModal = (state: RootState) =>
+export const selectIsAddToRecipeModalVisible = (state: RootState) =>
   state.editor.isAddToRecipeModalVisible;
 
 export const selectInstalledRecipeMetadatas = createSelector(
