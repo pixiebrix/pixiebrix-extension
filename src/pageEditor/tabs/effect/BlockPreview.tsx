@@ -50,6 +50,7 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { TriggerDefinition } from "@/extensionPoints/triggerExtension";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -64,6 +65,16 @@ function isTraceOptional(
   { type }: { type: BlockType }
 ): boolean {
   return type === "reader" || HACK_TRACE_OPTIONAL.has(blockId);
+}
+
+function isTriggerExtensionPoint(
+  // Form state uses BaseExtensionPointState as a type for the extension point definition,
+  // whereas extension points use ExtensionPointDefinition and its subtypes.
+  // We don't have a good type to bridge the BaseExtensionPointState and ExtensionPointDefinition,
+  // thus using unknown instead of BaseExtensionPointState.
+  extensionDefinition: unknown
+): extensionDefinition is TriggerDefinition {
+  return (extensionDefinition as any).type === "trigger";
 }
 
 type PreviewInfo = {
@@ -155,19 +166,23 @@ const BlockPreview: React.FunctionComponent<{
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 
+  // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";
-  const extensionPointDefinition: any = extensionPoint.definition;
+  const extensionPointDefinition = extensionPoint.definition;
 
   const debouncedRun = useDebouncedCallback(
     async (blockConfig: BlockConfig, context: BlockArgContext) => {
       dispatch(previewSlice.actions.startRun());
       const { outputKey } = blockConfig;
 
-      // If the block is configured to inherit the root element,
-      // try to get the root element from the extension point.
-      // Note: not possible when extensionPoint's targetMode equals "targetElement"
+      // If the block is configured to inherit the root element
+      // and the extension point is a trigger,
+      // try to get the root element from the extension point
+      // Note: this is not possible when extensionPoint's targetMode equals "targetElement",
+      // in this case a special message will be shown instead of the brick output
       const rootSelector =
         blockRootMode === "inherit" &&
+        isTriggerExtensionPoint(extensionPointDefinition) &&
         extensionPointDefinition.targetMode === "root"
           ? extensionPointDefinition.rootSelector
           : undefined;
@@ -210,12 +225,14 @@ const BlockPreview: React.FunctionComponent<{
 
   if (
     blockRootMode === "inherit" &&
+    isTriggerExtensionPoint(extensionPointDefinition) &&
     extensionPointDefinition.targetMode !== "root"
   ) {
     return (
       <div className="text-muted">
-        Output previews are not supported for blocks with inherited rootMode and
-        root targetMode set to &quot;eventTarget&quot;
+        Output Preview is not supported because this brick&apos;s Root Mode is
+        &quot;Inherit&quot; and the Trigger&apos;s Target Mode is &quot;Event
+        Target&quot;. Run the Trigger to see the output on the Output tab.
       </div>
     );
   }
