@@ -48,12 +48,12 @@ export class ErrorWithCause extends Error {
       return;
     }
 
-    super(`${message}: ${getErrorMessage(cause)}`);
+    super(`${message} - ${getErrorMessage(cause)}`);
 
     this.cause = cause;
 
     if (isObject(cause) && typeof cause.stack === "string") {
-      this.stack += `\ncaused by: ${cause.stack}`;
+      this.stack += `\n    at ErrorCause (VirtualFile.js:0:0) ${cause.stack}`;
     }
   }
 }
