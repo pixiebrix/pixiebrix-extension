@@ -154,17 +154,18 @@ const Editor: React.FunctionComponent = () => {
       return <WelcomePane />;
     }
   }, [
+    tabState.hasPermissions,
     connecting,
+    editorError,
     beta,
-    cancelInsert,
     inserting,
     selectedElement,
-    editorError,
-    installed,
-    selectionSeq,
+    selectedRecipe,
     availableDynamicIds?.size,
+    installed.length,
     unavailableCount,
-    tabState,
+    cancelInsert,
+    selectionSeq,
   ]);
 
   if (authLoading) {
