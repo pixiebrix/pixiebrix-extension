@@ -175,7 +175,7 @@ export class ContextError extends Error {
 
   public readonly context?: MessageContext;
   constructor(message: string, { cause, context }: ContextErrorDetails) {
-    super(message, { cause });
+    super(getErrorMessage(cause, message));
     this.context = context;
 
     // Required until https://github.com/sindresorhus/serialize-error/issues/50
