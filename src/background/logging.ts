@@ -262,7 +262,7 @@ export function flattenStackForRollbar(stack: string, cause?: unknown): string {
     return stack;
   }
 
-  // Drop spaces from cause’s title because Rollbar drops words past the second one
+  // Drop spaces from cause’s title or else Rollbar will clip the title
   const [errorTitle] = cause.stack.split("\n", 1);
   const causeStack = cause.stack.replace(
     errorTitle,
@@ -270,7 +270,7 @@ export function flattenStackForRollbar(stack: string, cause?: unknown): string {
   );
 
   // Add a fake stacktrace line in order to preserve the cause’s title. Rollbar does not support
-  // the standard `caused by: Error: Some message\n` line and would drop everything after that.
+  // the standard `caused by: Error: Some message\n` line and would misinterpret the stacktrace.
   return flattenStackForRollbar(
     stack + `\n    at CAUSED (BY.js:0:0) ${causeStack}`,
     cause.cause
