@@ -17,15 +17,13 @@
 
 import axios from "axios";
 import { expectContext } from "@/utils/expectContext";
-import { EndpointAuthError, getErrorMessage, isAxiosError } from "@/errors";
+import { getErrorMessage, isAxiosError } from "@/errors";
 import { assertHttpsUrl } from "@/utils";
 import {
   ClientNetworkError,
   ClientNetworkPermissionError,
   RemoteServiceError,
 } from "@/services/errors";
-
-const HTTP_401_UNAUTHENTICATED = 401;
 
 export default function enrichAxiosErrors(): void {
   expectContext("extension");
@@ -49,10 +47,6 @@ async function enrichError(error: unknown): Promise<never> {
   const url = assertHttpsUrl(error.config.url);
 
   if (error.response) {
-    if (error.response.status === HTTP_401_UNAUTHENTICATED) {
-      throw new EndpointAuthError(url.href);
-    }
-
     throw new RemoteServiceError(getErrorMessage(error), error);
   }
 
