@@ -249,7 +249,7 @@ export function hasCancelRootCause(error: unknown): boolean {
 }
 
 export function getRootCause(error: ErrorObject): ErrorObject {
-  if (error.name === "ContextError" && (error as ContextError).cause != null) {
+  if (isContextError(error) && error.cause != null) {
     return getRootCause(error.cause as ErrorObject);
   }
 
