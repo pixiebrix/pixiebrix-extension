@@ -25,21 +25,25 @@ import {
   RemoteServiceError,
 } from "@/services/errors";
 
+// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
+const SERVICE_URL = process.env.SERVICE_URL;
+
 export default function enrichAxiosErrors(): void {
   expectContext("extension");
 
   // Automatically wraps common Axios errors whenever possible
   // https://axios-http.com/docs/interceptors
-  axios.interceptors.response.use(undefined, enrichError);
+  axios.interceptors.response.use(undefined, enrichBusinessRequestError);
 }
 
 /**
- * Decorate an AxiosError with additional debugging information
+ * Turn AxiosErrors into BusinessErrors whenever possible
  */
-async function enrichError(error: unknown): Promise<never> {
-  console.trace("enrichRequestError", { error });
+async function enrichBusinessRequestError(error: unknown): Promise<never> {
+  console.trace("enrichBusinessError", { error });
 
-  if (!isAxiosError(error)) {
+  // Exclude unrelated errors and app errors
+  if (!isAxiosError(error) || error.config.url.startsWith(SERVICE_URL)) {
     throw error;
   }
 

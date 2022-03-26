@@ -74,7 +74,7 @@ export class ConnectionError extends Error {
  * unauthenticated users, or
  * - The client should not make the call if the extensions is not linked
  */
-// TODO: Update comment or drop `EndpointAuthError` from `enrichRequestError`
+// TODO: Update comment or drop `EndpointAuthError` from `enrichBusinessRequestError`
 export class EndpointAuthError extends Error {
   readonly url: string;
 
@@ -356,12 +356,12 @@ export function isPrivatePageError(error: unknown): boolean {
  * - Common response body patterns of other APIs
  * - HTTP standards in statusText/status
  *
- * enrichRequestError is a related method which wraps an AxiosError in an Error subclass that encodes information
+ * enrichBusinessRequestError is a related method which wraps an AxiosError in an Error subclass that encodes information
  * about why the request failed.
  *
  * @deprecated DO NOT CALL DIRECTLY. Call getErrorMessage
  * @see getErrorMessage
- * @see enrichRequestError
+ * @see enrichBusinessRequestError
  */
 function selectServerErrorMessage({ response }: AxiosError): string | null {
   // For examples of DRF errors, see the pixiebrix-app repository:
