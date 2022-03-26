@@ -253,13 +253,26 @@ async function selectExtraContext(
   return { extensionVersion };
 }
 
+/**
+ * Create a fake stacktrace that is compatible with Rollbar’s stacktrace parsing.
+ */
 export function flattenStackForRollbar(stack: string, cause?: unknown): string {
-  if (!isErrorObject(cause)) {
+  // Some stack validation to avoid runtime errors while submitting errors
+  if (!isErrorObject(cause) || !cause.stack?.includes("\n")) {
     return stack;
   }
 
+  // Drop spaces from cause’s title because Rollbar drops words past the second one
+  const [errorTitle] = cause.stack.split("\n", 1);
+  const causeStack = cause.stack.replace(
+    errorTitle,
+    errorTitle.replaceAll(" ", "-")
+  );
+
+  // Add a fake stacktrace line in order to preserve the cause’s title. Rollbar does not support
+  // the standard `caused by: Error: Some message\n` line and would drop everything after that.
   return flattenStackForRollbar(
-    stack + `\n    at ErrorCause (VirtualFile.js:0:0) ${cause.stack}`,
+    stack + `\n    at CAUSED (BY.js:0:0) ${causeStack}`,
     cause.cause
   );
 }

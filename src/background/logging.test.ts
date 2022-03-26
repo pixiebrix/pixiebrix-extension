@@ -41,7 +41,7 @@ describe("flattenStackForRollbar", () => {
       .toMatchInlineSnapshot(`
         "ContextError: High level error
             at someFunction (charizard.js:1:1)
-            at ErrorCause (VirtualFile.js:0:0) Error: Medium level error
+            at CAUSED (BY.js:0:0) Error:-Medium-level-error
             at otherFunction (charmeleon.js:1:1)"
       `);
   });
@@ -54,9 +54,9 @@ describe("flattenStackForRollbar", () => {
     ).toMatchInlineSnapshot(`
       "ContextError: High level error
           at someFunction (charizard.js:1:1)
-          at ErrorCause (VirtualFile.js:0:0) Error: Medium level error
+          at CAUSED (BY.js:0:0) Error:-Medium-level-error
           at otherFunction (charmeleon.js:1:1)
-          at ErrorCause (VirtualFile.js:0:0) TypeError: Low level error
+          at CAUSED (BY.js:0:0) TypeError:-Low-level-error
           at atob (charmander.js:1:1)"
     `);
   });
