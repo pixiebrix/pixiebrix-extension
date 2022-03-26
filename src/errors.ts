@@ -435,8 +435,9 @@ export function getErrorMessage(
     return error;
   }
 
-  // HTTP errors should be wrapped in more specific errors as early as possible so they do not reach here unhandled
   if (isAxiosError(error)) {
+    // This will miss any errors wrapped with enrichBusinessRequestError. Including any calls using src/hooks/fetch.ts:fetch
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2972
     const serverMessage = selectServerErrorMessage(error);
     if (serverMessage) {
       return String(serverMessage);
