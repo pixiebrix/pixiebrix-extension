@@ -74,7 +74,6 @@ export class ConnectionError extends Error {
  * unauthenticated users, or
  * - The client should not make the call if the extensions is not linked
  */
-// TODO: Update comment or drop `EndpointAuthError` from `enrichBusinessRequestError`
 export class EndpointAuthError extends Error {
   readonly url: string;
 
