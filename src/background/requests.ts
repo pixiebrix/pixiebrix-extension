@@ -22,12 +22,7 @@ import { ProxiedRemoteServiceError } from "@/services/errors";
 import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
-import {
-  BusinessError,
-  ContextError,
-  ExtensionNotLinkedError,
-  selectError,
-} from "@/errors";
+import { BusinessError, ContextError, ExtensionNotLinkedError } from "@/errors";
 import { isEmpty } from "lodash";
 import {
   deleteCachedAuthData,
@@ -266,9 +261,12 @@ export async function proxyService<TData>(
       requestConfig
     )) as RemoteResponse<TData>;
   } catch (error) {
-    throw new ContextError(selectError(error), {
-      serviceId: serviceConfig.serviceId,
-      authId: serviceConfig.id,
+    throw new ContextError("Error while performing request", {
+      cause: error,
+      context: {
+        serviceId: serviceConfig.serviceId,
+        authId: serviceConfig.id,
+      },
     });
   }
 }
