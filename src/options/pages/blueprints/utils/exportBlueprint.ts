@@ -16,7 +16,13 @@
  */
 
 import { isEmpty } from "lodash";
-import { IExtension, Metadata, RegistryId, Schema, UserOptions } from "@/core";
+import {
+  Metadata,
+  RegistryId,
+  Schema,
+  UnresolvedExtension,
+  UserOptions,
+} from "@/core";
 import { objToYaml } from "@/utils/objToYaml";
 import { saveAs } from "file-saver";
 import {
@@ -25,6 +31,8 @@ import {
 } from "@/types/definitions";
 import { isNullOrBlank } from "@/utils";
 import GenerateSchema from "generate-schema";
+import { isInnerExtensionPoint } from "@/registry/internal";
+import filenamify from "filenamify";
 
 /**
  * Infer optionsSchema from the options provided to the extension.
@@ -45,7 +53,7 @@ export function inferOptionsSchema(
 }
 
 export function makeBlueprint(
-  extension: IExtension,
+  extension: UnresolvedExtension,
   metadata: Metadata
 ): UnsavedRecipeDefinition {
   const {
@@ -59,6 +67,10 @@ export function makeBlueprint(
     optionsArgs,
     config,
   } = extension;
+
+  if (isInnerExtensionPoint(extensionPointId)) {
+    throw new Error("Expected unresolved extension");
+  }
 
   return {
     apiVersion,
@@ -83,7 +95,7 @@ export function makeBlueprint(
   };
 }
 
-export function exportBlueprint(extension: IExtension) {
+export function exportBlueprint(extension: UnresolvedExtension): void {
   const blueprint = makeBlueprint(extension, {
     id: "" as RegistryId,
     name: extension.label,
@@ -93,5 +105,5 @@ export function exportBlueprint(extension: IExtension) {
 
   const blueprintYAML = objToYaml(blueprint);
   const blob = new Blob([blueprintYAML], { type: "text/plain;charset=utf-8" });
-  saveAs(blob, "blueprint.yaml");
+  saveAs(blob, filenamify([extension.label, ".yaml"].join(".")));
 }
