@@ -477,6 +477,12 @@ export function assertHttpsUrl(
   baseUrl: string = location.href
 ): URL {
   const parsedUrl = safeParseUrl(url, baseUrl);
+
+  // Allow local non-HTTPS URLs when testing locally
+  if (process.env.DEBUG && parsedUrl.protocol === "http") {
+    return parsedUrl;
+  }
+
   switch (parsedUrl.protocol) {
     case "https:":
       return parsedUrl;
