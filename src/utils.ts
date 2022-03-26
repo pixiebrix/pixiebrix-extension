@@ -477,18 +477,19 @@ export function assertHttpsUrl(
   baseUrl: string = location.href
 ): URL {
   const parsedUrl = safeParseUrl(url, baseUrl);
-  if (parsedUrl.protocol === "https:") {
-    return parsedUrl;
-  }
+  switch (parsedUrl.protocol) {
+    case "https:":
+      return parsedUrl;
 
-  if (parsedUrl.protocol === "invalid-url:") {
-    baseUrl = isAbsoluteUrl(url) ? "" : ` (base URL: ${baseUrl})`;
-    throw new BusinessError(`Invalid URL: ${url}${baseUrl}`);
-  }
+    case "invalid-url:":
+      baseUrl = isAbsoluteUrl(url) ? "" : ` (base URL: ${baseUrl})`;
+      throw new BusinessError(`Invalid URL: ${url}${baseUrl}`);
 
-  throw new BusinessError(
-    `Unsupported protocol ${parsedUrl.protocol}. Use https:`
-  );
+    default:
+      throw new BusinessError(
+        `Unsupported protocol: ${parsedUrl.protocol}. Use https:`
+      );
+  }
 }
 
 export function isApiVersionAtLeast(
