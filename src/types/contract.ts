@@ -192,3 +192,11 @@ export type RemoteResponse<T = unknown> = Pick<
 > & {
   $$proxied?: boolean;
 };
+
+// Response from
+export type BrickData = {
+  id: UUID;
+  config: string;
+  organizations: UUID[];
+  public: boolean;
+};

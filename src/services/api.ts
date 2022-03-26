@@ -29,6 +29,7 @@ import { AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
 import {
+  BrickData,
   CloudExtension,
   Database,
   Group,
@@ -144,6 +145,7 @@ export const appApi = createApi({
     "EditablePackages",
     "Invitations",
     "CloudExtensions",
+    "Brick",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -343,6 +345,10 @@ export const appApi = createApi({
       query: () => ({ url: "/api/invitations/me", method: "get" }),
       providesTags: ["Invitations"],
     }),
+    getBrick: builder.query<BrickData, { id: UUID }>({
+      query: ({ id }) => ({ url: `/api/bricks/${id}/`, method: "get" }),
+      providesTags: (result, error, { id }) => [{ type: "Brick", id }],
+    }),
   }),
 });
 
@@ -367,4 +373,5 @@ export const {
   useCreateRecipeMutation,
   useUpdateRecipeMutation,
   useGetInvitationsQuery,
+  useGetBrickQuery,
 } = appApi;
