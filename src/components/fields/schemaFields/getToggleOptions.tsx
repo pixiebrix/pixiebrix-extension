@@ -10,8 +10,8 @@ import { ExpressionType, Schema } from "@/core";
 import { isTemplateExpression } from "@/runtime/mapArgs";
 import { UnknownObject } from "@/types";
 import OptionIcon from "./optionIcon/OptionIcon";
-import { CustomFieldToggleMode } from "./SchemaFieldContext";
 import widgetsRegistry from "./widgets/widgetsRegistry";
+import { CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;

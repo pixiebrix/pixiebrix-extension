@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHistory, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import useRemove from "@/pageEditor/hooks/useRemove";
 import useReset from "@/pageEditor/hooks/useReset";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const ActionToolbar: React.FunctionComponent<{
   element: FormState;

@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useContext } from "react";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import notify from "@/utils/notify";
-import { actions, FormState } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/slices/editorSlice";
 import { internalExtensionPointMetaFactory } from "@/pageEditor/extensionPoints/base";
 import { getErrorMessage } from "@/errors";
 import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
@@ -27,6 +27,7 @@ import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { SettingsState } from "@/store/settingsTypes";
 import useFlags from "@/hooks/useFlags";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 type AddElement = (config: ElementConfig) => void;
 

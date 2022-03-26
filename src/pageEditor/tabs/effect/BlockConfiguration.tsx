@@ -26,9 +26,7 @@ import Loader from "@/components/Loader";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { joinName } from "@/utils";
 import { useAsyncState } from "@/hooks/common";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
-import { getType } from "@/blocks/util";
 import { partial } from "lodash";
 import { BlockWindow } from "@/blocks/types";
 import AdvancedLinks, {
@@ -37,6 +35,8 @@ import AdvancedLinks, {
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
+import getType from "@/runtime/getType";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const rootModeOptions = [
   { label: "Inherit", value: "inherit" },
