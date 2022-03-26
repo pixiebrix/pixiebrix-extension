@@ -159,23 +159,27 @@ export class PropError extends BusinessError {
   }
 }
 
+type ContextErrorDetails = ErrorOptions & {
+  context?: MessageContext;
+};
+
 /**
  * Wrap an error with some additional context about where the error originated.
  */
 export class ContextError extends Error {
-  public readonly cause?: Error | ErrorObject;
+  override name = "ContextError";
+
+  // Super important until https://github.com/sindresorhus/serialize-error/issues/50
+  // This overrides the native property making it enumerable and thus serializable
+  override cause: unknown = undefined;
 
   public readonly context?: MessageContext;
-
-  constructor(
-    cause: Error | ErrorObject,
-    context?: MessageContext,
-    message?: string
-  ) {
+  constructor(message: string, { cause, context }: ContextErrorDetails) {
     super(getErrorMessage(cause, message));
-    this.name = "ContextError";
-    this.cause = cause;
     this.context = context;
+
+    // Required until https://github.com/sindresorhus/serialize-error/issues/50
+    this.cause = cause;
   }
 }
 
@@ -245,7 +249,7 @@ export function hasCancelRootCause(error: unknown): boolean {
 }
 
 export function getRootCause(error: ErrorObject): ErrorObject {
-  if (error.name === "ContextError" && (error as ContextError).cause != null) {
+  if (isContextError(error) && error.cause != null) {
     return getRootCause(error.cause as ErrorObject);
   }
 

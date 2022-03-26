@@ -568,9 +568,11 @@ function throwBlockError(
   }
 
   throw new ContextError(
-    error as Error,
-    logger.context,
-    `An error occurred running pipeline stage #${index + 1}: ${blockConfig.id}`
+    `An error occurred running pipeline stage #${index + 1}: ${blockConfig.id}`,
+    {
+      cause: error,
+      context: logger.context,
+    }
   );
 }
 
