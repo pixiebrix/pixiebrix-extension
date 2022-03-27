@@ -189,7 +189,7 @@ function useInstallableActions(installable: Installable) {
       }
 
       if (extensionsFromInstallable.length === 0) {
-        throw new Error("Extension must be installed to export it");
+        throw new Error("Extension must be installed to export as blueprint");
       }
 
       exportBlueprintYaml(extensionsFromInstallable[0]);
