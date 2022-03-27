@@ -159,10 +159,8 @@ describe("authenticated direct requests", () => {
 
       const { cause } = error as ContextError;
 
-      expect(cause).toBeInstanceOf(RemoteServiceError);
-
-      const { status } = (cause as RemoteServiceError).error.response;
-      expect(status).toEqual(403);
+      expect(cause).toMatchInlineSnapshot("[RemoteServiceError: Forbidden]");
+      expect(cause).toHaveProperty("error.response.status", 403);
     }
   });
 });
@@ -224,12 +222,11 @@ describe("proxy service requests", () => {
 
       const { cause } = error as ContextError;
 
-      expect(cause).toBeInstanceOf(RemoteServiceError);
+      expect(cause).toMatchInlineSnapshot(
+        `[RemoteServiceError: Internal Server Error]`
+      );
 
       expect((cause as RemoteServiceError).error.response.status).toEqual(500);
-      expect((cause as RemoteServiceError).message).toEqual(
-        "Internal Server Error"
-      );
     }
   });
 });

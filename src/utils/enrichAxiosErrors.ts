@@ -18,7 +18,7 @@
 import axios from "axios";
 import { expectContext } from "@/utils/expectContext";
 import { getErrorMessage, isAxiosError } from "@/errors";
-import { assertHttpsUrl } from "@/utils";
+import { assertHttpsUrl, safeParseUrl } from "@/utils";
 import {
   ClientNetworkError,
   ClientNetworkPermissionError,
@@ -40,10 +40,19 @@ export default function enrichAxiosErrors(): void {
  * Turn AxiosErrors into BusinessErrors whenever possible
  */
 async function enrichBusinessRequestError(error: unknown): Promise<never> {
-  console.trace("enrichBusinessError", { error });
+  if (!isAxiosError(error)) {
+    throw error;
+  }
 
-  // Exclude unrelated errors and app errors
-  if (!isAxiosError(error) || error.config.url.startsWith(SERVICE_URL)) {
+  console.trace("enrichBusinessRequestError", { error });
+
+  const requestUrl = safeParseUrl(error.config.url);
+
+  // Exclude app errors, unless they're proxied requests
+  if (
+    requestUrl.href.startsWith(SERVICE_URL) &&
+    !requestUrl.pathname.startsWith("/api/proxy")
+  ) {
     throw error;
   }
 
