@@ -17,13 +17,15 @@
 
 import styles from "./BrickHistory.module.scss";
 
-import React, { useEffect, useMemo, useState, Suspense } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import Select, { components, OptionProps } from "react-select";
-import useFetch from "@/hooks/useFetch";
-import { PackageVersion, Package } from "@/types/contract";
 import DiffEditor from "@/vendors/DiffEditor";
 import objectHash from "object-hash";
 import { UUID } from "@/core";
+import {
+  useGetPackageQuery,
+  useListPackageVersionsQuery,
+} from "@/services/api";
 
 export interface PackageVersionOption {
   value: string;
@@ -61,10 +63,10 @@ const CustomSingleOption: React.FunctionComponent<
 const BrickHistory: React.FunctionComponent<{
   brickId: UUID;
 }> = ({ brickId }) => {
-  const { data: brick } = useFetch<Package>(`/api/bricks/${brickId}/`);
-  const { data: packageVersions } = useFetch<PackageVersion[]>(
-    `/api/bricks/${brickId}/versions/`
-  );
+  const { data: brick } = useGetPackageQuery({ id: brickId });
+  const { data: packageVersions } = useListPackageVersionsQuery({
+    id: brickId,
+  });
   const [versionA, setVersionA] = useState(null);
   const [versionB, setVersionB] = useState(null);
 

@@ -90,9 +90,17 @@ export type Database = components["schemas"]["Database"];
 
 export type PackageVersion = components["schemas"]["PackageVersion"];
 
-export type Package = components["schemas"]["Package"];
-
 export type PendingInvitation = components["schemas"]["PendingInvitation"];
+
+export type Package = Except<
+  components["schemas"]["Package"],
+  "organizations" | "id"
+> & {
+  id: UUID;
+  config: string;
+  organizations: UUID[];
+  public: boolean;
+};
 
 export type PackageUpsertResponse = Except<
   components["schemas"]["Package"],
@@ -191,12 +199,4 @@ export type RemoteResponse<T = unknown> = Pick<
   "data" | "status" | "statusText"
 > & {
   $$proxied?: boolean;
-};
-
-// Response from
-export type BrickData = {
-  id: UUID;
-  config: string;
-  organizations: UUID[];
-  public: boolean;
 };

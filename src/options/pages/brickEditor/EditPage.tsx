@@ -33,9 +33,9 @@ import { HotKeys } from "react-hotkeys";
 import workshopSlice from "@/store/workshopSlice";
 import useLogContext from "@/options/pages/brickEditor/useLogContext";
 import { loadBrickYaml } from "@/runtime/brickYaml";
-import { useGetBrickQuery } from "@/services/api";
-import { BrickData } from "@/types/contract";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
+import { Package } from "@/types/contract";
+import { useGetPackageQuery } from "@/services/api";
 
 const { touchBrick } = workshopSlice.actions;
 
@@ -100,7 +100,7 @@ function useTouchBrick(id: UUID): void {
   }, [dispatch, id]);
 }
 
-const EditForm: React.FC<{ id: UUID; data: BrickData }> = ({ id, data }) => {
+const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
   const {
     isBlueprint,
     isInstalled,
@@ -178,7 +178,7 @@ const EditForm: React.FC<{ id: UUID; data: BrickData }> = ({ id, data }) => {
 
 const EditPage: React.FC = () => {
   const { id } = useParams<{ id: UUID }>();
-  const { data, isFetching, error } = useGetBrickQuery({ id });
+  const { data, isFetching, error } = useGetPackageQuery({ id });
 
   // Can mark the brick as recently opened even if it errors on load
   useTouchBrick(id);
