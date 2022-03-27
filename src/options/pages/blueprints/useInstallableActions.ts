@@ -188,6 +188,10 @@ function useInstallableActions(installable: Installable) {
         throw new Error("Already a blueprint. Access in the Workshop");
       }
 
+      if (extensionsFromInstallable.length === 0) {
+        throw new Error("Extension must be installed to export it");
+      }
+
       exportBlueprintYaml(extensionsFromInstallable[0]);
     },
     {
