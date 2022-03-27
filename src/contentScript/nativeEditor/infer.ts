@@ -524,14 +524,24 @@ const DEFAULT_SELECTOR_PRIORITIES: Array<keyof typeof CssSelectorType> = [
   "nthchild",
 ];
 
+interface SafeCssSelectorOptions {
+  selectors?: Array<keyof typeof CssSelectorType>;
+  root?: Element;
+  excludeRandomClasses?: boolean;
+}
+
 /**
  * Calls getCssSelector with smarter handling of undefined root element and blacklisting common
  * front-end framework elements that aren't good for selectors
  */
 export function safeCssSelector(
   element: HTMLElement,
-  selectors?: Array<keyof typeof CssSelectorType>,
-  root?: Element
+  {
+    selectors = DEFAULT_SELECTOR_PRIORITIES,
+    excludeRandomClasses = false,
+    // eslint-disable-next-line unicorn/no-useless-undefined -- Convert null to undefined or else getCssSelector bails
+    root = undefined,
+  }: SafeCssSelectorOptions = {}
 ): string {
   // https://github.com/fczbkk/css-selector-generator
 
@@ -547,15 +557,17 @@ export function safeCssSelector(
       `[${EXTENSION_POINT_DATA_ATTR}='*']`,
       `[${PIXIEBRIX_DATA_ATTR}='*']`,
       `[${PIXIEBRIX_READY_ATTRIBUTE}='*']`,
-      (selector) => {
-        if (!selector.startsWith(".")) {
-          return false;
-        }
+      excludeRandomClasses
+        ? (selector) => {
+            if (!selector.startsWith(".")) {
+              return false;
+            }
 
-        const usefulness = guessUsefulness(selector);
-        console.debug("css-selector-generator:", usefulness);
-        return usefulness.isRandom;
-      },
+            const usefulness = guessUsefulness(selector);
+            console.debug("css-selector-generator:", usefulness);
+            return usefulness.isRandom;
+          }
+        : undefined,
     ],
     whitelist: [
       // Data attributes people use in automated tests are unlikely to change frequently
@@ -563,11 +575,10 @@ export function safeCssSelector(
       "[data-testid='*']",
       "[data-test='*']",
     ],
-    selectors: selectors ?? DEFAULT_SELECTOR_PRIORITIES,
+    selectors,
     combineWithinSelector: true,
     combineBetweenSelectors: true,
-    // Convert null to undefined, because getCssSelector bails otherwise
-    root: root ?? undefined,
+    root,
   });
 
   if (root == null && selector.startsWith(":nth-child")) {
@@ -588,7 +599,7 @@ export function inferSelectors(
 ): string[] {
   const makeSelector = (allowed?: Array<keyof typeof CssSelectorType>) => {
     try {
-      return safeCssSelector(element, allowed, root);
+      return safeCssSelector(element, { selectors: allowed, root });
     } catch (error) {
       console.warn("Selector inference failed", {
         element,

@@ -20,14 +20,13 @@ import { Card, Form } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { useDispatch, useSelector } from "react-redux";
 import settingsSlice from "@/store/settingsSlice";
-import notify from "@/utils/notify";
 import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { selectSettings } from "@/store/settingsSelectors";
 
 const ExperimentalSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { suggestElements } = useSelector(selectSettings);
+  const { suggestElements, skipRandomElements } = useSelector(selectSettings);
 
   return (
     <Card>
@@ -61,8 +60,33 @@ const ExperimentalSettings: React.FunctionComponent = () => {
                     value,
                   })
                 );
-                notify.success(
-                  `Toggled suggest elements: ${value ? "on" : "off"}`
+              }}
+            />
+          </Form.Group>
+          <Form.Group controlId="skipRandomElements">
+            <div>
+              <Form.Label>
+                Detect and Exclude Random Classes from Selectors:{" "}
+                <i>{skipRandomElements ? "Enabled" : "Disabled"}</i>
+              </Form.Label>
+              <Form.Text muted className="mb-2">
+                Toggle on to avoid using randomly-generated classes when picking
+                elements from a website
+              </Form.Text>
+            </div>
+            <BootstrapSwitchButton
+              size="sm"
+              onstyle="info"
+              offstyle="light"
+              onlabel=" "
+              offlabel=" "
+              checked={skipRandomElements}
+              onChange={async (value) => {
+                dispatch(
+                  settingsSlice.actions.setFlag({
+                    flag: "skipRandomElements",
+                    value,
+                  })
                 );
               }}
             />
