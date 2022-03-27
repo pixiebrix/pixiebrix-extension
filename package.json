@@ -61,6 +61,7 @@
     "exifreader": "^4.0.0",
     "export-to-csv": "^0.2.1",
     "file-saver": "^2.0.5",
+    "filenamify": "^5.1.0",
     "fit-textarea": "^3.0.0",
     "formik": "^2.2.9",
     "fuse.js": "^6.4.6",
