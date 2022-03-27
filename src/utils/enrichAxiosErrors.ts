@@ -18,7 +18,7 @@
 import axios from "axios";
 import { expectContext } from "@/utils/expectContext";
 import { getErrorMessage, isAxiosError } from "@/errors";
-import { assertHttpsUrl, safeParseUrl } from "@/utils";
+import { assertHttpsUrl } from "@/utils";
 import {
   ClientNetworkError,
   ClientNetworkPermissionError,
@@ -46,20 +46,19 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
 
   console.trace("enrichBusinessRequestError", { error });
 
-  const requestUrl = safeParseUrl(error.config.url);
-
-  // Exclude app errors, unless they're proxied requests
-  if (
-    requestUrl.href.startsWith(SERVICE_URL) &&
-    !requestUrl.pathname.startsWith("/api/proxy")
-  ) {
-    throw error;
-  }
-
   // This should have already been called before attempting the request because Axios does not actually catch invalid URLs
   const url = assertHttpsUrl(error.config.url);
 
   if (error.response) {
+    // Exclude app errors, unless they're proxied requests
+    if (
+      url.href.startsWith(SERVICE_URL) &&
+      !url.pathname.startsWith("/api/proxy")
+    ) {
+      // TODO: Maybe handle app errors here too, like we do in `selectServerErrorMessage`
+      throw error;
+    }
+
     throw new RemoteServiceError(getErrorMessage(error), error);
   }
 
