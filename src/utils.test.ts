@@ -24,7 +24,7 @@ import {
   assertHttpsUrl,
 } from "@/utils";
 import type { SafeString } from "@/core";
-import { BusinessError } from "./errors";
+import { BusinessError } from "@/errors";
 
 test("can generate fresh identifier", () => {
   const root = "field" as SafeString;
