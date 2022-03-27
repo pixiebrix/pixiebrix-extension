@@ -23,6 +23,7 @@ import {
   isExtensionFromRecipe,
   isPersonal,
   isShared,
+  selectExtensionsFromInstallable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import { Installable } from "./blueprintsTypes";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,11 +41,8 @@ import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
 import { useModals } from "@/components/ConfirmationModal";
-import { selectExtensions } from "@/store/extensionsSelectors";
-import { UnresolvedExtension } from "@/core";
-import { useMemo } from "react";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
-import { compact } from "lodash";
+import { OptionsState } from "@/store/extensionsTypes";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -58,19 +56,9 @@ function useInstallableActions(installable: Installable) {
     data: { scope },
   } = useSelector(appApi.endpoints.getAuth.select());
 
-  // The UnresolvedExtension. Or, for a blueprint Installable, the UnresolvedExtension extensions the activated
-  // from the blueprint.
-  const allInstalledExtensions = useSelector(selectExtensions);
-  const extensionsFromInstallable: UnresolvedExtension[] = useMemo(
-    () =>
-      isBlueprint(installable)
-        ? allInstalledExtensions.filter(
-            (extension) => extension._recipe?.id === installable.metadata.id
-          )
-        : compact([
-            allInstalledExtensions.find((x) => x.id === installable.id),
-          ]),
-    [allInstalledExtensions, installable]
+  const extensionsFromInstallable = useSelector(
+    (state: { options: OptionsState }) =>
+      selectExtensionsFromInstallable(state, installable)
   );
 
   const { hasPermissions, requestPermissions } = useInstallablePermissions(
