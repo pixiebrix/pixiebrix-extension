@@ -595,11 +595,16 @@ export function safeCssSelector(
  */
 export function inferSelectors(
   element: HTMLElement,
-  root: Element | null = null
+  root: Element | null = null,
+  excludeRandomClasses?: boolean
 ): string[] {
   const makeSelector = (allowed?: Array<keyof typeof CssSelectorType>) => {
     try {
-      return safeCssSelector(element, { selectors: allowed, root });
+      return safeCssSelector(element, {
+        selectors: allowed,
+        root,
+        excludeRandomClasses,
+      });
     } catch (error) {
       console.warn("Selector inference failed", {
         element,

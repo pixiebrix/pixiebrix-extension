@@ -26,7 +26,7 @@ import { selectSettings } from "@/store/settingsSelectors";
 
 const ExperimentalSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { suggestElements, skipRandomElements } = useSelector(selectSettings);
+  const { suggestElements, excludeRandomClasses } = useSelector(selectSettings);
 
   return (
     <Card>
@@ -63,11 +63,11 @@ const ExperimentalSettings: React.FunctionComponent = () => {
               }}
             />
           </Form.Group>
-          <Form.Group controlId="skipRandomElements">
+          <Form.Group controlId="excludeRandomClasses">
             <div>
               <Form.Label>
                 Detect and Exclude Random Classes from Selectors:{" "}
-                <i>{skipRandomElements ? "Enabled" : "Disabled"}</i>
+                <i>{excludeRandomClasses ? "Enabled" : "Disabled"}</i>
               </Form.Label>
               <Form.Text muted className="mb-2">
                 Toggle on to avoid using randomly-generated classes when picking
@@ -80,11 +80,11 @@ const ExperimentalSettings: React.FunctionComponent = () => {
               offstyle="light"
               onlabel=" "
               offlabel=" "
-              checked={skipRandomElements}
+              checked={excludeRandomClasses}
               onChange={async (value) => {
                 dispatch(
                   settingsSlice.actions.setFlag({
-                    flag: "skipRandomElements",
+                    flag: "excludeRandomClasses",
                     value,
                   })
                 );
