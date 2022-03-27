@@ -223,7 +223,7 @@ describe("proxy service requests", () => {
       const { cause } = error as ContextError;
 
       expect(cause).toMatchInlineSnapshot(
-        `[RemoteServiceError: Internal Server Error]`
+        "[RemoteServiceError: Internal Server Error]"
       );
 
       expect((cause as RemoteServiceError).error.response.status).toEqual(500);
