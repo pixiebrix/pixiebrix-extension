@@ -563,6 +563,9 @@ export type ResolvedExtension<T extends Config = EmptyConfig> = Except<
    */
   extensionPointId: RegistryId;
 
+  /**
+   * Brand for nominal typing.
+   */
   _resolvedExtensionBrand: never;
 };
 

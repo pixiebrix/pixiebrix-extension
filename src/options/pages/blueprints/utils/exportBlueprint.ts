@@ -105,5 +105,5 @@ export function exportBlueprint(extension: UnresolvedExtension): void {
 
   const blueprintYAML = objToYaml(blueprint);
   const blob = new Blob([blueprintYAML], { type: "text/plain;charset=utf-8" });
-  saveAs(blob, filenamify([extension.label, ".yaml"].join(".")));
+  saveAs(blob, [filenamify(extension.label), "yaml"].join("."));
 }

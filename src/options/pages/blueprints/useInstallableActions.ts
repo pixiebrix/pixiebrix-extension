@@ -33,7 +33,6 @@ import {
 } from "@/background/messenger/api";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
-import notify from "@/utils/notify";
 import { push } from "connected-react-router";
 import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/blueprints/utils/exportBlueprint";
 import { appApi, useDeleteCloudExtensionMutation } from "@/services/api";
@@ -42,9 +41,10 @@ import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
 import { useModals } from "@/components/ConfirmationModal";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { IExtension } from "@/core";
+import { UnresolvedExtension } from "@/core";
 import { useMemo } from "react";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
+import { compact } from "lodash";
 
 const { removeExtension } = extensionsSlice.actions;
 
@@ -52,26 +52,30 @@ function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
-  const unresolvedExtensions = useSelector(selectExtensions);
 
   // Select cached auth data for performance reasons
   const {
     data: { scope },
   } = useSelector(appApi.endpoints.getAuth.select());
 
-  // The extensions associated with the installable
-  const extensions: IExtension[] = useMemo(
+  // The UnresolvedExtension. Or, for a blueprint Installable, the UnresolvedExtension extensions the activated
+  // from the blueprint.
+  const allInstalledExtensions = useSelector(selectExtensions);
+  const extensionsFromInstallable: UnresolvedExtension[] = useMemo(
     () =>
       isBlueprint(installable)
-        ? unresolvedExtensions.filter(
+        ? allInstalledExtensions.filter(
             (extension) => extension._recipe?.id === installable.metadata.id
           )
-        : [installable],
-    [unresolvedExtensions, installable]
+        : compact([
+            allInstalledExtensions.find((x) => x.id === installable.id),
+          ]),
+    [allInstalledExtensions, installable]
   );
 
-  const { hasPermissions, requestPermissions } =
-    useInstallablePermissions(extensions);
+  const { hasPermissions, requestPermissions } = useInstallablePermissions(
+    extensionsFromInstallable
+  );
 
   const reinstall = () => {
     if (isExtensionFromRecipe(installable) || isBlueprint(installable)) {
@@ -94,10 +98,9 @@ function useInstallableActions(installable: Installable) {
           `/marketplace/activate/${encodeURIComponent(installable.metadata.id)}`
         )
       );
-      return;
+    } else {
+      dispatch(push(`/extensions/install/${installable.id}`));
     }
-
-    dispatch(push(`/extensions/install/${installable.id}`));
   };
 
   const viewShare = () => {
@@ -147,21 +150,35 @@ function useInstallableActions(installable: Installable) {
     [modals]
   );
 
-  const uninstall = () => {
-    for (const extension of extensions) {
-      // Remove from storage first so it doesn't get re-added in reactivate step below
-      dispatch(removeExtension({ extensionId: extension.id }));
-      // XXX: also remove remove side panel panels that are already open?
-      void uninstallContextMenu({ extensionId: extension.id });
-      reactivateEveryTab();
+  const uninstall = useUserAction(
+    () => {
+      for (const extension of extensionsFromInstallable) {
+        // Remove from storage first so it doesn't get re-added in reactivate step below
+        dispatch(removeExtension({ extensionId: extension.id }));
+        // XXX: also remove sidebar panels that are already open?
+        void uninstallContextMenu({ extensionId: extension.id });
+        reactivateEveryTab();
+      }
 
-      reportEvent("ExtensionRemove", {
-        extensionId: extension.id,
-      });
-    }
-
-    notify.success(`Deactivated blueprint ${getLabel(installable)}`);
-  };
+      // Report telemetry
+      if (isBlueprint(installable)) {
+        reportEvent("BlueprintRemove", {
+          blueprintId: installable.metadata.id,
+        });
+      } else {
+        for (const extension of extensionsFromInstallable) {
+          reportEvent("ExtensionRemove", {
+            extensionId: extension.id,
+          });
+        }
+      }
+    },
+    {
+      successMessage: `Deactivated blueprint: ${getLabel(installable)}`,
+      errorMessage: `Error deactivating blueprint: ${getLabel(installable)}`,
+    },
+    [installable, extensionsFromInstallable]
+  );
 
   const viewLogs = () => {
     dispatch(
@@ -177,16 +194,21 @@ function useInstallableActions(installable: Installable) {
     );
   };
 
-  const exportBlueprint = () => {
-    const extension = isExtension(installable) ? installable : null;
+  const exportBlueprint = useUserAction(
+    () => {
+      if (isBlueprint(installable)) {
+        throw new Error("Already a blueprint. Access in the Workshop");
+      }
 
-    if (extension == null) {
-      notify.error("Error exporting as blueprint: extension not found.");
-      return;
-    }
-
-    exportBlueprintYaml(extension);
-  };
+      exportBlueprintYaml(extensionsFromInstallable[0]);
+    },
+    {
+      successMessage: `Exported blueprint: ${getLabel(installable)}`,
+      errorMessage: `Error exporting blueprint: ${getLabel(installable)}`,
+      event: "ExtensionExport",
+    },
+    [installable, extensionsFromInstallable]
+  );
 
   return {
     viewShare,
