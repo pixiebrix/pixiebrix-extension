@@ -35,12 +35,17 @@ export function useLabelRenderer() {
       <div>
         <span>{key}</span>
         {!expanded && ": "}
+        {/* The button must not be a form element,
+        otherwise the wrapping label from JSONTree is associated with the element's contents (the button).
+        See https://www.w3.org/TR/html401/interact/forms.html#h-17.9.1 */}
         <Button
           variant="text"
           className={cx(styles.copyPath, "p-0")}
           aria-label="copy path"
+          href="#"
           onClick={(event) => {
             copy([key, ...rest].reverse().join("."));
+            event.preventDefault();
             event.stopPropagation();
             notify.info("Copied property path to the clipboard");
           }}

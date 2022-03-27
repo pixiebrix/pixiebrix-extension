@@ -16,51 +16,30 @@
  */
 
 import { configureStore, Middleware } from "@reduxjs/toolkit";
-import { persistStore, persistReducer } from "redux-persist";
+import { persistReducer, persistStore } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
-import { editorSlice, EditorState } from "@/pageEditor/slices/editorSlice";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { createLogger } from "redux-logger";
 import { boolean } from "@/utils";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/services/api";
-import {
-  formBuilderSlice,
-  FormBuilderState,
-} from "@/pageEditor/slices/formBuilderSlice";
-import runtimeSlice, { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
-import {
-  savingExtensionSlice,
-  SavingExtensionState,
-} from "@/pageEditor/panes/save/savingExtensionSlice";
-import {
-  documentBuilderSlice,
-  DocumentBuilderState,
-} from "./slices/documentBuilderSlice";
-import { OptionsState } from "@/store/extensionsTypes";
+import { formBuilderSlice } from "@/pageEditor/slices/formBuilderSlice";
+import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
+import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
+import { documentBuilderSlice } from "./slices/documentBuilderSlice";
 import settingsSlice from "@/store/settingsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import servicesSlice, { persistServicesConfig } from "@/store/servicesSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
-import { SettingsState } from "@/store/settingsTypes";
-import { LogRootState } from "@/components/logViewer/logViewerTypes";
-import { logSlice, logActions } from "@/components/logViewer/logSlice";
+import { logActions, logSlice } from "@/components/logViewer/logSlice";
+import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
 const persistSettingsConfig = {
   key: "settings",
   storage: localStorage,
-};
-
-export type RootState = LogRootState & {
-  options: OptionsState;
-  editor: EditorState;
-  savingExtension: SavingExtensionState;
-  formBuilder: FormBuilderState;
-  documentBuilder: DocumentBuilderState;
-  settings: SettingsState;
-  runtime: RuntimeState;
 };
 
 const conditionalMiddleware: Middleware[] = [];
@@ -77,6 +56,7 @@ if (typeof createLogger === "function") {
 
 const store = configureStore({
   reducer: {
+    auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
       persistExtensionOptionsConfig,
       extensionsSlice.reducer

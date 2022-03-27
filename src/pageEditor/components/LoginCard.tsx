@@ -15,11 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.card {
-  min-width: 725px;
-  max-width: 725px;
-  width: 725px;
-}
-.cardBody {
-  padding: 1.5rem;
-}
+import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+import { Card, Button } from "react-bootstrap";
+
+const LoginCard: React.VoidFunctionComponent = () => (
+  <Card>
+    <Card.Body>
+      <p>Complete PixieBrix Extension setup to use the Page Editor</p>
+      <Button
+        variant="primary"
+        className="mt-2"
+        target="_blank"
+        href="/options.html"
+      >
+        <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
+      </Button>
+    </Card.Body>
+  </Card>
+);
+
+export default LoginCard;

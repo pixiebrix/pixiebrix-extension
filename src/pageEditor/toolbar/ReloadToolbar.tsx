@@ -16,7 +16,6 @@
  */
 
 import React, { useCallback } from "react";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { useDebouncedCallback } from "use-debounce";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { useAsyncEffect } from "use-async-effect";
@@ -24,6 +23,7 @@ import ToggleField from "@/pageEditor/components/ToggleField";
 import { Button } from "react-bootstrap";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 

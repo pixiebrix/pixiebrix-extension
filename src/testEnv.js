@@ -23,3 +23,10 @@ process.env.SERVICE_URL = "https://app.pixiebrix.com";
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
+global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
+  constructor(type, init) {
+    super(type);
+    this.promise = init.promise;
+    this.reason = init.reason;
+  }
+};

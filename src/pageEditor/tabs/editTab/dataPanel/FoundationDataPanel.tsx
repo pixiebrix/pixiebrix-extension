@@ -17,7 +17,6 @@
 
 import React from "react";
 import { useFormikContext } from "formik";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { UUID } from "@/core";
 import { useSelector } from "react-redux";
 import { makeSelectBlockTrace } from "@/pageEditor/slices/runtimeSelectors";
@@ -30,6 +29,7 @@ import ExtensionPointPreview from "@/pageEditor/tabs/effect/ExtensionPointPrevie
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import useFlags from "@/hooks/useFlags";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;

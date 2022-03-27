@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { IExtension } from "@/core";
 import { registry } from "@/background/messenger/api";
 import {
@@ -30,6 +29,7 @@ import contextMenuExtension from "@/pageEditor/extensionPoints/contextMenu";
 import sidebarExtension from "@/pageEditor/extensionPoints/sidebar";
 import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import { hasInnerExtensionPoint } from "@/registry/internal";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 export const ADAPTERS = new Map<ExtensionPointType, ElementConfig>([
   ["trigger", triggerExtension],

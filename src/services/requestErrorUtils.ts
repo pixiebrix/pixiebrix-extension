@@ -23,23 +23,21 @@ import {
 } from "@/errors";
 import {
   ClientNetworkError,
-  ClientRequestError,
   ClientNetworkPermissionError,
+  ClientRequestError,
   RemoteServiceError,
   SerializableAxiosError,
 } from "@/services/errors";
 import { expectContext } from "@/utils/expectContext";
-import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import { AxiosError, AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import {
   DEFAULT_SERVICE_URL,
   getBaseURL,
   withoutTrailingSlash,
 } from "@/services/baseService";
-import { getReasonPhrase } from "http-status-codes";
 import { isAbsoluteUrl } from "@/utils";
 import urljoin from "url-join";
-import { isEmpty } from "lodash";
 import { Except } from "type-fest";
 
 // eslint-disable-next-line prefer-destructuring -- process.env variable
@@ -56,19 +54,6 @@ export function selectAbsoluteUrl({
   // Using AxiosRequestConfig since the actual request object doesn't seem to be available in all the places we
   // use this method
   return isAbsoluteUrl(url) ? url : urljoin(baseURL, url);
-}
-
-/**
- * Version of getReasonPhrase that returns null for unknown status codes
- * @param code the HTML status code
- * @see getReasonPhrase
- */
-export function safeGuessStatusText(code: string | number): string | null {
-  try {
-    return getReasonPhrase(code);
-  } catch {
-    return null;
-  }
 }
 
 export async function isAppUrl(url: string): Promise<boolean> {
@@ -92,23 +77,6 @@ export async function isAppRequest(
     (url) => `${withoutTrailingSlash(url)}/*`
   );
   return testMatchPatterns(patterns, requestUrl);
-}
-
-/**
- * Heuristically select the most user-friendly error message for an Axios response.
- */
-function selectResponseErrorMessage(response: AxiosResponse): string {
-  const message = response.data?.message;
-
-  if (typeof message === "string" && !isEmpty(message)) {
-    return message;
-  }
-
-  if (!isEmpty(response.statusText)) {
-    return response.statusText;
-  }
-
-  return safeGuessStatusText(response.status) ?? "Unknown error";
 }
 
 /**
@@ -166,7 +134,7 @@ export async function enrichRequestError(
 
   if (maybeAxiosError.response) {
     return new RemoteServiceError(
-      selectResponseErrorMessage(maybeAxiosError.response),
+      getErrorMessage(maybeAxiosError),
       maybeAxiosError
     );
   }

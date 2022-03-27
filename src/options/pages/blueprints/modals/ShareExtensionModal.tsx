@@ -30,20 +30,22 @@ import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
 import * as Yup from "yup";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import { useGetAuthQuery, useGetOrganizationsQuery } from "@/services/api";
+import {
+  appApi,
+  useGetAuthQuery,
+  useGetOrganizationsQuery,
+} from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import slugify from "slugify";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
-import { makeBlueprint } from "@/options/pages/installed/exportBlueprint";
+import { makeBlueprint } from "@/options/pages/blueprints/utils/exportBlueprint";
 import { useDispatch, useSelector } from "react-redux";
 import {
   RecipeDefinition,
   selectSourceRecipeMetadata,
 } from "@/types/definitions";
 import notify from "@/utils/notify";
-import { push } from "connected-react-router";
-import { getHumanDetail } from "@/hooks/useUserAction";
 import { isAxiosError } from "@/errors";
 import { faGlobe, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Form, {
@@ -57,7 +59,7 @@ import { PackageUpsertResponse } from "@/types/contract";
 import extensionsSlice from "@/store/extensionsSlice";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { installedPageSlice } from "@/options/pages/installed/installedPageSlice";
+import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { RequireScope } from "@/auth/RequireScope";
 
@@ -126,7 +128,7 @@ const ShareExtensionModal: React.FC<{
   }, [extensions, extensionId]);
 
   const onCancel = () => {
-    dispatch(installedPageSlice.actions.setShareContext(null));
+    dispatch(blueprintModalsSlice.actions.setShareContext(null));
   };
 
   // If loading the URL directly, there's a race condition if scope will be populated when the modal is mounted.
@@ -161,12 +163,14 @@ const ShareExtensionModal: React.FC<{
         );
         notify.success("Converted/shared brick");
 
-        // Hide the share modal
-        dispatch(installedPageSlice.actions.setShareContext(null));
-
+        // Hide the share modal and show the share link modal
         dispatch(
-          push(`/installed/link/${encodeURIComponent(recipe.metadata.id)}`)
+          blueprintModalsSlice.actions.setShareContext({
+            blueprintId: recipe.metadata.id,
+          })
         );
+
+        dispatch(appApi.util.invalidateTags(["Recipes"]));
       } catch (error) {
         if (isAxiosError(error) && error.response.data.config) {
           helpers.setStatus(error.response.data.config);
@@ -174,8 +178,7 @@ const ShareExtensionModal: React.FC<{
         }
 
         notify.error({
-          message: `Error converting/sharing brick: ${getHumanDetail(error)}`,
-          includeErrorDetails: false, // Using `getHumanDetail`
+          message: "Error converting/sharing brick",
           error,
         });
       } finally {

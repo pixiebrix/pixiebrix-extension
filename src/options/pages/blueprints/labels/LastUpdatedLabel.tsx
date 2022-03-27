@@ -33,7 +33,6 @@ const LastUpdatedLabel: React.VoidFunctionComponent<{
   // noinspection RequiredAttributes
   return (
     <OverlayTrigger
-      trigger="hover"
       key="updateAt"
       placement="top"
       delay={600}

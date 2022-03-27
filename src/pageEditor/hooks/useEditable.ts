@@ -18,9 +18,9 @@
 import { useSelector } from "react-redux";
 import { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
-import { RootState } from "@/pageEditor/store";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { EditablePackage } from "@/types/definitions";
+import { RootState } from "@/pageEditor/pageEditorTypes";
 
 const selectEditor = (x: RootState) => x.editor;
 

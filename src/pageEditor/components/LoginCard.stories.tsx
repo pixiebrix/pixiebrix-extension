@@ -15,10 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RootState } from "@/options/store";
+import React from "react";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+import LoginCard from "@/pageEditor/components/LoginCard";
 
-export const selectShowLogsContext = ({ installedPage }: RootState) =>
-  installedPage.showLogsContext;
+export default {
+  title: "PageEditor/LoginCard",
+  component: LoginCard,
+  argTypes: {},
+} as ComponentMeta<typeof LoginCard>;
 
-export const selectShowShareContext = ({ installedPage }: RootState) =>
-  installedPage.showShareContext;
+const Template: ComponentStory<typeof LoginCard> = (args) => (
+  <LoginCard {...args} />
+);
+
+export const Default = Template.bind({});
+Default.args = {};

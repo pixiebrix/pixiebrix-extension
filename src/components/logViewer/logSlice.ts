@@ -17,7 +17,7 @@
 
 import { clearLog, getLog, LogEntry } from "@/background/logging";
 import { MessageContext } from "@/core";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { isEqual } from "lodash";
 import { selectActiveContext } from "./logSelectors";
 import { LogRootState, LogState } from "./logViewerTypes";
@@ -66,7 +66,7 @@ export const logSlice = createSlice({
   name: "logs",
   initialState: initialLogState,
   reducers: {
-    setContext(state, { payload: context }: { payload: MessageContext }) {
+    setContext(state, { payload: context }: PayloadAction<MessageContext>) {
       state.activeContext = context;
       state.availableEntries = [];
       state.entries = [];

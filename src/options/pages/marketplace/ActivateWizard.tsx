@@ -23,7 +23,7 @@ import "./ActivateWizard.scss";
 import { Formik } from "formik";
 import { useSelectedAuths, useSelectedExtensions } from "./ConfigureBody";
 import { useTitle } from "@/hooks/title";
-import useInstall from "@/pages/marketplace/useInstall";
+import useInstall from "@/options/pages/blueprints/utils/useInstall";
 import AsyncButton from "@/components/AsyncButton";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

@@ -41,7 +41,10 @@ function ListFilters({ teamFilters, tableInstance }: ListFiltersProps) {
   // filtered category
   useEffect(() => {
     setGlobalFilter(debouncedQuery);
-    setFilters([]);
+
+    if (debouncedQuery) {
+      setFilters([]);
+    }
   }, [debouncedQuery, setFilters, setGlobalFilter]);
 
   const activeKey = filters[0]?.value ?? "All";

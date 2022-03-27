@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2022 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import {
   BusinessError,
   CancelError,
@@ -16,12 +33,22 @@ import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 
 const TEST_MESSAGE = "Test message";
 
+function createUncaughtRejection(reason: string | Error) {
+  const promise = Promise.reject(reason);
+  // eslint-disable-next-line promise/prefer-await-to-then -- Test only
+  promise.catch(() => {}); // Or else it will crash Node
+  return { promise, reason };
+}
+
 function nest(error: Error, level = 1): Error {
   if (level === 0) {
     return error;
   }
 
-  return nest(new ContextError(error), level - 1);
+  return nest(
+    new ContextError("Something happened", { cause: error }),
+    level - 1
+  );
 }
 
 describe("hasCancelRootCause", () => {
@@ -160,9 +187,63 @@ describe("selectError", () => {
     );
   });
 
-  it("wraps primitize", () => {
-    const error = selectError("test");
-    expect(error).toBeInstanceOf(Error);
-    expect(error.message).toEqual(error.message);
+  it("wraps primitive", () => {
+    // eslint-disable-next-line unicorn/no-useless-undefined -- Required by the types
+    expect(selectError(undefined)).toMatchInlineSnapshot("[Error: undefined]");
+    expect(selectError(null)).toMatchInlineSnapshot("[Error: null]");
+    expect(selectError(123)).toMatchInlineSnapshot("[Error: 123]");
+    expect(selectError("test")).toMatchInlineSnapshot("[Error: test]");
+    expect(selectError({ my: "object" })).toMatchInlineSnapshot(
+      '[Error: {"my":"object"}]'
+    );
+  });
+
+  it("extracts error from ErrorEvent", () => {
+    const error = new Error("This won’t be caught");
+    const errorEvent = new ErrorEvent("error", {
+      error,
+    });
+
+    expect(selectError(errorEvent)).toBe(error);
+  });
+
+  it("wraps primitive from ErrorEvent and creates stack", () => {
+    const error = "It’s a non-error";
+    const errorEvent = new ErrorEvent("error", {
+      filename: "yoshi://mushroom-kingdom/bowser.js",
+      lineno: 2,
+      colno: 10,
+      error,
+    });
+
+    const selectedError = selectError(errorEvent);
+    expect(selectedError).toMatchInlineSnapshot(
+      "[Error: Synchronous error: It’s a non-error]"
+    );
+    expect(selectedError.stack).toMatchInlineSnapshot(`
+      "Error: Synchronous error: It’s a non-error
+          at unknown (yoshi://mushroom-kingdom/bowser.js:2:10)"
+    `);
+  });
+
+  it("extracts error from PromiseRejectionEvent", () => {
+    const error = new Error("This won’t be caught");
+    const errorEvent = new PromiseRejectionEvent(
+      "error",
+      createUncaughtRejection(error)
+    );
+
+    expect(selectError(errorEvent)).toBe(error);
+  });
+
+  it("wraps primitive from PromiseRejectionEvent", () => {
+    const errorEvent = new PromiseRejectionEvent(
+      "error",
+      createUncaughtRejection("It’s a non-error")
+    );
+
+    expect(selectError(errorEvent)).toMatchInlineSnapshot(
+      "[Error: Asynchronous error: It’s a non-error]"
+    );
   });
 });

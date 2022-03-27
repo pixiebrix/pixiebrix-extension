@@ -15,19 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.table {
-  th {
-    font-weight: 400;
-  }
+import { AuthRootState } from "./authTypes";
 
-  th,
-  td {
-    height: 44px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-
-    &:first-child {
-      width: 15px;
-    }
-  }
-}
+export const selectAuth = (state: AuthRootState) => state.auth;
+export const selectIsLoggedIn = (state: AuthRootState) => state.auth.isLoggedIn;

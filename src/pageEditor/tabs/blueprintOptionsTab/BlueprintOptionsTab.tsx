@@ -21,7 +21,6 @@ import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import { useFormikContext } from "formik";
 import React, { useMemo, useState } from "react";
 import { Alert, Col, Container, Nav, Row, Tab } from "react-bootstrap";
-import { FormState } from "@/pageEditor/slices/editorSlice";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
@@ -36,6 +35,7 @@ import { useGetRecipesQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter(
   (type) => !["File", "Image crop"].includes(type.label)

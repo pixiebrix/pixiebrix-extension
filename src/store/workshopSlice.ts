@@ -17,6 +17,7 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 import { orderBy } from "lodash";
+import { localStorage } from "redux-persist-webextension-storage";
 
 type RecentBrick = {
   id: string;
@@ -82,5 +83,10 @@ const workshopSlice = createSlice({
     },
   },
 });
+
+export const persistWorkshopConfig = {
+  key: "workshop",
+  storage: localStorage,
+};
 
 export default workshopSlice;

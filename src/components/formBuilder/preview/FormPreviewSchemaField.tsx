@@ -18,7 +18,6 @@
 import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
 import React from "react";
 import { FormPreviewFieldProps } from "./FormPreviewFieldTemplate";
-import { produce } from "immer";
 import { SchemaDefinition } from "@/core";
 
 const RjsfSchemaField = RjsfTheme.fields.SchemaField;
@@ -28,21 +27,30 @@ const FormPreviewSchemaField: React.FC<FormPreviewFieldProps> = (props) => {
 
   // If we render a dropdown with @var value, use the name of the var and the single option
   if (typeof props.schema.oneOf === "string") {
-    fieldProps = produce(props, (draft) => {
-      draft.schema.oneOf = [
-        {
-          const: props.schema.oneOf,
-        } as SchemaDefinition,
-      ];
-
-      draft.disabled = true;
-    });
+    // Not using immer.produce to clone `props` because it accesses `props.key` that throws an error
+    fieldProps = {
+      ...props,
+      disabled: true,
+      schema: {
+        ...props.schema,
+        oneOf: [
+          {
+            const: props.schema.oneOf,
+          } as SchemaDefinition,
+        ],
+      },
+    };
   } else if (typeof props.schema.enum === "string") {
-    fieldProps = produce(props, (draft) => {
-      draft.schema.enum = [props.schema.enum];
-      draft.schema.default = props.schema.enum;
-      draft.disabled = true;
-    });
+    // Not using immer.produce to clone `props` because it accesses `props.key` that throws an error
+    fieldProps = {
+      ...props,
+      disabled: true,
+      schema: {
+        ...props.schema,
+        enum: [props.schema.enum],
+        default: props.schema.enum,
+      },
+    };
   } else {
     fieldProps = props;
   }

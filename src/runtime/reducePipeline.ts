@@ -48,7 +48,6 @@ import {
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
 import {
   logIfInvalidOutput,
-  resolveBlockConfig,
   selectBlockRootElement,
   shouldRunBlock,
   throwIfInvalidInput,
@@ -56,7 +55,8 @@ import {
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { UnknownObject } from "@/types";
-import { RunBlock } from "@/contentScript/executor";
+import { RunBlock } from "@/contentScript/runBlockTypes";
+import { resolveBlockConfig } from "@/blocks/registry";
 
 type CommonOptions = ApiVersionOptions & {
   /**
@@ -568,9 +568,11 @@ function throwBlockError(
   }
 
   throw new ContextError(
-    error as Error,
-    logger.context,
-    `An error occurred running pipeline stage #${index + 1}: ${blockConfig.id}`
+    `An error occurred running pipeline stage #${index + 1}: ${blockConfig.id}`,
+    {
+      cause: error,
+      context: logger.context,
+    }
   );
 }
 

@@ -24,10 +24,10 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BlockConfiguration from "@/pageEditor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { getType } from "@/blocks/util";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
+import getType from "@/runtime/getType";
 
 const PopoverOutputLabel: React.FC<{
   description: string;

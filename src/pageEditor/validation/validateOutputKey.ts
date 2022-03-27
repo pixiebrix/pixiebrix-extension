@@ -16,11 +16,11 @@
  */
 
 import { BlockPipeline } from "@/blocks/types";
-import { BlockType } from "@/blocks/util";
 import { joinName } from "@/utils";
 import { isEmpty, set } from "lodash";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { TypedBlockMap } from "@/blocks/registry";
+import { BlockType } from "@/runtime/runtimeTypes";
 
 const outputKeyRegex = /^[A-Za-z][\dA-Za-z]*$/;
 

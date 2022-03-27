@@ -28,18 +28,18 @@ export type ShareContext = {
   extensionId?: UUID;
 };
 
-export type InstalledPageState = {
+export type BlueprintModalsState = {
   showLogsContext: LogsContext;
   showShareContext: ShareContext;
 };
 
-const initialState: InstalledPageState = {
+const initialState: BlueprintModalsState = {
   showLogsContext: null,
   showShareContext: null,
 };
 
-export const installedPageSlice = createSlice({
-  name: "installedPage",
+export const blueprintModalsSlice = createSlice({
+  name: "blueprintModals",
   initialState,
   reducers: {
     setLogsContext(state, action: PayloadAction<LogsContext>) {

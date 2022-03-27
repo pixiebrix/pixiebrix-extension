@@ -15,17 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import styles from "./ExtensionGroupHeader.module.scss";
+import { BlockArg, MessageContext, RegistryId } from "@/core";
+import { Availability } from "@/blocks/types";
 
-const ExtensionGroupHeader: React.FunctionComponent<{ label: string }> = ({
-  label,
-}) => (
-  <tr className={styles.root}>
-    <td colSpan={2}>{label}</td>
-    <td>Status</td>
-    <td>Actions</td>
-  </tr>
-);
+export interface RemoteBlockOptions {
+  ctxt: unknown;
+  messageContext: MessageContext;
+  maxRetries?: number;
+  isAvailable?: Availability;
+}
 
-export default ExtensionGroupHeader;
+export interface RunBlock {
+  sourceTabId?: number;
+  nonce?: string;
+  blockId: RegistryId;
+  blockArgs: BlockArg;
+  options: RemoteBlockOptions;
+}

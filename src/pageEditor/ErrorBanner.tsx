@@ -17,16 +17,22 @@
 
 import React, { useContext } from "react";
 import { PageEditorTabContext } from "@/pageEditor/context";
-import { useGetAuthQuery } from "@/services/api";
 import { getErrorMessage } from "@/errors";
 import { Button } from "react-bootstrap";
+import { useGetMeQuery } from "@/services/api";
+import { isClientErrorData } from "@/types/errorContract";
 
 const ErrorBanner: React.VFC = () => {
   const context = useContext(PageEditorTabContext);
-  const { error: accountError } = useGetAuthQuery();
+  const { error: accountError } = useGetMeQuery();
 
+  // HACK: this logic is necessary because our RTK API base query currently returns an object with data/status instead
+  // of an error-like object that getErrorMessage can extract an error message from
+  const data: unknown = (accountError as any)?.data;
   const error = accountError
-    ? "Authentication error: " + getErrorMessage(accountError)
+    ? `Authentication error: ${
+        isClientErrorData(data) ? data.detail : getErrorMessage(accountError)
+      }`
     : context.tabState.error;
 
   if (!error) {

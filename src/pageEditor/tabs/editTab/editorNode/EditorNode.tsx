@@ -21,9 +21,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ListGroup } from "react-bootstrap";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
-import { NodeId } from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import cx from "classnames";
+import { UUID } from "@/core";
 
+export type NodeId = UUID;
 export type EditorNodeProps = {
   nodeId?: NodeId;
   title: string;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AuthState } from "@/core";
+import { AuthState } from "./authTypes";
 
 export const anonAuth: AuthState = Object.freeze({
   userId: undefined,

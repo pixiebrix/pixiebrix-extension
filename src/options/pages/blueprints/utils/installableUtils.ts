@@ -16,18 +16,20 @@
  */
 
 import { RecipeDefinition } from "@/types/definitions";
-import { IExtension, RegistryId, ResolvedExtension, UUID } from "@/core";
+import {
+  IExtension,
+  RegistryId,
+  ResolvedExtension,
+  UnresolvedExtension,
+  UUID,
+} from "@/core";
 import * as semver from "semver";
 import { Organization } from "@/types/contract";
-import { Installable } from "./blueprintsTypes";
-
-export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
-
-export type SharingSource = {
-  type: SharingType;
-  label: string;
-  organization: Organization;
-};
+import {
+  Installable,
+  SharingSource,
+  SharingType,
+} from "@/options/pages/blueprints/blueprintsTypes";
 
 export const getSharingType = (
   installable: Installable,
@@ -140,35 +142,72 @@ export const isPersonal = (installable: Installable, userScope: string) => {
 export const isDeployment = (installable: Installable) =>
   isExtension(installable) && Boolean(installable._deployment);
 
+export const getInstalledVersionNumber = (
+  installedExtensions: UnresolvedExtension[],
+  installable: Installable
+): string | null => {
+  if (isExtension(installable)) {
+    return installable._recipe?.version;
+  }
+
+  const installedExtension = installedExtensions.find(
+    (extension: UnresolvedExtension) =>
+      extension._recipe?.id === installable.metadata.id
+  );
+
+  return installedExtension?._recipe?.version;
+};
+
 export function updateAvailable(
   availableRecipes: RecipeDefinition[],
-  extension: ResolvedExtension
+  installedExtensions: UnresolvedExtension[],
+  installable: Installable
 ): boolean {
-  if (!extension._recipe) {
+  let installedExtension: ResolvedExtension | UnresolvedExtension = null;
+
+  if (isBlueprint(installable)) {
+    installedExtension = installedExtensions?.find(
+      (extension) => extension._recipe?.id === installable.metadata.id
+    );
+  } else {
+    installedExtension = installable;
+  }
+
+  if (!installedExtension || !installedExtension._recipe) {
     return false;
   }
 
   const availableRecipe = availableRecipes?.find(
-    (recipe) => recipe.metadata.id === extension._recipe.id
+    (recipe) => recipe.metadata.id === installedExtension._recipe.id
   );
 
   if (!availableRecipe) {
     return false;
   }
 
-  if (semver.gt(availableRecipe.metadata.version, extension._recipe.version)) {
+  if (
+    semver.gt(
+      availableRecipe.metadata.version,
+      installedExtension._recipe.version
+    )
+  ) {
     return true;
   }
 
-  if (semver.eq(availableRecipe.metadata.version, extension._recipe.version)) {
+  if (
+    semver.eq(
+      availableRecipe.metadata.version,
+      installedExtension._recipe.version
+    )
+  ) {
     // Check the updated_at timestamp
-    if (extension._recipe?.updated_at == null) {
+    if (installedExtension._recipe?.updated_at == null) {
       // Extension was installed prior to us adding updated_at to RecipeMetadata
       return false;
     }
 
     const availableDate = new Date(availableRecipe.updated_at);
-    const installedDate = new Date(extension._recipe.updated_at);
+    const installedDate = new Date(installedExtension._recipe.updated_at);
 
     return availableDate > installedDate;
   }

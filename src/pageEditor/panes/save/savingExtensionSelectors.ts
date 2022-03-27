@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RootState } from "@/pageEditor/store";
+import { RootState } from "@/pageEditor/pageEditorTypes";
 
 export const selectIsWizardOpen = ({ savingExtension }: RootState) =>
   savingExtension.isWizardOpen;

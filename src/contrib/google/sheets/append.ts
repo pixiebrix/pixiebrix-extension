@@ -135,13 +135,12 @@ export class GoogleSheetsAppend extends Effect {
     }>,
     { logger }: BlockOptions
   ): Promise<void> {
-    const rowValues =
-      typeof rawValues === "object"
-        ? Object.entries(rawValues).map(([header, value]) => ({
-            header,
-            value,
-          }))
-        : rawValues;
+    const rowValues = Array.isArray(rawValues)
+      ? rawValues
+      : Object.entries(rawValues).map(([header, value]) => ({
+          header,
+          value,
+        }));
 
     const valueHeaders = rowValues.map((x: RowValue) => x.header);
     let currentHeaders: string[];

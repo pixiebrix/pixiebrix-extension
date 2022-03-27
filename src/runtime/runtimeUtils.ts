@@ -26,10 +26,8 @@ import {
   BlockArgContext,
   IBlock,
   IExtension,
-  InnerDefinitionRef,
   Logger,
   ReaderRoot,
-  RegistryId,
   RenderedArgs,
 } from "@/core";
 import { isEmpty } from "lodash";
@@ -41,15 +39,8 @@ import {
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
 import { BusinessError } from "@/errors";
-import blockRegistry from "@/blocks/registry";
-import { getType } from "@/blocks/util";
-import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { $safeFind } from "@/helpers";
-
-/**
- * Scope for inner definitions
- */
-export const INNER_SCOPE = "@internal";
+import { isInnerExtensionPoint } from "@/registry/internal";
 
 /**
  * @throws InputValidationError if blockArgs does not match the input schema for block
@@ -177,23 +168,6 @@ export function selectBlockRootElement(
   }
 
   return $stageRoot.get(0);
-}
-
-export async function resolveBlockConfig(
-  config: BlockConfig
-): Promise<ResolvedBlockConfig> {
-  const block = await blockRegistry.lookup(config.id);
-  return {
-    config,
-    block,
-    type: await getType(block),
-  };
-}
-
-export function isInnerExtensionPoint(
-  id: RegistryId | InnerDefinitionRef
-): boolean {
-  return id.startsWith(INNER_SCOPE + "/");
 }
 
 export function assertExtensionNotResolved<T extends IExtension>(
