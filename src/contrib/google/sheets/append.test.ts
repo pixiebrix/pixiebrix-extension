@@ -59,7 +59,7 @@ describe("Normalize shape", () => {
     ).toStrictEqual([[{ header: "Foo", value: "bar" }]]);
   });
 
-  it("Normalize entries shape", () => {
+  it("Normalize multi shape", () => {
     expect(
       normalizeShape("infer", [{ "column A": "Foo", "column B": "Bar" }])
     ).toStrictEqual([
