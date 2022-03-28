@@ -48,7 +48,7 @@ export const RequireScope: React.FunctionComponent<RequireScopeProps> = ({
     ({ settings }) => settings.mode
   );
 
-  if (isRequired && mode !== "local" && scope === null) {
+  if (isRequired && mode !== "local" && scope == null) {
     return (
       <ScopeSettings
         title={scopeSettingsTitle}
