@@ -46,7 +46,7 @@ export type CreateRenderFunctionOptions<
   preloadedState?: PreloadedState<CombinedState<NoInfer<TState>>>;
 
   ComponentUnderTest: React.ComponentType<TProps>;
-  defaultProps: TProps;
+  defaultProps?: TProps;
 };
 
 export function createRenderFunction<

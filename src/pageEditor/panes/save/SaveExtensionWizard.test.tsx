@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fireEvent, render, screen } from "@testing-library/react";
-import React from "react";
+import { fireEvent, screen } from "@testing-library/react";
 import SaveExtensionWizard from "./SaveExtensionWizard";
 import {
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
@@ -29,11 +28,9 @@ import {
   recipeFactory,
 } from "@/tests/factories";
 import { uuidv4 } from "@/types/helpers";
-import { waitForEffect } from "@/tests/testHelpers";
+import { createRenderFunction, waitForEffect } from "@/tests/testHelpers";
 import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
 import settingsSlice from "@/store/settingsSlice";
 
 jest.unmock("react-redux");
@@ -42,32 +39,23 @@ jest.mock("@/utils/notify");
 jest.mock("./useSavingWizard");
 
 jest.mock("@/services/api", () => ({
-  useGetMeQuery: () => ({
-    refetch: jest.fn(),
-  }),
+  appApi: {
+    useLazyGetMeQuery: () => [jest.fn()],
+  },
   useGetRecipesQuery: jest.fn(),
   useGetEditablePackagesQuery: jest.fn(),
 }));
 
-// TODO Review the usage of Redux in test
-const renderSaveExtensionWizard = (state?: any) => {
-  const store = configureStore({
-    reducer: {
-      auth: authSlice.reducer,
-      settings: settingsSlice.reducer,
-    },
-    preloadedState: {
-      auth: anonAuth,
-      ...state,
-    },
-  });
-
-  return render(
-    <Provider store={store}>
-      <SaveExtensionWizard />
-    </Provider>
-  );
-};
+const renderSaveExtensionWizard = createRenderFunction({
+  reducer: {
+    auth: authSlice.reducer,
+    settings: settingsSlice.reducer,
+  },
+  preloadedState: {
+    auth: anonAuth,
+  },
+  ComponentUnderTest: SaveExtensionWizard,
+});
 
 beforeEach(() => {
   (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
@@ -171,9 +159,11 @@ test("calls Save as New Blueprint", async () => {
   });
 
   renderSaveExtensionWizard({
-    auth: {
-      ...anonAuth,
-      scope: "@test",
+    stateOverride: {
+      auth: {
+        ...anonAuth,
+        scope: "@test",
+      },
     },
   });
 

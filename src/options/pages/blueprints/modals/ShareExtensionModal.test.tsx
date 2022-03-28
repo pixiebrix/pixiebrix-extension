@@ -31,8 +31,10 @@ jest.unmock("react-redux");
 
 jest.mock("@/utils/notify");
 jest.mock("@/services/api", () => ({
+  appApi: {
+    useLazyGetMeQuery: () => [jest.fn()],
+  },
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
-  useGetMeQuery: () => ({ refetch: jest.fn() }),
 }));
 
 const extension = extensionFactory({

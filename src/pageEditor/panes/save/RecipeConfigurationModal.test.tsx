@@ -18,43 +18,41 @@
 import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
 import { recipeMetadataFactory } from "@/tests/factories";
-import { render, screen } from "@testing-library/react";
-import React from "react";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
+import { screen } from "@testing-library/react";
 import RecipeConfigurationModal from "./RecipeConfigurationModal";
 import settingsSlice from "@/store/settingsSlice";
+import { createRenderFunction } from "@/tests/testHelpers";
 
 jest.unmock("react-redux");
 
-// TODO Review the usage of Redux in test
-const renderRecipeConfigurationModal = (isNewRecipe: boolean, state?: any) => {
-  const store = configureStore({
-    reducer: {
-      auth: authSlice.reducer,
-      settings: settingsSlice.reducer,
-    },
-    preloadedState: state,
-  });
-
-  return render(
-    <Provider store={store}>
-      <RecipeConfigurationModal
-        initialValues={recipeMetadataFactory()}
-        isNewRecipe={isNewRecipe}
-        close={jest.fn()}
-        navigateBack={jest.fn()}
-        save={jest.fn()}
-      />
-    </Provider>
-  );
-};
+const renderRecipeConfigurationModal = createRenderFunction({
+  reducer: {
+    auth: authSlice.reducer,
+    settings: settingsSlice.reducer,
+  },
+  preloadedState: {
+    auth: anonAuth,
+  },
+  ComponentUnderTest: RecipeConfigurationModal,
+  defaultProps: {
+    initialValues: recipeMetadataFactory(),
+    isNewRecipe: false,
+    close: jest.fn(),
+    navigateBack: jest.fn(),
+    save: jest.fn(),
+  },
+});
 
 test("renders Save as New Blueprint button and editable ID field for a new recipe", () => {
-  renderRecipeConfigurationModal(true, {
-    auth: {
-      ...anonAuth,
-      scope: "@test",
+  renderRecipeConfigurationModal({
+    stateOverride: {
+      auth: {
+        ...anonAuth,
+        scope: "@test",
+      },
+    },
+    propsOverride: {
+      isNewRecipe: true,
     },
   });
 
@@ -73,7 +71,7 @@ test("renders Save as New Blueprint button and editable ID field for a new recip
 });
 
 test("renders Update button and disabled ID field when updating recipe", () => {
-  renderRecipeConfigurationModal(false);
+  renderRecipeConfigurationModal();
 
   const updateBlueprintButton = screen.getByRole("button", {
     name: "Update Blueprint",
