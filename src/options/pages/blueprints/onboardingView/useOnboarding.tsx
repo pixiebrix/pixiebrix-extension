@@ -30,12 +30,12 @@ export type OnboardingType =
 
 function useOnboarding(): {
   onboardingType: OnboardingType;
-  onboardingFilter: string;
+  onboardingFilter?: string;
   isLoading: boolean;
 } {
   const { restrict } = useFlags();
   const filters = useSelector(selectFilters);
-  const onboardingFilter = filters[0]?.value?.toLowerCase();
+  const onboardingFilter = (filters ?? [])[0]?.value?.toLowerCase();
 
   const { data: rawRecipes, isLoading: isRecipesLoading } =
     useGetRecipesQuery();
