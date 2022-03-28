@@ -108,9 +108,9 @@ function useInstallableViewItems(installables: Installable[]): {
           source: getSharingType(installable, organizations.data ?? [], scope),
         },
         updatedAt: getUpdatedAt(installable),
-        status: isActive(installable)
-          ? "Active"
-          : ("Inactive" as InstallableStatus),
+        status:
+          // Cast needed because otherwise Typescript types as "string"
+          (isActive(installable) ? "Active" : "Inactive") as InstallableStatus,
         hasUpdate: updateAvailable(
           recipes.data,
           installedExtensions,
