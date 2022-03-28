@@ -139,7 +139,7 @@
     "slugify": "^1.6.0",
     "timezone-mock": "^1.2.2",
     "to-json-schema": "^0.2.5",
-    "url-join": "^4.0.1",
+    "url-join": "^5.0.0",
     "urlpattern-polyfill": "^1.0.0-rc1",
     "use-async-effect": "^2.2.3",
     "use-debounce": "^7.0.0",
