@@ -24,7 +24,6 @@ import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { RootState } from "@/options/store";
 import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useGetAuthQuery } from "@/services/api";
 import { deleteCachedAuthData } from "@/background/messenger/api";
 import { ServicesState } from "@/store/servicesSlice";
 import notify from "@/utils/notify";
@@ -46,10 +45,6 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   services,
   navigate,
 }) => {
-  const {
-    data: { isLoggedIn },
-  } = useGetAuthQuery();
-
   const [page, setPage] = useState(0);
 
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
@@ -90,29 +85,27 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           </tr>
         </thead>
         <tbody>
-          {isLoggedIn && (
-            <tr>
-              {/* Text-wrap because ellipsis menu popover will get hidden if `Table responsive`
+          <tr>
+            {/* Text-wrap because ellipsis menu popover will get hidden if `Table responsive`
               solution is used for mobile-friendly table
               https://stackoverflow.com/questions/6421966/css-overflow-x-visible-and-overflow-y-hidden-causing-scrollbar-issue */}
-              <td className="text-wrap">
-                Zapier <i>&ndash; use to connect to PixieBrix from Zapier</i>
-              </td>
-              <td className="text-muted small">N/A</td>
-              <td>
-                <Button
-                  style={{ width: 100 }}
-                  variant="info"
-                  size="sm"
-                  onClick={() => {
-                    navigate("/services/zapier/");
-                  }}
-                >
-                  View Key
-                </Button>
-              </td>
-            </tr>
-          )}
+            <td className="text-wrap">
+              Zapier <i>&ndash; use to connect to PixieBrix from Zapier</i>
+            </td>
+            <td className="text-muted small">N/A</td>
+            <td>
+              <Button
+                style={{ width: 100 }}
+                variant="info"
+                size="sm"
+                onClick={() => {
+                  navigate("/services/zapier/");
+                }}
+              >
+                View Key
+              </Button>
+            </td>
+          </tr>
 
           {pageServices.map((configuredService) => {
             const service = services.find(

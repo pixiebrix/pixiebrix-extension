@@ -36,12 +36,13 @@ import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprin
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { push } from "connected-react-router";
 import { exportBlueprint as exportBlueprintYaml } from "@/options/pages/blueprints/utils/exportBlueprint";
-import { appApi, useDeleteCloudExtensionMutation } from "@/services/api";
+import { useDeleteCloudExtensionMutation } from "@/services/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUserAction from "@/hooks/useUserAction";
 import { CancelError } from "@/errors";
 import { useModals } from "@/components/ConfirmationModal";
 import useInstallablePermissions from "@/options/pages/blueprints/useInstallablePermissions";
+import { selectScope } from "@/auth/authSelectors";
 import { OptionsState } from "@/store/extensionsTypes";
 
 const { removeExtension } = extensionsSlice.actions;
@@ -50,11 +51,7 @@ function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
-
-  // Select cached auth data for performance reasons
-  const {
-    data: { scope },
-  } = useSelector(appApi.endpoints.getAuth.select());
+  const scope = useSelector(selectScope);
 
   const extensionsFromInstallable = useSelector(
     (state: { options: OptionsState }) =>
