@@ -35,7 +35,6 @@ function useOnboarding(): {
 } {
   const { restrict } = useFlags();
   const filters = useSelector(selectFilters);
-  const onboardingFilter = (filters ?? [])[0]?.value?.toLowerCase();
 
   const { data: rawRecipes, isLoading: isRecipesLoading } =
     useGetRecipesQuery();
@@ -71,7 +70,7 @@ function useOnboarding(): {
 
   return {
     onboardingType,
-    onboardingFilter,
+    onboardingFilter: (filters ?? [])[0]?.value?.toLowerCase(),
     isLoading:
       isOrganizationsLoading || isDeploymentsLoading || isRecipesLoading,
   };
