@@ -17,6 +17,7 @@
 
 import {
   Installable,
+  InstallableStatus,
   InstallableViewItem,
 } from "@/options/pages/blueprints/blueprintsTypes";
 import React, { useCallback, useMemo } from "react";
@@ -43,12 +44,13 @@ import { MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
 import { selectScope } from "@/auth/authSelectors";
 
-function useInstallableViewItems(
-  installables: Installable[]
-): InstallableViewItem[] {
+function useInstallableViewItems(installables: Installable[]): {
+  installableViewItems: InstallableViewItem[];
+  isLoading: boolean;
+} {
   const scope = useSelector(selectScope);
   const installedExtensions = useSelector(selectExtensions);
-  const { data: organizations } = useGetOrganizationsQuery();
+  const organizations = useGetOrganizationsQuery();
   const listings = useGetMarketplaceListingsQuery();
   const recipes = useGetRecipesQuery();
 
@@ -93,17 +95,19 @@ function useInstallableViewItems(
     [listings]
   );
 
-  return useMemo(
+  const installableViewItems = useMemo(
     () =>
       installables.map((installable) => ({
         name: getLabel(installable),
         description: getDescription(installable),
         sharing: {
           packageId: getPackageId(installable),
-          source: getSharingType(installable, organizations ?? [], scope),
+          source: getSharingType(installable, organizations.data ?? [], scope),
         },
         updatedAt: getUpdatedAt(installable),
-        status: isActive(installable) ? "Active" : "Inactive",
+        status:
+          // Cast needed because otherwise Typescript types as "string"
+          (isActive(installable) ? "Active" : "Inactive") as InstallableStatus,
         hasUpdate: updateAvailable(
           recipes.data,
           installedExtensions,
@@ -119,12 +123,19 @@ function useInstallableViewItems(
     [
       installableIcon,
       installables,
+      installedExtensions,
       isActive,
-      organizations,
+      organizations.data,
       recipes.data,
       scope,
     ]
   );
+
+  return {
+    installableViewItems,
+    isLoading:
+      organizations.isLoading || recipes.isLoading || listings.isLoading,
+  };
 }
 
 export default useInstallableViewItems;
