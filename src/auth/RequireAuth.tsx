@@ -48,14 +48,16 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   const { isLoading, error, data: me } = useGetMeQuery();
 
   useEffect(() => {
+    // Before we get the very first response from API, do nothing, use the cached version.
     if (isLoading) {
       return;
     }
 
     const setAuth = async (me: Me) => {
+      const update = selectUserDataUpdate(me);
+      await updateUserData(update);
+
       if (me?.id) {
-        const update = selectUserDataUpdate(me);
-        await updateUserData(update);
         const auth = selectExtensionAuthState(me);
         dispatch(authActions.setAuth(auth));
       } else {
