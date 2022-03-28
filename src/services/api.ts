@@ -35,7 +35,9 @@ import {
   MarketplaceListing,
   Me,
   Organization,
+  Package,
   PackageUpsertResponse,
+  PackageVersion,
   PendingInvitation,
   SanitizedAuth,
   UserRole,
@@ -144,6 +146,8 @@ export const appApi = createApi({
     "EditablePackages",
     "Invitations",
     "CloudExtensions",
+    "Package",
+    "PackageVersion",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -343,6 +347,19 @@ export const appApi = createApi({
       query: () => ({ url: "/api/invitations/me", method: "get" }),
       providesTags: ["Invitations"],
     }),
+    getPackage: builder.query<Package, { id: UUID }>({
+      query: ({ id }) => ({ url: `/api/bricks/${id}/`, method: "get" }),
+      providesTags: (result, error, { id }) => [{ type: "Package", id }],
+    }),
+    listPackageVersions: builder.query<PackageVersion[], { id: UUID }>({
+      query: ({ id }) => ({
+        url: `/api/bricks/${id}/versions/`,
+        method: "get",
+      }),
+      providesTags: (result, error, { id }) => [
+        { type: "PackageVersion", id: `PACKAGE-${id}-LIST` },
+      ],
+    }),
   }),
 });
 
@@ -367,4 +384,6 @@ export const {
   useCreateRecipeMutation,
   useUpdateRecipeMutation,
   useGetInvitationsQuery,
+  useGetPackageQuery,
+  useListPackageVersionsQuery,
 } = appApi;
