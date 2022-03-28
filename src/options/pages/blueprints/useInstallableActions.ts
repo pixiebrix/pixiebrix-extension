@@ -51,7 +51,6 @@ function useInstallableActions(installable: Installable) {
   const dispatch = useDispatch();
   const modals = useModals();
   const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
-  const unresolvedExtensions = useSelector(selectExtensions);
   const scope = useSelector(selectScope);
 
   const extensionsFromInstallable = useSelector(
