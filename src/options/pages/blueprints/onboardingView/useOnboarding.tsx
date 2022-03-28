@@ -19,6 +19,8 @@ import { useGetOrganizationsQuery, useGetRecipesQuery } from "@/services/api";
 import useFlags from "@/hooks/useFlags";
 import { useMemo } from "react";
 import useDeployments from "@/hooks/useDeployments";
+import { useSelector } from "react-redux";
+import { selectFilters } from "@/options/pages/blueprints/blueprintsSelectors";
 
 export type OnboardingType =
   | "default"
@@ -28,9 +30,12 @@ export type OnboardingType =
 
 function useOnboarding(): {
   onboardingType: OnboardingType;
+  onboardingFilter: string;
   isLoading: boolean;
 } {
   const { restrict } = useFlags();
+  const filters = useSelector(selectFilters);
+  const onboardingFilter = filters[0]?.value?.toLowerCase();
 
   const { data: rawRecipes, isLoading: isRecipesLoading } =
     useGetRecipesQuery();
@@ -66,6 +71,7 @@ function useOnboarding(): {
 
   return {
     onboardingType,
+    onboardingFilter,
     isLoading:
       isOrganizationsLoading || isDeploymentsLoading || isRecipesLoading,
   };
