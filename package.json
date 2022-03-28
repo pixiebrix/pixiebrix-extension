@@ -213,7 +213,6 @@
     "@types/selenium-webdriver": "^4.0.15",
     "@types/semver": "^7.3.8",
     "@types/simple-icons": "^5.0.1",
-    "@types/url-join": "^4.0.1",
     "@types/uuid": "^8.3.1",
     "@types/webextension-polyfill": "^0.8.1",
     "@types/webpack": "^5.28.0",
