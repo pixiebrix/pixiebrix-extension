@@ -32,6 +32,7 @@ import {
   IGNORED_ERROR_PATTERNS,
   isAxiosError,
   isContextError,
+  isErrorObject,
 } from "@/errors";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { isAppRequest, selectAbsoluteUrl } from "@/services/requestErrorUtils";
@@ -253,6 +254,30 @@ async function selectExtraContext(
 }
 
 /**
+ * Create a fake stacktrace that is compatible with Rollbar’s stacktrace parsing.
+ */
+export function flattenStackForRollbar(stack: string, cause?: unknown): string {
+  // Some stack validation to avoid runtime errors while submitting errors
+  if (!isErrorObject(cause) || !cause.stack?.includes("\n")) {
+    return stack;
+  }
+
+  // Drop spaces from cause’s title or else Rollbar will clip the title
+  const [errorTitle] = cause.stack.split("\n", 1);
+  const causeStack = cause.stack.replace(
+    errorTitle,
+    errorTitle.replaceAll(" ", "-")
+  );
+
+  // Add a fake stacktrace line in order to preserve the cause’s title. Rollbar does not support
+  // the standard `caused by: Error: Some message\n` line and would misinterpret the stacktrace.
+  return flattenStackForRollbar(
+    stack + `\n    at CAUSED (BY.js:0:0) ${causeStack}`,
+    cause.cause
+  );
+}
+
+/**
  * True if recordError already logged a warning that DNT mode is on
  */
 let loggedDNT = false;
@@ -288,6 +313,10 @@ export async function recordError(
     const flatContext = flattenContext(error, context);
 
     if (await allowsTrack()) {
+      if (isErrorObject(error) && error.stack && error.cause) {
+        error.stack = flattenStackForRollbar(error.stack, error.cause);
+      }
+
       // Deserialize the error into an Error object before passing it to Rollbar so rollbar treats it as the error.
       // (It treats POJO as the custom data)
       // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog

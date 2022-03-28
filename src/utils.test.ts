@@ -21,8 +21,10 @@ import {
   joinName,
   removeUndefined,
   matchesAnyPattern,
+  assertHttpsUrl,
 } from "@/utils";
 import type { SafeString } from "@/core";
+import { BusinessError } from "@/errors";
 
 test("can generate fresh identifier", () => {
   const root = "field" as SafeString;
@@ -47,6 +49,44 @@ describe("removeUndefined", () => {
     expect(removeUndefined({ foo: { bar: undefined } })).toStrictEqual({
       foo: {},
     });
+  });
+});
+
+describe("assertHttpsUrl", () => {
+  test("parses HTTPS URLs", () => {
+    expect(assertHttpsUrl("https://example.com")).toStrictEqual(
+      new URL("https://example.com")
+    );
+  });
+  test("rejects HTTP URLs", () => {
+    expect(() => assertHttpsUrl("http://example.com")).toThrow(
+      new BusinessError("Unsupported protocol: http:. Use https:")
+    );
+  });
+  test("rejects invalid URLs", () => {
+    expect(() => assertHttpsUrl("https::/example.com")).toThrow(
+      new BusinessError(
+        "Invalid URL: https::/example.com (base URL: http://localhost/)"
+      )
+    );
+  });
+
+  test("parses relative URLs with a base", () => {
+    expect(
+      assertHttpsUrl("/cool/path", "https://example.com/page")
+    ).toStrictEqual(new URL("https://example.com/cool/path"));
+  });
+  test("rejects relative HTTP URLs", () => {
+    expect(() =>
+      assertHttpsUrl("/cool/path", "http://example.com/page")
+    ).toThrow(new BusinessError("Unsupported protocol: http:. Use https:"));
+  });
+  test("rejects invalid base URLs", () => {
+    expect(() => assertHttpsUrl("/cool/path", "https::/example.com")).toThrow(
+      new BusinessError(
+        "Invalid URL: /cool/path (base URL: https::/example.com)"
+      )
+    );
   });
 });
 

@@ -43,6 +43,9 @@ const shared = {
     alias: {
       // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
       handlebars: "handlebars/dist/handlebars.js",
+
+      // https://github.com/webpack/webpack/pull/12693#issuecomment-914079083
+      filenamify: "filenamify/browser",
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
     fallback: {
