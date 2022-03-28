@@ -19,7 +19,6 @@ import React, { useRef, useState } from "react";
 import {
   useGetRecipesQuery,
   useGetEditablePackagesQuery,
-  useGetAuthQuery,
 } from "@/services/api";
 import { validateRegistryId } from "@/types/helpers";
 import SavingInProgressModal from "./SavingInProgressModal";
@@ -30,6 +29,8 @@ import SavingExtensionModal from "./SavingExtensionModal";
 import RecipeConfigurationModal, {
   RecipeConfiguration,
 } from "./RecipeConfigurationModal";
+import { selectScope } from "@/auth/authSelectors";
+import { useSelector } from "react-redux";
 
 const SaveExtensionWizard: React.FC = () => {
   const {
@@ -40,9 +41,7 @@ const SaveExtensionWizard: React.FC = () => {
     saveElementAndUpdateRecipe,
     closeWizard,
   } = useSavingWizard();
-  const {
-    data: { scope },
-  } = useGetAuthQuery();
+  const scope = useSelector(selectScope);
   const { data: recipes, isLoading: areRecipesLoading } = useGetRecipesQuery();
   const { data: editablePackages, isLoading: areEditablePackageLoading } =
     useGetEditablePackagesQuery();

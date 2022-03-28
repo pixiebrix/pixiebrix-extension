@@ -35,7 +35,6 @@ import { useModals } from "@/components/ConfirmationModal";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { replaceRecipeContent } from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
-import { PackageUpsertResponse } from "@/types/contract";
 import extensionsSlice from "@/store/extensionsSlice";
 import useCreate from "@/pageEditor/hooks/useCreate";
 import { RegistryId } from "@/core";
@@ -63,15 +62,15 @@ function useRecipeSaver(): RecipeSaver {
 
   /**
    * Save a recipe's extensions, options, and metadata
+   * Throws errors for various bad states
    */
   const save = useCallback(
     async (recipeId: RegistryId) => {
       const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
       if (recipe == null) {
-        notify.error(
+        throw new Error(
           "You no longer have edit permissions for the blueprint. Please reload the Editor."
         );
-        return;
       }
 
       const dirtyRecipeElements = editorFormElements.filter(
@@ -100,8 +99,6 @@ function useRecipeSaver(): RecipeSaver {
         return;
       }
 
-      setIsSaving(true);
-
       const newRecipe = replaceRecipeContent({
         sourceRecipe: recipe,
         installedExtensions,
@@ -115,39 +112,20 @@ function useRecipeSaver(): RecipeSaver {
         (x) => x.name === newRecipe.metadata.id
       )?.id;
 
-      let updateRecipeResponse: PackageUpsertResponse;
-      try {
-        updateRecipeResponse = await updateRecipe({
-          packageId,
-          recipe: newRecipe,
-        }).unwrap();
-      } catch (error: unknown) {
-        notify.error({
-          message: "Failed to update the Blueprint",
-          error,
-        });
-        setIsSaving(false);
-        return;
-      }
+      const updateRecipeResponse = await updateRecipe({
+        packageId,
+        recipe: newRecipe,
+      }).unwrap();
 
       const newRecipeMetadata = selectRecipeMetadata(
         newRecipe,
         updateRecipeResponse
       );
 
-      try {
-        for (const element of dirtyRecipeElements) {
-          // Don't push to cloud since we're saving it with the recipe
-          // eslint-disable-next-line no-await-in-loop
-          await create({ element, pushToCloud: false });
-        }
-      } catch (error: unknown) {
-        notify.error({
-          message: "Failed saving extension",
-          error,
-        });
-        setIsSaving(false);
-        return;
+      for (const element of dirtyRecipeElements) {
+        // Don't push to cloud since we're saving it with the recipe
+        // eslint-disable-next-line no-await-in-loop
+        await create({ element, pushToCloud: false });
       }
 
       // Update the recipe metadata on extensions in the options slice
@@ -164,10 +142,6 @@ function useRecipeSaver(): RecipeSaver {
       dispatch(
         editorActions.resetRecipeMetadataAndOptions(newRecipeMetadata.id)
       );
-
-      // Finish up successfully
-      notify.success("Saved blueprint");
-      setIsSaving(false);
     },
     [
       recipes,
@@ -184,8 +158,26 @@ function useRecipeSaver(): RecipeSaver {
     ]
   );
 
+  const safeSave = useCallback(
+    async (recipeId: RegistryId) => {
+      setIsSaving(true);
+      try {
+        await save(recipeId);
+        notify.success("Saved blueprint");
+      } catch (error: unknown) {
+        notify.error({
+          message: "Failed saving blueprint",
+          error,
+        });
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [save]
+  );
+
   return {
-    save,
+    save: safeSave,
     isSaving,
   };
 }

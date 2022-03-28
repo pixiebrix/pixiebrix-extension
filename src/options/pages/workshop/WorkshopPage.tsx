@@ -21,7 +21,6 @@ import { faHammer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import { useGetAuthQuery } from "@/services/api";
 import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
 import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
@@ -232,11 +231,6 @@ const CustomBricksSection: React.FunctionComponent<NavigateProps> = ({
 };
 
 const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
-  const {
-    data: { isLoggedIn },
-    error: authError,
-  } = useGetAuthQuery();
-
   const { flagOn } = useFlags();
 
   return (
@@ -247,7 +241,6 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
       <Page
         title="Workshop"
         icon={faHammer}
-        error={authError}
         description={
           <p>
             Build and attach bricks.{" "}
@@ -260,17 +253,14 @@ const WorkshopPage: React.FunctionComponent<NavigateProps> = ({ navigate }) => {
           </p>
         }
         toolbar={
-          isLoggedIn &&
-          !authError && (
-            <Button
-              variant="info"
-              onClick={() => {
-                navigate("/workshop/create/");
-              }}
-            >
-              <FontAwesomeIcon icon={faPlus} /> Create New Brick
-            </Button>
-          )
+          <Button
+            variant="info"
+            onClick={() => {
+              navigate("/workshop/create/");
+            }}
+          >
+            <FontAwesomeIcon icon={faPlus} /> Create New Brick
+          </Button>
         }
       >
         <CustomBricksSection navigate={navigate} />

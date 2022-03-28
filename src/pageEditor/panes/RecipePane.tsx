@@ -124,8 +124,9 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
     {
       // Save
       variant: "primary",
-      async onClick() {
-        await saveRecipe(activeRecipeId);
+      onClick() {
+        // Recipe saver has internal error handling, so we can fire-and-forget here
+        void saveRecipe(activeRecipeId);
       },
       caption: "Save",
       disabled: isSavingRecipe,

@@ -36,7 +36,6 @@ import GenericInsertPane from "@/pageEditor/panes/insert/GenericInsertPane";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
-  useGetAuthQuery,
   useGetMarketplaceListingsQuery,
   useGetRecipesQuery,
 } from "@/services/api";
@@ -46,7 +45,6 @@ import {
   selectActiveElement,
   selectIsAddToRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
-import Loader from "@/components/Loader";
 import RecipePane from "@/pageEditor/panes/RecipePane";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
@@ -59,7 +57,6 @@ const Editor: React.FunctionComponent = () => {
   const { tabState, connecting } = useContext(PageEditorTabContext);
   const installed = useSelector(selectExtensions);
   const { data: recipes, isLoading: loadingRecipes } = useGetRecipesQuery();
-  const { isLoading: authLoading } = useGetAuthQuery();
   const dispatch = useDispatch();
 
   const sessionId = useSelector(selectSessionId);
@@ -174,14 +171,6 @@ const Editor: React.FunctionComponent = () => {
     cancelInsert,
     selectionSeq,
   ]);
-
-  if (authLoading) {
-    return (
-      <div className="auth">
-        <Loader />
-      </div>
-    );
-  }
 
   return (
     <>
