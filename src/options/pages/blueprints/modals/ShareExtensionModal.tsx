@@ -30,11 +30,7 @@ import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
 import { RegistryId, UnresolvedExtension, UUID } from "@/core";
 import * as Yup from "yup";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import {
-  appApi,
-  useGetAuthQuery,
-  useGetOrganizationsQuery,
-} from "@/services/api";
+import { appApi, useGetOrganizationsQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import slugify from "slugify";
 import { getLinkedApiClient } from "@/services/apiClient";
@@ -62,6 +58,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { blueprintModalsSlice } from "@/options/pages/blueprints/modals/blueprintModalsSlice";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { RequireScope } from "@/auth/RequireScope";
+import { selectScope } from "@/auth/authSelectors";
 
 const { attachExtension } = extensionsSlice.actions;
 
@@ -131,11 +128,7 @@ const ShareExtensionModal: React.FC<{
     dispatch(blueprintModalsSlice.actions.setShareContext(null));
   };
 
-  // If loading the URL directly, there's a race condition if scope will be populated when the modal is mounted.
-  // Not a priority to fix because user will, in general, come to the modal via the "Share" button on the main page
-  const {
-    data: { scope },
-  } = useGetAuthQuery();
+  const scope = useSelector(selectScope);
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const initialValues: FormState = {

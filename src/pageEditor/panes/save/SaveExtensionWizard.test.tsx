@@ -15,13 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fireEvent, render, screen } from "@testing-library/react";
-import React from "react";
+import { fireEvent, screen } from "@testing-library/react";
 import SaveExtensionWizard from "./SaveExtensionWizard";
 import {
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
   useGetRecipesQuery as useGetRecipesQueryMock,
-  useGetAuthQuery,
 } from "@/services/api";
 import useSavingWizardMock from "./useSavingWizard";
 import {
@@ -30,17 +28,34 @@ import {
   recipeFactory,
 } from "@/tests/factories";
 import { uuidv4 } from "@/types/helpers";
-import { waitForEffect } from "@/tests/testHelpers";
+import { createRenderFunction, waitForEffect } from "@/tests/testHelpers";
 import { anonAuth } from "@/auth/authConstants";
+import { authSlice } from "@/auth/authSlice";
+import settingsSlice from "@/store/settingsSlice";
+
+jest.unmock("react-redux");
 
 jest.mock("@/utils/notify");
 jest.mock("./useSavingWizard");
 
 jest.mock("@/services/api", () => ({
+  appApi: {
+    useLazyGetMeQuery: () => [jest.fn()],
+  },
   useGetRecipesQuery: jest.fn(),
   useGetEditablePackagesQuery: jest.fn(),
-  useGetAuthQuery: jest.fn(),
 }));
+
+const renderSaveExtensionWizard = createRenderFunction({
+  reducer: {
+    auth: authSlice.reducer,
+    settings: settingsSlice.reducer,
+  },
+  preloadedState: {
+    auth: anonAuth,
+  },
+  ComponentUnderTest: SaveExtensionWizard,
+});
 
 beforeEach(() => {
   (useGetRecipesQueryMock as jest.Mock).mockReturnValue({
@@ -49,10 +64,6 @@ beforeEach(() => {
   });
   (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
     data: [],
-    isLoading: false,
-  });
-  (useGetAuthQuery as jest.Mock).mockReturnValue({
-    data: anonAuth,
     isLoading: false,
   });
 });
@@ -65,7 +76,7 @@ test("shows loading when saving is in progress", async () => {
     isSaving: true,
   });
 
-  render(<SaveExtensionWizard />);
+  renderSaveExtensionWizard();
 
   const titleElement = screen.getByText("Saving extension...");
   expect(titleElement).not.toBeNull();
@@ -90,7 +101,7 @@ test.each([
     isLoading: loadingPackages,
   });
 
-  render(<SaveExtensionWizard />);
+  renderSaveExtensionWizard();
 
   const titleElement = screen.getByText("Loading data...");
   expect(titleElement).not.toBeNull();
@@ -115,7 +126,7 @@ test("calls Save as Personal extension", async () => {
     isLoading: false,
   });
 
-  render(<SaveExtensionWizard />);
+  renderSaveExtensionWizard();
 
   fireEvent.click(
     screen.getByRole("button", {
@@ -147,15 +158,14 @@ test("calls Save as New Blueprint", async () => {
     isLoading: false,
   });
 
-  (useGetAuthQuery as jest.Mock).mockReturnValue({
-    data: {
-      ...anonAuth,
-      scope: "@test",
+  renderSaveExtensionWizard({
+    stateOverride: {
+      auth: {
+        ...anonAuth,
+        scope: "@test",
+      },
     },
   });
-
-  // Setting the AuthContext to provide the user scope
-  render(<SaveExtensionWizard />);
 
   // Clicking Save as New Blueprint on the first modal
   fireEvent.click(
@@ -192,7 +202,7 @@ test("requires user context to save as new blueprint", async () => {
     isLoading: false,
   });
 
-  render(<SaveExtensionWizard />);
+  renderSaveExtensionWizard();
 
   // Clicking Save as New Blueprint on the first modal
   fireEvent.click(
@@ -227,7 +237,7 @@ test("calls Update Blueprint", async () => {
     isLoading: false,
   });
 
-  render(<SaveExtensionWizard />);
+  renderSaveExtensionWizard();
 
   // Clicking Update Blueprint on the first modal
   fireEvent.click(

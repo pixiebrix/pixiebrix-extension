@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { act } from "react-dom/test-utils";
+import React from "react";
+import { getErrorMessage } from "@/errors";
 
-export const waitForEffect = async () =>
-  act(async () => {
-    // Awaiting the async state update
-  });
+export const ErrorDisplay: React.VFC<{ error: unknown }> = ({ error }) => (
+  <div>
+    <h2 className="text-danger">An error occurred</h2>
+    <p>{getErrorMessage(error)}</p>
+  </div>
+);

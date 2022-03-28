@@ -129,7 +129,6 @@ function useSubmitBrick({
           .catch((error) => {
             notify.warning({
               message: "Error re-activating bricks",
-
               error,
             });
           });

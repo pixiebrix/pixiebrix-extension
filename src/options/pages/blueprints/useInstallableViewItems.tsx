@@ -36,22 +36,19 @@ import {
   updateAvailable,
 } from "@/options/pages/blueprints/utils/installableUtils";
 import {
-  useGetAuthQuery,
   useGetMarketplaceListingsQuery,
   useGetOrganizationsQuery,
   useGetRecipesQuery,
 } from "@/services/api";
 import { MarketplaceListing } from "@/types/contract";
 import InstallableIcon from "@/options/pages/blueprints/InstallableIcon";
+import { selectScope } from "@/auth/authSelectors";
 
 function useInstallableViewItems(installables: Installable[]): {
   installableViewItems: InstallableViewItem[];
   isLoading: boolean;
 } {
-  const {
-    data: { scope },
-    isLoading: isScopeLoading,
-  } = useGetAuthQuery();
+  const scope = useSelector(selectScope);
   const installedExtensions = useSelector(selectExtensions);
   const organizations = useGetOrganizationsQuery();
   const listings = useGetMarketplaceListingsQuery();
@@ -137,10 +134,7 @@ function useInstallableViewItems(installables: Installable[]): {
   return {
     installableViewItems,
     isLoading:
-      organizations.isLoading ||
-      recipes.isLoading ||
-      listings.isLoading ||
-      isScopeLoading,
+      organizations.isLoading || recipes.isLoading || listings.isLoading,
   };
 }
 

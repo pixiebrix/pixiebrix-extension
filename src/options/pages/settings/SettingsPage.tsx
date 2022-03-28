@@ -20,7 +20,6 @@ import styles from "./SettingsPage.module.scss";
 import React from "react";
 import Page from "@/layout/Page";
 import { faCogs } from "@fortawesome/free-solid-svg-icons";
-import { useGetAuthQuery } from "@/services/api";
 import PrivacySettings from "@/options/pages/settings/PrivacySettings";
 import LoggingSettings from "@/options/pages/settings/LoggingSettings";
 import PermissionsSettings from "@/options/pages/settings/PermissionsSettings";
@@ -28,6 +27,8 @@ import FactoryResetSettings from "@/options/pages/settings/FactoryResetSettings"
 import AdvancedSettings from "@/options/pages/settings/AdvancedSettings";
 import ExperimentalSettings from "@/options/pages/settings/ExperimentalSettings";
 import useFlags from "@/hooks/useFlags";
+import { selectOrganization } from "@/auth/authSelectors";
+import { useSelector } from "react-redux";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
@@ -37,9 +38,7 @@ const Section: React.FunctionComponent = ({ children }) => (
 );
 
 const SettingsPage: React.FunctionComponent = () => {
-  const {
-    data: { organization },
-  } = useGetAuthQuery();
+  const organization = useSelector(selectOrganization);
 
   const { flagOn, permit } = useFlags();
 

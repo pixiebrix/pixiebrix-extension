@@ -19,8 +19,8 @@ import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useTitle } from "@/hooks/title";
-import { getErrorMessage } from "@/errors";
 import Loader from "@/components/Loader";
+import { ErrorDisplay } from "./ErrorDisplay";
 
 export const PageTitle: React.FunctionComponent<{
   title: React.ReactNode;
@@ -35,13 +35,6 @@ export const PageTitle: React.FunctionComponent<{
       )}
       {title}
     </h3>
-  </div>
-);
-
-export const ErrorDisplay: React.FC<{ error: unknown }> = ({ error }) => (
-  <div>
-    <h2 className="text-danger">An error occurred</h2>
-    <p>{getErrorMessage(error)}</p>
   </div>
 );
 

@@ -19,31 +19,25 @@ import React, { useEffect, useMemo } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { Formik, useField } from "formik";
+import { Formik } from "formik";
 import { useParams } from "react-router";
 import Editor from "./Editor";
 import { truncate } from "lodash";
 import Loader from "@/components/Loader";
 import useSubmitBrick from "./useSubmitBrick";
-import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { useDispatch, useSelector } from "react-redux";
-import { RawConfig } from "@/core";
+import { RawConfig, UUID } from "@/core";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useTitle } from "@/hooks/title";
 import { HotKeys } from "react-hotkeys";
 import workshopSlice from "@/store/workshopSlice";
 import useLogContext from "@/options/pages/brickEditor/useLogContext";
-import useFetch from "@/hooks/useFetch";
 import { loadBrickYaml } from "@/runtime/brickYaml";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
+import { Package } from "@/types/contract";
+import { useGetPackageQuery } from "@/services/api";
 
 const { touchBrick } = workshopSlice.actions;
-
-interface BrickData {
-  id: string;
-  config: string;
-  organizations: string[];
-  public: boolean;
-}
 
 type ParsedBrickInfo = {
   isBlueprint: boolean;
@@ -75,23 +69,7 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
   }, [config, extensions]);
 }
 
-const ToggleField: React.FunctionComponent<{ name: string }> = ({ name }) => {
-  const [field, , helpers] = useField(name);
-  return (
-    <BootstrapSwitchButton
-      onstyle="info"
-      offstyle="light"
-      onlabel=" "
-      offlabel=" "
-      checked={field.value}
-      onChange={(value) => {
-        helpers.setValue(value);
-      }}
-    />
-  );
-};
-
-const LoadingBody: React.FunctionComponent = () => (
+const LoadingBody: React.FC = () => (
   <>
     <div className="d-flex">
       <div className="flex-grow-1">
@@ -111,7 +89,10 @@ const keyMap = {
   SAVE: "command+s",
 };
 
-function useTouchBrick(id: string): void {
+/**
+ * Hook to mark the brick as touched in the Redux state (For showing recently edited bricks).
+ */
+function useTouchBrick(id: UUID): void {
   const dispatch = useDispatch();
   useEffect(() => {
     console.debug("Marking brick as touched: %s", id);
@@ -119,35 +100,22 @@ function useTouchBrick(id: string): void {
   }, [dispatch, id]);
 }
 
-const EditPage: React.FunctionComponent = () => {
-  const { id } = useParams<{ id: string }>();
-
-  const url = `api/bricks/${id}/`;
-
-  const { data } = useFetch<BrickData>(url);
-
+const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
   const {
     isBlueprint,
     isInstalled,
     config: rawConfig,
-  } = useParseBrick(data?.config);
+  } = useParseBrick(data.config);
 
-  useTouchBrick(id);
+  const { submit, validate, remove } = useSubmitBrick({
+    url: `api/bricks/${id}/`,
+    create: false,
+  });
 
-  const { submit, validate, remove } = useSubmitBrick({ url, create: false });
+  useLogContext(data.config);
 
-  useLogContext(data?.config);
-
-  const name = rawConfig?.metadata?.name;
-  const title = useMemo(
-    () => (name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick"),
-    [name]
-  );
-  useTitle(title);
-
-  if (!data) {
-    return <LoadingBody />;
-  }
+  const name = rawConfig.metadata?.name;
+  useTitle(name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick");
 
   return (
     <HotKeys keyMap={keyMap}>
@@ -174,7 +142,7 @@ const EditPage: React.FunctionComponent = () => {
                   <div className="d-flex justify-content-end">
                     {isBlueprint && isInstalled && (
                       <div className="mr-4 my-auto">
-                        <ToggleField name="reactivate" />
+                        <BooleanWidget name="reactivate" />
                         <span className="ml-2">Re-activate Blueprint</span>
                       </div>
                     )}
@@ -206,6 +174,24 @@ const EditPage: React.FunctionComponent = () => {
       </Formik>
     </HotKeys>
   );
+};
+
+const EditPage: React.FC = () => {
+  const { id } = useParams<{ id: UUID }>();
+  const { data, isFetching, error } = useGetPackageQuery({ id });
+
+  // Can mark the brick as recently opened even if it errors on load
+  useTouchBrick(id);
+
+  if (error) {
+    throw error;
+  }
+
+  if (isFetching) {
+    return <LoadingBody />;
+  }
+
+  return <EditForm id={id} data={data} />;
 };
 
 export default EditPage;

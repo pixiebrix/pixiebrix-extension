@@ -28,16 +28,12 @@ import {
 import React, { useMemo } from "react";
 import useInstallableActions from "@/options/pages/blueprints/useInstallableActions";
 import { InstallableViewItem } from "./blueprintsTypes";
-import { appApi } from "@/services/api";
-import { useSelector } from "react-redux";
+import useFlags from "@/hooks/useFlags";
 
 const BlueprintActions: React.FunctionComponent<{
   installableViewItem: InstallableViewItem;
 }> = ({ installableViewItem }) => {
-  // Select cached auth data for performance reasons
-  const {
-    data: { flags },
-  } = useSelector(appApi.endpoints.getAuth.select());
+  const { permit } = useFlags();
 
   const { installable, hasUpdate, status, sharing } = installableViewItem;
   const actions = useInstallableActions(installable);
@@ -103,8 +99,7 @@ const BlueprintActions: React.FunctionComponent<{
         // TODO: shift all hide logic to useInstallableActions
         hide:
           status !== "Active" ||
-          (sharing.source.type === "Deployment" &&
-            flags.includes("restricted-uninstall")),
+          (sharing.source.type === "Deployment" && permit("uninstall")),
         className: "text-danger",
       },
       {
@@ -118,7 +113,7 @@ const BlueprintActions: React.FunctionComponent<{
         className: "text-danger",
       },
     ],
-    [actions, flags, hasUpdate, isCloudExtension, sharing.source.type, status]
+    [actions, permit, hasUpdate, isCloudExtension, sharing.source.type, status]
   );
 
   return <EllipsisMenu items={actionItems} />;

@@ -22,11 +22,8 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import { Installable } from "./blueprintsTypes";
-import {
-  useGetCloudExtensionsQuery,
-  useGetRecipesQuery,
-  useGetAuthQuery,
-} from "@/services/api";
+import { useGetCloudExtensionsQuery, useGetRecipesQuery } from "@/services/api";
+import { selectScope } from "@/auth/authSelectors";
 
 type InstallablesState = {
   installables: Installable[];
@@ -35,9 +32,7 @@ type InstallablesState = {
 };
 
 function useInstallables(): InstallablesState {
-  const {
-    data: { scope },
-  } = useGetAuthQuery();
+  const scope = useSelector(selectScope);
   const unresolvedExtensions = useSelector(selectExtensions);
 
   const recipes = useGetRecipesQuery();
