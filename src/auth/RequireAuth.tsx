@@ -71,8 +71,12 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     return <LoginPage />;
   }
 
-  if (error && ErrorPage) {
-    return <ErrorPage error={error} />;
+  if (error) {
+    if (ErrorPage) {
+      return <ErrorPage error={error} />;
+    }
+
+    throw error;
   }
 
   // Optimistically skip waiting if we have cached auth data

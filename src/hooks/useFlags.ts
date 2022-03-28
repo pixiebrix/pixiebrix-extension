@@ -48,7 +48,7 @@ function useFlags(): Restrict {
   const flags = useSelector(selectFlags);
 
   return useMemo(() => {
-    const flagSet = new Set(flags ?? []);
+    const flagSet = new Set(flags);
 
     return {
       permit: (area: RestrictedFeature) =>

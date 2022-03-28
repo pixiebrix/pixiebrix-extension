@@ -30,7 +30,7 @@ import { isAxiosError } from "@/errors";
 import reportError from "@/telemetry/reportError";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { useGetMeQuery } from "@/services/api";
+import { appApi } from "@/services/api";
 
 interface Profile {
   scope: string | null;
@@ -56,7 +56,7 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
   title,
   description,
 }) => {
-  const { refetch: refetchAuth } = useGetMeQuery();
+  const [refetchMe] = appApi.useLazyGetMeQuery();
 
   const submit = useCallback(
     async (
@@ -93,9 +93,9 @@ const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
         }
       }
 
-      refetchAuth();
+      await refetchMe();
     },
-    []
+    [refetchMe]
   );
 
   return (
