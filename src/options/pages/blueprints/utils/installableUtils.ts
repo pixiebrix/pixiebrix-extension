@@ -30,6 +30,8 @@ import {
   SharingSource,
   SharingType,
 } from "@/options/pages/blueprints/blueprintsTypes";
+import { createSelector } from "reselect";
+import { selectExtensions } from "@/store/extensionsSelectors";
 
 export const getSharingType = (
   installable: Installable,
@@ -233,3 +235,16 @@ export const getOrganization = (
     sharing.organizations.includes(org.id as UUID)
   );
 };
+
+/**
+ * Select UnresolvedExtensions currently installed from the installable.
+ */
+export const selectExtensionsFromInstallable = createSelector(
+  [selectExtensions, (state: unknown, installable: Installable) => installable],
+  (installedExtensions, installable) =>
+    isBlueprint(installable)
+      ? installedExtensions.filter(
+          (extension) => extension._recipe?.id === installable.metadata.id
+        )
+      : installedExtensions.filter((x) => x.id === installable.id)
+);
