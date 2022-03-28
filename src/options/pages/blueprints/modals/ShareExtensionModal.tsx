@@ -27,7 +27,7 @@ import {
 } from "react-bootstrap";
 import { FormikHelpers } from "formik";
 import { compact, isEmpty, pick, sortBy, uniq } from "lodash";
-import { IExtension, RegistryId, UUID } from "@/core";
+import { RegistryId, UnresolvedExtension, UUID } from "@/core";
 import * as Yup from "yup";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import {
@@ -84,7 +84,7 @@ const ShareSchema = Yup.object().shape({
 });
 
 async function convertAndShare(
-  extension: IExtension,
+  extension: UnresolvedExtension,
   form: FormState
 ): Promise<RecipeDefinition> {
   const client = await getLinkedApiClient();
