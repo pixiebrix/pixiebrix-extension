@@ -184,7 +184,7 @@ const EditPage: React.FC = () => {
   useTouchBrick(id);
 
   if (error) {
-    return <ErrorDisplay error={error} />;
+    throw error;
   }
 
   if (isFetching) {
