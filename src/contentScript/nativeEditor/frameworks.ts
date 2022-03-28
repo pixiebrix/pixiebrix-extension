@@ -67,6 +67,7 @@ export async function elementInfo(
         framework,
         tagName: element.tagName,
         hasData: !isEmpty(adapter.getData(component)),
+        // eslint-disable-next-line no-await-in-loop -- It's only awaited once per loop
         parent: await elementInfo(
           element.parentElement,
           framework,

@@ -250,12 +250,14 @@ export async function selectElement({
   mode = "element",
   framework,
   root,
+  excludeRandomClasses,
 }: {
   traverseUp: number;
   framework?: Framework;
   mode: SelectMode;
   isMulti?: boolean;
   root?: string;
+  excludeRandomClasses?: boolean;
 }) {
   const rootElement = root == null ? undefined : requireSingleElement(root);
   const elements = await userSelectElement({ root: rootElement });
@@ -278,7 +280,11 @@ export async function selectElement({
     }
 
     case "element": {
-      const selector = safeCssSelector(elements[0], [], rootElement);
+      const selector = safeCssSelector(elements[0], {
+        selectors: [],
+        root: rootElement,
+        excludeRandomClasses,
+      });
 
       console.debug(`Generated selector: ${selector}`);
 
