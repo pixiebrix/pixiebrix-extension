@@ -50,7 +50,7 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
-import { TriggerDefinition } from "@/extensionPoints/triggerExtension";
+import { TriggerExtensionPoint } from "@/pageEditor/extensionPoints/TriggerFormState";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -68,13 +68,9 @@ function isTraceOptional(
 }
 
 function isTriggerExtensionPoint(
-  // Form state uses BaseExtensionPointState as a type for the extension point definition,
-  // whereas extension points use ExtensionPointDefinition and its subtypes.
-  // We don't have a good type to bridge the BaseExtensionPointState and ExtensionPointDefinition,
-  // thus using unknown instead of BaseExtensionPointState.
-  extensionDefinition: unknown
-): extensionDefinition is TriggerDefinition {
-  return (extensionDefinition as any).type === "trigger";
+  extensionPoint: BaseExtensionPointState
+): extensionPoint is TriggerExtensionPoint {
+  return extensionPoint.definition.type === "trigger";
 }
 
 type PreviewInfo = {
@@ -168,7 +164,6 @@ const BlockPreview: React.FunctionComponent<{
 
   // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
   const blockRootMode = blockConfig.rootMode ?? "inherit";
-  const extensionPointDefinition = extensionPoint.definition;
 
   const debouncedRun = useDebouncedCallback(
     async (blockConfig: BlockConfig, context: BlockArgContext) => {
@@ -182,9 +177,9 @@ const BlockPreview: React.FunctionComponent<{
       // in this case a special message will be shown instead of the brick output
       const rootSelector =
         blockRootMode === "inherit" &&
-        isTriggerExtensionPoint(extensionPointDefinition) &&
-        extensionPointDefinition.targetMode === "root"
-          ? extensionPointDefinition.rootSelector
+        isTriggerExtensionPoint(extensionPoint) &&
+        extensionPoint.definition.targetMode === "root"
+          ? extensionPoint.definition.rootSelector
           : undefined;
       try {
         const output = await runBlock(thisTab, {
@@ -225,8 +220,8 @@ const BlockPreview: React.FunctionComponent<{
 
   if (
     blockRootMode === "inherit" &&
-    isTriggerExtensionPoint(extensionPointDefinition) &&
-    extensionPointDefinition.targetMode !== "root"
+    isTriggerExtensionPoint(extensionPoint) &&
+    extensionPoint.definition.targetMode !== "root"
   ) {
     return (
       <div className="text-muted">

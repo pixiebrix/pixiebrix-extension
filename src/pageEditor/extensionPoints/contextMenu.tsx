@@ -44,6 +44,7 @@ import {
 import { getDomain } from "@/permissions/patterns";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
+  BaseExtensionPointState,
   BaseExtensionState,
   BaseFormState,
   ElementConfig,
@@ -57,21 +58,20 @@ import { Except } from "type-fest";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 
 type Extension = BaseExtensionState & Except<ContextMenuConfig, "action">;
-
-export interface ContextMenuFormState extends BaseFormState<Extension> {
-  type: "contextMenu";
-
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      defaultOptions: ContextMenuDefaultOptions;
-      documentUrlPatterns: string[];
-      contexts: Menus.ContextType[];
-      targetMode: ContextMenuTargetMode;
-      reader: SingleLayerReaderConfig;
-      isAvailable: NormalizedAvailability;
-    };
+type ContextMenuExtensionPoint2 = BaseExtensionPointState & {
+  definition: {
+    defaultOptions: ContextMenuDefaultOptions;
+    documentUrlPatterns: string[];
+    contexts: Menus.ContextType[];
+    targetMode: ContextMenuTargetMode;
+    reader: SingleLayerReaderConfig;
+    isAvailable: NormalizedAvailability;
   };
+};
+
+export interface ContextMenuFormState
+  extends BaseFormState<Extension, ContextMenuExtensionPoint2> {
+  type: "contextMenu";
 }
 
 function fromNativeElement(

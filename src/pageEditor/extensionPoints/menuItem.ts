@@ -43,6 +43,7 @@ import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import {
+  BaseExtensionPointState,
   BaseExtensionState,
   BaseFormState,
   ElementConfig,
@@ -59,27 +60,24 @@ import {
 } from "@/contentScript/nativeEditor/types";
 
 type Extension = BaseExtensionState & Except<MenuItemExtensionConfig, "action">;
-
-export interface ActionFormState extends BaseFormState<Extension> {
-  type: "menuItem";
-
-  containerInfo: ElementInfo;
-
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      containerSelector: string;
-      position?: MenuPosition;
-      template: string;
-      reader: SingleLayerReaderConfig;
-      isAvailable: NormalizedAvailability;
-    };
-    traits?: {
-      style: {
-        mode: "default" | "inherit";
-      };
+type MenuItemExtensionPoint2 = BaseExtensionPointState & {
+  definition: {
+    containerSelector: string;
+    position?: MenuPosition;
+    template: string;
+    reader: SingleLayerReaderConfig;
+    isAvailable: NormalizedAvailability;
+  };
+  traits?: {
+    style: {
+      mode: "default" | "inherit";
     };
   };
+};
+export interface ActionFormState
+  extends BaseFormState<Extension, MenuItemExtensionPoint2> {
+  type: "menuItem";
+  containerInfo: ElementInfo;
 }
 
 function fromNativeElement(

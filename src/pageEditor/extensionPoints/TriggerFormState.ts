@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Metadata } from "@/core";
 import {
   AttachMode,
   DebounceOptions,
@@ -23,31 +22,34 @@ import {
   Trigger,
 } from "@/extensionPoints/triggerExtension";
 import {
+  BaseExtensionPointState,
+  BaseExtensionState,
   BaseFormState,
   SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
 import { NormalizedAvailability } from "@/blocks/types";
 
-export interface TriggerFormState extends BaseFormState {
-  type: "trigger";
+// TODO rename the file
+export type TriggerExtensionPoint = BaseExtensionPointState & {
+  definition: {
+    rootSelector: string | null;
+    trigger: Trigger;
+    reader: SingleLayerReaderConfig;
+    attachMode: AttachMode;
+    targetMode: TargetMode;
 
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      rootSelector: string | null;
-      trigger: Trigger;
-      reader: SingleLayerReaderConfig;
-      attachMode: AttachMode;
-      targetMode: TargetMode;
+    isAvailable: NormalizedAvailability;
 
-      isAvailable: NormalizedAvailability;
+    // Debouncing props
+    debounce: DebounceOptions;
 
-      // Debouncing props
-      debounce: DebounceOptions;
-
-      // Interval props
-      intervalMillis: number | null;
-      background: boolean | null;
-    };
+    // Interval props
+    intervalMillis: number | null;
+    background: boolean | null;
   };
+};
+
+export interface TriggerFormState
+  extends BaseFormState<BaseExtensionState, TriggerExtensionPoint> {
+  type: "trigger";
 }

@@ -59,7 +59,8 @@ export interface BaseExtensionState {
 }
 
 export interface BaseFormState<
-  TExtension extends BaseExtensionState = BaseExtensionState
+  TExtension extends BaseExtensionState = BaseExtensionState,
+  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
 > {
   /**
    * The apiVersion of the brick definition, controlling how PixieBrix interprets brick definitions
@@ -104,7 +105,7 @@ export interface BaseFormState<
 
   services: ServiceDependency[];
 
-  extensionPoint: BaseExtensionPointState;
+  extensionPoint: TExtensionPoint;
 
   extension: TExtension;
 

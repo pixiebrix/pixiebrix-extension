@@ -42,6 +42,7 @@ import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
 import {
+  BaseExtensionPointState,
   BaseExtensionState,
   BaseFormState,
   ElementConfig,
@@ -65,23 +66,22 @@ export type PanelTraits = {
 };
 
 type Extension = BaseExtensionState & Except<PanelConfig, "body">;
+type PanelExtensionPoint2 = BaseExtensionPointState & {
+  definition: {
+    containerSelector: string;
+    position?: MenuPosition;
+    template: string;
+    reader: SingleLayerReaderConfig;
+    isAvailable: NormalizedAvailability;
+  };
+  traits: PanelTraits;
+};
 
-export interface PanelFormState extends BaseFormState<Extension> {
+export interface PanelFormState
+  extends BaseFormState<Extension, PanelExtensionPoint2> {
   type: "panel";
 
   containerInfo: ElementInfo;
-
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      containerSelector: string;
-      position?: MenuPosition;
-      template: string;
-      reader: SingleLayerReaderConfig;
-      isAvailable: NormalizedAvailability;
-    };
-    traits: PanelTraits;
-  };
 }
 
 const DEFAULT_TRAITS: PanelTraits = {
