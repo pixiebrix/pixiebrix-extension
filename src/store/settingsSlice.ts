@@ -16,7 +16,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SettingsState } from "@/store/settingsTypes";
+import { SettingsState, SkunkworksSettings } from "@/store/settingsTypes";
 
 const initialSettingsState: SettingsState = {
   mode: "remote",
@@ -35,7 +35,7 @@ const settingsSlice = createSlice({
     setFlag(
       state,
       action: PayloadAction<{
-        flag: "suggestElements";
+        flag: keyof SkunkworksSettings;
         value: boolean;
       }>
     ) {

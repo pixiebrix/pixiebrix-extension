@@ -37,6 +37,8 @@ import {
 } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { ElementInfo, SelectMode } from "@/contentScript/nativeEditor/types";
+import { useSelector } from "react-redux";
+import { SettingsState } from "@/store/settingsTypes";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;
@@ -107,6 +109,11 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
   const [element, setElement] = useState(initialElement);
   const [isSelecting, setSelecting] = useState(false);
 
+  const excludeRandomClasses = useSelector<
+    { settings: SettingsState },
+    boolean
+  >((x) => x.settings.excludeRandomClasses);
+
   const suggestions: ElementSuggestion[] = useMemo(() => {
     const raw = getSuggestionsForElement(element);
     return sort ? sortBy(raw, (x) => x.value.length) : raw;
@@ -150,6 +157,7 @@ const SelectorSelectorWidget: React.FC<SelectorSelectorProps> = ({
         mode: selectMode,
         traverseUp,
         root,
+        excludeRandomClasses,
       });
 
       if (isEmpty(selected)) {
