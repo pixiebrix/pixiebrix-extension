@@ -50,7 +50,7 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
-import { TriggerExtensionPoint } from "@/pageEditor/extensionPoints/TriggerFormState";
+import { TriggerExtensionPointState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -69,7 +69,7 @@ function isTraceOptional(
 
 function isTriggerExtensionPoint(
   extensionPoint: BaseExtensionPointState
-): extensionPoint is TriggerExtensionPoint {
+): extensionPoint is TriggerExtensionPointState {
   return extensionPoint.definition.type === "trigger";
 }
 

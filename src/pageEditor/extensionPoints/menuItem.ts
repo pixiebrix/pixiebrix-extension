@@ -35,50 +35,20 @@ import {
   MenuDefinition,
   MenuItemExtensionConfig,
   MenuItemExtensionPoint,
-  MenuPosition,
 } from "@/extensionPoints/menuItemExtension";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
-import {
-  BaseExtensionPointState,
-  BaseExtensionState,
-  BaseFormState,
-  ElementConfig,
-  SingleLayerReaderConfig,
-} from "@/pageEditor/extensionPoints/elementConfig";
-import { NormalizedAvailability } from "@/blocks/types";
+import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import MenuItemConfiguration from "@/pageEditor/tabs/menuItem/MenuItemConfiguration";
 import { insertButton } from "@/contentScript/messenger/api";
-import { Except } from "type-fest";
 import {
   ButtonDefinition,
   ButtonSelectionResult,
-  ElementInfo,
 } from "@/contentScript/nativeEditor/types";
-
-type Extension = BaseExtensionState & Except<MenuItemExtensionConfig, "action">;
-type MenuItemExtensionPoint2 = BaseExtensionPointState & {
-  definition: {
-    containerSelector: string;
-    position?: MenuPosition;
-    template: string;
-    reader: SingleLayerReaderConfig;
-    isAvailable: NormalizedAvailability;
-  };
-  traits?: {
-    style: {
-      mode: "default" | "inherit";
-    };
-  };
-};
-export interface ActionFormState
-  extends BaseFormState<Extension, MenuItemExtensionPoint2> {
-  type: "menuItem";
-  containerInfo: ElementInfo;
-}
+import { ActionFormState } from "./formStateTypes";
 
 function fromNativeElement(
   url: string,
@@ -94,6 +64,7 @@ function fromNativeElement(
       metadata,
       definition: {
         ...button.menu,
+        type: "menuItem",
         reader: getImplicitReader("menuItem"),
         isAvailable: makeIsAvailable(url),
       },

@@ -37,42 +37,18 @@ import { ExtensionPointConfig } from "@/extensionPoints/types";
 import {
   ContextMenuConfig,
   ContextMenuExtensionPoint,
-  ContextMenuTargetMode,
-  MenuDefaultOptions as ContextMenuDefaultOptions,
   MenuDefinition,
 } from "@/extensionPoints/contextMenu";
 import { getDomain } from "@/permissions/patterns";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
-  BaseExtensionPointState,
-  BaseExtensionState,
-  BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
-import { Menus } from "webextension-polyfill";
-import { NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
-import { Except } from "type-fest";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
-
-type Extension = BaseExtensionState & Except<ContextMenuConfig, "action">;
-type ContextMenuExtensionPoint2 = BaseExtensionPointState & {
-  definition: {
-    defaultOptions: ContextMenuDefaultOptions;
-    documentUrlPatterns: string[];
-    contexts: Menus.ContextType[];
-    targetMode: ContextMenuTargetMode;
-    reader: SingleLayerReaderConfig;
-    isAvailable: NormalizedAvailability;
-  };
-};
-
-export interface ContextMenuFormState
-  extends BaseFormState<Extension, ContextMenuExtensionPoint2> {
-  type: "contextMenu";
-}
+import { ContextMenuFormState } from "./formStateTypes";
 
 function fromNativeElement(
   url: string,
@@ -92,6 +68,7 @@ function fromNativeElement(
     extensionPoint: {
       metadata,
       definition: {
+        type: "contextMenu",
         reader: getImplicitReader("contextMenu"),
         documentUrlPatterns: isAvailable.matchPatterns,
         contexts: ["all"],
@@ -172,6 +149,7 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
+        type: "contextMenu",
         documentUrlPatterns,
         defaultOptions,
         targetMode,

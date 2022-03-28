@@ -22,7 +22,7 @@ import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import FieldSection from "@/pageEditor/fields/FieldSection";
 import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
-import { TriggerFormState } from "@/pageEditor/extensionPoints/TriggerFormState";
+import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 import { DebounceOptions, Trigger } from "@/extensionPoints/triggerExtension";
 import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";

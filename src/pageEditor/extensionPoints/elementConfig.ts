@@ -45,14 +45,15 @@ export type SingleLayerReaderConfig =
   | RegistryId[]
   | Record<string, RegistryId>;
 
-export interface BaseExtensionPointState {
+export type BaseExtensionPointState = {
   metadata: Metadata;
   definition: {
+    type: ExtensionPointType;
     // We're currently not allowing users to modify readers in the page editor
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;
   };
-}
+};
 
 export interface BaseExtensionState {
   blockPipeline: BlockPipeline;
