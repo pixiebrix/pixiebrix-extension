@@ -114,7 +114,7 @@ export type PanelTraits = {
   };
 };
 
-type PanesExtensionState = BaseExtensionState & Except<PanelConfig, "body">;
+type PanelExtensionState = BaseExtensionState & Except<PanelConfig, "body">;
 type PanelExtensionPointState = BaseExtensionPointState & {
   definition: {
     type: ExtensionPointType;
@@ -128,15 +128,16 @@ type PanelExtensionPointState = BaseExtensionPointState & {
 };
 
 export interface PanelFormState
-  extends BaseFormState<PanesExtensionState, PanelExtensionPointState> {
+  extends BaseFormState<PanelExtensionState, PanelExtensionPointState> {
   type: "panel";
 
   containerInfo: ElementInfo;
 }
 
 // ContextMenuFormState
-type Extension = BaseExtensionState & Except<ContextMenuConfig, "action">;
-type ContextMenuExtensionPoint2 = BaseExtensionPointState & {
+type ContextMenuExtensionState = BaseExtensionState &
+  Except<ContextMenuConfig, "action">;
+type ContextMenuExtensionPoint = BaseExtensionPointState & {
   definition: {
     type: ExtensionPointType;
     defaultOptions: ContextMenuDefaultOptions;
@@ -149,7 +150,7 @@ type ContextMenuExtensionPoint2 = BaseExtensionPointState & {
 };
 
 export interface ContextMenuFormState
-  extends BaseFormState<Extension, ContextMenuExtensionPoint2> {
+  extends BaseFormState<ContextMenuExtensionState, ContextMenuExtensionPoint> {
   type: "contextMenu";
 }
 
