@@ -38,8 +38,6 @@ const BlueprintsView: React.VoidFunctionComponent<BlueprintListViewProps> = ({
     rows,
   } = tableInstance;
 
-  console.log("Rows:", rows);
-
   const BlueprintsList = view === "list" ? ListView : GridView;
 
   if (rows.length > 0) {
