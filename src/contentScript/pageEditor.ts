@@ -97,8 +97,9 @@ export async function runBlock({
   };
 
   if (rootSelector) {
-    // Not 100% accurate, since we're looking for an element in the document,
-    // rather than trying to find the closest element to the event target (in case of trigger)
+    // The element selector differs from the runtime implementation a little bit.
+    // This implementation is accurate if the selector is unique.
+    // See TriggerExtensionPoint.eventHandler for reference.
     const rootElement = $safeFind(rootSelector);
     if (rootElement.length > 0) {
       state.root = rootElement.get(0);

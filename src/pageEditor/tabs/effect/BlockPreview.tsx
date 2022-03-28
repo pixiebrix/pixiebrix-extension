@@ -174,7 +174,7 @@ const BlockPreview: React.FunctionComponent<{
       // and the extension point is a trigger,
       // try to get the root element from the extension point
       // Note: this is not possible when extensionPoint's targetMode equals "targetElement",
-      // in this case a special message will be shown instead of the brick output
+      // in this case a special message will be shown instead of the brick output (see the code later in the component)
       const rootSelector =
         blockRootMode === "inherit" &&
         isTriggerExtensionPoint(extensionPoint) &&
