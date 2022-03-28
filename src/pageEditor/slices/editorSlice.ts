@@ -357,7 +357,6 @@ export const editorSlice = createSlice({
       }
     },
     showAddToRecipeModal(state) {
-      console.log("show action");
       state.isAddToRecipeModalVisible = true;
     },
     hideAddToRecipeModal(state) {
