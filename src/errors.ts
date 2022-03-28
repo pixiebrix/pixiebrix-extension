@@ -355,12 +355,12 @@ export function isPrivatePageError(error: unknown): boolean {
  * - Common response body patterns of other APIs
  * - HTTP standards in statusText/status
  *
- * enrichRequestError is a related method which wraps an AxiosError in an Error subclass that encodes information
+ * enrichBusinessRequestError is a related method which wraps an AxiosError in an Error subclass that encodes information
  * about why the request failed.
  *
  * @deprecated DO NOT CALL DIRECTLY. Call getErrorMessage
  * @see getErrorMessage
- * @see enrichRequestError
+ * @see enrichBusinessRequestError
  */
 function selectServerErrorMessage({ response }: AxiosError): string | null {
   // For examples of DRF errors, see the pixiebrix-app repository:
@@ -435,8 +435,6 @@ export function getErrorMessage(
   }
 
   if (isAxiosError(error)) {
-    // This will miss any errors wrapped with enrichRequestError. Including any calls using src/hooks/fetch.ts:fetch
-    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/2972
     const serverMessage = selectServerErrorMessage(error);
     if (serverMessage) {
       return String(serverMessage);

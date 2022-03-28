@@ -30,7 +30,7 @@ import {
   getToken,
   launchOAuth2Flow,
 } from "@/background/auth";
-import { isAbsoluteUrl } from "@/utils";
+import { assertHttpsUrl, isAbsoluteUrl } from "@/utils";
 import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
@@ -39,14 +39,8 @@ import {
   isProxiedErrorResponse,
   proxyResponseToAxiosResponse,
 } from "@/background/proxyUtils";
-import {
-  enrichRequestError,
-  selectAxiosError,
-} from "@/services/requestErrorUtils";
+import { selectAxiosError } from "@/services/requestErrorUtils";
 import { safeGuessStatusText } from "@/types/errorContract";
-
-// eslint-disable-next-line prefer-destructuring -- process.env variable
-const DEBUG = process.env.DEBUG;
 
 type SanitizedResponse<T = unknown> = Pick<
   AxiosResponse<T>,
@@ -64,27 +58,13 @@ export async function serializableAxiosRequest<T>(
     "Network requests must be made from the background page"
   );
 
-  if (!DEBUG && config.baseURL && !config.baseURL?.startsWith("https://")) {
-    throw new BusinessError("Unsupported URL scheme; Use https:");
-  }
+  assertHttpsUrl(config.url, config.baseURL);
 
-  if (
-    !DEBUG &&
-    isAbsoluteUrl(config.url) &&
-    !config.url?.startsWith("https://")
-  ) {
-    throw new BusinessError("Unsupported URL scheme; Use https:");
-  }
+  const { data, status, statusText } = await axios(config);
 
-  try {
-    const { data, status, statusText } = await axios(config);
-
-    // Firefox won't send response objects from the background page to the content script. So strip out the
-    // potentially sensitive parts of the response (the request, headers, etc.)
-    return JSON.parse(JSON.stringify({ data, status, statusText }));
-  } catch (error) {
-    throw await enrichRequestError(error);
-  }
+  // Firefox won't send response objects from the background page to the content script. So strip out the
+  // potentially sensitive parts of the response (the request, headers, etc.)
+  return JSON.parse(JSON.stringify({ data, status, statusText }));
 }
 
 async function authenticate(
