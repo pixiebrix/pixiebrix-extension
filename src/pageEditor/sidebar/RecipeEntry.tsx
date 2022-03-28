@@ -22,7 +22,7 @@ import styles from "./Entry.module.scss";
 import { UnsavedChangesIcon } from "@/pageEditor/sidebar/ExtensionIcons";
 import { ListGroup } from "react-bootstrap";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/pageEditorTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -46,9 +46,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
   const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
-  const isDirty = useSelector((state: RootState) =>
-    selectRecipeIsDirty(state, recipeId, elements)
-  );
+  const isDirty = useSelector(selectRecipeIsDirty(recipeId, elements));
 
   const caretIcon = expanded ? faCaretDown : faCaretRight;
 

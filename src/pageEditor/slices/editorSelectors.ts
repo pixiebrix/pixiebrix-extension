@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, RecipeMetadata, RegistryId } from "@/core";
+import { IExtension, RecipeMetadata, RegistryId, UUID } from "@/core";
 import { createSelector } from "reselect";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
@@ -29,41 +29,44 @@ export const selectActiveElementId = ({ editor }: RootState) =>
 
 export const selectElements = ({ editor }: RootState) => editor.elements;
 
-export const selectActiveElement = (state: RootState) => {
-  const activeElementId = selectActiveElementId(state);
-  const elements = selectElements(state);
-  return elements.find((x) => x.uuid === activeElementId);
-};
+export const selectActiveElement = createSelector(
+  selectActiveElementId,
+  selectElements,
+  (activeElementId, elements) =>
+    elements.find((x) => x.uuid === activeElementId)
+);
 
 export const selectActiveRecipeId = ({ editor }: RootState) =>
   editor.activeRecipeId;
 
-export const selectShowV3UpgradeMessageForActiveElement = (
-  state: RootState
-) => {
-  const activeElementId = selectActiveElementId(state);
-  // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
-  return state.editor.showV3UpgradeMessageByElement[activeElementId] ?? false;
-};
+export const selectShowV3UpgradeMessageForActiveElement = createSelector(
+  selectActiveElementId,
+  (state: RootState) => state,
+  (activeElementId, state) =>
+    // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
+    state.editor.showV3UpgradeMessageByElement[activeElementId] ?? false
+);
 
 export const selectDirty = (state: RootState) => state.editor.dirty;
 
 export const selectDirtyRecipeOptions = (state: RootState) =>
   state.editor.dirtyRecipeOptionsById;
 
-export const selectDirtyOptionsForRecipe = createSelector(
-  [
-    selectDirtyRecipeOptions,
-    (state: RootState, recipeId: RegistryId) => recipeId,
-  ],
+const selectDirtyOptionsForRecipe = createSelector(
+  selectDirtyRecipeOptions,
+  (state: RootState, recipeId: RegistryId) => recipeId,
   // eslint-disable-next-line security/detect-object-injection
   (dirtyRecipeOptionsById, recipeId) => dirtyRecipeOptionsById[recipeId]
 );
 
+export const selectDirtyOptionsForRecipeId =
+  (recipeId: RegistryId) => (state: RootState) =>
+    selectDirtyOptionsForRecipe(state, recipeId);
+
 export const selectDirtyRecipeMetadata = (state: RootState) =>
   state.editor.dirtyRecipeMetadataById;
 
-export const selectDirtyMetadataForRecipe = createSelector(
+const selectDirtyMetadataForRecipe = createSelector(
   [
     selectDirtyRecipeMetadata,
     (state: RootState, recipeId: RegistryId) => recipeId,
@@ -72,36 +75,42 @@ export const selectDirtyMetadataForRecipe = createSelector(
   (dirtyRecipeMetadataById, recipeId) => dirtyRecipeMetadataById[recipeId]
 );
 
-export function getIdForElement(element: IExtension | FormState): string {
+export function getIdForElement(element: IExtension | FormState): UUID {
   return isExtension(element) ? element.id : element.uuid;
 }
 
-export const selectRecipeIsDirty = createSelector(
-  [
-    selectDirty,
-    (state: RootState, recipeId: RegistryId) =>
-      selectDirtyOptionsForRecipe(state, recipeId),
-    (state: RootState, recipeId: RegistryId) =>
-      selectDirtyMetadataForRecipe(state, recipeId),
-    (
-      state: RootState,
-      recipeId: RegistryId,
-      elements: Array<IExtension | FormState>
-    ) => elements,
-  ],
-  (dirtyElements, dirtyOptions, dirtyMetadata, elements) => {
-    const hasDirtyElements = elements.some(
-      (element) => dirtyElements[getIdForElement(element)]
+const selectRecipeIsDirtySelector = createSelector(
+  selectDirty,
+  selectDirtyOptionsForRecipe,
+  selectDirtyMetadataForRecipe,
+  (
+    state: RootState,
+    recipeId: RegistryId,
+    extensionsAndElements: Array<IExtension | FormState>
+  ) => extensionsAndElements.map((item) => getIdForElement(item)),
+  (dirtyElements, dirtyOptions, dirtyMetadata, elementIds) => {
+    const hasDirtyElements = elementIds.some(
+      // eslint-disable-next-line security/detect-object-injection -- id extracted from element
+      (elementId) => dirtyElements[elementId]
     );
     return hasDirtyElements || Boolean(dirtyOptions) || Boolean(dirtyMetadata);
   }
 );
 
+export const selectRecipeIsDirty =
+  (
+    recipeId: RegistryId,
+    extensionsAndElements: Array<IExtension | FormState>
+  ) =>
+  (state: RootState) =>
+    selectRecipeIsDirtySelector(state, recipeId, extensionsAndElements);
+
 export const selectIsAddToRecipeModalVisible = (state: RootState) =>
   state.editor.isAddToRecipeModalVisible;
 
 export const selectInstalledRecipeMetadatas = createSelector(
-  [selectElements, selectExtensions],
+  selectElements,
+  selectExtensions,
   (elements, extensions) => {
     const elementRecipes: RecipeMetadata[] = elements
       .filter((element) => Boolean(element.recipe))
