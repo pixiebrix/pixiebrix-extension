@@ -62,7 +62,7 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
     uiSchema: {},
   };
 
-  const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId(recipeId));
+  const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId)(recipeId);
 
   const initialValues = { optionsDefinition: dirtyOptions ?? options };
 
