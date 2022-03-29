@@ -155,7 +155,7 @@ test("Network error", async () => {
     message:
       "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information",
     stack:
-      "ClientNetworkError: No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information\n    at enrichRequestError (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:54834:12)\n    at async serializableAxiosRequest (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:43429:15)\n    at async handleMessage (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:67712:22)",
+      "ClientNetworkError: No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information\n    at enrichBusinessRequestError (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:54834:12)\n    at async serializableAxiosRequest (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:43429:15)\n    at async handleMessage (chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/background.js:67712:22)",
   };
 
   const { title, detailsElement } = getErrorDetails(error);

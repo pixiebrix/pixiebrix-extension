@@ -18,8 +18,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
-import { ApiError, useGetAuthQuery, useGetMeQuery } from "@/services/api";
-import { updateUserData } from "@/auth/token";
+import { ApiError, useGetMeQuery } from "@/services/api";
+import { isLinked, updateUserData } from "@/auth/token";
 import {
   selectExtensionAuthState,
   selectUserDataUpdate,
@@ -28,31 +28,56 @@ import { authActions } from "@/auth/authSlice";
 import { anonAuth } from "@/auth/authConstants";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
+import { useAsyncState } from "@/hooks/common";
 
 type RequireAuthProps = {
+  /** Rendered in case of 401 response */
   LoginPage: React.VFC;
+
+  /** Rendered request to `/me` fails */
+  ErrorPage?: React.VFC<{ error: unknown }>;
 };
 
-// React FunctionComponent returns ReactElement whereas RequireAuth returns children (ReactNode - more loose, but correct typing).
-// Hence can't use React.FunctionComponent<RequireAuthProps>
-const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
+/**
+ * Require that the extension is linked to the PixieBrix API (has a token) and that the user is authenticated.
+ *
+ * - Axios passes the session along with requests (even for CORS, it seems). So safe (GET) methods succeed with
+ *   just the session cookies. However, the server needs an X-CSRFToken token for unsafe methods (e.g., POST, DELETE).
+ *   NOTE: the CSRF token for session authentication is _not_ the same as the Authentication header token for
+ *   token-based authentication.
+ * - Therefore, also check the extension has received the Authentication header token from the server.
+ */
+const RequireAuth: React.FC<RequireAuthProps> = ({
+  children,
+  LoginPage,
+  ErrorPage,
+}) => {
   const dispatch = useDispatch();
 
   const isLoggedIn = useSelector(selectIsLoggedIn);
-  const { isLoading, error, data: me } = useGetMeQuery();
+  // See component documentation for why both isLinked and useGetMeQuery are required
+  const [hasToken, tokenLoading, tokenError] = useAsyncState(
+    async () => isLinked(),
+    []
+  );
+  const { isLoading: meLoading, error, data: me } = useGetMeQuery();
 
-  // TODO: remove this when useGetAuthQuery is no longer used
-  const { isLoading: isDeprecatedAuthLoading } = useGetAuthQuery();
+  const isLoading = tokenLoading || meLoading;
 
   useEffect(() => {
-    if (isLoading) {
+    // Before we get the first response from API, use the AuthRootState persisted with redux-persist.
+    if (meLoading) {
       return;
     }
 
+    // If me succeeds or errors, update the AuthRootState stored with redux-persist and updateUserData stored directly
+    // in browser.storage (that's used by the background page)
     const setAuth = async (me: Me) => {
+      const update = selectUserDataUpdate(me);
+      await updateUserData(update);
+
+      // `me` is nullish if the request errored
       if (me?.id) {
-        const update = selectUserDataUpdate(me);
-        await updateUserData(update);
         const auth = selectExtensionAuthState(me);
         dispatch(authActions.setAuth(auth));
       } else {
@@ -61,16 +86,32 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children, LoginPage }) => {
     };
 
     void setAuth(me);
-  }, [isLoading, me, dispatch]);
+  }, [meLoading, me, dispatch]);
 
   // Show SetupPage if there is auth error or user not logged in
-  if ((error as ApiError)?.status === 401 || (!isLoggedIn && !isLoading)) {
+  if (
+    // Currently, useGetMeQuery will only return a 401 if the user has a non-empty invalid token. If the extension
+    // is not linked, the extension client leaves off the token header. And our backend returns an empty object if
+    // the user is not authenticated.
+    // http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
+    // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
+    (error as ApiError)?.status === 401 ||
+    (!isLoggedIn && !meLoading) ||
+    (!hasToken && !tokenLoading)
+  ) {
     return <LoginPage />;
   }
 
-  // In the future optimistically skip waiting if we have cached auth data
-  // TODO remove isDeprecatedAuthLoading when useGetAuthQuery is no longer used
-  if ((isLoading && !isLoggedIn) || isDeprecatedAuthLoading) {
+  if (error ?? tokenError) {
+    if (ErrorPage) {
+      return <ErrorPage error={error ?? tokenError} />;
+    }
+
+    throw error;
+  }
+
+  // Optimistically skip waiting if we have cached auth data
+  if (!isLoggedIn && isLoading) {
     return <Loader />;
   }
 

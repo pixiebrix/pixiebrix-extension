@@ -5,13 +5,20 @@
   "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
   "testPathIgnorePatterns": ["<rootDir>/src/vendors/", "<rootDir>/selenium/"],
   "transform": {
-    "^.+\\.[jt]sx?$": "@swc/jest",
+    "^.+\\.[jt]sx?$": [
+      "@swc/jest",
+      {
+        "jsc": {
+          "target": "es2022"
+        }
+      }
+    ],
     "^.+\\.ya?ml$": "yaml-jest-transform",
     "^.+\\.ya?ml\\?loadAsText$": "jest-raw-loader",
     "^.+\\.txt$": "jest-raw-loader"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!@cfworker|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|mimic-fn|urlpattern-polyfill)"
+    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join)"
   ],
   "setupFiles": [
     "<rootDir>/src/testEnv.js",

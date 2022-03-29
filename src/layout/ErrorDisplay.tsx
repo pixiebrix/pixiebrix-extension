@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// This file exists because imports are executed before the local code.
-// Importing another file next to `webextension-polyfill` means that the
-// `globalThis` line will be executed too late.
-// This file can be dropped after https://github.com/mozilla/webextension-polyfill/pull/351
+import React from "react";
+import { getErrorMessage } from "@/errors";
 
-import browser from "webextension-polyfill";
-
-globalThis.browser = browser;
+export const ErrorDisplay: React.VFC<{ error: unknown }> = ({ error }) => (
+  <div>
+    <h2 className="text-danger">An error occurred</h2>
+    <p>{getErrorMessage(error)}</p>
+  </div>
+);

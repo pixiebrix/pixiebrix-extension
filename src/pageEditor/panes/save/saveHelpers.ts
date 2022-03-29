@@ -21,7 +21,6 @@ import {
   IExtension,
   SafeString,
   InnerDefinitionRef,
-  ApiVersion,
   InnerDefinitions,
   UnresolvedExtension,
 } from "@/core";
@@ -291,26 +290,26 @@ export function replaceRecipeContent({
   );
 
   return produce(sourceRecipe, (draft) => {
+    // Options dirty state is only populated if a change is made
     if (options) {
       draft.options = isEmpty(options.schema?.properties) ? undefined : options;
     }
 
+    // Metadata dirty state is only populated if a change is made
     if (metadata) {
       draft.metadata = metadata;
     }
 
-    let itemsApiVersion: ApiVersion;
-    for (const versionedItem of [
-      ...cleanRecipeExtensions,
-      ...dirtyRecipeElements,
-    ]) {
-      if (!itemsApiVersion) {
-        itemsApiVersion = versionedItem.apiVersion;
-      } else if (versionedItem.apiVersion !== itemsApiVersion) {
-        throw new Error(
-          `Blueprint extensions have inconsistent API Versions (${versionedItem.apiVersion}/${itemsApiVersion}). All extensions in a blueprint must have the same API Version.`
-        );
-      }
+    const versionedItems = [...cleanRecipeExtensions, ...dirtyRecipeElements];
+    const { apiVersion: itemsApiVersion } = versionedItems[0];
+    const badApiVersion = versionedItems.find(
+      (item) => item.apiVersion !== itemsApiVersion
+    )?.apiVersion;
+
+    if (badApiVersion) {
+      throw new Error(
+        `Blueprint extensions have inconsistent API Versions (${itemsApiVersion}/${badApiVersion}). All extensions in a blueprint must have the same API Version.`
+      );
     }
 
     if (itemsApiVersion !== sourceRecipe.apiVersion) {

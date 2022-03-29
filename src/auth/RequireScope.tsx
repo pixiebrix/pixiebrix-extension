@@ -19,39 +19,36 @@ import React from "react";
 import { useSelector } from "react-redux";
 import ScopeSettings from "./ScopeSettings";
 import { SettingsState } from "@/store/settingsTypes";
-import { isEmpty } from "lodash";
-import { useGetAuthQuery } from "@/services/api";
+import { selectScope } from "./authSelectors";
 
 type RootStateWithSettings = {
   settings: SettingsState;
+};
+
+type RequireScopeProps = {
+  // A flag to opt out of the scope check but still have the RequireScope component in the tree.
+  isRequired?: boolean;
+  scopeSettingsTitle?: string;
+  scopeSettingsDescription: string;
 };
 
 /**
  * Ensures that the user has the required scope to view the page.
  * The auth error is not handled here, it is the responsibility of a parent component.
  */
-export const RequireScope: React.FunctionComponent<{
-  // A flag to opt out of the scope check but still have the RequireScope component in the tree.
-  require?: boolean;
-  scopeSettingsTitle?: string;
-  scopeSettingsDescription: string;
-}> = ({
-  require = true,
+export const RequireScope: React.FunctionComponent<RequireScopeProps> = ({
+  isRequired = true,
   scopeSettingsTitle,
   scopeSettingsDescription,
   children,
 }) => {
-  const {
-    data: { scope },
-    isLoading,
-  } = useGetAuthQuery();
+  const scope = useSelector(selectScope);
 
   const mode = useSelector<RootStateWithSettings, string>(
     ({ settings }) => settings.mode
   );
 
-  // Fetching scope currently performs a network request. Optimistically show the main interface while the scope is being fetched.
-  if (require && mode !== "local" && !isLoading && isEmpty(scope)) {
+  if (isRequired && mode !== "local" && scope == null) {
     return (
       <ScopeSettings
         title={scopeSettingsTitle}

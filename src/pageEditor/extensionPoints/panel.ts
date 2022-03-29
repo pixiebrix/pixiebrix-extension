@@ -41,48 +41,14 @@ import { uuidv4 } from "@/types/helpers";
 import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
-import {
-  BaseExtensionState,
-  BaseFormState,
-  ElementConfig,
-  SingleLayerReaderConfig,
-} from "@/pageEditor/extensionPoints/elementConfig";
-import { MenuPosition } from "@/extensionPoints/menuItemExtension";
-import { NormalizedAvailability } from "@/blocks/types";
+import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import PanelConfiguration from "@/pageEditor/tabs/panel/PanelConfiguration";
 import { insertPanel } from "@/contentScript/messenger/api";
-import { Except } from "type-fest";
 import {
   DynamicDefinition,
-  ElementInfo,
   PanelSelectionResult,
 } from "@/contentScript/nativeEditor/types";
-
-export type PanelTraits = {
-  style: {
-    mode: "default" | "inherit";
-  };
-};
-
-type Extension = BaseExtensionState & Except<PanelConfig, "body">;
-
-export interface PanelFormState extends BaseFormState<Extension> {
-  type: "panel";
-
-  containerInfo: ElementInfo;
-
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      containerSelector: string;
-      position?: MenuPosition;
-      template: string;
-      reader: SingleLayerReaderConfig;
-      isAvailable: NormalizedAvailability;
-    };
-    traits: PanelTraits;
-  };
-}
+import { PanelFormState, PanelTraits } from "./formStateTypes";
 
 const DEFAULT_TRAITS: PanelTraits = {
   style: {

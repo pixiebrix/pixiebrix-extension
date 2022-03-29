@@ -65,7 +65,7 @@ const RecipeConfigurationModal: React.FC<OwnProps> = ({
     </Modal.Header>
 
     <RequireScope
-      require={isNewRecipe}
+      isRequired={isNewRecipe}
       scopeSettingsDescription="To create a new blueprint, you must first set an account alias for your PixieBrix account"
     >
       <Form

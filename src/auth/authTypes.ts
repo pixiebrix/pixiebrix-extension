@@ -97,10 +97,16 @@ export type AuthState = {
 
   readonly scope?: string | null;
 
+  /**
+   * True if the user is authenticated with PixieBrix
+   */
   readonly isLoggedIn: boolean;
 
   readonly isOnboarded: boolean;
 
+  /**
+   * True if running in a browser extension context. (False on the Admin Console app)
+   */
   readonly extension: boolean;
 
   readonly organization?: OrganizationAuthState | null;

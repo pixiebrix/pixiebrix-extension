@@ -28,9 +28,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
-import { TriggerFormState } from "@/pageEditor/extensionPoints/TriggerFormState";
 import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { TriggerFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 type PreviewState = {
   isRunning: boolean;
