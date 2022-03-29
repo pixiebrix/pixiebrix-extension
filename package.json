@@ -149,7 +149,7 @@
     "webext-content-scripts": "^1.0.1",
     "webext-detect-page": "^4.0.1",
     "webext-dynamic-content-scripts": "^8.0.1",
-    "webext-messenger": "^0.17.1",
+    "webext-messenger": "^0.18.0",
     "webext-patterns": "^1.1.1",
     "webext-polyfill-kinda": "^0.10.0",
     "webext-tools": "^0.3.0",
