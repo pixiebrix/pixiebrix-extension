@@ -32,10 +32,6 @@ import * as locator from "@/services/locator";
 import { RemoteServiceError } from "@/services/errors";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
-import browser from "webextension-polyfill";
-
-// @ts-expect-error No way to extend `globalThis` effectively
-globalThis.browser = browser;
 
 const axiosMock = new MockAdapter(axios);
 const mockIsBackground = isBackground as jest.MockedFunction<
@@ -47,20 +43,7 @@ const mockIsExtensionContext = isExtensionContext as jest.MockedFunction<
 mockIsBackground.mockImplementation(() => true);
 mockIsExtensionContext.mockImplementation(() => true);
 
-jest.mock("webextension-polyfill", () => {
-  const mock = jest.requireActual("webextension-polyfill");
-
-  return {
-    __esModule: true,
-    default: {
-      // Keep the existing local storage mock
-      ...mock,
-      permissions: {
-        contains: jest.fn().mockResolvedValue(true),
-      },
-    },
-  };
-});
+browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
 jest.mock("@/background/protocol");
 jest.mock("@/auth/token");

@@ -22,7 +22,8 @@ import "@/development/autoreload";
 import "@/development/errorsBadge";
 
 // Required for MV3; Service Workers don't have XMLHttpRequest
-import "@/background/axiosFetch";
+// TODO: Disabled due to https://github.com/pixiebrix/pixiebrix-extension/issues/3020
+// import "@/background/axiosFetch";
 
 import "webext-dynamic-content-scripts";
 
