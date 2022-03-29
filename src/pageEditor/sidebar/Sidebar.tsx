@@ -103,12 +103,14 @@ const AddToRecipeButton: React.VFC<{ enabled: boolean }> = ({ enabled }) => {
       }}
       disabled={!enabled}
     >
-      <FontAwesomeIcon icon={faFileImport} />
+      <FontAwesomeIcon icon={faFileImport} size="lg" />
     </Button>
   );
 };
 
-const RemoveFromRecipeButton: React.VFC = () => {
+const RemoveFromRecipeButton: React.VFC<{ enabled: boolean }> = ({
+  enabled,
+}) => {
   const dispatch = useDispatch();
   const elementId = useSelector(selectActiveElementId);
 
@@ -121,8 +123,9 @@ const RemoveFromRecipeButton: React.VFC = () => {
       onClick={() => {
         dispatch(actions.removeElementFromRecipe(elementId));
       }}
+      disabled={!enabled}
     >
-      <FontAwesomeIcon icon={faFileExport} />
+      <FontAwesomeIcon icon={faFileExport} size="lg" />
     </Button>
   );
 };
@@ -205,10 +208,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
     activeElement &&
     activeElement.recipe == null;
 
-  const showRemoveFromRecipeButton =
-    flagOn("page-editor-blueprints") &&
-    activeElement &&
-    activeElement.recipe != null;
+  const removeFromRecipeButtonEnabled = activeElement?.recipe != null;
 
   const elementHash = hash(
     sortBy(
@@ -313,10 +313,13 @@ const SidebarExpanded: React.VoidFunctionComponent<
             {showDeveloperUI && <ReloadButton />}
 
             {flagOn("page-editor-blueprints") && (
-              <AddToRecipeButton enabled={addToRecipeButtonEnabled} />
+              <>
+                <AddToRecipeButton enabled={addToRecipeButtonEnabled} />
+                <RemoveFromRecipeButton
+                  enabled={removeFromRecipeButtonEnabled}
+                />
+              </>
             )}
-
-            {showRemoveFromRecipeButton && <RemoveFromRecipeButton />}
           </div>
           <Button
             variant="light"
