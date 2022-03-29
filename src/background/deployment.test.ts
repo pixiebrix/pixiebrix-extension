@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser from "webextension-polyfill";
 import { loadOptions, saveOptions } from "@/store/extensionsStorage";
 import {
   deploymentFactory,
@@ -28,8 +27,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deployment";
 
-// @ts-expect-error No way to extend `globalThis` effectively
-globalThis.browser = browser;
+browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
 const axiosMock = new MockAdapter(axios);
 
@@ -92,27 +90,6 @@ jest.mock("webext-detect-page", () => ({
   isDevToolsPage: () => false,
   isContentScript: () => false,
 }));
-
-jest.mock("webextension-polyfill", () => {
-  const mock = jest.requireActual("webextension-polyfill");
-
-  return {
-    __esModule: true,
-    default: {
-      // Keep the existing local storage mock
-      ...mock,
-      permissions: {
-        contains: jest.fn().mockResolvedValue(true),
-      },
-      runtime: {
-        openOptionsPage: jest.fn(),
-        getManifest: jest.fn().mockReturnValue({
-          version: "1.5.2",
-        }),
-      },
-    },
-  };
-});
 
 jest.mock("@/background/installer", () => ({
   isUpdateAvailable: jest.fn().mockReturnValue(false),

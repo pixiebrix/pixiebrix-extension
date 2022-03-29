@@ -234,7 +234,6 @@ module.exports = (env, options) =>
       vendors: [
         "react",
         "react-dom",
-        "webextension-polyfill",
         "jquery",
         "lodash-es",
         "js-beautify",
@@ -318,6 +317,7 @@ module.exports = (env, options) =>
       new webpack.ProvidePlugin({
         $: "jquery",
         jQuery: "jquery",
+        browser: "webextension-polyfill",
       }),
 
       // This will inject the current ENVs into the bundle, if found
