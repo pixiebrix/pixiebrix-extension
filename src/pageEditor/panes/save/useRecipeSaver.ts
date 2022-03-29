@@ -91,6 +91,7 @@ function useRecipeSaver(): RecipeSaver {
       title: "Save Blueprint?",
       message: "All changes to the blueprint and its extensions will be saved",
       submitCaption: "Save",
+      submitVariant: "primary",
     });
 
     if (!confirm) {
