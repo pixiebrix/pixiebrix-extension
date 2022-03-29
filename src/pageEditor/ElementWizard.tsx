@@ -41,6 +41,7 @@ import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
+import useRecipeSaver from "@/pageEditor/panes/save/useRecipeSaver";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const EDIT_STEP_NAME = "Edit";
@@ -90,11 +91,17 @@ const ElementWizard: React.FunctionComponent<{
   const { isValid, status, handleReset, setStatus } =
     useFormikContext<FormState>();
 
-  const { isSaving, save } = useSavingWizard();
+  const { isSaving: isSavingWizard, save } = useSavingWizard();
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
+  const isSaving = isSavingRecipe || isSavingWizard;
 
   const onSave = async () => {
     try {
-      await save();
+      if (flagOn("page-editor-blueprints") && element.recipe) {
+        await saveRecipe(element.recipe.id);
+      } else {
+        await save();
+      }
     } catch (error) {
       setStatus(error);
     }

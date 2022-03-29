@@ -44,7 +44,7 @@ export const selectShowV3UpgradeMessageForActiveElement = (
   return state.editor.showV3UpgradeMessageByElement[activeElementId] ?? false;
 };
 
-const selectDirty = (state: RootState) => state.editor.dirty;
+export const selectDirty = (state: RootState) => state.editor.dirty;
 
 export const selectDirtyRecipeOptions = (state: RootState) =>
   state.editor.dirtyRecipeOptionsById;

@@ -18,7 +18,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getErrorMessage } from "@/errors";
 import { clearExtensionTraces } from "@/telemetry/trace";
-import { RegistryId, UUID } from "@/core";
+import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import {
   FOUNDATION_NODE_ID,
   makeInitialElementUIState,
@@ -341,6 +341,18 @@ export const editorSlice = createSlice({
       const { payload: recipeId } = action;
       delete state.dirtyRecipeMetadataById[recipeId];
       delete state.dirtyRecipeOptionsById[recipeId];
+    },
+    updateRecipeMetadataForElements(
+      state,
+      action: PayloadAction<RecipeMetadata>
+    ) {
+      const metadata = action.payload;
+      const recipeElements = state.elements.filter(
+        (element) => element.recipe?.id === metadata.id
+      );
+      for (const element of recipeElements) {
+        element.recipe = metadata;
+      }
     },
   },
 });
