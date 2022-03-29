@@ -21,8 +21,8 @@ import {
   createFormikTemplate,
   fireTextInput,
   selectSchemaFieldType,
-} from "@/utils/testUtils/formHelpers";
-import { waitForEffect } from "@/utils/testUtils/testHelpers";
+} from "@/testUtils/formHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { render, RenderResult, screen } from "@testing-library/react";
 import React from "react";

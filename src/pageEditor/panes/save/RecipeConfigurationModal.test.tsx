@@ -17,11 +17,11 @@
 
 import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
-import { recipeMetadataFactory } from "@/utils/testUtils/factories";
+import { recipeMetadataFactory } from "@/testUtils/factories";
 import { screen } from "@testing-library/react";
 import RecipeConfigurationModal from "./RecipeConfigurationModal";
 import settingsSlice from "@/store/settingsSlice";
-import { createRenderFunction } from "@/utils/testUtils/testHelpers";
+import { createRenderFunction } from "@/testUtils/testHelpers";
 
 jest.unmock("react-redux");
 

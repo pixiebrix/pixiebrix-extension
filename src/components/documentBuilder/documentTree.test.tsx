@@ -16,7 +16,7 @@
  */
 
 import { loadBrickYaml } from "@/runtime/brickYaml";
-import { waitForEffect } from "@/utils/testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@testing-library/react";
 import React from "react";
 import blockRegistry from "@/blocks/registry";

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createFormikTemplate } from "@/utils/testUtils/formHelpers";
+import { createFormikTemplate } from "@/testUtils/formHelpers";
 import { render, screen } from "@testing-library/react";
 import { FormikValues } from "formik";
 import React, { useRef } from "react";

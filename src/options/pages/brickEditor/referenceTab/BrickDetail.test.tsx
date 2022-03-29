@@ -21,7 +21,7 @@ import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/blocks/renderers/table";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import { MarketplaceListing } from "@/types/contract";
-import { waitForEffect } from "@/utils/testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/services/api", () => ({
   useGetMarketplaceListingsQuery: () => ({ data: [] as MarketplaceListing[] }),

@@ -16,10 +16,8 @@
  */
 
 import { Schema, UiSchema } from "@/core";
-import { waitForEffect } from "@/utils/testUtils/testHelpers";
-import testItRenders, {
-  ItRendersOptions,
-} from "@/utils/testUtils/testItRenders";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import testItRenders, { ItRendersOptions } from "@/testUtils/testItRenders";
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { Except } from "type-fest";
@@ -28,7 +26,7 @@ import {
   fireTextInput,
   fireFormSubmit,
   selectSchemaFieldType,
-} from "@/utils/testUtils/formHelpers";
+} from "@/testUtils/formHelpers";
 import { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor, { FormEditorProps } from "./FormEditor";
 import {

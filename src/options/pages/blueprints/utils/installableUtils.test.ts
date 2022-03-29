@@ -19,7 +19,7 @@ import {
   extensionFactory,
   recipeDefinitionFactory,
   sharingDefinitionFactory,
-} from "@/utils/testUtils/factories";
+} from "@/testUtils/factories";
 import { getSharingType } from "./installableUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";

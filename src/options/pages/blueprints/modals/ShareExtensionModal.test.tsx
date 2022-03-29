@@ -17,11 +17,8 @@
 
 import { screen } from "@testing-library/react";
 import ShareExtensionModal from "./ShareExtensionModal";
-import { extensionFactory } from "@/utils/testUtils/factories";
-import {
-  createRenderFunction,
-  waitForEffect,
-} from "@/utils/testUtils/testHelpers";
+import { extensionFactory } from "@/testUtils/factories";
+import { createRenderFunction, waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { Organization } from "@/types/contract";
 import extensionsSlice from "@/store/extensionsSlice";

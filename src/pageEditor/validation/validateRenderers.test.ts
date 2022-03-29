@@ -19,7 +19,7 @@ import {
   blocksMapFactory,
   pipelineFactory,
   TEST_BLOCK_ID,
-} from "@/utils/testUtils/factories";
+} from "@/testUtils/factories";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 import validateRenderers, {
   MULTIPLE_RENDERERS_ERROR_MESSAGE,
