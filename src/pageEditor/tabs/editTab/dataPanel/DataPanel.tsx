@@ -50,6 +50,7 @@ import copy from "copy-to-clipboard";
 import useFlags from "@/hooks/useFlags";
 import ErrorDisplay from "./ErrorDisplay";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import PageStateTab from "./PageStateTab";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -185,6 +186,9 @@ const DataPanel: React.FC<{
           </Nav.Item>
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="preview">Preview</Nav.Link>
+          </Nav.Item>
+          <Nav.Item className={dataPanelStyles.tabNav}>
+            <Nav.Link eventKey="pageState">Page State</Nav.Link>
           </Nav.Item>
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
@@ -328,6 +332,9 @@ const DataPanel: React.FC<{
                 Run the extension once to enable live preview
               </div>
             )}
+          </DataTab>
+          <DataTab eventKey="pageState">
+            <PageStateTab />
           </DataTab>
         </Tab.Content>
       </div>
