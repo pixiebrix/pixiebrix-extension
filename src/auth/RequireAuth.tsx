@@ -19,7 +19,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
 import { ApiError, useGetMeQuery } from "@/services/api";
-import { updateUserData } from "@/auth/token";
+import { isLinked, updateUserData } from "@/auth/token";
 import {
   selectExtensionAuthState,
   selectUserDataUpdate,
@@ -28,6 +28,7 @@ import { authActions } from "@/auth/authSlice";
 import { anonAuth } from "@/auth/authConstants";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
+import { useAsyncState } from "@/hooks/common";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
@@ -37,6 +38,19 @@ type RequireAuthProps = {
   ErrorPage?: React.VFC<{ error: unknown }>;
 };
 
+/**
+ * Require that the extension is linked to the PixieBrix API (has a token) and that the user is authenticated.
+ *
+ * - Axios passes the session along with requests (even for CORS, it seems). So safe (GET) methods succeed with
+ *   just the session cookies. However, the server needs a X-CSRFToken token for unsafe methods (e.g., POST, DELETE).
+ *   NOTE: the CSRF token for session authentication is _not_ the same as the Authentication header token for
+ *   token-based authentication.
+ * - Therefore, also check the extension has received the Authentication header token from the server.
+ *
+ * @param children
+ * @param LoginPage
+ * @param ErrorPage
+ */
 const RequireAuth: React.FC<RequireAuthProps> = ({
   children,
   LoginPage,
@@ -45,10 +59,16 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   const dispatch = useDispatch();
 
   const isLoggedIn = useSelector(selectIsLoggedIn);
-  const { isLoading, error, data: me } = useGetMeQuery();
+  const [hasToken, tokenLoading, tokenError] = useAsyncState(
+    async () => isLinked(),
+    []
+  );
+  const { isLoading: meLoading, error, data: me } = useGetMeQuery();
+
+  const isLoading = tokenLoading || meLoading;
 
   useEffect(() => {
-    // Before we get the very first response from API, do nothing, use the cached version.
+    // Before we get the very first response from API, do nothing, use the AuthRootState persisted with redux-persist.
     if (isLoading) {
       return;
     }
@@ -69,13 +89,17 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   }, [isLoading, me, dispatch]);
 
   // Show SetupPage if there is auth error or user not logged in
-  if ((error as ApiError)?.status === 401 || (!isLoggedIn && !isLoading)) {
+  if (
+    (error as ApiError)?.status === 401 ||
+    (!isLoggedIn && !meLoading) ||
+    (!hasToken && !tokenLoading)
+  ) {
     return <LoginPage />;
   }
 
-  if (error) {
+  if (error ?? tokenError) {
     if (ErrorPage) {
-      return <ErrorPage error={error} />;
+      return <ErrorPage error={error ?? tokenError} />;
     }
 
     throw error;
