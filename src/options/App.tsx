@@ -51,6 +51,7 @@ import BrowserBanner from "./pages/BrowserBanner";
 import useFlags from "@/hooks/useFlags";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
+import { ErrorDisplay } from "@/layout/ErrorDisplay";
 
 // Register the built-in bricks
 registerEditors();
@@ -71,7 +72,8 @@ const Layout = () => {
     <div>
       <Navbar />
       <Container fluid className="page-body-wrapper">
-        <RequireAuth LoginPage={SetupPage}>
+        {/* It is guaranteed that under RequireAuth the user is logged in. */}
+        <RequireAuth LoginPage={SetupPage} ErrorPage={ErrorDisplay}>
           <Sidebar />
           <div className="main-panel">
             <ErrorModal />

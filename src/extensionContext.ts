@@ -15,12 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable import/no-unassigned-import -- Import for side effects */
+
 // It must be the very first thing or telemetry will fail
-// eslint-disable-next-line import/no-unassigned-import -- Import for side effects
 import "@/extensionPolyfill";
 
 // Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/reportUncaughtErrors";
+
+// Handles common HTTP errors
+import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
+
+enrichAxiosErrors();
 
 // https://webpack.js.org/guides/public-path/#on-the-fly
 __webpack_public_path__ = chrome.runtime.getURL("/");

@@ -37,6 +37,7 @@ import {
 } from "@/background/messenger/api";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { PackageUpsertResponse } from "@/types/contract";
+import { appApi } from "@/services/api";
 
 type SubmitOptions = {
   create: boolean;
@@ -77,6 +78,7 @@ function useSubmitBrick({
     notify.success("Deleted brick");
     reportEvent("BrickDelete");
 
+    dispatch(appApi.util.invalidateTags(["Recipes", "EditablePackages"]));
     dispatch(push("/workshop"));
   }, [url, dispatch]);
 
@@ -127,13 +129,14 @@ function useSubmitBrick({
           .catch((error) => {
             notify.warning({
               message: "Error re-activating bricks",
-
               error,
             });
           });
 
         // Reset initial values of the form so dirty=false
         resetForm({ values });
+
+        dispatch(appApi.util.invalidateTags(["Recipes", "EditablePackages"]));
 
         if (create) {
           history.push(`/workshop/bricks/${data.id}/`);

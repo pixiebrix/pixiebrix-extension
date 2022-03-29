@@ -31,6 +31,8 @@ export type SharingSource = {
   organization: Organization;
 };
 
+export type InstallableStatus = "Active" | "Inactive";
+
 // Reshaped Installable to easily filter, sort, and group Installables
 export type InstallableViewItem = {
   name: string;
@@ -40,7 +42,7 @@ export type InstallableViewItem = {
     source: SharingSource;
   };
   updatedAt: string;
-  status: "Active" | "Inactive";
+  status: InstallableStatus;
   hasUpdate: boolean;
   installedVersionNumber: string;
   icon: ReactNode;

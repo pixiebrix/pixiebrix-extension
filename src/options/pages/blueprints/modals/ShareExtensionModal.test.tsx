@@ -15,72 +15,63 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import ShareExtensionModal from "./ShareExtensionModal";
 import { extensionFactory } from "@/tests/factories";
-import { waitForEffect } from "@/tests/testHelpers";
+import { createRenderFunction, waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { Organization } from "@/types/contract";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import { PersistedExtension } from "@/core";
-import { useGetAuthQuery } from "@/services/api";
 import settingsSlice from "@/store/settingsSlice";
 import { anonAuth } from "@/auth/authConstants";
+import { authSlice } from "@/auth/authSlice";
 
 jest.unmock("react-redux");
+
 jest.mock("@/utils/notify");
 jest.mock("@/services/api", () => ({
+  appApi: {
+    useLazyGetMeQuery: () => [jest.fn()],
+  },
   useGetOrganizationsQuery: () => ({ data: [] as Organization[] }),
-  useGetAuthQuery: jest.fn(),
 }));
 
 const extension = extensionFactory({
   label: "testExtension",
 });
 
-const storeForTests = configureStore({
+const renderShareExtensionModal = createRenderFunction({
   reducer: {
+    auth: authSlice.reducer,
     options: extensionsSlice.reducer,
     settings: settingsSlice.reducer,
   },
   preloadedState: {
+    auth: anonAuth,
     options: { extensions: [extension as PersistedExtension] },
   },
+  ComponentUnderTest: ShareExtensionModal,
+  defaultProps: { extensionId: extension.id },
 });
 
-const TestWrapper: React.FC<{ scope?: string }> = ({
-  scope = "@test",
-  children,
-}) => {
-  (useGetAuthQuery as jest.Mock).mockReturnValue({
-    data: {
-      ...anonAuth,
-      scope,
+test("renders modal", async () => {
+  renderShareExtensionModal({
+    stateOverride: {
+      auth: {
+        ...anonAuth,
+        scope: "@test",
+      },
     },
   });
-  return <Provider store={storeForTests}>{children}</Provider>;
-};
-
-test("renders modal", async () => {
-  render(
-    <TestWrapper>
-      <ShareExtensionModal extensionId={extension.id} />
-    </TestWrapper>
-  );
   await waitForEffect();
+
   const dialogRoot = screen.getByRole("dialog");
   expect(dialogRoot).toMatchSnapshot();
 });
 
 test("requires user scope", async () => {
-  render(
-    <TestWrapper scope="">
-      <ShareExtensionModal extensionId={extension.id} />
-    </TestWrapper>
-  );
+  renderShareExtensionModal();
   await waitForEffect();
 
   // Scope input field is on the screen
@@ -93,12 +84,16 @@ test("requires user scope", async () => {
 });
 
 test("prints 'Convert' when not Public (default)", async () => {
-  render(
-    <TestWrapper>
-      <ShareExtensionModal extensionId={extension.id} />
-    </TestWrapper>
-  );
+  renderShareExtensionModal({
+    stateOverride: {
+      auth: {
+        ...anonAuth,
+        scope: "@test",
+      },
+    },
+  });
   await waitForEffect();
+
   const dialogRoot = screen.getByRole("dialog");
   const publicSwitch = dialogRoot.querySelector(
     ".form-group:nth-child(5) .switch.btn"
@@ -109,17 +104,23 @@ test("prints 'Convert' when not Public (default)", async () => {
 });
 
 test("prints 'Share' when Public", async () => {
-  render(
-    <TestWrapper>
-      <ShareExtensionModal extensionId={extension.id} />
-    </TestWrapper>
-  );
+  renderShareExtensionModal({
+    stateOverride: {
+      auth: {
+        ...anonAuth,
+        scope: "@test",
+      },
+    },
+  });
   await waitForEffect();
+
   const dialogRoot = screen.getByRole("dialog");
   const publicSwitch = dialogRoot.querySelector(
     ".form-group:nth-child(5) .switch.btn"
   );
   userEvent.click(publicSwitch);
+  await waitForEffect();
+
   expect(publicSwitch).toHaveClass("on");
   const submitButton = dialogRoot.querySelector('.btn[type="submit"]');
   expect(submitButton.textContent).toBe("Share");
