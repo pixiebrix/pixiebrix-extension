@@ -47,20 +47,7 @@ const mockIsExtensionContext = isExtensionContext as jest.MockedFunction<
 mockIsBackground.mockImplementation(() => true);
 mockIsExtensionContext.mockImplementation(() => true);
 
-jest.mock("webextension-polyfill", () => {
-  const mock = jest.requireActual("webextension-polyfill");
-
-  return {
-    __esModule: true,
-    default: {
-      // Keep the existing local storage mock
-      ...mock,
-      permissions: {
-        contains: jest.fn().mockResolvedValue(true),
-      },
-    },
-  };
-});
+browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
 jest.mock("@/background/protocol");
 jest.mock("@/auth/token");
