@@ -138,11 +138,17 @@ export async function recordEvent({
   data: JsonObject | undefined;
 }): Promise<void> {
   if (await allowsTrack()) {
+    const { version, version_name: versionName } =
+      browser.runtime.getManifest();
     buffer.push({
       uid: await uid(),
       event,
       timestamp: Date.now(),
-      data,
+      data: {
+        ...data,
+        version,
+        versionName,
+      },
     });
     void debouncedFlush();
   }

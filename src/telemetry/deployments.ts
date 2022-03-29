@@ -11,14 +11,23 @@ export function selectEventData(
     return {};
   }
 
+  // For team deployments and blueprints, include additional information to track use consistently across installations.
+  // The extension on each activation
   if (extension._deployment) {
-    // For team deployments, include additional information so we can track use consistently across users. The extension
-    // id changes on each activation, so we can't use that in correlating the reporting for end users
     return {
       label: extension.label,
       extensionId: extension.id,
       deploymentId: extension._deployment?.id,
       extensionPointId: extension.extensionPointId,
+      blueprintId: extension._recipe?.id,
+      blueprintVersion: extension._recipe?.version,
+    };
+  }
+
+  if (extension._recipe) {
+    return {
+      label: extension.label,
+      extensionId: extension.id,
       blueprintId: extension._recipe?.id,
       blueprintVersion: extension._recipe?.version,
     };
