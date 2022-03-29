@@ -102,6 +102,12 @@ export type TriggerExtensionPointState = BaseExtensionPointState & {
   };
 };
 
+export function isTriggerExtensionPoint(
+  extensionPoint: BaseExtensionPointState
+): extensionPoint is TriggerExtensionPointState {
+  return extensionPoint.definition.type === "trigger";
+}
+
 export interface TriggerFormState
   extends BaseFormState<BaseExtensionState, TriggerExtensionPointState> {
   type: "trigger";

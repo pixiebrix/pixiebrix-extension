@@ -50,7 +50,7 @@ import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
-import { TriggerExtensionPointState } from "@/pageEditor/extensionPoints/formStateTypes";
+import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -65,12 +65,6 @@ function isTraceOptional(
   { type }: { type: BlockType }
 ): boolean {
   return type === "reader" || HACK_TRACE_OPTIONAL.has(blockId);
-}
-
-function isTriggerExtensionPoint(
-  extensionPoint: BaseExtensionPointState
-): extensionPoint is TriggerExtensionPointState {
-  return extensionPoint.definition.type === "trigger";
 }
 
 type PreviewInfo = {
