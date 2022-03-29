@@ -49,6 +49,8 @@ import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useD
 import { makeServiceContext } from "@/services/serviceUtils";
 import getType from "@/runtime/getType";
 import { BlockType } from "@/runtime/runtimeTypes";
+import { BaseExtensionPointState } from "@/pageEditor/extensionPoints/elementConfig";
+import { isTriggerExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -135,10 +137,12 @@ const previewSlice = createSlice({
 });
 
 const BlockPreview: React.FunctionComponent<{
-  traceRecord: TraceRecord;
   blockConfig: BlockConfig;
+  extensionPoint: BaseExtensionPointState;
+  traceRecord: TraceRecord;
   previewRefreshMillis?: 250;
-}> = ({ blockConfig, traceRecord, previewRefreshMillis }) => {
+  // eslint-disable-next-line complexity
+}> = ({ blockConfig, extensionPoint, traceRecord, previewRefreshMillis }) => {
   const [{ isRunning, output, outputKey }, dispatch] = useReducer(
     previewSlice.reducer,
     {
@@ -152,15 +156,31 @@ const BlockPreview: React.FunctionComponent<{
 
   const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 
+  // This defaults to "inherit" as described in the doc, see BlockConfig.rootMode
+  const blockRootMode = blockConfig.rootMode ?? "inherit";
+
   const debouncedRun = useDebouncedCallback(
     async (blockConfig: BlockConfig, context: BlockArgContext) => {
       dispatch(previewSlice.actions.startRun());
       const { outputKey } = blockConfig;
+
+      // If the block is configured to inherit the root element
+      // and the extension point is a trigger,
+      // try to get the root element from the extension point
+      // Note: this is not possible when extensionPoint's targetMode equals "targetElement",
+      // in this case a special message will be shown instead of the brick output (see the code later in the component)
+      const rootSelector =
+        blockRootMode === "inherit" &&
+        isTriggerExtensionPoint(extensionPoint) &&
+        extensionPoint.definition.targetMode === "root"
+          ? extensionPoint.definition.rootSelector
+          : undefined;
       try {
         const output = await runBlock(thisTab, {
           apiVersion,
           blockConfig: removeEmptyValues(blockConfig),
           context: { ...context, ...(await makeServiceContext(services)) },
+          rootSelector,
         });
         dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
       } catch (error) {
@@ -188,6 +208,20 @@ const BlockPreview: React.FunctionComponent<{
     return (
       <div className="text-muted">
         Output previews are not currently supported for renderers
+      </div>
+    );
+  }
+
+  if (
+    blockRootMode === "inherit" &&
+    isTriggerExtensionPoint(extensionPoint) &&
+    extensionPoint.definition.targetMode !== "root"
+  ) {
+    return (
+      <div className="text-muted">
+        Output Preview is not supported because this brick&apos;s Root Mode is
+        &quot;Inherit&quot; and the Trigger&apos;s Target Mode is &quot;Event
+        Target&quot;. Run the Trigger to see the output on the Output tab.
       </div>
     );
   }

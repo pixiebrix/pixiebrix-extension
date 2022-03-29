@@ -45,21 +45,23 @@ export type SingleLayerReaderConfig =
   | RegistryId[]
   | Record<string, RegistryId>;
 
-export interface BaseExtensionPointState {
+export type BaseExtensionPointState = {
   metadata: Metadata;
   definition: {
+    type: ExtensionPointType;
     // We're currently not allowing users to modify readers in the page editor
     reader: SingleLayerReaderConfig;
     isAvailable: NormalizedAvailability;
   };
-}
+};
 
 export interface BaseExtensionState {
   blockPipeline: BlockPipeline;
 }
 
 export interface BaseFormState<
-  TExtension extends BaseExtensionState = BaseExtensionState
+  TExtension extends BaseExtensionState = BaseExtensionState,
+  TExtensionPoint extends BaseExtensionPointState = BaseExtensionPointState
 > {
   /**
    * The apiVersion of the brick definition, controlling how PixieBrix interprets brick definitions
@@ -104,7 +106,7 @@ export interface BaseFormState<
 
   services: ServiceDependency[];
 
-  extensionPoint: BaseExtensionPointState;
+  extensionPoint: TExtensionPoint;
 
   extension: TExtension;
 

@@ -18,19 +18,26 @@
 import { Effect, UnknownObject } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { isNullOrBlank } from "@/utils";
-import { isPlainObject, unary } from "lodash";
+import { isNullOrBlank, isObject } from "@/utils";
+import { isEqual, isPlainObject, unary, uniq } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/sheetsHelpers";
 import { sheets } from "@/background/messenger/api";
-import { getErrorMessage } from "@/errors";
+import { BusinessError, getErrorMessage } from "@/errors";
 
 type CellValue = string | number | null;
 
-interface RowValue {
+type Entry = {
   header: string;
   value: CellValue;
-}
+};
+
+type RowValues =
+  | Record<string, CellValue>
+  | Array<Record<string, CellValue>>
+  | Entry[];
+type KnownShape = "entries" | "multi" | "single";
+type Shape = KnownShape | "infer";
 
 export const APPEND_SCHEMA: Schema = propertiesToSchema(
   {
@@ -41,6 +48,13 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
     tabName: {
       type: "string",
       description: "The tab name of the spreadsheet to update.",
+    },
+    shape: {
+      type: "string",
+      description:
+        "The row input shape, or infer to automatically detect the format",
+      enum: ["infer", "single", "multi", "entries"],
+      default: "infer",
     },
     rowValues: {
       oneOf: [
@@ -62,13 +76,21 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
           },
           minItems: 1,
         },
+        {
+          type: "array",
+          description: "The rows to append to the sheet",
+          items: {
+            type: "object",
+            additionalProperties: { type: ["number", "string", "null"] },
+          },
+        },
       ],
     },
   },
   ["spreadsheetId", "tabName", "rowValues"]
 );
 
-function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
+function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
   const row = [];
   const matched = new Set();
 
@@ -77,7 +99,7 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
 
   for (const header of fields) {
     const normalizedHeader = normalizeHeader(header);
-    const rowValue = rowValues.find(
+    const rowValue = rowEntries.find(
       (x) => normalizeHeader(x.header) === normalizedHeader
     );
     if (rowValue) {
@@ -88,7 +110,7 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
     }
   }
 
-  const unmatched = rowValues
+  const unmatched = rowEntries
     .map((x) => x.header)
     .filter((x) => !matched.has(x));
   if (unmatched.length > 0) {
@@ -111,6 +133,102 @@ function isAuthError(error: unknown): boolean {
   );
 }
 
+export function detectShape(rowValues: RowValues): KnownShape {
+  if (Array.isArray(rowValues)) {
+    const entryKeys = new Set(["header", "value"]);
+    if (
+      rowValues.every(
+        (entry) =>
+          isObject(entry) && isEqual(new Set(Object.keys(entry)), entryKeys)
+      )
+    ) {
+      return "entries";
+    }
+
+    return "multi";
+  }
+
+  return "single";
+}
+
+// Validate the shape wrt the provided rowValues. Could refactor the JSON Schema to perform the validation. There would
+// be 4 oneOf clauses, one for each shape.
+export function validateShape(shape: KnownShape, rowValues: RowValues) {
+  switch (shape) {
+    case "entries": {
+      const entryKeys = new Set(["header", "value"]);
+      if (
+        !Array.isArray(rowValues) ||
+        !rowValues.every(
+          (entry) =>
+            isObject(entry) && isEqual(new Set(Object.keys(entry)), entryKeys)
+        )
+      ) {
+        throw new BusinessError("Expected array of header/value entries");
+      }
+
+      return;
+    }
+
+    case "single": {
+      if (!isObject(rowValues)) {
+        throw new BusinessError("Expected object");
+      }
+
+      return;
+    }
+
+    case "multi": {
+      if (
+        !Array.isArray(rowValues) ||
+        !rowValues.every((entry) => isObject(entry))
+      ) {
+        throw new BusinessError("Expected array of objects");
+      }
+
+      // eslint-disable-next-line no-useless-return -- no fall through
+      return;
+    }
+
+    default: {
+      // eslint-disable-next-line no-useless-return -- no fall through
+      return;
+    }
+  }
+}
+
+const rowEntries = (row: Record<string, CellValue>) =>
+  Object.entries(row).map(([header, value]) => ({
+    header,
+    value,
+  }));
+
+export function normalizeShape(shape: Shape, rowValues: RowValues): Entry[][] {
+  const knownShape = shape === "infer" ? detectShape(rowValues) : shape;
+  validateShape(knownShape, rowValues);
+
+  switch (knownShape) {
+    case "single": {
+      const row = rowValues as Record<string, CellValue>;
+      return [rowEntries(row)];
+    }
+
+    case "entries": {
+      const entries = rowValues as Entry[];
+      return [entries];
+    }
+
+    case "multi": {
+      const rows = rowValues as Array<Record<string, CellValue>>;
+      return rows.map((row) => rowEntries(row));
+    }
+
+    default: {
+      throw new BusinessError(`Unexpected shape: ${shape}`);
+    }
+  }
+}
+
 export class GoogleSheetsAppend extends Effect {
   constructor() {
     super(
@@ -127,24 +245,22 @@ export class GoogleSheetsAppend extends Effect {
     {
       spreadsheetId,
       tabName,
+      shape = "infer",
       rowValues: rawValues = {},
     }: BlockArg<{
       spreadsheetId: string;
       tabName: string;
-      rowValues: Record<string, CellValue> | RowValue[];
+      shape: Shape;
+      rowValues: RowValues;
     }>,
     { logger }: BlockOptions
   ): Promise<void> {
-    const rowValues = Array.isArray(rawValues)
-      ? rawValues
-      : Object.entries(rawValues).map(([header, value]) => ({
-          header,
-          value,
-        }));
+    const rows = normalizeShape(shape, rawValues);
+    const valueHeaders = uniq(
+      rows.flatMap((row) => row.map((x: Entry) => x.header))
+    );
 
-    const valueHeaders = rowValues.map((x: RowValue) => x.header);
     let currentHeaders: string[];
-
     try {
       currentHeaders = await sheets.getHeaders({ spreadsheetId, tabName });
       console.debug(
@@ -168,8 +284,10 @@ export class GoogleSheetsAppend extends Effect {
       currentHeaders = valueHeaders;
     }
 
-    await sheets.appendRows(spreadsheetId, tabName, [
-      makeValues(currentHeaders, rowValues),
-    ]);
+    await sheets.appendRows(
+      spreadsheetId,
+      tabName,
+      rows.map((row) => makeRowCells(currentHeaders, row))
+    );
   }
 }

@@ -42,21 +42,10 @@ import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import Configuration from "@/pageEditor/tabs/sidebar/Configuration";
-import {
-  BaseExtensionState,
-  BaseFormState,
-  ElementConfig,
-} from "@/pageEditor/extensionPoints/elementConfig";
+import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
-import { Except } from "type-fest";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
-
-type Extension = BaseExtensionState & Except<SidebarConfig, "body">;
-
-export interface SidebarFormState extends BaseFormState<Extension> {
-  type: "actionPanel";
-  extension: Extension;
-}
+import { SidebarFormState } from "./formStateTypes";
 
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const base = makeInitialBaseState();
@@ -70,6 +59,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
     extensionPoint: {
       metadata,
       definition: {
+        type: "actionPanel",
         isAvailable: makeIsAvailable(url),
         reader: getImplicitReader("actionPanel"),
       },

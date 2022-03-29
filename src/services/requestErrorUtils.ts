@@ -15,20 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  BusinessError,
-  ContextError,
-  getErrorMessage,
-  isAxiosError,
-} from "@/errors";
-import {
-  ClientNetworkError,
-  ClientNetworkPermissionError,
-  ClientRequestError,
-  RemoteServiceError,
-  SerializableAxiosError,
-} from "@/services/errors";
-import { expectContext } from "@/utils/expectContext";
+import { ContextError, isAxiosError } from "@/errors";
+import { ClientRequestError, SerializableAxiosError } from "@/services/errors";
 import { AxiosError, AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import {
@@ -39,9 +27,6 @@ import {
 import { isAbsoluteUrl } from "@/utils";
 import urljoin from "url-join";
 import { Except } from "type-fest";
-
-// eslint-disable-next-line prefer-destructuring -- process.env variable
-const DEBUG = process.env.DEBUG;
 
 /**
  * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
@@ -97,61 +82,4 @@ export function selectAxiosError(error: unknown): Except<AxiosError, "toJSON"> {
   }
 
   return null;
-}
-
-/**
- * Decorate an AxiosError with additional debugging information
- * @param maybeAxiosError
- */
-export async function enrichRequestError(
-  maybeAxiosError: unknown
-): Promise<unknown> {
-  expectContext("extension");
-
-  console.trace("enrichRequestError", {
-    error: maybeAxiosError,
-  });
-
-  if (!isAxiosError(maybeAxiosError)) {
-    return maybeAxiosError;
-  }
-
-  let url: URL;
-
-  try {
-    url = new URL(selectAbsoluteUrl(maybeAxiosError.config));
-  } catch (typeError) {
-    return new BusinessError(
-      `Invalid request URL: ${getErrorMessage(typeError)}`
-    );
-  }
-
-  if (url.protocol !== "https:" && !DEBUG) {
-    return new BusinessError(
-      `Unsupported protocol ${url.protocol}. Use https:`
-    );
-  }
-
-  if (maybeAxiosError.response) {
-    return new RemoteServiceError(
-      getErrorMessage(maybeAxiosError),
-      maybeAxiosError
-    );
-  }
-
-  const hasPermissions = await browser.permissions.contains({
-    origins: [url.href],
-  });
-
-  if (!hasPermissions) {
-    return new ClientNetworkPermissionError(
-      "Insufficient browser permissions to make request.",
-      maybeAxiosError
-    );
-  }
-
-  return new ClientNetworkError(
-    "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information",
-    maybeAxiosError
-  );
 }

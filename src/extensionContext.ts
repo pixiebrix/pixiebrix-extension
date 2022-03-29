@@ -18,5 +18,10 @@
 // Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/reportUncaughtErrors";
 
+// Handles common HTTP errors
+import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
+
+enrichAxiosErrors();
+
 // https://webpack.js.org/guides/public-path/#on-the-fly
 __webpack_public_path__ = chrome.runtime.getURL("/");
