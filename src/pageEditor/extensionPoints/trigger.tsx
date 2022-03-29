@@ -46,7 +46,7 @@ import { ElementConfig } from "@/pageEditor/extensionPoints/elementConfig";
 import React from "react";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
-import { TriggerFormState } from "./TriggerFormState";
+import { TriggerFormState } from "./formStateTypes";
 
 function fromNativeElement(
   url: string,
@@ -60,6 +60,7 @@ function fromNativeElement(
     extensionPoint: {
       metadata,
       definition: {
+        type: "trigger",
         trigger: "load",
         rootSelector: null,
         attachMode: null,
@@ -218,6 +219,7 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
+        type: extensionPoint.definition.type,
         rootSelector,
         trigger,
         attachMode,

@@ -15,11 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable import/no-unassigned-import -- Import for side effects */
-
-// It must be the very first thing or telemetry will fail
-import "@/extensionPolyfill";
-
 // Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/reportUncaughtErrors";
 

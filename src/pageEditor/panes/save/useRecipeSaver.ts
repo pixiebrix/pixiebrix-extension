@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectDirty,
@@ -64,117 +64,95 @@ function useRecipeSaver(): RecipeSaver {
    * Save a recipe's extensions, options, and metadata
    * Throws errors for various bad states
    */
-  const save = useCallback(
-    async (recipeId: RegistryId) => {
-      const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
-      if (recipe == null) {
-        throw new Error(
-          "You no longer have edit permissions for the blueprint. Please reload the Editor."
-        );
-      }
-
-      const dirtyRecipeElements = editorFormElements.filter(
-        (element) =>
-          element.recipe?.id === recipe.metadata.id &&
-          isDirtyByElementId[element.uuid]
+  async function save(recipeId: RegistryId) {
+    const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
+    if (recipe == null) {
+      throw new Error(
+        "You no longer have edit permissions for the blueprint. Please reload the Editor."
       );
-      const newOptions = dirtyRecipeOptions[recipe.metadata.id];
-      const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
-      if (
-        newOptions == null &&
-        newMetadata == null &&
-        isEmpty(dirtyRecipeElements)
-      ) {
-        return;
-      }
+    }
 
-      const confirm = await showConfirmation({
-        title: "Save Blueprint?",
-        message:
-          "All changes to the blueprint and its extensions will be saved",
-        submitCaption: "Save",
-      });
+    const dirtyRecipeElements = editorFormElements.filter(
+      (element) =>
+        element.recipe?.id === recipe.metadata.id &&
+        isDirtyByElementId[element.uuid]
+    );
+    const newOptions = dirtyRecipeOptions[recipe.metadata.id];
+    const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
+    if (
+      newOptions == null &&
+      newMetadata == null &&
+      isEmpty(dirtyRecipeElements)
+    ) {
+      return;
+    }
 
-      if (!confirm) {
-        return;
-      }
+    const confirm = await showConfirmation({
+      title: "Save Blueprint?",
+      message: "All changes to the blueprint and its extensions will be saved",
+      submitCaption: "Save",
+      submitVariant: "primary",
+    });
 
-      const newRecipe = replaceRecipeContent({
-        sourceRecipe: recipe,
-        installedExtensions,
-        dirtyRecipeElements,
-        options: newOptions,
-        metadata: newMetadata,
-      });
+    if (!confirm) {
+      return;
+    }
 
-      const packageId = editablePackages.find(
-        // Bricks endpoint uses "name" instead of id
-        (x) => x.name === newRecipe.metadata.id
-      )?.id;
-
-      const updateRecipeResponse = await updateRecipe({
-        packageId,
-        recipe: newRecipe,
-      }).unwrap();
-
-      const newRecipeMetadata = selectRecipeMetadata(
-        newRecipe,
-        updateRecipeResponse
-      );
-
-      for (const element of dirtyRecipeElements) {
-        // Don't push to cloud since we're saving it with the recipe
-        // eslint-disable-next-line no-await-in-loop
-        await create({ element, pushToCloud: false });
-      }
-
-      // Update the recipe metadata on extensions in the options slice
-      dispatch(
-        optionsActions.updateRecipeMetadataForExtensions(newRecipeMetadata)
-      );
-
-      // Update the recipe metadata on elements in the page editor slice
-      dispatch(
-        editorActions.updateRecipeMetadataForElements(newRecipeMetadata)
-      );
-
-      // Clear the dirty state
-      dispatch(
-        editorActions.resetRecipeMetadataAndOptions(newRecipeMetadata.id)
-      );
-    },
-    [
-      recipes,
-      editorFormElements,
-      dirtyRecipeOptions,
-      dirtyRecipeMetadata,
-      showConfirmation,
+    const newRecipe = replaceRecipeContent({
+      sourceRecipe: recipe,
       installedExtensions,
-      editablePackages,
-      dispatch,
-      isDirtyByElementId,
-      updateRecipe,
-      create,
-    ]
-  );
+      dirtyRecipeElements,
+      options: newOptions,
+      metadata: newMetadata,
+    });
 
-  const safeSave = useCallback(
-    async (recipeId: RegistryId) => {
-      setIsSaving(true);
-      try {
-        await save(recipeId);
-        notify.success("Saved blueprint");
-      } catch (error: unknown) {
-        notify.error({
-          message: "Failed saving blueprint",
-          error,
-        });
-      } finally {
-        setIsSaving(false);
-      }
-    },
-    [save]
-  );
+    const packageId = editablePackages.find(
+      // Bricks endpoint uses "name" instead of id
+      (x) => x.name === newRecipe.metadata.id
+    )?.id;
+
+    const updateRecipeResponse = await updateRecipe({
+      packageId,
+      recipe: newRecipe,
+    }).unwrap();
+
+    const newRecipeMetadata = selectRecipeMetadata(
+      newRecipe,
+      updateRecipeResponse
+    );
+
+    for (const element of dirtyRecipeElements) {
+      // Don't push to cloud since we're saving it with the recipe
+      // eslint-disable-next-line no-await-in-loop
+      await create({ element, pushToCloud: false });
+    }
+
+    // Update the recipe metadata on extensions in the options slice
+    dispatch(
+      optionsActions.updateRecipeMetadataForExtensions(newRecipeMetadata)
+    );
+
+    // Update the recipe metadata on elements in the page editor slice
+    dispatch(editorActions.updateRecipeMetadataForElements(newRecipeMetadata));
+
+    // Clear the dirty state
+    dispatch(editorActions.resetRecipeMetadataAndOptions(newRecipeMetadata.id));
+  }
+
+  async function safeSave(recipeId: RegistryId) {
+    setIsSaving(true);
+    try {
+      await save(recipeId);
+      notify.success("Saved blueprint");
+    } catch (error: unknown) {
+      notify.error({
+        message: "Failed saving blueprint",
+        error,
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   return {
     save: safeSave,

@@ -84,6 +84,7 @@ export const getUID = liftBackground("GET_UID", async () => uid());
 
 async function userSummary() {
   const { os } = await browser.runtime.getPlatformInfo();
+  const { version, version_name: versionName } = browser.runtime.getManifest();
   // Getting browser information would require additional permissions
   // const {name: browserName} = await browser.runtime.getBrowserInfo();
   let numActiveExtensions: number = null;
@@ -107,6 +108,8 @@ async function userSummary() {
     numActiveExtensions,
     numActiveBlueprints,
     numActiveExtensionPoints,
+    versionName,
+    version,
     $os: os,
   };
 }
@@ -135,11 +138,17 @@ export async function recordEvent({
   data: JsonObject | undefined;
 }): Promise<void> {
   if (await allowsTrack()) {
+    const { version, version_name: versionName } =
+      browser.runtime.getManifest();
     buffer.push({
       uid: await uid(),
       event,
       timestamp: Date.now(),
-      data,
+      data: {
+        ...data,
+        version,
+        versionName,
+      },
     });
     void debouncedFlush();
   }
