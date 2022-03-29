@@ -76,6 +76,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
       const update = selectUserDataUpdate(me);
       await updateUserData(update);
 
+      // `me` is nullish if the request errored
       if (me?.id) {
         const auth = selectExtensionAuthState(me);
         dispatch(authActions.setAuth(auth));
@@ -89,8 +90,11 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
   // Show SetupPage if there is auth error or user not logged in
   if (
-    // FIXME: under what conditions can me return a 401? The endpoint is configured with AllowAny and returns blank
-    //   if the user is not authenticated: http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
+    // Currently, useGetMeQuery will only return a 401 if the user has a non-empty invalid token. If the extension
+    // is not linked, the extension client leaves off the token header. And our backend returns an empty object if
+    // the user is not authenticated.
+    // http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
+    // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
     (error as ApiError)?.status === 401 ||
     (!isLoggedIn && !meLoading) ||
     (!hasToken && !tokenLoading)
