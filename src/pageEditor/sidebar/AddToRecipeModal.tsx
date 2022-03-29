@@ -71,7 +71,7 @@ const AddToRecipeModal: React.VFC = () => {
     <Modal show onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
-          Add <strong>{activeElement?.label}</strong> to a blueprint
+          Add <em>{activeElement?.label}</em> to a blueprint
         </Modal.Title>
       </Modal.Header>
       <Formik
