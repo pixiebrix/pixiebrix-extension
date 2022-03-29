@@ -42,14 +42,10 @@ type RequireAuthProps = {
  * Require that the extension is linked to the PixieBrix API (has a token) and that the user is authenticated.
  *
  * - Axios passes the session along with requests (even for CORS, it seems). So safe (GET) methods succeed with
- *   just the session cookies. However, the server needs a X-CSRFToken token for unsafe methods (e.g., POST, DELETE).
+ *   just the session cookies. However, the server needs an X-CSRFToken token for unsafe methods (e.g., POST, DELETE).
  *   NOTE: the CSRF token for session authentication is _not_ the same as the Authentication header token for
  *   token-based authentication.
  * - Therefore, also check the extension has received the Authentication header token from the server.
- *
- * @param children
- * @param LoginPage
- * @param ErrorPage
  */
 const RequireAuth: React.FC<RequireAuthProps> = ({
   children,
@@ -59,6 +55,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   const dispatch = useDispatch();
 
   const isLoggedIn = useSelector(selectIsLoggedIn);
+  // See component documentation for why both isLinked and useGetMeQuery are required
   const [hasToken, tokenLoading, tokenError] = useAsyncState(
     async () => isLinked(),
     []
@@ -68,11 +65,13 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   const isLoading = tokenLoading || meLoading;
 
   useEffect(() => {
-    // Before we get the very first response from API, do nothing, use the AuthRootState persisted with redux-persist.
-    if (isLoading) {
+    // Before we get the first response from API, use the AuthRootState persisted with redux-persist.
+    if (meLoading) {
       return;
     }
 
+    // If me succeeds or errors, update the AuthRootState stored with redux-persist and updateUserData stored directly
+    // in browser.storage (that's used by the background page)
     const setAuth = async (me: Me) => {
       const update = selectUserDataUpdate(me);
       await updateUserData(update);
@@ -86,10 +85,12 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     };
 
     void setAuth(me);
-  }, [isLoading, me, dispatch]);
+  }, [meLoading, me, dispatch]);
 
   // Show SetupPage if there is auth error or user not logged in
   if (
+    // FIXME: under what conditions can me return a 401? The endpoint is configured with AllowAny and returns blank
+    //   if the user is not authenticated: http://github.com/pixiebrix/pixiebrix-app/blob/0686663bf007cf4b33d547d9f124d1fa2a83ec9a/api/views/site.py#L210-L210
     (error as ApiError)?.status === 401 ||
     (!isLoggedIn && !meLoading) ||
     (!hasToken && !tokenLoading)
