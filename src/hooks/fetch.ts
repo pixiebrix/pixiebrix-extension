@@ -17,10 +17,10 @@
 
 import axios from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
-import { EndpointAuthError, isAxiosError } from "@/errors";
 import { isAbsoluteUrl } from "@/utils";
-import { enrichRequestError, isAppUrl } from "@/services/requestErrorUtils";
+import { isAppUrl } from "@/services/requestErrorUtils";
 import { expectContext, forbidContext } from "@/utils/expectContext";
+import { EndpointAuthError, isAxiosError } from "@/errors";
 
 const HTTP_401_UNAUTHENTICATED = 401;
 
@@ -47,12 +47,8 @@ export async function fetch<TData = unknown>(
 
   if (absolute) {
     if (!(await isAppUrl(relativeOrAbsoluteUrl))) {
-      try {
-        const { data } = await axios.get<TData>(relativeOrAbsoluteUrl);
-        return data;
-      } catch (error) {
-        throw await enrichRequestError(error);
-      }
+      const { data } = await axios.get<TData>(relativeOrAbsoluteUrl);
+      return data;
     }
 
     console.warn(
@@ -78,6 +74,6 @@ export async function fetch<TData = unknown>(
       throw new EndpointAuthError(relativeOrAbsoluteUrl);
     }
 
-    throw await enrichRequestError(error);
+    throw error;
   }
 }

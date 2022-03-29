@@ -40,45 +40,21 @@ import {
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
 import {
-  BaseExtensionState,
-  BaseFormState,
   ElementConfig,
   SingleLayerReaderConfig,
 } from "@/pageEditor/extensionPoints/elementConfig";
-import { Menus } from "webextension-polyfill";
-import { NormalizedAvailability } from "@/blocks/types";
 import React, { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
-import { Except } from "type-fest";
 import {
   QuickBarConfig,
-  QuickBarDefaultOptions,
   QuickBarDefinition,
   QuickBarExtensionPoint,
-  QuickBarTargetMode,
 } from "@/extensionPoints/quickBarExtension";
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import { isEmpty } from "lodash";
 import type { DynamicDefinition } from "@/contentScript/nativeEditor/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-type Extension = BaseExtensionState & Except<QuickBarConfig, "action">;
-
-export interface QuickBarFormState extends BaseFormState<Extension> {
-  type: "quickBar";
-
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      defaultOptions: QuickBarDefaultOptions;
-      documentUrlPatterns: string[];
-      contexts: Menus.ContextType[];
-      targetMode: QuickBarTargetMode;
-      reader: SingleLayerReaderConfig;
-      isAvailable: NormalizedAvailability;
-    };
-  };
-}
+import { QuickBarFormState } from "./formStateTypes";
 
 function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const base = makeInitialBaseState();
@@ -95,6 +71,7 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
     extensionPoint: {
       metadata,
       definition: {
+        type: "quickBar",
         reader: getImplicitReader("quickBar"),
         documentUrlPatterns: isAvailable.matchPatterns,
         contexts: ["all"],
@@ -177,6 +154,7 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
+        type: "quickBar",
         documentUrlPatterns,
         defaultOptions,
         targetMode,

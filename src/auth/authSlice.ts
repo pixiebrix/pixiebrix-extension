@@ -19,12 +19,21 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { anonAuth } from "./authConstants";
 import { AuthState } from "./authTypes";
 import { localStorage } from "redux-persist-webextension-storage";
+import { isEmpty } from "lodash";
 
 export const authSlice = createSlice({
   name: "auth",
   initialState: anonAuth,
   reducers: {
-    setAuth: (state, { payload }: PayloadAction<AuthState>) => payload,
+    setAuth: (state, { payload }: PayloadAction<AuthState>) => ({
+      ...payload,
+      scope: isEmpty(payload.scope) ? null : payload.scope,
+      flags: Array.isArray(payload.flags) ? payload.flags : [],
+      organizations: Array.isArray(payload.organizations)
+        ? payload.organizations
+        : [],
+      groups: Array.isArray(payload.groups) ? payload.groups : [],
+    }),
   },
 });
 

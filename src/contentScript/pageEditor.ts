@@ -61,6 +61,11 @@ type RunBlockArgs = {
    * @see makeServiceContext
    */
   context: BlockArgContext;
+  /**
+   * Root JQuery selector to determine the root if the rootMode is "inherit".
+   * @see BlockConfig.rootMode
+   */
+  rootSelector: string | undefined;
 };
 
 /**
@@ -71,6 +76,7 @@ export async function runBlock({
   blockConfig,
   context,
   apiVersion,
+  rootSelector,
 }: RunBlockArgs) {
   const versionOptions = apiVersionOptions(apiVersion);
 
@@ -87,12 +93,23 @@ export async function runBlock({
     index: 0,
     // Force isLastBlock so blockReducer does not complain about the outputKey being forced to undefined
     isLastBlock: true,
-    // TODO: need to support other roots for triggers. Or we at least need to throw an error so we can show a message
-    //  in the UX that non-root contexts aren't supported
+    // `root` is over-ridden below if rootSelector is provided
     root: document,
     // We're forcing apiVersion: 2 or higher above values must come from the context
     previousOutput: {},
   };
+
+  if (rootSelector) {
+    // Handle non-document contexts. If the selector is unique, this gives the root that would be available at runtime.
+    // Differences in behavior:
+    // - For triggers, the PixieBrix looks for the closest ancestor to the DOM event target matching the selector
+    //   See TriggerExtensionPoint.eventHandler for reference
+    // - For multi-menus (not currently available in the Page Editor), the below logic returns an arbitrary menu
+    const rootElement = $safeFind(rootSelector);
+    if (rootElement.length > 0) {
+      state.root = rootElement.get(0);
+    }
+  }
 
   const options: ReduceOptions = {
     ...versionOptions,

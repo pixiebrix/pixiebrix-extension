@@ -33,7 +33,7 @@ import ShareExtensionModal from "@/options/pages/blueprints/modals/ShareExtensio
 import ShareLinkModal from "@/options/pages/blueprints/modals/ShareLinkModal";
 import { useTitle } from "@/hooks/title";
 import Loader from "@/components/Loader";
-import { ErrorDisplay } from "@/layout/Page";
+import { ErrorDisplay } from "@/layout/ErrorDisplay";
 
 const BlueprintsPage: React.FunctionComponent = () => {
   useTitle("Blueprints");

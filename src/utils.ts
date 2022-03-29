@@ -41,6 +41,7 @@ import {
 import { Primitive } from "type-fest";
 import { ApiVersion, SafeString } from "@/core";
 import { UnknownObject } from "@/types";
+import { BusinessError } from "@/errors";
 
 const specialCharsRegex = /[.[\]]/;
 
@@ -463,11 +464,37 @@ export function freshIdentifier(
 }
 
 /** Like `new URL(url)` except it never throws and always returns an URL object, empty if the url is invalid */
-export function safeParseUrl(url: string): URL {
+export function safeParseUrl(url: string, baseUrl?: string): URL {
   try {
-    return new URL(url);
+    return new URL(url, baseUrl);
   } catch {
     return new URL("invalid-url://");
+  }
+}
+
+export function assertHttpsUrl(
+  url: string,
+  baseUrl: string = location.href
+): URL {
+  const parsedUrl = safeParseUrl(url, baseUrl);
+
+  // Allow local non-HTTPS URLs when testing locally
+  if (process.env.DEBUG && parsedUrl.protocol === "http") {
+    return parsedUrl;
+  }
+
+  switch (parsedUrl.protocol) {
+    case "https:":
+      return parsedUrl;
+
+    case "invalid-url:":
+      baseUrl = isAbsoluteUrl(url) ? "" : ` (base URL: ${baseUrl})`;
+      throw new BusinessError(`Invalid URL: ${url}${baseUrl}`);
+
+    default:
+      throw new BusinessError(
+        `Unsupported protocol: ${parsedUrl.protocol}. Use https:`
+      );
   }
 }
 

@@ -40,6 +40,7 @@ import useInstallableViewItems from "@/options/pages/blueprints/useInstallableVi
 import AutoSizer from "react-virtualized-auto-sizer";
 import BlueprintsToolbar from "@/options/pages/blueprints/BlueprintsToolbar";
 import BlueprintsView from "@/options/pages/blueprints/BlueprintsView";
+import Loader from "@/components/Loader";
 
 // These react-table columns aren't rendered as column headings,
 // but used to expose grouping, sorting, filtering, and global
@@ -90,14 +91,17 @@ const columns: Array<Column<InstallableViewItem>> = [
 const BlueprintsCard: React.FunctionComponent<{
   installables: Installable[];
 }> = ({ installables }) => {
-  const data = useInstallableViewItems(installables);
+  const { installableViewItems, isLoading } =
+    useInstallableViewItems(installables);
 
   const teamFilters = useMemo(
     () =>
-      uniq(data.map((installable) => installable.sharing.source.label)).filter(
-        (label) => label !== "Public" && label !== "Personal"
-      ),
-    [data]
+      uniq(
+        installableViewItems.map(
+          (installable) => installable.sharing.source.label
+        )
+      ).filter((label) => label !== "Public" && label !== "Personal"),
+    [installableViewItems]
   );
 
   const groupBy = useSelector(selectGroupBy);
@@ -107,7 +111,7 @@ const BlueprintsCard: React.FunctionComponent<{
   const tableInstance = useTable<InstallableViewItem>(
     {
       columns,
-      data,
+      data: installableViewItems,
       initialState: {
         groupBy,
         sortBy,
@@ -130,6 +134,10 @@ const BlueprintsCard: React.FunctionComponent<{
     useGroupBy,
     useSortBy
   );
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <BootstrapRow className={styles.root}>

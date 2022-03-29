@@ -16,32 +16,45 @@
  */
 
 import { anonAuth } from "@/auth/authConstants";
-import { useGetAuthQuery } from "@/services/api";
+import { authSlice } from "@/auth/authSlice";
 import { recipeMetadataFactory } from "@/utils/testUtils/factories";
-import { render, screen } from "@testing-library/react";
-import React from "react";
+import { screen } from "@testing-library/react";
 import RecipeConfigurationModal from "./RecipeConfigurationModal";
+import settingsSlice from "@/store/settingsSlice";
+import { createRenderFunction } from "@/utils/testUtils/testHelpers";
 
-jest.mock("@/services/api", () => ({
-  useGetAuthQuery: jest.fn(() => ({ data: anonAuth })),
-}));
+jest.unmock("react-redux");
+
+const renderRecipeConfigurationModal = createRenderFunction({
+  reducer: {
+    auth: authSlice.reducer,
+    settings: settingsSlice.reducer,
+  },
+  preloadedState: {
+    auth: anonAuth,
+  },
+  ComponentUnderTest: RecipeConfigurationModal,
+  defaultProps: {
+    initialValues: recipeMetadataFactory(),
+    isNewRecipe: false,
+    close: jest.fn(),
+    navigateBack: jest.fn(),
+    save: jest.fn(),
+  },
+});
 
 test("renders Save as New Blueprint button and editable ID field for a new recipe", () => {
-  (useGetAuthQuery as jest.Mock).mockReturnValue({
-    data: {
-      ...anonAuth,
-      scope: "@test",
+  renderRecipeConfigurationModal({
+    stateOverride: {
+      auth: {
+        ...anonAuth,
+        scope: "@test",
+      },
+    },
+    propsOverride: {
+      isNewRecipe: true,
     },
   });
-  render(
-    <RecipeConfigurationModal
-      initialValues={recipeMetadataFactory()}
-      isNewRecipe
-      close={jest.fn()}
-      navigateBack={jest.fn()}
-      save={jest.fn()}
-    />
-  );
 
   const updateBlueprintButton = screen.queryByRole("button", {
     name: "Update Blueprint",
@@ -58,15 +71,7 @@ test("renders Save as New Blueprint button and editable ID field for a new recip
 });
 
 test("renders Update button and disabled ID field when updating recipe", () => {
-  render(
-    <RecipeConfigurationModal
-      initialValues={recipeMetadataFactory()}
-      isNewRecipe={false}
-      close={jest.fn()}
-      navigateBack={jest.fn()}
-      save={jest.fn()}
-    />
-  );
+  renderRecipeConfigurationModal();
 
   const updateBlueprintButton = screen.getByRole("button", {
     name: "Update Blueprint",
