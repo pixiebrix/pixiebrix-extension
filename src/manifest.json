@@ -18,7 +18,7 @@
     "48": "icons/logo48.png",
     "128": "icons/logo128.png"
   },
-  "content_security_policy": "script-src 'self' https://apis.google.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; object-src 'self'; img-src 'self' data: https://pixiebrix-marketplace.s3.amazonaws.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; frame-src 'self' https: https://*.googleapis.com https://docs.google.com https://player.vimeo.com",
+  "content_security_policy": "script-src 'self' https://apis.google.com 'unsafe-eval'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; object-src 'self'; img-src 'self' data: https://pixiebrix-marketplace.s3.amazonaws.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; frame-src 'self' https: https://*.googleapis.com https://docs.google.com",
   "content_scripts": [
     {
       "matches": ["https://*.pixiebrix.com/*"],
