@@ -22,7 +22,7 @@ import { getErrorMessage } from "@/errors";
 import { useAsyncState } from "@/hooks/common";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { thisTab } from "@/pageEditor/utils";
-import { faSync } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
@@ -48,34 +48,46 @@ const PageStateTab: React.VFC = () => {
     },
     [],
     {
-      extension: "loading...",
-      blueprint: "loading...",
-      shared: "loading...",
+      extension: "Loading...",
+      blueprint: "Loading...",
+      shared: "Loading...",
     }
   );
 
   return (
     <div>
-      <Button variant="info" size="sm" disabled={isLoading} onClick={refresh}>
-        <FontAwesomeIcon icon={faSync} /> Refresh
-      </Button>
+      <div className="mb-1 d-flex">
+        <div>
+          <Button
+            variant="info"
+            size="sm"
+            disabled={isLoading}
+            onClick={refresh}
+          >
+            <FontAwesomeIcon icon={faSync} /> Refresh
+          </Button>
+        </div>
+        <div className="ml-2">
+          <a
+            href="https://docs.pixiebrix.com/page-state"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <small>
+              <FontAwesomeIcon icon={faExternalLinkAlt} />
+              &nbsp;Learn more about Page State
+            </small>
+          </a>
+        </div>
+      </div>
       {error ? (
         <div>
-          <p>Error</p>
+          <div className="text-danger">Error</div>
           <p>{getErrorMessage(error)}</p>
         </div>
       ) : (
-        <JsonTree data={state} copyable shouldExpandNode={() => true} />
+        <JsonTree data={state} copyable={false} shouldExpandNode={() => true} />
       )}
-      <p className="mt-4">
-        <a
-          href="https://docs.pixiebrix.com/page-state"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <small>Learn more about Page State</small>
-        </a>
-      </p>
     </div>
   );
 };
