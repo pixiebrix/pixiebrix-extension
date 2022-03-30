@@ -18,20 +18,49 @@
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { getPageState } from "@/contentScript/messenger/api";
 import { useAsyncState } from "@/hooks/common";
+import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { thisTab } from "@/pageEditor/utils";
 import React from "react";
+import { useSelector } from "react-redux";
+import ErrorDisplay from "./ErrorDisplay";
 
 const PageStateTab: React.VFC = () => {
+  const activeElement = useSelector(selectActiveElement);
   const [sharedState, isSharedStateLoading, sharedStateError] = useAsyncState(
     async () => getPageState(thisTab, "shared"),
     []
   );
 
+  const [blueprintState, isBlueprintStateLoading, blueprintStateError] =
+    useAsyncState(
+      async () =>
+        activeElement.recipe
+          ? getPageState(thisTab, "blueprint", activeElement.recipe.id)
+          : null,
+      []
+    );
+
+  const [extensionState, isExtensionStateLoading, extensionStateError] =
+    useAsyncState(
+      async () => getPageState(thisTab, "extension", null, activeElement.uuid),
+      []
+    );
+
+  if (sharedStateError || blueprintStateError || extensionStateError) {
+    return (
+      <ErrorDisplay
+        error={sharedStateError ?? blueprintStateError ?? extensionStateError}
+      />
+    );
+  }
+
   const state = {
+    extension: isExtensionStateLoading ? "loading..." : extensionState,
+    blueprint: isBlueprintStateLoading ? "loading..." : blueprintState,
     shared: isSharedStateLoading ? "loading..." : sharedState,
   };
 
-  return <JsonTree data={state} />;
+  return <JsonTree data={state} copyable shouldExpandNode={() => true} />;
 };
 
 export default PageStateTab;

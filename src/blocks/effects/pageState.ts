@@ -171,14 +171,6 @@ export class GetPageState extends Transformer {
   ): Promise<UnknownObject> {
     const { blueprintId = null, extensionId } = logger.context;
 
-    console.log("GetPageState", {
-      namespace,
-      blueprintId,
-      extensionId,
-      blueprintState,
-      extensionState,
-    });
-
     switch (namespace) {
       case "shared": {
         return blueprintState.get(null) ?? {};

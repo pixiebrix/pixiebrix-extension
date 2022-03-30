@@ -144,7 +144,12 @@ const FoundationDataPanel: React.FC<{
         <Tab.Pane eventKey="preview" className={dataPanelStyles.tabPane}>
           <ExtensionPointPreview element={formState} />
         </Tab.Pane>
-        <Tab.Pane eventKey="pageState" className={dataPanelStyles.tabPane}>
+        <Tab.Pane
+          eventKey="pageState"
+          className={dataPanelStyles.tabPane}
+          mountOnEnter
+          unmountOnExit
+        >
           <PageStateTab />
         </Tab.Pane>
       </Tab.Content>
