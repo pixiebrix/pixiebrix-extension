@@ -20,38 +20,56 @@ import { getPageState } from "@/contentScript/messenger/api";
 import { useAsyncState } from "@/hooks/common";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { thisTab } from "@/pageEditor/utils";
+import { faSync } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
+import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import ErrorDisplay from "./ErrorDisplay";
 
 const PageStateTab: React.VFC = () => {
   const activeElement = useSelector(selectActiveElement);
-  const [sharedState, isSharedStateLoading, sharedStateError] = useAsyncState(
-    async () => getPageState(thisTab, "shared"),
+  const [
+    sharedState,
+    isSharedStateLoading,
+    sharedStateError,
+    refreshSharedState,
+  ] = useAsyncState(async () => getPageState(thisTab, "shared"), []);
+
+  const [
+    blueprintState,
+    isBlueprintStateLoading,
+    blueprintStateError,
+    refreshBlueprintState,
+  ] = useAsyncState(
+    async () =>
+      activeElement.recipe
+        ? getPageState(thisTab, "blueprint", activeElement.recipe.id)
+        : null,
     []
   );
 
-  const [blueprintState, isBlueprintStateLoading, blueprintStateError] =
-    useAsyncState(
-      async () =>
-        activeElement.recipe
-          ? getPageState(thisTab, "blueprint", activeElement.recipe.id)
-          : null,
-      []
-    );
+  const [
+    extensionState,
+    isExtensionStateLoading,
+    extensionStateError,
+    refreshExtensionState,
+  ] = useAsyncState(
+    async () => getPageState(thisTab, "extension", null, activeElement.uuid),
+    []
+  );
 
-  const [extensionState, isExtensionStateLoading, extensionStateError] =
-    useAsyncState(
-      async () => getPageState(thisTab, "extension", null, activeElement.uuid),
-      []
-    );
+  const isLoading =
+    isSharedStateLoading || isBlueprintStateLoading || isExtensionStateLoading;
+  const error = sharedStateError ?? blueprintStateError ?? extensionStateError;
+  const refreshState = () => {
+    void refreshSharedState();
+    void refreshBlueprintState();
+    void refreshExtensionState();
+  };
 
-  if (sharedStateError || blueprintStateError || extensionStateError) {
-    return (
-      <ErrorDisplay
-        error={sharedStateError ?? blueprintStateError ?? extensionStateError}
-      />
-    );
+  if (error != null) {
+    return <ErrorDisplay error={error} />;
   }
 
   const state = {
@@ -60,7 +78,19 @@ const PageStateTab: React.VFC = () => {
     shared: isSharedStateLoading ? "loading..." : sharedState,
   };
 
-  return <JsonTree data={state} copyable shouldExpandNode={() => true} />;
+  return (
+    <div>
+      <Button
+        variant="info"
+        size="sm"
+        disabled={isLoading}
+        onClick={refreshState}
+      >
+        <FontAwesomeIcon icon={faSync} /> Refresh
+      </Button>
+      <JsonTree data={state} copyable shouldExpandNode={() => true} />
+    </div>
+  );
 };
 
 export default PageStateTab;
