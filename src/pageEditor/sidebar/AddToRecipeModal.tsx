@@ -20,7 +20,8 @@ import { Button, Modal } from "react-bootstrap";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import extensionsSlice from "@/store/extensionsSlice";
 import {
   selectActiveElement,
   selectInstalledRecipeMetadatas,
@@ -28,6 +29,9 @@ import {
 import { RecipeMetadata } from "@/core";
 import { Form, Formik } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import notify from "@/utils/notify";
+
+const { actions: optionsActions } = extensionsSlice;
 
 type FormState = {
   recipeMetadata: RecipeMetadata;
@@ -45,8 +49,32 @@ const AddToRecipeModal: React.VFC = () => {
 
   const dispatch = useDispatch();
   const hideModal = () => {
-    dispatch(actions.hideAddToRecipeModal());
+    dispatch(editorActions.hideAddToRecipeModal());
   };
+
+  function onConfirmAddToRecipe(
+    recipeMetadata: RecipeMetadata,
+    keepLocalCopy: boolean
+  ) {
+    try {
+      const elementId = activeElement.uuid;
+      dispatch(
+        editorActions.addElementToRecipe({
+          elementId,
+          recipeMetadata,
+          keepLocalCopy,
+        })
+      );
+      dispatch(optionsActions.removeExtension({ extensionId: elementId }));
+    } catch (error: unknown) {
+      notify.error({
+        message: "Problem adding extension to blueprint",
+        error,
+      });
+    } finally {
+      hideModal();
+    }
+  }
 
   const selectOptions = recipeMetadatas.map((metadata) => ({
     label: metadata.name,
@@ -63,14 +91,7 @@ const AddToRecipeModal: React.VFC = () => {
       <Formik
         initialValues={initialFormState}
         onSubmit={({ recipeMetadata, keepLocalCopy }) => {
-          dispatch(
-            actions.addElementToRecipe({
-              elementId: activeElement.uuid,
-              recipeMetadata,
-              keepLocalCopy,
-            })
-          );
-          hideModal();
+          onConfirmAddToRecipe(recipeMetadata, keepLocalCopy);
         }}
       >
         {({ handleSubmit }) => (

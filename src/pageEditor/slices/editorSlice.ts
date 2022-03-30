@@ -373,29 +373,31 @@ export const editorSlice = createSlice({
       const {
         payload: { elementId, recipeMetadata, keepLocalCopy },
       } = action;
-      const element = state.elements.find(
+      const elementIndex = state.elements.findIndex(
         (element) => element.uuid === elementId
       );
-      if (!element) {
+      if (elementIndex < 0) {
         throw new Error(
           "Unable to add extension to blueprint, extension form state not found"
         );
       }
 
-      let copy: FormState;
-      if (keepLocalCopy) {
-        copy = {
-          ...element,
-          uuid: uuidv4(),
-        };
-      }
+      const element = state.elements[elementIndex];
 
-      element.recipe = recipeMetadata;
-      state.dirty[element.uuid] = true;
+      const newId = uuidv4();
+      state.elements.push({
+        ...element,
+        uuid: newId,
+        recipe: recipeMetadata,
+      });
+      state.dirty[newId] = true;
 
-      if (copy) {
-        state.elements.push(copy);
-        state.dirty[copy.uuid] = true;
+      if (!keepLocalCopy) {
+        ensureElementUIState(state, newId);
+        state.activeElement = newId;
+        state.elements.splice(elementIndex, 1);
+        delete state.dirty[element.uuid];
+        delete state.elementUIStates[element.uuid];
       }
     },
   },
