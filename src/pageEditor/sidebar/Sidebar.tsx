@@ -87,7 +87,7 @@ const ReloadButton: React.VoidFunctionComponent = () => (
   </Button>
 );
 
-const AddToRecipeButton: React.VFC<{ enabled: boolean }> = ({ enabled }) => {
+const AddToRecipeButton: React.VFC<{ disabled: boolean }> = ({ disabled }) => {
   const dispatch = useDispatch();
 
   return (
@@ -99,7 +99,7 @@ const AddToRecipeButton: React.VFC<{ enabled: boolean }> = ({ enabled }) => {
       onClick={() => {
         dispatch(actions.showAddToRecipeModal());
       }}
-      disabled={!enabled}
+      disabled={disabled}
     >
       <FontAwesomeIcon icon={faFileImport} />
     </Button>
@@ -178,11 +178,11 @@ const SidebarExpanded: React.VoidFunctionComponent<
   const isAddToRecipeModalVisible = useSelector(
     selectIsAddToRecipeModalVisible
   );
-  const addToRecipeButtonEnabled =
-    !isAddToRecipeModalVisible &&
-    !isEmpty(recipes) &&
-    activeElement &&
-    activeElement.recipe == null;
+  const addToRecipeButtonDisabled =
+    isAddToRecipeModalVisible ||
+    isEmpty(recipes) ||
+    activeElement === undefined ||
+    activeElement.recipe != null;
 
   const elementHash = hash(
     sortBy(
@@ -287,7 +287,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
             {showDeveloperUI && <ReloadButton />}
 
             {flagOn("page-editor-blueprints") && (
-              <AddToRecipeButton enabled={addToRecipeButtonEnabled} />
+              <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
             )}
           </div>
           <Button

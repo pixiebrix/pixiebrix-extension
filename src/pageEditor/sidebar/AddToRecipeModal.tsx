@@ -34,14 +34,14 @@ type FormState = {
   keepLocalCopy: boolean;
 };
 
+const initialFormState: FormState = {
+  recipeMetadata: null,
+  keepLocalCopy: false,
+};
+
 const AddToRecipeModal: React.VFC = () => {
   const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
   const activeElement = useSelector(selectActiveElement);
-
-  const initialFormState: FormState = {
-    recipeMetadata: null,
-    keepLocalCopy: false,
-  };
 
   const dispatch = useDispatch();
   const hideModal = () => {
@@ -53,20 +53,6 @@ const AddToRecipeModal: React.VFC = () => {
     value: metadata,
   }));
 
-  const onConfirmAddToRecipe = (
-    recipeMetadata: RecipeMetadata,
-    keepLocalCopy: boolean
-  ) => {
-    dispatch(
-      actions.addElementToRecipe({
-        elementId: activeElement.uuid,
-        recipeMetadata,
-        keepLocalCopy,
-      })
-    );
-    hideModal();
-  };
-
   return (
     <Modal show onHide={hideModal}>
       <Modal.Header closeButton>
@@ -77,7 +63,14 @@ const AddToRecipeModal: React.VFC = () => {
       <Formik
         initialValues={initialFormState}
         onSubmit={({ recipeMetadata, keepLocalCopy }) => {
-          onConfirmAddToRecipe(recipeMetadata, keepLocalCopy);
+          dispatch(
+            actions.addElementToRecipe({
+              elementId: activeElement.uuid,
+              recipeMetadata,
+              keepLocalCopy,
+            })
+          );
+          hideModal();
         }}
       >
         {({ handleSubmit }) => (
