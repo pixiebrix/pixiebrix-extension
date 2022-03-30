@@ -69,6 +69,7 @@ import {
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
+import { getStateValue } from "@/blocks/effects/getPageState";
 
 expectContext("contentScript");
 
@@ -123,6 +124,8 @@ declare global {
     NOTIFY_INFO: typeof notify.info;
     NOTIFY_ERROR: typeof notify.error;
     NOTIFY_SUCCESS: typeof notify.success;
+
+    GET_PAGE_STATE: typeof getStateValue;
   }
 }
 
@@ -178,5 +181,7 @@ export default function registerMessenger(): void {
     NOTIFY_INFO: notify.info,
     NOTIFY_ERROR: notify.error,
     NOTIFY_SUCCESS: notify.success,
+
+    GET_PAGE_STATE: getStateValue,
   });
 }

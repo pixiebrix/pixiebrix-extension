@@ -29,7 +29,7 @@ const extensionState = new Map<UUID, UnknownObject>();
 const blueprintState = new Map<RegistryId | null, UnknownObject>();
 
 type MergeStrategy = "shallow" | "replace" | "deep";
-type Namespace = "blueprint" | "extension" | "shared";
+export type Namespace = "blueprint" | "extension" | "shared";
 
 function mergeState(
   previous: UnknownObject,
