@@ -29,59 +29,34 @@ import ErrorDisplay from "./ErrorDisplay";
 
 const PageStateTab: React.VFC = () => {
   const activeElement = useSelector(selectActiveElement);
-  const [
-    sharedState,
-    isSharedStateLoading,
-    sharedStateError,
-    refreshSharedState,
-  ] = useAsyncState(async () => getPageState(thisTab, "shared"), []);
 
-  const [
-    blueprintState,
-    isBlueprintStateLoading,
-    blueprintStateError,
-    refreshBlueprintState,
-  ] = useAsyncState(
-    async () =>
-      activeElement.recipe
-        ? getPageState(thisTab, "blueprint", activeElement.recipe.id)
-        : null,
-    []
+  const [state, isLoading, error, refresh] = useAsyncState(
+    async () => {
+      const [shared, blueprint, extension] = await Promise.all([
+        getPageState(thisTab, "shared"),
+        activeElement.recipe
+          ? getPageState(thisTab, "blueprint", activeElement.recipe.id)
+          : Promise.resolve("Extension is not in a blueprint"),
+        getPageState(thisTab, "extension", null, activeElement.uuid),
+      ]);
+
+      return {
+        extension,
+        blueprint,
+        shared,
+      };
+    },
+    [],
+    {
+      extension: "loading...",
+      blueprint: "loading...",
+      shared: "loading...",
+    }
   );
-
-  const [
-    extensionState,
-    isExtensionStateLoading,
-    extensionStateError,
-    refreshExtensionState,
-  ] = useAsyncState(
-    async () => getPageState(thisTab, "extension", null, activeElement.uuid),
-    []
-  );
-
-  const isLoading =
-    isSharedStateLoading || isBlueprintStateLoading || isExtensionStateLoading;
-  const error = sharedStateError ?? blueprintStateError ?? extensionStateError;
-  const refreshState = () => {
-    void refreshSharedState();
-    void refreshBlueprintState();
-    void refreshExtensionState();
-  };
-
-  const state = {
-    extension: isExtensionStateLoading ? "loading..." : extensionState,
-    blueprint: isBlueprintStateLoading ? "loading..." : blueprintState,
-    shared: isSharedStateLoading ? "loading..." : sharedState,
-  };
 
   return (
     <div>
-      <Button
-        variant="info"
-        size="sm"
-        disabled={isLoading}
-        onClick={refreshState}
-      >
+      <Button variant="info" size="sm" disabled={isLoading} onClick={refresh}>
         <FontAwesomeIcon icon={faSync} /> Refresh
       </Button>
       {error ? (
