@@ -68,10 +68,6 @@ const PageStateTab: React.VFC = () => {
     void refreshExtensionState();
   };
 
-  if (error != null) {
-    return <ErrorDisplay error={error} />;
-  }
-
   const state = {
     extension: isExtensionStateLoading ? "loading..." : extensionState,
     blueprint: isBlueprintStateLoading ? "loading..." : blueprintState,
@@ -88,7 +84,11 @@ const PageStateTab: React.VFC = () => {
       >
         <FontAwesomeIcon icon={faSync} /> Refresh
       </Button>
-      <JsonTree data={state} copyable shouldExpandNode={() => true} />
+      {error ? (
+        <ErrorDisplay error={error} />
+      ) : (
+        <JsonTree data={state} copyable shouldExpandNode={() => true} />
+      )}
     </div>
   );
 };
