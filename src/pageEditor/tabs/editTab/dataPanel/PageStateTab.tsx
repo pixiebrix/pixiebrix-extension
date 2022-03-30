@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { getPageState } from "@/contentScript/messenger/api";
+import { getErrorMessage } from "@/errors";
 import { useAsyncState } from "@/hooks/common";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { thisTab } from "@/pageEditor/utils";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
 import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import ErrorDisplay from "./ErrorDisplay";
 
 const PageStateTab: React.VFC = () => {
   const activeElement = useSelector(selectActiveElement);
@@ -60,7 +60,10 @@ const PageStateTab: React.VFC = () => {
         <FontAwesomeIcon icon={faSync} /> Refresh
       </Button>
       {error ? (
-        <ErrorDisplay error={error} />
+        <div>
+          <p>Error</p>
+          <p>{getErrorMessage(error)}</p>
+        </div>
       ) : (
         <JsonTree data={state} copyable shouldExpandNode={() => true} />
       )}
