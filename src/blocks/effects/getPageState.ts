@@ -15,23 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import JsonTree from "@/components/jsonTree/JsonTree";
-import { getPageState } from "@/contentScript/messenger/api";
-import { useAsyncState } from "@/hooks/common";
-import { thisTab } from "@/pageEditor/utils";
-import React from "react";
+import { BlockOptions, RegistryId, UUID } from "@/core";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import ConsoleLogger from "@/tests/ConsoleLogger";
+import { GetPageState, Namespace } from "./pageState";
 
-const PageStateTab: React.VFC = () => {
-  const [sharedState, isSharedStateLoading, sharedStateError] = useAsyncState(
-    async () => getPageState(thisTab, "shared"),
-    []
-  );
+export async function getStateValue<TResult>(
+  namespace: Namespace,
+  blueprintId?: RegistryId | null,
+  extensionId?: UUID | null
+): Promise<TResult> {
+  const getState = new GetPageState();
+  const logger = new ConsoleLogger({
+    extensionId,
+    blueprintId,
+  });
 
-  const state = {
-    shared: isSharedStateLoading ? "loading..." : sharedState,
-  };
+  const result: TResult = (await getState.transform(
+    unsafeAssumeValidArg({ namespace }),
+    { logger } as BlockOptions
+  )) as TResult;
 
-  return <JsonTree data={state} />;
-};
-
-export default PageStateTab;
+  return result;
+}

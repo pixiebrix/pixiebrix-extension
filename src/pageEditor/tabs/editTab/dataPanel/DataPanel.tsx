@@ -333,7 +333,7 @@ const DataPanel: React.FC<{
               </div>
             )}
           </DataTab>
-          <DataTab eventKey="pageState">
+          <DataTab eventKey="pageState" mountOnEnter unmountOnExit>
             <PageStateTab />
           </DataTab>
         </Tab.Content>
