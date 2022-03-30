@@ -67,6 +67,15 @@ const PageStateTab: React.VFC = () => {
       ) : (
         <JsonTree data={state} copyable shouldExpandNode={() => true} />
       )}
+      <p className="mt-4">
+        <a
+          href="https://docs.pixiebrix.com/page-state"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <small>Learn more about Page State</small>
+        </a>
+      </p>
     </div>
   );
 };
