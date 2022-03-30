@@ -65,7 +65,9 @@ const AddToRecipeModal: React.VFC = () => {
           keepLocalCopy,
         })
       );
-      dispatch(optionsActions.removeExtension({ extensionId: elementId }));
+      if (!keepLocalCopy) {
+        dispatch(optionsActions.removeExtension({ extensionId: elementId }));
+      }
     } catch (error: unknown) {
       notify.error({
         message: "Problem adding extension to blueprint",
