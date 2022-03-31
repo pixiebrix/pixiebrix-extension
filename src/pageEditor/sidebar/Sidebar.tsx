@@ -167,7 +167,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   const isInsertingElement = useSelector((state: EditorState) =>
     Boolean(state.inserting)
   );
-  const activeElementId = useSelector(selectActiveExtensionId);
+  const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const installed = useSelector(selectExtensions);
   const elements = useSelector(selectElements);

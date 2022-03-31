@@ -46,7 +46,7 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch();
   const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
-  const isDirty = useSelector(selectRecipeIsDirty)(recipeId, elements);
+  const isDirty = useSelector(selectRecipeIsDirty(recipeId, elements));
 
   const caretIcon = expanded ? faCaretDown : faCaretRight;
 

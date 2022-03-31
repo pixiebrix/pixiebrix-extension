@@ -52,19 +52,25 @@ export const selectDirty = (state: RootState) => state.editor.dirty;
 export const selectDirtyRecipeOptions = (state: RootState) =>
   state.editor.dirtyRecipeOptionsById;
 
-export const selectDirtyOptionsForRecipeId = createSelector(
+const dirtyOptionsForRecipeIdSelector = createSelector(
   selectDirtyRecipeOptions,
-  (dirtyRecipeOptionsById) => (recipeId: RegistryId) =>
+  (state: RootState, recipeId: RegistryId) => recipeId,
+  (dirtyRecipeOptionsById, recipeId) =>
     // eslint-disable-next-line security/detect-object-injection
     dirtyRecipeOptionsById[recipeId]
 );
 
+export const selectDirtyOptionsForRecipeId =
+  (recipeId: RegistryId) => (state: RootState) =>
+    dirtyOptionsForRecipeIdSelector(state, recipeId);
+
 export const selectDirtyRecipeMetadata = (state: RootState) =>
   state.editor.dirtyRecipeMetadataById;
 
-export const selectDirtyMetadataForRecipeId = createSelector(
+const dirtyMetadataForRecipeIdSelector = createSelector(
   selectDirtyRecipeMetadata,
-  (dirtyRecipeMetadataById) => (recipeId: RegistryId) =>
+  (state: RootState, recipeId: RegistryId) => recipeId,
+  (dirtyRecipeMetadataById, recipeId) =>
     // eslint-disable-next-line security/detect-object-injection
     dirtyRecipeMetadataById[recipeId]
 );
@@ -73,29 +79,32 @@ export function getIdForElement(element: IExtension | FormState): UUID {
   return isExtension(element) ? element.id : element.uuid;
 }
 
-export const selectRecipeIsDirty = createSelector(
+const recipeIsDirtySelector = createSelector(
   selectDirty,
-  selectDirtyOptionsForRecipeId,
-  selectDirtyMetadataForRecipeId,
-  (dirtyElements, getDirtyOptionsById, getDirtyMetadataById) =>
-    (
-      recipeId: RegistryId,
-      extensionsAndElements: Array<IExtension | FormState>
-    ) => {
-      const elementIds = extensionsAndElements.map((item) =>
-        getIdForElement(item)
-      );
-      const hasDirtyElements = elementIds.some(
-        // eslint-disable-next-line security/detect-object-injection -- id extracted from element
-        (elementId) => dirtyElements[elementId]
-      );
-      return (
-        hasDirtyElements ||
-        Boolean(getDirtyOptionsById(recipeId)) ||
-        Boolean(getDirtyMetadataById(recipeId))
-      );
-    }
+  dirtyOptionsForRecipeIdSelector,
+  dirtyMetadataForRecipeIdSelector,
+  (
+    state: RootState,
+    recipeId: RegistryId,
+    extensionsAndElements: Array<IExtension | FormState>
+  ) => extensionsAndElements.map((item) => getIdForElement(item)),
+  (dirtyElements, dirtyRecipeOptions, dirtyRecipeMetadata, elementIds) => {
+    const hasDirtyElements = elementIds.some(
+      // eslint-disable-next-line security/detect-object-injection -- id extracted from element
+      (elementId) => dirtyElements[elementId]
+    );
+    return (
+      hasDirtyElements ||
+      Boolean(dirtyRecipeOptions) ||
+      Boolean(dirtyRecipeMetadata)
+    );
+  }
 );
+
+export const selectRecipeIsDirty =
+  (recipeId: RegistryId, elements: Array<IExtension | FormState>) =>
+  (state: RootState) =>
+    recipeIsDirtySelector(state, recipeId, elements);
 
 export const selectIsAddToRecipeModalVisible = (state: RootState) =>
   state.editor.isAddToRecipeModalVisible;
