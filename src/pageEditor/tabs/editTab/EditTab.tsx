@@ -56,6 +56,7 @@ import useFlags from "@/hooks/useFlags";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
+import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -144,11 +145,18 @@ const EditTab: React.FC<{
     setActiveNodeId
   );
 
+  const traces = useSelector(selectExtensionTrace);
+
   const nodes = useMemo<EditorNodeProps[]>(() => {
     const blockNodes: EditorNodeProps[] = blockPipeline.map(
       (blockConfig, index) => {
         const block = allBlocks.get(blockConfig.id)?.block;
         const nodeId = blockConfig.instanceId;
+        const hasCondition = typeof blockConfig.if !== "undefined";
+        // Don't loop through the trace records if condition is not set
+        const traceRecord = hasCondition
+          ? traces.find((trace) => trace.blockInstanceId === nodeId)
+          : null;
 
         if (!block) {
           return {
@@ -183,6 +191,8 @@ const EditTab: React.FC<{
           onClick() {
             setActiveNodeId(blockConfig.instanceId);
           },
+          hasCondition,
+          skippedRun: traceRecord?.skippedRun,
         };
 
         if (blockConfig.outputKey) {
@@ -212,6 +222,7 @@ const EditTab: React.FC<{
     icon,
     label,
     setActiveNodeId,
+    traces,
   ]);
 
   const [relevantBlocksToAdd] = useAsyncState(

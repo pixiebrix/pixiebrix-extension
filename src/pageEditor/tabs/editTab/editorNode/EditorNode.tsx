@@ -20,7 +20,12 @@ import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ListGroup } from "react-bootstrap";
-import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowDown,
+  faArrowUp,
+  faBan,
+  faCodeBranch,
+} from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { UUID } from "@/core";
 
@@ -39,6 +44,8 @@ export type EditorNodeProps = {
   canMoveDown?: boolean;
   onClickMoveUp?: () => void;
   onClickMoveDown?: () => void;
+  hasCondition?: boolean;
+  skippedRun?: boolean;
 };
 
 function isFontAwesomeIcon(
@@ -63,6 +70,8 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   canMoveDown,
   onClickMoveUp,
   onClickMoveDown,
+  hasCondition = false,
+  skippedRun = false,
 }) => {
   const nodeRef = useRef<HTMLAnchorElement>(null);
   const outputName = outputKey ? `@${outputKey}` : "";
@@ -87,6 +96,21 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       </span>
     ) : null;
 
+  const conditionBadge = hasCondition ? (
+    <span
+      className={cx(styles.conditionBadge, {
+        [styles.skippedRun]: skippedRun,
+        "fa-layers": skippedRun,
+      })}
+      title={`This block has a condition ${
+        skippedRun ? "and was skipped" : ""
+      }`}
+    >
+      <FontAwesomeIcon icon={faCodeBranch} />
+      {skippedRun && <FontAwesomeIcon icon={faBan} />}
+    </span>
+  ) : null;
+
   useEffect(() => {
     if (active) {
       nodeRef.current?.focus();
@@ -103,6 +127,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       <div className={styles.icon}>
         {icon}
         {errorBadge}
+        {conditionBadge}
       </div>
       <div className={styles.text}>
         <div>{title}</div>

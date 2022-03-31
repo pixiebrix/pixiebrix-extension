@@ -53,6 +53,22 @@
   }
 }
 
+.conditionBadge {
+  width: 0;
+  font-size: 0.7em;
+  transform: translate(-1.2em, 1.7em);
+}
+.skippedRun {
+  & svg:first-child {
+    font-size: 0.6em;
+    margin-left: 0.3em;
+  }
+
+  & svg:last-child {
+    margin-left: -0.125em;
+  }
+}
+
 .text {
   line-height: 1.2;
 }
