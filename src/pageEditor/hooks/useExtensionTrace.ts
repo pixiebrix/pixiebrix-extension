@@ -51,7 +51,6 @@ function selectTraceMetadata(record: TraceRecord) {
  */
 function useExtensionTrace() {
   const dispatch = useDispatch();
-  // XXX: should this use the Formik state to get the extension id instead? In practice they should always be in sync
   const extensionId = useSelector(selectActiveElementId);
   const extensionTrace = useSelector(selectExtensionTrace);
 
