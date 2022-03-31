@@ -306,6 +306,12 @@ const DataPanel: React.FC<{
             mountOnEnter
             unmountOnExit
           >
+            {block.if && (
+              <div className="text-info">
+                <FontAwesomeIcon icon={faInfoCircle} /> The preview is shown
+                regardless of the condition defined for the block
+              </div>
+            )}
             {showFormPreview || showDocumentPreview ? (
               <ErrorBoundary>
                 {showFormPreview ? (

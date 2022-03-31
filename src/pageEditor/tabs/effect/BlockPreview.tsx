@@ -178,7 +178,10 @@ const BlockPreview: React.FunctionComponent<{
       try {
         const output = await runBlock(thisTab, {
           apiVersion,
-          blockConfig: removeEmptyValues(blockConfig),
+          blockConfig: {
+            ...removeEmptyValues(blockConfig),
+            if: undefined,
+          },
           context: { ...context, ...(await makeServiceContext(services)) },
           rootSelector,
         });
