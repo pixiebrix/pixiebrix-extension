@@ -277,12 +277,13 @@ export function getRootCause(error: ErrorObject): ErrorObject {
 
 // Manually list subclasses because the prototype chain is lost in serialization/deserialization
 // See https://github.com/sindresorhus/serialize-error/issues/48
-const BUSINESS_ERROR_CLASSES = [
+const BUSINESS_ERROR_CLASSES = new Set([
   BusinessError,
   NoElementsFoundError,
   MultipleElementsFoundError,
+  InvalidSelectorError,
   PropError,
-];
+]);
 // Name classes from other modules separately, because otherwise we'll get a circular dependency with this module
 const BUSINESS_ERROR_NAMES = new Set([
   "PropError",
