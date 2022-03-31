@@ -20,7 +20,7 @@ import { createSelector } from "reselect";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { uniqBy } from "lodash";
+import { isEmpty, uniqBy } from "lodash";
 
 type RootState = { editor: EditorState };
 
@@ -75,6 +75,9 @@ const dirtyMetadataForRecipeIdSelector = createSelector(
     dirtyRecipeMetadataById[recipeId]
 );
 
+const selectDeletedElements = (state: RootState) =>
+  state.editor.deletedElementsByRecipeId;
+
 export function getIdForElement(element: IExtension | FormState): UUID {
   return isExtension(element) ? element.id : element.uuid;
 }
@@ -83,12 +86,22 @@ const recipeIsDirtySelector = createSelector(
   selectDirty,
   dirtyOptionsForRecipeIdSelector,
   dirtyMetadataForRecipeIdSelector,
+  (state: RootState, recipeId: RegistryId) =>
+    // eslint-disable-next-line security/detect-object-injection
+    selectDeletedElements(state)[recipeId],
   (
     state: RootState,
     recipeId: RegistryId,
     extensionsAndElements: Array<IExtension | FormState>
   ) => extensionsAndElements.map((item) => getIdForElement(item)),
-  (dirtyElements, dirtyRecipeOptions, dirtyRecipeMetadata, elementIds) => {
+  // eslint-disable-next-line max-params
+  (
+    dirtyElements,
+    dirtyRecipeOptions,
+    dirtyRecipeMetadata,
+    deletedElements,
+    elementIds
+  ) => {
     const hasDirtyElements = elementIds.some(
       // eslint-disable-next-line security/detect-object-injection -- id extracted from element
       (elementId) => dirtyElements[elementId]
@@ -96,7 +109,8 @@ const recipeIsDirtySelector = createSelector(
     return (
       hasDirtyElements ||
       Boolean(dirtyRecipeOptions) ||
-      Boolean(dirtyRecipeMetadata)
+      Boolean(dirtyRecipeMetadata) ||
+      !isEmpty(deletedElements)
     );
   }
 );
@@ -108,6 +122,9 @@ export const selectRecipeIsDirty =
 
 export const selectIsAddToRecipeModalVisible = (state: RootState) =>
   state.editor.isAddToRecipeModalVisible;
+
+export const selectIsRemoveFromRecipeModalVisible = (state: RootState) =>
+  state.editor.isRemoveFromRecipeModalVisible;
 
 export const selectInstalledRecipeMetadatas = createSelector(
   selectElements,

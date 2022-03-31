@@ -125,6 +125,16 @@ export interface EditorState {
    * Are we showing the "add extension to blueprint" modal?
    */
   isAddToRecipeModalVisible: boolean;
+
+  /**
+   * Are we showing the "remove extension from blueprint" modal?
+   */
+  isRemoveFromRecipeModalVisible: boolean;
+
+  /**
+   * Unsaved extensions that have been deleted from a recipe
+   */
+  deletedElementsByRecipeId: Record<RegistryId, FormState[]>;
 }
 
 export type RootState = AuthRootState &

@@ -115,16 +115,15 @@ const RemoveFromRecipeButton: React.VFC<{ disabled: boolean }> = ({
   disabled,
 }) => {
   const dispatch = useDispatch();
-  const elementId = useSelector(selectActiveElementId);
 
   return (
     <Button
       type="button"
       size="sm"
       variant="light"
-      title="Remove extension from its blueprint"
+      title="Remove extension from blueprint"
       onClick={() => {
-        dispatch(actions.removeElementFromRecipe(elementId));
+        dispatch(actions.showRemoveFromRecipeModal());
       }}
       disabled={disabled}
     >

@@ -53,6 +53,8 @@ export const initialState: EditorState = {
   dirtyRecipeOptionsById: {},
   dirtyRecipeMetadataById: {},
   isAddToRecipeModalVisible: false,
+  isRemoveFromRecipeModalVisible: false,
+  deletedElementsByRecipeId: {},
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
@@ -400,8 +402,20 @@ export const editorSlice = createSlice({
         delete state.elementUIStates[element.uuid];
       }
     },
-    removeElementFromRecipe(state, action: PayloadAction<UUID>) {
-      const elementId = action.payload;
+    showRemoveFromRecipeModal(state) {
+      state.isRemoveFromRecipeModalVisible = true;
+    },
+    hideRemoveFromRecipeModal(state) {
+      state.isRemoveFromRecipeModalVisible = false;
+    },
+    removeElementFromRecipe(
+      state,
+      action: PayloadAction<{
+        elementId: UUID;
+        keepLocalCopy: boolean;
+      }>
+    ) {
+      const { elementId, keepLocalCopy } = action.payload;
       const elementIndex = state.elements.findIndex(
         (element) => element.uuid === elementId
       );
@@ -412,12 +426,28 @@ export const editorSlice = createSlice({
       }
 
       const element = state.elements[elementIndex];
-      element.recipe = undefined;
-      state.dirty[elementId] = true;
+      const recipeId = element.recipe.id;
+      if (!state.deletedElementsByRecipeId[recipeId]) {
+        state.deletedElementsByRecipeId[recipeId] = [];
+      }
 
-      // How do we mark the recipe dirty?
+      state.deletedElementsByRecipeId[recipeId].push(element);
+      state.elements.splice(elementIndex, 1);
+      delete state.dirty[elementId];
+      delete state.elementUIStates[elementId];
+      state.activeElement = undefined;
 
-      // How do we 'reset' from this state?
+      if (keepLocalCopy) {
+        const newId = uuidv4();
+        state.elements.push({
+          ...element,
+          uuid: newId,
+          recipe: undefined,
+        });
+        state.dirty[newId] = true;
+        ensureElementUIState(state, newId);
+        state.activeElement = newId;
+      }
     },
   },
 });
