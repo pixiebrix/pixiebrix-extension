@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, RegistryId } from "@/core";
+import { IExtension, RecipeMetadata, RegistryId } from "@/core";
 import { createSelector } from "reselect";
 import { isExtension } from "@/pageEditor/sidebar/common";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
+import { selectExtensions } from "@/store/extensionsSelectors";
+import { uniqBy } from "lodash";
 
 type RootState = { editor: EditorState };
 
@@ -92,5 +94,25 @@ export const selectRecipeIsDirty = createSelector(
       (element) => dirtyElements[getIdForElement(element)]
     );
     return hasDirtyElements || Boolean(dirtyOptions) || Boolean(dirtyMetadata);
+  }
+);
+
+export const selectIsAddToRecipeModalVisible = (state: RootState) =>
+  state.editor.isAddToRecipeModalVisible;
+
+export const selectInstalledRecipeMetadatas = createSelector(
+  [selectElements, selectExtensions],
+  (elements, extensions) => {
+    const elementRecipes: RecipeMetadata[] = elements
+      .filter((element) => Boolean(element.recipe))
+      .map((element) => element.recipe);
+    const extensionRecipes: RecipeMetadata[] = extensions
+      .filter((extension) => Boolean(extension._recipe))
+      .map((extension) => extension._recipe);
+
+    return uniqBy(
+      [...elementRecipes, ...extensionRecipes],
+      (recipe) => recipe.id
+    );
   }
 );
