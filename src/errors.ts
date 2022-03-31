@@ -29,6 +29,9 @@ import {
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
+export const JQUERY_INVALID_SELECTOR_ERROR =
+  "Syntax error, unrecognized expression: ";
+
 /**
  * Base class for Errors arising from business logic in the brick, not the PixieBrix application/extension itself.
  *
@@ -133,6 +136,22 @@ export class MultipleElementsFoundError extends BusinessError {
   ) {
     super(message);
     this.name = "MultipleElementsFoundError";
+    this.selector = selector;
+  }
+}
+
+export class InvalidSelectorError extends BusinessError {
+  override name = "InvalidSelectorError";
+  readonly selector: string;
+
+  /**
+   * @param message The error message jQuery creates, example in https://cs.github.com/jquery/jquery/blob/2525cffc42934c0d5c7aa085bc45dd6a8282e840/src/selector.js#L787
+   */
+  constructor(message: string, selector: string) {
+    // Make the error message more specific than "Syntax error"
+    super(
+      "Invalid selector: " + message.replace(JQUERY_INVALID_SELECTOR_ERROR, "")
+    );
     this.selector = selector;
   }
 }
