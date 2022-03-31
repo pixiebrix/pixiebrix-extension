@@ -559,6 +559,7 @@ function throwBlockError(
     blockId: blockConfig.id,
     blockInstanceId: blockConfig.instanceId,
     error: serializeError(error),
+    skippedRun: false,
   });
 
   if (blockConfig.onError?.alert) {
