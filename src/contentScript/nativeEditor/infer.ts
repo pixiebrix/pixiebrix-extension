@@ -107,9 +107,14 @@ function isSelectorUsuallyUnique(selector: string): boolean {
  * 1   '[data-cy="b4da55"]'
  * 2   '.navItem'
  * 2   '.birdsArentReal'
+ * 21  '#name > :nth-child(2)'
  * 30  '[aria-label="Click elsewhere"]'
  */
 export function getSelectorPreference(selector: string): number {
+  if (selector.includes(":nth-child")) {
+    return selector.length;
+  }
+
   if (selector.startsWith("#")) {
     return 0;
   }
