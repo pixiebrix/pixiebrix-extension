@@ -372,7 +372,8 @@ export function replaceRecipeContent({
         if (extension.extensionPointId === innerId) {
           // We're tracking this with a separate variable here because
           // re-assigning extension.extensionPointId directly was sometimes
-          // throwing "Cannot re-assign property of Object" errors
+          // throwing "Cannot assign to read only property 'extensionPointId'
+          // of object '#<Object>'" errors
           extensionPointId = newInnerId as InnerDefinitionRef;
         }
 
