@@ -23,23 +23,25 @@ import { Formik } from "formik";
 import { fireTextInput } from "@/tests/formHelpers";
 import { waitForEffect } from "@/tests/testHelpers";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
+import { SchemaFieldProps } from "./propTypes";
 
 beforeAll(() => {
   registerDefaultWidgets();
 });
 
-describe("option mode switching", () => {
-  const renderSchemaField = (
-    name: string,
-    schema: Schema,
-    initialValues: any
-  ) =>
-    render(
-      <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-        <BasicSchemaField name={name} schema={schema} />
-      </Formik>
-    );
+const renderSchemaField = (
+  name: string,
+  schema: Schema,
+  initialValues: any,
+  props?: Partial<SchemaFieldProps>
+) =>
+  render(
+    <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+      <BasicSchemaField name={name} schema={schema} {...props} />
+    </Formik>
+  );
 
+describe("option mode switching", () => {
   const expectToggleMode = (container: HTMLElement, mode: string) => {
     expect(
       container.querySelector('[data-testid="toggle-test"]')
@@ -130,4 +132,34 @@ describe("option mode switching", () => {
     expectToggleMode(container, "Text");
     expect(inputElement.value).toStrictEqual("{{@data.foo}} ");
   });
+});
+
+test("omit if empty", async () => {
+  const rendered = renderSchemaField(
+    "test",
+    {
+      type: ["string", "number", "boolean"],
+    },
+    {
+      test: {
+        __type__: "var",
+        __value__: "@data.foo",
+      },
+    },
+    {
+      omitIfEmpty: true,
+      label: "testing omit",
+    }
+  );
+
+  const field = rendered.getByLabelText("testing omit");
+  expect(rendered.getByLabelText("testing omit")).toHaveValue("@data.foo");
+
+  fireTextInput(field, "");
+  await waitForEffect();
+
+  expect(rendered.getByLabelText("testing omit")).toHaveValue("");
+
+  const fieldToggle = rendered.getByTestId("toggle-test");
+  expect(fieldToggle).toHaveAttribute("data-test-selected", "Exclude");
 });
