@@ -357,6 +357,7 @@ export function replaceRecipeContent({
       ...cleanRecipeExtensions,
       ...dirtyRecipeExtensions,
     ]) {
+      let extensionPointId: RegistryId | InnerDefinitionRef = null;
       for (const [innerId, definition] of Object.entries(
         extension.definitions ?? {}
       )) {
@@ -369,18 +370,26 @@ export function replaceRecipeContent({
               )
             : innerId;
         if (extension.extensionPointId === innerId) {
-          extension.extensionPointId = newInnerId as InnerDefinitionRef;
+          // We're tracking this with a separate variable here because
+          // re-assigning extension.extensionPointId directly was sometimes
+          // throwing "Cannot assign to read only property 'extensionPointId'
+          // of object '#<Object>'" errors
+          extensionPointId = newInnerId as InnerDefinitionRef;
         }
 
         // eslint-disable-next-line security/detect-object-injection -- we just constructed the id
         recipeInnerDefinitions[newInnerId] = definition;
       }
 
-      const { extensionPointId, services, ...rest } = extension;
+      const {
+        extensionPointId: oldExtensionPointId,
+        services,
+        ...rest
+      } = extension;
 
       extensionPoints.push({
         ...pick(rest, ["label", "config", "permissions", "templateEngine"]),
-        id: extensionPointId,
+        id: extensionPointId ?? oldExtensionPointId,
         services: Object.fromEntries(services.map((x) => [x.outputKey, x.id])),
       });
     }

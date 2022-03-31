@@ -31,7 +31,7 @@ import {
   ListGroup,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IExtension, RegistryId, UUID } from "@/core";
+import { IExtension } from "@/core";
 import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import hash from "object-hash";
 import logoUrl from "@/icons/custom-icons/favicon.svg";
@@ -52,7 +52,6 @@ import {
 import { CSSTransition } from "react-transition-group";
 import cx from "classnames";
 import { CSSTransitionProps } from "react-transition-group/CSSTransition";
-import { RecipeDefinition } from "@/types/definitions";
 import Loader from "@/components/Loader";
 import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
@@ -60,10 +59,14 @@ import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
   getIdForElement,
   selectActiveElementId,
+  selectActiveRecipeId,
+  selectElements,
   selectIsAddToRecipeModalVisible,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import { FormState } from "@/pageEditor/pageEditorTypes";
+import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
+import { selectExtensions } from "@/store/extensionsSelectors";
+import { useGetRecipesQuery } from "@/services/api";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -89,7 +92,7 @@ const ReloadButton: React.VoidFunctionComponent = () => (
   </Button>
 );
 
-const AddToRecipeButton: React.VFC<{ enabled: boolean }> = ({ enabled }) => {
+const AddToRecipeButton: React.VFC<{ disabled: boolean }> = ({ disabled }) => {
   const dispatch = useDispatch();
 
   return (
@@ -101,7 +104,7 @@ const AddToRecipeButton: React.VFC<{ enabled: boolean }> = ({ enabled }) => {
       onClick={() => {
         dispatch(actions.showAddToRecipeModal());
       }}
-      disabled={!enabled}
+      disabled={disabled}
     >
       <FontAwesomeIcon icon={faFileImport} size="lg" />
     </Button>
@@ -154,31 +157,20 @@ const Logo: React.VoidFunctionComponent = () => (
   <img src={logoUrl} alt="PixiBrix logo" className={styles.logo} />
 );
 
-type SidebarProps = {
-  isInsertingElement: boolean;
-  activeElementId: UUID | null;
-  activeRecipeId: RegistryId | null;
-  readonly elements: FormState[];
-  installed: IExtension[];
-  recipes: RecipeDefinition[];
-  isLoadingItems: boolean;
-};
-
-const SidebarExpanded: React.VoidFunctionComponent<
-  SidebarProps & {
-    collapseSidebar: () => void;
-  }
-> = ({
-  isInsertingElement,
-  activeElementId,
-  activeRecipeId,
-  installed,
-  elements,
-  recipes,
-  isLoadingItems,
-  collapseSidebar,
-}) => {
+const SidebarExpanded: React.VoidFunctionComponent<{
+  collapseSidebar: () => void;
+}> = ({ collapseSidebar }) => {
   const context = useContext(PageEditorTabContext);
+
+  const { data: recipes, isLoading: isLoadingRecipes } = useGetRecipesQuery();
+
+  const isInsertingElement = useSelector((state: EditorState) =>
+    Boolean(state.inserting)
+  );
+  const activeElementId = useSelector(selectActiveExtensionId);
+  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const installed = useSelector(selectExtensions);
+  const elements = useSelector(selectElements);
 
   const { flagOn } = useFlags();
   const showDeveloperUI =
@@ -202,11 +194,11 @@ const SidebarExpanded: React.VoidFunctionComponent<
   const isAddToRecipeModalVisible = useSelector(
     selectIsAddToRecipeModalVisible
   );
-  const addToRecipeButtonEnabled =
-    !isAddToRecipeModalVisible &&
-    !isEmpty(recipes) &&
-    activeElement &&
-    activeElement.recipe == null;
+  const addToRecipeButtonDisabled =
+    isAddToRecipeModalVisible ||
+    isEmpty(recipes) ||
+    activeElement === undefined ||
+    activeElement.recipe != null;
 
   const removeFromRecipeButtonEnabled = activeElement?.recipe != null;
 
@@ -314,7 +306,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
 
             {flagOn("page-editor-blueprints") && (
               <>
-                <AddToRecipeButton enabled={addToRecipeButtonEnabled} />
+                <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
                 <RemoveFromRecipeButton
                   enabled={removeFromRecipeButtonEnabled}
                 />
@@ -346,7 +338,7 @@ const SidebarExpanded: React.VoidFunctionComponent<
         ) : null}
       </div>
       <div className={styles.extensions}>
-        {isLoadingItems ? (
+        {isLoadingRecipes ? (
           <Loader />
         ) : (
           <ListGroup>
@@ -421,7 +413,7 @@ const transitionProps: CSSTransitionProps = {
   mountOnEnter: true,
 };
 
-const Sidebar: React.VoidFunctionComponent<SidebarProps> = (props) => {
+const Sidebar: React.VFC = () => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   return (
     <>
@@ -437,7 +429,6 @@ const Sidebar: React.VoidFunctionComponent<SidebarProps> = (props) => {
           collapseSidebar={() => {
             setCollapsed(true);
           }}
-          {...props}
         />
       </CSSTransition>
     </>

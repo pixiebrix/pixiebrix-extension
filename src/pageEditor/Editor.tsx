@@ -56,7 +56,7 @@ const selectEditor = ({ editor }: RootState) => editor;
 const Editor: React.FunctionComponent = () => {
   const { tabState, connecting } = useContext(PageEditorTabContext);
   const installed = useSelector(selectExtensions);
-  const { data: recipes, isLoading: loadingRecipes } = useGetRecipesQuery();
+  const { data: recipes, isLoading: isLoadingRecipes } = useGetRecipesQuery();
   const dispatch = useDispatch();
 
   const sessionId = useSelector(selectSessionId);
@@ -79,7 +79,6 @@ const Editor: React.FunctionComponent = () => {
     selectionSeq,
     inserting,
     elements,
-    activeElement: activeElementId,
     activeRecipeId,
     error: editorError,
     beta,
@@ -175,19 +174,11 @@ const Editor: React.FunctionComponent = () => {
   return (
     <>
       <div className={styles.root}>
-        <Sidebar
-          installed={installed}
-          elements={elements}
-          recipes={recipes}
-          activeElementId={activeElementId}
-          activeRecipeId={activeRecipeId}
-          isInsertingElement={Boolean(inserting)}
-          isLoadingItems={loadingRecipes}
-        />
+        <Sidebar />
         {body}
       </div>
 
-      {isAddToRecipeModalVisible && <AddToRecipeModal />}
+      {isAddToRecipeModalVisible && !isLoadingRecipes && <AddToRecipeModal />}
     </>
   );
 };

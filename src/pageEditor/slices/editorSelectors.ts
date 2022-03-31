@@ -54,8 +54,8 @@ export const selectDirtyRecipeOptions = (state: RootState) =>
 
 export const selectDirtyOptionsForRecipeId = createSelector(
   selectDirtyRecipeOptions,
-  // eslint-disable-next-line security/detect-object-injection
   (dirtyRecipeOptionsById) => (recipeId: RegistryId) =>
+    // eslint-disable-next-line security/detect-object-injection
     dirtyRecipeOptionsById[recipeId]
 );
 
@@ -64,8 +64,8 @@ export const selectDirtyRecipeMetadata = (state: RootState) =>
 
 export const selectDirtyMetadataForRecipeId = createSelector(
   selectDirtyRecipeMetadata,
-  // eslint-disable-next-line security/detect-object-injection
   (dirtyRecipeMetadataById) => (recipeId: RegistryId) =>
+    // eslint-disable-next-line security/detect-object-injection
     dirtyRecipeMetadataById[recipeId]
 );
 

@@ -20,7 +20,8 @@ import { Button, Modal } from "react-bootstrap";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import extensionsSlice from "@/store/extensionsSlice";
 import {
   selectActiveElement,
   selectInstalledRecipeMetadatas,
@@ -28,44 +29,59 @@ import {
 import { RecipeMetadata } from "@/core";
 import { Form, Formik } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import notify from "@/utils/notify";
+
+const { actions: optionsActions } = extensionsSlice;
 
 type FormState = {
   recipeMetadata: RecipeMetadata;
   keepLocalCopy: boolean;
 };
 
+const initialFormState: FormState = {
+  recipeMetadata: null,
+  keepLocalCopy: false,
+};
+
 const AddToRecipeModal: React.VFC = () => {
   const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
   const activeElement = useSelector(selectActiveElement);
 
-  const initialFormState: FormState = {
-    recipeMetadata: null,
-    keepLocalCopy: false,
-  };
-
   const dispatch = useDispatch();
   const hideModal = () => {
-    dispatch(actions.hideAddToRecipeModal());
+    dispatch(editorActions.hideAddToRecipeModal());
   };
+
+  function onConfirmAddToRecipe(
+    recipeMetadata: RecipeMetadata,
+    keepLocalCopy: boolean
+  ) {
+    try {
+      const elementId = activeElement.uuid;
+      dispatch(
+        editorActions.addElementToRecipe({
+          elementId,
+          recipeMetadata,
+          keepLocalCopy,
+        })
+      );
+      if (!keepLocalCopy) {
+        dispatch(optionsActions.removeExtension({ extensionId: elementId }));
+      }
+    } catch (error: unknown) {
+      notify.error({
+        message: "Problem adding extension to blueprint",
+        error,
+      });
+    } finally {
+      hideModal();
+    }
+  }
 
   const selectOptions = recipeMetadatas.map((metadata) => ({
     label: metadata.name,
     value: metadata,
   }));
-
-  const onConfirmAddToRecipe = (
-    recipeMetadata: RecipeMetadata,
-    keepLocalCopy: boolean
-  ) => {
-    dispatch(
-      actions.addElementToRecipe({
-        elementId: activeElement.uuid,
-        recipeMetadata,
-        keepLocalCopy,
-      })
-    );
-    hideModal();
-  };
 
   return (
     <Modal show onHide={hideModal}>
