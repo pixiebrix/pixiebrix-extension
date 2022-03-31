@@ -75,7 +75,7 @@ const dirtyMetadataForRecipeIdSelector = createSelector(
     dirtyRecipeMetadataById[recipeId]
 );
 
-const selectDeletedElements = (state: RootState) =>
+export const selectDeletedElements = (state: RootState) =>
   state.editor.deletedElementsByRecipeId;
 
 export function getIdForElement(element: IExtension | FormState): UUID {
@@ -94,13 +94,13 @@ const recipeIsDirtySelector = createSelector(
     recipeId: RegistryId,
     extensionsAndElements: Array<IExtension | FormState>
   ) => extensionsAndElements.map((item) => getIdForElement(item)),
-  // eslint-disable-next-line max-params
   (
     dirtyElements,
     dirtyRecipeOptions,
     dirtyRecipeMetadata,
     deletedElements,
     elementIds
+    // eslint-disable-next-line max-params
   ) => {
     const hasDirtyElements = elementIds.some(
       // eslint-disable-next-line security/detect-object-injection -- id extracted from element

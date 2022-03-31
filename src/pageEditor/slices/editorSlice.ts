@@ -449,6 +449,10 @@ export const editorSlice = createSlice({
         state.activeElement = newId;
       }
     },
+    clearDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
+      const recipeId = action.payload;
+      delete state.deletedElementsByRecipeId[recipeId];
+    },
   },
 });
 /* eslint-enable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- re-enable rule */
