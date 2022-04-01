@@ -140,7 +140,9 @@ function useRecipeSaver(): RecipeSaver {
     dispatch(editorActions.updateRecipeMetadataForElements(newRecipeMetadata));
 
     // Clear the dirty states
-    dispatch(editorActions.resetRecipeMetadataAndOptions(newRecipeMetadata.id));
+    dispatch(
+      editorActions.resetMetadataAndOptionsForRecipe(newRecipeMetadata.id)
+    );
     dispatch(editorActions.clearDeletedElementsForRecipe(newRecipeMetadata.id));
   }
 

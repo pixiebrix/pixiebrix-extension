@@ -75,14 +75,15 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
     const confirmed = await showConfirmation({
       title: "Reset Blueprint?",
       message:
-        "Unsaved changes to extensions within this blueprint, or to blueprint options, will be lost",
+        "Unsaved changes to extensions within this blueprint, or to blueprint options and metadata, will be lost.",
       submitCaption: "Reset",
     });
     if (!confirmed) {
       return;
     }
 
-    dispatch(actions.resetRecipeMetadataAndOptions(recipe.metadata.id));
+    dispatch(actions.resetMetadataAndOptionsForRecipe(recipe.metadata.id));
+    dispatch(actions.restoreDeletedElementsForRecipe(recipe.metadata.id));
     forceRefreshLayout();
   }
 
