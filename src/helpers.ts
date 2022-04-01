@@ -53,9 +53,9 @@ export const IS_BROWSER =
   typeof window !== "undefined" && typeof window.document !== "undefined";
 
 /**
- * Find an element(s) by its JQuery selector. A safe alternative to $(selector), which constructs an element it it's
+ * Find an element(s) by its jQuery selector. A safe alternative to $(selector), which constructs an element it it's
  * passed HTML.
- * @param selector a JQuery selector
+ * @param selector a jQuery selector
  * @param parent parent element to search (default=document)
  */
 export function $safeFind<Element extends HTMLElement>(

@@ -45,7 +45,7 @@ import { isInnerExtensionPoint } from "@/registry/internal";
 /**
  * @throws InputValidationError if blockArgs does not match the input schema for block
  */
-// Can't use Typescript's assert return type for promises: https://github.com/microsoft/TypeScript/issues/34636
+// Can't use TypeScript's assert return type for promises: https://github.com/microsoft/TypeScript/issues/34636
 export async function throwIfInvalidInput(
   block: IBlock,
   blockArgs: RenderedArgs

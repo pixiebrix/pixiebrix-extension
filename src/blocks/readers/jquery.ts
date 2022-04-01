@@ -212,7 +212,7 @@ export async function readJQuery(
 ): Promise<ReaderOutput> {
   const { selectors } = reader;
   if (!root) {
-    throw new Error("JQuery reader requires the document or element(s)");
+    throw new Error("jQuery reader requires the document or element(s)");
   }
 
   return asyncMapValues(selectors, async (selector) => select(selector, root));

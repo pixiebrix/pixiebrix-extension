@@ -19,7 +19,7 @@ import { MultipleElementsFoundError, NoElementsFoundError } from "@/errors";
 
 /**
  * Returns exactly one HTMLElement corresponding to the given selector.
- * @param selector the JQuery selector
+ * @param selector the jQuery selector
  * @throws NoElementsFoundError if not elements are found
  * @throws MultipleElementsFoundError if multiple elements are found
  */

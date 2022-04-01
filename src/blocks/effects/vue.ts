@@ -34,7 +34,7 @@ export class SetVueValues extends Effect {
     properties: {
       component: {
         type: "string",
-        description: "JQuery selector for the Vue.js component",
+        description: "jQuery selector for the Vue.js component",
       },
       values: {
         type: "object",

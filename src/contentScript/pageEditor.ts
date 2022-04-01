@@ -62,7 +62,7 @@ type RunBlockArgs = {
    */
   context: BlockArgContext;
   /**
-   * Root JQuery selector to determine the root if the rootMode is "inherit".
+   * Root jQuery selector to determine the root if the rootMode is "inherit".
    * @see BlockConfig.rootMode
    */
   rootSelector: string | undefined;

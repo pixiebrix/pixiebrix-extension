@@ -166,7 +166,7 @@ export type BlockConfig = {
   rootMode?: "inherit" | "document";
 
   /**
-   * (Optional) root JQuery/CSS selector. The selector is relative to the `root` that is passed to the pipeline/stage.
+   * (Optional) root jQuery/CSS selector. The selector is relative to the `root` that is passed to the pipeline/stage.
    *
    * An error is thrown at runtime if the selector doesn't match exactly one element
    * @see rootMode
