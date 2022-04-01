@@ -24,7 +24,7 @@ import {
   installedRecipeMetadataFactory,
   recipeFactory,
   recipeMetadataFactory,
-} from "@/tests/factories";
+} from "@/testUtils/factories";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const simpleElementFactory = define<FormState>({

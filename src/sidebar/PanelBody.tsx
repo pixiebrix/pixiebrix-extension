@@ -19,7 +19,7 @@ import React from "react";
 import Loader from "@/components/Loader";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import ReactShadowRoot from "react-shadow-root";
 import { getErrorMessage } from "@/errors";
 import { BlockArg, RendererOutput } from "@/core";

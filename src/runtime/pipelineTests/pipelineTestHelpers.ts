@@ -1,4 +1,4 @@
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import { Block, UnknownObject } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { ApiVersion, BlockArg, BlockOptions, Schema } from "@/core";

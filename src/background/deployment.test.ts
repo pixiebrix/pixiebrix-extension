@@ -20,7 +20,7 @@ import {
   deploymentFactory,
   extensionFactory,
   installedRecipeMetadataFactory,
-} from "@/tests/factories";
+} from "@/testUtils/factories";
 import { uuidv4 } from "@/types/helpers";
 import { PersistedExtension } from "@/core";
 import MockAdapter from "axios-mock-adapter";
