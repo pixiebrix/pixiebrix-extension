@@ -91,12 +91,6 @@ const Editor: React.FunctionComponent = () => {
     (recipe) => recipe.metadata.id === activeRecipeId
   );
 
-  console.log("render editor", { activeRecipeId, selectedRecipe });
-
-  useEffect(() => {
-    console.log({ activeRecipeId, selectedRecipe });
-  }, [activeRecipeId, selectedRecipe]);
-
   const cancelInsert = useCallback(async () => {
     dispatch(actions.toggleInsert(null));
     await cancelSelect(thisTab);

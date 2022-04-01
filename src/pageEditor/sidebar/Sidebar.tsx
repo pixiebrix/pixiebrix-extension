@@ -161,7 +161,8 @@ const SidebarExpanded: React.VoidFunctionComponent<{
 }> = ({ collapseSidebar }) => {
   const context = useContext(PageEditorTabContext);
 
-  const { data: recipes, isLoading: isLoadingRecipes } = useGetRecipesQuery();
+  const { data: allRecipes, isLoading: isLoadingRecipes } =
+    useGetRecipesQuery();
 
   const isInsertingElement = useSelector((state: EditorState) =>
     Boolean(state.inserting)
@@ -170,6 +171,18 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const installed = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
+
+  const recipes = useMemo(
+    () =>
+      allRecipes?.filter(
+        (recipe) =>
+          installed.some(
+            (installed) => installed._recipe?.id === recipe.metadata.id
+          ) ||
+          elements.some((element) => element.recipe?.id === recipe.metadata.id)
+      ) ?? [],
+    [allRecipes, elements, installed]
+  );
 
   const { flagOn } = useFlags();
   const showDeveloperUI =
