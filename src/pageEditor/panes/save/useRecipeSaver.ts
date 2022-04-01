@@ -15,97 +15,147 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  selectDirty,
   selectDirtyRecipeMetadata,
   selectDirtyRecipeOptions,
+  selectElements,
 } from "@/pageEditor/slices/editorSelectors";
 import {
   useGetEditablePackagesQuery,
+  useGetRecipesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
-import { produce } from "immer";
 import { isEmpty } from "lodash";
 import notify from "@/utils/notify";
-import { RecipeDefinition } from "@/types/definitions";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { useModals } from "@/components/ConfirmationModal";
+import { selectExtensions } from "@/store/extensionsSelectors";
+import { replaceRecipeContent } from "@/pageEditor/panes/save/saveHelpers";
+import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
+import extensionsSlice from "@/store/extensionsSlice";
+import useCreate from "@/pageEditor/hooks/useCreate";
+import { RegistryId } from "@/core";
+
+const { actions: optionsActions } = extensionsSlice;
 
 type RecipeSaver = {
-  save: (recipe: RecipeDefinition) => Promise<void>;
+  save: (recipeId: RegistryId) => Promise<void>;
   isSaving: boolean;
 };
 
 function useRecipeSaver(): RecipeSaver {
   const dispatch = useDispatch();
+  const create = useCreate();
+  const { data: recipes } = useGetRecipesQuery();
   const { data: editablePackages } = useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
+  const editorFormElements = useSelector(selectElements);
+  const isDirtyByElementId = useSelector(selectDirty);
+  const installedExtensions = useSelector(selectExtensions);
   const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
   const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
-
+  const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
 
   /**
-   * Save a recipe's options and metadata
+   * Save a recipe's extensions, options, and metadata
+   * Throws errors for various bad states
    */
-  const save = useCallback(
-    async (recipe: RecipeDefinition) => {
-      if (recipe == null) {
-        return;
-      }
+  async function save(recipeId: RegistryId) {
+    const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
+    if (recipe == null) {
+      throw new Error(
+        "You no longer have edit permissions for the blueprint. Please reload the Editor."
+      );
+    }
 
-      const newOptions = dirtyRecipeOptions[recipe.metadata.id];
-      const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
-      if (newOptions == null && newMetadata == null) {
-        return;
-      }
+    const dirtyRecipeElements = editorFormElements.filter(
+      (element) =>
+        element.recipe?.id === recipe.metadata.id &&
+        isDirtyByElementId[element.uuid]
+    );
+    const newOptions = dirtyRecipeOptions[recipe.metadata.id];
+    const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
+    if (
+      newOptions == null &&
+      newMetadata == null &&
+      isEmpty(dirtyRecipeElements)
+    ) {
+      return;
+    }
 
-      setIsSaving(true);
+    const confirm = await showConfirmation({
+      title: "Save Blueprint?",
+      message: "All changes to the blueprint and its extensions will be saved",
+      submitCaption: "Save",
+      submitVariant: "primary",
+    });
 
-      const newRecipe = produce<RecipeDefinition>(recipe, (draft) => {
-        if (newOptions) {
-          draft.options = isEmpty(newOptions.schema?.properties)
-            ? undefined
-            : newOptions;
-        }
+    if (!confirm) {
+      return;
+    }
 
-        if (newMetadata) {
-          draft.metadata = newMetadata;
-        }
+    const newRecipe = replaceRecipeContent({
+      sourceRecipe: recipe,
+      installedExtensions,
+      dirtyRecipeElements,
+      options: newOptions,
+      metadata: newMetadata,
+    });
+
+    const packageId = editablePackages.find(
+      // Bricks endpoint uses "name" instead of id
+      (x) => x.name === newRecipe.metadata.id
+    )?.id;
+
+    const updateRecipeResponse = await updateRecipe({
+      packageId,
+      recipe: newRecipe,
+    }).unwrap();
+
+    const newRecipeMetadata = selectRecipeMetadata(
+      newRecipe,
+      updateRecipeResponse
+    );
+
+    for (const element of dirtyRecipeElements) {
+      // Don't push to cloud since we're saving it with the recipe
+      // eslint-disable-next-line no-await-in-loop
+      await create({ element, pushToCloud: false });
+    }
+
+    // Update the recipe metadata on extensions in the options slice
+    dispatch(
+      optionsActions.updateRecipeMetadataForExtensions(newRecipeMetadata)
+    );
+
+    // Update the recipe metadata on elements in the page editor slice
+    dispatch(editorActions.updateRecipeMetadataForElements(newRecipeMetadata));
+
+    // Clear the dirty state
+    dispatch(editorActions.resetRecipeMetadataAndOptions(newRecipeMetadata.id));
+  }
+
+  async function safeSave(recipeId: RegistryId) {
+    setIsSaving(true);
+    try {
+      await save(recipeId);
+      notify.success("Saved blueprint");
+    } catch (error: unknown) {
+      notify.error({
+        message: "Failed saving blueprint",
+        error,
       });
-
-      const packageId = editablePackages.find(
-        // Bricks endpoint uses "name" instead of id
-        (x) => x.name === newRecipe.metadata.id
-      )?.id;
-
-      try {
-        await updateRecipe({
-          packageId,
-          recipe: newRecipe,
-        }).unwrap();
-      } catch (error: unknown) {
-        notify.error({
-          message: "Failed to update the Blueprint",
-          error,
-        });
-      } finally {
-        setIsSaving(false);
-      }
-
-      dispatch(actions.resetRecipeMetadataAndOptions(recipe.metadata.id));
-    },
-    [
-      dirtyRecipeMetadata,
-      dirtyRecipeOptions,
-      dispatch,
-      editablePackages,
-      updateRecipe,
-    ]
-  );
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   return {
-    save,
+    save: safeSave,
     isSaving,
   };
 }

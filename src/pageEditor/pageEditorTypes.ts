@@ -23,11 +23,6 @@ import { FormBuilderState } from "@/pageEditor/slices/formBuilderSlice";
 import { DocumentBuilderState } from "@/pageEditor/slices/documentBuilderSlice";
 import { SettingsState } from "@/store/settingsTypes";
 import { RuntimeState } from "@/pageEditor/slices/runtimeSlice";
-import { ActionFormState } from "@/pageEditor/extensionPoints/menuItem";
-import { SidebarFormState } from "@/pageEditor/extensionPoints/sidebar";
-import { TriggerFormState } from "@/pageEditor/extensionPoints/TriggerFormState";
-import { PanelFormState } from "@/pageEditor/extensionPoints/panel";
-import { ContextMenuFormState } from "@/pageEditor/extensionPoints/contextMenu";
 import { ExtensionPointType } from "@/extensionPoints/types";
 import { RegistryId, UUID } from "@/core";
 import { BlockConfig } from "@/blocks/types";
@@ -36,13 +31,22 @@ import {
   RecipeMetadataFormState,
 } from "@/types/definitions";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
+import {
+  ActionFormState,
+  SidebarFormState,
+  TriggerFormState,
+  PanelFormState,
+  ContextMenuFormState,
+  QuickBarFormState,
+} from "./extensionPoints/formStateTypes";
 
 export type FormState =
   | ActionFormState
   | SidebarFormState
   | TriggerFormState
   | PanelFormState
-  | ContextMenuFormState;
+  | ContextMenuFormState
+  | QuickBarFormState;
 
 export interface EditorState {
   /**
@@ -116,6 +120,11 @@ export interface EditorState {
    * Unsaved, changed recipe metadata
    */
   dirtyRecipeMetadataById: Record<RegistryId, RecipeMetadataFormState>;
+
+  /**
+   * Are we showing the "add extension to blueprint" modal?
+   */
+  isAddToRecipeModalVisible: boolean;
 }
 
 export type RootState = AuthRootState &

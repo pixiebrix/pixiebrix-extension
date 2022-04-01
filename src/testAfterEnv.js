@@ -23,3 +23,12 @@ global.jQuery = $;
 
 // Disable onMessage handler, or else it will respond to `sendMessage` calls locally
 global.browser.runtime.onMessage.addListener = jest.fn();
+
+// @ts-expect-error API missing from mock https://github.com/clarkbw/jest-webextension-mock/issues/148
+browser.permissions = {
+  contains: jest.fn(),
+};
+
+browser.runtime.getManifest = jest.fn().mockReturnValue({
+  version: "1.5.2",
+});

@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// This cannot be a regular import because it turns `globals.d.ts` in a "module definition", which it isn't
+type Browser = import("webextension-polyfill").Browser;
+
 // https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
 declare module "*.svg" {
   const CONTENT: string;
@@ -143,3 +146,39 @@ interface ErrorConstructor {
   new (message?: string, options?: ErrorOptions): Error;
   (message?: string, options?: ErrorOptions): Error;
 }
+
+// TODO: This overrides Firefox’ types. It's possible that the return types are different between Firefox and Chrome
+interface ExtendedRuntime
+  extends Omit<Browser["runtime"], "requestUpdateCheck"> {
+  /*
+   * Requests an update check for this app/extension.
+   */
+  requestUpdateCheck(): Promise<chrome.runtime.RequestUpdateCheckStatus>;
+}
+
+type Identity = Browser["identity"];
+
+/**
+ * Gets an OAuth2 access token using the client ID and scopes specified in the oauth2 section of manifest.json.
+ */
+interface ExtendedIdentity extends Identity {
+  /**
+   * Gets an OAuth2 access token using the client ID and scopes specified in the oauth2 section of manifest.json.
+   */
+  getAuthToken(details?: chrome.identity.TokenDetails): Promise<string>;
+
+  /**
+   * Removes an OAuth2 access token from the Identity API's token cache.
+   */
+  removeCachedAuthToken(
+    details: chrome.identity.TokenInformation
+  ): Promise<void>;
+}
+
+// @ts-expect-error See Firefox/requestUpdateCheck-related comment above
+interface ChromeifiedBrowser extends Browser {
+  runtime: ExtendedRuntime;
+  identity: ExtendedIdentity;
+}
+
+declare const browser: ChromeifiedBrowser;

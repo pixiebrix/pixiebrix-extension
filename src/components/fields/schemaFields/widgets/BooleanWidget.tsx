@@ -16,11 +16,10 @@
  */
 
 import React from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 
-const BooleanWidget: React.VFC<SchemaFieldProps> = ({ name }) => {
+const BooleanWidget: React.VFC<{ name: string }> = ({ name }) => {
   const [{ value }, , { setValue }] = useField<boolean>(name);
 
   return (

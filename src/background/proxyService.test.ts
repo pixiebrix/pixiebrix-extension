@@ -31,6 +31,7 @@ import * as token from "@/auth/token";
 import * as locator from "@/services/locator";
 import { RemoteServiceError } from "@/services/errors";
 import { validateRegistryId } from "@/types/helpers";
+import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 
 const axiosMock = new MockAdapter(axios);
 const mockIsBackground = isBackground as jest.MockedFunction<
@@ -42,10 +43,14 @@ const mockIsExtensionContext = isExtensionContext as jest.MockedFunction<
 mockIsBackground.mockImplementation(() => true);
 mockIsExtensionContext.mockImplementation(() => true);
 
+browser.permissions.contains = jest.fn().mockResolvedValue(true);
+
 jest.mock("@/background/protocol");
 jest.mock("@/auth/token");
 jest.mock("webext-detect-page");
 jest.mock("@/services/locator");
+
+enrichAxiosErrors();
 
 const Locator = locator.default;
 
@@ -148,19 +153,16 @@ describe("authenticated direct requests", () => {
   it("throws error on bad request", async () => {
     axiosMock.onAny().reply(403, {});
 
-    try {
-      await proxyService(directServiceConfig, requestConfig);
-      fail("Expected proxyService to throw an error");
-    } catch (error) {
-      expect(error).toBeInstanceOf(ContextError);
+    const request = proxyService(directServiceConfig, requestConfig);
 
-      const { cause } = error as ContextError;
-
-      expect(cause).toBeInstanceOf(RemoteServiceError);
-
-      const { status } = (cause as RemoteServiceError).error.response;
-      expect(status).toEqual(403);
-    }
+    await expect(request).rejects.toThrow(ContextError);
+    await expect(request).rejects.toMatchObject({
+      cause: new RemoteServiceError("Forbidden", {} as AxiosError),
+    });
+    await expect(request).rejects.toHaveProperty(
+      "cause.error.response.status",
+      403
+    );
   });
 });
 
@@ -212,21 +214,32 @@ describe("proxy service requests", () => {
 
   it("handle proxy error", async () => {
     axiosMock.onAny().reply(500);
+    const request = proxyService(proxiedServiceConfig, requestConfig);
 
-    try {
-      await proxyService(proxiedServiceConfig, requestConfig);
-      fail("Expected proxyService to throw an error");
-    } catch (error) {
-      expect(error).toBeInstanceOf(ContextError);
+    await expect(request).rejects.toThrow(ContextError);
+    await expect(request).rejects.toMatchObject({
+      cause: {
+        name: "RemoteServiceError",
+        message: "Internal Server Error",
+        error: {
+          response: {
+            status: 500,
+          },
+        },
+      },
+    });
+  });
 
-      const { cause } = error as ContextError;
+  it("handle network error", async () => {
+    axiosMock.onAny().networkError();
+    const request = proxyService(proxiedServiceConfig, requestConfig);
 
-      expect(cause).toBeInstanceOf(RemoteServiceError);
-
-      expect((cause as RemoteServiceError).error.response.status).toEqual(500);
-      expect((cause as RemoteServiceError).message).toEqual(
-        "Internal Server Error"
-      );
-    }
+    await expect(request).rejects.toThrow(ContextError);
+    await expect(request).rejects.toMatchObject({
+      cause: {
+        name: "ClientNetworkError",
+        message: expect.stringMatching(/^No response received/),
+      },
+    });
   });
 });

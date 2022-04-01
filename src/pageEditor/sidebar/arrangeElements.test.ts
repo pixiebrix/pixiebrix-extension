@@ -24,9 +24,9 @@ import {
 } from "@/tests/factories";
 import { RecipeDefinition } from "@/types/definitions";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { ActionFormState } from "@/pageEditor/extensionPoints/menuItem";
 import { IExtension } from "@/core";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
+import { ActionFormState } from "@/pageEditor/extensionPoints/formStateTypes";
 
 // Recipes
 const ID_FOO = "test/recipe-foo";

@@ -17,11 +17,9 @@
 
 import styles from "./SetupPage.module.scss";
 
-import React, { useCallback } from "react";
+import React from "react";
 import { faCheck, faLink } from "@fortawesome/free-solid-svg-icons";
-import { Col, Row, Card, Button, ListGroup } from "react-bootstrap";
-import settingsSlice from "@/store/settingsSlice";
-import { useDispatch } from "react-redux";
+import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
 import { getBaseURL } from "@/services/baseService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -29,11 +27,9 @@ import { useAsyncState } from "@/hooks/common";
 import Loader from "@/components/Loader";
 
 import { useTitle } from "@/hooks/title";
-import { LinkButton } from "@/components/LinkButton";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;
-const { setMode } = settingsSlice.actions;
 
 const Step: React.FunctionComponent<{
   number: number;
@@ -58,7 +54,6 @@ const Step: React.FunctionComponent<{
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
 
-  const dispatch = useDispatch();
   const [accountTab, accountPending] = useAsyncState(async () => {
     const accountTabs = await browser.tabs.query({
       url: new URL("setup", SERVICE_URL).toString(),
@@ -73,10 +68,6 @@ const SetupPage: React.FunctionComponent = () => {
     url.searchParams.set("install", "1");
     return url.toString();
   }, []);
-
-  const setLocal = useCallback(() => {
-    dispatch(setMode({ mode: "local" }));
-  }, [dispatch]);
 
   if (accountPending || installURLPending) {
     return (
@@ -125,13 +116,6 @@ const SetupPage: React.FunctionComponent = () => {
                   <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix
                   account
                 </Button>
-              </div>
-
-              <div className="mt-2">
-                <small className="text-muted">
-                  Alternatively, you can use the extension in{" "}
-                  <LinkButton onClick={setLocal}>local-only mode</LinkButton>
-                </small>
               </div>
             </Step>
           </ListGroup>

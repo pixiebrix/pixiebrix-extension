@@ -36,10 +36,11 @@ import { uuidv4, validateRegistryId, validateTimestamp } from "@/types/helpers";
 import { Permissions } from "webextension-polyfill";
 import { BaseExtensionState } from "@/pageEditor/extensionPoints/elementConfig";
 import trigger from "@/pageEditor/extensionPoints/trigger";
-import { TriggerFormState } from "@/pageEditor/extensionPoints/TriggerFormState";
-import menuItem, {
+import menuItem from "@/pageEditor/extensionPoints/menuItem";
+import {
   ActionFormState,
-} from "@/pageEditor/extensionPoints/menuItem";
+  TriggerFormState,
+} from "@/pageEditor/extensionPoints/formStateTypes";
 import {
   RecipeDefinition,
   ExtensionPointConfig,

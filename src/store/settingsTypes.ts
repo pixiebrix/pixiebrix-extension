@@ -17,7 +17,7 @@
 
 export type InstallMode = "local" | "remote";
 
-export type SettingsState = {
+export type SettingsState = SkunkworksSettings & {
   /**
    * Whether the extension is synced to the app for provisioning.*
    *
@@ -33,12 +33,19 @@ export type SettingsState = {
   nextUpdate: number | null;
 
   /**
+   * Whether the non-Chrome browser warning has been dismissed.
+   */
+  browserWarningDismissed: boolean;
+};
+
+export type SkunkworksSettings = {
+  /**
    * Experimental feature to suggest HTML elements to select in the Page Editor
    */
   suggestElements?: boolean;
 
   /**
-   * Whether the non-Chrome browser warning has been dismissed.
+   * Experimental setting to detect and exclude random classes when generating selectors
    */
-  browserWarningDismissed: boolean;
+  excludeRandomClasses?: boolean;
 };

@@ -50,6 +50,7 @@ import copy from "copy-to-clipboard";
 import useFlags from "@/hooks/useFlags";
 import ErrorDisplay from "./ErrorDisplay";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import PageStateTab from "./PageStateTab";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -186,6 +187,9 @@ const DataPanel: React.FC<{
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="preview">Preview</Nav.Link>
           </Nav.Item>
+          <Nav.Item className={dataPanelStyles.tabNav}>
+            <Nav.Link eventKey="pageState">Page State</Nav.Link>
+          </Nav.Item>
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
           <DataTab eventKey="context" isTraceEmpty={!record}>
@@ -317,13 +321,20 @@ const DataPanel: React.FC<{
               </ErrorBoundary>
             ) : showBlockPreview ? (
               <ErrorBoundary>
-                <BlockPreview traceRecord={record} blockConfig={block} />
+                <BlockPreview
+                  traceRecord={record}
+                  blockConfig={block}
+                  extensionPoint={formState.extensionPoint}
+                />
               </ErrorBoundary>
             ) : (
               <div className="text-muted">
                 Run the extension once to enable live preview
               </div>
             )}
+          </DataTab>
+          <DataTab eventKey="pageState">
+            <PageStateTab />
           </DataTab>
         </Tab.Content>
       </div>

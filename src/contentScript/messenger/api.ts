@@ -62,6 +62,8 @@ export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runEffectPipeline = getMethod("RUN_EFFECT_PIPELINE");
 export const runMapArgs = getMethod("RUN_MAP_ARGS");
 
+export const getPageState = getMethod("GET_PAGE_STATE");
+
 export const notify = {
   info: getNotifier("NOTIFY_INFO"),
   error: getNotifier("NOTIFY_ERROR"),

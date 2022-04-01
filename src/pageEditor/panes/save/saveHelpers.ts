@@ -21,10 +21,15 @@ import {
   IExtension,
   SafeString,
   InnerDefinitionRef,
+  InnerDefinitions,
+  UnresolvedExtension,
 } from "@/core";
 import {
   EditablePackage,
+  ExtensionPointConfig,
+  OptionsDefinition,
   RecipeDefinition,
+  RecipeMetadataFormState,
   UnsavedRecipeDefinition,
 } from "@/types/definitions";
 import { PACKAGE_REGEX, validateRegistryId } from "@/types/helpers";
@@ -34,6 +39,8 @@ import { ADAPTERS } from "@/pageEditor/extensionPoints/adapter";
 import { freshIdentifier } from "@/utils";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
+import { Except } from "type-fest";
+import { DEFAULT_EXTENSION_POINT_VAR } from "@/pageEditor/extensionPoints/base";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -245,5 +252,149 @@ export function replaceRecipeExtension(
     }
 
     return draft;
+  });
+}
+
+type RecipeParts = {
+  sourceRecipe: RecipeDefinition;
+  installedExtensions: UnresolvedExtension[];
+  dirtyRecipeElements: FormState[];
+  options?: OptionsDefinition;
+  metadata?: RecipeMetadataFormState;
+};
+
+/**
+ * Create a copy of `sourceRecipe` with `metadata` and `elements`.
+ *
+ * NOTE: the caller is responsible for updating an extensionPoint package (i.e., that has its own version). This method
+ * only handles the extensionPoint if it's an inner definition
+ *
+ * @param sourceRecipe the original recipe
+ * @param installedExtensions the user's locally installed extensions (i.e., from optionsSlice). Used to locate the
+ * element's position in sourceRecipe
+ * @param dirtyRecipeElements the recipe's extension form states (i.e., submitted via Formik)
+ * @param options the recipe's options form state
+ * @param metadata the recipe's metadata form state
+ */
+export function replaceRecipeContent({
+  sourceRecipe,
+  installedExtensions,
+  dirtyRecipeElements,
+  options,
+  metadata,
+}: RecipeParts): UnsavedRecipeDefinition {
+  const cleanRecipeExtensions = installedExtensions.filter(
+    (extension) =>
+      extension._recipe?.id === sourceRecipe.metadata.id &&
+      !dirtyRecipeElements.some((element) => element.uuid === extension.id)
+  );
+
+  return produce(sourceRecipe, (draft) => {
+    // Options dirty state is only populated if a change is made
+    if (options) {
+      draft.options = isEmpty(options.schema?.properties) ? undefined : options;
+    }
+
+    // Metadata dirty state is only populated if a change is made
+    if (metadata) {
+      draft.metadata = metadata;
+    }
+
+    const versionedItems = [...cleanRecipeExtensions, ...dirtyRecipeElements];
+    const { apiVersion: itemsApiVersion } = versionedItems[0];
+    const badApiVersion = versionedItems.find(
+      (item) => item.apiVersion !== itemsApiVersion
+    )?.apiVersion;
+
+    if (badApiVersion) {
+      throw new Error(
+        `Blueprint extensions have inconsistent API Versions (${itemsApiVersion}/${badApiVersion}). All extensions in a blueprint must have the same API Version.`
+      );
+    }
+
+    if (itemsApiVersion !== sourceRecipe.apiVersion) {
+      throw new Error(
+        `Blueprint has API Version ${sourceRecipe.apiVersion}, but it's extensions have version ${itemsApiVersion}. Please use the Workshop to edit this blueprint.`
+      );
+    }
+
+    const dirtyRecipeExtensions: Array<Except<IExtension, "id" | "_recipe">> =
+      dirtyRecipeElements.map((element) => {
+        const adapter = ADAPTERS.get(element.type);
+        const extension = adapter.selectExtension(element);
+        const extensionPointId = element.extensionPoint.metadata.id;
+
+        const partialExtension: Except<IExtension, "id" | "_recipe"> = {
+          ...pick(extension, [
+            "apiVersion",
+            "label",
+            "config",
+            "permissions",
+            "templateEngine",
+            "services",
+          ]),
+          extensionPointId,
+        };
+
+        if (isInnerExtensionPoint(extensionPointId)) {
+          const extensionPointConfig = adapter.selectExtensionPoint(element);
+          partialExtension.definitions = {
+            [extensionPointId]: {
+              kind: "extensionPoint",
+              definition: extensionPointConfig.definition,
+            },
+          };
+        }
+
+        return partialExtension;
+      });
+
+    const recipeInnerDefinitions: InnerDefinitions = {};
+    const extensionPoints: ExtensionPointConfig[] = [];
+
+    // Loop through all the IExtensions, pull out the definitions object, put it into the recipe definitions
+    for (const extension of [
+      ...cleanRecipeExtensions,
+      ...dirtyRecipeExtensions,
+    ]) {
+      let extensionPointId: RegistryId | InnerDefinitionRef = null;
+      for (const [innerId, definition] of Object.entries(
+        extension.definitions ?? {}
+      )) {
+        const innerKeys = Object.keys(recipeInnerDefinitions);
+        const newInnerId =
+          innerKeys.includes(innerId) || isInnerExtensionPoint(innerId)
+            ? freshIdentifier(
+                DEFAULT_EXTENSION_POINT_VAR as SafeString,
+                innerKeys
+              )
+            : innerId;
+        if (extension.extensionPointId === innerId) {
+          // We're tracking this with a separate variable here because
+          // re-assigning extension.extensionPointId directly was sometimes
+          // throwing "Cannot assign to read only property 'extensionPointId'
+          // of object '#<Object>'" errors
+          extensionPointId = newInnerId as InnerDefinitionRef;
+        }
+
+        // eslint-disable-next-line security/detect-object-injection -- we just constructed the id
+        recipeInnerDefinitions[newInnerId] = definition;
+      }
+
+      const {
+        extensionPointId: oldExtensionPointId,
+        services,
+        ...rest
+      } = extension;
+
+      extensionPoints.push({
+        ...pick(rest, ["label", "config", "permissions", "templateEngine"]),
+        id: extensionPointId ?? oldExtensionPointId,
+        services: Object.fromEntries(services.map((x) => [x.outputKey, x.id])),
+      });
+    }
+
+    draft.extensionPoints = extensionPoints;
+    draft.definitions = recipeInnerDefinitions;
   });
 }

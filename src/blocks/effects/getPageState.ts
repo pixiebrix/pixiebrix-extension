@@ -15,11 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// This file exists because imports are executed before the local code.
-// Importing another file next to `webextension-polyfill` means that the
-// `globalThis` line will be executed too late.
-// This file can be dropped after https://github.com/mozilla/webextension-polyfill/pull/351
+import { BlockOptions, RegistryId, UUID } from "@/core";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import ConsoleLogger from "@/tests/ConsoleLogger";
+import { GetPageState, Namespace } from "./pageState";
 
-import browser from "webextension-polyfill";
+export async function getStateValue<TResult>(
+  namespace: Namespace,
+  blueprintId?: RegistryId | null,
+  extensionId?: UUID | null
+): Promise<TResult> {
+  const getState = new GetPageState();
+  const logger = new ConsoleLogger({
+    extensionId,
+    blueprintId,
+  });
 
-globalThis.browser = browser;
+  const result: TResult = (await getState.transform(
+    unsafeAssumeValidArg({ namespace }),
+    { logger } as BlockOptions
+  )) as TResult;
+
+  return result;
+}
