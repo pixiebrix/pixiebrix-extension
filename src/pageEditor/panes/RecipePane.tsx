@@ -134,7 +134,8 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
       // Remove
       variant: "danger",
       onClick() {
-        removeRecipe(recipe);
+        void removeRecipe(activeRecipeId);
+        forceRefreshLayout();
       },
       caption: "Remove",
       icon: faTrash,

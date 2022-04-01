@@ -31,7 +31,7 @@ import {
   installedRecipeMetadataFactory,
 } from "@/tests/factories";
 import useCreateMock from "@/pageEditor/hooks/useCreate";
-import useResetMock from "@/pageEditor/hooks/useReset";
+import useResetMock from "@/pageEditor/hooks/useResetExtension";
 import {
   useCreateRecipeMutation as useCreateRecipeMutationMock,
   useUpdateRecipeMutation as useUpdateRecipeMutationMock,

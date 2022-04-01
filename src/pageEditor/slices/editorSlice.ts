@@ -254,10 +254,10 @@ export const editorSlice = createSlice({
         state.activeElement = null;
       }
 
-      state.elements.splice(
-        state.elements.findIndex((x) => x.uuid === uuid),
-        1
-      );
+      const index = state.elements.findIndex((x) => x.uuid === uuid);
+      if (index > -1) {
+        state.elements.splice(index, 1);
+      }
 
       delete state.dirty[uuid];
       delete state.elementUIStates[uuid];
@@ -468,6 +468,9 @@ export const editorSlice = createSlice({
 
         delete state.deletedElementsByRecipeId[recipeId];
       }
+    },
+    clearActiveRecipe(state) {
+      state.activeRecipeId = null;
     },
   },
 });

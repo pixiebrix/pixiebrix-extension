@@ -20,13 +20,13 @@ import { RegistryId } from "@/core";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
-import useReset from "@/pageEditor/hooks/useReset";
+import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
 
 function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
-  const resetElement = useReset();
+  const resetElement = useResetExtension();
   const elements = useSelector(selectElements);
 
   return useCallback(

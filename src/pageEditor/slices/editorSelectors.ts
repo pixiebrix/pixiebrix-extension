@@ -82,6 +82,12 @@ export function getIdForElement(element: IExtension | FormState): UUID {
   return isExtension(element) ? element.id : element.uuid;
 }
 
+export function getRecipeIdForElement(
+  element: IExtension | FormState
+): RegistryId {
+  return isExtension(element) ? element._recipe?.id : element.recipe?.id;
+}
+
 const elementIsDirtySelector = createSelector(
   selectDirty,
   (state: RootState, elementId: UUID) => elementId,

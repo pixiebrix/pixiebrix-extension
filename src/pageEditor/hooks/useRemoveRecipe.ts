@@ -15,12 +15,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RecipeDefinition } from "@/types/definitions";
 import { useCallback } from "react";
+import { RegistryId } from "@/core";
+import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
+import { useDispatch, useSelector } from "react-redux";
+import { selectExtensions } from "@/store/extensionsSelectors";
+import {
+  getIdForElement,
+  getRecipeIdForElement,
+  selectElements,
+} from "@/pageEditor/slices/editorSelectors";
+import { uniq } from "lodash";
+import { useModals } from "@/components/ConfirmationModal";
+import { actions } from "@/pageEditor/slices/editorSlice";
 
-function useRemoveRecipe(): (recipe: RecipeDefinition) => void {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Stub
-  return useCallback(async (recipe: RecipeDefinition) => {}, []);
+function useRemoveRecipe(): (recipeId: RegistryId) => Promise<void> {
+  const dispatch = useDispatch();
+  const removeExtension = useRemoveExtension();
+  const extensions = useSelector(selectExtensions);
+  const elements = useSelector(selectElements);
+  const { showConfirmation } = useModals();
+
+  return useCallback(
+    async (recipeId: RegistryId) => {
+      const confirmed = await showConfirmation({
+        title: "Remove Blueprint?",
+        message:
+          "You can reactivate extensions and blueprints from the PixieBrix Options page",
+        submitCaption: "Remove",
+      });
+
+      if (!confirmed) {
+        return;
+      }
+
+      const extensionIds = uniq(
+        [...extensions, ...elements]
+          .filter((x) => getRecipeIdForElement(x) === recipeId)
+          .map((x) => getIdForElement(x))
+      );
+      for (const extensionId of extensionIds) {
+        // eslint-disable-next-line no-await-in-loop
+        await removeExtension({ extensionId, shouldShowConfirmation: false });
+      }
+
+      dispatch(actions.clearActiveRecipe());
+      dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
+      dispatch(actions.clearDeletedElementsForRecipe(recipeId));
+    },
+    [dispatch, elements, extensions, removeExtension, showConfirmation]
+  );
 }
 
 export default useRemoveRecipe;
