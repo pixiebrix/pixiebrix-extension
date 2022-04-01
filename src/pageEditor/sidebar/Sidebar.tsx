@@ -346,7 +346,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
                 key={recipeId}
                 recipeId={recipeId}
                 recipes={recipes}
-                elements={elements}
                 activeRecipeId={activeRecipeId}
               >
                 {elements.map((element) => (

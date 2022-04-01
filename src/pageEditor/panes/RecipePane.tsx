@@ -18,7 +18,10 @@
 import styles from "./RecipePane.module.scss";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveRecipeId,
+  selectRecipeIsDirty,
+} from "@/pageEditor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import Centered from "@/pageEditor/components/Centered";
@@ -51,6 +54,7 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   const recipe = recipes.find(
     (recipe) => recipe.metadata.id === activeRecipeId
   );
+  const isRecipeDirty = useSelector(selectRecipeIsDirty(activeRecipeId));
   const [showQuestionModal, setShowQuestionModal] = useState(false);
 
   // We need to force the component to re-render when the recipe is reset
@@ -129,7 +133,7 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
         void saveRecipe(activeRecipeId);
       },
       caption: "Save",
-      disabled: isSavingRecipe,
+      disabled: isSavingRecipe || !isRecipeDirty,
       icon: faSave,
     },
     {
@@ -137,7 +141,7 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
       variant: "warning",
       onClick: resetRecipe,
       caption: "Reset",
-      disabled: isSavingRecipe,
+      disabled: isSavingRecipe || !isRecipeDirty,
       icon: faHistory,
     },
     {
