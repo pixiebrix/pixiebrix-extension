@@ -41,10 +41,10 @@ export const selectActiveRecipeId = ({ editor }: RootState) =>
 
 export const selectShowV3UpgradeMessageForActiveElement = createSelector(
   selectActiveElementId,
-  (state: RootState) => state,
-  (activeElementId, state) =>
+  (state: RootState) => state.editor.showV3UpgradeMessageByElement,
+  (activeElementId, showV3UpgradeMessageByElement) =>
     // eslint-disable-next-line security/detect-object-injection -- using an internally-looked-up uuid
-    state.editor.showV3UpgradeMessageByElement[activeElementId] ?? false
+    showV3UpgradeMessageByElement[activeElementId] ?? false
 );
 
 export const selectDirty = (state: RootState) => state.editor.dirty;
