@@ -133,7 +133,7 @@ const useSavingWizard = () => {
     };
 
     dispatch(editorActions.addElement(personalElement));
-    reset({ element, shouldShowConfirmation: false });
+    await reset({ element, shouldShowConfirmation: false });
     const error = await create({ element: personalElement, pushToCloud: true });
     if (!error) {
       dispatch(editorActions.removeElement(element.uuid));

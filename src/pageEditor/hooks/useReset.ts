@@ -32,7 +32,7 @@ type Config = {
   element: FormState;
   shouldShowConfirmation?: boolean;
 };
-function useReset(): (useResetConfig: Config) => void {
+function useReset(): (useResetConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const installed = useSelector(selectExtensions);

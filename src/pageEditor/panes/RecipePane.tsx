@@ -45,8 +45,7 @@ import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
 import { useGetRecipesQuery } from "@/services/api";
-import { useModals } from "@/components/ConfirmationModal";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 
 const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   const { data: recipes } = useGetRecipesQuery();
@@ -68,25 +67,8 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   };
 
   const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
-  const { showConfirmation } = useModals();
   const dispatch = useDispatch();
-
-  async function resetRecipe() {
-    const confirmed = await showConfirmation({
-      title: "Reset Blueprint?",
-      message:
-        "Unsaved changes to extensions within this blueprint, or to blueprint options and metadata, will be lost.",
-      submitCaption: "Reset",
-    });
-    if (!confirmed) {
-      return;
-    }
-
-    dispatch(actions.resetMetadataAndOptionsForRecipe(recipe.metadata.id));
-    dispatch(actions.restoreDeletedElementsForRecipe(recipe.metadata.id));
-    forceRefreshLayout();
-  }
-
+  const resetRecipe = useResetRecipe();
   const removeRecipe = useRemoveRecipe();
 
   useEffect(() => {
@@ -140,7 +122,10 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
     {
       // Reset
       variant: "warning",
-      onClick: resetRecipe,
+      async onClick() {
+        await resetRecipe(activeRecipeId);
+        forceRefreshLayout();
+      },
       caption: "Reset",
       disabled: isSavingRecipe || !isRecipeDirty,
       icon: faHistory,
