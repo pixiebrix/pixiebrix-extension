@@ -20,6 +20,7 @@ import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import {
+  getInstalled,
   getInstalledIds,
   handleNavigate,
   queueReactivateTab,
@@ -111,6 +112,7 @@ declare global {
     ENABLE_OVERLAY: typeof enableOverlay;
     DISABLE_OVERLAY: typeof disableOverlay;
     INSTALLED_EXTENSIONS: typeof getInstalledIds;
+    INSTALLED_EXTENSION_INSTANCES: typeof getInstalled;
     CHECK_AVAILABLE: typeof checkAvailable;
     HANDLE_NAVIGATE: typeof handleNavigate;
     RUN_BRICK: typeof runBrick;
@@ -167,6 +169,7 @@ export default function registerMessenger(): void {
     ENABLE_OVERLAY: enableOverlay,
     DISABLE_OVERLAY: disableOverlay,
     INSTALLED_EXTENSIONS: getInstalledIds,
+    INSTALLED_EXTENSION_INSTANCES: getInstalled,
     CHECK_AVAILABLE: checkAvailable,
     HANDLE_NAVIGATE: handleNavigate,
 

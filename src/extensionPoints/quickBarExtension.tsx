@@ -69,6 +69,12 @@ export type QuickBarConfig = {
 };
 
 export abstract class QuickBarExtensionPoint extends ExtensionPoint<QuickBarConfig> {
+  static isQuickBarExtensionPoint(
+    extensionPoint: IExtensionPoint
+  ): extensionPoint is QuickBarExtensionPoint {
+    return (extensionPoint as any)?._definition?.type === "quickBar";
+  }
+
   abstract get targetMode(): QuickBarTargetMode;
 
   abstract getBaseReader(): Promise<IReader>;

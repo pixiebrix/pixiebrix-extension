@@ -105,6 +105,10 @@ export function getInstalledIds(): RegistryId[] {
   return _installedExtensionPoints.map((x) => x.id);
 }
 
+export function getInstalled(): IExtensionPoint[] {
+  return _installedExtensionPoints;
+}
+
 /**
  * Remove an extension from an extension point on the page
  */
