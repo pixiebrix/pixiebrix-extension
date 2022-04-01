@@ -30,6 +30,7 @@ import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDat
 import useDataPanelTabSearchQuery from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelTabSearchQuery";
 import useFlags from "@/hooks/useFlags";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import PageStateTab from "./PageStateTab";
 
 const FoundationDataPanel: React.FC<{
   firstBlockInstanceId?: UUID;
@@ -76,6 +77,9 @@ const FoundationDataPanel: React.FC<{
         </Nav.Item>
         <Nav.Item className={dataPanelStyles.tabNav}>
           <Nav.Link eventKey="preview">Preview</Nav.Link>
+        </Nav.Item>
+        <Nav.Item className={dataPanelStyles.tabNav}>
+          <Nav.Link eventKey="pageState">Page State</Nav.Link>
         </Nav.Item>
       </Nav>
       <Tab.Content>
@@ -139,6 +143,9 @@ const FoundationDataPanel: React.FC<{
         </Tab.Pane>
         <Tab.Pane eventKey="preview" className={dataPanelStyles.tabPane}>
           <ExtensionPointPreview element={formState} />
+        </Tab.Pane>
+        <Tab.Pane eventKey="pageState" className={dataPanelStyles.tabPane}>
+          <PageStateTab />
         </Tab.Pane>
       </Tab.Content>
     </Tab.Container>

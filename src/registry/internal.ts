@@ -253,9 +253,7 @@ export async function resolveRecipe(
  */
 export const INNER_SCOPE = "@internal";
 
-export function isInnerExtensionPoint(
-  id: RegistryId | InnerDefinitionRef
-): boolean {
+export function isInnerExtensionPoint(id: string): id is InnerDefinitionRef {
   return id.startsWith(INNER_SCOPE + "/");
 }
 

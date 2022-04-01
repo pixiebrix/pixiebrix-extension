@@ -279,6 +279,18 @@ const extensionsSlice = createSlice({
         ...extensionUpdate,
       };
     },
+    updateRecipeMetadataForExtensions(
+      state,
+      action: PayloadAction<RecipeMetadata>
+    ) {
+      const metadata = action.payload;
+      const recipeExtensions = state.extensions.filter(
+        (extension) => extension._recipe?.id === metadata.id
+      );
+      for (const extension of recipeExtensions) {
+        extension._recipe = metadata;
+      }
+    },
     removeExtension(
       state,
       { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>

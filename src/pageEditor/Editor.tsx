@@ -41,18 +41,22 @@ import {
 } from "@/services/api";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
-import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveElement,
+  selectIsAddToRecipeModalVisible,
+} from "@/pageEditor/slices/editorSelectors";
 import RecipePane from "@/pageEditor/panes/RecipePane";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { reportEvent } from "@/telemetry/events";
 import { RootState } from "@/pageEditor/pageEditorTypes";
+import AddToRecipeModal from "@/pageEditor/sidebar/AddToRecipeModal";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
 const Editor: React.FunctionComponent = () => {
   const { tabState, connecting } = useContext(PageEditorTabContext);
   const installed = useSelector(selectExtensions);
-  const { data: recipes, isLoading: loadingRecipes } = useGetRecipesQuery();
+  const { data: recipes, isLoading: isLoadingRecipes } = useGetRecipesQuery();
   const dispatch = useDispatch();
 
   const sessionId = useSelector(selectSessionId);
@@ -75,7 +79,6 @@ const Editor: React.FunctionComponent = () => {
     selectionSeq,
     inserting,
     elements,
-    activeElement: activeElementId,
     activeRecipeId,
     error: editorError,
     beta,
@@ -96,6 +99,10 @@ const Editor: React.FunctionComponent = () => {
   const { availableDynamicIds, unavailableCount } = useInstallState(
     installed,
     elements
+  );
+
+  const isAddToRecipeModalVisible = useSelector(
+    selectIsAddToRecipeModalVisible
   );
 
   const body = useMemo(() => {
@@ -150,32 +157,29 @@ const Editor: React.FunctionComponent = () => {
       return <WelcomePane />;
     }
   }, [
+    tabState.hasPermissions,
     connecting,
+    editorError,
     beta,
-    cancelInsert,
     inserting,
     selectedElement,
-    editorError,
-    installed,
-    selectionSeq,
+    selectedRecipe,
     availableDynamicIds?.size,
+    installed.length,
     unavailableCount,
-    tabState,
+    cancelInsert,
+    selectionSeq,
   ]);
 
   return (
-    <div className={styles.root}>
-      <Sidebar
-        installed={installed}
-        elements={elements}
-        recipes={recipes}
-        activeElementId={activeElementId}
-        activeRecipeId={activeRecipeId}
-        isInsertingElement={Boolean(inserting)}
-        isLoadingItems={loadingRecipes}
-      />
-      {body}
-    </div>
+    <>
+      <div className={styles.root}>
+        <Sidebar />
+        {body}
+      </div>
+
+      {isAddToRecipeModalVisible && !isLoadingRecipes && <AddToRecipeModal />}
+    </>
   );
 };
 
