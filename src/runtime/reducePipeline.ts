@@ -52,7 +52,7 @@ import {
   shouldRunBlock,
   throwIfInvalidInput,
 } from "@/runtime/runtimeUtils";
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import { ResolvedBlockConfig } from "@/runtime/runtimeTypes";
 import { UnknownObject } from "@/types";
 import { RunBlock } from "@/contentScript/runBlockTypes";

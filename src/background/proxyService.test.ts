@@ -121,14 +121,9 @@ describe("unauthenticated direct requests", () => {
   it("handles remote internal server error", async () => {
     axiosMock.onAny().reply(500);
 
-    try {
-      await proxyService(null, requestConfig);
-      fail("Expected proxyService to throw a RemoteServiceError error");
-    } catch (error) {
-      expect(error).toBeInstanceOf(RemoteServiceError);
-      const { status } = (error as RemoteServiceError).error.response;
-      expect(status).toEqual(500);
-    }
+    const request = proxyService(null, requestConfig);
+    await expect(request).rejects.toThrow(RemoteServiceError);
+    await expect(request).rejects.toHaveProperty("error.response.status", 500);
   });
 });
 
@@ -197,17 +192,17 @@ describe("proxy service requests", () => {
           status_code: statusCode,
         });
 
-        try {
-          await proxyService(proxiedServiceConfig, requestConfig);
-          fail("Expected proxyService to throw an error");
-        } catch (error) {
-          expect(error).toBeInstanceOf(ContextError);
-          const { status, statusText } = (
-            (error as ContextError).cause as AxiosError
-          ).response;
-          expect(status).toEqual(statusCode);
-          expect(statusText).toEqual(reason);
-        }
+        const request = proxyService(proxiedServiceConfig, requestConfig);
+
+        await expect(request).rejects.toThrow(ContextError);
+        await expect(request).rejects.toMatchObject({
+          cause: {
+            response: {
+              status: statusCode,
+              statusText: reason,
+            },
+          },
+        });
       });
     }
   );
