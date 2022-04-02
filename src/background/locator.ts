@@ -31,22 +31,19 @@ export default async function initLocator() {
 }
 
 type RefreshOptions = {
-  local: boolean;
-  remote: boolean;
+  local?: boolean;
+  remote?: boolean;
 };
 
-export async function refreshServices(options?: RefreshOptions): Promise<void> {
+export async function refreshServices({
+  local = true,
+  remote = true,
+}: RefreshOptions = {}): Promise<void> {
   // Service locator cannot run in contentScript due to CSP and wanting to isolate local secrets
   forbidContext(
     "contentScript",
     "The service locator cannot run in the contentScript"
   );
-
-  const { local, remote } = {
-    local: true,
-    remote: true,
-    ...options,
-  };
 
   if (remote && local) {
     await locator.refresh();
