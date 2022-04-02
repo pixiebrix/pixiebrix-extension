@@ -44,6 +44,11 @@ export async function readAuthData(): Promise<
   return readStorage(STORAGE_EXTENSION_KEY, {});
 }
 
+export async function flagOn(flag: string): Promise<boolean> {
+  const authData = await readAuthData();
+  return authData.flags?.includes(flag);
+}
+
 export async function getExtensionToken(): Promise<string | undefined> {
   const { token } = await readAuthData();
   return token;

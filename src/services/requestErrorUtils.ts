@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContextError, isAxiosError } from "@/errors";
-import { ClientRequestError, SerializableAxiosError } from "@/services/errors";
+import { isAxiosError, isErrorObject } from "@/errors";
+import { SerializableAxiosError } from "@/services/errors";
 import { AxiosError, AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/blocks/available";
 import {
@@ -73,11 +73,7 @@ export function selectAxiosError(error: unknown): Except<AxiosError, "toJSON"> {
     return error;
   }
 
-  if (error instanceof ClientRequestError) {
-    return error.error;
-  }
-
-  if (error instanceof ContextError) {
+  if (isErrorObject(error) && error.cause) {
     return selectAxiosError(error.cause);
   }
 

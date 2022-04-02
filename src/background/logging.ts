@@ -202,7 +202,7 @@ export async function getLog(
  * @see SerializedError
  */
 function flattenContext(
-  error: SerializedError,
+  error: Error | SerializedError,
   context: MessageContext
 ): MessageContext {
   if (isContextError(error)) {
@@ -225,29 +225,19 @@ function flattenContext(
  * - Requests to PixieBrix API to detect network problems client side
  * - Any service request if enterprise has enabled `enterprise-telemetry`
  */
-async function selectExtraContext(
-  error: SerializedError
-): Promise<UnknownObject> {
+async function selectExtraContext(error: Error): Promise<UnknownObject> {
   const { version: extensionVersion } = browser.runtime.getManifest();
-
-  if (!isObject(error)) {
-    return { extensionVersion };
-  }
-
-  const cause = getRootCause(error);
+  const axiosError = selectAxiosError(error);
 
   // Handle base classes of ClientRequestError
-  if ("error" in cause && isAxiosError(cause.error)) {
-    const { flags = [] } = await readAuthData();
-    if (
-      (await isAppRequest(cause.error)) ||
-      flags.includes("enterprise-telemetry")
-    ) {
-      return {
-        extensionVersion,
-        url: selectAbsoluteUrl(cause.error.config),
-      };
-    }
+  if (
+    axiosError &&
+    ((await flagOn("enterprise-telemetry")) || (await isAppRequest(axiosError)))
+  ) {
+    return {
+      extensionVersion,
+      url: selectAbsoluteUrl(axiosError.config),
+    };
   }
 
   return { extensionVersion };

@@ -134,7 +134,7 @@
     "rollbar": "^2.24.0",
     "schema-to-yup": "1.11.5",
     "semver": "^7.3.5",
-    "serialize-error": "^9.0.0",
+    "serialize-error": "github:pixiebrix/serialize-error#8bb36fb",
     "simple-icons": "^5.8.0",
     "slugify": "^1.6.0",
     "timezone-mock": "^1.2.2",

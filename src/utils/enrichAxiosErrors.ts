@@ -59,7 +59,7 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
       throw error;
     }
 
-    throw new RemoteServiceError(getErrorMessage(error), error);
+    throw new RemoteServiceError(getErrorMessage(error), { cause: error });
   }
 
   const hasPermissions = await browser.permissions.contains({
@@ -69,12 +69,12 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
   if (!hasPermissions) {
     throw new ClientNetworkPermissionError(
       "Insufficient browser permissions to make request.",
-      error
+      { cause: error }
     );
   }
 
   throw new ClientNetworkError(
     "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information",
-    error
+    { cause: error }
   );
 }
