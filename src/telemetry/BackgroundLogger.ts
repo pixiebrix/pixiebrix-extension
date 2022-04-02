@@ -22,7 +22,7 @@ import { isContentScript } from "webext-detect-page";
 import { showConnectionLost } from "@/contentScript/connection";
 import { recordLog } from "@/background/messenger/api";
 import { expectContext } from "@/utils/expectContext";
-import reportError from "./reportError";
+import reportError from "@/telemetry/reportError";
 
 /**
  * A Logger that logs messages through the background page (which can make calls to Rollbar)
