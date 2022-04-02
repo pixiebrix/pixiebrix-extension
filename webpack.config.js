@@ -236,8 +236,6 @@ module.exports = (env, options) =>
         "react-dom",
         "jquery",
         "lodash-es",
-        "js-beautify",
-        "css-selector-generator",
         "@rjsf/bootstrap-4",
         "@fortawesome/free-solid-svg-icons",
       ],
@@ -310,6 +308,7 @@ module.exports = (env, options) =>
         new BundleAnalyzerPlugin({
           analyzerMode: "static",
           reportFilename: path.resolve("report.html"),
+          excludeAssets: /svg-icons/,
         }),
 
       new NodePolyfillPlugin(),
@@ -348,7 +347,7 @@ module.exports = (env, options) =>
         patterns: [
           {
             from: "src/manifest.json",
-            transform: (jsonString) => {
+            transform(jsonString) {
               const manifest = JSON.parse(jsonString);
               customizeManifest(manifest, isProd(options));
               return JSON.stringify(manifest, null, 4);
