@@ -47,9 +47,7 @@ describe("isAvailable.matchPatterns", () => {
       await checkAvailable({ matchPatterns: "https://www.example.com/*" })
     ).toBe(true);
   });
-});
 
-describe("isAvailable.matchPatterns", () => {
   test("require urlPattern and matchPattern", async () => {
     jsdom.reconfigure({ url: "https://www.example.com/#/MISMATCH/42" });
     expect(

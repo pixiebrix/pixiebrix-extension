@@ -23,9 +23,9 @@ import { Formik } from "formik";
 import {
   activeDevToolContextFactory,
   menuItemFormStateFactory,
-} from "@/tests/factories";
+} from "@/testUtils/factories";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
-import { waitForEffect } from "@/tests/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { OutputKey, SanitizedServiceConfiguration } from "@/core";

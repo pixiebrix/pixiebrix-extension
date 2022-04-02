@@ -1,4 +1,4 @@
-import { traceErrorFactory } from "@/tests/factories";
+import { traceErrorFactory } from "@/testUtils/factories";
 import applyTraceInputError from "./applyTraceInputError";
 import { FormikErrorTree } from "@/pageEditor/tabs/editTab/editTabTypes";
 
