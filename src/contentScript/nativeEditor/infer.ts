@@ -93,7 +93,9 @@ const TEMPLATE_VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
   ["id", [new RegExp(`^${PANEL_FRAME_ID}$`)]],
 ]);
 
-class SkipElement extends Error {}
+class SkipElement extends Error {
+  override name = "SkipElement";
+}
 
 /** ID selectors and certain other attributes can uniquely identify items */
 function isSelectorUsuallyUnique(selector: string): boolean {

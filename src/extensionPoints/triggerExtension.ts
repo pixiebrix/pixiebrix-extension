@@ -48,11 +48,12 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { blockList } from "@/blocks/util";
 import { makeServiceContext } from "@/services/serviceUtils";
 import { mergeReaders } from "@/blocks/readers/readerUtils";
-import { PromiseCancelled, sleep } from "@/utils";
+import { sleep } from "@/utils";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/helpers";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
+import { PromiseCancelled } from "@/errors";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
