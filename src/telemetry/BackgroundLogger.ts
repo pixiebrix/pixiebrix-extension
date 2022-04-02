@@ -17,12 +17,12 @@
 
 import { Logger, MessageContext } from "@/core";
 import { JsonObject } from "type-fest";
-import { isConnectionError, selectError } from "@/errors";
-import { getContextName, isContentScript } from "webext-detect-page";
+import { isConnectionError } from "@/errors";
+import { isContentScript } from "webext-detect-page";
 import { showConnectionLost } from "@/contentScript/connection";
-import { serializeError } from "serialize-error";
-import { recordError, recordLog } from "@/background/messenger/api";
+import { recordLog } from "@/background/messenger/api";
 import { expectContext } from "@/utils/expectContext";
+import reportError from "./reportError";
 
 /**
  * A Logger that logs messages through the background page (which can make calls to Rollbar)
@@ -71,23 +71,12 @@ class BackgroundLogger implements Logger {
   }
 
   async error(error: unknown, data: JsonObject): Promise<void> {
-    // Use selectError which returns an error object ot avoid user-defined format strings
-    console.error(selectError(error), {
-      context: this.context,
-      data,
-    });
-
     if (isConnectionError(error) && isContentScript()) {
       showConnectionLost();
     }
 
-    // Add on the reporter side of the message. On the receiving side it would always be `background`
-    const extendedContext: MessageContext = {
-      ...this.context,
-      pageName: getContextName(),
-    };
-
-    recordError(serializeError(error), extendedContext, data);
+    console.error({ error, context: this.context, data });
+    reportError(error, this.context, { logToConsole: false });
   }
 }
 

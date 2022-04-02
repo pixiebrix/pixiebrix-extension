@@ -19,9 +19,9 @@ import { uuidv4 } from "@/types/helpers";
 import { getRollbar } from "@/telemetry/initRollbar";
 import { MessageContext, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
-import { deserializeError } from "serialize-error";
+import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
-import { isEmpty, sortBy } from "lodash";
+import { isEmpty, once, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
 import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import {
@@ -202,7 +202,7 @@ export async function getLog(
  * @see SerializedError
  */
 function flattenContext(
-  error: SerializedError,
+  error: Error | SerializedError,
   context: MessageContext
 ): MessageContext {
   if (isContextError(error)) {
@@ -226,7 +226,7 @@ function flattenContext(
  * - Any service request if enterprise has enabled `enterprise-telemetry`
  */
 async function selectExtraContext(
-  error: SerializedError
+  error: Error | SerializedError
 ): Promise<UnknownObject> {
   const { version: extensionVersion } = browser.runtime.getManifest();
 
@@ -277,13 +277,48 @@ export function flattenStackForRollbar(stack: string, cause?: unknown): string {
   );
 }
 
-/**
- * True if recordError already logged a warning that DNT mode is on
- */
-let loggedDNT = false;
+const warnAboutDisableDNT = once(() => {
+  console.warn("Rollbar telemetry is disabled because DNT is turned on");
+});
+
+async function reportToRollbar(
+  // Ensure it's an Error instance before passing it to Rollbar so rollbar treats it as the error.
+  // (It treats POJO as the custom data)
+  // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+  error: Error,
+  flatContext: MessageContext,
+  message: string
+): Promise<void> {
+  if (hasCancelRootCause(error)) {
+    return;
+  }
+
+  if (!(await allowsTrack())) {
+    warnAboutDisableDNT();
+    return;
+  }
+
+  if (isErrorObject(error) && error.stack && error.cause) {
+    error.stack = flattenStackForRollbar(error.stack, error.cause);
+  }
+
+  // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
+  // to determine log level also handle serialized/deserialized errors.
+  // See https://github.com/sindresorhus/serialize-error/issues/48
+
+  const rollbar = await getRollbar();
+  const details = await selectExtraContext(error);
+
+  // Send business errors debug level so it doesn't trigger devops notifications
+  if (hasBusinessRootCause(error)) {
+    rollbar.debug(message, error, { ...flatContext, ...details });
+  } else {
+    rollbar.error(message, error, { ...flatContext, ...details });
+  }
+}
 
 export async function recordError(
-  error: SerializedError,
+  maybeSerializedError: SerializedError,
   context: MessageContext,
   data?: JsonObject
 ): Promise<void> {
@@ -293,6 +328,9 @@ export async function recordError(
   );
 
   try {
+    // Ensure it's deserialized
+    const error = deserializeError(maybeSerializedError);
+
     const message = getErrorMessage(error);
 
     // For noisy errors, don't record/submit telemetry unless the error prevented an extension point
@@ -312,50 +350,25 @@ export async function recordError(
 
     const flatContext = flattenContext(error, context);
 
-    if (await allowsTrack()) {
-      if (isErrorObject(error) && error.stack && error.cause) {
-        error.stack = flattenStackForRollbar(error.stack, error.cause);
-      }
+    await Promise.all([
+      reportToRollbar(error, flatContext, message),
 
-      // Deserialize the error into an Error object before passing it to Rollbar so rollbar treats it as the error.
-      // (It treats POJO as the custom data)
-      // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+      appendEntry({
+        uuid: uuidv4(),
+        timestamp: Date.now().toString(),
+        level: "error",
+        context: flatContext,
+        message,
+        data,
 
-      // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
-      // to determine log level also handle serialized/deserialized errors.
-      // See https://github.com/sindresorhus/serialize-error/issues/48
-      const errorObj = deserializeError(error);
-
-      if (hasCancelRootCause(error)) {
-        // NOP - no reason to send to Rollbar
-      } else if (hasBusinessRootCause(error)) {
-        // Send at debug level so it doesn't trigger devops notifications
-        const rollbar = await getRollbar();
-        const details = await selectExtraContext(error);
-        rollbar.debug(message, errorObj, { ...flatContext, ...details });
-      } else {
-        const rollbar = await getRollbar();
-        const details = await selectExtraContext(error);
-        rollbar.error(message, errorObj, { ...flatContext, ...details });
-      }
-    } else if (!loggedDNT) {
-      console.warn("Rollbar telemetry is disabled because DNT is turned on");
-      loggedDNT = true;
-    }
-
-    await appendEntry({
-      uuid: uuidv4(),
-      timestamp: Date.now().toString(),
-      level: "error",
-      context: flatContext,
-      message,
-      error,
-      data,
-    });
+        // Ensure it's serialized
+        error: serializeError(maybeSerializedError),
+      }),
+    ]);
   } catch (recordError) {
     console.error("An error occurred while recording another error", {
       error: recordError,
-      originalError: error,
+      originalError: maybeSerializedError,
       context,
     });
   }
