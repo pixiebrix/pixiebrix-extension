@@ -32,6 +32,7 @@ import {
   maxBy,
   negate,
   ObjectIterator,
+  omitBy,
   partial,
   partialRight,
   pickBy,
@@ -396,30 +397,23 @@ export function isAbsoluteUrl(url: string): boolean {
 }
 
 export const SPACE_ENCODED_VALUE = "%20";
+export const URL_INPUT_SPACE_ENCODING_DEFAULT = "percent";
 
 export function makeURL(
   url: string,
-  params: Record<string, string | number | boolean> | undefined = {},
-  spaceEncoding: "plus" | "percent" = "plus"
+  params: Record<string, string | number | boolean> = {},
+  spaceEncoding: "plus" | "percent" = URL_INPUT_SPACE_ENCODING_DEFAULT
 ): string {
-  // https://javascript.info/url#searchparams
   const result = new URL(url);
-  for (const [name, value] of Object.entries(params ?? {})) {
-    if ((value ?? "") !== "") {
-      result.searchParams.append(name, String(value));
-    }
+  const cleanParams = omitBy(params, isNullOrBlank) as Record<string, string>;
+  // https://javascript.info/url#searchparams
+  result.search = new URLSearchParams(cleanParams).toString();
+
+  if (spaceEncoding === "percent" && result.search.length > 0) {
+    result.search = result.search.replaceAll("+", SPACE_ENCODED_VALUE);
   }
 
-  const fullURL = result.toString();
-
-  if (spaceEncoding === "plus" || result.search.length === 0) {
-    return fullURL;
-  }
-
-  return fullURL.replace(
-    result.search,
-    result.search.replaceAll("+", SPACE_ENCODED_VALUE)
-  );
+  return result.href;
 }
 
 export async function allSettledValues<T = unknown>(
