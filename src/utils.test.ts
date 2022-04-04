@@ -166,13 +166,21 @@ describe("makeURL", () => {
       "https://pixiebrix.com/?a=1&b=hi&c=false"
     );
   });
+
   test("spaces support", () => {
-    const origin = "https://pixiebrix.com";
+    const origin = "https://pixiebrix.com/path";
     expect(makeURL(origin, { a: "b c", d: "e+f" })).toBe(
-      "https://pixiebrix.com/?a=b+c&d=e%2Bf"
+      "https://pixiebrix.com/path?a=b%20c&d=e%2Bf"
     );
-    expect(makeURL(origin, { a: "b c", d: "e+f" }, "percent")).toBe(
-      "https://pixiebrix.com/?a=b%20c&d=e%2Bf"
+    expect(makeURL(origin, { a: "b c", d: "e+f" }, "plus")).toBe(
+      "https://pixiebrix.com/path?a=b+c&d=e%2Bf"
+    );
+  });
+
+  test("relative URLs support", () => {
+    expect(makeURL("bricks")).toBe("http://localhost/bricks");
+    expect(makeURL("/blueprints", { id: 1 })).toBe(
+      "http://localhost/blueprints?id=1"
     );
   });
 });
