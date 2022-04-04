@@ -21,7 +21,7 @@ import ActivateBody from "@/options/pages/marketplace/ActivateBody";
 
 const STEPS: WizardStep[] = [
   { key: "review", label: "Select Bricks", Component: ConfigureBody },
-  // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for Typescript
+  // OptionsBody takes only a slice of the RecipeDefinition, however the types aren't set up in a way for TypeScript
   // to realize it's OK to pass in a whole RecipeDefinition for something that just needs the options prop
   {
     key: "options",

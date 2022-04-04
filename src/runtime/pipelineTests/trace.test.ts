@@ -36,7 +36,7 @@ import {
   TraceExitData,
   TraceRecordMeta,
 } from "@/telemetry/trace";
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
 import { BlockPipeline } from "@/blocks/types";
 

@@ -42,7 +42,6 @@ const mockOnboarding = ({
   hasRestrictedFlag?: boolean;
 } = {}) => {
   (useGetOrganizationsQuery as jest.Mock).mockImplementation(() => ({
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
     data: hasOrganization ? [{} as Organization] : [],
   }));
 
@@ -62,7 +61,6 @@ const mockOnboarding = ({
       ? [
           {
             sharing: {
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we only need organizations.length > 1
               organizations: [{} as Organization],
             },
           },
@@ -94,7 +92,7 @@ describe("useOnboarding", () => {
     expect(result.current.onboardingType).toBe("default");
   });
 
-  test("unrestricted enterprise user", () => {
+  test("unrestricted enterprise user with teams", () => {
     mockOnboarding({ hasOrganization: true, hasTeamBlueprints: true });
     const { result } = renderHook(() => useOnboarding());
     expect(result.current.onboardingType).toBe("hasTeamBlueprints");
