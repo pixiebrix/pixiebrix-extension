@@ -30,6 +30,7 @@ import {
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
+import { isQuickBarExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export interface InstallState {
   availableInstalledIds: Set<UUID> | undefined;
@@ -63,11 +64,12 @@ function useInstallState(
             const extensionPoint = installedExtensionPoints.get(
               x.extensionPointId
             );
+            // Not installed means not available
             if (extensionPoint == null) {
               return false;
             }
 
-            // QuickBar is installed on every page and then filtered by the documentUrlPatterns
+            // QuickBar is installed on every page, need to filter by the documentUrlPatterns
             if (
               QuickBarExtensionPoint.isQuickBarExtensionPoint(extensionPoint)
             ) {
@@ -99,13 +101,23 @@ function useInstallState(
       // At this point, if the extensionPoint is an inner extension point (without its own id), then it will have
       // been expanded to extensionPoint
       if (meta && !error) {
+        const tabUrl = await getCurrentURL();
         const availability = await Promise.all(
-          elements.map(async (element) =>
-            checkAvailable(
-              thisTab,
-              element.extensionPoint.definition.isAvailable
-            )
-          )
+          elements.map(async (element) => {
+            const elementExtensionPoint = element.extensionPoint;
+
+            return (
+              (await checkAvailable(
+                thisTab,
+                elementExtensionPoint.definition.isAvailable
+              )) &&
+              (!isQuickBarExtensionPoint(elementExtensionPoint) ||
+                testMatchPatterns(
+                  elementExtensionPoint.definition.documentUrlPatterns,
+                  tabUrl
+                ))
+            );
+          })
         );
         return new Set<UUID>(
           zip(elements, availability)

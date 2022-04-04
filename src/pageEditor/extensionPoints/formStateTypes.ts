@@ -175,6 +175,12 @@ type QuickBarExtensionPointState = BaseExtensionPointState & {
   };
 };
 
+export function isQuickBarExtensionPoint(
+  extensionPoint: BaseExtensionPointState
+): extensionPoint is QuickBarExtensionPointState {
+  return extensionPoint.definition.type === "quickBar";
+}
+
 export interface QuickBarFormState
   extends BaseFormState<QuickBarExtensionState, QuickBarExtensionPointState> {
   type: "quickBar";
