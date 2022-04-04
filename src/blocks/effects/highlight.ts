@@ -74,7 +74,7 @@ export class HighlightEffect extends Effect {
           oneOf: [
             {
               type: "string",
-              description: "JQuery selector",
+              description: "jQuery selector",
               format: "selector",
             },
             {
@@ -82,7 +82,7 @@ export class HighlightEffect extends Effect {
               properties: {
                 selector: {
                   type: "string",
-                  description: "JQuery selector",
+                  description: "jQuery selector",
                   format: "selector",
                 },
                 condition: {

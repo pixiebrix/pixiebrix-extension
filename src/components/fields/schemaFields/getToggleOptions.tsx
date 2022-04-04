@@ -57,7 +57,7 @@ export function getToggleOptions({
 
       return {
         // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
-        // Typescript treats the return value as string and doesn't unify it with unknown)
+        // TypeScript treats the return value as string and doesn't unify it with unknown)
         __type__: "var" as ExpressionType,
         __value__: newValue,
       };
@@ -122,7 +122,7 @@ export function getToggleOptions({
       return allowExpressions
         ? {
             // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
-            // Typescript treats the return value as string and doesn't unify it with unknown)
+            // TypeScript treats the return value as string and doesn't unify it with unknown)
             __type__: "nunjucks" as ExpressionType,
             __value__: newValue,
           }

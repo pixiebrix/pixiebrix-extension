@@ -103,7 +103,7 @@ function useSubmitBrick({
         // We attach the handler below, and don't want it to block the save
         let refreshPromise: Promise<void>;
         if (kind === "recipe" && reinstallBlueprint) {
-          // Typescript doesn't have enough information to kind === "recipe" distinguishes RecipeDefinition from
+          // TypeScript doesn't have enough information to kind === "recipe" distinguishes RecipeDefinition from
           // Definition
           const unsavedRecipeDefinition =
             unsavedBrickJson as UnsavedRecipeDefinition;
