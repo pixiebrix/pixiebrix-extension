@@ -53,19 +53,14 @@
   }
 }
 
-.conditionBadge {
-  width: 0;
-  font-size: 0.7em;
-  transform: translate(-1.2em, 1.7em);
-}
 .skippedRun {
-  & svg:first-child {
-    font-size: 0.6em;
-    margin-left: 0.3em;
+  color: #9da1a4;
+  &:hover {
+    color: #9da1a4;
   }
 
-  & svg:last-child {
-    margin-left: -0.125em;
+  &:global(.active) {
+    color: #c6c7c8 !important;
   }
 }
 

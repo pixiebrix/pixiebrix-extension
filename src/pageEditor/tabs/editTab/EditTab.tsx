@@ -191,7 +191,6 @@ const EditTab: React.FC<{
           onClick() {
             setActiveNodeId(blockConfig.instanceId);
           },
-          hasCondition,
           skippedRun: traceRecord?.skippedRun,
         };
 

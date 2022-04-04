@@ -20,12 +20,7 @@ import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ListGroup } from "react-bootstrap";
-import {
-  faArrowDown,
-  faArrowUp,
-  faBan,
-  faCodeBranch,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { UUID } from "@/core";
 
@@ -44,7 +39,6 @@ export type EditorNodeProps = {
   canMoveDown?: boolean;
   onClickMoveUp?: () => void;
   onClickMoveDown?: () => void;
-  hasCondition?: boolean;
   skippedRun?: boolean;
 };
 
@@ -70,7 +64,6 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   canMoveDown,
   onClickMoveUp,
   onClickMoveDown,
-  hasCondition = false,
   skippedRun = false,
 }) => {
   const nodeRef = useRef<HTMLAnchorElement>(null);
@@ -96,21 +89,6 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       </span>
     ) : null;
 
-  const conditionBadge = hasCondition ? (
-    <span
-      className={cx(styles.conditionBadge, {
-        [styles.skippedRun]: skippedRun,
-        "fa-layers": skippedRun,
-      })}
-      title={`This block has a condition ${
-        skippedRun ? "and was skipped" : ""
-      }`}
-    >
-      <FontAwesomeIcon icon={faCodeBranch} />
-      {skippedRun && <FontAwesomeIcon icon={faBan} />}
-    </span>
-  ) : null;
-
   useEffect(() => {
     if (active) {
       nodeRef.current?.focus();
@@ -122,12 +100,14 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
       onClick={onClick}
       active={active}
-      className={cx(styles.root, "list-group-item-action")}
+      className={cx(styles.root, "list-group-item-action", {
+        [styles.skippedRun]: skippedRun,
+      })}
+      title={skippedRun ? "This node was skipped due to Condition" : undefined}
     >
       <div className={styles.icon}>
         {icon}
         {errorBadge}
-        {conditionBadge}
       </div>
       <div className={styles.text}>
         <div>{title}</div>
