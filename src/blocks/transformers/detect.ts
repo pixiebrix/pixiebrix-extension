@@ -27,14 +27,14 @@ export class DetectElement extends Transformer {
     super(
       "@pixiebrix/dom/detect",
       "Detect an element on a page",
-      "Detect and/or count an element on a page from a JQuery selector"
+      "Detect and/or count an element on a page from a jQuery selector"
     );
   }
 
   inputSchema: Schema = propertiesToSchema({
     selector: {
       type: "string",
-      description: "JQuery selector",
+      description: "jQuery selector",
     },
   });
 

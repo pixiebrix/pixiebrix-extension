@@ -38,7 +38,7 @@ export class FormData extends Transformer {
   inputSchema: Schema = propertiesToSchema({
     selector: {
       type: "string",
-      description: "JQuery selector for the form",
+      description: "jQuery selector for the form",
     },
   });
 

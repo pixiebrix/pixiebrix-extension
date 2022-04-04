@@ -245,7 +245,7 @@ function removeUnstyledLayout(node: Node): Node | null {
 
 /**
  * Recursively extract common HTML template from one or more buttons/menu item.
- * @param items JQuery of HTML elements
+ * @param items jQuery of HTML elements
  * @param captioned true, if the generated HTML template already includes a caption
  * placeholder
  */
@@ -336,7 +336,7 @@ type PanelStructureState = {
 
 /**
  * Recursively extract common HTML template from one or more panels.
- * @param $items JQuery of HTML elements
+ * @param $items jQuery of HTML elements
  * @param state current traversal/insertion state
  */
 function commonPanelStructure(
