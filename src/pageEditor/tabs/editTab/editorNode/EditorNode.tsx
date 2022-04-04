@@ -103,7 +103,9 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       className={cx(styles.root, "list-group-item-action", {
         [styles.skippedRun]: skippedRun,
       })}
-      title={skippedRun ? "This node was skipped due to Condition" : undefined}
+      title={
+        skippedRun ? "This brick was skipped due to its condition" : undefined
+      }
     >
       <div className={styles.icon}>
         {icon}

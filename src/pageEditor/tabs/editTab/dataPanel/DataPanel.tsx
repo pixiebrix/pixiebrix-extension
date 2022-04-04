@@ -308,8 +308,9 @@ const DataPanel: React.FC<{
           >
             {block.if && (
               <div className="text-info">
-                <FontAwesomeIcon icon={faInfoCircle} /> The preview is shown
-                regardless of the condition defined for the block
+                <FontAwesomeIcon icon={faInfoCircle} /> This brick has a
+                condition. The brick will not execute if the condition is not
+                met
               </div>
             )}
             {showFormPreview || showDocumentPreview ? (

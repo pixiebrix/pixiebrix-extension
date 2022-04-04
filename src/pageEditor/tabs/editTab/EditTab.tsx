@@ -152,7 +152,7 @@ const EditTab: React.FC<{
       (blockConfig, index) => {
         const block = allBlocks.get(blockConfig.id)?.block;
         const nodeId = blockConfig.instanceId;
-        const hasCondition = typeof blockConfig.if !== "undefined";
+        const hasCondition = blockConfig.if != null;
         // Don't loop through the trace records if condition is not set
         const traceRecord = hasCondition
           ? traces.find((trace) => trace.blockInstanceId === nodeId)
