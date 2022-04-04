@@ -20,7 +20,7 @@ import { castArray } from "lodash";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
-import { URLPatternInit } from "urlpattern-polyfill/dist/url-pattern.interfaces";
+import type { URLPatternInit } from "urlpattern-polyfill/dist";
 import { URLPattern } from "urlpattern-polyfill/dist";
 import { Entries } from "type-fest";
 

@@ -23,7 +23,7 @@ import {
   UUID,
 } from "@/core";
 import { UnknownObject } from "@/types";
-import { URLPatternInit } from "urlpattern-polyfill/dist/url-pattern.interfaces";
+import type { URLPatternInit } from "urlpattern-polyfill/dist";
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
