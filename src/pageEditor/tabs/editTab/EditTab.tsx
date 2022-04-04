@@ -152,11 +152,9 @@ const EditTab: React.FC<{
       (blockConfig, index) => {
         const block = allBlocks.get(blockConfig.id)?.block;
         const nodeId = blockConfig.instanceId;
-        const hasCondition = blockConfig.if != null;
-        // Don't loop through the trace records if condition is not set
-        const traceRecord = hasCondition
-          ? traces.find((trace) => trace.blockInstanceId === nodeId)
-          : null;
+        const traceRecord = traces.find(
+          (trace) => trace.blockInstanceId === nodeId
+        );
 
         if (!block) {
           return {
@@ -192,6 +190,7 @@ const EditTab: React.FC<{
             setActiveNodeId(blockConfig.instanceId);
           },
           skippedRun: traceRecord?.skippedRun,
+          ran: traceRecord != null,
         };
 
         if (blockConfig.outputKey) {

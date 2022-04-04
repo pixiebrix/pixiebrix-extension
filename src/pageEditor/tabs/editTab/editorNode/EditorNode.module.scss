@@ -53,15 +53,23 @@
   }
 }
 
-.skippedRun {
-  color: #9da1a4;
-  &:hover {
-    color: #9da1a4;
-  }
+.skippedBadge {
+  width: 0;
+  transform: translate(-0.7em, -0.8em);
+  font-size: 0.7em;
 
-  &:global(.active) {
-    color: #c6c7c8 !important;
+  color: var(--gray);
+  :global(.list-group-item.active) & {
+    color: var(--white);
   }
+}
+
+.successBadge {
+  width: 0;
+  transform: translate(-0.7em, -0.8em);
+  font-size: 0.7em;
+
+  color: var(--success);
 }
 
 .text {

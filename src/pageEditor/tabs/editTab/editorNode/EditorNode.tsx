@@ -20,7 +20,12 @@ import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ListGroup } from "react-bootstrap";
-import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowDown,
+  faArrowUp,
+  faCheckCircle,
+  faMinusCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { UUID } from "@/core";
 
@@ -40,6 +45,7 @@ export type EditorNodeProps = {
   onClickMoveUp?: () => void;
   onClickMoveDown?: () => void;
   skippedRun?: boolean;
+  ran?: boolean;
 };
 
 function isFontAwesomeIcon(
@@ -65,6 +71,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   onClickMoveUp,
   onClickMoveDown,
   skippedRun = false,
+  ran = false,
 }) => {
   const nodeRef = useRef<HTMLAnchorElement>(null);
   const outputName = outputKey ? `@${outputKey}` : "";
@@ -75,7 +82,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
     iconProp
   );
 
-  const errorBadge =
+  const badge =
     hasError || hasWarning ? (
       <span className={styles.errorBadge}>
         <img
@@ -86,6 +93,14 @@ const EditorNode: React.FC<EditorNodeProps> = ({
           }
           alt=""
         />
+      </span>
+    ) : skippedRun ? (
+      <span className={styles.skippedBadge}>
+        <FontAwesomeIcon icon={faMinusCircle} />
+      </span>
+    ) : ran ? (
+      <span className={styles.successBadge}>
+        <FontAwesomeIcon icon={faCheckCircle} />
       </span>
     ) : null;
 
@@ -100,16 +115,14 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
       onClick={onClick}
       active={active}
-      className={cx(styles.root, "list-group-item-action", {
-        [styles.skippedRun]: skippedRun,
-      })}
+      className={cx(styles.root, "list-group-item-action")}
       title={
         skippedRun ? "This brick was skipped due to its condition" : undefined
       }
     >
       <div className={styles.icon}>
         {icon}
-        {errorBadge}
+        {badge}
       </div>
       <div className={styles.text}>
         <div>{title}</div>
