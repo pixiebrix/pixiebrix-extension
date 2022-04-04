@@ -29,6 +29,9 @@
       // Silently improve tree-shakeability and AMD-related errors like #943
       "lodash": ["node_modules/lodash-es"],
 
+      // Types are not exported correctly in the package
+      "urlpattern-polyfill": ["node_modules/urlpattern-polyfill/dist"],
+
       // Help Madge resolve this dependency
       "marked": ["node_modules/marked/lib/marked.esm.js"]
     },

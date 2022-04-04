@@ -20,8 +20,8 @@ import { castArray } from "lodash";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
 import { $safeFind } from "@/helpers";
-import type { URLPatternInit } from "urlpattern-polyfill/dist";
-import { URLPattern } from "urlpattern-polyfill/dist";
+import type { URLPatternInit } from "urlpattern-polyfill";
+import { URLPattern } from "urlpattern-polyfill";
 import { Entries } from "type-fest";
 
 export function testMatchPatterns(
