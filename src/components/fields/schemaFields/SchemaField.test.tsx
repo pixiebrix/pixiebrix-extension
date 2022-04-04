@@ -286,17 +286,15 @@ describe("SchemaField", () => {
         .querySelector("button");
       expect(toggle).not.toBeNull();
 
-      userEvent.click(toggle);
+      await userEvent.click(toggle);
 
       const newOption = screen.getByText(toggleOption, { exact: false });
       expect(newOption).not.toBeNull();
 
       // Await this element to avoid the "unable to click element" error
-      await waitFor(() => {
-        userEvent.click(newOption);
-      });
+      await waitFor(async () => userEvent.click(newOption));
 
-      userEvent.click(screen.getByRole("button", { name: /submit/i }));
+      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith({
@@ -352,7 +350,7 @@ describe("SchemaField", () => {
         .querySelector("button");
       expect(toggle).not.toBeNull();
 
-      userEvent.click(toggle);
+      await userEvent.click(toggle);
 
       await waitFor(() => {
         const testIds = [
@@ -380,7 +378,7 @@ describe("SchemaField", () => {
         .querySelector("button");
       expect(toggle).not.toBeNull();
 
-      userEvent.click(toggle);
+      await userEvent.click(toggle);
 
       await waitFor(() => {
         const testIds = [
