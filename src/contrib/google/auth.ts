@@ -50,6 +50,8 @@ export async function ensureAuth(
 }
 
 class PermissionsError extends Error {
+  override name = "PermissionsError";
+
   public readonly status: number;
 
   constructor(m: string, status: number) {

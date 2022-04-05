@@ -105,13 +105,6 @@ export function isNativeCssSelector(selector: string): boolean {
   }
 }
 
-export class PromiseCancelled extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "PromiseCancelled";
-  }
-}
-
 function mutationSelector(
   selector: string,
   target?: HTMLElement | Document
