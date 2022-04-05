@@ -23,7 +23,7 @@ export async function expectToggleOptions(
   expected: string[]
 ) {
   // React Bootstrap dropdown does not render children items unless toggled
-  userEvent.click(container.querySelector("button"));
+  await userEvent.click(container.querySelector("button"));
   const actual = new Set(
     [...container.querySelectorAll("a")].map((x) => x.dataset.testid)
   );

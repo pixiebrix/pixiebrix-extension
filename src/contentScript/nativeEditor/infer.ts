@@ -93,7 +93,9 @@ const TEMPLATE_VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
   ["id", [new RegExp(`^${PANEL_FRAME_ID}$`)]],
 ]);
 
-class SkipElement extends Error {}
+class SkipElement extends Error {
+  override name = "SkipElement";
+}
 
 /** ID selectors and certain other attributes can uniquely identify items */
 function isSelectorUsuallyUnique(selector: string): boolean {
@@ -107,9 +109,14 @@ function isSelectorUsuallyUnique(selector: string): boolean {
  * 1   '[data-cy="b4da55"]'
  * 2   '.navItem'
  * 2   '.birdsArentReal'
+ * 21  '#name > :nth-child(2)'
  * 30  '[aria-label="Click elsewhere"]'
  */
 export function getSelectorPreference(selector: string): number {
+  if (selector.includes(":nth-child")) {
+    return selector.length;
+  }
+
   if (selector.startsWith("#")) {
     return 0;
   }

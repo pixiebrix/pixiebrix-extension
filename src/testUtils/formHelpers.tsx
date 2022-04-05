@@ -60,10 +60,10 @@ export const selectSchemaFieldType = async (
   const fieldToggleButton = screen
     .getByTestId(`toggle-${fieldName}`)
     .querySelector("button");
-  userEvent.click(fieldToggleButton);
+  await userEvent.click(fieldToggleButton);
   await waitForEffect();
 
   const textOption = screen.getByTestId(typeToSelect);
-  userEvent.click(textOption);
+  await userEvent.click(textOption);
   await waitForEffect();
 };

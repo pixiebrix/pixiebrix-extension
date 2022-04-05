@@ -20,7 +20,7 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import * as context from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebar";
-import { PromiseCancelled, sleep } from "@/utils";
+import { sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
 import reportError from "@/telemetry/reportError";
@@ -29,6 +29,7 @@ import { resolveDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deployment";
 import { $safeFind } from "@/helpers";
+import { PromiseCancelled } from "@/errors";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();

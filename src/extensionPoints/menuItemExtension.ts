@@ -24,6 +24,7 @@ import {
   hasCancelRootCause,
   MultipleElementsFoundError,
   NoElementsFoundError,
+  PromiseCancelled,
 } from "@/errors";
 import {
   acquireElement,
@@ -54,7 +55,7 @@ import notify, {
   notifyResult,
 } from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
-import { PromiseCancelled, rejectOnCancelled } from "@/utils";
+import { rejectOnCancelled } from "@/utils";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
