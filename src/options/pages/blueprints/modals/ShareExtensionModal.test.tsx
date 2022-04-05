@@ -118,7 +118,7 @@ test("prints 'Share' when Public", async () => {
   const publicSwitch = dialogRoot.querySelector(
     ".form-group:nth-child(5) .switch.btn"
   );
-  userEvent.click(publicSwitch);
+  await userEvent.click(publicSwitch);
   await waitForEffect();
 
   expect(publicSwitch).toHaveClass("on");

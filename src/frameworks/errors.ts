@@ -16,17 +16,11 @@
  */
 
 export class ComponentNotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ComponentNotFoundError";
-  }
+  override name = "ComponentNotFoundError";
 }
 
 export class FrameworkNotFound extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "FrameworkNotFound";
-  }
+  override name = "FrameworkNotFound";
 }
 
 export function ignoreNotFound<T>(factory: () => T): T | null {

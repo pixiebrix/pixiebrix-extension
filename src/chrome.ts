@@ -40,11 +40,11 @@ export type ReduxStorageKey = string & {
 };
 
 export class RequestError extends Error {
+  override name = "RequestError";
   readonly response: unknown;
 
   constructor(message: string, response: unknown) {
     super(message);
-    this.name = "RequestError";
     this.response = response;
   }
 }
@@ -77,10 +77,7 @@ export async function getExtensionVersion() {
 }
 
 export class RuntimeNotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "RuntimeNotFoundError";
-  }
+  override name = "RuntimeNotFoundError";
 }
 
 export async function readStorage<T = unknown>(
