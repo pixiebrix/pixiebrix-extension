@@ -108,23 +108,26 @@ function useInstallState(
         const availableElementIds = await Promise.all(
           elements.map(
             async ({ uuid, extensionPoint: elementExtensionPoint }) => {
-              const notQuickBarOrMatchDocumentUrlPatterns =
-                !isQuickBarExtensionPoint(elementExtensionPoint) ||
-                testMatchPatterns(
+              if (
+                isQuickBarExtensionPoint(elementExtensionPoint) &&
+                !testMatchPatterns(
                   elementExtensionPoint.definition.documentUrlPatterns,
                   tabUrl
-                );
+                )
+              ) {
+                return null;
+              }
 
-              const isAvailable =
-                notQuickBarOrMatchDocumentUrlPatterns &&
-                (await checkAvailable(
+              if (
+                await checkAvailable(
                   thisTab,
                   elementExtensionPoint.definition.isAvailable
-                ));
+                )
+              ) {
+                return uuid;
+              }
 
-              return isAvailable && notQuickBarOrMatchDocumentUrlPatterns
-                ? uuid
-                : null;
+              return null;
             }
           )
         );
