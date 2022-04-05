@@ -20,12 +20,7 @@ import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ListGroup } from "react-bootstrap";
-import {
-  faArrowDown,
-  faArrowUp,
-  faCheckCircle,
-  faMinusCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { UUID } from "@/core";
 
@@ -82,27 +77,21 @@ const EditorNode: React.FC<EditorNodeProps> = ({
     iconProp
   );
 
-  const badge =
-    hasError || hasWarning ? (
-      <span className={styles.errorBadge}>
-        <img
-          src={
-            hasError
-              ? "/img/fa-exclamation-circle-custom.svg"
-              : "/img/fa-exclamation-triangle-custom.svg"
-          }
-          alt=""
-        />
-      </span>
-    ) : skippedRun ? (
-      <span className={styles.skippedBadge}>
-        <FontAwesomeIcon icon={faMinusCircle} />
-      </span>
-    ) : ran ? (
-      <span className={styles.successBadge}>
-        <FontAwesomeIcon icon={faCheckCircle} />
-      </span>
-    ) : null;
+  const badgeSource = hasError
+    ? "/img/fa-exclamation-circle-custom.svg"
+    : hasWarning
+    ? "/img/fa-exclamation-triangle-custom.svg"
+    : skippedRun
+    ? "/img/fa-minus-circle-solid-custom.svg"
+    : ran
+    ? "/img/fa-check-circle-solid-custom.svg"
+    : null;
+
+  const badge = badgeSource ? (
+    <span className={styles.badge}>
+      <img src={badgeSource} alt="" />
+    </span>
+  ) : null;
 
   useEffect(() => {
     if (active) {

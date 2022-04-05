@@ -45,31 +45,12 @@
   }
 }
 
-.errorBadge {
+.badge {
   width: 0;
   img {
     font-size: 0.7em;
     transform: translate(-0.7em, -0.8em);
   }
-}
-
-.skippedBadge {
-  width: 0;
-  transform: translate(-0.7em, -0.8em);
-  font-size: 0.7em;
-
-  color: var(--gray);
-  :global(.list-group-item.active) & {
-    color: var(--white);
-  }
-}
-
-.successBadge {
-  width: 0;
-  transform: translate(-0.7em, -0.8em);
-  font-size: 0.7em;
-
-  color: var(--success);
 }
 
 .text {
