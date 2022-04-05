@@ -19,7 +19,7 @@ import { IExtension, UUID } from "@/core";
 import { useContext } from "react";
 import { PageEditorTabContext } from "@/pageEditor/context";
 import { useAsyncState } from "@/hooks/common";
-import { zip } from "lodash";
+import { compact } from "lodash";
 import hash from "object-hash";
 import { resolveDefinitions } from "@/registry/internal";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
@@ -30,7 +30,10 @@ import {
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
-import { isQuickBarExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
+import {
+  isQuickBarExtensionPoint,
+  QuickBarExtensionPointState,
+} from "@/pageEditor/extensionPoints/formStateTypes";
 
 export interface InstallState {
   availableInstalledIds: Set<UUID> | undefined;
@@ -102,28 +105,31 @@ function useInstallState(
       // been expanded to extensionPoint
       if (meta && !error) {
         const tabUrl = await getCurrentURL();
-        const availability = await Promise.all(
-          elements.map(async (element) => {
-            const elementExtensionPoint = element.extensionPoint;
-
-            return (
-              (await checkAvailable(
-                thisTab,
-                elementExtensionPoint.definition.isAvailable
-              )) &&
-              (!isQuickBarExtensionPoint(elementExtensionPoint) ||
+        const availableElementIds = await Promise.all(
+          elements.map(
+            async ({ uuid, extensionPoint: elementExtensionPoint }) => {
+              const notQuickBarOrMatchDocumentUrlPatterns =
+                !isQuickBarExtensionPoint(elementExtensionPoint) ||
                 testMatchPatterns(
                   elementExtensionPoint.definition.documentUrlPatterns,
                   tabUrl
-                ))
-            );
-          })
+                );
+
+              const isAvailable =
+                notQuickBarOrMatchDocumentUrlPatterns &&
+                (await checkAvailable(
+                  thisTab,
+                  elementExtensionPoint.definition.isAvailable
+                ));
+
+              return isAvailable && notQuickBarOrMatchDocumentUrlPatterns
+                ? uuid
+                : null;
+            }
+          )
         );
-        return new Set<UUID>(
-          zip(elements, availability)
-            .filter(([, available]) => available)
-            .map(([extension]) => extension.uuid)
-        );
+
+        return new Set<UUID>(compact(availableElementIds));
       }
 
       return new Set<UUID>();
@@ -136,6 +142,9 @@ function useInstallState(
         elements.map((x) => ({
           uuid: x.uuid,
           isAvailable: x.extensionPoint.definition.isAvailable,
+          documentUrlPatterns:
+            (x.extensionPoint as QuickBarExtensionPointState).definition
+              ?.documentUrlPatterns ?? "",
         }))
       ),
     ],

@@ -163,7 +163,7 @@ export interface ContextMenuFormState
 // QuickBarFormState
 type QuickBarExtensionState = BaseExtensionState &
   Except<QuickBarConfig, "action">;
-type QuickBarExtensionPointState = BaseExtensionPointState & {
+export type QuickBarExtensionPointState = BaseExtensionPointState & {
   definition: {
     type: ExtensionPointType;
     defaultOptions: QuickBarDefaultOptions;
