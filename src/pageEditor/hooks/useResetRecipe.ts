@@ -44,8 +44,7 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
       for (const element of elements.filter(
         (element) => element.recipe?.id === recipeId
       )) {
-        // eslint-disable-next-line no-await-in-loop
-        await resetElement({ element, shouldShowConfirmation: false });
+        resetElement({ element, shouldShowConfirmation: false });
       }
 
       dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
