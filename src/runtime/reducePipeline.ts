@@ -439,6 +439,16 @@ export async function blockReducer(
   ) {
     logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
 
+    traces.addExit({
+      runId,
+      extensionId: logger.context.extensionId,
+      blockId: blockConfig.id,
+      blockInstanceId: blockConfig.instanceId,
+      outputKey: blockConfig.outputKey,
+      output: null,
+      skippedRun: true,
+    });
+
     return { output: previousOutput, context };
   }
 
@@ -487,6 +497,7 @@ export async function blockReducer(
     blockInstanceId: blockConfig.instanceId,
     outputKey: blockConfig.outputKey,
     output: output as JsonObject,
+    skippedRun: false,
   });
 
   await logIfInvalidOutput(resolvedConfig.block, output, logger, {
@@ -548,6 +559,7 @@ function throwBlockError(
     blockId: blockConfig.id,
     blockInstanceId: blockConfig.instanceId,
     error: serializeError(error),
+    skippedRun: false,
   });
 
   if (blockConfig.onError?.alert) {
