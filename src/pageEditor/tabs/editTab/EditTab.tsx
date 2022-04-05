@@ -186,11 +186,11 @@ const EditTab: React.FC<{
             Boolean(blockPipelineErrors?.[index]),
           hasWarning:
             errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
+          skippedRun: traceRecord?.skippedRun,
+          ran: traceRecord != null,
           onClick() {
             setActiveNodeId(blockConfig.instanceId);
           },
-          skippedRun: traceRecord?.skippedRun,
-          ran: traceRecord != null,
         };
 
         if (blockConfig.outputKey) {
@@ -206,6 +206,7 @@ const EditTab: React.FC<{
       outputKey: "input",
       title: label,
       icon,
+      ran: traces.length > 0,
       onClick() {
         setActiveNodeId(FOUNDATION_NODE_ID);
       },
