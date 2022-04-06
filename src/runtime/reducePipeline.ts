@@ -28,6 +28,7 @@ import {
 import { castArray, isPlainObject } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import {
+  clearExtensionDebugLogs,
   getLoggingConfig,
   requestRun,
   sendDeploymentAlert,
@@ -606,6 +607,9 @@ export async function reducePipeline(
     "@input": input,
     "@options": optionsArgs ?? {},
   } as unknown as BlockArgContext;
+
+  await traces.clear(pipelineLogger.context.extensionId);
+  await clearExtensionDebugLogs(pipelineLogger.context.extensionId);
 
   // When using explicit data flow, the first block (and other blocks) use `@input` in the context to get the inputs
   let output: unknown = explicitDataFlow ? {} : input;

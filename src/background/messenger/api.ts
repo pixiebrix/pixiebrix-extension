@@ -111,11 +111,15 @@ export const recordEvent = getNotifier("RECORD_EVENT", bg);
 export const getLoggingConfig = getMethod("GET_LOGGING_CONFIG", bg);
 export const setLoggingConfig = getMethod("SET_LOGGING_CONFIG", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
+export const clearExtensionDebugLogs = getMethod(
+  "CLEAR_EXTENSION_DEBUG_LOGS",
+  bg
+);
 
 export const traces = {
   addEntry: getNotifier("ADD_TRACE_ENTRY", bg),
   addExit: getNotifier("ADD_TRACE_EXIT", bg),
-  clear: getNotifier("CLEAR_TRACES", bg),
+  clear: getMethod("CLEAR_TRACES", bg),
   clearAll: getNotifier("CLEAR_ALL_TRACES", bg),
 };
 

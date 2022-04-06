@@ -402,3 +402,14 @@ export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
   await setStorage(LOG_CONFIG_STORAGE_KEY, config);
   _config = config;
 }
+
+export async function clearExtensionDebugLogs(extensionId: string) {
+  const db = await getDB();
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  const index = tx.store.index("extensionId");
+  for await (const cursor of index.iterate(extensionId)) {
+    if (cursor.value.level === "debug") {
+      await cursor.delete();
+    }
+  }
+}
