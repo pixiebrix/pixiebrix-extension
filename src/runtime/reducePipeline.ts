@@ -608,8 +608,11 @@ export async function reducePipeline(
     "@options": optionsArgs ?? {},
   } as unknown as BlockArgContext;
 
-  await traces.clear(pipelineLogger.context.extensionId);
-  await clearExtensionDebugLogs(pipelineLogger.context.extensionId);
+  // `await` promises to avoid race condition where the calls here delete debug entries from this call to reducePipeline
+  await Promise.allSettled([
+    traces.clear(pipelineLogger.context.extensionId),
+    clearExtensionDebugLogs(pipelineLogger.context.extensionId),
+  ]);
 
   // When using explicit data flow, the first block (and other blocks) use `@input` in the context to get the inputs
   let output: unknown = explicitDataFlow ? {} : input;

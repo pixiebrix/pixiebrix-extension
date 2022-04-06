@@ -403,7 +403,9 @@ export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
   _config = config;
 }
 
-export async function clearExtensionDebugLogs(extensionId: UUID) {
+export async function clearExtensionDebugLogs(
+  extensionId: UUID
+): Promise<void> {
   const db = await getDB();
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
   const index = tx.store.index("extensionId");
