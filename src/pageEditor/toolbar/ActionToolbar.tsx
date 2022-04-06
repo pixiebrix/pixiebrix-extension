@@ -22,11 +22,6 @@ import { faHistory, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import useRemove from "@/pageEditor/hooks/useRemove";
 import useReset from "@/pageEditor/hooks/useReset";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import { useSelector } from "react-redux";
-import {
-  selectElementIsDirty,
-  selectRecipeIsDirty,
-} from "@/pageEditor/slices/editorSelectors";
 
 const ActionToolbar: React.FunctionComponent<{
   element: FormState;
@@ -36,24 +31,14 @@ const ActionToolbar: React.FunctionComponent<{
   const remove = useRemove(element);
   const reset = useReset();
 
-  const isElementDirty = useSelector(selectElementIsDirty(element.uuid));
-  const isRecipeDirty = useSelector(selectRecipeIsDirty(element.recipe?.id));
-
-  const isAddAndResetDisabled = disabled || (!isElementDirty && !isRecipeDirty);
-
   return (
     <ButtonGroup className="ml-2">
-      <Button
-        disabled={isAddAndResetDisabled}
-        size="sm"
-        variant="primary"
-        onClick={onSave}
-      >
+      <Button disabled={disabled} size="sm" variant="primary" onClick={onSave}>
         <FontAwesomeIcon icon={faSave} /> Save
       </Button>
       {element.installed && (
         <Button
-          disabled={isAddAndResetDisabled}
+          disabled={disabled}
           size="sm"
           variant="warning"
           onClick={() => {
