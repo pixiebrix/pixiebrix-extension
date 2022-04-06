@@ -16,10 +16,10 @@
         "type": "string"
       }
     },
-    "hostname": {
+    "serviceUrl": {
       "type": "string",
-      "description": "PixieBrix API hostname",
-      "default": "app.pixiebrix.com"
+      "description": "PixieBrix service URL",
+      "default": "https://app.pixiebrix.com"
     }
   }
 }

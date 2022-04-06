@@ -26,7 +26,7 @@ export const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
 
 type ConfiguredHost = string | null | undefined;
 
-const MANAGED_HOSTNAME_KEY = "hostname" as ManualStorageKey;
+const MANAGED_HOSTNAME_KEY = "serviceUrl" as ManualStorageKey;
 
 export function withoutTrailingSlash(url: string): string {
   return url.replace(/\/$/, "");
@@ -45,7 +45,7 @@ export async function getBaseURL(): Promise<string> {
       "managed"
     );
     if (!isEmpty(managed)) {
-      return withoutTrailingSlash("https://" + managed);
+      return withoutTrailingSlash(managed);
     }
   }
 

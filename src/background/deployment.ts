@@ -333,7 +333,7 @@ export async function updateDeployments(): Promise<void> {
       uid: await getUID(),
       version: await getExtensionVersion(),
       active: selectInstalledDeployments(extensions),
-      campaignId: await readStorage(
+      campaignIds: await readStorage(
         MANAGED_CAMPAIGN_IDS_KEY,
         undefined,
         "managed"
