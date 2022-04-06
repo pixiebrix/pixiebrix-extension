@@ -115,7 +115,7 @@ function useRecipeSaver(): RecipeSaver {
 
     // Don't push to cloud since we're saving it with the recipe
     await Promise.all(
-      dirtyRecipeElements.map((element) =>
+      dirtyRecipeElements.map(async (element) =>
         create({ element, pushToCloud: false })
       )
     );
