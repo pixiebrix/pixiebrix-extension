@@ -54,10 +54,11 @@ function useRemoveRecipe(): (recipeId: RegistryId) => Promise<void> {
           .filter((x) => getRecipeIdForElement(x) === recipeId)
           .map((x) => getIdForElement(x))
       );
-      for (const extensionId of extensionIds) {
-        // eslint-disable-next-line no-await-in-loop
-        await removeExtension({ extensionId, shouldShowConfirmation: false });
-      }
+      await Promise.all(
+        extensionIds.map(async (extensionId) =>
+          removeExtension({ extensionId, shouldShowConfirmation: false })
+        )
+      );
 
       dispatch(actions.clearActiveRecipe());
       dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
