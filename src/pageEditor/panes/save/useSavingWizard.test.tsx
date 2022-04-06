@@ -41,6 +41,7 @@ import {
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import menuItem from "@/pageEditor/extensionPoints/menuItem";
+import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
 import { MINIMAL_UI_SCHEMA } from "@/components/formBuilder/formBuilderHelpers";
