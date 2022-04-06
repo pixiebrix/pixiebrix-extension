@@ -41,12 +41,13 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
         return;
       }
 
-      for (const element of elements.filter(
-        (element) => element.recipe?.id === recipeId
-      )) {
-        // eslint-disable-next-line no-await-in-loop
-        await resetElement({ element, shouldShowConfirmation: false });
-      }
+      await Promise.all(
+        elements
+          .filter((element) => element.recipe?.id === recipeId)
+          .map(async (element) =>
+            resetElement({ element, shouldShowConfirmation: false })
+          )
+      );
 
       dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
       dispatch(actions.restoreDeletedElementsForRecipe(recipeId));
