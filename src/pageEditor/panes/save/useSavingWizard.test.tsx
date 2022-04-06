@@ -199,7 +199,6 @@ describe("saving a Recipe Extension", () => {
     store.dispatch(editorSlice.actions.addElement(element));
 
     const createMock = jest.fn();
-    createMock.mockResolvedValue(null);
     (useCreateMock as jest.Mock).mockReturnValue(createMock);
 
     const resetMock = jest.fn();
@@ -247,9 +246,14 @@ describe("saving a Recipe Extension", () => {
     expect(result.current.isWizardOpen).toBe(true);
     expect(result.current.isSaving).toBe(false);
 
+    // These deferreds let us go through saveElementAsPersonalExtension step by step
+    const resettingElementDeferred = pDefer<void>();
+    resetMock.mockReturnValueOnce(resettingElementDeferred.promise);
+    const creatingElementDeferred = pDefer<void>();
+    createMock.mockReturnValueOnce(creatingElementDeferred.promise);
+
     // Saving as personal extension
     // Invoke the saveElementAsPersonalExtension but don't wait for it to resolve yet
-    // so we can check the state while saving is in progress
     const savingElementPromise = act(async () =>
       result.current.saveElementAsPersonalExtension()
     );
@@ -270,15 +274,16 @@ describe("saving a Recipe Extension", () => {
     expect(elements[1].recipe).toBeUndefined();
     expect(elements[1].optionsDefinition).toBeUndefined();
 
-    // Waiting for the saveElementAsPersonalExtension to complete entirely
-    await savingElementPromise;
-
     // Check the source element is reset
     expect(resetMock).toHaveBeenCalledTimes(1);
     expect(resetMock).toHaveBeenCalledWith({
       element: elements[0],
       shouldShowConfirmation: false,
     });
+
+    // Resolving the reset promise to go further in the saveElementAsPersonalExtension
+    resettingElementDeferred.resolve();
+    await resettingElementDeferred.promise;
 
     // Check new element is saved
     expect(createMock).toHaveBeenCalledTimes(1);
@@ -287,8 +292,15 @@ describe("saving a Recipe Extension", () => {
       pushToCloud: true,
     });
 
+    // Resolving the create promise to go further in the saveElementAsPersonalExtension
+    creatingElementDeferred.resolve();
+    await creatingElementDeferred.promise;
+
     // Check the original recipe element is uninstalled
     expect(selectElements(store.getState())).toHaveLength(1);
+
+    // Waiting for the saveElementAsPersonalExtension to complete entirely
+    await savingElementPromise;
 
     // Check wizard state after saving
     expect(result.current.isWizardOpen).toBe(false);
