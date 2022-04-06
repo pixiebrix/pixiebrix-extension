@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { getRollbar } from "@/telemetry/initRollbar";
-import { MessageContext, SerializedError } from "@/core";
+import { MessageContext, SerializedError, UUID } from "@/core";
 import { Except, JsonObject } from "type-fest";
 import { deserializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
