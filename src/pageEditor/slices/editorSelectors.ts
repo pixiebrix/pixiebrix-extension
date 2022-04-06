@@ -78,10 +78,6 @@ const dirtyMetadataForRecipeIdSelector = createSelector(
 export const selectDeletedElements = (state: RootState) =>
   state.editor.deletedElementsByRecipeId;
 
-export function getIdForElement(element: IExtension | FormState): UUID {
-  return isExtension(element) ? element.id : element.uuid;
-}
-
 export function getRecipeIdForElement(
   element: IExtension | FormState
 ): RegistryId {

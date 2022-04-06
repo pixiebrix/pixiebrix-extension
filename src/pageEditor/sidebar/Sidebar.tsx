@@ -57,7 +57,6 @@ import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
-  getIdForElement,
   selectActiveElementId,
   selectActiveRecipeId,
   selectElements,
@@ -67,6 +66,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
+import { getIdForElement } from "@/pageEditor/utils";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button

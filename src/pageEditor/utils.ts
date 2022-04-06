@@ -18,6 +18,9 @@
 import { Primitive } from "type-fest";
 import { compact, includes, isEmpty, mapValues, pickBy } from "lodash";
 import { Target } from "@/types";
+import { IExtension, UUID } from "@/core";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import { isExtension } from "@/pageEditor/sidebar/common";
 
 export async function getCurrentURL(): Promise<string> {
   if (!browser.devtools) {
@@ -78,3 +81,7 @@ export const thisTab: Target = {
   // The top-level frame
   frameId: 0,
 };
+
+export function getIdForElement(element: IExtension | FormState): UUID {
+  return isExtension(element) ? element.id : element.uuid;
+}

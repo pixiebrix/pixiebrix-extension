@@ -21,13 +21,13 @@ import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
-  getIdForElement,
   getRecipeIdForElement,
   selectElements,
 } from "@/pageEditor/slices/editorSelectors";
 import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { getIdForElement } from "@/pageEditor/utils";
 
 function useRemoveRecipe(): (recipeId: RegistryId) => Promise<void> {
   const dispatch = useDispatch();
