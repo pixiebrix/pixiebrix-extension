@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, RecipeMetadata, RegistryId, UUID } from "@/core";
+import { RecipeMetadata, RegistryId, UUID } from "@/core";
 import { createSelector } from "reselect";
-import { isExtension } from "@/pageEditor/sidebar/common";
-import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
+import { EditorState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { isEmpty, uniqBy } from "lodash";
 
@@ -77,12 +76,6 @@ const dirtyMetadataForRecipeIdSelector = createSelector(
 
 export const selectDeletedElements = (state: RootState) =>
   state.editor.deletedElementsByRecipeId;
-
-export function getRecipeIdForElement(
-  element: IExtension | FormState
-): RegistryId {
-  return isExtension(element) ? element._recipe?.id : element.recipe?.id;
-}
 
 const elementIsDirtySelector = createSelector(
   selectDirty,

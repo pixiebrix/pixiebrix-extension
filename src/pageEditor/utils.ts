@@ -18,7 +18,7 @@
 import { Primitive } from "type-fest";
 import { compact, includes, isEmpty, mapValues, pickBy } from "lodash";
 import { Target } from "@/types";
-import { IExtension, UUID } from "@/core";
+import { IExtension, RegistryId, UUID } from "@/core";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isExtension } from "@/pageEditor/sidebar/common";
 
@@ -84,4 +84,10 @@ export const thisTab: Target = {
 
 export function getIdForElement(element: IExtension | FormState): UUID {
   return isExtension(element) ? element.id : element.uuid;
+}
+
+export function getRecipeIdForElement(
+  element: IExtension | FormState
+): RegistryId {
+  return isExtension(element) ? element._recipe?.id : element.recipe?.id;
 }
