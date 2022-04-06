@@ -51,7 +51,7 @@ jest.unmock("react-redux");
 
 jest.mock("@/telemetry/logging");
 jest.mock("@/pageEditor/hooks/useCreate");
-jest.mock("@/pageEditor/hooks/useReset");
+jest.mock("@/pageEditor/hooks/useResetExtension");
 
 jest.mock("@/services/api", () => ({
   useCreateRecipeMutation: jest.fn().mockReturnValue([]),
