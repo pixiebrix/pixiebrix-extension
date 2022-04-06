@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { getRollbar } from "@/telemetry/initRollbar";
-import { MessageContext, SerializedError } from "@/core";
+import { MessageContext, SerializedError, UUID } from "@/core";
 import { Except, JsonObject } from "type-fest";
 import { deserializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
@@ -401,4 +401,17 @@ export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
 
   await setStorage(LOG_CONFIG_STORAGE_KEY, config);
   _config = config;
+}
+
+export async function clearExtensionDebugLogs(
+  extensionId: UUID
+): Promise<void> {
+  const db = await getDB();
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  const index = tx.store.index("extensionId");
+  for await (const cursor of index.iterate(extensionId)) {
+    if (cursor.value.level === "debug") {
+      await cursor.delete();
+    }
+  }
 }

@@ -298,7 +298,7 @@ const extensionsSlice = createSlice({
       requireLatestState(state);
 
       // Make sure we're not keeping any private data around from Page Editor sessions
-      traces.clear(extensionId);
+      void traces.clear(extensionId);
 
       // NOTE: We aren't deleting the extension on the server. The user must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);
