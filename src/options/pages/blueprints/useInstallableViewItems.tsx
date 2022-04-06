@@ -106,7 +106,7 @@ function useInstallableViewItems(installables: Installable[]): {
         },
         updatedAt: getUpdatedAt(installable),
         status:
-          // Cast needed because otherwise Typescript types as "string"
+          // Cast needed because otherwise TypeScript types as "string"
           (isActive(installable) ? "Active" : "Inactive") as InstallableStatus,
         hasUpdate: updateAvailable(
           recipes.data,

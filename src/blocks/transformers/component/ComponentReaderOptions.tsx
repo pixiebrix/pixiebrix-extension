@@ -34,7 +34,7 @@ const selectorFieldSchema: Schema = {
   format: "selector",
   title: "Component Selector",
   description:
-    "A CSS/JQuery selector for an element corresponding to the component",
+    "A CSS/jQuery selector for an element corresponding to the component",
 };
 
 const optionalFieldSchema: Schema = {

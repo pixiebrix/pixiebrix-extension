@@ -134,7 +134,7 @@ const BlockConfiguration: React.FunctionComponent<{
 
           {showIfAndTarget && (
             <>
-              <SchemaField {...ifSchemaProps} />
+              <SchemaField {...ifSchemaProps} omitIfEmpty />
 
               <ConnectedFieldTemplate
                 name={configName("window")}
