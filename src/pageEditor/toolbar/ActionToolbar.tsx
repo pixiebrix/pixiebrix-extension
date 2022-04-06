@@ -21,11 +21,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHistory, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import { FormState } from "@/pageEditor/pageEditorTypes";
-import { useSelector } from "react-redux";
-import {
-  selectElementIsDirty,
-  selectRecipeIsDirty,
-} from "@/pageEditor/slices/editorSelectors";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
@@ -56,24 +51,14 @@ const ActionToolbar: React.FunctionComponent<{
     }
   };
 
-  const isElementDirty = useSelector(selectElementIsDirty(element.uuid));
-  const isRecipeDirty = useSelector(selectRecipeIsDirty(element.recipe?.id));
-
-  const isAddAndResetDisabled = disabled || (!isElementDirty && !isRecipeDirty);
-
   return (
     <ButtonGroup className="ml-2">
-      <Button
-        disabled={isAddAndResetDisabled}
-        size="sm"
-        variant="primary"
-        onClick={onSave}
-      >
+      <Button disabled={disabled} size="sm" variant="primary" onClick={onSave}>
         <FontAwesomeIcon icon={faSave} /> Save
       </Button>
       {element.installed && (
         <Button
-          disabled={isAddAndResetDisabled}
+          disabled={disabled}
           size="sm"
           variant="warning"
           onClick={resetElement}
