@@ -18,7 +18,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectDeletedElements,
   selectDirty,
   selectDirtyRecipeMetadata,
   selectDirtyRecipeOptions,
@@ -57,7 +56,6 @@ function useRecipeSaver(): RecipeSaver {
   const installedExtensions = useSelector(selectExtensions);
   const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
   const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
-  const deletedRecipeElements = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
 
