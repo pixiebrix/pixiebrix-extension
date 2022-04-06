@@ -22,6 +22,12 @@ import { faHistory, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import useRemove from "@/pageEditor/hooks/useRemove";
 import useReset from "@/pageEditor/hooks/useReset";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import { useSelector } from "react-redux";
+import {
+  selectElementIsDirty,
+  selectRecipeIsDirty,
+} from "@/pageEditor/slices/editorSelectors";
+import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 
 const ActionToolbar: React.FunctionComponent<{
   element: FormState;
@@ -30,20 +36,37 @@ const ActionToolbar: React.FunctionComponent<{
 }> = ({ element, disabled, onSave }) => {
   const remove = useRemove(element);
   const reset = useReset();
+  const resetRecipe = useResetRecipe();
+
+  const resetElement = async () => {
+    if (element.recipe) {
+      await resetRecipe(element.recipe.id);
+    } else {
+      await reset({ element });
+    }
+  };
+
+  const isElementDirty = useSelector(selectElementIsDirty(element.uuid));
+  const isRecipeDirty = useSelector(selectRecipeIsDirty(element.recipe?.id));
+
+  const isAddAndResetDisabled = disabled || (!isElementDirty && !isRecipeDirty);
 
   return (
     <ButtonGroup className="ml-2">
-      <Button disabled={disabled} size="sm" variant="primary" onClick={onSave}>
+      <Button
+        disabled={isAddAndResetDisabled}
+        size="sm"
+        variant="primary"
+        onClick={onSave}
+      >
         <FontAwesomeIcon icon={faSave} /> Save
       </Button>
       {element.installed && (
         <Button
-          disabled={disabled}
+          disabled={isAddAndResetDisabled}
           size="sm"
           variant="warning"
-          onClick={() => {
-            reset({ element });
-          }}
+          onClick={resetElement}
         >
           <FontAwesomeIcon icon={faHistory} /> Reset
         </Button>

@@ -36,6 +36,7 @@ import { NodeId } from "@/pageEditor/tabs/editTab/editorNode/EditorNode";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { ElementUIState } from "@/pageEditor/uiState/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
+import { isEmpty } from "lodash";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -341,7 +342,7 @@ export const editorSlice = createSlice({
       const { payload: metadata } = action;
       state.dirtyRecipeMetadataById[recipeId] = metadata;
     },
-    resetRecipeMetadataAndOptions(state, action: PayloadAction<RegistryId>) {
+    resetMetadataAndOptionsForRecipe(state, action: PayloadAction<RegistryId>) {
       const { payload: recipeId } = action;
       delete state.dirtyRecipeMetadataById[recipeId];
       delete state.dirtyRecipeOptionsById[recipeId];
@@ -452,6 +453,21 @@ export const editorSlice = createSlice({
     clearDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
       const recipeId = action.payload;
       delete state.deletedElementsByRecipeId[recipeId];
+    },
+    restoreDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
+      const recipeId = action.payload;
+      const deletedElements = state.deletedElementsByRecipeId[recipeId];
+      if (!isEmpty(deletedElements)) {
+        state.elements.push(...deletedElements);
+        for (const elementId of deletedElements.map(
+          (element) => element.uuid
+        )) {
+          state.dirty[elementId] = true;
+          ensureElementUIState(state, elementId);
+        }
+
+        delete state.deletedElementsByRecipeId[recipeId];
+      }
     },
   },
 });

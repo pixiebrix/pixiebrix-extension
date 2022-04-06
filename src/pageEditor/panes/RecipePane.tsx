@@ -18,7 +18,10 @@
 import styles from "./RecipePane.module.scss";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveRecipeId } from "@/pageEditor/slices/editorSelectors";
+import {
+  selectActiveRecipeId,
+  selectRecipeIsDirty,
+} from "@/pageEditor/slices/editorSelectors";
 import { Alert } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import Centered from "@/pageEditor/components/Centered";
@@ -42,8 +45,7 @@ import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import RecipeOptions from "@/pageEditor/tabs/RecipeOptions";
 import { useGetRecipesQuery } from "@/services/api";
-import { useModals } from "@/components/ConfirmationModal";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 
 const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   const { data: recipes } = useGetRecipesQuery();
@@ -51,6 +53,7 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   const recipe = recipes.find(
     (recipe) => recipe.metadata.id === activeRecipeId
   );
+  const isRecipeDirty = useSelector(selectRecipeIsDirty(activeRecipeId));
   const [showQuestionModal, setShowQuestionModal] = useState(false);
 
   // We need to force the component to re-render when the recipe is reset
@@ -64,24 +67,8 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
   };
 
   const { save: saveRecipe, isSaving: isSavingRecipe } = useRecipeSaver();
-  const { showConfirmation } = useModals();
   const dispatch = useDispatch();
-
-  async function resetRecipe() {
-    const confirmed = await showConfirmation({
-      title: "Reset Blueprint?",
-      message:
-        "Unsaved changes to extensions within this blueprint, or to blueprint options, will be lost",
-      submitCaption: "Reset",
-    });
-    if (!confirmed) {
-      return;
-    }
-
-    dispatch(actions.resetRecipeMetadataAndOptions(recipe.metadata.id));
-    forceRefreshLayout();
-  }
-
+  const resetRecipe = useResetRecipe();
   const removeRecipe = useRemoveRecipe();
 
   useEffect(() => {
@@ -129,15 +116,18 @@ const RecipePane: React.FC<{ recipe: RecipeDefinition }> = () => {
         void saveRecipe(activeRecipeId);
       },
       caption: "Save",
-      disabled: isSavingRecipe,
+      disabled: isSavingRecipe || !isRecipeDirty,
       icon: faSave,
     },
     {
       // Reset
       variant: "warning",
-      onClick: resetRecipe,
+      async onClick() {
+        await resetRecipe(activeRecipeId);
+        forceRefreshLayout();
+      },
       caption: "Reset",
-      disabled: isSavingRecipe,
+      disabled: isSavingRecipe || !isRecipeDirty,
       icon: faHistory,
     },
     {

@@ -32,7 +32,7 @@ type Config = {
   element: FormState;
   shouldShowConfirmation?: boolean;
 };
-function useReset(): (useResetConfig: Config) => void {
+function useReset(): (useResetConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const installed = useSelector(selectExtensions);
@@ -40,7 +40,7 @@ function useReset(): (useResetConfig: Config) => void {
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ element, shouldShowConfirmation = true }: Config) => {
+    async ({ element, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
           title: "Reset Brick?",
