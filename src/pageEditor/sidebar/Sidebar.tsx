@@ -188,7 +188,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   const showDeveloperUI =
     process.env.ENVIRONMENT === "development" ||
     flagOn("page-editor-developer");
-  const groupByRecipe = flagOn("page-editor-blueprints");
 
   const {
     tabState: { hasPermissions },
@@ -236,7 +235,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
         availableInstalledIds,
         availableDynamicIds,
         showAll,
-        groupByRecipe,
         activeElementId,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash and recipeHash to track changes
@@ -316,14 +314,9 @@ const SidebarExpanded: React.VoidFunctionComponent<{
 
             {showDeveloperUI && <ReloadButton />}
 
-            {flagOn("page-editor-blueprints") && (
-              <>
-                <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
-                <RemoveFromRecipeButton
-                  disabled={removeFromRecipeButtonDisabled}
-                />
-              </>
-            )}
+            <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
+
+            <RemoveFromRecipeButton disabled={removeFromRecipeButtonDisabled} />
           </div>
           <Button
             variant="light"

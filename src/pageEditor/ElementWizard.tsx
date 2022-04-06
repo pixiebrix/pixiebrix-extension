@@ -80,8 +80,6 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, editable }) => {
   const [step, setStep] = useState(wizard[0].step);
 
-  const { flagOn, flagOff } = useFlags();
-
   const availableDefinition = element.extensionPoint.definition.isAvailable;
   const [available] = useAsyncState(
     async () => checkAvailable(thisTab, availableDefinition),
@@ -97,7 +95,7 @@ const ElementWizard: React.FunctionComponent<{
 
   const onSave = async () => {
     try {
-      if (flagOn("page-editor-blueprints") && element.recipe) {
+      if (element.recipe) {
         await saveRecipe(element.recipe.id);
       } else {
         await save();
@@ -125,13 +123,6 @@ const ElementWizard: React.FunctionComponent<{
     useFormikContext<FormState>();
 
   const wizardSteps = [...wizard];
-  if (
-    formState.recipe?.id &&
-    flagOn("page-editor-blueprint-options") &&
-    flagOff("page-editor-blueprints")
-  ) {
-    wizardSteps.push(blueprintOptionsStep);
-  }
 
   useAsyncEffect(async () => {
     if (formState.apiVersion === "v2") {
