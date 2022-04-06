@@ -45,6 +45,7 @@ import Footer from "@/pageEditor/sidebar/Footer";
 import {
   faAngleDoubleLeft,
   faAngleDoubleRight,
+  faFileExport,
   faFileImport,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
@@ -57,7 +58,7 @@ import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
   getIdForElement,
-  selectActiveExtensionId,
+  selectActiveElementId,
   selectActiveRecipeId,
   selectElements,
   selectIsAddToRecipeModalVisible,
@@ -105,7 +106,28 @@ const AddToRecipeButton: React.VFC<{ disabled: boolean }> = ({ disabled }) => {
       }}
       disabled={disabled}
     >
-      <FontAwesomeIcon icon={faFileImport} />
+      <FontAwesomeIcon icon={faFileImport} size="lg" />
+    </Button>
+  );
+};
+
+const RemoveFromRecipeButton: React.VFC<{ disabled: boolean }> = ({
+  disabled,
+}) => {
+  const dispatch = useDispatch();
+
+  return (
+    <Button
+      type="button"
+      size="sm"
+      variant="light"
+      title="Remove extension from blueprint"
+      onClick={() => {
+        dispatch(actions.showRemoveFromRecipeModal());
+      }}
+      disabled={disabled}
+    >
+      <FontAwesomeIcon icon={faFileExport} size="lg" />
     </Button>
   );
 };
@@ -144,7 +166,7 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   const isInsertingElement = useSelector((state: EditorState) =>
     Boolean(state.inserting)
   );
-  const activeElementId = useSelector(selectActiveExtensionId);
+  const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const installed = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
@@ -176,6 +198,8 @@ const SidebarExpanded: React.VoidFunctionComponent<{
     isEmpty(recipes) ||
     activeElement === undefined ||
     activeElement.recipe != null;
+
+  const removeFromRecipeButtonDisabled = activeElement?.recipe == null;
 
   const elementHash = hash(
     sortBy(
@@ -280,7 +304,12 @@ const SidebarExpanded: React.VoidFunctionComponent<{
             {showDeveloperUI && <ReloadButton />}
 
             {flagOn("page-editor-blueprints") && (
-              <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
+              <>
+                <AddToRecipeButton disabled={addToRecipeButtonDisabled} />
+                <RemoveFromRecipeButton
+                  disabled={removeFromRecipeButtonDisabled}
+                />
+              </>
             )}
           </div>
           <Button
@@ -317,7 +346,6 @@ const SidebarExpanded: React.VoidFunctionComponent<{
                 key={recipeId}
                 recipeId={recipeId}
                 recipes={recipes}
-                elements={elements}
                 activeRecipeId={activeRecipeId}
               >
                 {elements.map((element) => (

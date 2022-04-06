@@ -53,6 +53,8 @@ export const initialState: EditorState = {
   dirtyRecipeOptionsById: {},
   dirtyRecipeMetadataById: {},
   isAddToRecipeModalVisible: false,
+  isRemoveFromRecipeModalVisible: false,
+  deletedElementsByRecipeId: {},
 };
 
 /* eslint-disable security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- lots of immer-style code here dealing with Records */
@@ -399,6 +401,57 @@ export const editorSlice = createSlice({
         delete state.dirty[element.uuid];
         delete state.elementUIStates[element.uuid];
       }
+    },
+    showRemoveFromRecipeModal(state) {
+      state.isRemoveFromRecipeModalVisible = true;
+    },
+    hideRemoveFromRecipeModal(state) {
+      state.isRemoveFromRecipeModalVisible = false;
+    },
+    removeElementFromRecipe(
+      state,
+      action: PayloadAction<{
+        elementId: UUID;
+        keepLocalCopy: boolean;
+      }>
+    ) {
+      const { elementId, keepLocalCopy } = action.payload;
+      const elementIndex = state.elements.findIndex(
+        (element) => element.uuid === elementId
+      );
+      if (elementIndex < 0) {
+        throw new Error(
+          "Unable to remove extension from blueprint, extension form state not found"
+        );
+      }
+
+      const element = state.elements[elementIndex];
+      const recipeId = element.recipe.id;
+      if (!state.deletedElementsByRecipeId[recipeId]) {
+        state.deletedElementsByRecipeId[recipeId] = [];
+      }
+
+      state.deletedElementsByRecipeId[recipeId].push(element);
+      state.elements.splice(elementIndex, 1);
+      delete state.dirty[elementId];
+      delete state.elementUIStates[elementId];
+      state.activeElement = undefined;
+
+      if (keepLocalCopy) {
+        const newId = uuidv4();
+        state.elements.push({
+          ...element,
+          uuid: newId,
+          recipe: undefined,
+        });
+        state.dirty[newId] = true;
+        ensureElementUIState(state, newId);
+        state.activeElement = newId;
+      }
+    },
+    clearDeletedElementsForRecipe(state, action: PayloadAction<RegistryId>) {
+      const recipeId = action.payload;
+      delete state.deletedElementsByRecipeId[recipeId];
     },
   },
 });

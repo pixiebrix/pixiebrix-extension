@@ -28,7 +28,6 @@ import {
   useGetRecipesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
-import { isEmpty } from "lodash";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
@@ -79,13 +78,6 @@ function useRecipeSaver(): RecipeSaver {
     );
     const newOptions = dirtyRecipeOptions[recipe.metadata.id];
     const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
-    if (
-      newOptions == null &&
-      newMetadata == null &&
-      isEmpty(dirtyRecipeElements)
-    ) {
-      return;
-    }
 
     const confirm = await showConfirmation({
       title: "Save Blueprint?",
@@ -135,8 +127,9 @@ function useRecipeSaver(): RecipeSaver {
     // Update the recipe metadata on elements in the page editor slice
     dispatch(editorActions.updateRecipeMetadataForElements(newRecipeMetadata));
 
-    // Clear the dirty state
+    // Clear the dirty states
     dispatch(editorActions.resetRecipeMetadataAndOptions(newRecipeMetadata.id));
+    dispatch(editorActions.clearDeletedElementsForRecipe(newRecipeMetadata.id));
   }
 
   async function safeSave(recipeId: RegistryId) {
