@@ -35,10 +35,8 @@ import { useDispatch } from "react-redux";
 import { produce } from "immer";
 import { useAsyncEffect } from "use-async-effect";
 import { upgradePipelineToV3 } from "@/pageEditor/extensionPoints/upgrade";
-import BlueprintOptionsTab from "./tabs/blueprintOptionsTab/BlueprintOptionsTab";
 import AskQuestionModalButton from "./askQuestion/AskQuestionModalButton";
 import cx from "classnames";
-import useFlags from "@/hooks/useFlags";
 import LogNavItemBadge from "./tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
 import useRecipeSaver from "@/pageEditor/panes/save/useRecipeSaver";
@@ -46,17 +44,11 @@ import { FormState } from "@/pageEditor/pageEditorTypes";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
-const BLUEPRINT_OPTIONS_STEP_NAME = "Blueprint Options";
 
 const wizard: WizardStep[] = [
   { step: EDIT_STEP_NAME, Component: EditTab },
   { step: LOG_STEP_NAME, Component: LogsTab },
 ];
-
-const blueprintOptionsStep = {
-  step: BLUEPRINT_OPTIONS_STEP_NAME,
-  Component: BlueprintOptionsTab,
-};
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
