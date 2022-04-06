@@ -90,4 +90,9 @@ export interface SchemaFieldProps {
    * Set this input to be focused
    */
   focusInput?: boolean;
+
+  /**
+   * If on blur the field is blank, the mode will be changed to Omit.
+   */
+  omitIfEmpty?: boolean;
 }

@@ -51,7 +51,7 @@ export class ComponentReader extends Transformer {
         type: "string",
         format: "selector",
         description:
-          "CSS/JQuery selector to select the HTML element that corresponds to the component. Or, leave blank to use root context.",
+          "CSS/jQuery selector to select the HTML element that corresponds to the component. Or, leave blank to use root context.",
       },
       optional: {
         type: "boolean",

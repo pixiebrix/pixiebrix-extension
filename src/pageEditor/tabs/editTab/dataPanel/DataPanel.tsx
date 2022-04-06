@@ -266,7 +266,13 @@ const DataPanel: React.FC<{
             isTraceEmpty={!record}
             isTraceOptional={previewInfo?.traceOptional}
           >
-            {outputObj && (
+            {record?.skippedRun && (
+              <Alert variant="warning">
+                <FontAwesomeIcon icon={faExclamationTriangle} /> The block did
+                not run because the condition was not met
+              </Alert>
+            )}
+            {!record?.skippedRun && outputObj && (
               <>
                 {isCurrentStale && (
                   <Alert variant="warning">
@@ -300,6 +306,13 @@ const DataPanel: React.FC<{
             mountOnEnter
             unmountOnExit
           >
+            {block.if && (
+              <div className="text-info">
+                <FontAwesomeIcon icon={faInfoCircle} /> This brick has a
+                condition. The brick will not execute if the condition is not
+                met
+              </div>
+            )}
             {showFormPreview || showDocumentPreview ? (
               <ErrorBoundary>
                 {showFormPreview ? (

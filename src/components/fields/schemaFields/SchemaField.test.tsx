@@ -20,8 +20,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { Formik } from "formik";
 import { ApiVersion, Expression, Schema, TemplateEngine } from "@/core";
-import { createFormikTemplate } from "@/tests/formHelpers";
-import { waitForEffect } from "@/tests/testHelpers";
+import { createFormikTemplate } from "@/testUtils/formHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { uniq } from "lodash";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
@@ -286,17 +286,15 @@ describe("SchemaField", () => {
         .querySelector("button");
       expect(toggle).not.toBeNull();
 
-      userEvent.click(toggle);
+      await userEvent.click(toggle);
 
       const newOption = screen.getByText(toggleOption, { exact: false });
       expect(newOption).not.toBeNull();
 
       // Await this element to avoid the "unable to click element" error
-      await waitFor(() => {
-        userEvent.click(newOption);
-      });
+      await waitFor(async () => userEvent.click(newOption));
 
-      userEvent.click(screen.getByRole("button", { name: /submit/i }));
+      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith({
@@ -352,7 +350,7 @@ describe("SchemaField", () => {
         .querySelector("button");
       expect(toggle).not.toBeNull();
 
-      userEvent.click(toggle);
+      await userEvent.click(toggle);
 
       await waitFor(() => {
         const testIds = [
@@ -380,7 +378,7 @@ describe("SchemaField", () => {
         .querySelector("button");
       expect(toggle).not.toBeNull();
 
-      userEvent.click(toggle);
+      await userEvent.click(toggle);
 
       await waitFor(() => {
         const testIds = [

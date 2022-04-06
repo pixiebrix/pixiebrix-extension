@@ -40,7 +40,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ element, shouldShowConfirmation = true }: Config) => {
+    async ({ element, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
           title: "Reset Brick?",

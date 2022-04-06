@@ -32,7 +32,7 @@ export class ElementReader extends Reader {
     super(
       "@pixiebrix/html/element",
       "HTML element reader",
-      "Read all attributes and JQuery data from an HTML element"
+      "Read all attributes and jQuery data from an HTML element"
     );
   }
 

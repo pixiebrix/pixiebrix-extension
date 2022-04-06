@@ -35,9 +35,13 @@ const DEFAULT_ERROR_MESSAGE = "Unknown error";
  * Used for blame analysis for reporting and alerting.
  */
 export class BusinessError extends Error {
-  constructor(message: string) {
+  override name = "BusinessError";
+}
+
+export class PromiseCancelled extends Error {
+  override name = "PromiseCancelled";
+  constructor(message = "Promise was cancelled") {
     super(message);
-    this.name = "BusinessError";
   }
 }
 
@@ -45,11 +49,12 @@ export class BusinessError extends Error {
  * Error that a registry definition is invalid
  */
 export class InvalidDefinitionError extends BusinessError {
+  override name = "InvalidDefinitionError";
+
   errors: unknown;
 
   constructor(message: string, errors: unknown) {
     super(message);
-    this.name = "InvalidDefinitionError";
     this.errors = errors;
   }
 }
@@ -58,10 +63,7 @@ export class InvalidDefinitionError extends BusinessError {
  * Base class for connection errors between browser extension components
  */
 export class ConnectionError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ConnectionError";
-  }
+  override name = "ConnectionError";
 }
 
 /**
@@ -75,11 +77,11 @@ export class ConnectionError extends Error {
  * - The client should not make the call if the extensions is not linked
  */
 export class EndpointAuthError extends Error {
+  override name = "EndpointAuthError";
   readonly url: string;
 
   constructor(url: string) {
     super(`API endpoint requires authentication: ${url}`);
-    this.name = "EndpointAuthError";
     this.url = url;
   }
 }
@@ -88,43 +90,39 @@ export class EndpointAuthError extends Error {
  * Error indicating the client performed a suspicious operation
  */
 export class SuspiciousOperationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "SuspiciousOperationError";
-  }
+  override name = "SuspiciousOperationError";
 }
 
 /**
  * Error indicating the extension is not linked to the PixieBrix API
  */
 export class ExtensionNotLinkedError extends Error {
-  constructor() {
-    super("Extension not linked to PixieBrix server");
-    this.name = "ExtensionNotLinkedError";
-  }
+  override name = "ExtensionNotLinkedError";
+  override message = "Extension not linked to PixieBrix server";
 }
 
 /**
  * Base class for "Error" of cancelling out of a flow that's in progress
  */
 export class CancelError extends BusinessError {
+  override name = "CancelError";
   constructor(message?: string) {
     super(message ?? "User cancelled the operation");
-    this.name = "CancelError";
   }
 }
 
 export class NoElementsFoundError extends BusinessError {
+  override name = "NoElementsFoundError";
   readonly selector: string;
 
   constructor(selector: string, message = "No elements found for selector") {
     super(message);
-    this.name = "NoElementsFoundError";
     this.selector = selector;
   }
 }
 
 export class MultipleElementsFoundError extends BusinessError {
+  override name = "MultipleElementsFoundError";
   readonly selector: string;
 
   constructor(
@@ -132,7 +130,6 @@ export class MultipleElementsFoundError extends BusinessError {
     message = "Multiple elements found for selector"
   ) {
     super(message);
-    this.name = "MultipleElementsFoundError";
     this.selector = selector;
   }
 }
@@ -144,6 +141,8 @@ export class MultipleElementsFoundError extends BusinessError {
  * @see InputValidationError
  */
 export class PropError extends BusinessError {
+  override name = "PropError";
+
   public readonly blockId: string;
 
   public readonly prop: string;
@@ -152,7 +151,6 @@ export class PropError extends BusinessError {
 
   constructor(message: string, blockId: string, prop: string, value: unknown) {
     super(message);
-    this.name = "PropError";
     this.blockId = blockId;
     this.prop = prop;
     this.value = value;

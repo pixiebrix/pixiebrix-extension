@@ -18,7 +18,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectDeletedElements,
   selectDirty,
   selectDirtyRecipeMetadata,
   selectDirtyRecipeOptions,
@@ -29,7 +28,6 @@ import {
   useGetRecipesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
-import { isEmpty } from "lodash";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
@@ -58,7 +56,6 @@ function useRecipeSaver(): RecipeSaver {
   const installedExtensions = useSelector(selectExtensions);
   const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptions);
   const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
-  const deletedRecipeElements = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -81,15 +78,6 @@ function useRecipeSaver(): RecipeSaver {
     );
     const newOptions = dirtyRecipeOptions[recipe.metadata.id];
     const newMetadata = dirtyRecipeMetadata[recipe.metadata.id];
-    const deletedElements = deletedRecipeElements[recipe.metadata.id];
-    if (
-      newOptions == null &&
-      newMetadata == null &&
-      isEmpty(dirtyRecipeElements) &&
-      isEmpty(deletedElements)
-    ) {
-      throw new Error("No changes found in blueprint");
-    }
 
     const confirm = await showConfirmation({
       title: "Save Blueprint?",

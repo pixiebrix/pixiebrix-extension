@@ -39,6 +39,8 @@ export type EditorNodeProps = {
   canMoveDown?: boolean;
   onClickMoveUp?: () => void;
   onClickMoveDown?: () => void;
+  skippedRun?: boolean;
+  ran?: boolean;
 };
 
 function isFontAwesomeIcon(
@@ -63,6 +65,8 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   canMoveDown,
   onClickMoveUp,
   onClickMoveDown,
+  skippedRun = false,
+  ran = false,
 }) => {
   const nodeRef = useRef<HTMLAnchorElement>(null);
   const outputName = outputKey ? `@${outputKey}` : "";
@@ -73,19 +77,21 @@ const EditorNode: React.FC<EditorNodeProps> = ({
     iconProp
   );
 
-  const errorBadge =
-    hasError || hasWarning ? (
-      <span className={styles.errorBadge}>
-        <img
-          src={
-            hasError
-              ? "/img/fa-exclamation-circle-custom.svg"
-              : "/img/fa-exclamation-triangle-custom.svg"
-          }
-          alt=""
-        />
-      </span>
-    ) : null;
+  const badgeSource = hasError
+    ? "/img/fa-exclamation-circle-custom.svg"
+    : hasWarning
+    ? "/img/fa-exclamation-triangle-custom.svg"
+    : skippedRun
+    ? "/img/fa-minus-circle-solid-custom.svg"
+    : ran
+    ? "/img/fa-check-circle-solid-custom.svg"
+    : null;
+
+  const badge = badgeSource ? (
+    <span className={styles.badge}>
+      <img src={badgeSource} alt="" />
+    </span>
+  ) : null;
 
   useEffect(() => {
     if (active) {
@@ -99,10 +105,13 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       onClick={onClick}
       active={active}
       className={cx(styles.root, "list-group-item-action")}
+      title={
+        skippedRun ? "This brick was skipped due to its condition" : undefined
+      }
     >
       <div className={styles.icon}>
         {icon}
-        {errorBadge}
+        {badge}
       </div>
       <div className={styles.text}>
         <div>{title}</div>

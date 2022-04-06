@@ -28,7 +28,7 @@ test("can read yaml fixture", () => {
   expect(nytimes.kind).toBe("component");
 });
 
-test("can read yaml fixture", async () => {
+test("can read nytimes articles", async () => {
   const block = fromJS(nytimes);
   expect(block.id).toBe("nytimes/organization-articles");
 });

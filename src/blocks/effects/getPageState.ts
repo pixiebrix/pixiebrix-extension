@@ -17,7 +17,7 @@
 
 import { BlockOptions, RegistryId, UUID } from "@/core";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import { GetPageState, Namespace } from "./pageState";
 
 export async function getStateValue<TResult>(

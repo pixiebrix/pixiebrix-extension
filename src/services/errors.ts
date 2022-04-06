@@ -20,26 +20,26 @@ import { BusinessError, SuspiciousOperationError } from "@/errors";
 import { Except } from "type-fest";
 
 export class IncompatibleServiceError extends SuspiciousOperationError {
-  constructor(message: string) {
-    super(message);
-    this.name = "IncompatibleServiceError";
-  }
+  override name = "IncompatibleServiceError";
 }
 
 export class MissingConfigurationError extends BusinessError {
+  override name = "MissingConfigurationError";
+
   serviceId: string;
 
   id: string;
 
   constructor(message: string, serviceId: string, id?: string) {
     super(message);
-    this.name = "MissingConfigurationError";
     this.serviceId = serviceId;
     this.id = id;
   }
 }
 
 export class NotConfiguredError extends BusinessError {
+  override name = "NotConfiguredError";
+
   serviceId: string;
 
   missingProperties: string[];
@@ -50,7 +50,6 @@ export class NotConfiguredError extends BusinessError {
     missingProperties?: string[]
   ) {
     super(message);
-    this.name = "NotConfiguredError";
     this.serviceId = serviceId;
     this.missingProperties = missingProperties;
   }
@@ -67,11 +66,11 @@ type ProxiedResponse = Pick<AxiosResponse, "data" | "status" | "statusText">;
  * @see RemoteServiceError
  */
 export class ProxiedRemoteServiceError extends BusinessError {
+  override name = "ProxiedRemoteServiceError";
   readonly response: ProxiedResponse;
 
   constructor(message: string, response: ProxiedResponse) {
     super(message);
-    this.name = "ProxiedRemoteServiceError";
 
     this.response = response;
   }
@@ -81,11 +80,12 @@ export class ProxiedRemoteServiceError extends BusinessError {
  * Abstract base class for request errors from client to 3rd-party service.
  */
 export abstract class ClientRequestError extends BusinessError {
+  override name = "ClientRequestError";
+
   readonly error: SerializableAxiosError;
 
-  protected constructor(message: string, error: AxiosError) {
+  constructor(message: string, error: AxiosError) {
     super(message);
-    this.name = "ClientRequestError";
 
     // Axios offers its own serialization method, but it doesn't include the response.
     // By deleting toJSON, the serialize-error library will use its default serialization
@@ -99,10 +99,7 @@ export abstract class ClientRequestError extends BusinessError {
  * An error response from a 3rd party API.
  */
 export class RemoteServiceError extends ClientRequestError {
-  constructor(message: string, error: AxiosError) {
-    super(message, error);
-    this.name = "RemoteServiceError";
-  }
+  override name = "RemoteServiceError";
 }
 
 /**
@@ -113,10 +110,7 @@ export class RemoteServiceError extends ClientRequestError {
  * @see ClientNetworkError
  */
 export class ClientNetworkPermissionError extends ClientRequestError {
-  constructor(message: string, error: AxiosError) {
-    super(message, error);
-    this.name = "ClientNetworkPermissionError";
-  }
+  override name = "ClientNetworkPermissionError";
 }
 
 /**
@@ -131,8 +125,5 @@ export class ClientNetworkPermissionError extends ClientRequestError {
  * @see ClientNetworkError
  */
 export class ClientNetworkError extends ClientRequestError {
-  constructor(message: string, error: AxiosError) {
-    super(message, error);
-    this.name = "ClientNetworkError";
-  }
+  override name = "ClientNetworkError";
 }

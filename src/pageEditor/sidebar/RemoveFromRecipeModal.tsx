@@ -89,7 +89,8 @@ const RemoveFromRecipeModal: React.VFC = () => {
               {!values.keepLocalCopy && (
                 <Alert variant="warning">
                   <FontAwesomeIcon icon={faExclamationTriangle} />
-                  &nbsp;This will delete the extension
+                  &nbsp;This will delete the extension. To restore it, use the
+                  reset button.
                 </Alert>
               )}
             </Modal.Body>
@@ -98,7 +99,7 @@ const RemoveFromRecipeModal: React.VFC = () => {
                 Cancel
               </Button>
               <Button variant="danger" type="submit">
-                Remove
+                {values.keepLocalCopy ? "Remove" : "Delete"}
               </Button>
             </Modal.Footer>
           </Form>

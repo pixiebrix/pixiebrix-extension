@@ -17,8 +17,8 @@
 
 import { screen } from "@testing-library/react";
 import ShareExtensionModal from "./ShareExtensionModal";
-import { extensionFactory } from "@/tests/factories";
-import { createRenderFunction, waitForEffect } from "@/tests/testHelpers";
+import { extensionFactory } from "@/testUtils/factories";
+import { createRenderFunction, waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { Organization } from "@/types/contract";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -118,7 +118,7 @@ test("prints 'Share' when Public", async () => {
   const publicSwitch = dialogRoot.querySelector(
     ".form-group:nth-child(5) .switch.btn"
   );
-  userEvent.click(publicSwitch);
+  await userEvent.click(publicSwitch);
   await waitForEffect();
 
   expect(publicSwitch).toHaveClass("on");
