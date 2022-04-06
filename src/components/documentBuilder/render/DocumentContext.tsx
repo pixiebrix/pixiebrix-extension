@@ -17,7 +17,7 @@
 
 import React from "react";
 import { BlockArgContext, BlockOptions } from "@/core";
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 
 type DocumentState = {
   options: BlockOptions<BlockArgContext>;

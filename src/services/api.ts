@@ -314,8 +314,13 @@ export const appApi = createApi({
           url: `api/bricks/${packageId}/`,
           method: "put",
           data: {
+            id: packageId,
+            name: recipe.metadata.id,
             config: recipeConfig,
             kind: "recipe" as RecipeDefinition["kind"],
+            public: Boolean((recipe as RecipeDefinition).sharing?.public),
+            organizations:
+              (recipe as RecipeDefinition).sharing?.organizations ?? [],
           },
         };
       },

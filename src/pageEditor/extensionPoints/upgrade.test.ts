@@ -117,7 +117,7 @@ describe("upgradePipelineToV3 tests", () => {
     }
   );
 
-  test("test upgrade literals", async () => {
+  test("upgrade literals", async () => {
     const id = defineBlock(
       propertiesToSchema({
         booleanProp: {
@@ -144,7 +144,7 @@ describe("upgradePipelineToV3 tests", () => {
     ]);
   });
 
-  test("test upgrade conditional", async () => {
+  test("upgrade conditional", async () => {
     const id = defineBlock(propertiesToSchema({}));
 
     const upgraded = await upgradePipelineToV3([
@@ -163,7 +163,7 @@ describe("upgradePipelineToV3 tests", () => {
     ]);
   });
 
-  test("test upgrade nunjucks conditional", async () => {
+  test("upgrade nunjucks conditional", async () => {
     const id = defineBlock(propertiesToSchema({}));
 
     const upgraded = await upgradePipelineToV3([
@@ -182,7 +182,7 @@ describe("upgradePipelineToV3 tests", () => {
     ]);
   });
 
-  test("test ignore selector", async () => {
+  test("ignore selector", async () => {
     const id = defineBlock(
       propertiesToSchema({
         selector: {
@@ -206,7 +206,7 @@ describe("upgradePipelineToV3 tests", () => {
     ]);
   });
 
-  test("test nested object", async () => {
+  test("nested object", async () => {
     const id = defineBlock(
       propertiesToSchema({
         parent: {
@@ -246,7 +246,7 @@ describe("upgradePipelineToV3 tests", () => {
     ]);
   });
 
-  test("test nested object with additionalProperties", async () => {
+  test("nested object with additionalProperties", async () => {
     const id = defineBlock({
       $schema: "https://json-schema.org/draft/2019-09/schema#",
       type: "object",
@@ -286,7 +286,7 @@ describe("upgradePipelineToV3 tests", () => {
     ]);
   });
 
-  test("test nested object with additionalProperties ignores selector", async () => {
+  test("nested object with additionalProperties ignores selector", async () => {
     const id = defineBlock({
       $schema: "https://json-schema.org/draft/2019-09/schema#",
       type: "object",
@@ -317,7 +317,7 @@ describe("upgradePipelineToV3 tests", () => {
     expect(upgraded).toStrictEqual(pipeline);
   });
 
-  test("test nested object with additionalProperties and oneOf", async () => {
+  test("nested object with additionalProperties and oneOf", async () => {
     const id = defineBlock({
       $schema: "https://json-schema.org/draft/2019-09/schema#",
       type: "object",
@@ -383,7 +383,7 @@ describe("upgradePipelineToV3 tests", () => {
     ]);
   });
 
-  test("test nested object with additionalProperties and oneOf ignores selector", async () => {
+  test("nested object with additionalProperties and oneOf ignores selector", async () => {
     const id = defineBlock({
       $schema: "https://json-schema.org/draft/2019-09/schema#",
       type: "object",
@@ -424,7 +424,7 @@ describe("upgradePipelineToV3 tests", () => {
     expect(upgraded).toStrictEqual(pipeline);
   });
 
-  test("test nested array", async () => {
+  test("nested array", async () => {
     const id = defineBlock(
       propertiesToSchema({
         parent: {
@@ -467,7 +467,7 @@ describe("upgradePipelineToV3 tests", () => {
     ]);
   });
 
-  test("test nested array with items array", async () => {
+  test("nested array with items array", async () => {
     const id = defineBlock(
       propertiesToSchema({
         parent: {
@@ -524,7 +524,7 @@ describe("upgradePipelineToV3 tests", () => {
     ]);
   });
 
-  test("test nested array with items array and additionalItems", async () => {
+  test("nested array with items array and additionalItems", async () => {
     const id = defineBlock(
       propertiesToSchema({
         parent: {
@@ -586,7 +586,7 @@ describe("upgradePipelineToV3 tests", () => {
     ]);
   });
 
-  test("test nested array with additionalItems and oneOf", async () => {
+  test("nested array with additionalItems and oneOf", async () => {
     const id = defineBlock(
       propertiesToSchema({
         parent: {
@@ -637,7 +637,7 @@ describe("upgradePipelineToV3 tests", () => {
 });
 
 describe("upgrade overrides", () => {
-  test("test append to google sheets as object", async () => {
+  test("append to google sheets as object", async () => {
     // Import dynamically to avoid circular dependence
     // eslint-disable-next-line import/dynamic-import-chunkname -- test code
     const { GoogleSheetsAppend } = await import(
@@ -688,7 +688,7 @@ describe("upgrade overrides", () => {
     ]);
   });
 
-  test("test append to google sheets as array", async () => {
+  test("append to google sheets as array", async () => {
     // Import dynamically to avoid circular dependence
     // eslint-disable-next-line import/dynamic-import-chunkname -- test code
     const { GoogleSheetsAppend } = await import(

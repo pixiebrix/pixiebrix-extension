@@ -26,9 +26,9 @@ import {
   formStateFactory,
   installedRecipeMetadataFactory,
   recipeFactory,
-} from "@/tests/factories";
+} from "@/testUtils/factories";
 import { uuidv4 } from "@/types/helpers";
-import { createRenderFunction, waitForEffect } from "@/tests/testHelpers";
+import { createRenderFunction, waitForEffect } from "@/testUtils/testHelpers";
 import { anonAuth } from "@/auth/authConstants";
 import { authSlice } from "@/auth/authSlice";
 import settingsSlice from "@/store/settingsSlice";

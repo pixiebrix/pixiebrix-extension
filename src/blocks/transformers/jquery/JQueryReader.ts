@@ -23,8 +23,8 @@ export class JQueryReader extends Transformer {
   constructor() {
     super(
       "@pixiebrix/jquery-reader",
-      "JQuery Selector Reader",
-      "Extract data via one or more JQuery selectors"
+      "jQuery Selector Reader",
+      "Extract data via one or more jQuery selectors"
     );
   }
 
@@ -40,7 +40,7 @@ export class JQueryReader extends Transformer {
           oneOf: [
             {
               type: "string",
-              description: "A JQuery selector",
+              description: "A jQuery selector",
               format: "selector",
             },
             {
@@ -48,7 +48,7 @@ export class JQueryReader extends Transformer {
               properties: {
                 selector: {
                   type: "string",
-                  description: "A JQuery selector",
+                  description: "A jQuery selector",
                   format: "selector",
                 },
                 multi: {

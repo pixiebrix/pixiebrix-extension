@@ -36,7 +36,7 @@ import {
   TraceExitData,
   TraceRecordMeta,
 } from "@/telemetry/trace";
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
 import { BlockPipeline } from "@/blocks/types";
 
@@ -111,6 +111,7 @@ describe("Trace normal execution", () => {
       ...meta,
       outputKey: undefined,
       output: { message: "hello" },
+      skippedRun: false,
     };
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
@@ -162,6 +163,7 @@ describe("Trace normal execution", () => {
       ...meta,
       outputKey,
       output: { message: "hello" },
+      skippedRun: false,
     };
 
     expect(traces.addExit).toHaveBeenCalledTimes(2);

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { BlockOptions } from "@/core";

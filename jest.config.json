@@ -3,7 +3,7 @@
   "testEnvironment": "jest-environment-jsdom-global",
   "modulePaths": ["/src"],
   "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
-  "testPathIgnorePatterns": ["<rootDir>/src/vendors/", "<rootDir>/selenium/"],
+  "testPathIgnorePatterns": ["<rootDir>/selenium/"],
   "transform": {
     "^.+\\.[jt]sx?$": [
       "@swc/jest",
@@ -21,11 +21,11 @@
     "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join)"
   ],
   "setupFiles": [
-    "<rootDir>/src/testEnv.js",
+    "<rootDir>/src/testUtils/testEnv.js",
     "jest-webextension-mock",
     "fake-indexeddb/auto"
   ],
-  "setupFilesAfterEnv": ["<rootDir>/src/testAfterEnv.js"],
+  "setupFilesAfterEnv": ["<rootDir>/src/testUtils/testAfterEnv.js"],
   "collectCoverageFrom": [
     "src/**/*.{ts,tsx}",
     "!src/**/*.stories.tsx",

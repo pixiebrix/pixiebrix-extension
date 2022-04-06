@@ -56,6 +56,7 @@ import useFlags from "@/hooks/useFlags";
 import { BlockType } from "@/runtime/runtimeTypes";
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { isInnerExtensionPoint } from "@/registry/internal";
+import { selectExtensionTrace } from "@/pageEditor/slices/runtimeSelectors";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -144,11 +145,16 @@ const EditTab: React.FC<{
     setActiveNodeId
   );
 
+  const traces = useSelector(selectExtensionTrace);
+
   const nodes = useMemo<EditorNodeProps[]>(() => {
     const blockNodes: EditorNodeProps[] = blockPipeline.map(
       (blockConfig, index) => {
         const block = allBlocks.get(blockConfig.id)?.block;
         const nodeId = blockConfig.instanceId;
+        const traceRecord = traces.find(
+          (trace) => trace.blockInstanceId === nodeId
+        );
 
         if (!block) {
           return {
@@ -180,6 +186,8 @@ const EditTab: React.FC<{
             Boolean(blockPipelineErrors?.[index]),
           hasWarning:
             errorTraceEntry?.blockInstanceId === blockConfig.instanceId,
+          skippedRun: traceRecord?.skippedRun,
+          ran: traceRecord != null,
           onClick() {
             setActiveNodeId(blockConfig.instanceId);
           },
@@ -198,6 +206,7 @@ const EditTab: React.FC<{
       outputKey: "input",
       title: label,
       icon,
+      ran: traces.length > 0,
       onClick() {
         setActiveNodeId(FOUNDATION_NODE_ID);
       },
@@ -212,6 +221,7 @@ const EditTab: React.FC<{
     icon,
     label,
     setActiveNodeId,
+    traces,
   ]);
 
   const [relevantBlocksToAdd] = useAsyncState(

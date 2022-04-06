@@ -1,7 +1,7 @@
 import { BlockPipeline } from "@/blocks/types";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { BlockArgContext, ServiceContext, UserOptions, UUID } from "@/core";
-import ConsoleLogger from "@/tests/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/blocks/errors";
 import { BusinessError } from "@/errors";
