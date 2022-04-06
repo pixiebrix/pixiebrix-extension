@@ -42,7 +42,7 @@ const ActionToolbar: React.FunctionComponent<{
     if (element.recipe) {
       await resetRecipe(element.recipe.id);
     } else {
-      reset({ element });
+      await reset({ element });
     }
   };
 

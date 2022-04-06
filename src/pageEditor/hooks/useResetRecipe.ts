@@ -44,7 +44,7 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
       for (const element of elements.filter(
         (element) => element.recipe?.id === recipeId
       )) {
-        resetElement({ element, shouldShowConfirmation: false });
+        await resetElement({ element, shouldShowConfirmation: false });
       }
 
       dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
