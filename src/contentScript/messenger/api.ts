@@ -51,7 +51,9 @@ export const updateDynamicElement = getMethod("UPDATE_DYNAMIC_ELEMENT");
 export const runExtensionPointReader = getMethod("RUN_EXTENSION_POINT_READER");
 export const enableOverlay = getMethod("ENABLE_OVERLAY");
 export const disableOverlay = getMethod("DISABLE_OVERLAY");
-export const getInstalledExtensionPointIds = getMethod("INSTALLED_EXTENSIONS");
+export const getInstalledExtensionPoints = getMethod(
+  "INSTALLED_EXTENSION_POINTS"
+);
 export const checkAvailable = getMethod("CHECK_AVAILABLE");
 export const handleNavigate = getNotifier("HANDLE_NAVIGATE");
 export const runBrick = getMethod("RUN_BRICK");
