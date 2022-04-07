@@ -16,7 +16,7 @@
  */
 
 import { MessageContext } from "@/core";
-import { recordError } from "@/background/messenger/api";
+import { backgroundTarget as bg, messenger } from "webext-messenger";
 import { serializeError } from "serialize-error";
 import { selectError } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
@@ -32,21 +32,28 @@ expectContext(
  * @param error the error object
  * @param context optional context for error telemetry
  */
-function reportError(
+export default function reportError(
   error: unknown, // It might also be an ErrorEvent
   context?: MessageContext,
   { logToConsole = true } = {}
 ): void {
   if (logToConsole) {
-    console.error(error);
+    console.error(error, { context });
   }
 
   try {
-    recordError(serializeError(selectError(error)), {
-      ...context,
-      // Add on the reporter side of the message. On the receiving side it would always be `background`
-      pageName: getContextName(),
-    });
+    messenger(
+      // Low-level direct API call to avoid calls outside reportError
+      "RECORD_ERROR",
+      { isNotification: true },
+      bg,
+      serializeError(selectError(error)),
+      {
+        ...context,
+        // Add on the reporter side of the message. On the receiving side it would always be `background`
+        pageName: getContextName(),
+      }
+    );
   } catch (reportingError) {
     // The messenger does not throw async errors on "notifiers" but if this is
     // called in the background the call will be executed directly and it could
@@ -57,5 +64,3 @@ function reportError(
     });
   }
 }
-
-export default reportError;
