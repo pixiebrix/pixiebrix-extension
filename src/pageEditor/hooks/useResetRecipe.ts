@@ -20,13 +20,13 @@ import { RegistryId } from "@/core";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
-import useReset from "@/pageEditor/hooks/useReset";
+import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
 
 function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
-  const resetElement = useReset();
+  const resetElement = useResetExtension();
   const elements = useSelector(selectElements);
 
   return useCallback(
@@ -41,11 +41,13 @@ function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
         return;
       }
 
-      for (const element of elements.filter(
-        (element) => element.recipe?.id === recipeId
-      )) {
-        await resetElement({ element, shouldShowConfirmation: false });
-      }
+      await Promise.all(
+        elements
+          .filter((element) => element.recipe?.id === recipeId)
+          .map(async (element) =>
+            resetElement({ element, shouldShowConfirmation: false })
+          )
+      );
 
       dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
       dispatch(actions.restoreDeletedElementsForRecipe(recipeId));

@@ -57,7 +57,6 @@ import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
 import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
-  getIdForElement,
   selectActiveElementId,
   selectActiveRecipeId,
   selectElements,
@@ -67,6 +66,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
+import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -161,7 +161,8 @@ const SidebarExpanded: React.VoidFunctionComponent<{
 }> = ({ collapseSidebar }) => {
   const context = useContext(PageEditorTabContext);
 
-  const { data: recipes, isLoading: isLoadingRecipes } = useGetRecipesQuery();
+  const { data: allRecipes, isLoading: isLoadingRecipes } =
+    useGetRecipesQuery();
 
   const isInsertingElement = useSelector((state: EditorState) =>
     Boolean(state.inserting)
@@ -170,6 +171,16 @@ const SidebarExpanded: React.VoidFunctionComponent<{
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const installed = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
+
+  const recipes = useMemo(
+    () =>
+      allRecipes?.filter((recipe) =>
+        [...installed, ...elements].some(
+          (element) => getRecipeIdForElement(element) === recipe.metadata.id
+        )
+      ) ?? [],
+    [allRecipes, elements, installed]
+  );
 
   const { flagOn } = useFlags();
   const showDeveloperUI =

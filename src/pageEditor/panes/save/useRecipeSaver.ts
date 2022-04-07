@@ -113,11 +113,12 @@ function useRecipeSaver(): RecipeSaver {
       updateRecipeResponse
     );
 
-    for (const element of dirtyRecipeElements) {
-      // Don't push to cloud since we're saving it with the recipe
-      // eslint-disable-next-line no-await-in-loop
-      await create({ element, pushToCloud: false });
-    }
+    // Don't push to cloud since we're saving it with the recipe
+    await Promise.all(
+      dirtyRecipeElements.map(async (element) =>
+        create({ element, pushToCloud: false })
+      )
+    );
 
     // Update the recipe metadata on extensions in the options slice
     dispatch(

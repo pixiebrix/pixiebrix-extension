@@ -31,7 +31,7 @@ import {
   installedRecipeMetadataFactory,
 } from "@/testUtils/factories";
 import useCreateMock from "@/pageEditor/hooks/useCreate";
-import useResetMock from "@/pageEditor/hooks/useReset";
+import useResetMock from "@/pageEditor/hooks/useResetExtension";
 import {
   useCreateRecipeMutation as useCreateRecipeMutationMock,
   useUpdateRecipeMutation as useUpdateRecipeMutationMock,
@@ -51,7 +51,7 @@ jest.unmock("react-redux");
 
 jest.mock("@/telemetry/logging");
 jest.mock("@/pageEditor/hooks/useCreate");
-jest.mock("@/pageEditor/hooks/useReset");
+jest.mock("@/pageEditor/hooks/useResetExtension");
 
 jest.mock("@/services/api", () => ({
   useCreateRecipeMutation: jest.fn().mockReturnValue([]),

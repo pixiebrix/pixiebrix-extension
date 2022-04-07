@@ -254,10 +254,13 @@ export const editorSlice = createSlice({
         state.activeElement = null;
       }
 
-      state.elements.splice(
-        state.elements.findIndex((x) => x.uuid === uuid),
-        1
-      );
+      // This is called from the remove-recipe logic. When removing all extensions
+      // in a recipe, some of them may not have been selected by the user in the UI yet,
+      // and so may not have been moved into state.elements yet.
+      const index = state.elements.findIndex((x) => x.uuid === uuid);
+      if (index > -1) {
+        state.elements.splice(index, 1);
+      }
 
       delete state.dirty[uuid];
       delete state.elementUIStates[uuid];
@@ -468,6 +471,9 @@ export const editorSlice = createSlice({
 
         delete state.deletedElementsByRecipeId[recipeId];
       }
+    },
+    clearActiveRecipe(state) {
+      state.activeRecipeId = null;
     },
   },
 });
