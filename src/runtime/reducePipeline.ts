@@ -335,6 +335,7 @@ async function renderBlockArg(
     templateContext: state.context as JsonObject,
     renderedArgs: blockArgs,
     blockConfig: config,
+    skippedRun: false,
   });
 
   return blockArgs;
@@ -439,13 +440,16 @@ export async function blockReducer(
   ) {
     logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
 
-    traces.addExit({
+    // There's no corresponding trace entry for a skipped block
+    traces.addEntry({
       runId,
       extensionId: logger.context.extensionId,
       blockId: blockConfig.id,
       blockInstanceId: blockConfig.instanceId,
-      outputKey: blockConfig.outputKey,
-      output: null,
+      timestamp: new Date().toISOString(),
+      templateContext: state.context as JsonObject,
+      renderedArgs: null,
+      blockConfig: blockConfig,
       skippedRun: true,
     });
 
