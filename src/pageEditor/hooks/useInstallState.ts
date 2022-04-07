@@ -30,10 +30,7 @@ import {
 import { FormState } from "@/pageEditor/pageEditorTypes";
 import { QuickBarExtensionPoint } from "@/extensionPoints/quickBarExtension";
 import { testMatchPatterns } from "@/blocks/available";
-import {
-  isQuickBarExtensionPoint,
-  QuickBarExtensionPointState,
-} from "@/pageEditor/extensionPoints/formStateTypes";
+import { isQuickBarExtensionPoint } from "@/pageEditor/extensionPoints/formStateTypes";
 
 export interface InstallState {
   availableInstalledIds: Set<UUID> | undefined;
@@ -108,26 +105,19 @@ function useInstallState(
         const availableElementIds = await Promise.all(
           elements.map(
             async ({ uuid, extensionPoint: elementExtensionPoint }) => {
-              if (
-                isQuickBarExtensionPoint(elementExtensionPoint) &&
-                !testMatchPatterns(
-                  elementExtensionPoint.definition.documentUrlPatterns,
-                  tabUrl
-                )
-              ) {
-                return null;
-              }
+              const isAvailable = isQuickBarExtensionPoint(
+                elementExtensionPoint
+              )
+                ? testMatchPatterns(
+                    elementExtensionPoint.definition.documentUrlPatterns,
+                    tabUrl
+                  )
+                : await checkAvailable(
+                    thisTab,
+                    elementExtensionPoint.definition.isAvailable
+                  );
 
-              if (
-                await checkAvailable(
-                  thisTab,
-                  elementExtensionPoint.definition.isAvailable
-                )
-              ) {
-                return uuid;
-              }
-
-              return null;
+              return isAvailable ? uuid : null;
             }
           )
         );
@@ -146,7 +136,8 @@ function useInstallState(
           uuid: x.uuid,
           isAvailable: x.extensionPoint.definition.isAvailable,
           documentUrlPatterns:
-            (x.extensionPoint as QuickBarExtensionPointState).definition
+            // Including the documentUrlPatterns in the hash from any extension point type that actually has them
+            (x.extensionPoint.definition as { documentUrlPatterns?: string[] })
               ?.documentUrlPatterns ?? "",
         }))
       ),

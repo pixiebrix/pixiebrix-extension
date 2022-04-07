@@ -102,10 +102,6 @@ async function runExtensionPoint(
   await extensionPoint.run();
 }
 
-export function getInstalledIds(): RegistryId[] {
-  return _installedExtensionPoints.map((x) => x.id);
-}
-
 export function getInstalled(): IExtensionPoint[] {
   return _installedExtensionPoints;
 }
