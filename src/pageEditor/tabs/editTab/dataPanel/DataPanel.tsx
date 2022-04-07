@@ -68,6 +68,8 @@ const contextFilter = (value: unknown, key: string) => {
   return true;
 };
 
+const pageStateBlockIds = ["@pixiebrix/state/set", "@pixiebrix/state/get"];
+
 const DataPanel: React.FC<{
   instanceId: UUID;
 }> = ({ instanceId }) => {
@@ -146,6 +148,7 @@ const DataPanel: React.FC<{
   const showFormPreview = block.config?.schema && block.config?.uiSchema;
   const showDocumentPreview = block.config?.body;
   const showBlockPreview = record || previewInfo?.traceOptional;
+  const showPageState = pageStateBlockIds.includes(block.id);
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     showFormPreview || showDocumentPreview ? "preview" : "output"
@@ -168,6 +171,11 @@ const DataPanel: React.FC<{
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="context">Context</Nav.Link>
           </Nav.Item>
+          {showPageState && (
+            <Nav.Item className={dataPanelStyles.tabNav}>
+              <Nav.Link eventKey="pageState">Page State</Nav.Link>
+            </Nav.Item>
+          )}
           {showDeveloperTabs && (
             <>
               <Nav.Item className={dataPanelStyles.tabNav}>
@@ -186,9 +194,6 @@ const DataPanel: React.FC<{
           </Nav.Item>
           <Nav.Item className={dataPanelStyles.tabNav}>
             <Nav.Link eventKey="preview">Preview</Nav.Link>
-          </Nav.Item>
-          <Nav.Item className={dataPanelStyles.tabNav}>
-            <Nav.Link eventKey="pageState">Page State</Nav.Link>
           </Nav.Item>
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
@@ -210,6 +215,11 @@ const DataPanel: React.FC<{
               }
             />
           </DataTab>
+          {showPageState && (
+            <DataTab eventKey="pageState">
+              <PageStateTab />
+            </DataTab>
+          )}
           {showDeveloperTabs && (
             <>
               <DataTab eventKey="formik">
@@ -345,9 +355,6 @@ const DataPanel: React.FC<{
                 Run the extension once to enable live preview
               </div>
             )}
-          </DataTab>
-          <DataTab eventKey="pageState">
-            <PageStateTab />
           </DataTab>
         </Tab.Content>
       </div>
