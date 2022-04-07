@@ -92,6 +92,11 @@ declare module "page-metadata-parser" {
   ): IPageMetadata;
 }
 
+// Types are not exported correctly in the package
+declare module "urlpattern-polyfill/dist/url-pattern.cjs" {
+  export { URLPatternInit, URLPattern } from "urlpattern-polyfill";
+}
+
 declare module "@/vendors/initialize" {
   import { Promisable } from "type-fest";
 
