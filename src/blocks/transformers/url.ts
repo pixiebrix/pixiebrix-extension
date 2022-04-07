@@ -17,7 +17,11 @@
 
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { makeURL, URL_INPUT_SPACE_ENCODING_DEFAULT } from "@/utils";
+import {
+  makeURL,
+  URL_INPUT_SPACE_ENCODING_DEFAULT,
+  LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
+} from "@/utils";
 
 export const URL_INPUT_SPEC: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -76,7 +80,7 @@ export class UrlParams extends Transformer {
   async transform({
     url,
     params,
-    spaceEncoding,
+    spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
   }: BlockArg): Promise<{ url: string }> {
     return {
       url: makeURL(url, params, spaceEncoding),

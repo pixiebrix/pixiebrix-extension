@@ -397,6 +397,10 @@ export function isAbsoluteUrl(url: string): boolean {
 }
 
 export const SPACE_ENCODED_VALUE = "%20";
+
+// Preserve the previous default for backwards compatibility
+// https://github.com/pixiebrix/pixiebrix-extension/pull/3076#discussion_r844564894
+export const LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT = "plus";
 export const URL_INPUT_SPACE_ENCODING_DEFAULT = "percent";
 
 export function makeURL(

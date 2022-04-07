@@ -19,7 +19,7 @@ import { Effect } from "@/types";
 import { BlockArg } from "@/core";
 import { openTab } from "@/background/messenger/api";
 import { URL_INPUT_SPEC } from "@/blocks/transformers/url";
-import { makeURL } from "@/utils";
+import { LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT, makeURL } from "@/utils";
 
 export class NavigateURLEffect extends Effect {
   constructor() {
@@ -33,7 +33,11 @@ export class NavigateURLEffect extends Effect {
 
   inputSchema = URL_INPUT_SPEC;
 
-  async effect({ url, params, spaceEncoding }: BlockArg): Promise<void> {
+  async effect({
+    url,
+    params,
+    spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
+  }: BlockArg): Promise<void> {
     document.location.href = makeURL(url, params, spaceEncoding);
   }
 }
@@ -50,7 +54,11 @@ export class OpenURLEffect extends Effect {
 
   inputSchema = URL_INPUT_SPEC;
 
-  async effect({ url, params, spaceEncoding }: BlockArg): Promise<void> {
+  async effect({
+    url,
+    params,
+    spaceEncoding = LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
+  }: BlockArg): Promise<void> {
     await openTab({
       url: makeURL(url, params, spaceEncoding),
     });
