@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "primaryOrganizationId": {
+      "type": "string",
+      "description": "PixieBrix organization ID the extension should link to"
+    },
+    "partnerId": {
+      "type": "string",
+      "description": "PixieBrix partner ID"
+    },
+    "campaignIds": {
+      "type": "array",
+      "description": "Campaign IDs the extension is associated with",
+      "items": {
+        "type": "string"
+      }
+    },
+    "serviceUrl": {
+      "type": "string",
+      "description": "PixieBrix service URL",
+      "default": "https://app.pixiebrix.com"
+    }
+  }
+}

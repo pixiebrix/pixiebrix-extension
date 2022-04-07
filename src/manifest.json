@@ -41,6 +41,9 @@
   "externally_connectable": {
     "matches": ["https://app.pixiebrix.com/*"]
   },
+  "storage": {
+    "managed_schema": "managedStorageSchema.json"
+  },
   "web_accessible_resources": [
     "css/*",
     "bundles/*",

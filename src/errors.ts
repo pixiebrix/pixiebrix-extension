@@ -29,6 +29,9 @@ import {
 
 const DEFAULT_ERROR_MESSAGE = "Unknown error";
 
+export const JQUERY_INVALID_SELECTOR_ERROR =
+  "Syntax error, unrecognized expression: ";
+
 /**
  * Base class for Errors arising from business logic in the brick, not the PixieBrix application/extension itself.
  *
@@ -130,6 +133,22 @@ export class MultipleElementsFoundError extends BusinessError {
     message = "Multiple elements found for selector"
   ) {
     super(message);
+    this.selector = selector;
+  }
+}
+
+export class InvalidSelectorError extends BusinessError {
+  override name = "InvalidSelectorError";
+  readonly selector: string;
+
+  /**
+   * @param message The error message jQuery creates, example in https://cs.github.com/jquery/jquery/blob/2525cffc42934c0d5c7aa085bc45dd6a8282e840/src/selector.js#L787
+   */
+  constructor(message: string, selector: string) {
+    // Make the error message more specific than "Syntax error"
+    super(
+      "Invalid selector: " + message.replace(JQUERY_INVALID_SELECTOR_ERROR, "")
+    );
     this.selector = selector;
   }
 }
@@ -256,12 +275,13 @@ export function getRootCause(error: ErrorObject): ErrorObject {
 
 // Manually list subclasses because the prototype chain is lost in serialization/deserialization
 // See https://github.com/sindresorhus/serialize-error/issues/48
-const BUSINESS_ERROR_CLASSES = [
+const BUSINESS_ERROR_CLASSES = new Set([
   BusinessError,
   NoElementsFoundError,
   MultipleElementsFoundError,
+  InvalidSelectorError,
   PropError,
-];
+]);
 // Name classes from other modules separately, because otherwise we'll get a circular dependency with this module
 const BUSINESS_ERROR_NAMES = new Set([
   "PropError",

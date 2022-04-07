@@ -59,6 +59,8 @@ async function initRollbar(): Promise<Rollbar> {
 
   if (accessToken) {
     console.debug("Initializing Rollbar error telemetry");
+  } else {
+    console.debug("Rollbar token missing, errors won’t be reported");
   }
 
   try {
@@ -140,4 +142,6 @@ async function updatePerson(data: Partial<UserData>): Promise<void> {
 }
 
 // OK to memoize. The addAuthListener will modify the Rollbar instance in place
-export const getRollbar = pMemoize(initRollbar);
+export const getRollbar = pMemoize(initRollbar, {
+  cachePromiseRejection: false, // Keep trying to connect if it fails
+});

@@ -47,6 +47,7 @@ import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
 import {
+  clearExtensionDebugLogs,
   clearLogs,
   getLoggingConfig,
   recordError,
@@ -121,6 +122,7 @@ declare global {
     GET_LOGGING_CONFIG: typeof getLoggingConfig;
     SET_LOGGING_CONFIG: typeof setLoggingConfig;
     CLEAR_LOGS: typeof clearLogs;
+    CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
 
     ADD_TRACE_ENTRY: typeof addTraceEntry;
     ADD_TRACE_EXIT: typeof addTraceExit;
@@ -189,6 +191,7 @@ export default function registerMessenger(): void {
     GET_LOGGING_CONFIG: getLoggingConfig,
     SET_LOGGING_CONFIG: setLoggingConfig,
     CLEAR_LOGS: clearLogs,
+    CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
 
     ADD_TRACE_ENTRY: addTraceEntry,
     ADD_TRACE_EXIT: addTraceExit,

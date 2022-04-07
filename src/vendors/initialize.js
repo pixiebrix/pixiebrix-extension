@@ -1,8 +1,11 @@
 // Copyright (c) 2015-2016 Adam Pietrasiak
 // https://github.com/pie6k/jquery.initialize/blob/master/jquery.initialize.js
-// Copied to expose as a module instead of JQuery plugin, and check if Element type is defined
+// Changes:
+// - expose as a module instead of JQuery plugin
+// - check if Element type is defined
+// - use $safeFind to catch invalid selectors #3061
 
-"use strict";
+import { $safeFind } from "@/helpers";
 
 var combinators = [" ", ">", "+", "~"]; // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors#Combinators
 var fraternisers = ["+", "~"]; // These combinators involve siblings.
@@ -72,7 +75,7 @@ msobservers.initialize = function (selector, callback, options) {
   };
 
   // See if the selector matches any elements already on the page.
-  $(options.target).find(selector).each(callbackOnce);
+  $safeFind(selector, options.target).each(callbackOnce);
 
   // Then, add it to the list of selector observers.
   var msobserver = new MutationSelectorObserver(
@@ -108,12 +111,12 @@ msobservers.initialize = function (selector, callback, options) {
         if (msobserver.isFraternal)
           matches.push.apply(
             matches,
-            $(mutations[m].target.parentElement).find(msobserver.selector)
+            $safeFind(msobserver.selector, mutations[m].target.parentElement)
           );
         else
           matches.push.apply(
             matches,
-            $(mutations[m].target).find(msobserver.selector)
+            $safeFind(msobserver.selector, mutations[m].target)
           );
       }
 
@@ -131,14 +134,15 @@ msobservers.initialize = function (selector, callback, options) {
           if (msobserver.isFraternal)
             matches.push.apply(
               matches,
-              $(mutations[m].addedNodes[n].parentElement).find(
-                msobserver.selector
+              $safeFind(
+                msobserver.selector,
+                mutations[m].addedNodes[n].parentElement
               )
             );
           else
             matches.push.apply(
               matches,
-              $(mutations[m].addedNodes[n]).find(msobserver.selector)
+              $safeFind(msobserver.selector, mutations[m].addedNodes[n])
             );
         }
       }
