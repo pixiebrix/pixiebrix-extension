@@ -21,7 +21,6 @@ import { expectContext } from "@/utils/expectContext";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import {
   getInstalled,
-  getInstalledIds,
   handleNavigate,
   queueReactivateTab,
   reactivateTab,
