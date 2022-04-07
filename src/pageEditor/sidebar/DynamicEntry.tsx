@@ -32,7 +32,8 @@ import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { reportEvent } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { FormState, RootState } from "@/pageEditor/pageEditorTypes";
+import { FormState } from "@/pageEditor/pageEditorTypes";
+import { selectElementIsDirty } from "@/pageEditor/slices/editorSelectors";
 
 /**
  * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
@@ -47,9 +48,7 @@ const DynamicEntry: React.FunctionComponent<{
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
 
-  const isDirty = useSelector<RootState>(
-    (x) => x.editor.dirty[item.uuid] ?? false
-  );
+  const isDirty = useSelector(selectElementIsDirty(item.uuid));
 
   const isButton = item.type === "menuItem";
 

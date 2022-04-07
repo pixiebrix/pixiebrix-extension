@@ -33,7 +33,7 @@ import { FIELD_TYPE_OPTIONS } from "@/components/formBuilder/formBuilderHelpers"
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveRecipeId,
-  selectDirtyOptionsForRecipe,
+  selectDirtyOptionsForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/extensionPoints/base";
 import { useGetRecipesQuery } from "@/services/api";
@@ -42,7 +42,6 @@ import { OptionsDefinition } from "@/types/definitions";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/pageEditor/components/Effect";
 import { getErrorMessage } from "@/errors";
-import { RootState } from "@/pageEditor/pageEditorTypes";
 
 const fieldTypes = FIELD_TYPE_OPTIONS.filter(
   (type) => !["File", "Image crop"].includes(type.label)
@@ -63,9 +62,7 @@ const RecipeOptions: React.VoidFunctionComponent = () => {
     uiSchema: {},
   };
 
-  const dirtyOptions = useSelector((state: RootState) =>
-    selectDirtyOptionsForRecipe(state, recipeId)
-  );
+  const dirtyOptions = useSelector(selectDirtyOptionsForRecipeId(recipeId));
 
   const initialValues = { optionsDefinition: dirtyOptions ?? options };
 

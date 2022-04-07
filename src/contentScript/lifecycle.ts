@@ -168,7 +168,7 @@ export function clearDynamic(
     }
 
     if (clearTrace) {
-      traces.clear(extensionId);
+      void traces.clear(extensionId);
     }
   } else {
     for (const extensionPoint of _dynamic.values()) {

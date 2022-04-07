@@ -28,6 +28,7 @@ import {
 import { castArray, isPlainObject } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import {
+  clearExtensionDebugLogs,
   getLoggingConfig,
   requestRun,
   sendDeploymentAlert,
@@ -439,6 +440,16 @@ export async function blockReducer(
   ) {
     logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
 
+    traces.addExit({
+      runId,
+      extensionId: logger.context.extensionId,
+      blockId: blockConfig.id,
+      blockInstanceId: blockConfig.instanceId,
+      outputKey: blockConfig.outputKey,
+      output: null,
+      skippedRun: true,
+    });
+
     return { output: previousOutput, context };
   }
 
@@ -487,6 +498,7 @@ export async function blockReducer(
     blockInstanceId: blockConfig.instanceId,
     outputKey: blockConfig.outputKey,
     output: output as JsonObject,
+    skippedRun: false,
   });
 
   await logIfInvalidOutput(resolvedConfig.block, output, logger, {
@@ -548,6 +560,7 @@ function throwBlockError(
     blockId: blockConfig.id,
     blockInstanceId: blockConfig.instanceId,
     error: serializeError(error),
+    skippedRun: false,
   });
 
   if (blockConfig.onError?.alert) {
@@ -594,6 +607,12 @@ export async function reducePipeline(
     "@input": input,
     "@options": optionsArgs ?? {},
   } as unknown as BlockArgContext;
+
+  // `await` promises to avoid race condition where the calls here delete debug entries from this call to reducePipeline
+  await Promise.allSettled([
+    traces.clear(pipelineLogger.context.extensionId),
+    clearExtensionDebugLogs(pipelineLogger.context.extensionId),
+  ]);
 
   // When using explicit data flow, the first block (and other blocks) use `@input` in the context to get the inputs
   let output: unknown = explicitDataFlow ? {} : input;

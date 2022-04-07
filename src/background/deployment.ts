@@ -19,7 +19,7 @@ import { Deployment, Me } from "@/types/contract";
 import { isEmpty, partition, uniqBy } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUID } from "@/background/telemetry";
-import { getExtensionVersion } from "@/chrome";
+import { getExtensionVersion, ManualStorageKey, readStorage } from "@/chrome";
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
@@ -42,6 +42,8 @@ import { uninstallContextMenu } from "@/background/contextMenus";
 const { reducer, actions } = extensionsSlice;
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
+
+const MANAGED_CAMPAIGN_IDS_KEY = "campaignIds" as ManualStorageKey;
 
 /**
  * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
@@ -331,6 +333,11 @@ export async function updateDeployments(): Promise<void> {
       uid: await getUID(),
       version: await getExtensionVersion(),
       active: selectInstalledDeployments(extensions),
+      campaignIds: await readStorage(
+        MANAGED_CAMPAIGN_IDS_KEY,
+        undefined,
+        "managed"
+      ),
     });
 
   if (deploymentResponseStatus >= 400) {

@@ -17,52 +17,43 @@
 
 import { useCallback } from "react";
 import { RegistryId } from "@/core";
-import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
-import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
-import { selectElements } from "@/pageEditor/slices/editorSelectors";
-import { uniq } from "lodash";
-import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
+import { useModals } from "@/components/ConfirmationModal";
+import { useDispatch, useSelector } from "react-redux";
+import useResetExtension from "@/pageEditor/hooks/useResetExtension";
+import { selectElements } from "@/pageEditor/slices/editorSelectors";
 
-function useRemoveRecipe(): (recipeId: RegistryId) => Promise<void> {
-  const dispatch = useDispatch();
-  const removeExtension = useRemoveExtension();
-  const extensions = useSelector(selectExtensions);
-  const elements = useSelector(selectElements);
+function useResetRecipe(): (recipeId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
+  const dispatch = useDispatch();
+  const resetElement = useResetExtension();
+  const elements = useSelector(selectElements);
 
   return useCallback(
     async (recipeId: RegistryId) => {
       const confirmed = await showConfirmation({
-        title: "Remove Blueprint?",
+        title: "Reset Blueprint?",
         message:
-          "You can reactivate extensions and blueprints from the PixieBrix Options page",
-        submitCaption: "Remove",
+          "Unsaved changes to extensions within this blueprint, or to blueprint options and metadata, will be lost.",
+        submitCaption: "Reset",
       });
-
       if (!confirmed) {
         return;
       }
 
-      const extensionIds = uniq(
-        [...extensions, ...elements]
-          .filter((x) => getRecipeIdForElement(x) === recipeId)
-          .map((x) => getIdForElement(x))
-      );
       await Promise.all(
-        extensionIds.map(async (extensionId) =>
-          removeExtension({ extensionId, shouldShowConfirmation: false })
-        )
+        elements
+          .filter((element) => element.recipe?.id === recipeId)
+          .map(async (element) =>
+            resetElement({ element, shouldShowConfirmation: false })
+          )
       );
 
-      dispatch(actions.clearActiveRecipe());
       dispatch(actions.resetMetadataAndOptionsForRecipe(recipeId));
-      dispatch(actions.clearDeletedElementsForRecipe(recipeId));
+      dispatch(actions.restoreDeletedElementsForRecipe(recipeId));
     },
-    [dispatch, elements, extensions, removeExtension, showConfirmation]
+    [dispatch, elements, resetElement, showConfirmation]
   );
 }
 
-export default useRemoveRecipe;
+export default useResetRecipe;

@@ -19,17 +19,37 @@ import React from "react";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHistory, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
-import useRemove from "@/pageEditor/hooks/useRemove";
-import useReset from "@/pageEditor/hooks/useReset";
+import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import { FormState } from "@/pageEditor/pageEditorTypes";
+import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
+import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
+import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 
 const ActionToolbar: React.FunctionComponent<{
   element: FormState;
   disabled: boolean;
   onSave: () => void;
 }> = ({ element, disabled, onSave }) => {
-  const remove = useRemove(element);
-  const reset = useReset();
+  const removeExtension = useRemoveExtension();
+  const removeRecipe = useRemoveRecipe();
+  const resetExtension = useResetExtension();
+  const resetRecipe = useResetRecipe();
+
+  const removeElement = async () => {
+    if (element.recipe) {
+      await removeRecipe(element.recipe.id);
+    } else {
+      await removeExtension({ extensionId: element.uuid });
+    }
+  };
+
+  const resetElement = async () => {
+    if (element.recipe) {
+      await resetRecipe(element.recipe.id);
+    } else {
+      await resetExtension({ element });
+    }
+  };
 
   return (
     <ButtonGroup className="ml-2">
@@ -41,15 +61,13 @@ const ActionToolbar: React.FunctionComponent<{
           disabled={disabled}
           size="sm"
           variant="warning"
-          onClick={() => {
-            reset({ element });
-          }}
+          onClick={resetElement}
         >
           <FontAwesomeIcon icon={faHistory} /> Reset
         </Button>
       )}
       {/* Remove is always available and enabled */}
-      <Button variant="danger" size="sm" onClick={remove}>
+      <Button variant="danger" size="sm" onClick={removeElement}>
         <FontAwesomeIcon icon={faTrash} /> Remove
       </Button>
     </ButtonGroup>
