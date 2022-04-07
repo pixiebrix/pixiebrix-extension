@@ -66,7 +66,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { EditorState, FormState } from "@/pageEditor/pageEditorTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useGetRecipesQuery } from "@/services/api";
-import { getIdForElement } from "@/pageEditor/utils";
+import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
 
 const ReloadButton: React.VoidFunctionComponent = () => (
   <Button
@@ -174,12 +174,10 @@ const SidebarExpanded: React.VoidFunctionComponent<{
 
   const recipes = useMemo(
     () =>
-      allRecipes?.filter(
-        (recipe) =>
-          installed.some(
-            (installed) => installed._recipe?.id === recipe.metadata.id
-          ) ||
-          elements.some((element) => element.recipe?.id === recipe.metadata.id)
+      allRecipes?.filter((recipe) =>
+        [...installed, ...elements].some(
+          (element) => getRecipeIdForElement(element) === recipe.metadata.id
+        )
       ) ?? [],
     [allRecipes, elements, installed]
   );
