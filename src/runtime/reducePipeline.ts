@@ -447,9 +447,9 @@ export async function blockReducer(
       blockId: blockConfig.id,
       blockInstanceId: blockConfig.instanceId,
       timestamp: new Date().toISOString(),
-      templateContext: state.context as JsonObject,
+      templateContext: context as JsonObject,
       renderedArgs: null,
-      blockConfig: blockConfig,
+      blockConfig,
       skippedRun: true,
     });
 
@@ -501,7 +501,6 @@ export async function blockReducer(
     blockInstanceId: blockConfig.instanceId,
     outputKey: blockConfig.outputKey,
     output: output as JsonObject,
-    skippedRun: false,
   });
 
   await logIfInvalidOutput(resolvedConfig.block, output, logger, {
@@ -563,7 +562,6 @@ function throwBlockError(
     blockId: blockConfig.id,
     blockInstanceId: blockConfig.instanceId,
     error: serializeError(error),
-    skippedRun: false,
   });
 
   if (blockConfig.onError?.alert) {

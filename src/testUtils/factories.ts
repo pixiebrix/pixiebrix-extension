@@ -156,6 +156,7 @@ export const traceErrorFactory: (
     id: TEST_BLOCK_ID,
     config: {},
   },
+  skippedRun: false,
   ...traceErrorProps,
 });
 
