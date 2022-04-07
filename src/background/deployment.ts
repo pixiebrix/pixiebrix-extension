@@ -283,6 +283,18 @@ export async function updateDeployments(): Promise<void> {
     // If the Browser extension is unlinked (it doesn't have the API key), just NOP. If it's an enterprise user, it's
     // likely they just need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any
     // deployments installed anyway.
+    if (organizationId != null) {
+      reportEvent("OrganizationExtensionLink", {
+        organizationId,
+        initial: false,
+        campaignIds:
+          (await readStorage(MANAGED_CAMPAIGN_IDS_KEY, undefined, "managed")) ??
+          [],
+      });
+
+      void browser.runtime.openOptionsPage();
+    }
+
     return;
   }
 
