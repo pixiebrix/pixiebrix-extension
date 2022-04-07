@@ -22,6 +22,7 @@ import {
   removeUndefined,
   matchesAnyPattern,
   assertHttpsUrl,
+  makeURL,
 } from "@/utils";
 import type { SafeString } from "@/core";
 import { BusinessError } from "@/errors";
@@ -150,5 +151,36 @@ describe("matchesAnyPattern", () => {
   test("matches a regex array", () => {
     expect(matchesAnyPattern("hello", [/^hel+o/, /(ho ){3}/])).toBeTruthy();
     expect(matchesAnyPattern("hello", [/^Hello$/])).toBeFalsy();
+  });
+});
+
+describe("makeURL", () => {
+  test("basic parameter support", () => {
+    const origin = "https://pixiebrix.com";
+    expect(makeURL(origin)).toBe("https://pixiebrix.com/");
+    expect(makeURL(origin, {})).toBe("https://pixiebrix.com/");
+    expect(makeURL(origin, { a: undefined, b: null })).toBe(
+      "https://pixiebrix.com/"
+    );
+    expect(makeURL(origin, { a: 1, b: "hi", c: false })).toBe(
+      "https://pixiebrix.com/?a=1&b=hi&c=false"
+    );
+  });
+
+  test("spaces support", () => {
+    const origin = "https://pixiebrix.com/path";
+    expect(makeURL(origin, { a: "b c", d: "e+f" })).toBe(
+      "https://pixiebrix.com/path?a=b%20c&d=e%2Bf"
+    );
+    expect(makeURL(origin, { a: "b c", d: "e+f" }, "plus")).toBe(
+      "https://pixiebrix.com/path?a=b+c&d=e%2Bf"
+    );
+  });
+
+  test("relative URLs support", () => {
+    expect(makeURL("bricks")).toBe("http://localhost/bricks");
+    expect(makeURL("/blueprints", { id: 1 })).toBe(
+      "http://localhost/blueprints?id=1"
+    );
   });
 });
