@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { InitialValues, reducePipeline } from "@/runtime/reducePipeline";
+import {
+  InitialValues,
+  reduceExtensionPipeline,
+} from "@/runtime/reducePipeline";
 import { ExtensionPoint } from "@/types";
 import {
   IBlock,
@@ -137,7 +140,7 @@ export abstract class SidebarExtensionPoint extends ExtensionPoint<SidebarConfig
     };
 
     try {
-      await reducePipeline(body, initialValues, {
+      await reduceExtensionPipeline(body, initialValues, {
         headless: true,
         logger: extensionLogger,
         ...apiVersionOptions(extension.apiVersion),
