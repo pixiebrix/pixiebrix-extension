@@ -47,6 +47,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
 import { clearExtensionAuth } from "@/auth/token";
+import { ErrorObject, serializeError } from "serialize-error";
 
 // Temporary type for RTK query errors. Matches the example from
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery.
@@ -55,6 +56,8 @@ import { clearExtensionAuth } from "@/auth/token";
 export type ApiError = {
   status: number;
   data: unknown | undefined;
+  // Will be serialized AxiosError. Serialized to kept in the Redux store.
+  error: ErrorObject;
 };
 
 type QueryArgs = {
@@ -108,8 +111,18 @@ const appBaseQuery: BaseQueryFn<QueryArgs, unknown, ApiError> = async ({
         await clearExtensionAuth();
       }
 
+      // Axios offers its own serialization method, but it doesn't include the response.
+      // By deleting toJSON, the serialize-error library will use its default serialization
+      delete error.toJSON;
+
       return {
-        error: { status: error.response?.status, data: error.response?.data },
+        // RTK expects the status and data fields?
+        // Serialize error because RTK stores the error in the Redux store (which should only have serializable data)
+        error: {
+          status: error.response?.status,
+          data: error.response?.data,
+          error: serializeError(error),
+        },
       };
     }
 

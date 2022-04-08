@@ -52,6 +52,7 @@ import useFlags from "@/hooks/useFlags";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
+import Centered from "@/layout/Centered";
 
 // Register the built-in bricks
 registerEditors();
@@ -67,6 +68,12 @@ const RefreshBricks: React.VFC = () => {
   return null;
 };
 
+const ErrorScreen: React.VFC<{ error: unknown }> = ({ error }) => (
+  <Centered>
+    <ErrorDisplay error={error} />
+  </Centered>
+);
+
 const Layout = () => {
   const { permit } = useFlags();
 
@@ -75,7 +82,7 @@ const Layout = () => {
       <Navbar />
       <Container fluid className="page-body-wrapper">
         {/* It is guaranteed that under RequireAuth the user has a valid API token. */}
-        <RequireAuth LoginPage={SetupPage} ErrorPage={ErrorDisplay}>
+        <RequireAuth LoginPage={SetupPage} ErrorPage={ErrorScreen}>
           <RefreshBricks />
           <Sidebar />
           <div className="main-panel">

@@ -17,7 +17,12 @@
 
 import axios from "axios";
 import { expectContext } from "@/utils/expectContext";
-import { getErrorMessage, isAxiosError } from "@/errors";
+import {
+  getErrorMessage,
+  isAxiosError,
+  NO_INTERNET_MESSAGE,
+  NO_RESPONSE_MESSAGE,
+} from "@/errors";
 import { assertHttpsUrl } from "@/utils";
 import {
   ClientNetworkError,
@@ -62,6 +67,10 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
     throw new RemoteServiceError(getErrorMessage(error), error);
   }
 
+  if (!navigator.onLine) {
+    throw new ClientNetworkError(NO_INTERNET_MESSAGE, error);
+  }
+
   const hasPermissions = await browser.permissions.contains({
     origins: [url.href],
   });
@@ -73,8 +82,5 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
     );
   }
 
-  throw new ClientNetworkError(
-    "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/network-errors for troubleshooting information",
-    error
-  );
+  throw new ClientNetworkError(NO_RESPONSE_MESSAGE, error);
 }

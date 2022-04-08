@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
 import { ApiError, useGetMeQuery } from "@/services/api";
@@ -33,6 +33,8 @@ import { anonAuth } from "@/auth/authConstants";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Me } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
+import { isAxiosError, NO_INTERNET_MESSAGE } from "@/errors";
+import { deserializeError } from "serialize-error";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
@@ -85,6 +87,27 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     skip: !hasToken,
   });
 
+  const error = useMemo(() => {
+    if (meError) {
+      if (!navigator.onLine) {
+        return new Error(NO_INTERNET_MESSAGE);
+      }
+
+      if ("error" in meError && isAxiosError(meError.error)) {
+        return deserializeError(meError.error);
+      }
+
+      // Not sure why, but Typescript things that meError can be a SerializedError
+      return meError;
+    }
+
+    if (tokenError) {
+      return tokenError;
+    }
+
+    return null;
+  }, [meError, tokenError]);
+
   const isLoading = tokenLoading || meLoading;
 
   useEffect(() => {
@@ -129,7 +152,6 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     return <LoginPage />;
   }
 
-  const error = meError ?? tokenError;
   if (error) {
     if (ErrorPage) {
       return <ErrorPage error={error} />;
