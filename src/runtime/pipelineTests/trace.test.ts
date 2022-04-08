@@ -105,13 +105,13 @@ describe("Trace normal execution", () => {
       blockConfig,
       templateContext: { "@input": { inputArg: "hello" }, "@options": {} },
       renderedArgs: { message: "hello" } as unknown as RenderedArgs,
-      skippedRun: false,
     };
 
     const expectedExit: TraceExitData = {
       ...meta,
       outputKey: undefined,
       output: { message: "hello" },
+      skippedRun: false,
     };
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
@@ -163,6 +163,7 @@ describe("Trace normal execution", () => {
       ...meta,
       outputKey,
       output: { message: "hello" },
+      skippedRun: false,
     };
 
     expect(traces.addExit).toHaveBeenCalledTimes(2);
