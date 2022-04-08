@@ -38,7 +38,7 @@ import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/blocks/errors";
 import { engineRenderer } from "@/runtime/renderers";
-import { TraceRecordMeta } from "@/telemetry/trace";
+import { TraceExitData, TraceRecordMeta } from "@/telemetry/trace";
 import { JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
@@ -435,24 +435,6 @@ export async function blockReducer(
       ? context
       : { ...context, ...(previousOutput as UnknownObject) };
 
-  if (
-    !(await shouldRunBlock(blockConfig, contextWithPreviousOutput, options))
-  ) {
-    logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
-
-    traces.addExit({
-      runId,
-      extensionId: logger.context.extensionId,
-      blockId: blockConfig.id,
-      blockInstanceId: blockConfig.instanceId,
-      outputKey: blockConfig.outputKey,
-      output: null,
-      skippedRun: true,
-    });
-
-    return { output: previousOutput, context };
-  }
-
   const resolvedConfig = await resolveBlockConfig(blockConfig);
 
   const blockOptions = {
@@ -477,6 +459,30 @@ export async function blockReducer(
     context: contextWithPreviousOutput,
   };
 
+  const preconfiguredTraceExit: TraceExitData = {
+    runId,
+    extensionId: logger.context.extensionId,
+    blockId: blockConfig.id,
+    blockInstanceId: blockConfig.instanceId,
+    outputKey: blockConfig.outputKey,
+    output: null,
+    skippedRun: false,
+  };
+
+  if (
+    !(await shouldRunBlock(blockConfig, contextWithPreviousOutput, options))
+  ) {
+    logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
+
+    traces.addExit({
+      ...preconfiguredTraceExit,
+      output: previousOutput as JsonObject,
+      skippedRun: true,
+    });
+
+    return { output: previousOutput, context };
+  }
+
   const output = await runBlock(resolvedConfig, props, blockOptions);
 
   if (logValues) {
@@ -492,11 +498,7 @@ export async function blockReducer(
   }
 
   traces.addExit({
-    runId,
-    extensionId: logger.context.extensionId,
-    blockId: blockConfig.id,
-    blockInstanceId: blockConfig.instanceId,
-    outputKey: blockConfig.outputKey,
+    ...preconfiguredTraceExit,
     output: output as JsonObject,
     skippedRun: false,
   });
