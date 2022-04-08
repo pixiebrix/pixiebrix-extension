@@ -51,8 +51,8 @@ import { ErrorObject, serializeError } from "serialize-error";
 
 // Temporary type for RTK query errors. Matches the example from
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery.
-// A future PR will have appBaseQuery return the AxiosError or enriched request error
 // See errorContract
+// TODO: remove in https://github.com/pixiebrix/pixiebrix-extension/issues/3126
 export type ApiError = {
   status: number;
   data: unknown | undefined;
@@ -126,7 +126,9 @@ const appBaseQuery: BaseQueryFn<QueryArgs, unknown, ApiError> = async ({
       };
     }
 
-    // Could be an ExtensionNotLinkedError
+    // Potential errors at this point: ExtensionNotLinked. Currently re-throwing the error since it can't match
+    // the {status, data} properties we had originally in RTK query
+    // TODO: remove in https://github.com/pixiebrix/pixiebrix-extension/issues/3126
     throw error;
   }
 };
