@@ -280,9 +280,12 @@ export async function updateDeployments(): Promise<void> {
   ]);
 
   if (!linked) {
-    // If the Browser extension is unlinked (it doesn't have the API key), just NOP. If it's an enterprise user, it's
-    // likely they just need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any
-    // deployments installed anyway.
+    // If the Browser extension is unlinked (it doesn't have the API key):
+    // - If the was part of an organization, they must have somehow lost their token: 1) the token is no longer valid
+    //   so PixieBrix cleared it out, 2) something removed the local storage entry
+    // - If the user is not an enterprise user (or has not linked their extension yet), just NOP. They lik
+    //   likely they just need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any
+    //   deployments installed anyway.
     if (organizationId != null) {
       reportEvent("OrganizationExtensionLink", {
         organizationId,
@@ -320,7 +323,7 @@ export async function updateDeployments(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping  deployments update because the extension is not linked to the PixieBrix service"
+      "Skipping deployments update because the extension is not linked to the PixieBrix service"
     );
     return;
   }
@@ -334,6 +337,7 @@ export async function updateDeployments(): Promise<void> {
     console.debug(
       "Skipping deployments update because /api/me/ request failed"
     );
+
     return;
   }
 

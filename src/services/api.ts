@@ -46,6 +46,7 @@ import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { propertiesToSchema } from "@/validators/generic";
 import { produce } from "immer";
 import { sortBy } from "lodash";
+import { clearExtensionAuth } from "@/auth/token";
 
 // Temporary type for RTK query errors. Matches the example from
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery.
@@ -56,18 +57,42 @@ export type ApiError = {
   data: unknown | undefined;
 };
 
+type QueryArgs = {
+  /**
+   * The relative PixieBrix URL. The client will apply the configured base service URL.
+   */
+  url: string;
+
+  /**
+   * The REST method
+   */
+  method: AxiosRequestConfig["method"];
+
+  /**
+   * The REST JSON data
+   */
+  data?: AxiosRequestConfig["data"];
+
+  /**
+   * True if a Token is required to make the request.
+   * @see isLinked
+   */
+  requireLinked?: boolean;
+
+  /**
+   * Optional additional metadata to pass through to the result.
+   */
+  meta?: unknown;
+};
+
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
-const appBaseQuery: BaseQueryFn<
-  {
-    url: string;
-    method: AxiosRequestConfig["method"];
-    data?: AxiosRequestConfig["data"];
-    requireLinked?: boolean;
-    meta?: unknown;
-  },
-  unknown,
-  ApiError
-> = async ({ url, method, data, requireLinked = false, meta }) => {
+const appBaseQuery: BaseQueryFn<QueryArgs, unknown, ApiError> = async ({
+  url,
+  method,
+  data,
+  requireLinked = true,
+  meta,
+}) => {
   try {
     const client = await (requireLinked
       ? getLinkedApiClient()
@@ -77,11 +102,18 @@ const appBaseQuery: BaseQueryFn<
     return { data: result.data, meta };
   } catch (error) {
     if (isAxiosError(error)) {
+      if (error.response?.status === 401) {
+        console.debug("Invalid token, resetting extension auth");
+        // The token is bad, clear it out
+        await clearExtensionAuth();
+      }
+
       return {
         error: { status: error.response?.status, data: error.response?.data },
       };
     }
 
+    // Could be an ExtensionNotLinkedError
     throw error;
   }
 };
@@ -144,10 +176,14 @@ export const appApi = createApi({
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
-      query: () => ({ url: "/api/me/", method: "get" }),
+      query: () => ({
+        url: "/api/me/",
+        method: "get",
+        // The /api/me/ endpoint returns a blank result if not authenticated
+        requireLinked: false,
+      }),
       providesTags: ["Me"],
     }),
-
     getDatabases: builder.query<Database[], void>({
       query: () => ({ url: "/api/databases/", method: "get" }),
       providesTags: ["Databases"],
@@ -179,7 +215,12 @@ export const appApi = createApi({
       invalidatesTags: ["Databases"],
     }),
     getServices: builder.query<ServiceDefinition[], void>({
-      query: () => ({ url: "/api/services/", method: "get" }),
+      query: () => ({
+        url: "/api/services/",
+        method: "get",
+        // Returns public service definitions if not authenticated
+        requireLinked: false,
+      }),
       providesTags: ["Services"],
     }),
     getServiceAuths: builder.query<SanitizedAuth[], void>({
@@ -237,6 +278,8 @@ export const appApi = createApi({
       query: () => ({
         url: "/api/marketplace/listings/?show_detail=true",
         method: "get",
+        // Returns public marketplace
+        requireLinked: false,
       }),
       providesTags: ["MarketplaceListings"],
       transformResponse(

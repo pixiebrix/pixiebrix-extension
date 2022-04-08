@@ -61,19 +61,22 @@ registerContribBlocks();
 // Register Widgets
 registerDefaultWidgets();
 
-const Layout = () => {
-  // Get the latest brick definitions. Put it here in Layout instead of App to ensure the Redux store has been hydrated
-  // by the time refresh is called.
+const RefreshBricks: React.VFC = () => {
+  // Get the latest brick definitions. Defined as a component to put inside the RequireAuth gate in the layout.
   useRefresh();
+  return null;
+};
 
+const Layout = () => {
   const { permit } = useFlags();
 
   return (
     <div>
       <Navbar />
       <Container fluid className="page-body-wrapper">
-        {/* It is guaranteed that under RequireAuth the user is logged in. */}
+        {/* It is guaranteed that under RequireAuth the user has a valid API token. */}
         <RequireAuth LoginPage={SetupPage} ErrorPage={ErrorDisplay}>
+          <RefreshBricks />
           <Sidebar />
           <div className="main-panel">
             <ErrorModal />
