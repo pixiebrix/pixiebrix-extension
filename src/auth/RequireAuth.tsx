@@ -21,6 +21,7 @@ import Loader from "@/components/Loader";
 import { ApiError, useGetMeQuery } from "@/services/api";
 import {
   addListener as addAuthListener,
+  removeListener as removeAuthListener,
   isLinked,
   updateUserData,
 } from "@/auth/token";
@@ -70,10 +71,16 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
   useEffect(() => {
     // Listen for token invalidation
-    addAuthListener(async () => {
+    const handler = async () => {
       console.debug("Auth state changed, checking for token");
       void refreshToken();
-    });
+    };
+
+    addAuthListener(handler);
+
+    return () => {
+      removeAuthListener(handler);
+    };
   }, [refreshToken]);
 
   const {
@@ -97,7 +104,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
         return deserializeError(meError.error);
       }
 
-      // Not sure why, but Typescript thinks that meError can be a SerializedError
+      // Not sure why, but Typescript thinks that meError can be a SerializedError.
       return meError;
     }
 
@@ -113,8 +120,8 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   useEffect(() => {
     // Before we get the first response from API, use the AuthRootState persisted with redux-persist.
 
-    // The `Me` call should never error unless there's network connectivity issues. In this case, we should
-    // keep whatever was in redux-persist
+    // The `Me` call should never error unless there's network connectivity issues or the PixieBrix server is down.
+    // In this case, we should keep whatever was in redux-persist
     if (!isMeSuccess) {
       return;
     }
