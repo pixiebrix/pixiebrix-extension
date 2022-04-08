@@ -79,14 +79,15 @@ export type TraceEntryData = TraceRecordMeta & {
   renderedArgs: RenderedArgs;
 
   blockConfig: BlockConfig;
-
-  /**
-   * If a condition was specified and not met, this is `true`, otherwise `false`.
-   */
-  skippedRun: boolean;
 };
 
-export type TraceExitData = TraceRecordMeta & (Output | ErrorOutput);
+export type TraceExitData = TraceRecordMeta &
+  (Output | ErrorOutput) & {
+    /**
+     * If a condition was specified and not met, this is `true`, otherwise `false`.
+     */
+    skippedRun: boolean;
+  };
 
 export type TraceRecord = TraceEntryData & Partial<TraceExitData>;
 
