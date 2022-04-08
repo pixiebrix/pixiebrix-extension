@@ -97,7 +97,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
         return deserializeError(meError.error);
       }
 
-      // Not sure why, but Typescript things that meError can be a SerializedError
+      // Not sure why, but Typescript thinks that meError can be a SerializedError
       return meError;
     }
 
