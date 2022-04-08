@@ -494,6 +494,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         root: document,
       };
 
+      // NOTE: don't use reduceExtensionPipeline because this is just evaluating the condition and shouldn't show up
+      // as a "run" in the logs/traces. We also leave off the extensionLogger (see note)
       const show = await reducePipeline(extension.config.if, initialValues, {
         // Don't pass extension: extensionLogger because our log display doesn't handle the in-extension point
         // conditionals yet
